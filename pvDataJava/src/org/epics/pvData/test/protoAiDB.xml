@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<database>
+<record name = "ai${recordExtension}Record">
+    <scalar name = "value" type = "double">10.0</scalar>
+    <structure name = "timeStamp" type = "timeStamp" />
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "input" type = "linearConvertInput">
+        <structure name = "linearConvert">
+            <scalar name = "deviceHigh">2047</scalar>
+            <scalar name = "deviceLow">-2048</scalar>
+            <scalar name = "engUnitsLow">${engUnitsLow}</scalar>
+            <scalar name = "engUnitsHigh">${engUnitsHigh}</scalar>
+        </structure>
+        <structure name = "input" type = "inputSupport">
+                <scalar name = "pvname">${pvname}</scalar>
+                <scalar name = "process">false</scalar>
+        </structure>
+
+    </structure>
+    <structure name = "display" type = "display" >
+        <scalar name = "units">volts</scalar>
+        <structure name = "limit">
+            <scalar name = "low">${doubleLow}</scalar>
+            <scalar name = "high">${doubleHigh}</scalar>
+        </structure>
+    </structure>
+</record>
+</database>
