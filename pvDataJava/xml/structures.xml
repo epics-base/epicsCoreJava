@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<database>
+<include addPath = "xml/structure" />
+<include href = "limit.xml" />
+<include href = "display.xml" />
+<include href = "control.xml" />
+<include href = "enumerated.xml" />
+<include href = "timeStamp.xml" />
+<include href = "alarm.xml" />
+<!--
+
+-->
+<include removePath = "xml/structure" />
+</database>
+
