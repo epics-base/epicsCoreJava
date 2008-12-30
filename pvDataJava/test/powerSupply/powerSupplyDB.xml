@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<database>
+
+<include addPath = "test/powerSupply" />
+<include href = "psAll.xml" />
+<include href = "psArray.xml" />
+<!--
+-->
+<include removePath = "test/powerSupply" />
+
+</database>

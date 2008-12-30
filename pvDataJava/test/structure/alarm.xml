@@ -1,0 +1,151 @@
+<?xml version="1.0" ?>
+<database>
+
+<structure name = "alarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.AlarmFactory</scalar>
+</structure>
+
+<structure name = "booleanAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.BooleanAlarmFactory</scalar>
+</structure>
+
+<structure name = "byteAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.ByteAlarmFactory</scalar>
+</structure>
+
+<structure name = "shortAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.ShortAlarmFactory</scalar>
+</structure>
+
+<structure name = "intAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.IntAlarmFactory</scalar>
+</structure>
+
+<structure name = "longAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.LongAlarmFactory</scalar>
+</structure>
+
+<structure name = "floatAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.FloatAlarmFactory</scalar>
+</structure>
+
+<structure name = "doubleAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.DoubleAlarmFactory</scalar>
+</structure>
+
+<structure name = "enumeratedAlarmFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.alarm.EnumeratedAlarmFactory</scalar>
+</structure>
+
+
+<structure name = "byteAlarmInterval">
+  <scalar name = "value" type = "byte" />
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+</structure>
+<structure name = "byteAlarm" supportName = "byteAlarm" >
+  <auxInfo name = "supportFactory" type = "string">byteAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+  <structure name = "interval" />
+  <structure name = "outOfRange" type = "alarmSeverity" />
+  <scalar name = "hystersis" type = "byte" />
+</structure>
+
+<structure name = "shortAlarmInterval">
+  <scalar name = "value" type = "short" />
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+</structure>
+<structure name = "shortAlarm" >
+  <auxInfo name = "supportFactory" type = "string">shortAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+  <structure name = "interval" />
+  <structure name = "outOfRange" type = "alarmSeverity" />
+  <scalar name = "hystersis" type = "short" />
+</structure>
+
+<structure name = "intAlarmInterval">
+  <scalar name = "value" type = "int" />
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+</structure>
+<structure name = "intAlarm" >
+  <auxInfo name = "supportFactory" type = "string">intAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+  <structure name = "interval" />
+  <structure name = "outOfRange" type = "alarmSeverity" />
+  <scalar name = "hystersis" type = "int" />
+</structure>
+
+<structure name = "longAlarmInterval">
+  <scalar name = "value" type = "long" />
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+</structure>
+<structure name = "longAlarm">
+  <auxInfo name = "supportFactory" type = "string">longAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+  <structure name = "interval" />
+  <structure name = "outOfRange" type = "alarmSeverity" />
+  <scalar name = "hystersis" type = "long" />
+</structure>
+
+<structure name = "floatAlarmInterval">
+  <scalar name = "value" type = "float" />
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+</structure>
+<structure name = "floatAlarm">
+  <auxInfo name = "supportFactory" type = "string">floatAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+  <structure name = "interval" />
+  <structure name = "outOfRange" type = "alarmSeverity" />
+  <scalar name = "hystersis" type = "float" />
+</structure>
+
+<structure name = "doubleAlarmInterval">
+  <scalar name = "value" type = "double" />
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+</structure>
+<structure name = "doubleAlarm" >
+  <auxInfo name = "supportFactory" type = "string">doubleAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+  <structure name = "interval" />
+  <structure name = "outOfRange" type = "alarmSeverity" />
+  <scalar name = "hystersis" type = "double" />
+</structure>
+
+<structure name = "booleanAlarm">
+  <auxInfo name = "supportFactory" type = "string">booleanAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+  <structure name = "falseAlarm" type = "alarmSeverity" />
+  <scalar name = "falseMessage" type = "string" />
+  <structure name = "trueAlarm" type = "alarmSeverity" />
+  <scalar name = "trueMessage" type = "string" />
+  <structure name = "changeStateAlarm" type = "alarmSeverity" />
+  <scalar name = "changeStateMessage" type = "string" />
+</structure>
+
+<structure name = "enumeratedAlarmState">
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+</structure>
+<structure name = "enumeratedAlarm">
+  <auxInfo name = "supportFactory" type = "string">enumeratedAlarmFactory</auxInfo>
+  <scalar name = "active" type = "boolean" />
+   <!-- each stateAlarm field must be structure enumeratedAlarmState -->
+  <structure name = "stateAlarm"/>
+  <structure name = "changeStateAlarm" type = "enumeratedAlarmState" />
+</structure>
+
+</database>

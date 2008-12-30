@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<database>
+<structure name = "genericFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.basic.GenericFactory</scalar>
+</structure>
+<structure name = "noopFactory">
+  <scalar name = "supportFactory" type = "string">
+     org.epics.ioc.support.basic.NoopFactory</scalar>
+</structure>
+
+<structure name = "generic">
+  <auxInfo name = "supportFactory" type = "string">genericFactory</auxInfo>
+</structure>
+</database>

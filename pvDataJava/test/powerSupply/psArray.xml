@@ -1,0 +1,41 @@
+<?xml version="1.0" ?>
+<database>
+
+<record name = "powerSupplyArray" >
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+    <structure name = "supply">
+        <structure name = "0" type = "generic" >
+            <structure name = "alarm" type = "alarm" />
+            <structure name = "voltage" type = "generic">
+                 <scalar name = "value" type = "double">1.0</scalar>
+            </structure>
+            <structure name = "current" type = "generic">
+                 <scalar name = "value" type = "double">
+                    <auxInfo name = "supportFactory" type = "string">powerSupplyCurrentFactory</auxInfo>
+                 </scalar>
+                 <structure name = "alarm" type = "alarm" />
+            </structure>
+            <structure name = "power">
+                <scalar name = "value" type = "double" />
+            </structure>
+        </structure>
+        <structure name = "1" type = "generic" >
+            <structure name = "alarm" type = "alarm" />
+            <structure name = "voltage" type = "generic">
+                 <scalar name = "value" type = "double">2.0</scalar>
+            </structure>
+            <structure name = "current" type = "generic">
+                 <scalar name = "value" type = "double">
+                    <auxInfo name = "supportFactory" type = "string">powerSupplyCurrentFactory</auxInfo>
+                 </scalar>
+                 <structure name = "alarm" type = "alarm" />
+            </structure>
+            <structure name = "power">
+                <scalar name = "value" type = "double" />
+            </structure>
+        </structure>
+    </structure>
+</record>
+
+</database>

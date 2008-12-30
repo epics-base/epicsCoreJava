@@ -1,0 +1,74 @@
+<?xml version="1.0" ?>
+<database>
+
+<structure name = "processSupportFactory">
+  <scalar name = "supportFactory" type = "string">
+    org.epics.ioc.support.ca.LinkSupportFactory"</scalar>
+</structure>
+<structure name = "monitorSupportFactory">
+  <scalar name = "supportFactory" type = "string">
+    org.epics.ioc.support.ca.LinkSupportFactory"</scalar>
+</structure>
+<structure name = "monitorNotifySupportFactory">
+  <scalar name = "supportFactory" type = "string">
+    org.epics.ioc.support.ca.LinkSupportFactory"</scalar>
+</structure>
+<structure name = "inputSupportFactory">
+  <scalar name = "supportFactory" type = "string">
+    org.epics.ioc.support.ca.LinkSupportFactory"</scalar>
+</structure>
+<structure name = "outputSupportFactory">
+  <scalar name = "supportFactory" type = "string">
+    org.epics.ioc.support.ca.LinkSupportFactory"</scalar>
+</structure>
+
+<structure name = "monitorType">
+  <auxInfo name = "pvFactory" type = "string">enumeratedFactory</auxInfo>
+  <scalar name = "index" type = "int" />
+  <scalar name = "choice" type = "string" />
+  <array name = "choices" type = "string">
+     put change absoluteChange percentageChange</array>
+</structure>
+
+<structure name = "processSupport">
+  <auxInfo name = "supportFactory" type = "string">processSupportFactory</auxInfo>
+  <scalar name = "providerName" type = "string">local</scalar>
+  <scalar name = "pvname" type = "string" />
+</structure>
+
+<structure name = "monitorSupport" >
+  <auxInfo name = "supportFactory" type = "string">monitorSupportFactory</auxInfo>
+  <scalar name = "providerName" type = "string">local</scalar>
+  <scalar name = "pvname" type = "string" link = "true" />
+  <structure name = "type" type = "monitorType"/>
+  <scalar name = "deadband" type = "double" />
+  <scalar name = "queueSize" type = "int"  >3</scalar>
+  <scalar name = "reportOverrun" type = "boolean" />
+  <scalar name = "process" type = "boolean">
+      <!-- process this record when monitor occurs -->
+  </scalar>
+  <scalar name = "propertyNames" type = "string" />
+</structure>
+
+<structure name = "monitorNotifySupport" supportName = "monitorNotifySupport" >
+  <auxInfo name = "supportFactory" type = "string">monitorNotifySupportFactory</auxInfo>
+  <scalar name = "providerName" type = "string">local</scalar>
+  <scalar name = "pvname" type = "string" link = "true" />
+</structure>
+
+<structure name = "inputSupport" supportName = "inputSupport" >
+  <auxInfo name = "supportFactory" type = "string">inputSupportFactory</auxInfo>
+  <scalar name = "providerName" type = "string" >local</scalar>
+  <scalar name = "pvname" type = "string" />
+  <scalar name = "process" type = "boolean" />
+  <scalar name = "propertyNames" type = "string" />
+</structure>
+
+<structure name = "outputSupport" supportName = "outputSupport" >
+  <auxInfo name = "supportFactory" type = "string">outputSupportFactory</auxInfo>
+  <scalar name = "providerName" type = "string" >local</scalar>
+  <scalar name = "pvname" type = "string" />
+  <scalar name = "process" type = "boolean" />
+</structure>
+
+</database>

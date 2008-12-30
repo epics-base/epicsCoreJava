@@ -1,0 +1,78 @@
+<?xml version="1.0" ?>
+<database>
+
+<record name = "adcVoltageSupported">
+    <scalar name = "value" type = "int" />
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+    <scalar name = "value">1000</scalar>
+</record>
+
+<record name = "voltage">
+    <scalar name = "value" type = "double" />
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+    <structure name = "input" type = "linearConvertInput">
+        <structure name = "alarm" type = "alarm" />
+        <structure name = "linearConvert">
+            <scalar name = "deviceHigh">4095</scalar>
+            <scalar name = "deviceLow">0</scalar>
+            <scalar name = "engUnitsLow">0.0</scalar>
+            <scalar name = "engUnitsHigh">10.0</scalar>
+        </structure>
+        <structure name = "input" type = "inputSupport">
+            <scalar name = "pvname">adcVoltageSupported</scalar>
+            <scalar name = "process">false</scalar>
+        </structure>
+    </structure>  
+</record>
+
+
+
+<record name = "psLinked" >
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+    <structure name = "voltage" type = "generic">
+        <scalar name = "value" type = "double" />
+        <structure name = "input" type = "inputSupport">
+            <scalar name = "pvname">adcVoltageSupported</scalar>
+            <scalar name = "process">true</scalar>
+        </structure>
+    </structure>
+    <structure name = "current" type = "generic">
+        <scalar name = "value" type = "double" />
+        <structure name = "output" type = "outputSupport">
+            <scalar name = "pvname">current</scalar>
+            <scalar name = "process">true</scalar>
+        </structure>
+    </structure>
+    <structure name = "power">
+        <scalar name = "value" type = "double" />
+    </structure>
+</record>
+
+<record name = "current" >
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+    <scalar name = "value" type = "double" />
+    <structure name = "output" type = "linearConvertOutput">
+        <structure name = "linearConvert">
+            <scalar name = "deviceHigh">4095</scalar>
+            <scalar name = "deviceLow">0</scalar>
+            <scalar name = "engUnitsLow">0.0</scalar>
+            <scalar name = "engUnitsHigh">10.0</scalar>
+        </structure>
+        <structure name = "output" type = "outputSupport">
+            <scalar name = "pvname">dacCurrentSupported</scalar>
+            <scalar name = "process">true</scalar>
+        </structure>
+    </structure>
+</record>
+
+<record name = "dacCurrentSupported" >
+    <scalar name = "value" type = "int" />
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+</record>
+
+</database>
