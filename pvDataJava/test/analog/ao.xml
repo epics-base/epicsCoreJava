@@ -1,0 +1,54 @@
+<?xml version="1.0" ?>
+<database>
+
+
+<record name = "aoCounter" >
+    <scalar name = "value" type = "double"/>
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+    <structure name = "input" type = "calculation" >
+      <structure name = "calculator">
+        <scalar name ="expression">value+.1&lt;=10?value+.1:0.0</scalar>
+      </structure>
+    </structure>
+    <structure name = "scan" type = "scan">
+        <structure name = "type"><scalar name = "choice">periodic</scalar></structure>
+        <scalar name = "rate">1.0</scalar>
+    </structure>
+    <structure name = "supportSequence" type = "generic" >
+        <structure name = "0" type = "supportSequenceElement">
+            <scalar name = "wait">false</scalar>
+            <structure name = "link" type = "outputSupport">
+                <scalar name = "pvname">ao</scalar>
+                <scalar name = "process">true</scalar>
+            </structure>
+        </structure>
+    </structure>
+</record>
+
+<record name = "ao">
+    <scalar name = "value" type = "double" />
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+    <structure name = "output" type = "linearConvertOutput">
+        <structure name = "linearConvert">
+            <scalar name = "deviceHigh">2047</scalar>
+            <scalar name = "deviceLow">-2048</scalar>
+            <scalar name = "engUnitsLow">0.0</scalar>
+            <scalar name = "engUnitsHigh">10.0</scalar>
+        </structure>
+        <structure name = "output" type = "outputSupport">
+            <scalar name = "pvname">aoRaw</scalar>
+            <scalar name = "process">true</scalar>
+        </structure>
+    </structure>
+</record>
+
+<record name = "aoRaw">
+    <scalar name = "value" type = "int"/>
+    <structure name = "alarm" type = "alarm" />
+    <structure name = "timeStamp" type = "timeStamp" />
+</record>
+
+
+</database>

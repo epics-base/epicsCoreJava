@@ -1,0 +1,10 @@
+<?xml version="1.0" ?>
+<database>
+<include addPath = "test/analog" />
+
+<include href = "ai.xml" />
+<include href = "ao.xml" />
+<!--
+-->
+<include removePath = "test/analog" />
+</database>
