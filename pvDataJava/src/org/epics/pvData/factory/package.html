@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>EPICS JavaIOC: pv</title>
+</head>
+
+<body>
+<h1 style="text-align: center">EPICS PVData: factory<br />
+package: org.epics.pvData.factory<br />
+2008.12.24</h1>
+CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#Factory">Factory</a>
+    <ul>
+      <li><a href="#PVDatabase">PVDatabaseFactory</a></li>
+      <li><a href="#FieldFacto">FieldFactory</a></li>
+      <li><a href="#PVDataFact">PVDataFactory</a></li>
+      <li><a href="#ConvertFac">ConvertFactory</a></li>
+      <li><a href="#PVReplaceF">PVReplaceFactory</a></li>
+    </ul>
+  </li>
+  <li><a href="#Base">Base Introspection Classes</a></li>
+  <li><a href="#Abstract">Abstract and Base Classes for PVField</a>
+    <ul>
+      <li><a href="#BasePVAuxI">BasePVAuxInfo</a></li>
+      <li><a href="#AbstractPV">AbstractPVField</a></li>
+    </ul>
+  </li>
+  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRcord</a>
+    <ul>
+      <li><a href="#AbstractPV1">AbstractPVScalar</a></li>
+      <li><a href="#BasePVStru">BasePVStructure</a></li>
+      <li><a href="#BasePVReco">BasePVRecord</a></li>
+    </ul>
+  </li>
+  <li><a href="#Classes1">Classes for PVArray</a>
+    <ul>
+      <li><a href="#AbstractPV2">AbstractPVArray</a></li>
+      <li><a href="#BasePVBool">BasePVBooleanArray</a></li>
+      <li><a href="#BasePVByte">BasePVByteArray</a></li>
+      <li><a href="#BasePVShor">BasePVShortArray</a></li>
+      <li><a href="#BasePVIntA">BasePVIntArray</a></li>
+      <li><a href="#BasePVLong">BasePVLongArray</a></li>
+      <li><a href="#BasePVFloa">BasePVFloatArray</a></li>
+      <li><a href="#BasePVDoub">BasePVDoubleArray</a></li>
+      <li><a href="#BasePVStri">BasePVStringArray</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+<hr />
+
+<h2 style="text-align: center" id="Overview">Overview</h2>
+<hr />
+
+<p>This package provides factories and classes to implement everything
+defined in package org.epics.pvData.pv</p>
+<hr />
+
+<h2 style="text-align: center" id="Factory">Factory</h2>
+<hr />
+
+<h3 id="PVDatabase">PVDatabaseFactory</h3>
+<pre>    class PVDatabaseFactory {
+        public static PVDatabase create(String name);
+        public static PVDatabase getMaster();
+    }</pre>
+
+<p>PVDatabaseFactory automatically creates the master database and also
+creates other databases. The reason for multiple databases is to support
+on-line add of new records. The new records can be added to a temporary
+database and only if they can be created and initialized, added to the master
+database.</p>
+
+<h3 id="FieldFacto">FieldFactory</h3>
+<pre>    public final class FieldFactory {
+        public static FieldCreate getFieldCreate();
+    }</pre>
+
+<p>FieldFactory automatically creates a single instance of FieldCreate and
+provides a method to get the interface.</p>
+
+<h3 id="PVDataFact">PVDataFactory</h3>
+<pre>    public class PVDataFactory {
+        public static PVDataCreate getPVDataCreate();
+    }</pre>
+
+<p>PVDataFactory automatically creates a single instance of PVDataCreate and
+provides a method to get the interface.</p>
+
+<h3 id="ConvertFac">ConvertFactory</h3>
+<pre>    public final class ConvertFactory {
+        public static Convert getConvert();
+    }</pre>
+
+<p>ConvertFactory automatically creates a single instance of Convert and
+provides a method to get the interface.</p>
+
+<h3 id="PVReplaceF">PVReplaceFactory</h3>
+<pre>    public class PVReplaceFactory {
+        public static void replace(PVDatabase pvDatabase);
+    }</pre>
+
+<p>PVReplaceFactory.replace looks at each field of each record in the
+pvDatabase. For each field it looks for PVAuxInfo with key =
+"pvReplaceFactory". For each such key the value provided by PVAuxInfo is the
+name of a factory that provides a replacement for the PVField implementation.
+The factory must provide a method:</p>
+
+<p></p>
+<pre>    public static void replacePVField(PVField pvField);</pre>
+
+<p>This method is called.</p>
+<hr />
+
+<h2 style="text-align: center" id="Base">Base Introspection Classes</h2>
+<hr />
+
+<p>This section describes base classes for implementing Field instances ,
+i.e. introspection instances. For many applications they provide a complete
+introspection implementation but they could be extended if necessary.</p>
+<pre>    
+    public class BaseField implements Field {
+        public BaseField(String fieldName, Type type);
+        public String getFieldName();
+        public Type getType();
+        public String toString();
+        public String toString(int indentLevel);
+    }
+
+    public class BaseScalar extends BaseField implements Scalar {
+        public BaseScalar(String fieldName,ScalarType scalarType);
+        public ScalarType getScalarType();
+        public String toString();
+        public String toString(int indentLevel);
+    }
+    
+    public class BaseStructure extends BaseField implements Structure {
+        public BaseStructure(String fieldName,Field[] field);
+        public Field getField(String name);
+        public int getFieldIndex(String name);
+        public String[] getFieldNames();
+        public Field[] getFields();
+        public String toString();
+        public String toString(int indentLevel);
+    }
+
+    public class BaseArray extends BaseField implements Array {
+        public BaseArray(String fieldName,Type elementType);
+        public Type getElementType();
+        public String toString();
+        public String toString(int indentLevel);      
+        private String getString(int indentLevel);
+    }
+}</pre>
+<hr />
+
+<h2 style="text-align: center" id="Abstract">Abstract and Base Classes for
+PVField</h2>
+
+<h3 id="BasePVAuxI">BasePVAuxInfo</h3>
+
+<p>This is a complete implementation of PVAuxInfo.</p>
+<pre>public class BasePVAuxInfo implements PVAuxInfo {
+    public BasePVAuxInfo(PVField pvField);
+    public PVField getPVField();
+    public PVScalar getInfo(String key);
+    public Map&lt;String, PVScalar&gt; getInfos();
+    public PVScalar createInfo(String key,ScalarType scalarType);
+    public String toString();
+    public String toString(int indentLevel)
+}</pre>
+
+<h3 id="AbstractPV">AbstractPVField</h3>
+
+<p>This is an abstract base class for implementing PVField interfaces. It
+MUST be a base class for any class that is an extension of PVField. </p>
+<pre>public abstract class AbstractPVField implements PVField{
+    protected static Convert convert = ConvertFactory.getConvert();
+    protected static Pattern commaSpacePattern = Pattern.compile("[, ]");
+    protected static  Pattern periodPattern = Pattern.compile("[.]");
+
+    protected AbstractPVField(PVField parent, Field field);
+    protected void replaceField(Field field);
+    protected void setRecord(PVRecord record);
+    protected void postPut();
+    protected void postPutNoParent(AbstractPVField pvField);
+    protected void removeEveryListener() 
+
+    // All public methods of PVField
+}</pre>
+
+<p>The public methods are described in package org.epics.pvData.pv. The
+protected methods are: </p>
+<dl>
+  <dt>convert</dt>
+    <dd>A convenience for derived classes since implementations often need
+      access to the conversion facility.</dd>
+  <dt>commaSpacePattern</dt>
+    <dd>A convenience for derived classes that use a comma or space to
+      separate tokens.</dd>
+  <dt>periodPattern</dt>
+    <dd>A convenience for derived classes that use a period to separate
+      tokens.</dd>
+  <dt>AbstractPVField</dt>
+    <dd>The constructor which must be called by any derived class.</dd>
+  <dt>replaceField</dt>
+    <dd>This is called by a derived PVStructure implementation when it wants
+      to change the introspection interface for one of it's fields. This is
+      necessary because an IOC database allows the definition of a structure
+      field to be defined during record initialization and also modified
+      after initialization..</dd>
+  <dt>setRecord</dt>
+    <dd>Called by BasePVRecord.</dd>
+  <dt>postPut</dt>
+    <dd>Any code that implements put must call this after modifing a
+    field.</dd>
+  <dt>postPutNoParent</dt>
+    <dd>Called by BasePVRecord.</dd>
+  <dt>removeEveryListener</dt>
+    <dd>Called by BasePCRecord.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="Classes">Classes for PVScalar,
+PVStructure, and PVRcord</h2>
+<hr />
+
+<h3 id="AbstractPV1">AbstractPVScalar</h3>
+
+<p>The following is an abstract base class for implementing PVScalar. It MUST
+be the base class for any code that implements an extension of PVScalar.</p>
+<pre>public class AbstractPVScalar extends AbstractPVField implements PVScalar {
+    protected AbstractPVScalar(PVStructure parent, Scalar scalar);
+    public Scalar getScalar();
+}</pre>
+
+<h3 id="BasePVStru">BasePVStructure</h3>
+
+<p>The following is a base class for any code that implements PVStructure.
+Any code that implements PVStructure MUST extend this class.</p>
+<pre>public class BasePVStructure extends AbstractPVField implements PVStructure
+    public BasePVStructure(PVField parent, Structure structure);
+    
+    protected String toString(String prefix,int indentLevel);
+    // all public methods of PVStructure
+}</pre>
+
+<h3 id="BasePVReco">BasePVRecord</h3>
+
+<p>The following is the base class for any code that implements PVRcord. Any
+code that implements PVRecord MUST extend this class.</p>
+<pre>public class BasePVRecord extends BasePVStructure implements PVRecord {    
+    public BasePVRecord(String recordName,Structure structure)
+    // all public methods of PVRecord
+}</pre>
+<hr />
+
+<h2 style="text-align: center" id="Classes1">Classes for PVArray</h2>
+<hr />
+
+<h3 id="AbstractPV2">AbstractPVArray</h3>
+
+<p>The following is a abstract class for creating array fields. Any code that
+implements any extension of PVArray must extend this class.</p>
+<pre>public abstract class AbstractPVArray extends AbstractPVField implements PVArray{
+    protected int length = 0;
+    protected int capacity;
+    protected boolean capacityMutable = true;
+
+    protected AbstractPVArray(PVField parent,Array array,
+        int capacity,boolean capacityMutable);
+    abstract public void setCapacity(int capacity);
+    // public methods of PVArray
+}</pre>
+
+<p>For each ScalarType there is a base class for implementing the
+corresponding array type. For most uses it is not necessary to extend these
+classes.</p>
+
+<h3 id="BasePVBool">BasePVBooleanArray</h3>
+<pre>public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArray
+{
+    protected boolean[] value;
+    protected BooleanArrayData booleanArrayData = new BooleanArrayData();
+    // implements all PVBooleanArray methods
+}</pre>
+
+<h3 id="BasePVByte">BasePVByteArray</h3>
+<pre>public class BasePVByteArray extends AbstractPVArray implements PVByteArray
+{
+    protected byte[] value;
+    protected ByteArrayData byteArrayData = new ByteArrayData();
+    // implements all PVByteArray methods
+}</pre>
+
+<h3 id="BasePVShor">BasePVShortArray</h3>
+<pre>public class BasePVShortArray extends AbstractPVArray implements PVShortArray
+{
+    protected short[] value;
+    protected ShortArrayData shortArrayData = new ShortArrayData();
+    // implements all PVShortArray methods
+}</pre>
+
+<h3 id="BasePVIntA">BasePVIntArray</h3>
+<pre>public class BasePVIntArray extends AbstractPVArray implements PVIntArray
+{
+    protected int[] value;
+    protected IntArrayData intArrayData = new IntArrayData();
+    // implements all PVIntArray methods
+}</pre>
+
+<h3 id="BasePVLong">BasePVLongArray</h3>
+<pre>public class BasePVLongArray extends AbstractPVArray implements PVLongArray
+{
+    protected long[] value;
+    protected LongArrayData longArrayData = new LongArrayData();
+    // implements all PVLongArray methods
+}</pre>
+
+<h3 id="BasePVFloa">BasePVFloatArray</h3>
+<pre>public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
+{
+    protected float[] value;
+    protected FloatArrayData floatArrayData = new FloatArrayData();
+    // implements all PVFloatArray methods
+}</pre>
+
+<h3 id="BasePVDoub">BasePVDoubleArray</h3>
+<pre>public class BasePVDoubleArray extends AbstractPVArray implements PVDoubleArray
+{
+    protected double[] value;
+    protected DoubleArrayData doubleArrayData = new DoubleArrayData();
+    // implements all PVDoubleArray methods
+}</pre>
+
+<h3 id="BasePVStri">BasePVStringArray</h3>
+<pre>public class BasePVStringArray extends AbstractPVArray implements PVStringArray
+{
+    protected String[] value;
+    protected StringArrayData stringArrayData = new StringArrayData();
+    // implements all PVStringArray methods
+}</pre>
+</body>
+</html>
