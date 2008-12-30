@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<database xmlns="urn:schemas-epics-org:javaioc:1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="urn:schemas-epics-org:javaioc:1.0 javaioc.xsd"
+   xmlns:model="urn:schemas-cosylab-com:model:1.0"
+   name="database">>
+
+<structure name = "display">
+    <scalar name = "description" type = "string" />
+    <scalar name = "format" type = "string" />
+    <scalar name = "units" type = "string" />
+    <scalar name = "resolution" type = "int" />
+    <structure name = "limit" type = "doubleLimit" />
+</structure>
+
+</database>

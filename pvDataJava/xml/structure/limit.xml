@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<database xmlns="urn:schemas-epics-org:javaioc:1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="urn:schemas-epics-org:javaioc:1.0 javaioc.xsd"
+   xmlns:model="urn:schemas-cosylab-com:model:1.0"
+   name="database">>
+
+<structure name = "byteLimit">
+    <scalar name = "low" type = "byte" />
+    <scalar name = "high" type = "byte" />
+</structure>
+
+<structure name = "shortLimit">
+    <scalar name = "low" type = "short" />
+    <scalar name = "high" type = "short" />
+</structure>
+
+<structure name = "intLimit">
+    <scalar name = "low" type = "int" />
+    <scalar name = "high" type = "int" />
+</structure>
+
+<structure name = "longLimit">
+    <scalar name = "low" type = "long" />
+    <scalar name = "high" type = "long" />
+</structure>
+
+<structure name = "floatLimit">
+    <scalar name = "low" type = "float" />
+    <scalar name = "high" type = "float" />
+</structure>
+
+<structure name = "doubleLimit">
+    <scalar name = "low" type = "double" />
+    <scalar name = "high" type = "double" />
+</structure>
+
+</database>

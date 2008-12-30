@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<database xmlns="urn:schemas-epics-org:javaioc:1.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="urn:schemas-epics-org:javaioc:1.0 javaioc.xsd"
+   xmlns:model="urn:schemas-cosylab-com:model:1.0"
+   name="database">
+
+<structure name = "alarmSeverity">
+  <auxInfo name = "pvReplaceFactory" type = "string">enumeratedFactory</auxInfo>
+  <scalar name = "index" type = "int" />
+  <scalar name = "choice" type = "string" />
+  <array name = "choices" type = "string">
+    none,minor,major,invalid</array>
+</structure>
+
+<structure name = "alarm" supportName = "alarm" >
+  <auxInfo name = "supportFactory" type = "string">alarmFactory</auxInfo>
+  <structure name = "severity" type = "alarmSeverity" />
+  <scalar name = "message" type = "string" />
+  <scalar name = "ackTransient" type = "boolean" />
+  <structure name = "ackSeverity" type = "alarmSeverity" />
+</structure>
+
+</database>
