@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>EPICS PVData</title>
+</head>
+
+<body>
+<h1 style="text-align: center">EPICS PVData<br />
+Overview<br />
+2008.12.24</h1>
+CONTENTS
+
+<div class="toc">
+<ul>
+  <li><a href="#Introducti">Introduction</a></li>
+  <li><a href="#Data">Data Types</a></li>
+  <li><a href="#PVData">PVData Project</a>
+    <ul>
+      <li><a href="#L149">{@link org.epics.pvData.pv}</a></li>
+      <li><a href="#L153">{@link org.epics.pvData.factory}</a></li>
+      <li><a href="#L185">{@link org.epics.pvData.property}</a></li>
+      <li><a href="#L193">{@link org.epics.pvData.xml}</a></li>
+      <li><a href="#L197">{@link org.epics.pvData.misc}</a></li>
+      <li><a href="#L201">{@link org.epics.pvData.test}</a></li>
+    </ul>
+  </li>
+  <li><a href="#Unresolved">Unresolved Issues</a>
+    <ul>
+      <li><a href="#Property">Property</a></li>
+      <li><a href="#Attribute">Attribute</a></li>
+      <li><a href="#Remote">Remote Procedure Call</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<p> </p>
+<hr />
+
+<h2 style="text-align: center" id="Introducti">Introduction</h2>
+<hr />
+
+<p>PVData is an acronym for Process Variable Data. A Process Variable (PV)
+Database, which is a memory resident database holding PVData, has the
+following features:</p>
+<ul>
+  <li>A database has records.</li>
+  <li>Each record has a unique record name.</li>
+  <li>A record is a data structure, i.e. a set of fields holding data.</li>
+  <li>A field contains data of one of the following types: 
+    <ul>
+      <li>scalar : boolean, byte, short, int, long, float, double, string</li>
+      <li>array: a 1-dim array with the elementType being any scalar
+      type.</li>
+      <li>structure: a subStructure with each field being any of the
+        supported types.</li>
+    </ul>
+  </li>
+</ul>
+
+<p>PVData was initially created to support the JavaIOC and was part of the
+JavaIOC project. It is now a separate project that is used by the JavaIOC. In
+addition to the Java IOC, PVData is intended for use by 1) Channel Access
+Client, 2) Interface between client and network, 3) Interface between network
+and Channel Access server, 4) Interface between Server and IOC database.
+Since it is an interface to data, it could also be used by other systems,
+e.g. TANGO, TINE, etc. A high level Physics application can hold data as
+PVData. By starting a channel access server, the data can made available to
+network clients.</p>
+
+<p>PVData contains everything required to support Channel Access and Channel
+Access clients and servers. </p>
+<hr />
+
+<h2 style="text-align: center" id="Data">Data Types</h2>
+<hr />
+
+<p>The following types are supported:</p>
+<dl>
+  <dt>primitive</dt>
+    <dd><dl>
+        <dt>boolean</dt>
+          <dd>true or false</dd>
+        <dt>byte</dt>
+          <dd>An 8 bit signed byte</dd>
+        <dt>short</dt>
+          <dd>16 bit signed integer</dd>
+        <dt>int</dt>
+          <dd>32 bit signed integer</dd>
+        <dt>long</dt>
+          <dd>64 bit signed integer</dd>
+        <dt>float</dt>
+          <dd>32 bit IEEE float</dd>
+        <dt>double</dt>
+          <dd>64 bit IEEE float</dd>
+      </dl>
+    </dd>
+  <dt>string</dt>
+    <dd>A Java String</dd>
+  <dt>scalar</dt>
+    <dd>A primitive or string.</dd>
+  <dt>array</dt>
+    <dd>A one dimensional array. The element type is any scalar type.</dd>
+  <dt>structure</dt>
+    <dd>A struture with fields of type scalar, structure, or array</dd>
+</dl>
+
+<p>Since a structure can have fields that are structures, complex data can be
+defined.</p>
+<hr />
+
+<h2 style="text-align: center" id="PVData">PVData Project</h2>
+<hr />
+
+<p>This document describes everything via Java definitions. The initial
+implementation is in Java but the functionality could also be implemented in
+other languages such as C++.</p>
+
+<p>PVData is distributed as a eclipse Java Project named pvData. This project
+consists of the following java packages:</p>
+
+<h3 id="L149">{@link org.epics.pvData.pv}</h3>
+
+<p>The Java enum, interface, and class definitions that define PVData. This
+section provides a complete definition of what PVData is. This package
+completely describes how PVData is accessed.</p>
+
+<h3 id="L153">{@link org.epics.pvData.factory}</h3>
+
+<p>Java Facilities for creating a PV Database and PVData. It provides
+everything required for creating PVData. It provides the following
+factories:</p>
+<dl>
+  <dt>FieldFactory</dt>
+    <dd>Creates introspection interfaces.</dd>
+  <dt>PVDataFactory</dt>
+    <dd>Creates data interfaces for all of the supported data types.</dd>
+  <dt>PVDatabaseFactory</dt>
+    <dd>Creates and manages PVData databases. A database contains memory
+      resident structures and records. Structures make it easy to create
+      structure fields with pre-defined fields. </dd>
+  <dt>ConvertFactory</dt>
+    <dd>Converts between support data types.</dd>
+  <dt>PVReplaceFactory</dt>
+    <dd>Finds all fields within each record of a database that have an
+      associated factory that implements a replacement for the default
+      implementation for the field.</dd>
+</dl>
+
+<p>Although PVDataFactory can provide the implementation for all supported
+data types, often it is desirable to provide other implementations. To make
+it easy to create alternate implementations a set of abstract and base
+classes are supplied.</p>
+
+<h3 id="L185">{@link org.epics.pvData.property}</h3>
+
+<p>Provides a way to associated properties with a field. </p>
+
+<p>The basic idea is to associate properties with any field named "value".
+All the fields in the structure that contains the value field are considered
+properties of value with the field name being the property name. See that
+package overview for details.</p>
+
+<p>This package also provides support for "well known" field definitions like
+timeStamp, alarm, display,etc. Code that uses PVData can be simplified by
+using this support.</p>
+
+<h3 id="L193">{@link org.epics.pvData.xml}</h3>
+
+<p>One way to create a PV database is via an xml parser.</p>
+
+<h3 id="L197">{@link org.epics.pvData.misc}</h3>
+
+<p>This package provides support that is used by pvData factories and might
+also be useful to software that uses PVData.</p>
+
+<h3 id="L201">{@link org.epics.pvData.test}</h3>
+
+<p>Test code.</p>
+<hr />
+
+<h2 style="text-align: center" id="Unresolved">Unresolved Issues</h2>
+<hr />
+
+<h3 id="Property">Property</h3>
+
+<p>How should properties be associated with a field? Package
+org.epics.pvData.property shows one way of assigning properties. Is this what
+is desired? No matter what a property should end up producing a PVField
+interface.</p>
+
+<h3 id="Attribute">Attribute</h3>
+
+<p>Do we also want attributes for a field? Are both property and attribute
+desirable?</p>
+
+<h3 id="Remote">Remote Procedure Call</h3>
+
+<p>Although this document does not discuss remote procedure calls, an RPC
+facility could easily be implemented via PVData. The following is a possible
+interface for a remote procedure call.</p>
+<pre>    interface PVRPC {
+        PVString methodName;
+        PVStructure arguments;
+        PVStructure result;
+    }</pre>
+
+<p>The Channel access methods can be implemented via a PVRPC. Method names
+would be something like: get, put, putGet, processGet, putProcess,
+putProcessGet. Each would have a appropriate combination of arguments and
+result. What about monitors? Perhaps the client could just call
+PVRecord.registerListener and PVField.addListener on client side
+implementations of a "shadow" of a record in the server.</p>
+</body>
+</html>
