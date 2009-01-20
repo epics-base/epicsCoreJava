@@ -91,6 +91,14 @@ public class PVXMLReaderFactory {
         
         private Handler create(Handler parent,String fileName) throws IllegalStateException
         {
+            int start = fileName.indexOf("${");
+            int end = fileName.indexOf("}");
+            if(start>=0 && end>start) {
+                String name = fileName.substring(start+2, end);
+                name = System.getenv(name);
+                fileName = fileName.substring(0, start) + name + fileName.substring(end+1);
+                
+            }
             String uri = null;
             try {
                 uri = new File(fileName).toURI().toURL().toString();

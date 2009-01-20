@@ -91,7 +91,7 @@ public class XMLToPVDatabaseFactory {
             XMLToPVDatabaseFactory.requester = requester;
             PVXMLListener listener = new Listener();
             iocxmlReader = PVXMLReaderFactory.getReader();
-            iocxmlReader.parse("IOCDatabase",fileName,listener);
+            iocxmlReader.parse("PVDatabase",fileName,listener);
             return XMLToPVDatabaseFactory.pvDatabase;
         } finally {
             isInUse.set(false);
@@ -165,7 +165,6 @@ public class XMLToPVDatabaseFactory {
                 }
                 return;
             case record:
-                // fall through
             case structure:
                 if(qName.equals("structure")) {
                     startStructure(qName,attributes);
@@ -369,13 +368,9 @@ public class XMLToPVDatabaseFactory {
                     return;
                 }
                 pvStructure = pvDatabase.findStructure(fieldName);
-                if(pvStructure!=null) {
-                    iocxmlReader.message(
-                            "structure " + fieldName + " is ignored because structure already exists",
-                            MessageType.error);
-                    return;
+                if(pvStructure==null) {
+                    pvStructure = pvDataCreate.createPVStructure(null,fieldName, new Field[0]);
                 }
-                pvStructure = pvDataCreate.createPVStructure(null,fieldName, new Field[0]);
             } else {// field of existing structure
                 structureStack.push(structureState);
                 PVStructure pvParent = structureState.pvStructure;
@@ -426,11 +421,7 @@ public class XMLToPVDatabaseFactory {
         {
             PVStructure pvStructure = structureState.pvStructure;
             if(structureStack.size()==0) {
-                if(!pvDatabase.addStructure(pvStructure)) {
-                    iocxmlReader.message(
-                            "structure " + pvStructure.getField().getFieldName() + " not added to database",
-                            MessageType.warning);
-                }
+                pvDatabase.addStructure(pvStructure);
                 state = structureState.prevState;
                 structureState = null;
                 return;

@@ -85,10 +85,7 @@ public class ExecutorFactory {
         private void add(Runnable runnable) {
             lock.lock();
             try {
-                if(runList.contains(runnable)) {
-                    System.out.println("thread " + thread.getName() + " add but already on runList");
-                    return;
-                }
+                if(runList.contains(runnable)) return;
                 boolean isEmpty = runList.isEmpty();
                 runList.add(runnable);
                 if(isEmpty) moreWork.signal();

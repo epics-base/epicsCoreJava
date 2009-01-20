@@ -208,6 +208,7 @@ public class EnumeratedFactory {
                 for(int i=0; i<choices.length; i++) {
                     if(value.equals(choices[i])) {
                         if(index!=i) {
+                            index = i;
                             pvIndex.postIt();
                             super.postPut();
                         }

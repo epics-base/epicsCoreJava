@@ -61,7 +61,7 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      * @see org.epics.pvData.factory.AbstractPVField#message(java.lang.String, org.epics.pvData.pv.MessageType)
      */
     public void message(String message, MessageType messageType) {
-        if(message!=null && message.charAt(0)!='.') message = "." + message;
+        if(message!=null && message.charAt(0)!='.') message = " " + message;
         message = recordName + message;
         for (Requester requester : requesterList) {
             requester.message(message, messageType);

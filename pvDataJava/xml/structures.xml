@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <database>
-<include addPath = "xml/structure" />
+<include addPath = "${PVDATA}/xml/structure" />
 <include href = "limit.xml" />
 <include href = "display.xml" />
 <include href = "control.xml" />
@@ -10,6 +10,6 @@
 <!--
 
 -->
-<include removePath = "xml/structure" />
+<include removePath = "${PVDATA}/xml/structure" />
 </database>
 

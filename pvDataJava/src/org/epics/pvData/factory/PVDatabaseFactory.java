@@ -78,13 +78,13 @@ private static PVDataCreate pvDataCreate = null;
         // following are only used by master
         private static final int messageQueueSize = 300;
         private MessageQueue messageQueue = MessageQueueFactory.create(messageQueueSize);
-        private Executor iocExecutor = null;
+        private Executor executor = null;
         
         private Database(String name) {
             this.name = name;
             if(name.equals("master")) {
                 isMaster = true;
-                iocExecutor = ExecutorFactory.create(
+                executor = ExecutorFactory.create(
                         "PVDatabaseMessage", ThreadPriority.lowest);
             }
         }
@@ -284,7 +284,8 @@ private static PVDataCreate pvDataCreate = null;
                 messageQueue.unlock();
             }
             if(execute) {
-                iocExecutor.execute(this);
+
+                executor.execute(this);
             }
         }
         /* (non-Javadoc)

@@ -5,7 +5,7 @@ package org.epics.pvData.property;
 
 import java.util.TreeMap;
 
-import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.*;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVLong;
@@ -13,12 +13,29 @@ import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Type;
-
+import org.epics.pvData.factory.*;
 /**
  * @author mrk
  *
  */
 public class TimeStampFactory{
+    /**
+     * Create a TimeStamp.
+     * @param secondsPastEpoch initial value for seconds
+     * @param nanoSeconds initial value for nanoseconds.
+     * @return The TimeStamp interface.
+     */
+    public static TimeStamp create(long secondsPastEpoch,int nanoSeconds) {
+        Field[] fields = new Field[2];
+        fields[0] = fieldCreate.createScalar("secondsPastEpoch", ScalarType.pvLong);
+        fields[1] = fieldCreate.createScalar("nanoSeconds", ScalarType.pvInt);
+        PVStructure pvStructure = pvDataCreate.createPVStructure(null, "timeStamp", fields);
+        PVLong pvLong = pvStructure.getLongField("secondsPastEpoch");
+        PVInt pvInt = pvStructure.getIntField("nanoSeconds");
+        pvLong.put(secondsPastEpoch);
+        pvInt.put(nanoSeconds);
+        return new TimeStampImpl(pvStructure,pvLong,pvInt);
+    }
     /**
      * Get a TimeStamp for the pvStructure if the structure is a TimeStamp structure.
      * @param pvStructure The structure.
@@ -35,6 +52,8 @@ public class TimeStampFactory{
         return timeStamp;
     }
     
+    private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private static TreeMap<String,TimeStamp> timeStampMap = new TreeMap<String,TimeStamp>();
    
     private static TimeStamp create(PVStructure timeStamp) {

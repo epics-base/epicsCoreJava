@@ -13,8 +13,7 @@
     none,minor,major,invalid</array>
 </structure>
 
-<structure name = "alarm" supportName = "alarm" >
-  <auxInfo name = "supportFactory" type = "string">alarmFactory</auxInfo>
+<structure name = "alarm">
   <structure name = "severity" type = "alarmSeverity" />
   <scalar name = "message" type = "string" />
   <scalar name = "ackTransient" type = "boolean" />

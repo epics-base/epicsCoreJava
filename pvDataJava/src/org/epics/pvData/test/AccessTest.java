@@ -15,6 +15,7 @@ import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.xml.XMLToPVDatabaseFactory;
 
@@ -34,6 +35,10 @@ public class AccessTest extends TestCase {
         XMLToPVDatabaseFactory.convert(master,"xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"test/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"test/example/counterDB.xml", iocRequester);
+        PVStructure pvStructure = master.findStructure("scan");
+        System.out.println(pvStructure.toString());
+        PVRecord pvRecord = master.findRecord("counter");
+        System.out.println(pvRecord.toString());
         
               
 //        System.out.printf("%n%nstructures");
@@ -46,8 +51,7 @@ public class AccessTest extends TestCase {
         XMLToPVDatabaseFactory.convert(master,"test/powerSupply/powerSupplyDB.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"test/types/allTypes.xml", iocRequester);
 
-        PVRecord pvRecord = master.findRecord("allTypesInitial");
-        if(pvRecord!=null) System.out.println(pvRecord.toString());
+     
 //        System.out.printf("%n%nrecords");
 //        PVRecord[] pvRecords = master.getRecords();
 //        for(PVRecord pvRecord: pvRecords) {

@@ -5,10 +5,6 @@
    xmlns:model="urn:schemas-cosylab-com:model:1.0"
    name="database">>
 
-<structure name = "controlLimitFactory">
-  <scalar name = "pvReplaceFactory" type = "string">
-    org.epics.pvData.misc.ControlLimitFactory</scalar>
-</structure>
 
 <structure name = "control">
     <structure name = "limit" type = "doubleLimit" />
