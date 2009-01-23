@@ -88,7 +88,7 @@ public class TimeStampFactory{
          * @see org.epics.pvData.property.TimeStamp#getMilliSeconds()
          */
         public long getMilliSeconds() {
-            return pvSecond.get()*1000 + pvNano.get();
+            return pvSecond.get()*1000 + pvNano.get()/1000000;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#getNanoSeconds()
