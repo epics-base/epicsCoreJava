@@ -28,7 +28,7 @@ public class PVReplaceFactory {
         }
     }
     
-    private static void replace(PVDatabase pvDatabase,PVRecord pvRecord) {
+    public static void replace(PVDatabase pvDatabase,PVRecord pvRecord) {
        replace(pvDatabase,pvRecord.getPVFields());
     }
     
