@@ -25,14 +25,14 @@ public class XMLTest extends TestCase {
     /**
      * test DBListener.
      */
-    public static void testListener() {
+    public static void testXML() {
     	PVDatabase master = PVDatabaseFactory.getMaster();
         Requester iocRequester = new RequesterForTesting("xmlTest");
         XMLToPVDatabaseFactory.convert(master,"xml/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/example/counterDB.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/analog/analogDB.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/powerSupply/powerSupplyDB.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/ai.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/powerSupply/powerSupplyDB.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"test/types/allTypes.xml", iocRequester);
         PVReplaceFactory.replace(master);
         PVRecord[] pvRecords = master.getRecords();

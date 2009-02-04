@@ -28,10 +28,10 @@ public class SubstituteTest extends TestCase {
     /**
      * test XMLToIOCDB.
      */
-    public static void testXML() {
+    public static void testSubstitute() {
         Requester iocRequester = new RequesterForTesting("accessTest");
         XMLToPVDatabaseFactory.convert(master,"xml/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/structures.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
         
         XMLToPVDatabaseFactory.convert(master,
             "src/org/epics/pvData/test/substituteDB.xml",iocRequester);

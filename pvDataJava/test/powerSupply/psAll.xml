@@ -1,6 +1,0 @@
-<?xml version="1.0" ?>
-<database>
-<include href = "psSimple.xml" />
-<include href = "psLinked.xml" />
-<include href = "psEmbeded.xml" />
-</database>
