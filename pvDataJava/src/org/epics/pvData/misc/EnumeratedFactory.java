@@ -1,6 +1,7 @@
 package org.epics.pvData.misc;
 
 
+import java.nio.ByteBuffer;
 import java.util.TreeMap;
 
 import org.epics.pvData.factory.AbstractPVArray;
@@ -184,6 +185,24 @@ public class EnumeratedFactory {
                 return convert.getString(this, indentLevel)
                 + super.toString(indentLevel);
             }
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+			 */
+			public int getSerializationSize() {
+				throw new UnsupportedOperationException("not supported");
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+			 */
+			public void serialize(ByteBuffer buffer) {
+				throw new UnsupportedOperationException("not supported");
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+			 */
+			public void deserialize(ByteBuffer buffer) {
+				throw new UnsupportedOperationException("not supported");
+			}
         }
 
         private class Choice extends AbstractPVScalar implements PVString {
@@ -233,6 +252,24 @@ public class EnumeratedFactory {
                 return convert.getString(this, indentLevel)
                 + super.toString(indentLevel);
             }
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+			 */
+			public int getSerializationSize() {
+				throw new UnsupportedOperationException("not supported");
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+			 */
+			public void serialize(ByteBuffer buffer) {
+				throw new UnsupportedOperationException("not supported");
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+			 */
+			public void deserialize(ByteBuffer buffer) {
+				throw new UnsupportedOperationException("not supported");
+			}
         }
 
         private class Choices extends AbstractPVArray implements PVStringArray
@@ -302,6 +339,24 @@ public class EnumeratedFactory {
                 }
                 return len;      
             }
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+			 */
+			public int getSerializationSize() {
+				throw new UnsupportedOperationException("not supported");
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+			 */
+			public void serialize(ByteBuffer buffer) {
+				throw new UnsupportedOperationException("not supported");
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+			 */
+			public void deserialize(ByteBuffer buffer) {
+				throw new UnsupportedOperationException("not supported");
+			}
         }
     }
 

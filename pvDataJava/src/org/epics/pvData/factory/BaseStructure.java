@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,8 +36,16 @@ public class BaseStructure extends BaseField implements Structure {
      */
     public BaseStructure(String fieldName,Field[] field)
     {
-        super(fieldName, Type.structure);        
-        if(field==null) field = new Field[0];
+        super(fieldName, Type.structure);  
+        initializeFields(field);
+    }
+	/**
+	 * Initialize fields.
+	 * @param field
+	 * @throws IllegalArgumentException
+	 */
+	private void initializeFields(Field[] field) throws IllegalArgumentException {
+		if(field==null) field = new Field[0];
         this.fields = field;
         fieldNames = new String[field.length];
         sortedFieldNameList = new ArrayList<String>(field.length);
@@ -63,7 +72,7 @@ public class BaseStructure extends BaseField implements Structure {
                 }
             }
         }
-    }    
+	}    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Structure#getField(java.lang.String)
      */
@@ -117,4 +126,91 @@ public class BaseStructure extends BaseField implements Structure {
         builder.append("}");
         return builder.toString();
     }
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+	 */
+	public int getSerializationSize() {
+		int size = AbstractPVArray.getStringSerializationSize(getFieldName());
+		size += AbstractPVArray.getSerializedSizeSize(fields.length);
+		size += fields.length;
+		for (int i = 0; i < fields.length; i++)
+			size += fields[i].getSerializationSize();
+		return size;
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 */
+	public void serialize(ByteBuffer buffer) {
+		AbstractPVArray.serializeString(getFieldName(), buffer);
+		AbstractPVArray.writeSize(fields.length, buffer);
+		for (int i = 0; i < fields.length; i++)
+		{
+			buffer.put((byte)fields[i].getType().ordinal());
+			fields[i].serialize(buffer);
+		}
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+	 */
+	public void deserialize(ByteBuffer buffer) {
+		fieldName = AbstractPVArray.deserializeString(buffer);
+		final int size = AbstractPVArray.readSize(buffer);
+		Field[] fields = null;
+		if (size > 0)
+		{
+			fields = new Field[size];
+			for (int i = 0; i < size; i++)
+			{
+				final Type type = Type.values()[buffer.get()];
+				fields[i] = deserializeFromType(type, buffer);
+			}
+		}
+		initializeFields(fields);
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BaseStructure) {
+			BaseStructure b = (BaseStructure)obj;
+
+			final Field[] bfields = b.getFields(); 
+			if (bfields.length == fields.length)
+			{
+		        for (int i = 0; i < fields.length; i++)
+		        	if (!fields[i].equals(bfields[i]))
+		        		return false;
+		        
+				if (getFieldName() == null)
+					return b.getFieldName() == null;
+				else
+					return getFieldName().equals(b.getFieldName());
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}	
+	/**
+	 * Deserializes <code>Field</code> from buffer.
+	 * @param type	type of <code>Field</code> to deserialize.
+	 * @param buffer deserialization buffer.
+	 * @return deserialized instance of an <code>Field</code>.
+	 */
+	// TODO where to put this
+	public static Field deserializeFromType(Type type, ByteBuffer buffer)
+	{
+		Field field;
+		switch (type)
+		{
+			case scalar: field = new BaseScalar(null, null); break;
+			case scalarArray: field = new BaseArray(null, null); break;
+			case structure: field = new BaseStructure(null, null); break;
+			default: throw new UnsupportedOperationException("unknown Field type");
+		}
+		field.deserialize(buffer);
+		return field;
+	}
 }

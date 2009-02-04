@@ -15,9 +15,9 @@ import org.epics.pvData.pv.Type;
  * @author mrk
  *
  */
-public class BaseField implements Field
+public abstract class BaseField implements Field
 {
-    private String fieldName;
+    protected String fieldName;
     private Type type;
     private static Convert convert = ConvertFactory.getConvert();
 

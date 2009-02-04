@@ -11,7 +11,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVField extends Requester {
+public interface PVField extends Requester, Serializable {
     
     /**
      * Get the PVAuxInfo interface for the PVField.

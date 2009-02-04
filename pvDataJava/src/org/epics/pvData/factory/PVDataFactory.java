@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,12 +61,20 @@ public class PVDataFactory {
         
         
         /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVDataCreate#createPVScalar(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
-         */
-        public PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType scalarType)
-        {
-        	Scalar scalar = fieldCreate.createScalar(fieldName, scalarType);
-            switch(scalarType) {
+		 * @see org.epics.pvData.pv.PVDataCreate#createPVField(org.epics.pvData.pv.PVStructure, org.epics.pvData.pv.Field)
+		 */
+		public PVField createPVField(PVStructure parent, Field field) {
+			switch(field.getType()) {
+			case scalar: 	  return createPVScalar(parent, (Scalar)field); 
+			case scalarArray: return createPVArray(parent, (Array)field); 
+			case structure:   return new BasePVStructure(parent,(Structure)field);
+			}
+            throw new IllegalArgumentException("Illegal Type");
+		}
+		
+		private final PVScalar createPVScalar(PVStructure parent, Scalar scalar)
+		{
+           switch(scalar.getScalarType()) {
             case pvBoolean: return new BooleanData(parent,scalar);
             case pvByte:    return new ByteData(parent,scalar);
             case pvShort:   return new ShortData(parent,scalar);
@@ -77,14 +86,21 @@ public class PVDataFactory {
             }
             throw new IllegalArgumentException(
                 "Illegal Type. Must be pvBoolean,...,pvStructure");
+	 	}
+		/* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDataCreate#createPVScalar(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
+         */
+        public PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType scalarType)
+        {
+        	return createPVScalar(parent, fieldCreate.createScalar(fieldName, scalarType));
         }
+
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVArray(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
          */
-        public PVArray createPVArray(PVStructure parent,String fieldName,ScalarType scalarType)
+        public final PVArray createPVArray(PVStructure parent,Array array)
         {
-        	Array array = fieldCreate.createArray(fieldName, scalarType);
-        	switch(scalarType) {
+        	switch(array.getElementType()) {
             case pvBoolean: return new BasePVBooleanArray(parent,array);
             case pvByte:    return new BasePVByteArray(parent,array);
             case pvShort:   return new BasePVShortArray(parent,array);
@@ -95,6 +111,13 @@ public class PVDataFactory {
             case pvString:  return new BasePVStringArray(parent,array);
             }
             throw new IllegalArgumentException("Illegal Type. Logic error");
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDataCreate#createPVArray(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
+         */
+        public PVArray createPVArray(PVStructure parent,String fieldName,ScalarType scalarType)
+        {
+        	return createPVArray(parent, fieldCreate.createArray(fieldName, scalarType));
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.Field[])
@@ -244,6 +267,37 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return 1;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			buffer.put(value ? (byte)1 : (byte)0);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = buffer.get() != 0;
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVBoolean) {
+				PVBoolean b = (PVBoolean)obj;
+				return b.get() == value;
+			}
+			else
+				return false;
+		}
     }
 
     private static class ByteData extends AbstractPVScalar implements PVByte {
@@ -283,6 +337,37 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+        /* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return 1;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			buffer.put(value);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = buffer.get();
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVByte) {
+				PVByte b = (PVByte)obj;
+				return b.get() == value;
+			}
+			else
+				return false;
+		}
     }
 
     private static class ShortData extends AbstractPVScalar implements PVShort {
@@ -322,6 +407,37 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return 2;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			buffer.putShort(value);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = buffer.getShort();
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVShort) {
+				PVShort b = (PVShort)obj;
+				return b.get() == value;
+			}
+			else
+				return false;
+		}
     }
 
     private static class IntData extends AbstractPVScalar implements PVInt {
@@ -361,6 +477,37 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return 4;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			buffer.putInt(value);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = buffer.getInt();
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVInt) {
+				PVInt b = (PVInt)obj;
+				return b.get() == value;
+			}
+			else
+				return false;
+		}
     }
 
     private static class LongData extends AbstractPVScalar implements PVLong {
@@ -400,6 +547,37 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return 8;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			buffer.putLong(value);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = buffer.getLong();
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVLong) {
+				PVLong b = (PVLong)obj;
+				return b.get() == value;
+			}
+			else
+				return false;
+		}
     }
 
     private static class FloatData extends AbstractPVScalar implements PVFloat {
@@ -439,6 +617,37 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return 4;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			buffer.putFloat(value);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = buffer.getFloat();
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVFloat) {
+				PVFloat b = (PVFloat)obj;
+				return b.get() == value;
+			}
+			else
+				return false;
+		}
     }
 
     private static class DoubleData extends AbstractPVScalar implements PVDouble {
@@ -478,6 +687,37 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return 8;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			buffer.putDouble(value);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = buffer.getDouble();
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVDouble) {
+				PVDouble b = (PVDouble)obj;
+				return b.get() == value;
+			}
+			else
+				return false;
+		}
     }
 
     private static class StringData extends AbstractPVScalar implements PVString {
@@ -517,5 +757,40 @@ public class PVDataFactory {
             return convert.getString(this, indentLevel)
             + super.toString(indentLevel);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			return AbstractPVArray.getStringSerializationSize(get());
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			AbstractPVArray.serializeString(get(), buffer);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			value = AbstractPVArray.deserializeString(buffer);
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			// TODO anything else?
+			if (obj instanceof PVString) {
+				PVString b = (PVString)obj;
+				final String bv = b.get();
+				if (bv != null)
+					return bv.equals(value);
+				else
+					return bv == value;
+			}
+			else
+				return false;
+		}
     }
 }

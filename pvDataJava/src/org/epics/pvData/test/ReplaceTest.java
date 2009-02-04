@@ -5,6 +5,8 @@
  */
 package org.epics.pvData.test;
 
+import java.nio.ByteBuffer;
+
 import junit.framework.TestCase;
 
 import org.epics.pvData.factory.AbstractPVArray;
@@ -505,6 +507,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private boolean value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
 
@@ -551,6 +571,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private byte value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
 
@@ -597,6 +635,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private short value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
 
@@ -643,6 +699,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private int value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
 
@@ -689,6 +763,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private long value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
 
@@ -735,6 +827,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private float value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
 
@@ -781,6 +891,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private double value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
 
@@ -827,6 +955,24 @@ public class ReplaceTest extends TestCase {
         }
         
         private String value;
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
 
     }
     
@@ -879,6 +1025,24 @@ public class ReplaceTest extends TestCase {
         public String toString() {
             return toString(0);
         }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+		 */
+		public int getSerializationSize() {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		public void serialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		public void deserialize(ByteBuffer buffer) {
+			throw new UnsupportedOperationException("not supported");
+		}
     }
     private static class BooleanArray extends MyAbstractPVArray implements PVBooleanArray
     {

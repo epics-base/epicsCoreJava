@@ -13,7 +13,7 @@ import org.epics.pvData.pv.Scalar;
  * @author mrk
  *
  */
-public class AbstractPVScalar extends AbstractPVField implements PVScalar {
+public abstract class AbstractPVScalar extends AbstractPVField implements PVScalar {
     private Scalar scalar;
     /**
      * Constructor.

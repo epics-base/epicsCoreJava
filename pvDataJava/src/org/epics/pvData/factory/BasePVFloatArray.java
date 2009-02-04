@@ -5,6 +5,9 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.FloatArrayData;
 import org.epics.pvData.pv.MessageType;
@@ -85,4 +88,50 @@ public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
         super.postPut();
         return len;      
     }
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+	 */
+	public int getSerializationSize() {
+		return getSerializedSizeSize(length) + 4 * length;
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 */
+	public void serialize(ByteBuffer buffer) {
+		writeSize(length, buffer);
+		for (int i = 0; i < length; i++)
+			buffer.putFloat(value[i]);
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+	 */
+	public void deserialize(ByteBuffer buffer) {
+		final int size = readSize(buffer);
+		if (size >= 0) {
+			// prepare array, if necessary
+			if (size > capacity)
+				setCapacity(size);
+			// retrieve value from the buffer
+			for (int i = 0; i < size; i++)
+				value[i] = buffer.getFloat();
+			// set new length
+			length = size;
+		}
+		// TODO null arrays (size == -1) not supported
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		// TODO anything else?
+		if (obj instanceof PVFloatArray) {
+			PVFloatArray b = (PVFloatArray)obj;
+			FloatArrayData bad = new FloatArrayData();
+			b.get(0, b.getLength(), bad);
+			return Arrays.equals(bad.data, value);
+		}
+		else
+			return false;
+	}
 }

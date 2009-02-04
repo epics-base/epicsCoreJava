@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import org.epics.pvData.pv.Array;
@@ -392,5 +393,50 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         builder.append("}");
         return builder.toString();
     }
-    
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+	 */
+	public int getSerializationSize() {
+		int size = 0;
+		for (int i = 0; i < pvFields.length; i++)
+        	size += pvFields[i].getSerializationSize();
+        return size;
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 */
+	public void serialize(ByteBuffer buffer) {
+        for (int i = 0; i < pvFields.length; i++)
+        	pvFields[i].serialize(buffer);
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+	 */
+	public void deserialize(ByteBuffer buffer) {
+        for (int i = 0; i < pvFields.length; i++)
+        	pvFields[i].deserialize(buffer);
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		// TODO anything else?
+		if (obj instanceof PVStructure) {
+			PVStructure b = (PVStructure)obj;
+			final PVField[] bfields = b.getPVFields(); 
+			if (bfields.length == pvFields.length)
+			{
+		        for (int i = 0; i < pvFields.length; i++)
+		        	if (!pvFields[i].equals(bfields[i]))
+		        		return false;
+		        
+		        return true;
+			}
+			else
+				return false;
+		}
+		else
+			return false;
+	}
 }

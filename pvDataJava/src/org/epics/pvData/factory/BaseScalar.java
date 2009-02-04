@@ -5,6 +5,8 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
+
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Type;
@@ -51,5 +53,41 @@ public class BaseScalar extends BaseField implements Scalar {
         builder.append(" scalarType " + scalarType.toString());
         return builder.toString();
     }
-
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+	 */
+	public int getSerializationSize() {
+		return 1 + AbstractPVArray.getStringSerializationSize(getFieldName());
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 */
+	public void serialize(ByteBuffer buffer) {
+		buffer.put((byte)scalarType.ordinal());
+		AbstractPVArray.serializeString(getFieldName(), buffer);
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+	 */
+	public void deserialize(ByteBuffer buffer) {
+		scalarType = ScalarType.values()[buffer.get()];
+		fieldName = AbstractPVArray.deserializeString(buffer);
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BaseScalar) {
+			BaseScalar b = (BaseScalar)obj;
+			if (b.getScalarType() != getScalarType())
+				return false;
+			if (getFieldName() == null)
+				return b.getFieldName() == null;
+			else
+				return getFieldName().equals(b.getFieldName());
+		}
+		else
+			return false;
+	}	
 }

@@ -76,4 +76,12 @@ public interface PVDataCreate {
      * @return The interface for accessing the record instance.
      */
     public PVRecord createPVRecord(String recordName,PVDatabase pvDatabase,String structureName);
+    
+    /**
+     * Create a PVField using given Field introspection data.
+     * @param parent The parent interface.
+     * @param field The introspection data to be used to create PVField.
+     * @return The PVField implementation.
+     */
+    public PVField createPVField(PVStructure parent, Field field);
 }
