@@ -10,21 +10,28 @@
 <body>
 <h1 style="text-align: center">EPICS PVData<br />
 Overview<br />
-2008.12.24</h1>
-CONTENTS
+2009.02.09</h1>
+CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Introducti">Introduction</a></li>
-  <li><a href="#Data">Data Types</a></li>
-  <li><a href="#PVData">PVData Project</a>
+  <li><a href="#Interface">Interface Definitions</a>
     <ul>
-      <li><a href="#L149">{@link org.epics.pvData.pv}</a></li>
-      <li><a href="#L153">{@link org.epics.pvData.factory}</a></li>
-      <li><a href="#L185">{@link org.epics.pvData.property}</a></li>
-      <li><a href="#L193">{@link org.epics.pvData.xml}</a></li>
-      <li><a href="#L197">{@link org.epics.pvData.misc}</a></li>
-      <li><a href="#L201">{@link org.epics.pvData.test}</a></li>
+      <li><a href="#Types">Types</a></li>
+      <li><a href="#Introspect">Introspection Interfaces</a></li>
+      <li><a href="#Data">Data Interfaces</a></li>
+      <li><a href="#Introspect1">Introspection and Data creation</a></li>
+    </ul>
+  </li>
+  <li><a href="#Package">Package Summary</a>
+    <ul>
+      <li><a href="#L230">{@link org.epics.pvData.pv}</a></li>
+      <li><a href="#L234">{@link org.epics.pvData.factory}</a></li>
+      <li><a href="#L266">{@link org.epics.pvData.property}</a></li>
+      <li><a href="#L274">{@link org.epics.pvData.xml}</a></li>
+      <li><a href="#L278">{@link org.epics.pvData.misc}</a></li>
+      <li><a href="#L282">{@link org.epics.pvData.test}</a></li>
     </ul>
   </li>
   <li><a href="#Unresolved">Unresolved Issues</a>
@@ -36,20 +43,62 @@ CONTENTS
   </li>
 </ul>
 </div>
-
-<p> </p>
 <hr />
 
 <h2 style="text-align: center" id="Introducti">Introduction</h2>
 <hr />
 
-<p>PVData is an acronym for Process Variable Data. A Process Variable (PV)
-Database, which is a memory resident database holding PVData, has the
-following features:</p>
+<p>PVData (Process Variable Data) defines and implements an efficent way to
+store, access, and transmit memory resident structured data.</p>
+<dl>
+  <dt>definition</dt>
+    <dd>Package org.epics.pvData.pv has Java interface definitions that
+      define PVData. Although defined with Java syntax they also document
+      what is required for implementation in other languages such as C++.</dd>
+  <dt>implementation</dt>
+    <dd>The set of packages provides by this project provide a complete Java
+      implementation of PVData. It will be used to implement Channel Access:
+      Network, Client, and Server. It is used by the JavaIOC.</dd>
+  <dt>efficient</dt>
+    <dd>Small memory footprint, low cpu overhead, and concise code base.</dd>
+  <dt>store data</dt>
+    <dd>PVData defines separate introspection and data interfaces. The
+      introspection interfaces provide access to immutable objects, which
+      allows introspection instances to be freely shared. The introspection
+      interface for a process variable can be accessed without requiring
+      access to the data.</dd>
+  <dt>access data</dt>
+    <dd>Client code can access PVData via the introspection and data
+      interfaces. For "well known" data, e.g. timeStamp, specialized
+      interfaces can be provided without requiring any changes to the core
+      software.</dd>
+  <dt>transmit data</dt>
+    <dd>The separation of introspection and data interfaces allows for
+      efficient network data transfer. At connection time introspection
+      information can be passed from server to client. Each side can create a
+      data instance. The data is transferred between these instances. The
+      data in the network buffers does not have to be self describing since
+      each side has the introspection information.</dd>
+  <dt>memory resident</dt>
+    <dd>PVData only defines memory resident data.</dd>
+  <dt>structured data</dt>
+    <dd>PVData has three types: scalar, array, and structure. A scalar can be
+      one of the following: boolean, byte, short, int, long, float, double,
+      string. An array is a one dimensional array with the element type being
+      a scalar. A structure is an ordered set of fields where each field has
+      a name and type. Since a field can have type structure complex
+      structures are supported. No other types are needed since structures
+      can be defined that simulate types.</dd>
+  <dt></dt>
+    <dd></dd>
+</dl>
+
+<p>A Process Variable (PV) Database, which is a memory resident database
+holding PVData, has the following features:</p>
 <ul>
   <li>A database has records.</li>
   <li>Each record has a unique record name.</li>
-  <li>A record is a data structure, i.e. a set of fields holding data.</li>
+  <li>A record is a structure.</li>
   <li>A field contains data of one of the following types: 
     <ul>
       <li>scalar : boolean, byte, short, int, long, float, double, string</li>
@@ -63,7 +112,7 @@ following features:</p>
 
 <p>PVData was initially created to support the JavaIOC and was part of the
 JavaIOC project. It is now a separate project that is used by the JavaIOC. In
-addition to the Java IOC, PVData is intended for use by 1) Channel Access
+addition to the JavaIOC, PVData is intended for use by 1) Channel Access
 Client, 2) Interface between client and network, 3) Interface between network
 and Channel Access server, 4) Interface between Server and IOC database.
 Since it is an interface to data, it could also be used by other systems,
@@ -75,44 +124,183 @@ network clients.</p>
 Access clients and servers. </p>
 <hr />
 
-<h2 style="text-align: center" id="Data">Data Types</h2>
+<h2 style="text-align: center" id="Interface">Interface Definitions</h2>
 <hr />
 
-<p>The following types are supported:</p>
+<h3 id="Types">Types</h3>
+
+<p>The following are the type definitions:</p>
+<pre>public enum Type {
+    scalar,
+    scalarArray,
+    structure;
+}
+
+public enum ScalarType {
+    pvBoolean,
+    pvByte,pvShort,pvInt,pvLong,
+    pvFloat,pvDouble,
+    pvString;
+    // The following are convenience methods
+    public boolean isInteger();
+    public boolean isNumeric()
+    public boolean isPrimitive() 
+    public static ScalarType getScalarType(String type);
+}</pre>
 <dl>
-  <dt>primitive</dt>
-    <dd><dl>
-        <dt>boolean</dt>
-          <dd>true or false</dd>
-        <dt>byte</dt>
-          <dd>An 8 bit signed byte</dd>
-        <dt>short</dt>
-          <dd>16 bit signed integer</dd>
-        <dt>int</dt>
-          <dd>32 bit signed integer</dd>
-        <dt>long</dt>
-          <dd>64 bit signed integer</dd>
-        <dt>float</dt>
-          <dd>32 bit IEEE float</dd>
-        <dt>double</dt>
-          <dd>64 bit IEEE float</dd>
-      </dl>
-    </dd>
+  <dt>boolean</dt>
+    <dd>true or false</dd>
+  <dt>byte</dt>
+    <dd>An 8 bit signed byte</dd>
+  <dt>short</dt>
+    <dd>16 bit signed integer</dd>
+  <dt>int</dt>
+    <dd>32 bit signed integer</dd>
+  <dt>long</dt>
+    <dd>64 bit signed integer</dd>
+  <dt>float</dt>
+    <dd>32 bit IEEE float</dd>
+  <dt>double</dt>
+    <dd>64 bit IEEE float</dd>
   <dt>string</dt>
-    <dd>A Java String</dd>
-  <dt>scalar</dt>
-    <dd>A primitive or string.</dd>
+    <dd>An immutable string. The Java implementation is String. For other
+      implementations the network representation must be the same as for
+    Java.</dd>
   <dt>array</dt>
     <dd>A one dimensional array. The element type is any scalar type.</dd>
   <dt>structure</dt>
-    <dd>A struture with fields of type scalar, structure, or array</dd>
+    <dd>A structure of fields where each field has a name and a type.</dd>
 </dl>
 
-<p>Since a structure can have fields that are structures, complex data can be
-defined.</p>
+<h3 id="Introspect">Introspection Interfaces</h3>
+
+<p>The complete set of introspection interfaces are:</p>
+<pre>public interface Field extends Serializable {
+    String getFieldName();
+    Type getType();
+}
+
+public interface Scalar extends Field{
+    ScalarType getScalarType();
+}
+
+public interface Array extends Field{
+    ScalarType getElementType();
+
+}
+
+public interface Structure extends Field{
+    String[] getFieldNames();
+    Field getField(String fieldName);
+    int getFieldIndex(String fieldName);
+    Field[] getFields();
+
+}</pre>
+
+<p>The introspection interfaces provide access to immutable objects. This
+allows introspection interfaces to be freely shared between data objects. For
+example the introspection interface for a timeStamp, which is a structure
+containing two fields, can be stared by every record that has a time
+stamp.</p>
+
+<h3 id="Data">Data Interfaces</h3>
+
+<p>PVField is the base interface for a data field:</p>
+<pre>public interface PVField extends Requester, Serializable {
+    Field getField();
+    PVStructure getParent();
+    PVRecord getPVRecord();
+    String getFullFieldName(); 
+    String getFullName();
+    PVAuxInfo getPVAuxInfo(); //auxillary information
+    boolean isMutable();
+    void setMutable(boolean value);
+    void replacePVField(PVField newPVField);
+    // following methods are for monitoring changes
+    boolean addListener(PVListener pvListener);
+    void removeListener(PVListener pvListener);
+    void postPut();
+}</pre>
+
+<p>Each scalar type has an associated data interface: PVBoolean, PVByte,
+PVShort, PVInt, PVLong, PVFloat, PVDouble, and PVString. Each has a get and a
+put method. For example:</p>
+<pre>public interface PVDouble extends PVScalar{
+    double get();
+    void put(double value);
+}</pre>
+
+<p>PVArray is the base class for arrays.</p>
+<pre>public interface PVArray extends PVField{
+    Array getArray();
+    int getLength();
+    void setLength(int len);
+    int getCapacity();
+    void setCapacity(int len);
+    boolean isCapacityMutable();
+    void setCapacityMutable(boolean isMutable);
+}</pre>
+
+<p>For each scalar type an associated array data interface is defined. Each
+has a get and put method. For example: </p>
+<pre>public interface PVDoubleArray extends PVArray{
+    int get(int offset, int len, DoubleArrayData data);
+    int put(int offset,int len, double[] from, int fromOffset);
+
+}</pre>
+
+<p>PVStructure is the data interface for a structure.</p>
+<pre>public interface PVStructure extends PVField {
+    Structure getStructure();
+    PVField[] getPVFields();
+    PVField getSubField(String fieldName);
+    boolean replaceStructureField(String fieldName,Structure structure);
+    void appendPVField(PVField pvField);
+    void postPut(PVField subField);
+    // The following are convenience methods
+    PVBoolean getBooleanField(String fieldName);
+    PVByte getByteField(String fieldName);
+    PVShort getShortField(String fieldName);
+    PVInt getIntField(String fieldName);
+    PVLong getLongField(String fieldName);
+    PVFloat getFloatField(String fieldName);
+    PVDouble getDoubleField(String fieldName);
+    PVString getStringField(String fieldName);
+    PVStructure getStructureField(String fieldName);
+    PVArray getArrayField(String fieldName,ScalarType elementType);
+
+}</pre>
+
+<h3 id="Introspect1">Introspection and Data creation</h3>
+
+<p>The following interface creates introspection instances:</p>
+<pre>public interface FieldCreate {
+    public Scalar createScalar(String fieldName,ScalarType scalarType);
+    public Array createArray(String fieldName,ScalarType elementType);
+    public Structure createStructure(String fieldName, Field[] field);
+}</pre>
+
+<p>The following interface creates data instances:</p>
+<pre>public interface PVDataCreate {
+    public PVScalar createPVScalar(PVStructure parent,String fieldName,
+        ScalarType fieldType);
+    public PVArray createPVArray(PVStructure parent,String fieldName,
+        ScalarType elementType);
+    public PVStructure createPVStructure(PVStructure parent,String fieldName,
+        Field[] fields);
+    public PVStructure createPVStructure(PVStructure parent,String fieldName,
+        PVStructure structToClone);
+    public PVStructure createPVStructure(PVStructure parent,String fieldName,
+         PVDatabase pvDatabase,String structureName);
+    public PVRecord createPVRecord(String recordName,Field[] fields);
+    public PVRecord createPVRecord(String recordName,PVStructure structToClone);
+    public PVRecord createPVRecord(String recordName,PVDatabase pvDatabase,
+         String structureName);
+    public PVField createPVField(PVStructure parent, Field field);
+}</pre>
 <hr />
 
-<h2 style="text-align: center" id="PVData">PVData Project</h2>
+<h2 style="text-align: center" id="Package">Package Summary</h2>
 <hr />
 
 <p>This document describes everything via Java definitions. The initial
@@ -122,13 +310,13 @@ other languages such as C++.</p>
 <p>PVData is distributed as a eclipse Java Project named pvData. This project
 consists of the following java packages:</p>
 
-<h3 id="L149">{@link org.epics.pvData.pv}</h3>
+<h3 id="L230">{@link org.epics.pvData.pv}</h3>
 
 <p>The Java enum, interface, and class definitions that define PVData. This
 section provides a complete definition of what PVData is. This package
 completely describes how PVData is accessed.</p>
 
-<h3 id="L153">{@link org.epics.pvData.factory}</h3>
+<h3 id="L234">{@link org.epics.pvData.factory}</h3>
 
 <p>Java Facilities for creating a PV Database and PVData. It provides
 everything required for creating PVData. It provides the following
@@ -155,7 +343,7 @@ data types, often it is desirable to provide other implementations. To make
 it easy to create alternate implementations a set of abstract and base
 classes are supplied.</p>
 
-<h3 id="L185">{@link org.epics.pvData.property}</h3>
+<h3 id="L266">{@link org.epics.pvData.property}</h3>
 
 <p>Provides a way to associated properties with a field. </p>
 
@@ -168,16 +356,17 @@ package overview for details.</p>
 timeStamp, alarm, display,etc. Code that uses PVData can be simplified by
 using this support.</p>
 
-<h3 id="L193">{@link org.epics.pvData.xml}</h3>
+<h3 id="L274">{@link org.epics.pvData.xml}</h3>
 
-<p>One way to create a PV database is via an xml parser.</p>
+<p>One way to create a PV database is via an xml parser. This package defines
+the syntax and provides a parser.</p>
 
-<h3 id="L197">{@link org.epics.pvData.misc}</h3>
+<h3 id="L278">{@link org.epics.pvData.misc}</h3>
 
 <p>This package provides support that is used by pvData factories and might
 also be useful to software that uses PVData.</p>
 
-<h3 id="L201">{@link org.epics.pvData.test}</h3>
+<h3 id="L282">{@link org.epics.pvData.test}</h3>
 
 <p>Test code.</p>
 <hr />
