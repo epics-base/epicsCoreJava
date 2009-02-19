@@ -15,12 +15,11 @@ import java.util.Map;
  *
  */
 public interface PVAuxInfo {
-	
-	/**
-	 * Get the PVField with which this PVAuxInfo is associated
-	 * @return The PVField.
-	 */
-	PVField getPVField();
+    /**
+     * Get the PVField with which this PVAuxInfo is associated
+     * @return The PVField.
+     */
+    PVField getPVField();
     /**
      * Add a new auxiliary item or retrieve the interface to an existing item. 
      * @param key The key.
@@ -50,5 +49,5 @@ public interface PVAuxInfo {
      * @return The string describing the attributes.
      */
     String toString(int indentLevel);
-    
+
 }
