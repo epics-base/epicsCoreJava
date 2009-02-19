@@ -50,6 +50,7 @@ public class ListenerTest extends TestCase {
 //          System.out.println(pvStructure.toString());
 //        }
 
+//        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/temp.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/ai.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/powerSupply/powerSupplyDB.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"test/types/allTypes.xml", iocRequester);

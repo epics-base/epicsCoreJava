@@ -15,7 +15,6 @@ import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
-import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.xml.XMLToPVDatabaseFactory;
 

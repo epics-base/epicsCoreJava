@@ -2,10 +2,10 @@ package org.epics.pvData.misc;
 
 
 import java.nio.ByteBuffer;
-import java.util.TreeMap;
 
 import org.epics.pvData.factory.AbstractPVArray;
 import org.epics.pvData.factory.AbstractPVScalar;
+import org.epics.pvData.factory.BasePVStructure;
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
@@ -33,6 +33,7 @@ public class EnumeratedFactory {
      * @param pvField The field. It must be an enumerated structure.
      */
     public static void replacePVField(PVField pvField) {
+        if(pvField instanceof Enumerated) return;
         if(pvField.getField().getType()!=Type.structure) {
             pvField.message("field is not a structure", MessageType.error);
             return;
@@ -61,30 +62,21 @@ public class EnumeratedFactory {
             return;
         }
         PVField[] pvFields = pvStructure.getPVFields();
-        Enumerated enumerated = new EnumeratedImpl(pvStructure,(PVInt)pvFields[0],(PVString)pvFields[1],(PVStringArray)pvFields[2]);
-        Enumerated prevEnum = enumeratedMap.put(pvStructure.getFullName(), enumerated);
-        if(prevEnum!=null) {
-            pvStructure.message("Logic error EnumeratedFactory.replacePVField enumeratedMap already had entry", MessageType.error);
-            return;
-        }
+        new EnumeratedImpl(pvStructure,(PVInt)pvFields[0],(PVString)pvFields[1],(PVStringArray)pvFields[2]);
     }
-    
     /**
-     * If the field is an enumerated structure and replacePVField was called for the field then interface Enumerated is returned.
-     * @param pvField The possible enumerated structure.
-     * @return Interface Enumerated or null if it does not exist;
+     * getEnumerated.
+     * @param pvField The pvField.
+     * @return (null, Enumerated) if pvField (is not, is) an Enumerated structure.
      */
     public static Enumerated getEnumerated(PVField pvField) {
-        Enumerated enumerated = enumeratedMap.get(pvField.getFullName());
-        return enumerated;
+        if(pvField instanceof Enumerated) return (Enumerated)pvField;
+        return null;
     }
-
-    private static TreeMap<String,Enumerated> enumeratedMap = new TreeMap<String,Enumerated>();
-    
-    private static class EnumeratedImpl implements Enumerated{
+   
+    private static class EnumeratedImpl extends BasePVStructure implements Enumerated{
         private int index;
         private String[] choices;
-        private PVStructure pvField;
         private Index pvIndex;
         private Choice pvChoice;
         private Choices pvChoices;
@@ -95,31 +87,30 @@ public class EnumeratedFactory {
          * @param dbChoice The PVField for the choice.
          * @param dbChoices The PVField for the choices.
          */
-        private EnumeratedImpl(PVStructure pvField,PVInt pvIndex, PVString pvChoice, PVStringArray pvChoices) {
-            this.pvField = pvField;
-            PVStructure pvParent = pvIndex.getParent();
-            Index pvNewIndex = new Index(pvParent,pvIndex.getScalar());
-            Choice pvNewChoice = new Choice(pvParent,pvChoice.getScalar());      
-            Choices pvNewChoices = new Choices(pvParent,pvChoices.getArray());
-            pvIndex.replacePVField(pvNewIndex);
-            pvChoice.replacePVField(pvNewChoice);
-            pvChoices.replacePVField(pvNewChoices);
-            this.pvIndex = pvNewIndex;
-            this.pvChoice = pvNewChoice;
-            this.pvChoices = pvNewChoices;
-            if(pvChoices.getLength()>0) {
+        private EnumeratedImpl(PVStructure pvField,PVInt pvOldIndex, PVString pvOldChoice, PVStringArray pvOldChoices) {
+            super(pvField.getParent(),pvField.getStructure());
+            pvIndex = new Index(this,pvOldIndex.getScalar());
+            pvChoice = new Choice(this,pvOldChoice.getScalar());      
+            pvChoices = new Choices(this,pvOldChoices.getArray());
+            if(pvOldChoices.getLength()>0) {
                 StringArrayData stringArrayData = new StringArrayData();
-                int len = pvChoices.get(0,pvChoices.getLength(), stringArrayData);
-                pvNewChoices.put(0, len, stringArrayData.data , 0);
+                int len = pvOldChoices.getLength();
+                len = pvOldChoices.get(0,len, stringArrayData);
+                pvChoices.put(0, len, stringArrayData.data , 0);
             }        
-            String choice = pvChoice.get();
-            if(choice!=null) pvNewChoice.put(choice);
+            String choice = pvOldChoice.get();
+            if(choice!=null) pvChoice.put(choice);
+            pvField.replacePVField(this);
+            PVField[] pvFields = super.getPVFields();
+            pvFields[0].replacePVField(pvIndex);
+            pvFields[1].replacePVField(pvChoice);
+            pvFields[2].replacePVField(pvChoices);
         }       
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.Enumerated#getPV()
          */
         public PVStructure getPV() {
-            return pvField;
+            return this;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.Enumerated#getChoice()
@@ -165,7 +156,6 @@ public class EnumeratedFactory {
                 }
                 if(index!=value) {
                     index = value;
-                    super.postPut();
                     pvChoice.postIt();
                 }
             }
@@ -229,7 +219,6 @@ public class EnumeratedFactory {
                         if(index!=i) {
                             index = i;
                             pvIndex.postIt();
-                            super.postPut();
                         }
                         return;
                     }
@@ -333,7 +322,6 @@ public class EnumeratedFactory {
                 System.arraycopy(from,fromOffset,choices,offset,len);
                 if(index>=length) {
                     index = 0;
-                    super.postPut();
                     pvIndex.postIt();
                     pvChoice.postIt();
                 }

@@ -12,7 +12,6 @@ package org.epics.pvData.pv;
  *
  */
 public interface PVStructure extends PVField {
-    void postPut(PVField subField);
     /**
      * Get the Structure introspection interface.
      * @return The introspection interface.
@@ -30,18 +29,22 @@ public interface PVStructure extends PVField {
      */
     PVField getSubField(String fieldName);
     /**
-     * Replace a field of the structure that is itself a structure.
+     * Replace a field of a structure..
      * For an ioc record. This should only be called when a record is in the readyForInitialization state.
      * @param fieldName The field name.
-     * @param structure The replacement structure.
-     * @return (false,true) if the field (was not,was) replaced.
+     * @param newPVField The new field.
      */
-    boolean replaceStructureField(String fieldName,Structure structure);
+    void replacePVField(String fieldName,PVField newPVField);
     /**
      * Append a new PVField to this structure.
      * @param pvField The field to append.
      */
     void appendPVField(PVField pvField);
+    /**
+     * postPut to a subfield of the structure.
+     * @param pvSubField The subfield.
+     */
+    void postPut(PVField pvSubField);
     /**
      * Find a boolean subfield with the specified fieldName.
      * The fieldName is of the form name.name...

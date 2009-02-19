@@ -98,6 +98,8 @@ public class TimeStampFactory{
         public void put(long secondsPastEpoch, int nanoSeconds) {
             pvSecond.put(secondsPastEpoch);
             pvNano.put(nanoSeconds);
+            pvSecond.postPut();
+            pvNano.postPut();
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#put(long)
@@ -105,6 +107,8 @@ public class TimeStampFactory{
         public void put(long milliSeconds) {
             pvSecond.put(milliSeconds/1000);
             pvNano.put(((int)(milliSeconds%1000))*1000000);
+            pvSecond.postPut();
+            pvNano.postPut();
         } 
     }
     

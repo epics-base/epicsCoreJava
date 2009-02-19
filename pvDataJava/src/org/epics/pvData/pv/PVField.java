@@ -71,6 +71,11 @@ public interface PVField extends Requester, Serializable {
      */
     void removeListener(PVListener pvListener);
     /**
+     * post that data has been modified.
+     * This must be called by the code that issues a put request..
+     */
+    void postPut();
+    /**
      * Convert the PVField to a string.
      * @return The string.
      */

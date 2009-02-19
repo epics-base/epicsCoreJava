@@ -47,10 +47,9 @@ public class ExecutorFactory {
         private List<Runnable> runList = new ArrayList<Runnable>();
         private ReentrantLock lock = new ReentrantLock();
         private Condition moreWork = lock.newCondition();
-        private Thread thread = null;
 
         private ThreadInstance(String name,int priority) {
-            thread = threadCreate.create(name, priority, this);
+            threadCreate.create(name, priority, this);
         } 
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.RunnableReady#run(org.epics.pvData.misc.ThreadReady)

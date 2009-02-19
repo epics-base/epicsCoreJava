@@ -39,7 +39,7 @@
       10.0 20.0 30.0
   </array>
   <array name = "stringArray" type = "string">
-      one two three
+      one,two,three
   </array>
   <structure name = "structureArray" />
   <structure name = "arrayArray" />

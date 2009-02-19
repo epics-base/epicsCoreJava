@@ -41,14 +41,13 @@ public class MatejListenerTest extends TestCase {
     public static void testListener() throws InterruptedException {
         Requester iocRequester = new RequesterForTesting("accessTest");
         XMLToPVDatabaseFactory.convert(master,"xml/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/example/counterDB.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
         
-              
-        XMLToPVDatabaseFactory.convert(master,"test/analog/analogDB.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/powerSupply/powerSupplyDB.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/ai.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/powerSupply/powerSupplyDB.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"test/types/allTypes.xml", iocRequester);
-
+              
         /*
         PVRecord pvRecord = master.findRecord("allTypesInitial");
         if(pvRecord!=null) System.out.println(pvRecord.toString());
