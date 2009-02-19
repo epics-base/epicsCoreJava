@@ -85,7 +85,6 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
             length = newlength;
         }
         System.arraycopy(from,fromOffset,value,offset,len);
-        super.postPut();
         return len;
     }
 	/* (non-Javadoc)

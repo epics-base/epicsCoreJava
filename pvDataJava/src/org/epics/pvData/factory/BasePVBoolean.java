@@ -35,7 +35,6 @@ public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
     public void put(boolean value) {
         if(super.isMutable()) {
             this.value = value;
-            super.postPut();
             return ;
         }
         super.message("not isMutable", MessageType.error);

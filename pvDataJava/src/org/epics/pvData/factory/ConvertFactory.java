@@ -97,42 +97,42 @@ public final class ConvertFactory {
                 case pvBoolean: {
                         PVBoolean value = (PVBoolean)pv;
                         value.put(Boolean.parseBoolean(from));
-                        return;
+                        break;
                     }
                 case pvByte : {
                         PVByte value = (PVByte)pv;
                         value.put((byte)(long)Long.decode(from));
-                        return;
+                        break;
                     }
                 case pvShort : {
                         PVShort value = (PVShort)pv;
                         value.put((short)(long)Long.decode(from));
-                        return;
+                        break;
                     }
                 case pvInt : {
                         PVInt value = (PVInt)pv;
                         value.put((int)(long)Long.decode(from));
-                        return;
+                        break;
                     }
                 case pvLong : {
                         PVLong value = (PVLong)pv;
                         value.put(Long.decode(from));
-                        return;
+                        break;
                     }
                 case pvFloat : {
                         PVFloat value = (PVFloat)pv;
                         value.put(Float.valueOf(from));
-                        return;
+                        break;
                     }
                 case pvDouble : {
                         PVDouble value = (PVDouble)pv;
                         value.put(Double.valueOf(from));
-                        return;
+                        break;
                     }
                 case pvString: {
                         PVString value = (PVString)pv;
                         value.put(from);
-                        return;
+                        break;
                     }
                 default:
                     throw new IllegalArgumentException(
@@ -140,6 +140,7 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
+            pv.postPut();
             
         }       
         /* (non-Javadoc)
@@ -147,7 +148,9 @@ public final class ConvertFactory {
          */
         public int fromStringArray(PVArray pv, int offset, int len,String[] from, int fromOffset)
         {
-            return ConvertFromStringArray(pv,offset,len,from,fromOffset);
+            int num = ConvertFromStringArray(pv,offset,len,from,fromOffset);
+            if(num>0) pv.postPut();
+            return num;
         }       
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toStringArray(org.epics.pvData.pv.PVArray, int, int, java.lang.String[], int)
@@ -177,7 +180,9 @@ public final class ConvertFactory {
             switch(fromType) {
             case pvBoolean: {
                     if(toType!=ScalarType.pvBoolean) {
-                        if(toType!=ScalarType.pvString) break;
+                        if(toType!=ScalarType.pvString) {
+                            throw new IllegalArgumentException("Convert.copyScalar arguments are not compatible");
+                        }
                     }
                     PVBoolean data = (PVBoolean)from;
                     boolean value = data.get();
@@ -188,55 +193,55 @@ public final class ConvertFactory {
                         PVBoolean dataTo = (PVBoolean)to;
                         dataTo.put(value);
                     }
-                    return;
+                    to.postPut();
+                    break;
                 }
             case pvByte : {
                     PVByte data = (PVByte)from;
                     byte value = data.get();
                     fromByte(to,value);
-                    return;
+                    break;
                 }
             case pvShort : {
                     PVShort data = (PVShort)from;
                     short value = data.get();
                     fromShort(to,value);
-                    return;
+                    break;
                 } 
             case pvInt :{
                     PVInt data = (PVInt)from;
                     int value = data.get();
                     fromInt(to,value);
-                    return;
+                    break;
                 }    
             case pvLong : {
                     PVLong data = (PVLong)from;
                     long value = data.get();
                     fromLong(to,value);
-                    return;
+                    break;
                 }  
             case pvFloat : {
                     PVFloat data = (PVFloat)from;
                     float value = data.get();
                     fromFloat(to,value);
-                    return;
+                    break;
                 }     
             case pvDouble : {
                     PVDouble data = (PVDouble)from;
                     double value = data.get();
                     fromDouble(to,value);
-                    return;
+                    break;
                 }  
             case pvString: {
                     PVString data = (PVString)from;
                     String value = data.get();
                     fromString(to,value);
-                    return;
+                    break;
                 }
             default:
+                throw new IllegalArgumentException(
+                        "Convert.copyScalar arguments are not compatible");
             }
-            throw new IllegalArgumentException(
-                    "Convert.copyScalar arguments are not compatible"
-                  );
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#isCopyArrayCompatible(org.epics.pvData.pv.Array, org.epics.pvData.pv.Array)
@@ -257,13 +262,13 @@ public final class ConvertFactory {
         {
             ScalarType fromElementType = ((Array)from.getField()).getElementType();
             ScalarType toElementType = ((Array)to.getField()).getElementType();
-            if(toElementType.isNumeric() && fromElementType.isNumeric())
-                return CopyNumericArray(from,offset,to,toOffset,len);
-            if(toElementType==ScalarType.pvBoolean && fromElementType==ScalarType.pvBoolean) {
+            int ncopy = 0;
+            if(toElementType.isNumeric() && fromElementType.isNumeric()) {
+                ncopy = CopyNumericArray(from,offset,to,toOffset,len);
+            } else if(toElementType==ScalarType.pvBoolean && fromElementType==ScalarType.pvBoolean) {
                 PVBooleanArray pvfrom = (PVBooleanArray)from;
                 PVBooleanArray pvto = (PVBooleanArray)to;
                 BooleanArrayData data = new BooleanArrayData();
-                int ncopy = 0;
                 while(len>0) {
                     int num = pvfrom.get(offset,len,data);
                     if(num<=0) break;
@@ -273,11 +278,10 @@ public final class ConvertFactory {
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
                 }
-                return ncopy;
-            }
-            if(toElementType==ScalarType.pvString) {
+                to.postPut();
+            } else if(toElementType==ScalarType.pvString) {
                 PVStringArray pvto = (PVStringArray)to;
-                int ncopy = from.getLength();
+                ncopy = from.getLength();
                 if(ncopy>len) ncopy = len;
                 int num = ncopy;
                 String[] toData = new String[1];
@@ -286,12 +290,10 @@ public final class ConvertFactory {
                     pvto.put(toOffset,1,toData,0);
                     num--; offset++; toOffset++;
                 }
-                return ncopy;
-            }
-            if(fromElementType==ScalarType.pvString) {
+                to.postPut();
+            } else if(fromElementType==ScalarType.pvString) {
                 PVStringArray pvfrom = (PVStringArray)from;
                 StringArrayData data = new StringArrayData();
-                int ncopy = 0;
                 while(len>0) {
                     int num = pvfrom.get(offset,len,data);
                     if(num<=0) break;
@@ -301,9 +303,8 @@ public final class ConvertFactory {
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
                 }
-                return ncopy;
             }
-            return 0;
+            return ncopy;
         }        
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#isCopyStructureCompatible(org.epics.pvData.pv.Structure, org.epics.pvData.pv.Structure)
@@ -352,12 +353,15 @@ public final class ConvertFactory {
                 switch(fromType) {
                 case scalar:
                     copyScalar((PVScalar)fromData,(PVScalar)toData);
+                    toData.postPut();
                     break;
                 case scalarArray: 
                     copyArray((PVArray)fromData,0,(PVArray)toData,0,((PVArray)fromData).getLength());
+                    toData.postPut();
                     break;
                 case structure:
                     copyStructure((PVStructure)fromData,(PVStructure)toData);
+                    toData.postPut();
                     break;
                 }
             }
@@ -369,32 +373,35 @@ public final class ConvertFactory {
             ScalarType type = pv.getScalar().getScalarType();
             switch(type) {
                 case pvByte :
-                    {PVByte value = (PVByte)pv; value.put((byte)from); return;}
+                    {PVByte value = (PVByte)pv; value.put((byte)from); break;}
                 case pvShort :
-                    {PVShort value = (PVShort)pv; value.put((short)from); return;}
+                    {PVShort value = (PVShort)pv; value.put((short)from); break;}
                 case pvInt :
-                    {PVInt value = (PVInt)pv; value.put((int)from); return;}
+                    {PVInt value = (PVInt)pv; value.put((int)from); break;}
                 case pvLong :
-                    {PVLong value = (PVLong)pv; value.put((long)from); return;}
+                    {PVLong value = (PVLong)pv; value.put((long)from); break;}
                 case pvFloat :
-                    {PVFloat value = (PVFloat)pv; value.put((float)from); return;}
+                    {PVFloat value = (PVFloat)pv; value.put((float)from); break;}
                 case pvDouble :
-                    {PVDouble value = (PVDouble)pv; value.put((double)from); return;}
+                    {PVDouble value = (PVDouble)pv; value.put((double)from); break;}
                 case pvString :
-                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); return;}
+                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
                       "Illegal PVType. Must be numeric but it is "
                       + type.toString()
                     );
             }
+            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromByteArray(org.epics.pvData.pv.PVArray, int, int, byte[], int)
          */
         public int fromByteArray(PVArray pv, int offset, int len,byte[] from, int fromOffset) {
-            return ConvertByteArrayFrom(pv,offset,len,from,fromOffset);
-        }   
+            int num = ConvertByteArrayFrom(pv,offset,len,from,fromOffset);
+            if(num>0) pv.postPut();
+            return num;
+        }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromDouble(org.epics.pvData.pv.PVScalar, double)
          */
@@ -402,32 +409,34 @@ public final class ConvertFactory {
             ScalarType type = pv.getScalar().getScalarType();
             switch(type) {
                 case pvByte :
-                    {PVByte value = (PVByte)pv; value.put((byte)from); return;}
+                    {PVByte value = (PVByte)pv; value.put((byte)from); break;}
                 case pvShort :
-                    {PVShort value = (PVShort)pv; value.put((short)from); return;}
+                    {PVShort value = (PVShort)pv; value.put((short)from); break;}
                 case pvInt :
-                    {PVInt value = (PVInt)pv; value.put((int)from); return;}
+                    {PVInt value = (PVInt)pv; value.put((int)from); break;}
                 case pvLong :
-                    {PVLong value = (PVLong)pv; value.put((long)from); return;}
+                    {PVLong value = (PVLong)pv; value.put((long)from); break;}
                 case pvFloat :
-                    {PVFloat value = (PVFloat)pv; value.put((float)from); return;}
+                    {PVFloat value = (PVFloat)pv; value.put((float)from); break;}
                 case pvDouble :
-                    {PVDouble value = (PVDouble)pv; value.put((double)from); return;}
+                    {PVDouble value = (PVDouble)pv; value.put((double)from); break;}
                 case pvString :
-                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); return;}
+                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
                       "Illegal PVType. Must be numeric but it is "
                       + type.toString()
                     );
             }
+            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromDoubleArray(org.epics.pvData.pv.PVArray, int, int, double[], int)
          */
-        public int fromDoubleArray(PVArray pv, int offset, int len,
-            double[] from, int fromOffset) {
-            return ConvertDoubleArrayFrom(pv,offset,len,from,fromOffset);
+        public int fromDoubleArray(PVArray pv, int offset, int len, double[] from, int fromOffset) {
+            int num = ConvertDoubleArrayFrom(pv,offset,len,from,fromOffset);
+            if(num>0) pv.postPut();
+            return num;
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromFloat(org.epics.pvData.pv.PVScalar, float)
@@ -436,32 +445,34 @@ public final class ConvertFactory {
             ScalarType type = pv.getScalar().getScalarType();
             switch(type) {
                 case pvByte :
-                    {PVByte value = (PVByte)pv; value.put((byte)from); return;}
+                    {PVByte value = (PVByte)pv; value.put((byte)from); break;}
                 case pvShort :
-                    {PVShort value = (PVShort)pv; value.put((short)from); return;}
+                    {PVShort value = (PVShort)pv; value.put((short)from); break;}
                 case pvInt :
-                    {PVInt value = (PVInt)pv; value.put((int)from); return;}
+                    {PVInt value = (PVInt)pv; value.put((int)from); break;}
                 case pvLong :
-                    {PVLong value = (PVLong)pv; value.put((long)from); return;}
+                    {PVLong value = (PVLong)pv; value.put((long)from); break;}
                 case pvFloat :
-                    {PVFloat value = (PVFloat)pv; value.put((float)from); return;}
+                    {PVFloat value = (PVFloat)pv; value.put((float)from); break;}
                 case pvDouble :
-                    {PVDouble value = (PVDouble)pv; value.put((double)from); return;}
+                    {PVDouble value = (PVDouble)pv; value.put((double)from); break;}
                 case pvString :
-                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); return;}
+                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
                       "Illegal PVType. Must be numeric but it is "
                       + type.toString()
                     );
             }
+            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromFloatArray(org.epics.pvData.pv.PVArray, int, int, float[], int)
          */
-        public int fromFloatArray(PVArray pv, int offset, int len,
-            float[] from, int fromOffset) {
-            return ConvertFloatArrayFrom(pv,offset,len,from,fromOffset);
+        public int fromFloatArray(PVArray pv, int offset, int len, float[] from, int fromOffset) {
+            int num = ConvertFloatArrayFrom(pv,offset,len,from,fromOffset);
+            if(num>0) pv.postPut();
+            return num;
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromInt(org.epics.pvData.pv.PVScalar, int)
@@ -470,32 +481,34 @@ public final class ConvertFactory {
             ScalarType type = pv.getScalar().getScalarType();
             switch(type) {
                 case pvByte :
-                    {PVByte value = (PVByte)pv; value.put((byte)from); return;}
+                    {PVByte value = (PVByte)pv; value.put((byte)from); break;}
                 case pvShort :
-                    {PVShort value = (PVShort)pv; value.put((short)from); return;}
+                    {PVShort value = (PVShort)pv; value.put((short)from); break;}
                 case pvInt :
-                    {PVInt value = (PVInt)pv; value.put((int)from); return;}
+                    {PVInt value = (PVInt)pv; value.put((int)from); break;}
                 case pvLong :
-                    {PVLong value = (PVLong)pv; value.put((long)from); return;}
+                    {PVLong value = (PVLong)pv; value.put((long)from); break;}
                 case pvFloat :
-                    {PVFloat value = (PVFloat)pv; value.put((float)from); return;}
+                    {PVFloat value = (PVFloat)pv; value.put((float)from); break;}
                 case pvDouble :
-                    {PVDouble value = (PVDouble)pv; value.put((double)from); return;}
+                    {PVDouble value = (PVDouble)pv; value.put((double)from); break;}
                 case pvString :
-                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); return;}
+                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
                       "Illegal PVType. Must be numeric but it is "
                       + type.toString()
                     );
             }
+            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromIntArray(org.epics.pvData.pv.PVArray, int, int, int[], int)
          */
-        public int fromIntArray(PVArray pv, int offset, int len,
-            int[] from, int fromOffset) {
-            return ConvertIntArrayFrom(pv,offset,len,from,fromOffset);
+        public int fromIntArray(PVArray pv, int offset, int len,int[] from, int fromOffset) {
+            int num = ConvertIntArrayFrom(pv,offset,len,from,fromOffset);
+            if(num>0) pv.postPut();
+            return num;
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromLong(org.epics.pvData.pv.PVScalar, long)
@@ -504,32 +517,34 @@ public final class ConvertFactory {
             ScalarType type = pv.getScalar().getScalarType();
             switch(type) {
                 case pvByte :
-                    {PVByte value = (PVByte)pv; value.put((byte)from); return;}
+                    {PVByte value = (PVByte)pv; value.put((byte)from); break;}
                 case pvShort :
-                    {PVShort value = (PVShort)pv; value.put((short)from); return;}
+                    {PVShort value = (PVShort)pv; value.put((short)from); break;}
                 case pvInt :
-                    {PVInt value = (PVInt)pv; value.put((int)from); return;}
+                    {PVInt value = (PVInt)pv; value.put((int)from); break;}
                 case pvLong :
-                    {PVLong value = (PVLong)pv; value.put((long)from); return;}
+                    {PVLong value = (PVLong)pv; value.put((long)from); break;}
                 case pvFloat :
-                    {PVFloat value = (PVFloat)pv; value.put((float)from); return;}
+                    {PVFloat value = (PVFloat)pv; value.put((float)from); break;}
                 case pvDouble :
-                    {PVDouble value = (PVDouble)pv; value.put((double)from); return;}
+                    {PVDouble value = (PVDouble)pv; value.put((double)from); break;}
                 case pvString :
-                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); return;}
+                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
                       "Illegal PVType. Must be numeric but it is "
                       + type.toString()
                     );
             }
+            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromLongArray(org.epics.pvData.pv.PVArray, int, int, long[], int)
          */
-        public int fromLongArray(PVArray pv, int offset, int len,
-            long[] from, int fromOffset) {
-            return ConvertLongArrayFrom(pv,offset,len,from,fromOffset);
+        public int fromLongArray(PVArray pv, int offset, int len,long[] from, int fromOffset) {
+            int num = ConvertLongArrayFrom(pv,offset,len,from,fromOffset);
+            if(num>0) pv.postPut();
+            return num;
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromShort(org.epics.pvData.pv.PVScalar, short)
@@ -538,32 +553,35 @@ public final class ConvertFactory {
             ScalarType type = pv.getScalar().getScalarType();
             switch(type) {
                 case pvByte :
-                    {PVByte value = (PVByte)pv; value.put((byte)from); return;}
+                    {PVByte value = (PVByte)pv; value.put((byte)from); break;}
                 case pvShort :
-                    {PVShort value = (PVShort)pv; value.put((short)from); return;}
+                    {PVShort value = (PVShort)pv; value.put((short)from); break;}
                 case pvInt :
-                    {PVInt value = (PVInt)pv; value.put((int)from); return;}
+                    {PVInt value = (PVInt)pv; value.put((int)from); break;}
                 case pvLong :
-                    {PVLong value = (PVLong)pv; value.put((long)from); return;}
+                    {PVLong value = (PVLong)pv; value.put((long)from); break;}
                 case pvFloat :
-                    {PVFloat value = (PVFloat)pv; value.put((float)from); return;}
+                    {PVFloat value = (PVFloat)pv; value.put((float)from); break;}
                 case pvDouble :
-                    {PVDouble value = (PVDouble)pv; value.put((double)from); return;}
+                    {PVDouble value = (PVDouble)pv; value.put((double)from); break;}
                 case pvString :
-                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); return;}
+                    {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
                       "Illegal PVType. Must be numeric but it is "
                       + type.toString()
                     );
             }
+            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromShortArray(org.epics.pvData.pv.PVArray, int, int, short[], int)
          */
         public int fromShortArray(PVArray pv, int offset, int len,
             short[] from, int fromOffset) {
-            return ConvertShortArrayFrom(pv,offset,len,from,fromOffset);
+            int num = ConvertShortArrayFrom(pv,offset,len,from,fromOffset);
+            if(num>0) pv.postPut();
+            return num;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toByte(org.epics.pvData.pv.PVScalar)

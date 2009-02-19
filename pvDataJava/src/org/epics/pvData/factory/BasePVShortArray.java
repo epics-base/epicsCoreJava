@@ -85,7 +85,6 @@ public class BasePVShortArray extends AbstractPVArray implements PVShortArray
             length = newlength;
         }
         System.arraycopy(from,fromOffset,value,offset,len);
-        super.postPut();
         return len;
     }
 	/* (non-Javadoc)

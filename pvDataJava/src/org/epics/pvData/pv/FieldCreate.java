@@ -18,19 +18,19 @@ public interface FieldCreate {
      * @return a <i>Field</i> interface for the newly created object.
      * @throws An <i>IllegalArgumentException</i> if an illegal type is specified.
      */
-    public Scalar createScalar(String fieldName,ScalarType scalarType);
+    Scalar createScalar(String fieldName,ScalarType scalarType);
     /**
      * Create an <i>Array</i> field.
      * @param fieldName The field name
      * @param elementType The <i>Type</i> for array elements
      * @return An <i>Array</i> Interface for the newly created object.
      */
-    public Array createArray(String fieldName,ScalarType elementType);
+    Array createArray(String fieldName,ScalarType elementType);
     /**
      * Create a <i>Structure</i> field.
      * @param fieldName The field name
      * @param field The array of <i>Field</i>s for the structure.
      * @return a <i>Structure</i> interface for the newly created object.
      */
-    public Structure createStructure(String fieldName, Field[] field);
+    Structure createStructure(String fieldName, Field[] field);
 }

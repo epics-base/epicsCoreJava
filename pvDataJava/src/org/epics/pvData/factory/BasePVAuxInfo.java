@@ -50,10 +50,7 @@ public class BasePVAuxInfo implements PVAuxInfo {
     public synchronized PVScalar createInfo(String key,ScalarType scalarType) {
         PVScalar pvScalar = pvDataCreate.createPVScalar(null,key,scalarType);
         PVScalar old = attributeMap.put(key, pvScalar);
-        if(old!=null) {
-            System.err.println("createAttribute key " + key + " already exists");
-            return old;
-        }
+        if(old!=null) return old;
         return pvScalar;
     }
     /* (non-Javadoc)

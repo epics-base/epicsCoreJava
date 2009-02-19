@@ -121,25 +121,23 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVStructure#replaceStructureField(java.lang.String, org.epics.pvData.pv.Structure)
+     * @see org.epics.pvData.pv.PVStructure#replacePVField(java.lang.String, org.epics.pvData.pv.PVField)
      */
-    public boolean replaceStructureField(String fieldName, Structure structure) {
-        Structure oldStructure = (Structure)super.getField();
-        int index = oldStructure.getFieldIndex(fieldName);
-        PVStructure newField = pvDataCreate.createPVStructure(this, fieldName, structure.getFields());
-        pvFields[index] = newField;
-        // Must create and replace the Structure for this structure.
-        Field[] oldFields = oldStructure.getFields();
-        int length = oldFields.length;
-        Field[] newFields = new Field[length];
-        for(int i=0; i<length; i++) newFields[i] = oldFields[i];
-        newFields[index] = newField.getStructure();
-        Structure newStructure = fieldCreate.createStructure(
-            oldStructure.getFieldName(),
-            newFields);
-        super.replaceField(newStructure);
-        return true;
+    public void replacePVField(String fieldName, PVField newPVField) {
+        Structure structure = (Structure)super.getField();
+        Field[] origFields = structure.getFields();
+        int index = -1;
+        for(int i=0; i<origFields.length; i++) {
+            Field origField = origFields[i];
+            if(origField.getFieldName().equals(fieldName)) {
+               index = i;
+               break;
+            } 
+        }
+        pvFields[index] = newPVField;
+        if(origFields[index]!=newPVField.getField()) replaceStructure();
     }
+    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getPVFields()
      */
@@ -318,19 +316,14 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      * @see org.epics.pvData.pv.PVStructure#appendPVField(org.epics.pvData.pv.PVField)
      */
     public void appendPVField(PVField pvField) {
-        Structure structure = (Structure)super.getField();
-        Field[] origFields = structure.getFields();
-        Field[] newFields = new Field[origFields.length + 1];
-        PVField[] newPVFields = new PVField[pvFields.length + 1];
-        for(int i=0; i<origFields.length; i++) {
-            newFields[i] = origFields[i];
+        int origLength = pvFields.length;
+        PVField[] newPVFields = new PVField[origLength + 1];
+        for(int i=0; i<origLength; i++) {
             newPVFields[i] = pvFields[i];
         }
-        newFields[newFields.length-1] = pvField.getField();
-        Structure newStructure = fieldCreate.createStructure(structure.getFieldName(), newFields);
         newPVFields[newPVFields.length-1] = pvField;
-        super.replaceField(newStructure);
         pvFields = newPVFields;
+        replaceStructure();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -355,6 +348,22 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         return getString(prefix,indentLevel);
     }
     
+    private void replaceStructure() {
+        int length = pvFields.length;
+        Field[] newFields = new Field[length];
+        for(int i=0; i<length; i++) {
+            newFields[i] = pvFields[i].getField();
+        }
+        Structure newStructure = fieldCreate.createStructure(super.getField().getFieldName(), newFields);
+        super.replaceField(newStructure);
+        PVStructure pvParent = super.getParent();
+        if(pvParent!=null) {
+            BasePVStructure basePVStructure = (BasePVStructure)pvParent;
+            basePVStructure.replaceStructure();
+        }
+        
+    }
+    
     private PVField findSubField(String fieldName,PVStructure pvStructure) {
         int index = fieldName.indexOf('.');
         if(index==-1) {
@@ -369,7 +378,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         if(index>0) {
             name = fieldName.substring(0, index);
             if(fieldName.length()>index) {
-                restOfName = fieldName.substring(index);
+                restOfName = fieldName.substring(index+1);
             }
         }
         PVField pvField = pvStructure.getSubField(name);

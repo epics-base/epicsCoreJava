@@ -5,7 +5,10 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.MessageType;
+import org.epics.pvData.pv.PVFloat;
+import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Scalar;
 
 /**
  * Base class for PVFloat.
@@ -33,7 +36,6 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
     public void put(float value) {
         if(super.isMutable()) {
             this.value = value;
-            super.postPut();
             return ;
         }
         super.message("not isMutable", MessageType.error);

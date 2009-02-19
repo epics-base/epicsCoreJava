@@ -85,7 +85,6 @@ public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
             length = newlength;
         }
         System.arraycopy(from,fromOffset,value,offset,len);
-        super.postPut();
         return len;      
     }
 	/* (non-Javadoc)

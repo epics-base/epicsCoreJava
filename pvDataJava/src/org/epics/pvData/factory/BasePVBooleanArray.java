@@ -85,7 +85,6 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
             length = newlength;
         }
         System.arraycopy(from,fromOffset,value,offset,len);
-        super.postPut();
         return len;       
     }
 	/* (non-Javadoc)

@@ -85,7 +85,6 @@ public class BasePVByteArray extends AbstractPVArray implements PVByteArray
             length = newlength;
         }
         System.arraycopy(from,fromOffset,value,offset,len);
-        super.postPut();
         return len;        
     }
 	/* (non-Javadoc)

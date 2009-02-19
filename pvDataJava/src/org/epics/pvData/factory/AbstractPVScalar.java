@@ -14,7 +14,6 @@ import org.epics.pvData.pv.Scalar;
  *
  */
 public abstract class AbstractPVScalar extends AbstractPVField implements PVScalar {
-    private Scalar scalar;
     /**
      * Constructor.
      * @param parent The parent.
@@ -22,12 +21,11 @@ public abstract class AbstractPVScalar extends AbstractPVField implements PVScal
      */
     protected AbstractPVScalar(PVStructure parent, Scalar scalar) {
         super(parent,scalar);
-        this.scalar = scalar;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVScalar#getScalar()
      */
     public Scalar getScalar() {
-        return scalar;
+        return (Scalar)super.getField();
     }
 }

@@ -86,13 +86,6 @@ public abstract class AbstractPVField implements PVField{
         createFullNameANDFullFieldName();
     }
     /**
-     * 
-     */
-    protected void postPut() {
-        callListener();
-        if(parent!=null)parent.postPut(this);
-    }
-    /**
      * Called by BasePVStructure.postPut() and recursively by itself.
      * @param pvField The pvField to post.
      */
@@ -185,14 +178,7 @@ public abstract class AbstractPVField implements PVField{
     public void replacePVField(PVField newPVField) {
         PVStructure parent = getParent();
         if(parent==null) throw new IllegalArgumentException("no parent");
-        PVField[] fields = parent.getPVFields();
-        for(int i=0; i<fields.length; i++) {
-            if(fields[i]==this) {
-                fields[i] = newPVField;
-                return;
-            }
-        }
-        throw new IllegalArgumentException("oldField not found in parent");
+        parent.replacePVField(field.getFieldName(), newPVField);
     }
    
     /* (non-Javadoc)
@@ -207,6 +193,13 @@ public abstract class AbstractPVField implements PVField{
      */
     public void removeListener(PVListener recordListener) {
         pvListenerList.remove(recordListener);
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVField#postPut()
+     */
+    public void postPut() {
+        callListener();
+        if(parent!=null)parent.postPut(this);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#toString(int)

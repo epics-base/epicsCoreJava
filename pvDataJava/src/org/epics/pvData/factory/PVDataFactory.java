@@ -5,7 +5,6 @@
  */
 package org.epics.pvData.factory;
 
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,19 +15,11 @@ import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVAuxInfo;
-import org.epics.pvData.pv.PVBoolean;
-import org.epics.pvData.pv.PVByte;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVDatabase;
-import org.epics.pvData.pv.PVDouble;
 import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVFloat;
-import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVLong;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
-import org.epics.pvData.pv.PVShort;
-import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
@@ -72,7 +63,7 @@ public class PVDataFactory {
             throw new IllegalArgumentException("Illegal Type");
 		}
 		
-		private final PVScalar createPVScalar(PVStructure parent, Scalar scalar)
+        public PVScalar createPVScalar(PVStructure parent, Scalar scalar)
 		{
            switch(scalar.getScalarType()) {
             case pvBoolean: return new BasePVBoolean(parent,scalar);
@@ -98,7 +89,7 @@ public class PVDataFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVArray(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
          */
-        public final PVArray createPVArray(PVStructure parent,Array array)
+        public PVArray createPVArray(PVStructure parent,Array array)
         {
         	switch(array.getElementType()) {
             case pvBoolean: return new BasePVBooleanArray(parent,array);

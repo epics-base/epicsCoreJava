@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2008.12.24</h1>
+2009.02.17</h1>
 CONTENTS 
 
 <div class="toc">
@@ -105,6 +105,8 @@ provides a method to get the interface.</p>
 <h3 id="PVReplaceF">PVReplaceFactory</h3>
 <pre>    public class PVReplaceFactory {
         public static void replace(PVDatabase pvDatabase);
+        public static void replace(PVDatabase pvDatabase,PVRecord pvRecord);
+        public static void replace(PVDatabase pvDatabase,PVField pvField);
     }</pre>
 
 <p>PVReplaceFactory.replace looks at each field of each record in the

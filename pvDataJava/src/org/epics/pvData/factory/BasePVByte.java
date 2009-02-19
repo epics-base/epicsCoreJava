@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVByte;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.Scalar;
 
 /**
  * Base class for PVByte.
@@ -36,7 +36,6 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
     public void put(byte value) {
         if(super.isMutable()) {
             this.value = value;
-            super.postPut();
             return ;
         }
         super.message("not isMutable", MessageType.error);
