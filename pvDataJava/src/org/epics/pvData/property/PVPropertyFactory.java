@@ -51,7 +51,7 @@ public class PVPropertyFactory {
                 }
                 String name = pvField.getField().getFieldName(); 
                 if(name.equals("value")) {
-                    return findField(pvField.getParent(),fieldName);
+                    return findProperty(pvField.getParent(),fieldName);
                 }
             }
             return currentField;
