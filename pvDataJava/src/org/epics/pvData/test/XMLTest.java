@@ -28,7 +28,6 @@ public class XMLTest extends TestCase {
     public static void testXML() {
     	PVDatabase master = PVDatabaseFactory.getMaster();
         Requester iocRequester = new RequesterForTesting("xmlTest");
-        XMLToPVDatabaseFactory.convert(master,"xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/ai.xml", iocRequester);

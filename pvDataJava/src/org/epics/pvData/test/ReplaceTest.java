@@ -69,7 +69,6 @@ public class ReplaceTest extends TestCase {
      */
     public static void testReplaceField() {
         Requester iocRequester = new RequesterForTesting("accessTest");
-        XMLToPVDatabaseFactory.convert(master,"xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
         

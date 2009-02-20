@@ -31,7 +31,6 @@ public class ParentTest extends TestCase {
      */
     public static void testParent() {
         Requester iocRequester = new RequesterForTesting("accessTest");
-        XMLToPVDatabaseFactory.convert(master,"xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
         
