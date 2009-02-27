@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
   <title>EPICS JavaIOC: pv</title>
@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2009.02.17</h1>
+2009.02.24</h1>
 CONTENTS 
 
 <div class="toc">
@@ -32,24 +32,36 @@ CONTENTS
       <li><a href="#AbstractPV">AbstractPVField</a></li>
     </ul>
   </li>
-  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRcord</a>
+  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRecord</a>
     <ul>
       <li><a href="#AbstractPV1">AbstractPVScalar</a></li>
       <li><a href="#BasePVStru">BasePVStructure</a></li>
       <li><a href="#BasePVReco">BasePVRecord</a></li>
     </ul>
   </li>
-  <li><a href="#Classes1">Classes for PVArray</a>
+  <li><a href="#Classes1">Classes For PVScalar</a>
+    <ul>
+      <li><a href="#BasePVBool">BasePVBoolean</a></li>
+      <li><a href="#BasePVByte">BasePVByte</a></li>
+      <li><a href="#BasePVShor">BasePVShort</a></li>
+      <li><a href="#BasePVInt">BasePVInt</a></li>
+      <li><a href="#BasePVLong">BasePVLong</a></li>
+      <li><a href="#BasePVFloa">BasePVFloat</a></li>
+      <li><a href="#BasePVDoub">BasePVDouble</a></li>
+      <li><a href="#BasePVStri">BasePVString</a></li>
+    </ul>
+  </li>
+  <li><a href="#Classes2">Classes for PVArray</a>
     <ul>
       <li><a href="#AbstractPV2">AbstractPVArray</a></li>
-      <li><a href="#BasePVBool">BasePVBooleanArray</a></li>
-      <li><a href="#BasePVByte">BasePVByteArray</a></li>
-      <li><a href="#BasePVShor">BasePVShortArray</a></li>
+      <li><a href="#BasePVBool1">BasePVBooleanArray</a></li>
+      <li><a href="#BasePVByte1">BasePVByteArray</a></li>
+      <li><a href="#BasePVShor1">BasePVShortArray</a></li>
       <li><a href="#BasePVIntA">BasePVIntArray</a></li>
-      <li><a href="#BasePVLong">BasePVLongArray</a></li>
-      <li><a href="#BasePVFloa">BasePVFloatArray</a></li>
-      <li><a href="#BasePVDoub">BasePVDoubleArray</a></li>
-      <li><a href="#BasePVStri">BasePVStringArray</a></li>
+      <li><a href="#BasePVLong1">BasePVLongArray</a></li>
+      <li><a href="#BasePVFloa1">BasePVFloatArray</a></li>
+      <li><a href="#BasePVDoub1">BasePVDoubleArray</a></li>
+      <li><a href="#BasePVStri1">BasePVStringArray</a></li>
     </ul>
   </li>
 </ul>
@@ -130,35 +142,22 @@ introspection implementation but they could be extended if necessary.</p>
 <pre>    
     public class BaseField implements Field {
         public BaseField(String fieldName, Type type);
-        public String getFieldName();
-        public Type getType();
-        public String toString();
-        public String toString(int indentLevel);
+        // all Field methods
     }
 
     public class BaseScalar extends BaseField implements Scalar {
         public BaseScalar(String fieldName,ScalarType scalarType);
-        public ScalarType getScalarType();
-        public String toString();
-        public String toString(int indentLevel);
+        // all Scalar methods
     }
     
     public class BaseStructure extends BaseField implements Structure {
         public BaseStructure(String fieldName,Field[] field);
-        public Field getField(String name);
-        public int getFieldIndex(String name);
-        public String[] getFieldNames();
-        public Field[] getFields();
-        public String toString();
-        public String toString(int indentLevel);
+        // all Structure methods
     }
 
     public class BaseArray extends BaseField implements Array {
-        public BaseArray(String fieldName,Type elementType);
-        public Type getElementType();
-        public String toString();
-        public String toString(int indentLevel);      
-        private String getString(int indentLevel);
+        public BaseArray(String fieldName,ScalarType elementType);
+        // all Array methods  
     }
 }</pre>
 <hr />
@@ -171,12 +170,7 @@ PVField</h2>
 <p>This is a complete implementation of PVAuxInfo.</p>
 <pre>public class BasePVAuxInfo implements PVAuxInfo {
     public BasePVAuxInfo(PVField pvField);
-    public PVField getPVField();
-    public PVScalar getInfo(String key);
-    public Map&lt;String, PVScalar&gt; getInfos();
-    public PVScalar createInfo(String key,ScalarType scalarType);
-    public String toString();
-    public String toString(int indentLevel)
+    // All PVAuxInfo methods
 }</pre>
 
 <h3 id="AbstractPV">AbstractPVField</h3>
@@ -191,10 +185,8 @@ MUST be a base class for any class that is an extension of PVField. </p>
     protected AbstractPVField(PVField parent, Field field);
     protected void replaceField(Field field);
     protected void setRecord(PVRecord record);
-    protected void postPut();
     protected void postPutNoParent(AbstractPVField pvField);
     protected void removeEveryListener() 
-
     // All public methods of PVField
 }</pre>
 
@@ -220,9 +212,6 @@ protected methods are: </p>
       after initialization..</dd>
   <dt>setRecord</dt>
     <dd>Called by BasePVRecord.</dd>
-  <dt>postPut</dt>
-    <dd>Any code that implements put must call this after modifing a
-    field.</dd>
   <dt>postPutNoParent</dt>
     <dd>Called by BasePVRecord.</dd>
   <dt>removeEveryListener</dt>
@@ -231,7 +220,7 @@ protected methods are: </p>
 <hr />
 
 <h2 style="text-align: center" id="Classes">Classes for PVScalar,
-PVStructure, and PVRcord</h2>
+PVStructure, and PVRecord</h2>
 <hr />
 
 <h3 id="AbstractPV1">AbstractPVScalar</h3>
@@ -251,6 +240,7 @@ Any code that implements PVStructure MUST extend this class.</p>
     public BasePVStructure(PVField parent, Structure structure);
     
     protected String toString(String prefix,int indentLevel);
+    public void postPut();
     // all public methods of PVStructure
 }</pre>
 
@@ -264,7 +254,75 @@ code that implements PVRecord MUST extend this class.</p>
 }</pre>
 <hr />
 
-<h2 style="text-align: center" id="Classes1">Classes for PVArray</h2>
+<h2 style="text-align: center" id="Classes1">Classes For PVScalar</h2>
+<hr />
+
+<h3 id="BasePVBool">BasePVBoolean</h3>
+<pre>public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
+{
+    protected boolean value = false;
+    public BasePVBoolean(PVStructure parent,Scalar scalar);
+    // public methods of PVBoolean
+}</pre>
+
+<h3 id="BasePVByte">BasePVByte</h3>
+<pre>public class BasePVByte extends AbstractPVScalar implements PVByte
+{
+    protected byte value;
+    public BasePVByte(PVStructure parent,Scalar scalar);
+    // public methods of PVByte
+}</pre>
+
+<h3 id="BasePVShor">BasePVShort</h3>
+<pre>public class BasePVShort extends AbstractPVScalar implements PVShort
+{
+    protected short value;
+    public BasePVShort(PVStructure parent,Scalar scalar);
+    // public methods of PVShort
+}</pre>
+
+<h3 id="BasePVInt">BasePVInt</h3>
+<pre>public class BasePVInt extends AbstractPVScalar implements PVInt
+{
+    protected int value;
+    public BasePVInt(PVStructure parent,Scalar scalar);
+    // public methods of PVInt
+}</pre>
+
+<h3 id="BasePVLong">BasePVLong</h3>
+<pre>public class BasePVLong extends AbstractPVScalar implements PVLong
+{
+    protected long value;
+    public BasePVLong(PVStructure parent,Scalar scalar);
+    // public methods of PVLong
+}</pre>
+
+<h3 id="BasePVFloa">BasePVFloat</h3>
+<pre>public class BasePVFloat extends AbstractPVScalar implements PVFloat
+{
+    protected float value;
+    public BasePVFloat(PVStructure parent,Scalar scalar);
+    // public methods of PVFloat
+}</pre>
+
+<h3 id="BasePVDoub">BasePVDouble</h3>
+<pre>public class BasePVDouble extends AbstractPVScalar implements PVDouble
+{
+    protected double value;
+    public BasePVDouble(PVStructure parent,Scalar scalar);
+    // public methods of PVDouble
+}</pre>
+
+<h3 id="BasePVStri">BasePVString</h3>
+<pre>public class BasePVString extends AbstractPVScalar implements PVString
+{
+    protected String value;
+    public BasePVString(PVStructure parent,Scalar scalar);
+    // public methods of PVString
+}</pre>
+<hr />
+
+<h2 style="text-align: center" id="Classes2">Classes for PVArray</h2>
 <hr />
 
 <h3 id="AbstractPV2">AbstractPVArray</h3>
@@ -276,9 +334,7 @@ implements any extension of PVArray must extend this class.</p>
     protected int capacity;
     protected boolean capacityMutable = true;
 
-    protected AbstractPVArray(PVField parent,Array array,
-        int capacity,boolean capacityMutable);
-    abstract public void setCapacity(int capacity);
+    protected AbstractPVArray(PVField parent,Array array);
     // public methods of PVArray
 }</pre>
 
@@ -286,7 +342,7 @@ implements any extension of PVArray must extend this class.</p>
 corresponding array type. For most uses it is not necessary to extend these
 classes.</p>
 
-<h3 id="BasePVBool">BasePVBooleanArray</h3>
+<h3 id="BasePVBool1">BasePVBooleanArray</h3>
 <pre>public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArray
 {
     protected boolean[] value;
@@ -294,7 +350,7 @@ classes.</p>
     // implements all PVBooleanArray methods
 }</pre>
 
-<h3 id="BasePVByte">BasePVByteArray</h3>
+<h3 id="BasePVByte1">BasePVByteArray</h3>
 <pre>public class BasePVByteArray extends AbstractPVArray implements PVByteArray
 {
     protected byte[] value;
@@ -302,7 +358,7 @@ classes.</p>
     // implements all PVByteArray methods
 }</pre>
 
-<h3 id="BasePVShor">BasePVShortArray</h3>
+<h3 id="BasePVShor1">BasePVShortArray</h3>
 <pre>public class BasePVShortArray extends AbstractPVArray implements PVShortArray
 {
     protected short[] value;
@@ -318,7 +374,7 @@ classes.</p>
     // implements all PVIntArray methods
 }</pre>
 
-<h3 id="BasePVLong">BasePVLongArray</h3>
+<h3 id="BasePVLong1">BasePVLongArray</h3>
 <pre>public class BasePVLongArray extends AbstractPVArray implements PVLongArray
 {
     protected long[] value;
@@ -326,7 +382,7 @@ classes.</p>
     // implements all PVLongArray methods
 }</pre>
 
-<h3 id="BasePVFloa">BasePVFloatArray</h3>
+<h3 id="BasePVFloa1">BasePVFloatArray</h3>
 <pre>public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
 {
     protected float[] value;
@@ -334,7 +390,7 @@ classes.</p>
     // implements all PVFloatArray methods
 }</pre>
 
-<h3 id="BasePVDoub">BasePVDoubleArray</h3>
+<h3 id="BasePVDoub1">BasePVDoubleArray</h3>
 <pre>public class BasePVDoubleArray extends AbstractPVArray implements PVDoubleArray
 {
     protected double[] value;
@@ -342,7 +398,7 @@ classes.</p>
     // implements all PVDoubleArray methods
 }</pre>
 
-<h3 id="BasePVStri">BasePVStringArray</h3>
+<h3 id="BasePVStri1">BasePVStringArray</h3>
 <pre>public class BasePVStringArray extends AbstractPVArray implements PVStringArray
 {
     protected String[] value;

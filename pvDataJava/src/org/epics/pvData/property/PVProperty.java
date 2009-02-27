@@ -7,26 +7,7 @@ import org.epics.pvData.pv.PVField;
  */
 public interface PVProperty {
     /**
-     * Find a field that is a subfield or a property of this field.
-     * The fieldName is of the form name.name....
      * 
-     * The algorithm implemented by findProperty is:
-     * <ul>
-     *  <li>Start with the leftmost name and find it.</li>
-     *  <li>find the next leftmost name and find it.</li>
-     *  <li>Continue until all names have been found or a search fails.</li>
-     *  <li>Return the interface for the last name or null if a search fails.</li>
-     * </ul>
-     *  
-     *  A name is found as follows:
-     *  <ol>
-     *    <li>If the Field for the current PVField is named "value" back up one level in parent tree.</li>
-     *    <li>The current PV must be a structure. If not fail.</li>
-     *    <li>If the current PVField is type structure with a fieldName=name then use it.</li>
-     *    <li>If the fieldName is not timeStamp than fail.</li>
-     *    <li>If the parent tree is null then fail.</li>
-     *    <li>Back up one level in the parent tree and go to 2).</li>
-     *  </ol>
      *  
      * @param pvField The pvField.
      * @param fieldName A string of the form item.item... where item is name or name[index]

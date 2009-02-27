@@ -2217,14 +2217,15 @@ public final class ConvertFactory {
                     StringArrayData data = new StringArrayData();
                     builder.append("{");
                     for(int i=0; i < pvdata.getLength(); i++) {
+                        if(i!=0) builder.append(",");
                         int num = pvdata.get(i,1,data);
                         String[] value = data.data;
                         if(num==1 && value[data.offset]!=null) {
                             builder.append("\"");
                             builder.append(value[data.offset]);
-                            builder.append("\" ");
+                            builder.append("\"");
                         } else {
-                             builder.append("null ");
+                             builder.append("null");
                         }
                     }
                     builder.append("}");

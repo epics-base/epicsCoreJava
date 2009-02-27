@@ -99,10 +99,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      * @see org.epics.pvData.pv.PVStructure#getSubField(java.lang.String)
      */
     public PVField getSubField(String fieldName) {
-        for(PVField pvField : pvFields) {
-            if(pvField.getField().getFieldName().equals(fieldName)) return pvField;
-        }
-        return null;
+        return findSubField(fieldName,this);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getStructure()
@@ -365,14 +362,8 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     }
     
     private PVField findSubField(String fieldName,PVStructure pvStructure) {
+        if(fieldName==null || fieldName.length()<1) return null;
         int index = fieldName.indexOf('.');
-        if(index==-1) {
-            index = fieldName.indexOf("[");
-            if(index==0) index = fieldName.indexOf(']');
-            if(index>0) {
-                index++;
-            }
-        }
         String name = fieldName;
         String restOfName = null;
         if(index>0) {
@@ -381,7 +372,15 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
                 restOfName = fieldName.substring(index+1);
             }
         }
-        PVField pvField = pvStructure.getSubField(name);
+        PVField[] pvFields = pvStructure.getPVFields();
+        PVField pvField = null;
+        for(PVField pvf : pvFields) {
+            if(pvf.getField().getFieldName().equals(name)) {
+                pvField = pvf;
+                break;
+            }
+        }
+        if(pvField==null) return null;
         if(restOfName==null) return pvField;
         if(pvField.getField().getType()!=Type.structure) return null;
         return findSubField(restOfName,(PVStructure)pvField);
