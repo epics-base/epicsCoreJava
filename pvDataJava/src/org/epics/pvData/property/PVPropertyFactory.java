@@ -1,12 +1,9 @@
 package org.epics.pvData.property;
 
 
-import java.util.regex.Pattern;
-
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.Type;
 
 
 /**
@@ -27,34 +24,20 @@ public class PVPropertyFactory {
     }
     
     private static final class PVPropertyImpl implements PVProperty{
-        private static  Pattern periodPattern = Pattern.compile("[.]");
         /* (non-Javadoc)
          * @see org.epics.pvData.property.PVProperty#findProperty(org.epics.pvData.pv.PVField, java.lang.String)
          */
         public PVField findProperty(PVField pvField,String fieldName) {
+            Field field = pvField.getField();
+            if(!field.getFieldName().equals("value")) return null;
             if(fieldName==null || fieldName.length()==0) return null;
-            String[] names = periodPattern.split(fieldName,2);
-            if(names.length<=0) {
-                return null;
+            PVStructure pvParent = pvField.getParent();
+            PVField pvFound = pvParent.getSubField(fieldName);
+            if(pvFound!=null) return pvFound;
+            if(fieldName.equals("timeStamp")) {
+                return findPropertyViaParent(pvField,fieldName);
             }
-            PVField currentField = pvField;
-            while(true) {
-                String name = names[0];
-                currentField = findField(currentField,name);
-                if(currentField==null) break;;
-                if(names.length<=1) break;
-                names = periodPattern.split(names[1],2);
-            }
-            if(currentField==null) {
-                if(fieldName.equals("timeStamp")) {
-                    return findPropertyViaParent(pvField,fieldName);
-                }
-                String name = pvField.getField().getFieldName(); 
-                if(name.equals("value")) {
-                    return findProperty(pvField.getParent(),fieldName);
-                }
-            }
-            return currentField;
+            return null;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.PVProperty#findPropertyViaParent(org.epics.pvData.pv.PVField, java.lang.String)
@@ -74,16 +57,10 @@ public class PVPropertyFactory {
          */
         public String[] getPropertyNames(PVField pv) {
             PVField pvField = pv;
-            boolean skipValue = false;
             Field field = pvField.getField();
-            if(field.getFieldName().equals("value")) {
-                if(pvField.getParent()!=null) {
-                    pvField = pvField.getParent();
-                    skipValue = true;
-                }
-            }
-            field = pvField.getField();
-            if(field.getType()!=Type.structure) return null;
+            if(!field.getFieldName().equals("value"))  return null;
+            if(pvField.getParent()==null) return null;
+            pvField = pvField.getParent();
             PVStructure pvStructure = (PVStructure)pvField;
             PVField[] pvFields = pvStructure.getPVFields();
             int size = 0;
@@ -92,7 +69,7 @@ public class PVPropertyFactory {
                 field = pvf.getField();
                 String fieldName = field.getFieldName();
                 if(fieldName.equals("timeStamp")) addTimeStamp = false;
-                if(skipValue && fieldName.equals("value")) continue;
+                if(fieldName.equals("value")) continue;
                 size++;
             }
             PVField pvTimeStamp = null;
@@ -109,17 +86,10 @@ public class PVPropertyFactory {
             for(PVField pvf: pvFields) {
                 field = pvf.getField();
                 String fieldName = field.getFieldName();
-                if(skipValue && fieldName.equals("value")) continue;
+                if(fieldName.equals("value")) continue;
                 propertyNames[index++] = pvf.getField().getFieldName();
             }
             return propertyNames;
-        }
-        
-        private PVField findField(PVField pvField,String name) {
-            if(pvField==null) return null;
-            if(pvField.getField().getType()!=Type.structure) return null;
-            PVStructure pvStructure = (PVStructure)pvField;
-            return pvStructure.getSubField(name);
         }
     }
 }
