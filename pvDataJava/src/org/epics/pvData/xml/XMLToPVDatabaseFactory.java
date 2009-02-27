@@ -588,6 +588,15 @@ public class XMLToPVDatabaseFactory {
                 } else {
                     // ignore blanks , is separator
                     values = stringPattern.split(value);
+                    for(int i=0; i<values.length; i++) {
+                        String item = values[i];
+                        int len = item.length();
+                        if(len>1) {
+                            if(item.charAt(0)=='\"' && item.endsWith("\"")) {
+                                values[i] = item.substring(1, len-1);
+                            }
+                        }
+                    }
                 }
                 if(capacity>0) pvArray.setCapacity(capacity);
                 if(length>0) pvArray.setLength(length);

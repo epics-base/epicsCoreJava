@@ -10,17 +10,16 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: property<br />
 package: org.epics.pvData.property<br />
-2008.12.24</h1>
+2009.02.24</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
-  <li><a href="#Data">Data Model</a></li>
-  <li><a href="#PVData">PVData Structures</a></li>
+  <li><a href="#Definition">Definition of Property</a></li>
+  <li><a href="#Standard">Standard Properties</a></li>
   <li><a href="#PVProperty">PVProperty</a></li>
-  <li><a href="#Structure">Structure Definitions</a>
+  <li><a href="#Standard1">Standard Properties</a>
     <ul>
-      <li><a href="#Enumerated">Enumerated</a></li>
       <li><a href="#TimeStamp">TimeStamp</a></li>
       <li><a href="#Alarm">Alarm</a></li>
       <li><a href="#Limits">Limits</a></li>
@@ -32,22 +31,19 @@ CONTENTS
 </div>
 <hr />
 
-<h2 style="text-align: center" id="Data">Data Model</h2>
+<h2 style="text-align: center" id="Definition">Definition of Property</h2>
 <hr />
 
-<p>The Data Model supports general purpose client tools. A record supports
-the data model if it follows a few simple guidelines.</p>
+<p>Only fields named "value" have properties. A record can have multiple
+value fields, which can appear in the top level structure of a record or in a
+substructure. All other fields in the structure containing a value field are
+considered properties of the value field. The fieldname is also the property
+name. The value field can have any type, i.e. scalar, scalarArray, or
+structure. Typical property fields are timeStamp, alarm, display, control,
+and history.</p>
 
-<p>The model can briefly be described as follows: Clients access a field
-named value, which may be a field in the top level structure of a record or
-in a substructure. All other fields in the structure are considered propertys
-of the value field. The fieldname is the property name. The value is usually
-a data field, i.e. a scalar type or an array with the elementType being
-scalar. All other fields of the structure support the value. Typical property
-fields are timeStamp, alarm, display, control, and history.</p>
-
-<p>The timeStamp is a special case. It it appears anywhere in the structure
-hieraracy above the value field it is considered a property</p>
+<p>The timeStamp is a special case. If it appears anywhere in the structure
+hieraracy above a value field it is a property of the value field.</p>
 
 <p>For example the following record has a single value field. The value field
 has propertys alarm, timeStamp, and display.</p>
@@ -67,40 +63,32 @@ has propertys alarm, timeStamp, and display.</p>
     &lt;/structure&gt;
 &lt;/record&gt;</pre>
 
-<p>The following example has three value fields each with propertys alarm and
-timeStamp.</p>
+<p>The following example has three value fields each with properties alarm
+and timeStamp. Voltage, Current, and Power each have a different alarms but
+all share the timeStamp.</p>
 <pre>&lt;record name = "psSimple"&gt;
     &lt;structure name = "alarm" type = "alarm" /&gt;
     &lt;structure name = "timeStamp" type = "timeStamp" /&gt;
-    &lt;voltage type = "structure"&gt;
-        &lt;scalar name = "value" type = "double" /&gt;
-        &lt;alarm structureName = "alarm" /&gt;
-    &lt;/voltage&gt;
-    &lt;current type = "structure"&gt;
+    &lt;structure name = "voltage"&gt;
         &lt;scalar name = "value" type = "double" /&gt;
         &lt;structure name = "alarm" type = "alarm" /&gt;
-    &lt;/current&gt;
-    &lt;power type = "structure"&gt;
+    &lt;/structure&gt;
+    &lt;structure name = "current"&gt;
         &lt;scalar name = "value" type = "double" /&gt;
         &lt;structure name = "alarm" type = "alarm" /&gt;
-    &lt;/power&gt;
+    &lt;/structure&gt;
+    &lt;structure name = "power"&gt;
+        &lt;scalar name = "value" type = "double" /&gt;
+        &lt;structure name = "alarm" type = "alarm" /&gt;
+    &lt;/structure&gt;
 &lt;/record&gt;</pre>
-
-<p>A client could ask for power.value, current.value, or voltage.value.</p>
-
-<p>This data model supports existing EPICS V3 channel access clients. In the
-future it is expected that more powerfull or special purpose client will be
-developed that can handle structured data. Such clients could access a
-structure. For example a client could ask for an entire record. </p>
 <hr />
 
-<h2 style="text-align: center" id="PVData">PVData Structures</h2>
+<h2 style="text-align: center" id="Standard">Standard Properties</h2>
 <hr />
 
-<p>A PVData structure follows the PVData Data Model if it has a set of fields
-that have names and types that support the data model. It can have additional
-fields, that can also be considered properties. The following field names
-have special meaning, i.e. are properties for general purpose clients.</p>
+<p>The following field names have special meaning, i.e. support properties
+for general purpose clients.</p>
 <dl>
   <dt>value</dt>
     <dd>This is normally defined since most general purpose clients access
@@ -111,7 +99,7 @@ have special meaning, i.e. are properties for general purpose clients.</p>
         <dt>scalar</dt>
           <dd>One of boolean, byte, short, int, long, float, double, or
           string</dd>
-        <dt>scalar array</dt>
+        <dt>scalarArray</dt>
           <dd>An array with the elementType being a scalar type</dd>
         <dt>enumerated structure</dt>
           <dd>A structure that includes fields named index, choice, and
@@ -144,9 +132,9 @@ have special meaning, i.e. are properties for general purpose clients.</p>
     <dd>Other standard properties can be defined.</dd>
 </dl>
 
-<p>In addition the PVData structure can have additional fields that support
-the value field but are not recognized by most general purpose client tools.
-Typical examples are:</p>
+<p>In addition a structure can have additional fields that support the value
+field but are not recognized by most general purpose client tools. Typical
+examples are:</p>
 <dl>
   <dt>input</dt>
     <dd>A field with support that changes the value field. This can be
@@ -183,35 +171,8 @@ data model. </p>
 <ul>
   <li>findProperty<br />
     Find a field that is a subfield or property of this PVField. The
-    fieldName is of the form item.item... where item is name or name[index].
-    The algorithm implemented by findProperty is: 
-    <ul>
-      <li>Start with the leftmost item and find it.</li>
-      <li>find the next leftmost item and find it.</li>
-      <li>Continue until all items have been found or a search fails.</li>
-      <li>Return the interface for the last item or null if a search
-      fails.</li>
-    </ul>
-    An item is found as follows: 
-    <ul>
-      <li>Find the name part of item. If no [index] is present then fail.</li>
-      <li>If [index] is present than field must be a structure with
-        elementType structure or array. If so then make sure the index
-        element is found. If so it is the field.</li>
-      <li>fail</li>
-    </ul>
-    A name is found as follows: 
-    <ol>
-      <li>If the Field for the current PVField is named "value" back up one
-        level in parent tree.</li>
-      <li>The current PV must be a structure. If not fail.</li>
-      <li>If the current PVField is type structure with a fieldName=name then
-        use it.</li>
-      <li>If the fieldName is not timeStamp than fail.</li>
-      <li>If the parent tree is null then fail.</li>
-      <li>Back up one level in the parent tree and go to 2).</li>
-    </ol>
-  </li>
+    fieldName is of the form name.name... The pvField must be named value or
+    it does not have properties. </li>
   <li>findPropertyViaParent<br />
     Find a property by searching up the parent tree. The property name is
     expected to match the name of a field. The return value is the interface
@@ -219,35 +180,17 @@ data model. </p>
     found. </li>
   <li>getPropertyNames<br />
     Get a String array that holds the names of the properties for this field.
-    A property name is the field name. If this PVfield is a structure then
-    every field except null structures is a property. If this PVField is the
-    value field the parent is the starting point and the properties will not
-    include the value field itself. In addition a search up the parent tree
-    is made for the timeStamp.</li>
+  </li>
   <li>getPVProperty<br />
     Get the single instance of PVProperty. </li>
 </ul>
 <hr />
 
-<h2 style="text-align: center" id="Structure">Structure Definitions</h2>
+<h2 style="text-align: center" id="Standard1">Standard Properties</h2>
 <hr />
 
 <p>This section has structure definitions that support standard
 properties.</p>
-
-<h3 id="Enumerated">Enumerated</h3>
-<pre>&lt;structure name = "enumeratedFactory"&gt;
-  &lt;scalar name = "pvReplaceFactory" type = "string"&gt;
-    org.epics.pvData.misc.EnumeratedFactory&lt;/scalar&gt;
-&lt;/structure&gt;
-
-&lt;structure name = "enumerated"&gt;
-  &lt;auxInfo name = "pvReplaceFactory" type = "string"&gt;enumeratedFactory&lt;/auxInfo&gt;
-  &lt;scalar name = "index" type = "int" /&gt;
-  &lt;scalar name = "choice" type = "string" /&gt;
-  &lt;array name = "choices" type = "string" /&gt;
-&lt;/structure&gt;
-</pre>
 
 <h3 id="TimeStamp">TimeStamp</h3>
 <pre>&lt;structure name = "timeStamp"&gt;
@@ -264,13 +207,13 @@ properties.</p>
     none,minor,major,invalid&lt;/array&gt;
 &lt;/structure&gt;
 
-&lt;structure name = "alarm" supportName = "alarm" &gt;
-  &lt;auxInfo name = "supportFactory" type = "string"&gt;alarmFactory&lt;/auxInfo&gt;
+&lt;structure name = "alarm"&gt;
   &lt;structure name = "severity" type = "alarmSeverity" /&gt;
   &lt;scalar name = "message" type = "string" /&gt;
   &lt;scalar name = "ackTransient" type = "boolean" /&gt;
   &lt;structure name = "ackSeverity" type = "alarmSeverity" /&gt;
-&lt;/structure&gt;</pre>
+&lt;/structure&gt;
+</pre>
 
 <h3 id="Limits">Limits</h3>
 <pre>&lt;structure name = "byteLimit"&gt;
@@ -301,8 +244,7 @@ properties.</p>
 &lt;structure name = "doubleLimit"&gt;
     &lt;scalar name = "low" type = "double" /&gt;
     &lt;scalar name = "high" type = "double" /&gt;
-&lt;/structure&gt;
-</pre>
+&lt;/structure&gt;</pre>
 
 <h3 id="Display">Display</h3>
 <pre>&lt;structure name = "display"&gt;
@@ -314,11 +256,7 @@ properties.</p>
 &lt;/structure&gt;</pre>
 
 <h3 id="Control">Control</h3>
-<pre>&lt;structure name = "controlLimitFactory"&gt;
-  &lt;scalar name = "pvReplaceFactory" type = "string"&gt;
-    org.epics.pvData.misc.ControlLimitFactory&lt;/scalar&gt;
-&lt;/structure&gt;
-
+<pre>
 &lt;structure name = "control"&gt;
     &lt;structure name = "limit" type = "doubleLimit" /&gt;
     &lt;scalar name = "minStep" type = "double" /&gt;

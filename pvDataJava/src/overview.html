@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData<br />
 Overview<br />
-2009.02.19</h1>
+2009.02.24</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Introducti">Introduction</a></li>
-  <li><a href="#Interface">Interface Definitions</a>
+  <li><a href="#Interface">Interface Definitions</a> 
     <ul>
       <li><a href="#Types">Types</a></li>
       <li><a href="#Introspect">Introspection Interfaces</a></li>
@@ -25,7 +25,7 @@ CONTENTS
       <li><a href="#PVData">PVData Conversion</a></li>
     </ul>
   </li>
-  <li><a href="#Package">Package Summary</a>
+  <li><a href="#Package">Package Summary</a> 
     <ul>
       <li><a href="#L239">{@link org.epics.pvData.pv}</a></li>
       <li><a href="#L243">{@link org.epics.pvData.factory}</a></li>
@@ -35,7 +35,7 @@ CONTENTS
       <li><a href="#L291">{@link org.epics.pvData.test}</a></li>
     </ul>
   </li>
-  <li><a href="#Unresolved">Unresolved Issues</a>
+  <li><a href="#Unresolved">Unresolved Issues</a> 
     <ul>
       <li><a href="#Property">Property</a></li>
       <li><a href="#Attribute">Attribute</a></li>
@@ -66,18 +66,18 @@ store, access, and transmit memory resident structured data.</p>
       Network, Client, and Server. It is used by the JavaIOC.</dd>
   <dt>efficient</dt>
     <dd>Small memory footprint, low cpu overhead, and concise code base.</dd>
-  <dt>store data</dt>
+  <dt>data storage</dt>
     <dd>PVData defines separate introspection and data interfaces. The
       introspection interfaces provide access to immutable objects, which
       allows introspection instances to be freely shared. The introspection
       interface for a process variable can be accessed without requiring
       access to the data.</dd>
-  <dt>access data</dt>
+  <dt>data access</dt>
     <dd>Client code can access PVData via the introspection and data
       interfaces. For "well known" data, e.g. timeStamp, specialized
       interfaces can be provided without requiring any changes to the core
       software.</dd>
-  <dt>transmit data</dt>
+  <dt>data transfer</dt>
     <dd>The separation of introspection and data interfaces allows for
       efficient network data transfer. At connection time introspection
       information can be passed from server to client. Each side can create a
@@ -271,7 +271,7 @@ put method. For example:</p>
 has a get and put method. For example: </p>
 <pre>public class DoubleArrayData {
     public double[] data;
-     public int offset;
+    public int offset;
 }
 
 public interface PVDoubleArray extends PVArray{
@@ -415,14 +415,15 @@ also be useful to software that uses PVData.</p>
 <h3 id="Property">Property</h3>
 
 <p>How should properties be associated with a field? Package
-org.epics.pvData.property shows one way of assigning properties. Is this what
-is desired? No matter what a property should end up producing a PVField
-interface.</p>
+org.epics.pvData.property implements a simple way to define properties. Only
+a field named value has associated properties. The properties are all the
+other fields in the same structure as the value field. The field name is also
+the property name. A record can have multiple value fields.</p>
 
 <h3 id="Attribute">Attribute</h3>
 
 <p>Do we also want attributes for a field? Are both property and attribute
-desirable?</p>
+desirable? Why?</p>
 
 <h3 id="Remote">Remote Procedure Call</h3>
 
