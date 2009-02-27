@@ -32,7 +32,7 @@ public class AccessTest extends TestCase {
     public static void testAccess() {
         Requester iocRequester = new RequesterForTesting("accessTest");
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counter.xml", iocRequester);
         
 //        PVStructure pvStructure = master.findStructure("scan");
 //        System.out.println(pvStructure.toString());
@@ -124,7 +124,7 @@ public class AccessTest extends TestCase {
             System.out.printf("record %s not found%n",recordName);
             return;
         }
-        PVField pvField = pvProperty.findProperty(pvRecord, fieldName);
+        PVField pvField = pvRecord.getSubField(fieldName);
         if(pvField==null) {
             System.out.printf("field %s of record %s not found%n",fieldName,recordName);
             return;

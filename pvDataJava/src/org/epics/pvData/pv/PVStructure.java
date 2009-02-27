@@ -24,6 +24,7 @@ public interface PVStructure extends PVField {
     PVField[] getPVFields();
     /**
      * Get the PVField subfield with name fieldName.
+     * The fieldName is of the form name.name...
      * @param fieldName The fieldName.
      * @return The PVField or null if the subfield does not exist.
      */

@@ -16,13 +16,13 @@ CONTENTS
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Process">Process Variable Reflection</a>
+  <li><a href="#Process">Process Variable Reflection</a> 
     <ul>
       <li><a href="#Type">Type</a></li>
       <li><a href="#Reflection">Reflection</a></li>
     </ul>
   </li>
-  <li><a href="#PVField">PVField - Data Interfaces</a>
+  <li><a href="#PVField">PVField - Data Interfaces</a> 
     <ul>
       <li><a href="#PVField1">PVField</a></li>
       <li><a href="#Requester">Requester</a></li>
@@ -31,7 +31,7 @@ CONTENTS
       <li><a href="#PVScalar">PVScalar and extensions</a></li>
       <li><a href="#Primitive">Primitive PVField types</a></li>
       <li><a href="#PVString">PVString</a></li>
-      <li><a href="#PVArray">PVArray and Extensions</a>
+      <li><a href="#PVArray">PVArray and Extensions</a> 
         <ul>
           <li><a href="#PVArray1">PVArray</a></li>
           <li><a href="#PVArray2">PVArray Extensions</a></li>
@@ -39,7 +39,7 @@ CONTENTS
         </ul>
       </li>
       <li><a href="#PVStructur">PVStructure</a></li>
-      <li><a href="#PVRecord">PVRecord</a>
+      <li><a href="#PVRecord">PVRecord</a> 
         <ul>
           <li><a href="#Record">Record Locking</a></li>
         </ul>
@@ -49,7 +49,7 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Convert">Convert</a></li>
-  <li><a href="#Examples">Examples</a>
+  <li><a href="#Examples">Examples</a> 
     <ul>
       <li><a href="#Accessing">Accessing PVData</a></li>
       <li><a href="#Creating">Creating PVData</a></li>
@@ -281,12 +281,10 @@ PVRecord provides methods to register message requesters.</p>
         <li>getRequesterName<br />
           This is the full field name concatenated to the record name.</li>
         <li>message<br />
-
-          <p>For the default implementation, PVField prepends the full field
+          For the default implementation, PVField prepends the full field
           name to the message and calls PVRecord.message. The default
           implementation for PVRecord either displays the message on stdout
-          or stderr or gives the message to message requsters.</p>
-        </li>
+          or stderr or gives the message to message requsters.</li>
       </ul>
     </dd>
 </dl>
@@ -606,7 +604,8 @@ following reads an entire array:</p>
       different field names.</dd>
   <dt>getSubField</dt>
     <dd>Get a subField of a field. For a PVStructure a non-null result is
-      returned if fieldName is a field of the PVStructure.</dd>
+      returned if fieldName is a field of the PVStructure. The fieldName can
+      be of the form name.name...</dd>
   <dt>replacePVField</dt>
     <dd>Replace a subfield of a PVStructure.</dd>
   <dt>appendPVField</dt>
@@ -618,7 +617,7 @@ following reads an entire array:</p>
     <dd>Look for fieldName. If found and it has the correct type return the
       interface. This and the following methods are convenience methods that
       allow a user to get the interface to a subfield without requiring
-      introspection.</dd>
+      introspection. fieldName can be of the form name.name...</dd>
   <dt>getByteField</dt>
     <dd>Look for fieldName. If found and it has the correct type return the
       interface.</dd>

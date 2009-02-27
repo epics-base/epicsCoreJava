@@ -10,8 +10,6 @@ import junit.framework.TestCase;
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
 import org.epics.pvData.factory.PVReplaceFactory;
-import org.epics.pvData.property.PVProperty;
-import org.epics.pvData.property.PVPropertyFactory;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
@@ -31,7 +29,6 @@ import org.epics.pvData.xml.XMLToPVDatabaseFactory;
  *
  */
 public class ListenerTest extends TestCase {
-    private static PVProperty pvProperty = PVPropertyFactory.getPVProperty();
     private static PVDatabase master = PVDatabaseFactory.getMaster();
     private static Convert convert = ConvertFactory.getConvert();
     /**
@@ -40,7 +37,7 @@ public class ListenerTest extends TestCase {
     public static void testListener() {
         Requester iocRequester = new RequesterForTesting("accessTest");
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counter.xml", iocRequester);
         
               
 //        System.out.printf("%n%nstructures");
@@ -113,7 +110,7 @@ public class ListenerTest extends TestCase {
             System.out.printf("%nrecord %s not found%n",recordName);
             return;
         }
-        PVField pvField = pvProperty.findProperty(pvRecord, fieldName);
+        PVField pvField = pvRecord.getSubField(fieldName);
         if(pvField==null){
             System.out.printf("%nfield %s not in record %s%n",fieldName,recordName);
             return;
