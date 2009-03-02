@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvData.misc;
@@ -39,6 +39,12 @@ public class ExecutorFactory {
         public void execute(Runnable command) {
             thread.add(command);
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.misc.Executor#stop()
+         */
+        public void stop() {
+            thread.stop();
+        }
     }
     
     static private ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
@@ -47,6 +53,7 @@ public class ExecutorFactory {
         private List<Runnable> runList = new ArrayList<Runnable>();
         private ReentrantLock lock = new ReentrantLock();
         private Condition moreWork = lock.newCondition();
+        private boolean alive = true;
 
         private ThreadInstance(String name,int priority) {
             threadCreate.create(name, priority, this);
@@ -57,7 +64,7 @@ public class ExecutorFactory {
         public void run(ThreadReady threadReady) {
             boolean firstTime = true;
             try {
-                while(true) {
+                while(alive) {
                     Runnable runnable = null;
                     lock.lock();
                     try {
@@ -65,10 +72,10 @@ public class ExecutorFactory {
                             firstTime = false;
                             threadReady.ready();
                         }
-                        while(runList.isEmpty()) {
+                        while(alive && runList.isEmpty()) {
                             moreWork.await();
                         }
-                        runnable = runList.remove(0);
+                        if(!runList.isEmpty()) runnable = runList.remove(0);
                     }finally {
                         lock.unlock();
                     }
@@ -84,10 +91,21 @@ public class ExecutorFactory {
         private void add(Runnable runnable) {
             lock.lock();
             try {
-                if(runList.contains(runnable)) return;
+                if(!alive || runList.contains(runnable)) return;
                 boolean isEmpty = runList.isEmpty();
                 runList.add(runnable);
                 if(isEmpty) moreWork.signal();
+                return;
+            } finally {
+                lock.unlock();
+            }
+        }
+        
+        private void stop() {
+            lock.lock();
+            try {
+                alive = false;
+                moreWork.signal();
                 return;
             } finally {
                 lock.unlock();
