@@ -6,13 +6,15 @@
 package org.epics.pvData.misc;
 
 /**
- * Interface implemented by ThreadCreate
+ * Time a function call.
  * @author mrk
  *
  */
-public interface ThreadReady {
+public interface TimeFunction {
     /**
-     * Called by RunnableReady.run when it is ready.
+     * Time the call.
+     * TimeFunctionRequester.function is called repeatedly and the average time per call is calculated.
+     * @return The average number of seconds the function call required.
      */
-    void ready();
+    double timeCall();
 }
