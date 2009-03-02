@@ -10,26 +10,27 @@
 <body>
 <h1 style="text-align: center">EPICS PVData : misc<br />
 package: org.epics.pvData.misc<br />
-2009.02.24</h1>
+2009.03.02</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
   <li><a href="#Enumeratio">Enumeration</a></li>
-  <li><a href="#Message">Message Support</a> 
+  <li><a href="#Message">Message Support</a>
     <ul>
       <li><a href="#Definition">Definitions</a></li>
       <li><a href="#MessageQue">MessageQueue</a></li>
     </ul>
   </li>
-  <li><a href="#Thread">Thread Support</a> 
+  <li><a href="#Thread">Thread Support</a>
     <ul>
       <li><a href="#ThreadPrio">ThreadPriority</a></li>
       <li><a href="#ThreadCrea">ThreadCreate</a></li>
       <li><a href="#Executor">Executor</a></li>
     </ul>
   </li>
+  <li><a href="#Time">Time Function Call</a></li>
 </ul>
 </div>
 <hr />
@@ -46,6 +47,8 @@ CONTENTS
     <dd>Support for queuing messages to give to requesters.</dd>
   <dt>Thread Support</dt>
     <dd>ThreadCreate and Executor</dd>
+  <dt>TimeFunction</dt>
+    <dd>Time how long a function call requiresd.</dd>
 </dl>
 <hr />
 
@@ -213,7 +216,6 @@ higher priority threads.</p>
         highest;
         
         public static final int[] javaPriority;
-    
         public int getJavaPriority();
         public static int getJavaPriority(ThreadPriority threadPriority);
     }</pre>
@@ -245,16 +247,47 @@ higher priority threads.</p>
 </ol>
 
 <h3 id="Executor">Executor</h3>
-<pre>    public interface Executor {
-        void execute(Runnable command);
-    }
-    public class ExecutorFactory {
-        static public Executor create(String name,ScanPriority priority);
-    }</pre>
 
 <p>An Executor is a thread that can execute any object that implements the
 Java Runnable interface. The user can request that a single command be
 executed. If the command is already in the list of commands to be executed it
-is NOT added to the list.</p>
+is NOT added to the list when add is called.</p>
+<pre>    public interface Executor {
+        void execute(Runnable command);
+        void stop();
+    }
+    public class ExecutorFactory {
+        static public Executor create(String name,ScanPriority priority);
+    }</pre>
+where 
+<dl>
+  <dt>execute</dt>
+    <dd>Request that command be executed. If it is already on the run list
+      nothing is done.</dd>
+  <dt>stop</dt>
+    <dd>Stop the thread an refuse additional execute requests.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center;" id="Time">Time Function Call</h2>
+<hr />
+
+<p>TimeFunction is a facility that measures the average number of seconds a
+function call requires. When timeCall is called, it calls function in a loop.
+It starts with a loop of one iteration. If the total elapsed time is less
+then .1 seconds it increases the number of iterrations by a factor of 10. It
+keeps repeating until the elapsed time is greater than .1 seconds. It returns
+the average number of seconds per call.</p>
+<pre>    public interface TimeFunctionRequester {
+        void function();
+    }
+
+    public interface TimeFunction {
+        double timeCall();
+    }
+
+    public class TimeFunctionFactory {
+        public static TimeFunction create(TimeFunctionRequester requester);
+    }</pre>
 </body>
 </html>

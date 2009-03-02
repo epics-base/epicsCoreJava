@@ -6,19 +6,15 @@
 package org.epics.pvData.test;
 
 import junit.framework.TestCase;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.pv.Convert;
-import org.epics.pvData.pv.Field;
-import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.PVDataCreate;
-import org.epics.pvData.pv.PVDoubleArray;
-import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVLongArray;
-import org.epics.pvData.pv.PVRecord;
-import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.*;
+
+import org.epics.pvData.misc.*;
 
 /**
  * JUnit test for pvAccess.
@@ -49,46 +45,135 @@ public class PerformTest extends TestCase {
         for(int i=0; i<arraySize; i++) data[i] = i;
         int nput = from.put(0,data.length,data,0);
         assertEquals(nput,arraySize);
-        long startTime,endTime;
-        int ntimes = 10000;
-        double perArray, perElement;
-        startTime = System.nanoTime();
-        for(int i=0; i<ntimes; i++) {
-            System.arraycopy(data,0,toData,0,arraySize);
-        }
-        endTime = System.nanoTime();
-        perArray = (double)(endTime - startTime)/(double)ntimes/1000.0;
-        perElement = perArray/(double)arraySize;
-        System.out.printf("data to toData perArray %f perElement %f microseconds%n",perArray,perElement);
-        startTime = System.nanoTime();
-        for(int i=0; i<ntimes; i++) {
-            convert.copyArray(from,0,to,0,arraySize);
-        }
-        endTime = System.nanoTime();
-        perArray = (double)(endTime - startTime)/(double)ntimes/1000.0;
-        perElement = perArray/(double)arraySize;
-        System.out.printf("double to double perArray %f perElement %f microseconds%n",perArray,perElement);
-        startTime = System.nanoTime();
-        for(int i=0; i<ntimes; i++) {
-            convert.copyArray(from,0,toLong,0,arraySize);
-        }
-        endTime = System.nanoTime();
-        perArray = (double)(endTime - startTime)/(double)ntimes/1000.0;
-        perElement = perArray/(double)arraySize;
-        System.out.printf("double to long perArray %f perElement %f microseconds%n",perArray,perElement);
+        convert.copyArray(from, 0, to, 0, from.getLength());
+        convert.copyArray(from, 0, toLong, 0, from.getLength());
+        System.out.printf("%narray copy%n");
+        ArrayCopy dataToData = new ArrayCopy(data,toData);
+        TimeFunction timeFunction = TimeFunctionFactory.create(dataToData);
+        double perCall = timeFunction.timeCall();
+        System.out.printf("arrayCopy seconds per call %e per element %e%n",perCall,perCall/arraySize);
+        ConvertCopy convertCopy = new ConvertCopy(from,to);
+        timeFunction = TimeFunctionFactory.create(convertCopy);
+        perCall = timeFunction.timeCall();
+        System.out.printf("convertCopy double to double seconds per call %e per element %e%n",perCall,perCall/arraySize);
+        
+        convertCopy = new ConvertCopy(from,toLong);
+        timeFunction = TimeFunctionFactory.create(convertCopy);
+        perCall = timeFunction.timeCall();
+        System.out.printf("convertCopy double to long seconds per call %e per element %e%n",perCall,perCall/arraySize);
     }
     
-    public static void testCurentTime() {
-        long startTime,endTime;
-        int ntimes = 10000;
-        startTime = System.nanoTime();
-        for(int i=0; i<ntimes; i++) {
-            System.currentTimeMillis();
+    private static class ArrayCopy implements TimeFunctionRequester {
+        
+        private ArrayCopy(double[] data ,double[] toData) {
+            this.data = data;
+            this.toData = toData;
         }
-        endTime = System.nanoTime();
-        double perCall = (double)(endTime - startTime)/(double)ntimes/1000.0;
-        System.out.printf("currentTimeMillis %f microseconds%n",perCall);
+
+        /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {
+            System.arraycopy(data,0,toData,0,data.length);
+        }
+        
+        private double[] data;
+        private double[] toData;
+        
+    }
+    
+    private static class ConvertCopy implements TimeFunctionRequester {
+        
+        private ConvertCopy(PVArray from ,PVArray to) {
+            this.from = from;
+            this.to = to;
+        }
+
+        /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {
+            convert.copyArray(from,0,to,0,from.getLength());
+        }
+        
+        private PVArray from;
+        private PVArray to;;
+        
+    }
+    
+    public static void testCurrentTime() {
+        System.out.printf("%nSystem.currentTimeMillis%n");
+        CurrentTimeFunction currentTimeFunction = new CurrentTimeFunction();
+        TimeFunction timeFunction = TimeFunctionFactory.create(currentTimeFunction);
+        double perCall = timeFunction.timeCall();
+        System.out.printf("currentTime seconds per call %e%n",perCall);
+    }
+    
+    
+    private static class CurrentTimeFunction implements TimeFunctionRequester {
+        
+        private CurrentTimeFunction() {}
+
+        /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {
+            value = System.currentTimeMillis();
+        }
+        
+        private volatile long value = 0;
+        
     }
 
+    public static void testThreadSwitch() {
+        System.out.printf("%nthreadSwitch%n");
+        Executor executor = ExecutorFactory.create("testThreadSwitch", ThreadPriority.higher);
+        ThreadSwitchFunction threadSwitchFunction = new ThreadSwitchFunction(executor);
+        TimeFunction timeFunction = TimeFunctionFactory.create(threadSwitchFunction);
+        double perCall = timeFunction.timeCall();
+        System.out.printf("threadSwitch seconds per call %e%n",perCall);
+        executor.stop();
+        
+    }
+    
+    private static class ThreadSwitchFunction implements TimeFunctionRequester,Runnable {
+        
+        private ThreadSwitchFunction(Executor executor) {
+            this.executor = executor;
+        }
+
+        /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {
+            isWaiting = true;
+            executor.execute(this);
+            lock.lock();
+            try {
+                if(isWaiting) wakeUp.await();
+            } catch(InterruptedException e) {
+            } finally {
+                lock.unlock();
+            } 
+        }
+            
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        public void run() {
+            lock.lock();
+            try {
+                isWaiting = false;
+                wakeUp.signal();
+            } finally {
+                lock.unlock();
+            }
+            
+        }
+        private ReentrantLock lock = new ReentrantLock();
+        private Condition wakeUp = lock.newCondition();
+        private Executor executor;
+        private boolean isWaiting = false;
+    }
 }
 
