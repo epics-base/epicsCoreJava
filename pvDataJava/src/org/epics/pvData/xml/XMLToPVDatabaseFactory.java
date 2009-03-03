@@ -369,7 +369,22 @@ public class XMLToPVDatabaseFactory {
                 }
                 pvStructure = pvDatabase.findStructure(fieldName);
                 if(pvStructure==null) {
-                    pvStructure = pvDataCreate.createPVStructure(null,fieldName, new Field[0]);
+                    PVStructure pvType = null;
+                    String typeName = attributes.get("type");
+                    if(typeName!=null && typeName.length()<=0) typeName = null;
+                    if(typeName!=null) {
+                        pvType = pvDatabase.findStructure(typeName);
+                        if(pvType==null) {
+                            iocxmlReader.message(
+                                    "type " + typeName + " not a known structure",
+                                    MessageType.warning);
+                        }
+                    }
+                    if(pvType!=null) {
+                        pvStructure = pvDataCreate.createPVStructure(null, fieldName, pvType);
+                    } else {
+                        pvStructure = pvDataCreate.createPVStructure(null,fieldName, new Field[0]);
+                    }
                 }
             } else {// field of existing structure
                 structureStack.push(structureState);
