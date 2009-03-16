@@ -32,7 +32,7 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
     private List<Requester> requesterList = new ArrayList<Requester>();
     private LinkedList<PVListener> pvListenerList = new LinkedList<PVListener>();
     private ReentrantLock lock = new ReentrantLock();
-    private static int numberRecords = 0;
+    private static volatile int numberRecords = 0;
     private int id = numberRecords++;
     /**
      * Constructor.
