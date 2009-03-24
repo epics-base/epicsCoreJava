@@ -88,12 +88,6 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
         return len;       
     }
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-	 */
-	public int getSerializationSize() {
-		return getSerializedSizeSize(length) + length;
-	}
-	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
 	 */
 	public void serialize(ByteBuffer buffer) {

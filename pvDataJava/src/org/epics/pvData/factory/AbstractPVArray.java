@@ -102,17 +102,6 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     		buffer.put((byte)-2).putInt(s);	// (byte)-2 + size
     }
     /**
-     * Ger serialized array size size.
-     * @param s size to encode.
-     * @return size of serialized size.
-     */
-    public final static int getSerializedSizeSize(final int s) {
-    	if (s < 254)
-    		return 1;	// (byte)size
-    	else
-    		return 5;	// (byte)-1 + (int)size
-    }
-    /**
      * Deserializa array size.
      * @param buffer deserialization buffer.
      * @return array size.
@@ -131,20 +120,6 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     	else
     		return (int)(b < 0 ? b + 256 : b);
     }
-   
-    
-	/**
-	 * String serializaton helper method.
-	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-	 */
-	public final static int getStringSerializationSize(final String value) {
-		if (value == null)
-			return getSerializedSizeSize(-1);
-		else {
-			final int len = value.length();
-			return getSerializedSizeSize(len) + len;
-		}
-	}
 	/**
 	 * String serializaton helper method.
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
@@ -171,20 +146,4 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 		else
 			return null;
 	}
-    
-    /**
-     * Get size of serialized standard array header.
-     * @return
-     *
-	public final int getSerializedArrayHeaderSize() {
-		return 0;
-	}
-
-	/**
-     * Serialize standard array header.
-     * @param buffer
-     *
-	public final void serializeArrayHeader(ByteBuffer buffer) {
-	}*/
-
 }
