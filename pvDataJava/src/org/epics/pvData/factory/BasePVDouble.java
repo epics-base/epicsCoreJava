@@ -54,12 +54,6 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
         + super.toString(indentLevel);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-     */
-    public int getSerializationSize() {
-        return 8;
-    }
-    /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
      */
     public void serialize(ByteBuffer buffer) {
