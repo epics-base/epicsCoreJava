@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.factory;
 
-import java.nio.ByteBuffer;
-
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Type;
@@ -54,40 +52,32 @@ public class BaseArray extends BaseField implements Array {
         return builder.toString();
     }
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+	 * @see java.lang.Object#hashCode()
 	 */
-	public int getSerializationSize() {
-		return 1 + AbstractPVArray.getStringSerializationSize(getFieldName());
-	}
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-	 */
-	public void serialize(ByteBuffer buffer) {
-		buffer.put((byte)elementType.ordinal());
-		AbstractPVArray.serializeString(getFieldName(), buffer);
-	}
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-	 */
-	public void deserialize(ByteBuffer buffer) {
-		elementType = ScalarType.values()[buffer.get()];
-		fieldName = AbstractPVArray.deserializeString(buffer);
+	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = super.hashCode();
+		result = PRIME * result + ((elementType == null) ? 0 : elementType.hashCode());
+		return result;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof BaseArray) {
-			BaseArray b = (BaseArray)obj;
-			if (b.getElementType() != getElementType())
-				return false;
-			if (getFieldName() == null)
-				return b.getFieldName() == null;
-			else
-				return getFieldName().equals(b.getFieldName());
-		}
-		else
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
 			return false;
-	}	
+		if (getClass() != obj.getClass())
+			return false;
+		final BaseArray other = (BaseArray) obj;
+		if (elementType == null) {
+			if (other.elementType != null)
+				return false;
+		} else if (!elementType.equals(other.elementType))
+			return false;
+		return true;
+	}
 }
