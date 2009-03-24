@@ -23,12 +23,6 @@ public interface Serializable {
 	void serialize(ByteBuffer buffer);
 	
     /**
-     * Return size (in bytes) required to serialize this instance.
-     * @return size (in bytes).
-     */
-    int getSerializationSize();
-
-    /**
      * Deserialize buffer.
 	 * @param buffer serialization buffer.
 	 */

@@ -181,23 +181,18 @@ public class EnumeratedFactory {
                 + super.toString(indentLevel);
             }
 			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-			 */
-			public int getSerializationSize() {
-				throw new UnsupportedOperationException("not supported");
-			}
-			/* (non-Javadoc)
 			 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
 			 */
 			public void serialize(ByteBuffer buffer) {
-				throw new UnsupportedOperationException("not supported");
+		        buffer.putInt(index);
 			}
 			/* (non-Javadoc)
 			 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
 			 */
 			public void deserialize(ByteBuffer buffer) {
-				throw new UnsupportedOperationException("not supported");
+		        index = buffer.getInt();
 			}
+			// TODO equals
         }
 
         private class Choice extends AbstractPVScalar implements PVString {
@@ -246,24 +241,19 @@ public class EnumeratedFactory {
                 return convert.getString(this, indentLevel)
                 + super.toString(indentLevel);
             }
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-			 */
-			public int getSerializationSize() {
-				throw new UnsupportedOperationException("not supported");
-			}
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-			 */
-			public void serialize(ByteBuffer buffer) {
-				throw new UnsupportedOperationException("not supported");
-			}
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-			 */
-			public void deserialize(ByteBuffer buffer) {
-				throw new UnsupportedOperationException("not supported");
-			}
+            /* (non-Javadoc)
+             * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+             */
+            public void serialize(ByteBuffer buffer) {
+                AbstractPVArray.serializeString(get(), buffer);
+            }
+            /* (non-Javadoc)
+             * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+             */
+            public void deserialize(ByteBuffer buffer) {
+                put(AbstractPVArray.deserializeString(buffer));
+            }
+            // TODO equals
         }
 
         private class Choices extends AbstractPVArray implements PVStringArray
@@ -332,24 +322,32 @@ public class EnumeratedFactory {
                 }
                 return len;      
             }
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-			 */
-			public int getSerializationSize() {
-				throw new UnsupportedOperationException("not supported");
-			}
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-			 */
-			public void serialize(ByteBuffer buffer) {
-				throw new UnsupportedOperationException("not supported");
-			}
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-			 */
-			public void deserialize(ByteBuffer buffer) {
-				throw new UnsupportedOperationException("not supported");
-			}
+        	/* (non-Javadoc)
+        	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+        	 */
+        	public void serialize(ByteBuffer buffer) {
+        		writeSize(length, buffer);
+        		for (int i = 0; i < length; i++)
+        			serializeString(choices[i], buffer);
+        	}
+        	/* (non-Javadoc)
+        	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+        	 */
+        	public void deserialize(ByteBuffer buffer) {
+        		final int size = readSize(buffer);
+        		if (size >= 0) {
+        			// prepare array, if necessary
+        			if (size > capacity)
+        				setCapacity(size);
+        			// retrieve value from the buffer
+        			for (int i = 0; i < size; i++)
+        				choices[i] = deserializeString(buffer);
+        			// set new length
+        			length = size;
+        		}
+        		// TODO null arrays (size == -1) not supported
+        	}
+        	// TODO equals
         }
     }
 

@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 
 import junit.framework.TestCase;
 
-import org.epics.pvData.factory.BaseStructure;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.pv.Array;
@@ -62,12 +61,8 @@ public class SerializationTest extends TestCase {
 	private void serializatioTest(PVField field)
 	{
 		// serialize
-		int reportedSize = field.getSerializationSize();
-		ByteBuffer buffer = ByteBuffer.allocate(reportedSize);
+		ByteBuffer buffer = ByteBuffer.allocate(1 << 16);
 		field.serialize(buffer);
-		
-		// check size
-		assertEquals(reportedSize, buffer.position());
 		
 		// deserialize
 		buffer.flip();
@@ -332,13 +327,11 @@ public class SerializationTest extends TestCase {
 	
 	private void serializatioTest(Field field)
 	{
+		// not implemented... since it is to specific
+		/*
 		// serialize
-		int reportedSize = field.getSerializationSize();
-		ByteBuffer buffer = ByteBuffer.allocate(reportedSize);
+		ByteBuffer buffer = ByteBuffer.allocate(1 << 12);
 		field.serialize(buffer);
-		
-		// check size
-		assertEquals(reportedSize, buffer.position());
 		
 		// deserialize
 		buffer.flip();
@@ -347,6 +340,7 @@ public class SerializationTest extends TestCase {
 	
 		// must equal
 		assertEquals(field.getFieldName(), field, deserializedField);
+		*/
 	}
 	
 }
