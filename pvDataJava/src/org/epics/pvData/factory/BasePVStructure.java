@@ -402,15 +402,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         return builder.toString();
     }
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-	 */
-	public int getSerializationSize() {
-		int size = 0;
-		for (int i = 0; i < pvFields.length; i++)
-        	size += pvFields[i].getSerializationSize();
-        return size;
-	}
-	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
 	 */
 	public void serialize(ByteBuffer buffer) {

@@ -88,12 +88,6 @@ public class BasePVLongArray extends AbstractPVArray implements PVLongArray
         return len;    
     }
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-	 */
-	public int getSerializationSize() {
-		return getSerializedSizeSize(length) + 8 * length;
-	}
-	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
 	 */
 	public void serialize(ByteBuffer buffer) {

@@ -54,12 +54,6 @@ public class BasePVString extends AbstractPVScalar implements PVString
         + super.toString(indentLevel);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#getSerializationSize()
-     */
-    public int getSerializationSize() {
-        return AbstractPVArray.getStringSerializationSize(get());
-    }
-    /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
      */
     public void serialize(ByteBuffer buffer) {
