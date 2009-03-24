@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.factory;
 
-import java.nio.ByteBuffer;
-
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Type;
@@ -54,40 +52,32 @@ public class BaseScalar extends BaseField implements Scalar {
         return builder.toString();
     }
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+	 * @see java.lang.Object#hashCode()
 	 */
-	public int getSerializationSize() {
-		return 1 + AbstractPVArray.getStringSerializationSize(getFieldName());
-	}
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-	 */
-	public void serialize(ByteBuffer buffer) {
-		buffer.put((byte)scalarType.ordinal());
-		AbstractPVArray.serializeString(getFieldName(), buffer);
-	}
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-	 */
-	public void deserialize(ByteBuffer buffer) {
-		scalarType = ScalarType.values()[buffer.get()];
-		fieldName = AbstractPVArray.deserializeString(buffer);
+	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = super.hashCode();
+		result = PRIME * result + ((scalarType == null) ? 0 : scalarType.hashCode());
+		return result;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof BaseScalar) {
-			BaseScalar b = (BaseScalar)obj;
-			if (b.getScalarType() != getScalarType())
-				return false;
-			if (getFieldName() == null)
-				return b.getFieldName() == null;
-			else
-				return getFieldName().equals(b.getFieldName());
-		}
-		else
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
 			return false;
-	}	
+		if (getClass() != obj.getClass())
+			return false;
+		final BaseScalar other = (BaseScalar) obj;
+		if (scalarType == null) {
+			if (other.scalarType != null)
+				return false;
+		} else if (!scalarType.equals(other.scalarType))
+			return false;
+		return true;
+	}
 }
