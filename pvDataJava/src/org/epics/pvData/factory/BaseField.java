@@ -60,4 +60,40 @@ public abstract class BaseField implements Field
                 fieldName,type.toString()));
         return builder.toString();
     }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int PRIME = 31;
+		int result = 1;
+		result = PRIME * result + ((fieldName == null) ? 0 : fieldName.hashCode());
+		result = PRIME * result + ((type == null) ? 0 : type.hashCode());
+		return result;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		final BaseField other = (BaseField) obj;
+		if (fieldName == null) {
+			if (other.fieldName != null)
+				return false;
+		} else if (!fieldName.equals(other.fieldName))
+			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
+		return true;
+	}
+    
 }
