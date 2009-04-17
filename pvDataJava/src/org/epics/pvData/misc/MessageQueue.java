@@ -15,14 +15,6 @@ import org.epics.pvData.pv.MessageType;
  */
 public interface MessageQueue {
     /**
-     * Lock the message Queue.
-     */
-    void lock();
-    /**
-     * Unlock the message queue.
-     */
-    void unlock();
-    /**
      * Get the next message.
      * @return The next message or null if no messages.
      */
