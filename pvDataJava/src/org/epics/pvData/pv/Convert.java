@@ -57,25 +57,25 @@ public interface Convert {
      * The array element type must be a scalar.
      * @param pv The PV.
      * @param offset Starting element in a PV.
-     * @param len The number of elements to transfer.
+     * @param length The number of elements to transfer.
      * @param from The array of values to put into the PV.
      * @param fromOffset Starting element in the source array.
      * @return The number of elements converted.
      * @throws IllegalArgumentException if the element Type is not a scalar.
      * @throws NumberFormatException if the String does not have a valid value.
      */
-    int fromStringArray(PVArray pv, int offset, int len, String[]from, int fromOffset);
+    int fromStringArray(PVArray pv, int offset, int length, String[]from, int fromOffset);
     /**
      * Convert a <i>PV</i> array to a <i>String</i> array.
      * The <i>PV</i> array can have ant elementType.
      * @param pv The PV.
      * @param offset Starting element in the PV array.
-     * param len Number of elements to convert to the string array.
+     * param length Number of elements to convert to the string array.
      * @param to String array to receive the converted <i>PV</i> data.
      * @param toOffset Starting element in the string array.
      * @return Number of elements converted.
      */
-    int toStringArray(PVArray pv, int offset, int len, String[]to, int toOffset);
+    int toStringArray(PVArray pv, int offset, int length, String[]to, int toOffset);
     /**
      * Are <i>from</i> and <i>to</i> valid arguments to copyScalar.
      * <i>false</i> will be returned if either argument is not a scalar as defined by <i>Type.isScalar()</i>.
@@ -111,11 +111,11 @@ public interface Convert {
      * @param offset Starting element in the source.
      * @param to The destination array.
      * @param toOffset Starting element in the array.
-     * @param len Number of elements to transfer.
+     * @param length Number of elements to transfer.
      * @return Number of elements converted.
      * @throws IllegalArgumentException if the arguments are not compatible.
      */
-    int copyArray(PVArray from, int offset, PVArray to, int toOffset, int len);
+    int copyArray(PVArray from, int offset, PVArray to, int toOffset, int length);
     /**
      * Are from and to valid arguments for copyStructure.
      * They are only compatible if they have the same Structure description.
@@ -225,134 +225,134 @@ public interface Convert {
      * Convert a <i>PV</i> array to a <i>byte</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param to where to put the <i>PV</i> data
      * @param toOffset starting element in the array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int toByteArray(PVArray pv, int offset, int len, byte[]to, int toOffset);
+    int toByteArray(PVArray pv, int offset, int length, byte[]to, int toOffset);
     /**
      * Convert a <i>PV</i> array to a <i>short</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param to where to put the <i>PV</i> data
      * @param toOffset starting element in the array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int toShortArray(PVArray pv, int offset, int len, short[]to, int toOffset);
+    int toShortArray(PVArray pv, int offset, int length, short[]to, int toOffset);
     /**
      * Convert a <i>PV</i> array to an <i>int</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param to where to put the <i>PV</i> data
      * @param toOffset starting element in the array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int toIntArray(PVArray pv, int offset, int len, int[]to, int toOffset);
+    int toIntArray(PVArray pv, int offset, int length, int[]to, int toOffset);
     /**
      * Convert a <i>PV</i> array to a <i>long</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param to where to put the <i>PV</i> data
      * @param toOffset starting element in the array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int toLongArray(PVArray pv, int offset, int len, long[]to, int toOffset);
+    int toLongArray(PVArray pv, int offset, int length, long[]to, int toOffset);
     /**
      * Convert a <i>PV</i> array to a <i>float</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param to where to put the <i>PV</i> data
      * @param toOffset starting element in the array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int toFloatArray(PVArray pv, int offset, int len, float[]to, int toOffset);
+    int toFloatArray(PVArray pv, int offset, int length, float[]to, int toOffset);
     /**
      * Convert a <i>PV</i> array to a <i>double</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param to where to put the <i>PV</i> data
      * @param toOffset starting element in the array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int toDoubleArray(PVArray pv, int offset, int len, double[]to, int toOffset);
+    int toDoubleArray(PVArray pv, int offset, int length, double[]to, int toOffset);
     /**
      * Convert a <i>PV</i> array from a <i>byte</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param from value to put into PV
      * @param fromOffset
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int fromByteArray(PVArray pv, int offset, int len, byte[]from, int fromOffset);
+    int fromByteArray(PVArray pv, int offset, int length, byte[]from, int fromOffset);
     /**
      * Convert a <i>PV</i> array from a <i>short</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param from value to put into PV
      * @param fromOffset starting element in the source array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int fromShortArray(PVArray pv, int offset, int len, short[]from, int fromOffset);
+    int fromShortArray(PVArray pv, int offset, int length, short[]from, int fromOffset);
     /**
      * Convert a <i>PV</i> array from an <i>int</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param from value to put into PV
      * @param fromOffset starting element in the source array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int fromIntArray(PVArray pv, int offset, int len, int[]from, int fromOffset);
+    int fromIntArray(PVArray pv, int offset, int length, int[]from, int fromOffset);
     /**
      * Convert a <i>PV</i> array from a <i>long</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param from value to put into PV
      * @param fromOffset starting element in the source array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int fromLongArray(PVArray pv, int offset, int len, long[]from, int fromOffset);
+    int fromLongArray(PVArray pv, int offset, int length, long[]from, int fromOffset);
     /**
      * Convert a <i>PV</i> array from a <i>float</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param from value to put into PV
      * @param fromOffset starting element in the source array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int fromFloatArray(PVArray pv, int offset, int len, float[]from, int fromOffset);
+    int fromFloatArray(PVArray pv, int offset, int length, float[]from, int fromOffset);
     /**
      * Convert a <i>PV</i> array from a <i>double</i> array.
      * @param pv a PV
      * @param offset starting element in a PV
-     * @param len number of elements to transfer
+     * @param length number of elements to transfer
      * @param from value to put into PV
      * @param fromOffset starting element in the source array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
-    int fromDoubleArray(PVArray pv, int offset, int len, double[]from, int fromOffset);
+    int fromDoubleArray(PVArray pv, int offset, int length, double[]from, int fromOffset);
     /**
      * Convenience method for implementing toString.
      * It generates a newline and inserts blanks at the beginning of the newline.

@@ -17,27 +17,27 @@ public interface PVLongArray extends PVArray{
     /**
      * Get values from a <i>PVLongArray</i> and put them into <i>long[]to</i>.
      * @param offset The offset to the first element to get.
-     * @param len The maximum number of elements to transfer.
+     * @param length The maximum number of elements to transfer.
      * @param data The class containing the data and an offset into the data.
      * Get sets these values. The caller must do the actual data transfer.
      * @return The number of elements that can be transfered.
-     * This is always less than or equal to len.
+     * This is always less than or equal to length.
      * If the value is less then get should be called again.
      * If the return value is greater than 0 then data.data is
      * a reference to the array and data.offset is the offset into the
      * array.
      */
-    int get(int offset, int len, LongArrayData data);
+    int get(int offset, int length, LongArrayData data);
     /**
      * Put values into a <i>PVLongArray</i> from <i>long[]to</i>.
      * @param offset The offset to the first element to put.
-     * @param len The maximum number of elements to transfer.
+     * @param length The maximum number of elements to transfer.
      * @param from The array from which to get the data.
      * @param fromOffset The offset into from.
      * @return The number of elements transfered.
-     * This is always less than or equal to len.
+     * This is always less than or equal to length.
      * If the value is less then put should be called again.
      * @throws IllegalStateException if the field is not mutable.
      */
-    int put(int offset,int len, long[] from, int fromOffset);
+    int put(int offset,int length, long[] from, int fromOffset);
 }

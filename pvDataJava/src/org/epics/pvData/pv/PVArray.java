@@ -24,10 +24,10 @@ public interface PVArray extends PVField{
     int getLength();
     /**
      * Set the length of the array.
-     * @param len Set the length.
+     * @param length Set the length.
      * @throws IllegalStateException if the field is not mutable.
      */
-    void setLength(int len);
+    void setLength(int length);
     /**
      * Get the current capacity of the array,
      * i.e. the allocated number of elements.
@@ -36,10 +36,10 @@ public interface PVArray extends PVField{
     int getCapacity();
     /**
      * Set the capacity.
-     * @param len The new capacity for the array.
+     * @param length The new capacity for the array.
      * @throws IllegalStateException if the capacity can't be changed.
      */
-    void setCapacity(int len);
+    void setCapacity(int length);
     /**
      * Can the capacity be changed?
      * @return If it can be modified.
