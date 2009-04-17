@@ -15,6 +15,7 @@ import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.Executor;
 import org.epics.pvData.misc.ExecutorFactory;
+import org.epics.pvData.misc.ExecutorNode;
 import org.epics.pvData.misc.ThreadPriority;
 import org.epics.pvData.misc.TimeFunction;
 import org.epics.pvData.misc.TimeFunctionFactory;
@@ -154,6 +155,7 @@ public class PerformTest extends TestCase {
         
         private ThreadSwitchFunction(Executor executor) {
             this.executor = executor;
+            executorNode = executor.createNode(this);
         }
 
         /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
@@ -161,7 +163,7 @@ public class PerformTest extends TestCase {
          */
         public void function() {
             isWaiting = true;
-            executor.execute(this);
+            executor.execute(executorNode);
             lock.lock();
             try {
                 if(isWaiting) wakeUp.await();
@@ -187,6 +189,7 @@ public class PerformTest extends TestCase {
         private ReentrantLock lock = new ReentrantLock();
         private Condition wakeUp = lock.newCondition();
         private Executor executor;
+        private ExecutorNode executorNode;
         private boolean isWaiting = false;
     }
 }

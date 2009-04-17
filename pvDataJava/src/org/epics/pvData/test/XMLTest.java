@@ -29,10 +29,11 @@ public class XMLTest extends TestCase {
     	PVDatabase master = PVDatabaseFactory.getMaster();
         Requester iocRequester = new RequesterForTesting("xmlTest");
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counterDB.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counter.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/ai.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/powerSupply/powerSupplyDB.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/types/allTypes.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"test/types/allTypesStructure.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"test/types/allTypesRecords.xml", iocRequester);
         PVReplaceFactory.replace(master);
         PVRecord[] pvRecords = master.getRecords();
         PVStructure[] pvStructurtes = master.getStructures();
