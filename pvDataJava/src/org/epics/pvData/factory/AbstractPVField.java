@@ -126,7 +126,7 @@ public abstract class AbstractPVField implements PVField{
             System.out.println(
                     messageType.toString() + " " + fullFieldName + " " + message);
         } else {
-            record.message(fullFieldName + " " + message, messageType);
+            record.message(fullName + " " + message, messageType);
         }
     }
     /* (non-Javadoc)

@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2009.02.24</h1>
+2009.04.09</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Factory">Factory</a>
+  <li><a href="#Factory">Factory</a> 
     <ul>
       <li><a href="#PVDatabase">PVDatabaseFactory</a></li>
       <li><a href="#FieldFacto">FieldFactory</a></li>
@@ -26,20 +26,20 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Base">Base Introspection Classes</a></li>
-  <li><a href="#Abstract">Abstract and Base Classes for PVField</a>
+  <li><a href="#Abstract">Abstract and Base Classes for PVField</a> 
     <ul>
       <li><a href="#BasePVAuxI">BasePVAuxInfo</a></li>
       <li><a href="#AbstractPV">AbstractPVField</a></li>
     </ul>
   </li>
-  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRecord</a>
+  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRecord</a> 
     <ul>
       <li><a href="#AbstractPV1">AbstractPVScalar</a></li>
       <li><a href="#BasePVStru">BasePVStructure</a></li>
       <li><a href="#BasePVReco">BasePVRecord</a></li>
     </ul>
   </li>
-  <li><a href="#Classes1">Classes For PVScalar</a>
+  <li><a href="#Classes1">Classes For PVScalar</a> 
     <ul>
       <li><a href="#BasePVBool">BasePVBoolean</a></li>
       <li><a href="#BasePVByte">BasePVByte</a></li>
@@ -51,7 +51,7 @@ CONTENTS
       <li><a href="#BasePVStri">BasePVString</a></li>
     </ul>
   </li>
-  <li><a href="#Classes2">Classes for PVArray</a>
+  <li><a href="#Classes2">Classes for PVArray</a> 
     <ul>
       <li><a href="#AbstractPV2">AbstractPVArray</a></li>
       <li><a href="#BasePVBool1">BasePVBooleanArray</a></li>
@@ -82,12 +82,14 @@ defined in package org.epics.pvData.pv</p>
 <pre>    class PVDatabaseFactory {
         public static PVDatabase create(String name);
         public static PVDatabase getMaster();
+        public static PVDatabase getBeingInstalled();
     }</pre>
 
 <p>PVDatabaseFactory automatically creates the master database and also
 creates other databases. The reason for multiple databases is to support
-on-line add of new records. The new records can be added to a temporary
-database and only if they can be created and initialized, added to the master
+on-line add of new records. This feature is used by the javaIOC. The new
+records can be added to a temporary database named beiongInstalled. If this
+database can be created, initialized and started it is merged into the master
 database.</p>
 
 <h3 id="FieldFacto">FieldFactory</h3>

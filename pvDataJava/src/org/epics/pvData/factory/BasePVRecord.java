@@ -5,12 +5,11 @@
  */
 package org.epics.pvData.factory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.epics.pvData.misc.LinkedList;
+import org.epics.pvData.misc.LinkedListCreate;
+import org.epics.pvData.misc.LinkedListNode;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVListener;
@@ -28,9 +27,11 @@ import org.epics.pvData.pv.Type;
  *
  */
 public class BasePVRecord extends BasePVStructure implements PVRecord {
+    private static LinkedListCreate<Requester> requesterListCreate = new LinkedListCreate<Requester>();
+    private static LinkedListCreate<PVListener> pvListenerListCreate = new LinkedListCreate<PVListener>();
     private String recordName;
-    private List<Requester> requesterList = new ArrayList<Requester>();
-    private LinkedList<PVListener> pvListenerList = new LinkedList<PVListener>();
+    private LinkedList<Requester> requesterList = requesterListCreate.create();
+    private LinkedList<PVListener> pvListenerList = pvListenerListCreate.create();
     private ReentrantLock lock = new ReentrantLock();
     private static volatile int numberRecords = 0;
     private int id = numberRecords++;
@@ -62,24 +63,31 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      */
     public void message(String message, MessageType messageType) {
         if(message!=null && message.charAt(0)!='.') message = " " + message;
-        message = recordName + message;
-        for (Requester requester : requesterList) {
-            requester.message(message, messageType);
-        }
-        if(requesterList.size()==0) {
+        if(requesterList.isEmpty()) {
             System.out.println(messageType.toString() + " " + message);
+            return;
+        }
+        // no need to synchronize because record must be locked when this is called.
+        LinkedListNode<Requester> node = requesterList.getHead();
+        while(node!=null) {
+            Requester requester = node.getObject();
+            requester.message(message, messageType);
+            node = requesterList.getNext(node);
         }
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#addRequester(org.epics.pvData.pv.Requester)
      */
     public void addRequester(Requester requester) {
-        requesterList.add(requester);
+        LinkedListNode<Requester> node = requesterListCreate.createNode(requester);
+        // no need to synchronize because record must be locked when this is called.
+        requesterList.addTail(node);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#removeRequester(org.epics.pvData.pv.Requester)
      */
     public void removeRequester(Requester requester) {
+        // no need to synchronize because record must be locked when this is called.
         requesterList.remove(requester);
     }
     /* (non-Javadoc)
@@ -113,29 +121,32 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      * @see org.epics.pvData.pv.PVRecord#beginGroupPut()
      */
     public void beginGroupPut() {
-        Iterator<PVListener> iter;
-        iter = pvListenerList.iterator();
-        while(iter.hasNext()) {
-            PVListener pvListener = iter.next();
+        // no need to synchronize because record must be locked when this is called.
+        LinkedListNode<PVListener> node = pvListenerList.getHead();
+        while(node!=null) {
+            PVListener pvListener = node.getObject();
             pvListener.beginGroupPut(this);
+            node = pvListenerList.getNext(node);
         }
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#endGroupPut()
      */
     public void endGroupPut() {
-        Iterator<PVListener> iter;
-        iter = pvListenerList.iterator();
-        while(iter.hasNext()) {
-            PVListener pvListener = iter.next();
+     // no need to synchronize because record must be locked when this is called.
+        LinkedListNode<PVListener> node = pvListenerList.getHead();
+        while(node!=null) {
+            PVListener pvListener = node.getObject();
             pvListener.endGroupPut(this);
+            node = pvListenerList.getNext(node);
         }
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#registerListener(org.epics.pvData.pv.PVListener)
      */
     public void registerListener(PVListener recordListener) {
-        pvListenerList.add(recordListener);
+        LinkedListNode<PVListener> node = pvListenerListCreate.createNode(recordListener);
+        pvListenerList.addTail(node);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#unregisterListener(org.epics.pvData.pv.PVListener)
@@ -155,8 +166,11 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      * @see org.epics.pvData.factory.AbstractPVField#removeEveryListener()
      */
     public void removeEveryListener() {
-        for(PVListener pvListener : pvListenerList) pvListener.unlisten(this);
-        pvListenerList.clear();
+        LinkedListNode<PVListener> node = null;
+        while((node = pvListenerList.removeHead())!=null) {
+            PVListener pvListener = node.getObject();
+            pvListener.unlisten(this);
+        }
         PVStructure pvField = this;
         removeAll((BasePVStructure)pvField);
     }
