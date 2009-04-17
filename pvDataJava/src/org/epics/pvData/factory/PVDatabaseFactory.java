@@ -12,13 +12,17 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.epics.pvData.misc.Executor;
 import org.epics.pvData.misc.ExecutorFactory;
+import org.epics.pvData.misc.ExecutorNode;
+import org.epics.pvData.misc.LinkedList;
+import org.epics.pvData.misc.LinkedListArray;
+import org.epics.pvData.misc.LinkedListCreate;
+import org.epics.pvData.misc.LinkedListNode;
 import org.epics.pvData.misc.MessageNode;
 import org.epics.pvData.misc.MessageQueue;
 import org.epics.pvData.misc.MessageQueueFactory;
@@ -39,17 +43,6 @@ import org.epics.pvData.pv.Requester;
  *
  */
 public class PVDatabaseFactory {
-private static PVDataCreate pvDataCreate = null;
-    
-    private static Database master;
-    
-    static {
-        pvDataCreate = PVDataFactory.getPVDataCreate();
-        master = new Database("master");
-        PVStructure pvStructure = pvDataCreate.createPVStructure(null,"null", new Field[0]);
-        master.addStructure(pvStructure);
-    }
-    
     /**
      * Create a PVDatabase.
      * @param name Name for the database.
@@ -57,7 +50,12 @@ private static PVDataCreate pvDataCreate = null;
      */
     public static PVDatabase create(String name) {
         if(name.equals("master")) return master;
-        return new Database(name);
+        if(name.equals("beingInstalled") && beingInstalled!=null) {
+            throw new IllegalStateException("beingInstalled already present");
+        }
+        Database database = new Database(name);
+        if(name.equals("beingInstalled")) beingInstalled = database;
+        return database;
     }
     /**
      * Get the master database.
@@ -66,6 +64,25 @@ private static PVDataCreate pvDataCreate = null;
     public static PVDatabase getMaster() {
         return master;
     }
+    /**
+     * Get the beingInstalled database.
+     * @return The beingInstalled database or null if no database is currently being installed.
+     */
+    public static PVDatabase getBeingInstalled() {
+        return beingInstalled;
+    }
+    
+    private static PVDataCreate pvDataCreate = null;
+    private static Database master;
+    private static Database beingInstalled = null;
+    private static LinkedListCreate<Requester> linkedListCreate = new LinkedListCreate<Requester>();
+    
+    static {
+        pvDataCreate = PVDataFactory.getPVDataCreate();
+        master = new Database("master");
+        PVStructure pvStructure = pvDataCreate.createPVStructure(null,"null", new Field[0]);
+        master.addStructure(pvStructure);
+    }
     
     private static class Database implements PVDatabase,Runnable {
         private String name;
@@ -73,12 +90,13 @@ private static PVDataCreate pvDataCreate = null;
         private boolean isMaster = false;
         private LinkedHashMap<String,PVRecord> recordMap = new LinkedHashMap<String,PVRecord>();
         private ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
-        private ReentrantLock messageRequestListLock = new ReentrantLock();
-        private ArrayList<Requester> messageRequesterList = new ArrayList<Requester>();
+        private LinkedList<Requester> messageRequesterList = linkedListCreate.create();
+        private LinkedListArray<Requester> messageRequesterArray = linkedListCreate.createArray();
         // following are only used by master
         private static final int messageQueueSize = 300;
         private MessageQueue messageQueue = MessageQueueFactory.create(messageQueueSize);
         private Executor executor = null;
+        private ExecutorNode executorNode = null;
         
         private Database(String name) {
             this.name = name;
@@ -86,7 +104,14 @@ private static PVDataCreate pvDataCreate = null;
                 isMaster = true;
                 executor = ExecutorFactory.create(
                         "PVDatabaseMessage", ThreadPriority.lowest);
+                executorNode = executor.createNode(this);
             }
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.Requester#getRequesterName()
+         */
+        public String getRequesterName() {
+            return name;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDatabase#addRecord(org.epics.pvData.pv.PVRecord)
@@ -111,17 +136,6 @@ private static PVDataCreate pvDataCreate = null;
                 record.getPVRecord().addRequester(this);
             }
             return true;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVDatabase#addRequester(org.epics.pvData.pv.Requester)
-         */
-        public void addRequester(Requester requester) {
-            messageRequestListLock.lock();
-            try {
-                messageRequesterList.add(requester);
-            } finally {
-                messageRequestListLock.unlock();
-            }
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDatabase#addStructure(org.epics.pvData.pv.PVStructure)
@@ -216,6 +230,7 @@ private static PVDataCreate pvDataCreate = null;
                 master.merge(structureMap,recordMap);
                 structureMap.clear();
                 recordMap.clear();
+                if(name.equals("beingInstalled")) PVDatabaseFactory.beingInstalled = null;
             } finally {
                 rwLock.writeLock().unlock();
             }
@@ -241,51 +256,6 @@ private static PVDataCreate pvDataCreate = null;
                 }
             } finally {
                 rwLock.writeLock().unlock();
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVDatabase#message(java.lang.String, org.epics.pvData.pv.MessageType)
-         */
-        public void message(String message, MessageType messageType) {
-            if(!isMaster) {
-                messageRequestListLock.lock();
-                try {
-                    if(messageRequesterList.size()<=0) {
-                        PrintStream printStream;
-                        if(messageType==MessageType.info) {
-                            printStream = System.out;
-                        } else {
-                            printStream = System.err;
-                        }
-                        printStream.println(messageType.toString() + " " + message);
-                       
-                    } else {
-                        Iterator<Requester> iter = messageRequesterList.iterator();
-                        while(iter.hasNext()) {
-                            Requester requester = iter.next();
-                            requester.message(message, messageType);
-                        }
-                    }
-                } finally {
-                    messageRequestListLock.unlock();
-                }
-                return;
-            }
-            boolean execute = false;
-            messageQueue.lock();
-            try {
-                if(messageQueue.isEmpty()) execute = true;
-                if(messageQueue.isFull()) {
-                    messageQueue.replaceLast(message, messageType);
-                } else {
-                    messageQueue.put(message, messageType);
-                }
-            } finally {
-                messageQueue.unlock();
-            }
-            if(execute) {
-
-                executor.execute(this);
             }
         }
         /* (non-Javadoc)
@@ -363,17 +333,6 @@ private static PVDataCreate pvDataCreate = null;
             }
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVDatabase#removeRequester(org.epics.pvData.pv.Requester)
-         */
-        public void removeRequester(Requester requester) {
-            messageRequestListLock.lock();
-            try {
-                messageRequesterList.remove(requester);
-            } finally {
-                messageRequestListLock.unlock();
-            }
-        }
-        /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDatabase#removeStructure(org.epics.pvData.pv.PVStructure)
          */
         public boolean removeStructure(PVStructure structure) {
@@ -443,11 +402,76 @@ private static PVDataCreate pvDataCreate = null;
             }
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pv.Requester#getRequesterName()
+         * @see org.epics.pvData.pv.PVDatabase#addRequester(org.epics.pvData.pv.Requester)
          */
-        public String getRequesterName() {
-            return name;
+        public void addRequester(Requester requester) {
+            LinkedListNode<Requester> listNode = linkedListCreate.createNode(requester);
+            synchronized(messageRequesterList){
+                messageRequesterList.addTail(listNode);
+                messageRequesterArray.setNodes(messageRequesterList);
+            }
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDatabase#removeRequester(org.epics.pvData.pv.Requester)
+         */
+        public void removeRequester(Requester requester) {
+            synchronized(messageRequesterList){
+                LinkedListNode<Requester> listNode = messageRequesterList.getHead();
+                while(listNode!=null) {
+                    Requester req = (Requester)listNode.getObject();
+                    if(req==requester) {
+                        messageRequesterList.remove(listNode);
+                        messageRequesterArray.setNodes(messageRequesterList);
+                        return;
+                    }
+                    listNode = messageRequesterList.getNext(listNode);
+                }
+                return;
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDatabase#message(java.lang.String, org.epics.pvData.pv.MessageType)
+         */
+        public void message(String message, MessageType messageType) {
+            if(!isMaster) {
+                LinkedListNode<Requester>[] listNodes = null;
+                int length = 0;
+                synchronized(messageRequesterList) {
+                    listNodes = messageRequesterArray.getNodes();
+                    length = messageRequesterArray.getLength();
+                }
+                if(length<=0) {
+                    PrintStream printStream;
+                    if(messageType==MessageType.info) {
+                        printStream = System.out;
+                    } else {
+                        printStream = System.err;
+                    }
+                    printStream.println(messageType.toString() + " " + message);
+
+                } else {
+                    for(int i=0; i<length; i++) {
+                        LinkedListNode<Requester> listNode = listNodes[i];
+                        Requester requester = listNode.getObject();
+                        requester.message(message, messageType);
+                    }
+                }
+                return;
+            }
+            boolean execute = false;
+            synchronized(messageQueue) {
+                if(messageQueue.isEmpty()) execute = true;
+                if(messageQueue.isFull()) {
+                    messageQueue.replaceLast(message, messageType);
+                } else {
+                    messageQueue.put(message, messageType);
+                }
+            }
+            if(execute) {
+                executor.execute(executorNode);
+            }
+        }
+        
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
          */
@@ -456,45 +480,43 @@ private static PVDataCreate pvDataCreate = null;
                 String message = null;
                 MessageType messageType = null;
                 int numOverrun = 0;
-                messageQueue.lock();
-                try {
+                synchronized(messageQueue) {
                     MessageNode messageNode = messageQueue.get();
                     numOverrun = messageQueue.getClearOverrun();
                     if(messageNode==null) break;
                     message = messageNode.message;
                     messageType = messageNode.messageType;
                     messageNode.message = null;
-                } finally {
-                    messageQueue.unlock();
                 }
-                messageRequestListLock.lock();
-                try {
-                    
-                    if(messageRequesterList.size()<=0) {
-                        PrintStream printStream;
-                        if(messageType==MessageType.info) {
-                            printStream = System.out;
-                        } else {
-                            printStream = System.err;
-                        }
-                        if(numOverrun>0) {
-                            System.err.println(MessageType.error.toString() + " " + numOverrun + " dropped messages ");
-                        }
-                        if(message!=null) {
-                            printStream.println(messageType.toString() + " " + message);
-                        }
+                LinkedListNode<Requester>[] listNodes = null;
+                int length = 0;
+                synchronized(messageRequesterList) {
+                    listNodes = messageRequesterArray.getNodes();
+                    length = messageRequesterArray.getLength();
+                }
+                if(length<=0) {
+                    PrintStream printStream;
+                    if(messageType==MessageType.info) {
+                        printStream = System.out;
                     } else {
-                        Iterator<Requester> iter = messageRequesterList.iterator();
-                        while(iter.hasNext()) {
-                            Requester requester = iter.next();
-                            requester.message(message, messageType);
-                            if(numOverrun>0) {
-                                requester.message(numOverrun + " dropped messages",MessageType.error);
-                            }
+                        printStream = System.err;
+                    }
+                    if(numOverrun>0) {
+                        System.err.println(MessageType.error.toString() + " " + numOverrun + " dropped messages ");
+                    }
+                    if(message!=null) {
+                        printStream.println(messageType.toString() + " " + message);
+                    }
+
+                } else {
+                    for(int i=0; i<length; i++) {
+                        LinkedListNode<Requester> listNode = listNodes[i];
+                        Requester requester = listNode.getObject();
+                        requester.message(message, messageType);
+                        if(numOverrun>0) {
+                            requester.message(numOverrun + " dropped messages",MessageType.error);
                         }
                     }
-                } finally {
-                    messageRequestListLock.unlock();
                 }
             }
         }
