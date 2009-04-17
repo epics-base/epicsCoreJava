@@ -7,16 +7,22 @@ package org.epics.pvData.misc;
 
 /**
  * Schedule a command to be executed via a thread.
- * An IOCExecutor is created via IOCExecutorFactory.
+ * An Executor is created via ExecutorFactory.
  * @author mrk
  *
  */
 public interface Executor {
     /**
-     * Execute a command via a thread.
-     * @param command The interface for the command.
+     * Create a node that can be passed to execute.
+     * @param command
+     * @return Interface.
      */
-    void execute(Runnable command);
+    ExecutorNode createNode(Runnable command);
+    /**
+     * Execute a command via a thread.
+     * @param executorNode The ExecutorNode created by createNode.
+     */
+    void execute(ExecutorNode executorNode);
     /**
      * Stop the executor.
      */
