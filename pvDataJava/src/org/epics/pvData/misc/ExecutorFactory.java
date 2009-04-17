@@ -5,10 +5,9 @@
  */
 package org.epics.pvData.misc;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+
 
 /**
  * Create an IOCExecutor.
@@ -34,10 +33,18 @@ public class ExecutorFactory {
         }
         
         /* (non-Javadoc)
-         * @see org.epics.pvData.misc.Executor#execute(java.lang.Runnable)
+         * @see org.epics.pvData.misc.Executor#createNode(java.lang.Runnable)
          */
-        public void execute(Runnable command) {
-            thread.add(command);
+        public ExecutorNode createNode(Runnable command) {
+            return new ExecutorNodeImpl(command);
+        }
+
+        /* (non-Javadoc)
+         * @see org.epics.pvData.misc.Executor#execute(org.epics.pvData.misc.ExecutorNode)
+         */
+        public void execute(ExecutorNode executorNode) {
+            ExecutorNodeImpl impl = (ExecutorNodeImpl)executorNode;
+            thread.add(impl.listNode);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.Executor#stop()
@@ -48,9 +55,11 @@ public class ExecutorFactory {
     }
     
     static private ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
+    static private LinkedListCreate<ExecutorNodeImpl> linkedListCreate = new LinkedListCreate<ExecutorNodeImpl>();
     
     static private class ThreadInstance implements RunnableReady {
-        private List<Runnable> runList = new ArrayList<Runnable>();
+        
+        private LinkedList<ExecutorNodeImpl> runList = linkedListCreate.create();
         private ReentrantLock lock = new ReentrantLock();
         private Condition moreWork = lock.newCondition();
         private boolean alive = true;
@@ -75,7 +84,11 @@ public class ExecutorFactory {
                         while(alive && runList.isEmpty()) {
                             moreWork.await();
                         }
-                        if(!runList.isEmpty()) runnable = runList.remove(0);
+                        if(!runList.isEmpty()) {
+                            LinkedListNode<ExecutorNodeImpl> listNode = runList.removeHead();
+                            ExecutorNodeImpl impl = listNode.getObject();
+                            runnable = impl.command;
+                        }
                     }finally {
                         lock.unlock();
                     }
@@ -88,12 +101,12 @@ public class ExecutorFactory {
             }
         }
         
-        private void add(Runnable runnable) {
+        private void add(LinkedListNode<ExecutorNodeImpl> listNode) {
             lock.lock();
             try {
-                if(!alive || runList.contains(runnable)) return;
+                if(!alive || listNode.isOnList()) return;
                 boolean isEmpty = runList.isEmpty();
-                runList.add(runnable);
+                runList.addTail(listNode);
                 if(isEmpty) moreWork.signal();
                 return;
             } finally {
@@ -112,4 +125,15 @@ public class ExecutorFactory {
             }
         }
     }
+    
+    private static class ExecutorNodeImpl implements ExecutorNode {
+        private LinkedListNode<ExecutorNodeImpl> listNode;
+        private Runnable command;
+        
+        private ExecutorNodeImpl(Runnable command) {
+            this.command = command;
+            listNode = linkedListCreate.createNode(this);
+        }
+    }
+        
 }
