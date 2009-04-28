@@ -195,6 +195,23 @@ public class PVDatabaseFactory {
             return name;
         }
         /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDatabase#getRecordNames()
+         */
+        public String[] getRecordNames() {
+            rwLock.readLock().lock();
+            try {
+                String[] array = new String[recordMap.size()];
+                int index = 0;
+                Set<String> keys = recordMap.keySet();
+                for(String key: keys) {
+                    array[index++] = key;
+                }
+                return array;
+            } finally {
+                rwLock.readLock().unlock();
+            }
+        }
+        /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDatabase#getRecords()
          */
         public PVRecord[] getRecords() {
@@ -202,6 +219,23 @@ public class PVDatabaseFactory {
             try {
                 PVRecord[] array = new PVRecord[recordMap.size()];
                 recordMap.values().toArray(array);
+                return array;
+            } finally {
+                rwLock.readLock().unlock();
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDatabase#getStructureNames()
+         */
+        public String[] getStructureNames() {
+            rwLock.readLock().lock();
+            try {
+                String[] array = new String[structureMap.size()];
+                int index = 0;
+                Set<String> keys = structureMap.keySet();
+                for(String key: keys) {
+                    array[index++] = key;
+                }
                 return array;
             } finally {
                 rwLock.readLock().unlock();

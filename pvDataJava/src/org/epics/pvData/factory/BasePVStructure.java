@@ -43,6 +43,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private PVField[] pvFields;
+    private String extendsStructureName = null;
     
     /**
      * Constructor.
@@ -258,7 +259,11 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      */
     public PVString getStringField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) return null;
+        if(pvField==null) {
+            super.message("fieldName " + fieldName + " does not exist ",
+                    MessageType.error);
+            return null;
+        }
         if(pvField.getField().getType()==Type.scalar) {
             Scalar scalar = (Scalar)pvField.getField();
             if(scalar.getScalarType()==ScalarType.pvString) {
@@ -323,6 +328,39 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         replaceStructure();
     }
     /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVStructure#removePVField(java.lang.String)
+     */
+    public void removePVField(String fieldName) {
+        PVField pvField = getSubField(fieldName);
+        if(pvField==null) {
+            super.message("removePVField " + fieldName + " does not exist", MessageType.error);
+            return;
+        }
+        int origLength = pvFields.length;
+        PVField[] newPVFields = new PVField[origLength - 1];
+        int newIndex = 0;
+        for(int i=0; i<origLength; i++) {
+            if(pvFields[i]==pvField) continue;
+            newPVFields[newIndex++] = pvFields[i];
+        }
+        pvFields = newPVFields;
+        replaceStructure();
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVStructure#getExtendStructure()
+     */
+    public String getExtendsStructureName() {
+        return extendsStructureName;
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVStructure#putExtendStructure(org.epics.pvData.pv.PVStructure)
+     */
+    public boolean putExtendsStructureName(String extendsStructureName) {
+        if(extendsStructureName==null || this.extendsStructureName!=null) return false;
+        this.extendsStructureName = extendsStructureName;
+        return true;
+    }
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     public String toString() {
@@ -360,7 +398,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         
     }
-    
+   
     private PVField findSubField(String fieldName,PVStructure pvStructure) {
         if(fieldName==null || fieldName.length()<1) return null;
         int index = fieldName.indexOf('.');
@@ -389,6 +427,10 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         StringBuilder builder = new StringBuilder();
         builder.append(prefix);
         builder.append(super.toString(indentLevel));
+        if(extendsStructureName!=null) {
+            builder.append(" extends ");
+            builder.append(extendsStructureName);
+        }
         convert.newLine(builder,indentLevel);
         builder.append("{");
         for(int i=0, n= pvFields.length; i < n; i++) {
@@ -416,6 +458,13 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         	pvFields[i].deserialize(buffer);
 	}
 	/* (non-Javadoc)
+     * @see org.epics.pvData.pv.Serializable#getSerializationSize()
+     */
+    public int getSerializationSize() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+    /* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
