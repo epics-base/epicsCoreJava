@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<database>
+
+<import name = "a.b.c.*" />
+<import name = "a.b.*" />
+<import name = "x.y.*" />
+<record recordName = "record0" extends = "structCommon" />
+<record recordName = "record1" extends = "a.b.structCommon" />
+<record recordName = "record2" extends = "x.y.structCommon" />
+<record recordName = "record3" extends = "structa" />
+<record recordName = "record4" extends = "structx" />
+<record recordName = "record5" extends = "structExtra">
+  <structure name = "xxx" extends = "structCommon" />
+</record>
+</database>
