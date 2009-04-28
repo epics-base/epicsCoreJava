@@ -5,34 +5,34 @@
    xmlns:model="urn:schemas-cosylab-com:model:1.0"
    name="database">>
 
-<structure name = "byteLimit">
-    <scalar name = "low" type = "byte" />
-    <scalar name = "high" type = "byte" />
+<structure structureName = "byteLimit">
+    <scalar name = "low" scalarType = "byte" />
+    <scalar name = "high" scalarType = "byte" />
 </structure>
 
-<structure name = "shortLimit">
-    <scalar name = "low" type = "short" />
-    <scalar name = "high" type = "short" />
+<structure structureName = "shortLimit">
+    <scalar name = "low" scalarType = "short" />
+    <scalar name = "high" scalarType = "short" />
 </structure>
 
-<structure name = "intLimit">
-    <scalar name = "low" type = "int" />
-    <scalar name = "high" type = "int" />
+<structure structureName = "intLimit">
+    <scalar name = "low" scalarType = "int" />
+    <scalar name = "high" scalarType = "int" />
 </structure>
 
-<structure name = "longLimit">
-    <scalar name = "low" type = "long" />
-    <scalar name = "high" type = "long" />
+<structure structureName = "longLimit">
+    <scalar name = "low" scalarType = "long" />
+    <scalar name = "high" scalarType = "long" />
 </structure>
 
-<structure name = "floatLimit">
-    <scalar name = "low" type = "float" />
-    <scalar name = "high" type = "float" />
+<structure structureName = "floatLimit">
+    <scalar name = "low" scalarType = "float" />
+    <scalar name = "high" scalarType = "float" />
 </structure>
 
-<structure name = "doubleLimit">
-    <scalar name = "low" type = "double" />
-    <scalar name = "high" type = "double" />
+<structure structureName = "doubleLimit">
+    <scalar name = "low" scalarType = "double" />
+    <scalar name = "high" scalarType = "double" />
 </structure>
 
 </database>

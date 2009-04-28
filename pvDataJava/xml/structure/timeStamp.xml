@@ -5,9 +5,9 @@
    xmlns:model="urn:schemas-cosylab-com:model:1.0"
    name="database">>
 
-<structure name = "timeStamp">
-  <scalar name = "secondsPastEpoch" type = "long" />
-  <scalar name = "nanoSeconds" type = "int" />
+<structure structureName = "timeStamp">
+  <scalar name = "secondsPastEpoch" scalarType = "long" />
+  <scalar name = "nanoSeconds" scalarType = "int" />
 </structure>
 
 </database>
