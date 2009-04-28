@@ -42,6 +42,11 @@ public interface PVStructure extends PVField {
      */
     void appendPVField(PVField pvField);
     /**
+     * Remove a field.
+     * @param fieldName The name of the field to remove.
+     */
+    void removePVField(String fieldName);
+    /**
      * postPut to a subfield of the structure.
      * @param pvSubField The subfield.
      */
@@ -116,4 +121,17 @@ public interface PVStructure extends PVField {
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVArray getArrayField(String fieldName,ScalarType elementType);
+    /**
+     * Get the name of structure that this structure extends.
+     * @return The name or null if this structure does not extend a structure.
+     */
+    String getExtendsStructureName();
+    /**
+     * Specify the structure that this structure extends.
+     * The call fails if a previous call was successful.
+     * @param extendsStructureName The structure this structure extends.
+     * @return (false,true) if the call (succeeds,fails).
+     * It succeeds only if extendPVStructure is not null and no previous call was successful.
+     */
+    boolean putExtendsStructureName(String extendsStructureName);
 }

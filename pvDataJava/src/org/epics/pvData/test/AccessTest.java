@@ -32,7 +32,7 @@ public class AccessTest extends TestCase {
     public static void testAccess() {
         Requester iocRequester = new RequesterForTesting("accessTest");
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/counter.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/example/exampleDB.xml", iocRequester);
         
 //        PVStructure pvStructure = master.findStructure("scan");
 //        System.out.println(pvStructure.toString());
@@ -46,9 +46,10 @@ public class AccessTest extends TestCase {
 //        	System.out.println(pvStructure.toString());
 //        }
 
-        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/ai.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/analogDB.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/powerSupply/powerSupplyDB.xml", iocRequester);
-        XMLToPVDatabaseFactory.convert(master,"test/types/allTypes.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/types/allTypesStructure.xml", iocRequester);
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/types/allTypesRecords.xml", iocRequester);
 
      
 //        System.out.printf("%n%nrecords");

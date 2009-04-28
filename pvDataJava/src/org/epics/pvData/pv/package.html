@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pv<br />
 package: org.epics.pvData.pv<br />
-2009.02.13</h1>
+2009.04.28</h1>
 CONTENTS 
 
 <div class="toc">
@@ -581,6 +581,7 @@ following reads an entire array:</p>
         PVField getSubField(String fieldName);
         void replacePVField(String fieldName,PVField newPVField);
         void appendPVField(PVField pvField);
+        void removePVField(String fieldName);
         void postPut(PVField pvSubField);
         // the following are convenience methods
         PVBoolean getBooleanField(String fieldName);
@@ -610,6 +611,8 @@ following reads an entire array:</p>
     <dd>Replace a subfield of a PVStructure.</dd>
   <dt>appendPVField</dt>
     <dd>Append pvField to the end of this PVStructure.</dd>
+  <dt>removePVField</dt>
+    <dd>Remove the specified field from this structure.</dd>
   <dt>postPut</dt>
     <dd>post a put to a subfield of this structure. It does not have to be a
       direct subfield.</dd>
