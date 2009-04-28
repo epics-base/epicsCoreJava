@@ -6,9 +6,9 @@
    name="database">>
 
 
-<structure name = "control">
-    <structure name = "limit" type = "doubleLimit" />
-    <scalar name = "minStep" type = "double" />
+<structure structureName = "control">
+    <structure name = "limit" extends = "doubleLimit" />
+    <scalar name = "minStep" scalarType = "double" />
 </structure>
 
 </database>

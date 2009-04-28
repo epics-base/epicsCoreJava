@@ -5,12 +5,12 @@
    xmlns:model="urn:schemas-cosylab-com:model:1.0"
    name="database">>
 
-<structure name = "display">
-    <scalar name = "description" type = "string" />
-    <scalar name = "format" type = "string" />
-    <scalar name = "units" type = "string" />
-    <scalar name = "resolution" type = "int" />
-    <structure name = "limit" type = "doubleLimit" />
+<structure structureName = "display">
+    <scalar name = "description" scalarType = "string" />
+    <scalar name = "format" scalarType = "string" />
+    <scalar name = "units" scalarType = "string" />
+    <scalar name = "resolution" scalarType = "int" />
+    <structure name = "limit" extends = "doubleLimit" />
 </structure>
 
 </database>
