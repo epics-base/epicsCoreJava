@@ -5,16 +5,16 @@
    xmlns:model="urn:schemas-cosylab-com:model:1.0"
    name="database">>
 
-<structure name = "enumeratedFactory">
-  <scalar name = "pvReplaceFactory" type = "string">
+<structure structureName = "enumeratedFactory">
+  <scalar name = "pvReplaceFactory" scalarType = "string">
     org.epics.pvData.misc.EnumeratedFactory</scalar>
 </structure>
 
-<structure name = "enumerated">
-  <auxInfo name = "pvReplaceFactory" type = "string">enumeratedFactory</auxInfo>
-  <scalar name = "index" type = "int" />
-  <scalar name = "choice" type = "string" />
-  <array name = "choices" type = "string" />
+<structure structureName = "enumerated">
+  <auxInfo name = "pvReplaceFactory" scalarType = "string">org.epics.pvData.enumeratedFactory</auxInfo>
+  <scalar name = "index" scalarType = "int" />
+  <scalar name = "choice" scalarType = "string" />
+  <array name = "choices" scalarType = "string" />
 </structure>
 
 </database>
