@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 <database>
 <include addPath = "${PVDATA}/xml/structure" />
+<package name = "org.epics.pvData" />
+<import name = "org.epics.pvData.*" />
 <include href = "limit.xml" />
 <include href = "display.xml" />
 <include href = "control.xml" />

@@ -5,19 +5,19 @@
    xmlns:model="urn:schemas-cosylab-com:model:1.0"
    name="database">
 
-<structure name = "alarmSeverity">
-  <auxInfo name = "pvReplaceFactory" type = "string">enumeratedFactory</auxInfo>
-  <scalar name = "index" type = "int" />
-  <scalar name = "choice" type = "string" />
-  <array name = "choices" type = "string">
+<structure structureName = "alarmSeverity">
+  <auxInfo name = "pvReplaceFactory" scalarType = "string">org.epics.pvData.enumeratedFactory</auxInfo>
+  <scalar name = "index" scalarType = "int" />
+  <scalar name = "choice" scalarType = "string" />
+  <array name = "choices" scalarType = "string">
     none,minor,major,invalid</array>
 </structure>
 
-<structure name = "alarm">
-  <structure name = "severity" type = "alarmSeverity" />
-  <scalar name = "message" type = "string" />
-  <scalar name = "ackTransient" type = "boolean" />
-  <structure name = "ackSeverity" type = "alarmSeverity" />
+<structure structureName = "alarm">
+  <structure name = "severity" extends = "alarmSeverity" />
+  <scalar name = "message" scalarType = "string" />
+  <scalar name = "ackTransient" scalarType = "boolean" />
+  <structure name = "ackSeverity" extends = "alarmSeverity" />
 </structure>
 
 </database>
