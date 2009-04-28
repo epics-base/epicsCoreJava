@@ -312,6 +312,13 @@ public class DatabaseExampleTest extends TestCase {
         System.out.printf("%s%nvalue %s%n",
              structure.toString(),
              displayLimit.toString());
+        
+        displayLimit.removePVField("low");
+        structFieldData = displayLimit.getPVFields();
+        assertTrue(structFieldData.length==1);
+        System.out.printf("%nafter remove limit value %s%n",
+                displayLimit.toString());
+           
     }
 
     /**
