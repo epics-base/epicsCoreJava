@@ -48,6 +48,11 @@ public interface PVDatabase extends Requester{
      */
     boolean removeRecord(PVRecord record);
     /**
+     * Get an array of the record names.
+     * @return The array of names.
+     */
+    String[] getRecordNames();
+    /**
      * Get an array of record instances.
      * @return The array of record instances.
      */
@@ -70,6 +75,11 @@ public interface PVDatabase extends Requester{
      * @return true if the structure was removed and false otherwise.
      */
     boolean removeStructure(PVStructure structure);
+    /**
+     * Get an array of the structure names.
+     * @return The array of names.
+     */
+    String[] getStructureNames();
     /**
      * Get an array of structure instances.
      * @return The array of structure instances.
