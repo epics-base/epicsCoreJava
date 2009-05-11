@@ -10,8 +10,8 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: xml<br />
 package: org.epics.pvData.xml<br />
-2009.04.23</h1>
-CONTENTS 
+2009.05.11</h1>
+CONTENTS
 
 <div class="toc">
 <ul>
@@ -36,16 +36,39 @@ CONTENTS
       <li><a href="#Example">Example Include and Macro Substitution</a></li>
     </ul>
   </li>
-  <li><a href="#Database1">Database XML Code</a></li>
+  <li><a href="#Database1">Database XML Code</a>
+    <ul>
+      <li><a href="#Warning">Warning About XML element syntax</a></li>
+      <li><a href="#Java">Java Definitions</a></li>
+      <li><a href="#PVDatabase">XML To PVDatabase</a>
+        <ul>
+          <li><a href="#XMLToPVDat">XMLToPVDatabaseFactory</a></li>
+          <li><a href="#XMLToPVDat1">XMLToPVDatabaseListener</a></li>
+        </ul>
+      </li>
+      <li><a href="#Include1">Include and Substitution</a></li>
+      <li><a href="#IncludeSub">IncludeSubstituteXMLListener</a>
+        <ul>
+          <li><a
+          href="#IncludeSub1">IncludeSubstituteDetailsXMLListener</a></li>
+          <li><a href="#IncludeSub2">IncludeSubstituteXMLReader</a></li>
+          <li><a
+          href="#IncludeSub3">IncludeSubstituteXMLReaderFactory</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
 </ul>
 </div>
+
+<p> </p>
 <hr />
 
 <h2 style="text-align: center" id="Overview">Overview</h2>
 <hr />
 
 <p>One way to create structures and records for a PVDatabase is via
-XMLToPVDatabaseFactory, which takes structure and record definitions for an
+XMLToPVDatabaseFactory, which parses structure and record definitions from an
 xml file, creates structure and record instances and adds then to a
 PVDatabase. This overview first defines the xml syntax and then interfaces
 and code for reading the xml files.</p>
@@ -133,8 +156,8 @@ record is defined as follows:</p>
       structureName must not be defined. recordName which must be
       specified,is a string with a combination of the following characters: 
       <ul>
-        <li><span style="font-family: courier">0-9 A-Z a-z _ - : ; &lt; &gt;
-          [ ]</span></li>
+        <li><span style="font-family: courier">0-9 A-Z a-z _ - : ; [
+        ]</span></li>
         <li>Any Unicode/UTF-8 character outside of the Basic Latin set</li>
       </ul>
     </dd>
@@ -182,8 +205,7 @@ structure definitions. For example the following:</p>
 <p>Is the same as:</p>
 <pre>&lt;record recordName = "xxx" extends = "org.me.myStuff.myStructure"&gt;
     &lt;structure name = "alarm" extends = "org.epics.pvData.alarm"&gt;
-&lt;/record&gt;
-</pre>
+&lt;/record&gt;</pre>
 <pre></pre>
 
 <h3 style="text-align:center;" id="Field">Field definition</h3>
@@ -554,29 +576,250 @@ se&gt;</pre>
 
 <h2 style="text-align: center" id="Database1">Database XML Code</h2>
 <hr />
-<pre>    interface PVXMLReader {
-        void parse(String rootElementName,String fileName,
-            PVXMLListener listener);
-        void message(String message,MessageType messageType);
+
+<p>This section describes the Java support for converting files, which have
+XML definitions for PVData structures and records, to PVDatabase PVStructures
+and PVRecords.</p>
+
+<p>The support has two components:</p>
+<ol>
+  <li>Include and Substitute<br />
+    Support for macro substitution and include.</li>
+  <li>XML to PVDatabase<br />
+    Support that parsers the PVData XML statements. It uses the Include and
+    Substitute support</li>
+</ol>
+
+<p>This section first shows the Java Definitions, then it discusses XML to
+PVDatabase parsing, and last Include and Substitute.</p>
+
+<h3 id="Warning">Warning About XML element syntax</h3>
+
+<p>This is a warning for utility code that genetrates xml for PVData. The
+problem is the special XML characters:</p>
+<ul>
+  <li>Less than  &lt;</li>
+  <li>Greater Than  &gt;</li>
+  <li>Quote "</li>
+  <li>Apostrophe ''</li>
+  <li>Ampersand &amp;</li>
+</ul>
+
+<p>These symbols are part of the xml syntax. This is a problem when the value
+for a string is being defined. For example:</p>
+<pre>    &lt;scalar name = "xxx" elementType = "string"&gt;value&lt;/scalar&gt;
+</pre>
+
+<p>In order to set value = "a&lt;b" Then one of the following must be
+entered.</p>
+<pre>    &lt;scalar name = "xxx" elmentType = "string"&gt;a&amp;lt;b&lt;/scalar&gt;
+</pre>
+
+<p>or</p>
+<pre>    &lt;scalar name = "xxx" elmentType = "string"&gt;&lt;![CDATA[a&lt;b]]&gt;&lt;/scalar&gt;
+</pre>
+
+<p>I (Marty Kraimer) do not know how to determine, using SAX, which appears
+in the original xml source file. What appears to the ContentHandler callback
+is just the converted characters. What to do? One suggestion is that any code
+that generates PVData xml should look at all string scalar and scalar array
+element values. If any of the special XML characters are present to should
+use the&lt;![CDATA[value]]&gt; method of encoding the value.</p>
+
+<h3 id="Java">Java Definitions</h3>
+<pre>    class XMLToPVDatabaseFactory {
+        static void convert(PVDatabase pvDatabase, String fileName,Requester requester,
+            boolean reportSubstitutionFailure,
+            XMLToPVDatabaseListener pvListener,
+            IncludeSubstituteXMLListener isListener,
+            IncludeSubstituteDetailsXMLListener detailsListener);
+        static void convert(PVDatabase pvDatabase, String fileName,Requester requester);
     }
 
-    interface PVXMLListener {
+    interface XMLToPVDatabaseListener {
+        void startStructure(PVStructure pvStructure);
+        void endStructure();
+        void startRecord(PVRecord pvRecord);
+        void endRecord(); 
+        void newStructureField(PVStructure pvStructure);
+        void endStructureField();
+        void startArray(PVArray pvArray);
+        void endArray();
+        void startScalar(PVScalar pvScalar);
+        void endScalar();
+        void startAuxInfo(String name,Map&lt;String,String&gt; attributes);
+        void endAuxInfo();
+    }
+
+    interface IncludeSubstituteXMLListener {
         void endDocument();
         void startElement(String name, Map&lt;String,String&gt; attributes);
-        void characters(char[] ch, int start, int length);
+        void element(String content);
         void endElement(String name);
+    }
+
+    interface IncludeSubstituteDetailsXMLListener {
+        void startElementBeforeSubstitution(String name, Map&lt;String,String&gt; attributes);
+        void elementBeforeSubstitution(String content);
+        void newSourceFile(String fileName);
+        void endSourceFile();
+        void addPath(String pathName);
+        void removePath(String pathName);
+        void substitute(String from,String to);
+        void removeSubstitute(String from);
+    }
+    
+    interface IncludeSubstituteXMLReader {
+        void parse(String rootElementName,String fileName,Requester requester,
+            boolean reportSubstitutionFailure,
+            IncludeSubstituteXMLListener listener,
+            IncludeSubstituteDetailsXMLListener detailsListener);
         void message(String message,MessageType messageType);
     }
 
-    public class PVXMLReaderFactory {
-        static public PVXMLReader getReader();
-    }
-
-    public class XMLToPVDatabaseFactory {
-        public static void convert(PVDatabase pvDatabase,
-            String fileName,Requester requester);
+    class IncludeSubstituteXMLReaderFactory {
+        static public IncludeSubstituteXMLReader getReader();
     }</pre>
 
-<p>The above needs to be documented.</p>
+<h3 id="PVDatabase">XML To PVDatabase</h3>
+
+<p>This support processes PVData XML statements. Code that wants to parse
+PVData XML statements calls one of the XMLToPVDatabaseFactory.convert
+methods. The only difference between the two methods is that the first
+provides access to detailed information about parsing while the second only
+provides errors..</p>
+
+<h4 id="XMLToPVDat">XMLToPVDatabaseFactory</h4>
+
+<p>This provides two methods both named convert. The first provides detailed
+information about parsing. It is intended for use by VDCT. The second reports
+all errors including substitution failues but none of the detailed
+information. The arguments for the first method are:</p>
+<dl>
+  <dt><span style="font-family: Courier">pvDatabase</span></dt>
+    <dd>The PVDatabase into which structure and record instances are put.</dd>
+  <dt><span style="font-family: Courier">fileName</span></dt>
+    <dd>The name of the XML file.</dd>
+  <dt><span style="font-family: Courier">requester</span></dt>
+    <dd>The Requester interface which must be implemented by the caller.</dd>
+  <dt><span style="font-family: Courier">reportSubstitutionFailure</span></dt>
+    <dd>Should substitution failures be reported?</dd>
+  <dt><span style="font-family: Courier">pvListener</span></dt>
+    <dd>The XMLToPVDatabaseListener interface, which can be null. If
+      implemented the caller is notified when PV XML elements have been
+      parsed.</dd>
+  <dt><span style="font-family: Courier">isListener</span></dt>
+    <dd>The IncludeSubstituteXMLListener interface, which can be null.
+      XMLToPVDatabaseFactory implements it's own version but will also call
+      this instance if implemented.See the interface description below for
+      details.</dd>
+  <dt><span style="font-family: Courier">detailsListener</span></dt>
+    <dd>The IncludeSubstituteDetailsXMLListener interface, which can be
+    null.</dd>
+</dl>
+
+<h4 id="XMLToPVDat1">XMLToPVDatabaseListener</h4>
+
+<p>This provides a callback for the beginning and end of the parsing of
+PVData XML elements not related to macro substitution and include. It
+provides the following methods:</p>
+<dl>
+  <dt><span style="font-family: Courier">startStructure</span></dt>
+    <dd>A new structure instance is being created.</dd>
+  <dt><span style="font-family: Courier">endStructure</span></dt>
+    <dd>The definition of the new structure is complete.</dd>
+  <dt><span style="font-family: Courier">startRecord</span></dt>
+    <dd>A new record instance is being created. </dd>
+  <dt><span style="font-family: Courier">endRecord</span></dt>
+    <dd>The definition on the new record is complete.</dd>
+  <dt><span style="font-family: Courier">newStructureField</span></dt>
+    <dd>A new structure field is being created.</dd>
+  <dt><span style="font-family: Courier">endStructureField</span></dt>
+    <dd>The definition on the new structure field is complete</dd>
+  <dt><span style="font-family: Courier">startArray</span></dt>
+    <dd>A new array field is being created.</dd>
+  <dt><span style="font-family: Courier">endArray</span></dt>
+    <dd>The definition on the new array field is complete</dd>
+  <dt><span style="font-family: Courier">startScalar</span></dt>
+    <dd>A new scalar field is being created.</dd>
+  <dt><span style="font-family: Courier">endScalar</span></dt>
+    <dd>The definition on the new scalar field is complete</dd>
+  <dt><span style="font-family: Courier">startAuxInfo</span></dt>
+    <dd>A new auxInfo is being created.</dd>
+  <dt><span style="font-family: Courier">endAuxInfo</span></dt>
+    <dd>The definition on the new auxInfo is complete</dd>
+</dl>
+
+<h3 id="Include1">Include and Substitution</h3>
+
+<p>This support completely handles all details of Macro Substitution and
+Include. The code that calls this support sees only the results of
+substitution and include.. This support also implements the SAX2
+ContentHandler and EventHandler interfaces. Instead of the SAX2 interfaces,
+code that uses this code must implement at least the
+IncludeSubstituteXMLListener interface. Support that wants additional
+information can also implement the IncludeSubstituteDetailsXMLListener
+interface. This code, in addition to macro substitution, provides a
+simplified version of what SAX2 provides, which also means that it does not
+provide access to all of SAX2. </p>
+
+<p>This code does not understand the complete pvData XML syntax. It only
+understands the include, substitute, package, and import elements. Thus it
+could be used by code other than XML to PVDatabase but any such code must
+realize that it does not provide access to all of SAX2.</p>
+
+<h3 id="IncludeSub">IncludeSubstituteXMLListener</h3>
+
+<p>This interface must be implemented by the caller. It is a simplified
+version of the SAX2 ContentHandler. The methods are:</p>
+<dl>
+  <dt><span style="font-family: Courier">endDocument</span></dt>
+    <dd>The end of the xml input file. This is NOT called for included
+    files.</dd>
+  <dt><span style="font-family: Courier">startElement</span></dt>
+    <dd>The opening tag of an xml element is being processed.</dd>
+  <dt><span style="font-family: Courier">element</span></dt>
+    <dd>The value of an xml element, i.e. what appears between the opening
+      and closing tags. Any leading and trailing white space of any element
+      fragment is removed.</dd>
+  <dt><span style="font-family: Courier">endElement</span></dt>
+    <dd>The end tag opf an xml element is being processed.</dd>
+</dl>
+
+<h4 id="IncludeSub1">IncludeSubstituteDetailsXMLListener</h4>
+
+<p>This interface can optionally be implemented by the caller. It provides
+details about include and substitution details. The methods are:</p>
+<dl>
+  <dt><span
+  style="font-family: Courier">startElementBeforeSubstitution</span></dt>
+    <dd>This is the opening tag of an xml element before any
+    substitutions.</dd>
+  <dt><span style="font-family: Courier">elementBeforeSubstitution</span></dt>
+    <dd>This is an xml element value before any substitutions.</dd>
+  <dt><span style="font-family: Courier">newSourceFile</span></dt>
+    <dd>A new file is being included.</dd>
+  <dt><span style="font-family: Courier">endSourceFile</span></dt>
+    <dd>End of an included file,</dd>
+  <dt><span style="font-family: Courier">addPath</span></dt>
+    <dd>A new addPath</dd>
+  <dt><span style="font-family: Courier">removePath</span></dt>
+    <dd>A addPath is being removed.</dd>
+  <dt><span style="font-family: Courier">substitute</span></dt>
+    <dd>A new substitute is defined.</dd>
+  <dt><span style="font-family: Courier">removeSubstitute</span></dt>
+    <dd>A substitute is being removed.</dd>
+</dl>
+
+<h4 id="IncludeSub2">IncludeSubstituteXMLReader</h4>
+
+<p>The interface implemented by IncludeSubstituteXMLReaderFactory. It
+provides two methods: parse and message. The arguments to parse have already
+been describes. The message method adds the location within the input xml
+files when this method is called.</p>
+
+<h4 id="IncludeSub3">IncludeSubstituteXMLReaderFactory</h4>
+
+<p>The factory that implements macro substitution and include.</p>
 </body>
 </html>
