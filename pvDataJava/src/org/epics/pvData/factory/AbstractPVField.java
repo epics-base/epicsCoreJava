@@ -9,14 +9,18 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
+import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVAuxInfo;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 
 
@@ -27,6 +31,7 @@ import org.epics.pvData.pv.Type;
  *
  */
 public abstract class AbstractPVField implements PVField{
+    private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private PVAuxInfo pvAuxInfo = null;
     private boolean isMutable = true;
     private String fullFieldName = "";
@@ -76,6 +81,7 @@ public abstract class AbstractPVField implements PVField{
      */
     protected void replaceField(Field field) {
         this.field = field;
+        createFullNameANDFullFieldName();
     }
     /**
      * Called by derived class to specify the PVRecord interface.
@@ -182,6 +188,40 @@ public abstract class AbstractPVField implements PVField{
     }
    
     /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVField#renameField(java.lang.String)
+     */
+    public void renameField(String newName) {
+        switch(field.getType()) {
+        case scalar: {
+            Scalar scalar = (Scalar)field;
+            scalar = fieldCreate.createScalar(newName, scalar.getScalarType());
+            this.field = scalar;
+            createFullNameANDFullFieldName();
+            return;
+        }
+        case scalarArray: {
+            Array array = (Array)field;
+            array = fieldCreate.createArray(newName, array.getElementType());
+            this.field = array;
+            createFullNameANDFullFieldName();
+            return;
+        }
+        case structure: {
+            Structure structure = (Structure)field;
+            Field[] origFields = structure.getFields();
+            structure = fieldCreate.createStructure(newName, origFields);
+            this.field = structure;
+            createFullNameANDFullFieldName();
+            PVStructure pvStructure = (PVStructure)this;
+            // must make all subfields call createFullNameANDFullFieldName()
+            for(PVField pvField: pvStructure.getPVFields()) {
+                pvField.renameField(pvField.getField().getFieldName());
+            }
+            return;
+        }
+        }
+    }
+    /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#addListener(org.epics.pvData.pv.PVListener)
      */
     public boolean addListener(PVListener pvListener) {
@@ -219,6 +259,7 @@ public abstract class AbstractPVField implements PVField{
     }
     
     private void createFullNameANDFullFieldName() {
+        if(record==null) return;
         if(this==record) {
             fullName = record.getRecordName();
             return;
