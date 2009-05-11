@@ -10,7 +10,7 @@ public interface PVProperty {
      * 
      *  
      * @param pvField The pvField.
-     * @param fieldName A string of the form item.item... where item is name or name[index]
+     * @param fieldName A string of the form name.name...
      * @return The PVField interface for the property or null if not found. 
      */
     PVField findProperty(PVField pvField,String fieldName);
