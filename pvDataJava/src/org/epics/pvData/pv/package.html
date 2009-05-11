@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pv<br />
 package: org.epics.pvData.pv<br />
-2009.04.28</h1>
+2009.05.06</h1>
 CONTENTS 
 
 <div class="toc">
@@ -206,6 +206,7 @@ structure and a record also has an associated PVField.</p>
         PVStructure getParent();
         PVRecord getPVRecord();
         void replacePVField(PVField newPVField);
+        void renameField(String newName);
         boolean addListener(PVListener pvListener);
         void removeListener(PVListener pvListener);
         void postPut();
@@ -239,9 +240,11 @@ structure and a record also has an associated PVField.</p>
     <dd>Get the interface for the record that contains this field. This can
       be null.</dd>
   <dt>replacePVField</dt>
-    <dd>Replace this PVField. This is called support code that wants to
+    <dd>Replace this PVField. This is called by support code that wants to
       replace the default implementation of a data field with it's own
       implementation.</dd>
+  <dt>renameField</dt>
+    <dd>Rename the field name.</dd>
   <dt>addListener</dt>
     <dd>Add A PVListener to this field. Whenever this field or any subfield
       if this field is modified the listener will be notified. PVListener is

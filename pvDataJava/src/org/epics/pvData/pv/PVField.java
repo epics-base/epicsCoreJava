@@ -59,6 +59,11 @@ public interface PVField extends Requester, Serializable {
      */
     void replacePVField(PVField newPVField);
     /**
+     * Rename the field name.
+     * @param newName The new name.
+     */
+    void renameField(String newName);
+    /**
      * Add a listener to this field.
      * @param pvListener The pvListener to add to list for postPut notification.
      * @return (false,true) if the pvListener (was not,was) added.
