@@ -323,11 +323,18 @@ public class EnumeratedFactory {
                 return len;      
             }
         	/* (non-Javadoc)
-        	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+        	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
         	 */
-        	public void serialize(ByteBuffer buffer) {
-        		writeSize(length, buffer);
-        		for (int i = 0; i < length; i++)
+        	public void serialize(ByteBuffer buffer, int offset, int count) {
+        		// check bounds
+        		if (offset < 0) offset = 0;
+        		if (count < 0) count = length;
+        		final int maxCount = length - offset;
+        		if (count > maxCount)
+        			count = maxCount;
+        		// write
+        		writeSize(count, buffer);
+        		for (int i = 0; i < count; i++)
         			serializeString(choices[i], buffer);
         	}
         	/* (non-Javadoc)

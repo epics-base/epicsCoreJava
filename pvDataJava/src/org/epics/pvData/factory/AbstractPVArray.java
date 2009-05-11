@@ -146,4 +146,11 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 		else
 			return null;
 	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 */
+	public void serialize(ByteBuffer buffer) {
+		serialize(buffer, 0, -1);
+	}
+	
 }

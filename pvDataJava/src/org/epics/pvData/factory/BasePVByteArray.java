@@ -61,7 +61,7 @@ public class BasePVByteArray extends AbstractPVArray implements PVByteArray
      */
     public int get(int offset, int len, ByteArrayData data) {
         int n = len;
-        if(offset+len > length) n = length - offset;
+        if(offset+len > length) n = Math.max(0, length-offset);;
         data.data = value;
         data.offset = offset;
         return n;
@@ -88,11 +88,22 @@ public class BasePVByteArray extends AbstractPVArray implements PVByteArray
         return len;        
     }
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
 	 */
-	public void serialize(ByteBuffer buffer) {
-		writeSize(length, buffer);
-		buffer.put(value, 0, length);
+	public void serialize(ByteBuffer buffer, int offset, int count) {
+		// check bounds
+		if (offset < 0) offset = 0;
+		else if (offset > length) offset = length;
+		if (count < 0) count = length;
+
+		final int maxCount = length - offset;
+		if (count > maxCount)
+			count = maxCount;
+		
+		// write
+		writeSize(count, buffer);
+		if (offset < length)
+			buffer.put(value, offset, count);
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)

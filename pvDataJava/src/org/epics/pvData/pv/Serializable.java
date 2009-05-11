@@ -19,10 +19,18 @@ public interface Serializable {
     /**
      * Serialize field into given buffer.
 	 * @param buffer serialization buffer.
+	 * @param offset offset in array.
+	 * @param count number of elements in array.
+	 */
+	void serialize(ByteBuffer buffer, int offset, int count);
+
+	/**
+     * Serialize field into given buffer.
+	 * @param buffer serialization buffer.
 	 */
 	void serialize(ByteBuffer buffer);
-	
-    /**
+
+	/**
      * Deserialize buffer.
 	 * @param buffer serialization buffer.
 	 */
