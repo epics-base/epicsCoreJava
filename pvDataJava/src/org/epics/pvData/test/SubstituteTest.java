@@ -11,6 +11,7 @@ import org.epics.pvData.factory.PVDatabaseFactory;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.Requester;
+import org.epics.pvData.xml.IncludeSubstituteDetailsXMLListener;
 import org.epics.pvData.xml.XMLToPVDatabaseFactory;
 /**
  * JUnit test for XMLToIOCDB.
@@ -30,10 +31,10 @@ public class SubstituteTest extends TestCase {
      */
     public static void testSubstitute() {
         Requester iocRequester = new RequesterForTesting("accessTest");
-        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
-        
+        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester,true,null,null,null);
+        IncludeSubstituteDetailsXMLListener listener = new IncludeSubstituteDetailsXMLLIstenerForTesting();
         XMLToPVDatabaseFactory.convert(master,
-            "src/org/epics/pvData/test/substituteDB.xml",iocRequester);
+            "src/org/epics/pvData/test/substituteDB.xml",iocRequester,true,null,null,listener);
         System.out.printf("%n%nrecord list%n");
         PVRecord[] pvRecords = master.getRecords();
         for(PVRecord pvRecord : pvRecords) {
