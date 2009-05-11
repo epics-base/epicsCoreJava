@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.factory.PVDatabaseFactory;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
@@ -33,27 +32,38 @@ import org.epics.pvData.pv.Type;
 
 /**
  * Factory to convert an xml file to an IOCDatabase and put it in the database.
- * The only public method is convert.
+ * The only public methods are two versions of convert.
  * @author mrk
  *
  */
 public class XMLToPVDatabaseFactory {
-    private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-    private static AtomicBoolean isInUse = new AtomicBoolean(false);
+    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final AtomicBoolean isInUse = new AtomicBoolean(false);
+    private static IncludeSubstituteXMLReader iocxmlReader = IncludeSubstituteXMLReaderFactory.getReader();
     //  for use by private classes
-    private static Convert convert = ConvertFactory.getConvert();
-    private static Pattern primitivePattern = Pattern.compile("[, ]");
-    private static Pattern stringPattern = Pattern.compile("\\s*,\\s*");
+    private static final Convert convert = ConvertFactory.getConvert();
+    private static final Pattern primitivePattern = Pattern.compile("[, ]");
+    private static final Pattern stringPattern = Pattern.compile("\\s*,\\s*");
     private static PVDatabase pvDatabase;
-    private static Requester requester;
-    private static PVXMLReader iocxmlReader;
+    private static IncludeSubstituteXMLListener isListener;
+    private static XMLToPVDatabaseListener pvListener;
+    
     /**
      * Convert an xml file to PVDatabase definitions and put the definitions in a database.
      * @param pvDatabase The database into which the new structure and records are added.
      * @param fileName The name of the file containing xml record instance definitions.
      * @param requester The requester.
+     * @param reportSubstitutionFailure Should an error be reported if a ${from} does not have a substitution.
+     * @param pvListener The XMLToPVDatabaseListener. This can be null.
+     * @param isListener The IncludeSubstituteXMLListener listener. This can be null.
+     * @param detailsListener The IncludeSubstituteDetailsXMLListener. This can be null;
+     * 
      */
-    public static void convert(PVDatabase pvDatabase, String fileName,Requester requester)
+    public static void convert(PVDatabase pvDatabase, String fileName,Requester requester,
+            boolean reportSubstitutionFailure,
+            XMLToPVDatabaseListener pvListener,
+            IncludeSubstituteXMLListener isListener,
+            IncludeSubstituteDetailsXMLListener detailsListener)
     {
         boolean gotIt = isInUse.compareAndSet(false,true);
         if(!gotIt) {
@@ -61,46 +71,32 @@ public class XMLToPVDatabaseFactory {
         }
         try {
             XMLToPVDatabaseFactory.pvDatabase = pvDatabase;
-            XMLToPVDatabaseFactory.requester = requester;
-            PVXMLListener listener = new Listener();
-            iocxmlReader = PVXMLReaderFactory.getReader();
-            iocxmlReader.parse("database",fileName,listener);
+            XMLToPVDatabaseFactory.isListener = isListener;
+            XMLToPVDatabaseFactory.pvListener = pvListener;
+            IncludeSubstituteXMLListener listener = new Listener();
+            iocxmlReader.parse("database",fileName,requester,reportSubstitutionFailure,listener,detailsListener);
         } finally {
             isInUse.set(false);
         }
         
     }
-    
     /**
-     * Create an IOC Database (IOCDB) and populate it
-     * with definitions from an XML record instance.
-     * @param databaseName The name for the PVDatabase.
-     * The definitions are not added to the master IOCDB but the caller can call IOCDB.mergeIntoMaster
-     * to add them to master.
-     * Attempting to add definitions for a record instance that is already in master is an error.
-     * @param fileName The file containing record instances definitions.
-     * @param requester A listener for error messages.
-     * @return An IOC Database that has the newly created record instances.
+     * Convert an xml file to PVDatabase definitions and put the definitions in a database.
+     * Calls previous method with reportSubstitutionFailure=true and (pvListener,isListener,detailsListener) all null.
+     * @param pvDatabase The database into which the new structure and records are added.
+     * @param fileName The name of the file containing xml record instance definitions.
+     * @param requester The requester.
      */
-    public static PVDatabase convert(String databaseName,String fileName,Requester requester) {
-        boolean gotIt = isInUse.compareAndSet(false,true);
-        if(!gotIt) {
-            requester.message("XMLToIOCDBFactory is already active", MessageType.error);
-            return null;
-        }
-        try {
-            XMLToPVDatabaseFactory.pvDatabase = PVDatabaseFactory.create(databaseName);           
-            XMLToPVDatabaseFactory.requester = requester;
-            PVXMLListener listener = new Listener();
-            iocxmlReader = PVXMLReaderFactory.getReader();
-            iocxmlReader.parse("PVDatabase",fileName,listener);
-            return XMLToPVDatabaseFactory.pvDatabase;
-        } finally {
-            isInUse.set(false);
-        }
+    public static void convert(PVDatabase pvDatabase, String fileName,Requester requester)
+    {
+        XMLToPVDatabaseFactory.convert(pvDatabase,fileName,requester,true,null,null,null);
     }
     
-    private static class Listener implements PVXMLListener
+    /**
+     * @author mrk
+     *
+     */
+    private static class Listener implements IncludeSubstituteXMLListener
     {
         private enum State {
             idle,
@@ -120,11 +116,11 @@ public class XMLToPVDatabaseFactory {
         private StructureState structureState = null;
         
         private PVScalar pvScalar = null;
-        private StringBuilder scalarBuilder = new StringBuilder();
+        private String scalarString = null;
         private State scalarPrevState = null;
         
         private PVArray pvArray = null;
-        private StringBuilder arrayBuilder = new StringBuilder();
+        private String arrayString = null;
         private State arrayPrevState = null;
         private int capacity = 0;
         private int length = 0;
@@ -133,180 +129,177 @@ public class XMLToPVDatabaseFactory {
         
         private String auxInfoName = null;
         private ScalarType auxInfoType = null;
-        private StringBuilder auxInfoBuilder = new StringBuilder();
+        private String auxInfoString = null;
         private State auxInfoPrevState = null;
  
         private String packageName = null;
         private ArrayList<String> importNameList = new ArrayList<String>();
         
         /* (non-Javadoc)
-         * @see org.epics.pvData.xml.PVXMLListener#endDocument()
+         * @see org.epics.pvData.xml.IncludeSubstituteXMLListener#endDocument()
          */
-        public void endDocument() {}       
-       
+        public void endDocument() {
+            if(isListener!=null) isListener.endDocument();
+        }       
         /* (non-Javadoc)
-         * @see org.epics.pvData.xml.PVXMLListener#message(java.lang.String, org.epics.pvData.pv.MessageType)
+         * @see org.epics.pvData.xml.IncludeSubstituteXMLListener#startElement(java.lang.String, java.util.Map)
          */
-        public void message(String message,MessageType messageType) {
-            requester.message(message, messageType);
-        }
-       
-        /* (non-Javadoc)
-         * @see org.epics.pvData.xml.PVXMLListener#startElement(java.lang.String, java.util.Map)
-         */
-        public void startElement(String qName,Map<String,String> attributes)
+        public void startElement(String name,Map<String,String> attributes)
         {
+            if(isListener!=null) isListener.startElement(name, attributes);
             switch(state) {
             case idle:
-                if(qName.equals("structure")) {
-                    startStructure(qName,attributes);
-                } else if(qName.equals("record")) {
-                    startRecord(qName,attributes);
-                } else if(qName.equals("package")) {
-                    String name = attributes.get("name");
-                    if(name==null || name.length() == 0) {
+                if(name.equals("structure")) {
+                    startStructure(name,attributes);
+                } else if(name.equals("record")) {
+                    startRecord(name,attributes);
+                } else if(name.equals("package")) {
+                    String value = attributes.get("name");
+                    if(value==null || value.length() == 0) {
                         iocxmlReader.message("name not defined",MessageType.error);
-                    } else if(name.indexOf('.')<=0) {
+                    } else if(value.indexOf('.')<=0) {
                         iocxmlReader.message("name must have at least one embeded .",MessageType.error);
                     } else {
-                        packageName = name;
+                        packageName = value;
                     }
-                } else if(qName.equals("import")) {
-                    String name = attributes.get("name");
-                    if(name==null || name.length() == 0) {
+                } else if(name.equals("import")) {
+                    String value = attributes.get("name");
+                    if(value==null || value.length() == 0) {
                         iocxmlReader.message("name not defined",MessageType.error);
-                    } else if(name.indexOf('.')<=0) {
+                    } else if(value.indexOf('.')<=0) {
                         iocxmlReader.message("name must have at least one embeded .",MessageType.error);
                     } else {
-                        importNameList.add(name);
+                        importNameList.add(value);
                     }
                 } else {
                     iocxmlReader.message(
-                            "startElement " + qName + " not understood",
+                            "startElement " + name + " not understood",
                             MessageType.error);
                 }
                 return;
             case record:
             case structure:
-                if(qName.equals("structure")) {
-                    startStructure(qName,attributes);
-                } else if(qName.equals("scalar")) {
-                    startScalar(qName,attributes);
-                } else if(qName.equals("array")) {
-                    startScalarArray(qName,attributes);
-                } else if(qName.equals("auxInfo")) {
-                    startAttribute(qName,attributes);
+                if(name.equals("structure")) {
+                    startStructure(name,attributes);
+                } else if(name.equals("scalar")) {
+                    startScalar(name,attributes);
+                } else if(name.equals("array")) {
+                    startScalarArray(name,attributes);
+                } else if(name.equals("auxInfo")) {
+                    startAuxInfo(name,attributes);
                 } else {
                     iocxmlReader.message(
-                            "startElement " + qName + " not understood current state is structure",
+                            "startElement " + name + " not understood current state is structure",
                             MessageType.error);
                 }
                 return;
             case scalar:
-                if(qName.equals("auxInfo")) {
-                    startAttribute(qName,attributes);
+                if(name.equals("auxInfo")) {
+                    startAuxInfo(name,attributes);
                 } else {
                     iocxmlReader.message(
-                            "startElement " + qName + " not understood current state is scalar",
+                            "startElement " + name + " not understood current state is scalar",
                             MessageType.error);
                 }
                 return;
             case scalarArray:
-                if(qName.equals("auxInfo")) {
-                    startAttribute(qName,attributes);
+                if(name.equals("auxInfo")) {
+                    startAuxInfo(name,attributes);
                 } else {
                     iocxmlReader.message(
-                            "startElement " + qName + " not understood current state is scalarArray",
+                            "startElement " + name + " not understood current state is scalarArray",
                             MessageType.error);
                 }
                 return;
             case auxInfo:
                 iocxmlReader.message(
-                        "startElement " + qName + " not understood current state is auxInfo",
+                        "startElement " + name + " not understood current state is auxInfo",
                         MessageType.error);
                 return;
             default:
                 iocxmlReader.message(
-                        "startElement " + qName + " Logic Error in parser",
+                        "startElement " + name + " Logic Error in parser",
                         MessageType.error);
             }
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.xml.PVXMLListener#endElement(java.lang.String)
+         * @see org.epics.pvData.xml.IncludeSubstituteXMLListener#endElement(java.lang.String)
          */
-        public void endElement(String qName)
+        public void endElement(String name)
         {
+            if(isListener!=null) isListener.endElement(name);
             switch(state) {
             case idle:
                 return;
             case record:
-                if(qName.equals("record")) {
-                    endRecord(qName);
+                if(name.equals("record")) {
+                    endRecord(name);
                 } else {
                     iocxmlReader.message(
-                            "endElement " + qName + " not understood",
+                            "endElement " + name + " not understood",
                             MessageType.error);
                 }
                 return;
             case structure:
-                if(qName.equals("structure")) {
-                    endStructure(qName);
+                if(name.equals("structure")) {
+                    endStructure(name);
                 } else {
                     iocxmlReader.message(
-                            "endElement " + qName + " not understood",
+                            "endElement " + name + " not understood",
                             MessageType.error);
                 }
                 return;
             case scalar:
-                if(qName.equals("scalar")) {
-                    endScalar(qName);
+                if(name.equals("scalar")) {
+                    endScalar(name);
                 } else {
                     iocxmlReader.message(
-                            "endElement " + qName + " not understood",
+                            "endElement " + name + " not understood",
                             MessageType.error);
                 }
                 return;
             case scalarArray:
-                if(qName.equals("array")) {
-                    endScalarArray(qName);
+                if(name.equals("array")) {
+                    endScalarArray(name);
                 } else {
                     iocxmlReader.message(
-                            "endElement " + qName + " not understood",
+                            "endElement " + name + " not understood",
                             MessageType.error);
                 }
                 return;
             case auxInfo:
-                if(qName.equals("auxInfo")) {
-                    endAttribute(qName);
+                if(name.equals("auxInfo")) {
+                    endAuxInfo(name);
                 } else {
                     iocxmlReader.message(
-                        "endElement " + qName + " not understood",
+                        "endElement " + name + " not understood",
                         MessageType.error);
                 }
                 return;
             default:
                 iocxmlReader.message(
-                        "endElement " + qName + " Logic Error in parser",
+                        "endElement " + name + " Logic Error in parser",
                         MessageType.error);
             }
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.xml.PVXMLListener#characters(char[], int, int)
+         * @see org.epics.pvData.xml.IncludeSubstituteXMLListener#element(java.lang.String)
          */
-        public void characters(char[] ch, int start, int length)
-        {
+        @Override
+        public void element(String content) {
+            if(isListener!=null) isListener.element(content);
             switch(state) {
             case idle:
                 return;
             case structure:
                 return;
             case scalar:
-                charactersScalar(ch,start,length);
+                scalarString = content;
                 return;
             case scalarArray:
-                charactersScalarArray(ch,start,length);
+                arrayString = content;
             case auxInfo:
-                charactersAttribute(ch,start,length);
+                auxInfoString = content;
                 return;
             default:
                 return;
@@ -348,17 +341,17 @@ public class XMLToPVDatabaseFactory {
             return name;
         }
         
-        private void startRecord(String qName,Map<String,String> attributes)
+        private void startRecord(String name,Map<String,String> attributes)
         {
             if(state!=State.idle) {
                 iocxmlReader.message(
-                        "startElement " + qName + " not allowed except as top level structure",
+                        "startElement " + name + " not allowed except as top level structure",
                         MessageType.error);
                 return;
             }
             if(structureStack.size()!=0) {
                 iocxmlReader.message(
-                        "startElement " + qName + " Logic error ?",
+                        "startElement " + name + " Logic error ?",
                         MessageType.error);
                 return;
             }
@@ -398,11 +391,13 @@ public class XMLToPVDatabaseFactory {
             structureState.prevState = state;
             structureState.pvStructure = pvRecord.getPVStructure();
             state = State.record;
+            if(pvListener!=null) pvListener.startRecord(pvRecord);
             
         }
         
-        private void endRecord(String qName)
+        private void endRecord(String name)
         {
+            if(pvListener!=null) pvListener.endRecord();   
             PVRecord pvRecord = structureState.pvStructure.getPVRecord();
             if(!pvDatabase.addRecord(pvRecord)) {
                 iocxmlReader.message(
@@ -413,7 +408,7 @@ public class XMLToPVDatabaseFactory {
             structureState = null;
         }
         
-        private void startStructure(String qName,Map<String,String> attributes)
+        private void startStructure(String name,Map<String,String> attributes)
         {
             
             PVStructure pvStructure = null;
@@ -449,6 +444,7 @@ public class XMLToPVDatabaseFactory {
                         pvStructure = pvDataCreate.createPVStructure(null,structureName, new Field[0]);
                     }
                 }
+                if(pvListener!=null) pvListener.startStructure(pvStructure);
             } else {// field of existing structure
                 String fieldName = attributes.get("name");
                 if(fieldName==null || fieldName.length() == 0) {
@@ -493,7 +489,7 @@ public class XMLToPVDatabaseFactory {
                         pvField.replacePVField(pvStructure);	
                     }
                 }
-                
+                if(pvListener!=null) pvListener.newStructureField(pvStructure);
             }
             structureState = new StructureState();
             structureState.prevState = state;
@@ -501,23 +497,25 @@ public class XMLToPVDatabaseFactory {
             state = State.structure;
         }
         
-        private void endStructure(String qName)
+        private void endStructure(String name)
         {
             PVStructure pvStructure = structureState.pvStructure;
             if(structureStack.size()==0) {
                 pvDatabase.addStructure(pvStructure);
                 state = structureState.prevState;
                 structureState = null;
+                if(pvListener!=null) pvListener.endStructureField();
                 return;
             }
+            if(pvListener!=null) pvListener.endStructure();
             state = structureState.prevState;
             structureState = structureStack.pop();
         }
         
         
-        private void startScalar(String qName,Map<String,String> attributes)
+        private void startScalar(String name,Map<String,String> attributes)
         {
-        	scalarBuilder.setLength(0);
+        	scalarString = null;
             String fieldName = attributes.get("name");
             if(fieldName==null || fieldName.length() == 0) {
                 iocxmlReader.message("name not defined",MessageType.error);
@@ -555,37 +553,26 @@ public class XMLToPVDatabaseFactory {
                 pvStructure.appendPVField(pvScalar);
             }
             this.pvScalar = pvScalar;
+            if(pvListener!=null) pvListener.startScalar(pvScalar);
             scalarPrevState = state;
             state = State.scalar;
         }
-        private void endScalar(String qName)
+        private void endScalar(String name)
         {
-            String value = scalarBuilder.toString();
-            if(value!=null && value.length()>0) {
-                convert.fromString(pvScalar, value);
+            if(scalarString!=null && scalarString.length()>0) {
+                convert.fromString(pvScalar, scalarString);
             }
-            scalarBuilder.setLength(0);
+            scalarString = null;
             pvScalar = null;
             state = scalarPrevState;
+            if(pvListener!=null) pvListener.endScalar();
             scalarPrevState = null;
         }
         
-        private void charactersScalar(char[] ch, int start, int length)
-        {
-            while(start<ch.length && length>0
-                    && Character.isWhitespace(ch[start])) {
-                start++; length--;
-            }
-            while(length>0 && Character.isWhitespace(ch[start+ length-1])) {
-                length--;
-            }
-            if(length<=0) return;
-            scalarBuilder.append(ch,start,length);
-        }
         
-        private void startScalarArray(String qName,Map<String,String> attributes)
+        private void startScalarArray(String name,Map<String,String> attributes)
         {
-            arrayBuilder.setLength(0);
+            arrayString = null;
             String fieldName = attributes.get("name");
             if(fieldName==null || fieldName.length() == 0) {
                 iocxmlReader.message("name not defined",MessageType.error);
@@ -659,11 +646,13 @@ public class XMLToPVDatabaseFactory {
                 capacityMutable = Boolean.parseBoolean(value);
             }
             state = State.scalarArray;
+            if(pvListener!=null) pvListener.startArray(pvArray);
         }
         
-        private void endScalarArray(String qName)
+        private void endScalarArray(String name)
         {
-            String value = arrayBuilder.toString();
+            String value = arrayString;
+            arrayString = null;
             if(value!=null && value.length()>0) {
                 String[] values = null;
                 ScalarType type = pvArray.getArray().getElementType();
@@ -693,28 +682,17 @@ public class XMLToPVDatabaseFactory {
                 }
             }
             if(!capacityMutable) pvArray.setCapacityMutable(false);
-            arrayBuilder.setLength(0);
+            if(pvListener!=null) pvListener.endArray();
             pvArray = null;
             state = arrayPrevState;
             arrayPrevState = null;
         }
         
-        private void charactersScalarArray(char[] ch, int start, int length)
-        {
-            while(start<ch.length && length>0
-                    && Character.isWhitespace(ch[start])) {
-                start++; length--;
-            }
-            while(length>0 && Character.isWhitespace(ch[start+ length-1])) {
-                length--;
-            }
-            if(length<=0) return;
-            arrayBuilder.append(ch,start,length);
-        }
         
-        private void startAttribute(String qName,Map<String,String> attributes)
+        
+        private void startAuxInfo(String name,Map<String,String> attributes)
         {
-        	auxInfoBuilder.setLength(0);
+        	auxInfoString = null;
             String fieldName = attributes.get("name");
             if(fieldName==null || fieldName.length() == 0) {
                 iocxmlReader.message("name not defined",MessageType.error);
@@ -735,10 +713,8 @@ public class XMLToPVDatabaseFactory {
             state = State.auxInfo;
         }
         
-        private void endAttribute(String qName)
+        private void endAuxInfo(String name)
         {
-            String value = auxInfoBuilder.toString();
-            auxInfoBuilder.setLength(0);
             state = auxInfoPrevState;
             auxInfoPrevState = null;
             PVField pvField = null;
@@ -751,23 +727,10 @@ public class XMLToPVDatabaseFactory {
             }
             PVAuxInfo pvAttribute = pvField.getPVAuxInfo();
             PVScalar pvScalar = pvAttribute.createInfo(auxInfoName, auxInfoType);
-            if(value!=null&&value.length()>0) {
-                convert.fromString(pvScalar, value);
+            if(auxInfoString!=null && auxInfoString.length()>0) {
+                convert.fromString(pvScalar, auxInfoString);
             }
+            auxInfoString = null;
         }
-        
-        private void charactersAttribute(char[] ch, int start, int length)
-        {
-            while(start<ch.length && length>0
-                    && Character.isWhitespace(ch[start])) {
-                start++; length--;
-            }
-            while(length>0 && Character.isWhitespace(ch[start+ length-1])) {
-                length--;
-            }
-            if(length<=0) return;
-            auxInfoBuilder.append(ch,start,length);
-        }
-        
     }  
 }

@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import org.epics.pvData.pv.MessageType;
+import org.epics.pvData.pv.Requester;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
@@ -31,36 +32,43 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author mrk
  *
  */
-public class PVXMLReaderFactory {
+public class IncludeSubstituteXMLReaderFactory {
     
-    static private PVReader pvReader = new PVReader();
-    static private PVXMLListener listener = null;
+    static private final PVReader pvReader = new PVReader();
+    static private final Pattern separatorPattern = Pattern.compile("[, ]");
+    static private final Pattern equalPattern = Pattern.compile("[=]");
+    static private final StringBuilder elementContentBuilder = new StringBuilder();
+    static private Requester requester = null;
+    static private IncludeSubstituteXMLListener listener = null;
+    static private IncludeSubstituteDetailsXMLListener detailsListener = null;
+    static private boolean reportSubstitutionFailure = false;
     static private String rootElementName = null;
     static private Map<String,String> substituteMap = new TreeMap<String,String>();
     static private List<String> pathList = new ArrayList<String>();
-    static private Pattern separatorPattern = Pattern.compile("[, ]");
-    static private Pattern equalPattern = Pattern.compile("[=]");
+   
     
     /**
      * Get the IOCXMLReader.
      * @return The reader.
      */
-    static public PVXMLReader getReader() {
+    static public IncludeSubstituteXMLReader getReader() {
         return pvReader;
     }
     
-    private static class PVReader implements PVXMLReader {
-        private AtomicBoolean isInUse = new AtomicBoolean(false);
+    private static class PVReader implements IncludeSubstituteXMLReader {
+        private static final AtomicBoolean isInUse = new AtomicBoolean(false);
         private Handler currentHandler = null;
         
         /* (non-Javadoc)
-         * @see org.epics.pvData.xml.PVXMLReader#parse(java.lang.String, java.lang.String, org.epics.pvData.xml.PVXMLListener)
+         * @see org.epics.pvData.xml.IncludeSubstituteXMLReader#parse(java.lang.String, java.lang.String, org.epics.pvData.xml.IncludeSubstituteXMLListener, boolean)
          */
-        public void parse(String rootElementName,String fileName, PVXMLListener listener) 
+        public void parse(String rootElementName,String fileName,Requester requester,boolean reportSubstitutionFailure,
+                IncludeSubstituteXMLListener listener,
+                IncludeSubstituteDetailsXMLListener detailsListener) 
         {
             boolean gotIt = isInUse.compareAndSet(false,true);
             if(!gotIt) {
-                listener.message("IOCReader is already active",MessageType.fatalError);
+                requester.message("IOCReader is already active",MessageType.fatalError);
                 return;
             }
             if(listener==null) {
@@ -68,10 +76,13 @@ public class PVXMLReaderFactory {
                 return;
             }
             try {
-                PVXMLReaderFactory.rootElementName = rootElementName;
-                PVXMLReaderFactory.listener = listener;
-                PVXMLReaderFactory.substituteMap.clear();
-                PVXMLReaderFactory.pathList.clear();
+                IncludeSubstituteXMLReaderFactory.rootElementName = rootElementName;
+                IncludeSubstituteXMLReaderFactory.requester = requester;
+                IncludeSubstituteXMLReaderFactory.listener = listener;
+                IncludeSubstituteXMLReaderFactory.detailsListener = detailsListener;
+                IncludeSubstituteXMLReaderFactory.reportSubstitutionFailure = reportSubstitutionFailure;
+                IncludeSubstituteXMLReaderFactory.substituteMap.clear();
+                IncludeSubstituteXMLReaderFactory.pathList.clear();
                 create(null,fileName);
             } finally {
                 isInUse.set(false);
@@ -91,6 +102,7 @@ public class PVXMLReaderFactory {
         
         private Handler create(Handler parent,String fileName) throws IllegalStateException
         {
+            if(detailsListener!=null) detailsListener.newSourceFile(fileName);
             int start = fileName.indexOf("${");
             int end = fileName.indexOf("}");
             if(start>=0 && end>start) {
@@ -122,12 +134,12 @@ public class PVXMLReaderFactory {
                 String message = String.format(
                     "IOCXMLReader.convert terminating with IOException: %s%n%s%n",
                     e.getMessage(),handler.showLocation());
-                listener.message(message, MessageType.fatalError);
+                requester.message(message, MessageType.fatalError);
             } catch (IllegalArgumentException e) {
                 String message = String.format(
                     "Illegal Argument Exception: %s%n%s%n",
                     e.getMessage(), handler.showLocation());
-                listener.message(message,MessageType.fatalError);
+                requester.message(message,MessageType.fatalError);
             }
             return handler;
         }
@@ -140,7 +152,6 @@ public class PVXMLReaderFactory {
         private int nError = 0;
         private int nFatal = 0;
         private boolean gotFirstElement = false;
-        private StringBuilder charBuilder = new StringBuilder();
         
         private Handler(Handler parent) {
             this.parent = parent;
@@ -161,7 +172,7 @@ public class PVXMLReaderFactory {
         
         private void message(String message,MessageType messageType)
         {
-            listener.message(String.format("%s %s%n%s",
+            requester.message(String.format("%s %s%n%s",
                 messageType.name(),message,showLocation()),
                 messageType);
             switch(messageType) {
@@ -191,78 +202,27 @@ public class PVXMLReaderFactory {
          */
         public void warning(SAXParseException e) throws SAXException {
             message(e.toString(),MessageType.warning);
-        }
-
-        private enum CharState {
-            idle,
-            got$,
-            gotPrefix
-        }
-        private CharState charState = CharState.idle;
-        
+        } 
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#characters(char[], int, int)
          */
         public void characters(char[] ch, int start, int length) throws SAXException {
-            switch(charState) {
-            case idle:
-                for(int i=0; i< length; i++) {
-                    if(ch[start+i]=='$') {
-                        if(i+1<length) {
-                            if(ch[start+i+1]=='{') {
-                                if(i>0) listener.characters(ch,start,i);
-                                charState = CharState.got$;
-                                characters(ch,start+i+1,length-(i+1));
-                                return;
-                            } else {
-                                continue;
-                            }
-                        } else {
-                            if(i>0) listener.characters(ch,start,i);
-                            charState = CharState.got$;
-                            return;
-                        }
-                    }
-                }
-                listener.characters(ch,start,length);
-                return;
-            case got$:
-                if(ch[start]=='{') {
-                    charState = CharState.gotPrefix;
-                    charBuilder.setLength(0);
-                    start++;
-                    if(length>1) characters(ch,start,length-1);
-                    return;
-                }
-                char[] str$ = new char[] {'$'};
-                listener.characters(str$,0,1);
-                charState = CharState.idle;
-                if(length>1) listener.characters(ch,start+1,length-1);
-                return;
-            case gotPrefix:
-                for(int i=0; i<length; i++) {
-                    if(ch[start+i]=='}') {
-                        if(i>0) charBuilder.append(ch,start,i);
-                        String from = charBuilder.toString();
-                        String to = substituteMap.get(from);
-                        if(to!=null) {
-                            char[] charArray = to.toCharArray();
-                            listener.characters(charArray,0,charArray.length);
-                        }
-                        charState = CharState.idle;
-                        if(i+1<length) characters(ch,start+i+1,length-(i+1));
-                        return;
-                    }
-                }
-                charBuilder.append(ch,start,length);
-                return;
+            while(start<ch.length && length>0
+                    && Character.isWhitespace(ch[start])) {
+                start++; length--;
             }
+            while(length>0 && Character.isWhitespace(ch[start+ length-1])) {
+                length--;
+            }
+            if(length<=0) return;
+            elementContentBuilder.append(ch,start,length);
         }
 
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#endDocument()
          */
         public void endDocument() throws SAXException {
+            if(detailsListener!=null) detailsListener.endSourceFile();
             if(parent==null) listener.endDocument();
             if(nWarning>0 || nError>0 || nFatal>0) {
                 message(String.format("%s endDocument: warning %d severe %d fatal %d",
@@ -295,8 +255,15 @@ public class PVXMLReaderFactory {
                 substituteElement(atts);
                 return;
             }
-            charBuilder.setLength(0);
+            elementContentBuilder.setLength(0);
             Map<String,String> attributes = new TreeMap<String,String>();
+            for(int i=0; i<atts.getLength(); i++) {
+                String name = atts.getQName(i);
+                String value = atts.getValue(i);
+                attributes.put(name,value);
+            }
+            if(detailsListener!=null) detailsListener.startElementBeforeSubstitution(qName, attributes);
+            attributes.clear();
             for(int i=0; i<atts.getLength(); i++) {
                 String name = atts.getQName(i);
                 String value = atts.getValue(i);
@@ -315,6 +282,7 @@ public class PVXMLReaderFactory {
                         if(temp==null) {
                             message("attribute " + name + " no substitution found",
                                     MessageType.error);
+                            builder.append(value.substring(0,end+1));
                         } else {
                             builder.append(temp);
                         }
@@ -335,23 +303,55 @@ public class PVXMLReaderFactory {
             if(qName.equals(rootElementName)) return;
             if(qName.equals("include")) return;
             if(qName.equals("substitute")) return;
+            if(elementContentBuilder.length()>0) {
+                if(detailsListener!=null) detailsListener.elementBeforeSubstitution(elementContentBuilder.toString());
+                int indexStart = 0;
+                while(indexStart<elementContentBuilder.length()) {
+                    indexStart = elementContentBuilder.indexOf("${", indexStart);
+                    if(indexStart<0) break;
+                    int indexEnd = elementContentBuilder.indexOf("}",indexStart);
+                    if(indexEnd<0) {
+                        message("invalid macro name",MessageType.error);
+                        break;
+                    }
+                    String from = elementContentBuilder.substring(indexStart+2, indexEnd);
+                    String to = substituteMap.get(from);
+                    if(to!=null) {
+                        elementContentBuilder.delete(indexStart, indexEnd+1);
+                        elementContentBuilder.insert(indexStart, to);
+                    } else {
+                        if(reportSubstitutionFailure) {
+                            message("macro substitution failed for " + from,MessageType.error);
+                        }
+                        indexStart = indexEnd + 1;
+                    }
+                }
+                listener.element(elementContentBuilder.toString());
+                elementContentBuilder.setLength(0);
+            }
             listener.endElement(qName);
         }
 
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#endPrefixMapping(java.lang.String)
          */
-        public void endPrefixMapping(String prefix) throws SAXException {}
+        public void endPrefixMapping(String prefix) throws SAXException {
+            
+        }
 
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#ignorableWhitespace(char[], int, int)
          */
-        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
+        public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+            
+        }
 
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#processingInstruction(java.lang.String, java.lang.String)
          */
-        public void processingInstruction(String target, String data) throws SAXException {}
+        public void processingInstruction(String target, String data) throws SAXException {
+            System.out.println("processingInstruction target " + target + " data " + data);
+        }
 
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#setDocumentLocator(org.xml.sax.Locator)
@@ -363,7 +363,9 @@ public class PVXMLReaderFactory {
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#skippedEntity(java.lang.String)
          */
-        public void skippedEntity(String name) throws SAXException {}
+        public void skippedEntity(String name) throws SAXException {
+            System.out.println("skippedEntity " + name);
+        }
 
         /* (non-Javadoc)
          * @see org.xml.sax.ContentHandler#startDocument()
@@ -415,14 +417,17 @@ public class PVXMLReaderFactory {
         private void includeElement(Attributes atts) {
             String removePath = atts.getValue("removePath");
             if(removePath!=null) {
-                removePath = convertFieldName(removePath);
-                if(!pathList.remove(removePath)) {
+                String convertedPath = convertFieldName(removePath);
+                if(!pathList.remove(convertedPath)) {
                     message("path " + removePath + " not in pathList",
                             MessageType.warning);
+                } else {
+                    if(detailsListener!=null) detailsListener.removePath(removePath);
                 }
             }
             String addPath = atts.getValue("addPath");
             if(addPath!=null) {
+                if(detailsListener!=null) detailsListener.addPath(addPath);
                 addPath = convertFieldName(addPath);
                 pathList.add(0, addPath);
             }
@@ -457,6 +462,8 @@ public class PVXMLReaderFactory {
                 if(substituteMap.remove(remove)==null) {
                     message(remove + " not found",
                             MessageType.warning);
+                } else {
+                    if(detailsListener!=null) detailsListener.removeSubstitute(remove);
                 }
             }
             String from = atts.getValue("from");
@@ -467,6 +474,7 @@ public class PVXMLReaderFactory {
                             MessageType.warning);
                 } else {
                     substituteMap.put(from,to);
+                    if(detailsListener!=null) detailsListener.substitute(from, to);
                 }
             }
             String fromTo = atts.getValue("fromTo");
@@ -485,6 +493,7 @@ public class PVXMLReaderFactory {
                             MessageType.warning);
                 } else {
                     substituteMap.put(parts[0],parts[1]);
+                    if(detailsListener!=null) detailsListener.substitute(parts[0],parts[1]);
                 }
             }
         }
