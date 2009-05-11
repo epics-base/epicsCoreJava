@@ -24,5 +24,6 @@
             <scalar name = "high">${doubleHigh}</scalar>
         </structure>
     </structure>
+    <scalar name = "${noTo}" scalarType = "double" />
 </record>
 </database>
