@@ -9,8 +9,15 @@ import java.nio.ByteBuffer;
 
 import junit.framework.TestCase;
 
-import org.epics.pvData.factory.AbstractPVArray;
 import org.epics.pvData.factory.AbstractPVScalar;
+import org.epics.pvData.factory.BasePVBooleanArray;
+import org.epics.pvData.factory.BasePVByteArray;
+import org.epics.pvData.factory.BasePVDoubleArray;
+import org.epics.pvData.factory.BasePVFloatArray;
+import org.epics.pvData.factory.BasePVIntArray;
+import org.epics.pvData.factory.BasePVLongArray;
+import org.epics.pvData.factory.BasePVShortArray;
+import org.epics.pvData.factory.BasePVStringArray;
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
 import org.epics.pvData.factory.PVReplaceFactory;
@@ -25,25 +32,17 @@ import org.epics.pvData.pv.IntArrayData;
 import org.epics.pvData.pv.LongArrayData;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVBoolean;
-import org.epics.pvData.pv.PVBooleanArray;
 import org.epics.pvData.pv.PVByte;
-import org.epics.pvData.pv.PVByteArray;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVDouble;
-import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVFloat;
-import org.epics.pvData.pv.PVFloatArray;
 import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVIntArray;
 import org.epics.pvData.pv.PVLong;
-import org.epics.pvData.pv.PVLongArray;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.pv.PVShort;
-import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Scalar;
@@ -925,69 +924,7 @@ public class ReplaceTest extends TestCase {
 
     }
     
-    private static abstract class MyAbstractPVArray extends AbstractPVArray implements PVArray{
-        protected int length = 0;
-        protected int capacity;
-        protected boolean capacityMutable = true;
-        /**
-         * Constructer that derived classes must call.
-         * @param parent The parent interface.
-         * @param dbdArrayField The reflection interface for the CDArray data.
-         */
-        protected MyAbstractPVArray(PVStructure parent,Array array) {
-            super(parent,array);
-        }
-        /* (non-Javadoc)
-         * @see org.epics.ioc.pv.PVArray#isCapacityMutable()
-         */
-        public boolean isCapacityMutable() {
-            return capacityMutable;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.ioc.pv.PVArray#getCapacity()
-         */
-        public int getCapacity() {
-            return capacity;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.ioc.pv.PVArray#getLength()
-         */
-        public int getLength() {
-            return length;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.ioc.pv.PVArray#setCapacity(int)
-         */
-        abstract public void setCapacity(int capacity);
-        /* (non-Javadoc)
-         * @see org.epics.ioc.pv.PVArray#setLength(int)
-         */
-        public void setLength(int len) {
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
-            if(len>capacity) setCapacity(len);
-            length = len;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        public String toString() {
-            return toString(0);
-        }
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-		 */
-		public void serialize(ByteBuffer buffer) {
-			throw new UnsupportedOperationException("not supported");
-		}
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-		 */
-		public void deserialize(ByteBuffer buffer) {
-			throw new UnsupportedOperationException("not supported");
-		}
-    }
-    private static class BooleanArray extends MyAbstractPVArray implements PVBooleanArray
+    private static class BooleanArray extends  BasePVBooleanArray
     {
         /* (non-Javadoc)
          * @see org.epics.ioc.pv.PVField#toString(int)
@@ -1053,7 +990,7 @@ public class ReplaceTest extends TestCase {
         private boolean[] value;
     }
 
-    private static class ByteArray extends MyAbstractPVArray implements PVByteArray
+    private static class ByteArray extends BasePVByteArray
     {
         /* (non-Javadoc)
          * @see org.epics.ioc.pv.PVField#toString(int)
@@ -1122,7 +1059,7 @@ public class ReplaceTest extends TestCase {
         private byte[] value;
     }
 
-    private static class ShortArray extends MyAbstractPVArray implements PVShortArray
+    private static class ShortArray extends BasePVShortArray
     {
         /* (non-Javadoc)
          * @see org.epics.ioc.pv.PVField#toString(int)
@@ -1188,7 +1125,7 @@ public class ReplaceTest extends TestCase {
         private short[] value;
     }
 
-    private static class IntArray extends MyAbstractPVArray implements PVIntArray
+    private static class IntArray extends BasePVIntArray
     {
        
         /* (non-Javadoc)
@@ -1255,7 +1192,7 @@ public class ReplaceTest extends TestCase {
         private int[] value;
     }
 
-    private static class LongArray extends MyAbstractPVArray implements PVLongArray
+    private static class LongArray extends BasePVLongArray
     {
         /* (non-Javadoc)
          * @see org.epics.ioc.pv.PVLongArray#share(org.epics.ioc.pv.PVLongArray)
@@ -1321,7 +1258,7 @@ public class ReplaceTest extends TestCase {
         private long[] value;
     }
 
-    private static class FloatArray extends MyAbstractPVArray implements PVFloatArray
+    private static class FloatArray extends BasePVFloatArray
     {
         
         /* (non-Javadoc)
@@ -1388,7 +1325,7 @@ public class ReplaceTest extends TestCase {
         private float[] value;
     }
 
-    private static class DoubleArray extends MyAbstractPVArray implements PVDoubleArray
+    private static class DoubleArray extends BasePVDoubleArray
     {
         /* (non-Javadoc)
          * @see org.epics.ioc.pv.PVDoubleArray#share(org.epics.ioc.pv.PVDoubleArray)
@@ -1456,7 +1393,7 @@ public class ReplaceTest extends TestCase {
         private double[] value;
     }
 
-    private static class StringArray extends MyAbstractPVArray implements PVStringArray
+    private static class StringArray extends BasePVStringArray
     {
         /* (non-Javadoc)
          * @see org.epics.ioc.pv.PVStringArray#share(org.epics.ioc.pv.PVStringArray)
