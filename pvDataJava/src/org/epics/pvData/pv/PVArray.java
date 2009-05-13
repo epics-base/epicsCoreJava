@@ -11,7 +11,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVArray extends PVField{
+public interface PVArray extends PVField, SerializableArray {
     /**
      * Get the Array introspection interface.
      * @return The introspection interface.
