@@ -32,8 +32,7 @@ import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.ScalarType;
 
 /**
- * JUnit test for pvAccess.
- * It also provides examples of how to use the pvAccess interfaces.
+ * JUnit test for measuring the time to execute some low level operations.
  * @author mrk
  *
  */
@@ -121,7 +120,8 @@ public class PerformTest extends TestCase {
         CurrentTimeFunction currentTimeFunction = new CurrentTimeFunction();
         TimeFunction timeFunction = TimeFunctionFactory.create(currentTimeFunction);
         double perCall = timeFunction.timeCall();
-        System.out.printf("currentTime seconds per call %e%n",perCall);
+        long value = currentTimeFunction.value;
+        System.out.printf("currentTime seconds per call %e value %d%n",perCall,value);
     }
     
     

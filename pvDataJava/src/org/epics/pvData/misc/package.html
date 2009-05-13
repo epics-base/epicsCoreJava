@@ -10,20 +10,20 @@
 <body>
 <h1 style="text-align: center">EPICS PVData : misc<br />
 package: org.epics.pvData.misc<br />
-2009.04.16</h1>
+2009.05.13</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
   <li><a href="#Enumeratio">Enumeration</a></li>
-  <li><a href="#Message">Message Support</a> 
+  <li><a href="#Message">Message Support</a>
     <ul>
       <li><a href="#Definition">Definitions</a></li>
       <li><a href="#MessageQue">MessageQueue</a></li>
     </ul>
   </li>
-  <li><a href="#Thread">Thread Support</a> 
+  <li><a href="#Thread">Thread Support</a>
     <ul>
       <li><a href="#ThreadPrio">ThreadPriority</a></li>
       <li><a href="#ThreadCrea">ThreadCreate</a></li>
@@ -32,6 +32,15 @@ CONTENTS
   </li>
   <li><a href="#Time">Time Function Call</a></li>
   <li><a href="#Linked">Linked List</a></li>
+  <li><a href="#Timer">Timer</a>
+    <ul>
+      <li><a href="#Java">Java Definitions</a></li>
+      <li><a href="#TimerCallb">TimerCallback</a></li>
+      <li><a href="#TimerNode">TimerNode</a></li>
+      <li><a href="#Timer1">Timer</a></li>
+      <li><a href="#TimerFacto">TimerFactory</a></li>
+    </ul>
+  </li>
 </ul>
 </div>
 <hr />
@@ -373,5 +382,101 @@ like:</p>
             SomeObject object = nodes[i].getObject();
             // do something with object
         }</pre>
+<hr />
+
+<h2 style="text-align: center;" id="Timer">Timer</h2>
+<hr />
+
+<p>This provides a general purpose timer. It provides the following features
+not provided by java.util.Timer and java.util.TimerTask:</p>
+<ol>
+  <li>Priority<br />
+    The java.util implementation does not allow the user to specify the
+    priority of the timer thread. This implementation does.</li>
+  <li>TimerNode<br />
+    A java.util.TimerTask is not reusable. Once a timerTask has been canceled
+    or a delay timerTask has run, the TimerTask can not be reused. Instead a
+    new TimerTask must be created. A TimerNode can be reused.</li>
+</ol>
+
+<h3 id="Java">Java Definitions</h3>
+<pre>interface Timer {
+    interface TimerCallback {
+        void callback();
+        void timerStopped();
+    }
+    interface TimerNode {
+        void cancel();
+    }
+    void scheduleAfterDelay(TimerNode timerNode,double delay);
+    void schedulePeriodic(TimerNode timerNode,double delay,double period);
+    void stop();
+}
+
+class TimerFactory {
+    static public Timer create(String threadName, ThreadPriority priority);
+    static public TimerNode createNode(TimerCallback timerCallback);
+}</pre>
+
+<h3 id="TimerCallb">TimerCallback</h3>
+
+<p>This is an interface that must be implemented by the user. It has the
+following methods: </p>
+<dl>
+  <dt>callback</dt>
+    <dd>This is called when a timer expires. This is called with no locks
+      held. When called a delay timer is no longer on the queue but a
+      periodioc timer is on a queue. Thus the callback for a delay timer can
+      issue a new schedule request but a periodic timer must not. Note the
+      explaination of TimerNode.cancel below.</dd>
+  <dt>timerStopped</dt>
+    <dd>Timer.stop was called when a timer request was queued. or if the
+      timer is stopped and a schedule request is made.</dd>
+</dl>
+
+<h3 id="TimerNode">TimerNode</h3>
+
+<p>This is an interface implemented by TimerFactory. It is allocated by
+calling TimerFactory.createNode. It is passed as an argument when scheduling
+a callback. It has the single method:</p>
+<dl>
+  <dt>cancel</dt>
+    <dd>This is called to cancel a timer request. If a callback has been
+      dequeued but the callback not called when cancel is called then a
+      callback may still happen. New schedule requests can be made after a
+      cancel request has been made.</dd>
+</dl>
+
+<h3 id="Timer1">Timer</h3>
+
+<p>This is the interface for scheduling a timer callback. A timer is created
+by calling TimerFactory.create. It has the methods:</p>
+<dl>
+  <dt>scheduleAfterDelay</dt>
+    <dd>A request to schedule a callback after a delay specified in seconds.
+      If stop has been called then TimerCallback.timerStopped is called
+      immediately.</dd>
+  <dt>schedulePeriodic</dt>
+    <dd>Schedule a periodic callback. If stop has been called then
+      TimerCallback.timerStopped is called immediately.</dd>
+  <dt>stop</dt>
+    <dd>Stop the timer. The queue is emptied and TimerCallback.timerStopped
+      is called for each element of the queue. Further schedule calls result
+      in a call to TimerCallback.timerStopped. Once stopped a timer is no
+      longer useful. A new timer must be created.</dd>
+</dl>
+
+<h3 id="TimerFacto">TimerFactory</h3>
+
+<p>This is the factory that implements the Timer and TimerNode interfaces. It
+has the methods:</p>
+<dl>
+  <dt>create</dt>
+    <dd>Create a new Timer.</dd>
+  <dt>createNode</dt>
+    <dd>Create a TimerNode. A timerNode can be used to schedule any timer but
+      a timeNode can only be on a single timer queue and only once on a given
+      timer queue.</dd>
+</dl>
 </body>
 </html>
