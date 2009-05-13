@@ -5,6 +5,7 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
@@ -57,13 +58,13 @@ public class BasePVString extends AbstractPVScalar implements PVString
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
      */
     public void serialize(ByteBuffer buffer) {
-        AbstractPVArray.serializeString(get(), buffer);
+        SerializeHelper.serializeString(get(), buffer);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
      */
     public void deserialize(ByteBuffer buffer) {
-        value = AbstractPVArray.deserializeString(buffer);
+        value = SerializeHelper.deserializeString(buffer);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)

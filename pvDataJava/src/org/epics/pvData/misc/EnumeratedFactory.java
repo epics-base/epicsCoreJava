@@ -245,13 +245,13 @@ public class EnumeratedFactory {
              * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
              */
             public void serialize(ByteBuffer buffer) {
-                AbstractPVArray.serializeString(get(), buffer);
+                SerializeHelper.serializeString(get(), buffer);
             }
             /* (non-Javadoc)
              * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
              */
             public void deserialize(ByteBuffer buffer) {
-                put(AbstractPVArray.deserializeString(buffer));
+                put(SerializeHelper.deserializeString(buffer));
             }
             // TODO equals
         }
@@ -333,22 +333,22 @@ public class EnumeratedFactory {
         		if (count > maxCount)
         			count = maxCount;
         		// write
-        		writeSize(count, buffer);
+        		SerializeHelper.writeSize(count, buffer);
         		for (int i = 0; i < count; i++)
-        			serializeString(choices[i], buffer);
+        			SerializeHelper.serializeString(choices[i], buffer);
         	}
         	/* (non-Javadoc)
         	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
         	 */
         	public void deserialize(ByteBuffer buffer) {
-        		final int size = readSize(buffer);
+        		final int size = SerializeHelper.readSize(buffer);
         		if (size >= 0) {
         			// prepare array, if necessary
         			if (size > capacity)
         				setCapacity(size);
         			// retrieve value from the buffer
         			for (int i = 0; i < size; i++)
-        				choices[i] = deserializeString(buffer);
+        				choices[i] = SerializeHelper.deserializeString(buffer);
         			// set new length
         			length = size;
         		}

@@ -8,6 +8,7 @@ package org.epics.pvData.factory;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVShortArray;
@@ -101,7 +102,7 @@ public class BasePVShortArray extends AbstractPVArray implements PVShortArray
 			count = maxCount;
 		
 		// write
-		writeSize(count, buffer);
+		SerializeHelper.writeSize(count, buffer);
 		final int end = offset + count;
 		for (int i = offset; i < end; i++)
 			buffer.putShort(value[i]);
@@ -110,7 +111,7 @@ public class BasePVShortArray extends AbstractPVArray implements PVShortArray
 	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
 	 */
 	public void deserialize(ByteBuffer buffer) {
-		final int size = readSize(buffer);
+		final int size = SerializeHelper.readSize(buffer);
 		if (size >= 0) {
 			// prepare array, if necessary
 			if (size > capacity)
