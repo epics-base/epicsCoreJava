@@ -10,21 +10,17 @@ import java.nio.ByteBuffer;
 
 
 /**
- * Base interface for serializaion.
+ * Base interface for array serializaion.
  * @author mse
  *
  */
-public interface Serializable {
+public interface SerializableArray extends Serializable {
 	
-	/**
+    /**
      * Serialize field into given buffer.
 	 * @param buffer serialization buffer.
+	 * @param offset offset in array.
+	 * @param count number of elements in array.
 	 */
-	void serialize(ByteBuffer buffer);
-
-	/**
-     * Deserialize buffer.
-	 * @param buffer serialization buffer.
-	 */
-     void deserialize(ByteBuffer buffer);
+	void serialize(ByteBuffer buffer, int offset, int count);
 }
