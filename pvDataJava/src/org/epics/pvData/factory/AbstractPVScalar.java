@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.factory;
 
-import java.nio.ByteBuffer;
-
 import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
@@ -30,10 +28,4 @@ public abstract class AbstractPVScalar extends AbstractPVField implements PVScal
     public Scalar getScalar() {
         return (Scalar)super.getField();
     }
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
-	 */
-	public void serialize(ByteBuffer buffer, int offset, int count) {
-		serialize(buffer);
-	}
 }
