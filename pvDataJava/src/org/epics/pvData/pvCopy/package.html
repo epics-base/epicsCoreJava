@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>EPICS JavaIOC: pv</title>
+</head>
+
+<body>
+<h1 style="text-align: center">EPICS PVData: pvCopy<br />
+package: org.epics.pvData.pvCopy<br />
+2009.05.19</h1>
+CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#Determinat">Determination of Modified Fields</a></li>
+  <li><a href="#Client">Client Support</a>
+    <ul>
+      <li><a href="#Definition">Definitions</a></li>
+      <li><a href="#Client1">Client Put</a></li>
+      <li><a href="#Client2">Client Get</a></li>
+    </ul>
+  </li>
+  <li><a href="#Server">Server Support</a>
+    <ul>
+      <li><a href="#Definition1">Definitions</a></li>
+      <li><a href="#Server1">Server Put</a></li>
+      <li><a href="#Server2">Server Get</a></li>
+    </ul>
+  </li>
+  <li><a href="#Monitor">Monitor Server Support</a>
+    <ul>
+      <li><a href="#Definition2">Definitions</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+<hr />
+
+<h2 style="text-align: center" id="Overview">Overview</h2>
+<hr />
+
+<p>This package provides support for copying PVData between a client and
+server. For example the client can be a channel access client and the server
+a channel access server. It allows a client to access an arbitrary set of
+fields of a PVRecord that exists on the server. This package does not provide
+support for transfering the data between client and server but provides
+support for code that does, e. g. it can be used by channel access.</p>
+
+<p>The support provides the following features:</p>
+<ul>
+  <li>On server it has copy of a subset of the PVFields from a PVRecord<br />
+    This allows the server to transfer data to/from the network without
+    keeping the PVRecord locked.</li>
+  <li>Shows modified fields<br />
+    The support keeps track of which fields are modified. Thus only modified
+    data needs to be transfered between client and server. For puts the
+    client can modify the fields it desires and the server can determine
+    which fields were modified. For gets the server can find out which fields
+    of the source PVRecord have changed since the last get and only send
+    these fields. The client can find out which fields changed. Similarly for
+    monitors.</li>
+  <li>Monitor Queues<br />
+    For monitors the support provides support for a queue of copies of the
+    data from the PVRecord.</li>
+  <li>Client sees a PVStructure<br />
+    The client sees the data as a normal PVStructurte but can also find out
+    whixh fields have changed for gets and monitors</li>
+</ul>
+
+<p>It is assumed that code which uses pvCopy is using some other code to
+perform the actual data transfer. This can be channel access but can also be
+some other code. In the examples below the data transfer code is called
+channel access.</p>
+<hr />
+
+<h2 style="text-align: center" id="Determinat">Determination of Modified
+Fields</h2>
+<hr />
+
+<p>The client and server must agree on the set of data that is passed between
+client and server. This data appears to the client as a PVStructure. The
+server also create a PVStructure for this data. Both client and server assign
+an offset to each field of this PVStructure. The offsets is determined by
+assigning an order to the fields of the PVStructure. Code that uses pvCopy
+does not have to understand details of how the offsets are assigned since the
+interfaces implemented by pvCopy hide the details. The following interface is
+presented to user code when it interates over the modified fields.</p>
+<pre>interface PVCopyNode {
+    int getOffset();
+    PVField getPVField();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>getOffset</dt>
+    <dd>The offset of the next modified field.</dd>
+  <dt>getPVField</dt>
+    <dd>The interface for the next modified field.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="Client">Client Support</h2>
+<hr />
+
+<h3 id="Definition">Definitions</h3>
+
+<p>The client interface is:</p>
+<pre>interface PVCopyClient {
+    void destroy();
+    PVStructure getPVStructure();
+    PVField getPVField(int offset);
+    int getOffset(PVField pvField);
+    void setModified(int offset);
+    void startIterator(boolean  onlyModified);
+    PVCopyNode next();
+    void clearModified();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>destroy</dt>
+    <dd>Clean up. No more calls will be made to this interface.</dd>
+  <dt>getPVStructure</dt>
+    <dd>Get the PVStructure</dd>
+  <dt>getPVField</dt>
+    <dd>Get the PVField for the specified offset</dd>
+  <dt>getOffset</dt>
+    <dd>Given a PVField, which must be in PVStructure, get the offset.</dd>
+  <dt>setModified</dt>
+    <dd>Set the field at the given offset modified.</dd>
+  <dt>startIterator</dt>
+    <dd>Start interating over the fields of PVStructure.</dd>
+  <dt>next</dt>
+    <dd>Get the next field. Note that as soon as startIterator or next is
+      called the values returned by PVCopyNode will also change.</dd>
+  <dt>clearModified</dt>
+    <dd>Clear all modified fields.</dd>
+</dl>
+
+<p>An interface for the client is created by calling the following
+factory:</p>
+<pre>class PVCopyClientFactory {
+    public static PVCopyClient create(PVStructure pvStructure);
+}</pre>
+
+<p>The only argument to create is the pvStructure. Thus the client or Channel
+Access must create a PVStructure before a PVCopyClient can be created.</p>
+
+<h3 id="Client1">Client Put</h3>
+
+<p>A client performs a put by issuing puts to the fields of PVStructure, and
+calling setModified for each field it changes. When it is ready to send the
+data it calls channel access. Channel access calls startIterator and then
+keeps calling next until null is returned. After calling next PVCopyNode
+provides the offset and PVField to send to the server.</p>
+
+<h3 id="Client2">Client Get</h3>
+
+<p>A client performs a get by asking channel access to do a get. The channel
+access client asks the channel access server to get the data which has
+changed since the last get request. When the information is returned to the
+client channel access calls getPVField for each offset returned and then
+issues a put to the PVField and calls setModified. When it is done it
+notifies the client. The client calls startIterator and next to determined
+which fields have changed.</p>
+<hr />
+
+<h2 style="text-align: center" id="Server">Server Support</h2>
+<hr />
+
+<h3 id="Definition1">Definitions</h3>
+
+<p>The server interface is:</p>
+<pre>interface PVCopyServer {
+    void destroy();
+    PVStructure getCopyPVStructure();
+    PVField getCopyPVField(int offset);
+    int getCopyOffset(PVField pvField);
+    void updateCopy();
+    void setModified(int offset);
+    void updateSource();
+    void startIterator(boolean  onlyModified);
+    PVCopyNode next();
+    void clearModified();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>destroy</dt>
+    <dd>Clean up. No more calls will be made to this interface.</dd>
+  <dt>getCopyPVStructure</dt>
+    <dd>Get the structure created by PVCopyServer.</dd>
+  <dt>getCopyPVField</dt>
+    <dd>Given an offset get the PVField.</dd>
+  <dt>getCopyOffset</dt>
+    <dd>Given a PVField, which must be in the copy PVStructure, get the
+      offset.</dd>
+  <dt>updateCopy</dt>
+    <dd>Compare each PVField in the copy with the corresponding PVField in
+      the source PVRecord. Copy any field that has changed and set the field
+      as modified. If the field is an array and the array data is being
+      shared, the pvCopy implementation monitors the PVField in the
+    PVRecord.</dd>
+  <dt>setModified</dt>
+    <dd>Set the field as modified.</dd>
+  <dt>update source</dt>
+    <dd>Copy each modified PVField of the copy PVStructure to the
+      corresponding PVField of the PVStructure.</dd>
+  <dt>startIterator</dt>
+    <dd>Start iteratoring over the fields in PVStructure.</dd>
+  <dt>next</dt>
+    <dd>Get the next field. Note that as soon as startIterator or next is
+      called the values returned by PVCopyNode will also change, i.e. the
+      implementation creates a single instance of PVCopyNode.</dd>
+  <dt>clearModified</dt>
+    <dd>Clear all the modified fields.</dd>
+</dl>
+
+<p>A PVCopyServer is created by calling:</p>
+<pre>class PVCopyServerFactory {
+    public static PVCopyServer create(PVRecord pvRecord,
+        PVField[] pvFields,boolean shareArrayData);
+}</pre>
+
+<p>The arguments are:</p>
+<dl>
+  <dt>pvRecord</dt>
+    <dd>The record the client is accessing.</dd>
+  <dt>pvFields</dt>
+    <dd>The fields of PVRecord the client is accessing. The implementation
+      will create a PVStructure which has a copy of each of these
+    PVFields.</dd>
+  <dt>shareArraydata</dt>
+    <dd>If this is true then for any array fields the underlying data array
+      will be the underlying data array of the PVField in the PVRecord. A
+      monitor will be set on the PVField of PVRecord so that the
+      implementation knows when the PVField has been modified.</dd>
+</dl>
+
+<h3 id="Server1">Server Put</h3>
+
+<p>When the client issues a put, the channel access client sends the changed
+PVFields to the server. For each field received from the client the channel
+access server updates the PVField in the PVStructure and also calls
+setModified. When all fields have been updated, update source is called.</p>
+
+<h3 id="Server2">Server Get</h3>
+
+<p>When the channel access server receives a get request from the client it
+calls updateCopy. Then it iterates over the modified fields of the
+PVStructure by calling startIterator and next. As it receives each next field
+it sends the PVField to the client.</p>
+<hr />
+
+<h2 style="text-align: center" id="Monitor">Monitor Server Support</h2>
+<hr />
+
+<h3 id="Definition2">Definitions</h3>
+<pre>interface PVCopyMonitorRequester {
+    boolean monitorEvent();
+}</pre>
+
+<p>monitorEvent is called by the PVCopyMonitorServer each time it has new
+data to report. If the client wants the event it call
+PVCopyMonitorServer.push. If not it can just ignore the event.</p>
+<pre>interface PVCopyMonitorServer {
+    void destroy();
+    PVStructure getCopyPVStructure();
+    void start(PVCopyMonitorRequester requester);
+    void stop();
+    void push();
+    boolean pop();
+    int getNumberMissed();
+    void release();
+    void startIterator(boolean  onlyModified);
+    PVCopyNode next();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>destroy</dt>
+    <dd>Clean up. No more calls will be made to this interface.</dd>
+  <dt>getCopyPVStructure</dt>
+    <dd>Get the structure created by PVCopyServer.</dd>
+  <dt>start</dt>
+    <dd>Start monitoring. An immediate monitorEvent will be called with the
+      PVStructure itself marked as modified.</dd>
+  <dt>stop</dt>
+    <dd>Stop monitoring.</dd>
+  <dt>push</dt>
+    <dd>Assuming the size of the queue is no zero, this call causes the
+      PVStructure holding data for new monitors to be put on the event queue
+      and an element taken from the free queue. If the free queue is empty
+      the oldest queue element is taken from the event queue and numberMissed
+      increased by 1. This should be called by monitorEvent.</dd>
+  <dt>pop</dt>
+    <dd>Pop the oldest element on the event queue. (false,true) is returned
+      if an element (was not, was) on the queue. This is the element that is
+      used by release, startIterator, and release</dd>
+  <dt>getNumberMissed</dt>
+    <dd>Get the number of monitor events missed, i.e. the number of times
+      push was called and no element was on the free list. This call also
+      sets numberMissed to 0.</dd>
+  <dt>release</dt>
+    <dd>Put the element of the free list.</dd>
+  <dt>startIterator</dt>
+    <dd>Start iteratoring over the fields in PVStructure.</dd>
+  <dt>next</dt>
+    <dd>Get the next field. Note that as soon as startIterator or next is
+      called the values returned by PVCopyNode will also change, i.e. the
+      implementation creates a single instance of PVCopyNode.</dd>
+</dl>
+
+<p>A PVCopyMonitorServer is created by calling:</p>
+<pre>class PVCopyMonitorServerFactory {
+    public static PVCopyMonitorServer create(PVRecord pvRecord,
+            PVField[] pvFields,
+            boolean shareArrayData,int queueSize);
+}</pre>
+
+<p>The arguments are:</p>
+<dl>
+  <dt>pvRecord</dt>
+    <dd>The record to monitor</dd>
+  <dt>pvFields</dt>
+    <dd>The fields to monitor.</dd>
+  <dt>shareArraydata</dt>
+    <dd>If this is true then for any array fields the underlying data array
+      will be the underlying data array of the PVField in the PVRecord.</dd>
+  <dt>queueSize</dt>
+    <dd>If queueSize is 0 then no queues are kept otherwise queueSize should
+      be at least 3.</dd>
+</dl>
+</body>
+</html>
