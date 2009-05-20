@@ -10,21 +10,22 @@ import org.epics.pvData.pv.*;
  *
  */
 public class PVCopyServerFactory {
-    public static PVCopyServer create(PVRecord pvRecord,
-            PVField[] pvFields,boolean shareArrayData) {
-        return new PVCopyServerImpl(pvRecord,pvFields,shareArrayData);
+    public static PVCopyServer create(PVCopy pvCopy) {
+        PVCopyServerImpl copyServer =  new PVCopyServerImpl(pvCopy);
+        copyServer.init();
+        return copyServer;
     }
     
    
     private static class PVCopyServerImpl implements PVCopyServer {
         
-        private PVCopyServerImpl(PVRecord pvRecord,PVField[] pvFields,boolean shareArrayData) {
-            this.pvRecord = pvRecord;
-            this.pvRecordFields = pvFields;
-            this.shareArrayData = shareArrayData;
+        private PVCopyServerImpl(PVCopy pvCopy) {
+            this.pvCopy = pvCopy;
         }
-        private PVRecord pvRecord = null;
-        private PVField[] pvRecordFields = null;
-        private boolean shareArrayData = false;
+        
+        private void init() {
+            
+        }
+        private PVCopy pvCopy = null;
     }
 }

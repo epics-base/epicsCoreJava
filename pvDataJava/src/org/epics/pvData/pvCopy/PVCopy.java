@@ -5,11 +5,16 @@
  */
 package org.epics.pvData.pvCopy;
 import org.epics.pvData.pv.*;
+
+
 /**
  * @author mrk
  *
  */
-public interface PVCopyNode {
-    int getOffset();
-    PVField getPVField();
+public interface PVCopy {
+    PVRecord getPVRecord();
+    PVField[] getRecordPVFields();
+    int[] getStructureOffsets();
+    Structure getStructure();
+    PVStructure createPVStructure();
 }

@@ -10,30 +10,35 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.05.19</h1>
+2009.05.20</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Determinat">Determination of Modified Fields</a></li>
+  <li><a href="#PVCopyIter">PVCopyIterator</a></li>
   <li><a href="#Client">Client Support</a>
     <ul>
-      <li><a href="#Definition">Definitions</a></li>
       <li><a href="#Client1">Client Put</a></li>
       <li><a href="#Client2">Client Get</a></li>
     </ul>
   </li>
   <li><a href="#Server">Server Support</a>
     <ul>
-      <li><a href="#Definition1">Definitions</a></li>
+      <li><a href="#PVCopy">PVCopy</a></li>
+      <li><a href="#MapToFromR">MapToFromRecord</a></li>
+    </ul>
+  </li>
+  <li><a href="#Copy">Copy Server Support</a>
+    <ul>
+      <li><a href="#Definition">Definitions</a></li>
       <li><a href="#Server1">Server Put</a></li>
       <li><a href="#Server2">Server Get</a></li>
     </ul>
   </li>
   <li><a href="#Monitor">Monitor Server Support</a>
     <ul>
-      <li><a href="#Definition2">Definitions</a></li>
+      <li><a href="#Definition1">Definitions</a></li>
     </ul>
   </li>
 </ul>
@@ -68,7 +73,7 @@ support for code that does, e. g. it can be used by channel access.</p>
     data from the PVRecord.</li>
   <li>Client sees a PVStructure<br />
     The client sees the data as a normal PVStructurte but can also find out
-    whixh fields have changed for gets and monitors</li>
+    which fields have changed for gets and monitors</li>
 </ul>
 
 <p>It is assumed that code which uses pvCopy is using some other code to
@@ -77,86 +82,83 @@ some other code. In the examples below the data transfer code is called
 channel access.</p>
 <hr />
 
-<h2 style="text-align: center" id="Determinat">Determination of Modified
-Fields</h2>
+<h2 style="text-align: center" id="PVCopyIter">PVCopyIterator</h2>
 <hr />
 
-<p>The client and server must agree on the set of data that is passed between
-client and server. This data appears to the client as a PVStructure. The
-server also create a PVStructure for this data. Both client and server assign
-an offset to each field of this PVStructure. The offsets is determined by
-assigning an order to the fields of the PVStructure. Code that uses pvCopy
-does not have to understand details of how the offsets are assigned since the
-interfaces implemented by pvCopy hide the details. The following interface is
-presented to user code when it interates over the modified fields.</p>
-<pre>interface PVCopyNode {
+<p>The client and server must agree on the data that is passed between client
+and server. This data appears to the client as a PVStructure. The server also
+create a PVStructure for this data. Both client and server use a
+PVCopyIterator, which assigns an offset to each field of this PVStructure.
+Code that uses pvCopy does not have to understand details of how the offsets
+are assigned since the interfaces implemented by pvCopy hide the details. The
+following interface is presented to user code when it interates over the
+modified fields.</p>
+<pre>interface PVCopyIterator {
+    PVStructure getPVStructure();
+    int getOffset(PVField pvField);
+    PVField getPVField(int offset);
+    void setModified(int offset);
+    void clearModified(int offset);
+    void clearModified();
+    boolean isModified(int offset);
+    boolean isModified();
+    boolean startIterator(boolean  onlyModified);
+    boolean next();
     int getOffset();
     PVField getPVField();
 }</pre>
 
 <p>where</p>
 <dl>
+  <dt>getPVStructure</dt>
+    <dd>Get the PVStructure to which this PVCopyIterator is attached.</dd>
   <dt>getOffset</dt>
-    <dd>The offset of the next modified field.</dd>
+    <dd>Given a PVField, which must be a field of PVStructure, get the
+    offset.</dd>
   <dt>getPVField</dt>
-    <dd>The interface for the next modified field.</dd>
+    <dd>Given an offset return the PVField.</dd>
+  <dt>setModified</dt>
+    <dd>set the field at this offset modified.</dd>
+  <dt>clearModified</dt>
+    <dd>Clear the field if the offset is specified and clear all fields
+      otherwise.</dd>
+  <dt>isModified</dt>
+    <dd>Is the field modified? If an argument is given it means the specified
+      field otherwise it means is any field modified.</dd>
+  <dt>startIterator</dt>
+    <dd>Start iterating. If onlyModified is true and no fields are modified
+      then false is returned. Otherwise true is returned and the following
+      methods are valid.</dd>
+  <dt>next</dt>
+    <dd>Get the next field.</dd>
+  <dt>getOffset</dt>
+    <dd>Get the current offset.</dd>
+  <dt>getPVField</dt>
+    <dd>Get the curret field.</dd>
 </dl>
+
+<p>A PVCopyIterator is create by calling PVCopyIteratorFactory.create:</p>
+<pre>class PVCopyIteratorFactory {
+    public static PVCopyIterator create(PVStructure pvStructure);
+}</pre>
+PVCopyIterator 
+
+<p>The only argument is the PVStructure. Note that server code does not
+create an iterator but uses an iterator created by one of the server classes
+described below.</p>
 <hr />
 
 <h2 style="text-align: center" id="Client">Client Support</h2>
 <hr />
-
-<h3 id="Definition">Definitions</h3>
-
-<p>The client interface is:</p>
-<pre>interface PVCopyClient {
-    void destroy();
-    PVStructure getPVStructure();
-    PVField getPVField(int offset);
-    int getOffset(PVField pvField);
-    void setModified(int offset);
-    void startIterator(boolean  onlyModified);
-    PVCopyNode next();
-    void clearModified();
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>destroy</dt>
-    <dd>Clean up. No more calls will be made to this interface.</dd>
-  <dt>getPVStructure</dt>
-    <dd>Get the PVStructure</dd>
-  <dt>getPVField</dt>
-    <dd>Get the PVField for the specified offset</dd>
-  <dt>getOffset</dt>
-    <dd>Given a PVField, which must be in PVStructure, get the offset.</dd>
-  <dt>setModified</dt>
-    <dd>Set the field at the given offset modified.</dd>
-  <dt>startIterator</dt>
-    <dd>Start interating over the fields of PVStructure.</dd>
-  <dt>next</dt>
-    <dd>Get the next field. Note that as soon as startIterator or next is
-      called the values returned by PVCopyNode will also change.</dd>
-  <dt>clearModified</dt>
-    <dd>Clear all modified fields.</dd>
-</dl>
-
-<p>An interface for the client is created by calling the following
-factory:</p>
-<pre>class PVCopyClientFactory {
-    public static PVCopyClient create(PVStructure pvStructure);
-}</pre>
-
-<p>The only argument to create is the pvStructure. Thus the client or Channel
-Access must create a PVStructure before a PVCopyClient can be created.</p>
+Channel Access for the client just creates a PVCopyIterator and makes it
+available to the client. 
 
 <h3 id="Client1">Client Put</h3>
 
-<p>A client performs a put by issuing puts to the fields of PVStructure, and
+<p>A client performs a put by issuing puts the fields of PVStructure, and
 calling setModified for each field it changes. When it is ready to send the
 data it calls channel access. Channel access calls startIterator and then
-keeps calling next until null is returned. After calling next PVCopyNode
-provides the offset and PVField to send to the server.</p>
+keeps calling next until null is returned.</p>
 
 <h3 id="Client2">Client Get</h3>
 
@@ -172,73 +174,218 @@ which fields have changed.</p>
 <h2 style="text-align: center" id="Server">Server Support</h2>
 <hr />
 
-<h3 id="Definition1">Definitions</h3>
+<p>Interfaces PVCopy and MapToFromRecord are used by a channel access server
+to create and manage a PVStructure that has a structure that is the same as a
+set of fields in a PVRecord. This interface is used for get,put, and monitor
+requests. After PVCopy and MapToFromRecord are described section "Copy Server
+Support" describes support for get and put and section "Monitor Server
+Support" describes support for monitors.</p>
+
+<h3 id="PVCopy">PVCopy</h3>
+
+<p>The interface for PVCopy is:</p>
+<pre>interface PVCopy {
+    PVRecord getPVRecord();
+    PVField[] getRecordPVFields();
+    int[] getStructureOffsets();
+    Structure getStructure();
+    PVStructure createPVStructure();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>getPVRecord</dt>
+    <dd>Get the PVRecord to which the server is attached.</dd>
+  <dt>getRecordPVFields</dt>
+    <dd>Get the set of fields in the PVRecord to which the server is
+      attached. Note the a field can be a structure.</dd>
+  <dt>getStructureOffsets</dt>
+    <dd>An array of offsets into a PVStructure. offset[index] is the offset
+      into a PVStructure of the getRecordPVFields[index] of the PVRecord.
+      Normally channel access does not use this method but other code
+      implemented by pvCopy does.</dd>
+  <dt>getStructure</dt>
+    <dd>Get the introspection interface for the structure that that describes
+      the fields in the copy.</dd>
+  <dt>createPVStructure</dt>
+    <dd>Create a PVStructure that holds the copy.</dd>
+</dl>
+
+<p>A PVCopy is created by calling:</p>
+<pre>class PVCopyFactory {
+    public static PVCopy create(PVRecord pvRecord,PVStructure request);
+}</pre>
+
+<p>pvRecord is the record that the server is accessing. request describes the
+set of fields to be accessed. The request is itself a structured set of data
+that describes the fields. The following describes a request using the pvData
+xml syntax but an actual client/sever will probably create a request without
+using the xml support.</p>
+
+<p>The simplest form of a request is an empty structure. In this case the
+entire PVRecord is accessed, i.e. getRecordPVFields will return ar array of
+length 1 and the field will be the top level PVStructure for the PVRecord.</p>
+
+<p>If not empty, the request is a structure that has all the form:</p>
+<pre>&lt;structure&gt;
+    &lt;scalar name = "name" scalarType = "string"&gt;value&lt;/scalar&gt;
+    &lt;structure name = "name"&gt;
+        &lt;!-- scalar and structure definitions --&gt;
+    &lt;!-- more scalar and structure definitions --&gt;
+&lt;/structure&gt;</pre>
+
+<p>where</p>
+<dl>
+  <dt>name</dt>
+    <dd>This will be the name assigned to a field within the Structure that
+      describes the copy of the data.</dd>
+  <dt>value</dt>
+    <dd>This is the full name of the field within PVRecord.</dd>
+</dl>
+
+<p>If the field definition is a structure then each field in the structure is
+again either a string or a structure, i.e. a recursive definition appears.</p>
+
+<p>Assume that the PVRecord has the definition:</p>
+<pre>&lt;record name ="powerSupply"&gt;
+   &lt;structure name = "alarm" extends = "alarm"&gt;
+   &lt;structure name = "timeStamp" extends = "timeStamp"&gt;
+   &lt;structure name = "voltage"&gt;
+     &lt;scalar name = "value" scalarType = "double"&gt;
+     &lt;structure name = "alarm" extends = "alarm"&gt;
+     &lt;structure name = "input" extends = "caInputLink"&gt;
+   &lt;/structure&gt;
+   &lt;structure name = "power"&gt;
+     &lt;scalar name = "value" scalarType = "double"&gt;
+     &lt;structure name = "alarm" extends = "alarm"&gt;
+     &lt;structure name = "input" extends = "caInputLink"&gt;
+   &lt;/structure&gt;
+   &lt;structure name = "current"&gt;
+     &lt;scalar name = "value" scalarType = "double"&gt;
+     &lt;structure name = "alarm" extends = "alarm"&gt;
+     &lt;structure name = "input" extends = "caInputLink"&gt;
+   &lt;/structure&gt;
+&lt;/record&gt;</pre>
+
+<p>Then if request has the form:</p>
+<pre>&lt;structure&gt;
+   &lt;scalar name = "value"&gt;power.value&lt;/scalar&gt;
+   &lt;scalar name = "alarm"&gt;alarm&lt;/scalar&gt;
+&lt;/structure&gt;</pre>
+
+<p>then the resulting PVStructure will look like:</p>
+<pre>&lt;structure&gt;
+   &lt;scalar name = "value" scalarType = "double"&gt;
+   &lt;scalar name = "alarm" extends = "alarm"&gt;
+&lt;/structure&gt;</pre>
+
+<p>If request has the form:</p>
+<pre>&lt;structure&gt;
+   &lt;scalar name = "alarm" scalarType = "string"&gt;alarm&lt;/scalar&gt;
+   &lt;scalar name = "timeStamp" scalarType = "string"&gt;timeStamp&lt;/scalar&gt;
+   &lt;structure name = "voltage"&gt;
+       &lt;scalar name = "value"&gt;voltage.value&lt;/scalar&gt;
+       &lt;scalar name = "alarm"&gt;voltagealarm&lt;/scalar&gt;
+   &lt;/structure&gt;
+   &lt;structure name = "power"&gt;
+       &lt;scalar name = "value"&gt;power.value&lt;/scalar&gt;
+       &lt;scalar name = "alarm"&gt;power.alarm&lt;/scalar&gt;
+   &lt;/structure&gt;
+   &lt;structure name = "current"&gt;
+       &lt;scalar name = "value"&gt;current.value&lt;/scalar&gt;
+       &lt;scalar name = "alarm"&gt;current.alarm&lt;/scalar&gt;
+   &lt;/structure&gt;
+&lt;/structure&gt;</pre>
+
+<p>then the resulting PVStructure will look like:</p>
+<pre>&lt;structure&gt;
+   &lt;structure name = "alarm" extends = "alarm"&gt;
+   &lt;structure name = "timeStamp" extends = "timeStamp"&gt;
+   &lt;structure name = "voltage"&gt;
+     &lt;scalar name = "value" scalarType = "double"&gt;
+     &lt;structure name = "alarm" extends = "alarm"&gt;
+   &lt;/structure&gt;
+   &lt;structure name = "power"&gt;
+     &lt;scalar name = "value" scalarType = "double"&gt;
+     &lt;structure name = "alarm" extends = "alarm"&gt;
+   &lt;/structure&gt;
+   &lt;structure name = "current"&gt;
+     &lt;scalar name = "value" scalarType = "double"&gt;
+     &lt;structure name = "alarm" extends = "alarm"&gt;
+   &lt;/structure&gt;
+&lt;/structure&gt;</pre>
+
+<h3 id="MapToFromR">MapToFromRecord</h3>
+
+<p>This interface maps between fields in PVRecord and fields in PVStructure.
+The definition for MapToFromRecord is:</p>
+<pre>interface MapToFromRecord {
+    PVCopyIterator getPVCopyIterator();
+    int getPVStructureOffset(PVField recordPVField);
+    int getPVStructureOffset(PVStructure recordPVStructure,PVField recordPVField);
+    void getPVRecordField(int offsetInStructure);
+    int getPVFieldsIndex();
+    PVField getPVField(int offset);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>getPVCopyIterator</dt>
+    <dd>Get the iterator for the structure. Note that the user does not
+      create an iterator but uses this iterator.</dd>
+  <dt>getPVStructureOffset</dt>
+    <dd>Given a PVField in the PVRecord return the offset into the
+      PVStructure.</dd>
+  <dt>getPVRecordField</dt>
+    <dd>Given an offset into the PVStructure find the index of the PVField[]
+      array of the PVRecord and the PVField of the record. The values can be
+      retrieved by calling the next two methods.</dd>
+  <dt>getPVFieldsIndex</dt>
+    <dd>Get the index computed by getPVRecordField</dd>
+  <dt>getPVField</dt>
+    <dd>Get the PVField found by getPVRecordField.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="Copy">Copy Server Support</h2>
+<hr />
+
+<h3 id="Definition">Definitions</h3>
 
 <p>The server interface is:</p>
 <pre>interface PVCopyServer {
     void destroy();
-    PVStructure getCopyPVStructure();
-    PVField getCopyPVField(int offset);
-    int getCopyOffset(PVField pvField);
+    MapToFromRecord getMapToFromRecord();
     void updateCopy();
-    void setModified(int offset);
     void updateSource();
-    void startIterator(boolean  onlyModified);
-    PVCopyNode next();
-    void clearModified();
 }</pre>
 
 <p>where</p>
 <dl>
   <dt>destroy</dt>
     <dd>Clean up. No more calls will be made to this interface.</dd>
-  <dt>getCopyPVStructure</dt>
-    <dd>Get the structure created by PVCopyServer.</dd>
-  <dt>getCopyPVField</dt>
-    <dd>Given an offset get the PVField.</dd>
-  <dt>getCopyOffset</dt>
-    <dd>Given a PVField, which must be in the copy PVStructure, get the
-      offset.</dd>
+  <dt>getMapToFromRecord</dt>
+    <dd>Get the map intrface, which also suppliesa PVCopyIterator..</dd>
   <dt>updateCopy</dt>
     <dd>Compare each PVField in the copy with the corresponding PVField in
       the source PVRecord. Copy any field that has changed and set the field
       as modified. If the field is an array and the array data is being
       shared, the pvCopy implementation monitors the PVField in the
     PVRecord.</dd>
-  <dt>setModified</dt>
-    <dd>Set the field as modified.</dd>
-  <dt>update source</dt>
-    <dd>Copy each modified PVField of the copy PVStructure to the
-      corresponding PVField of the PVStructure.</dd>
-  <dt>startIterator</dt>
-    <dd>Start iteratoring over the fields in PVStructure.</dd>
-  <dt>next</dt>
-    <dd>Get the next field. Note that as soon as startIterator or next is
-      called the values returned by PVCopyNode will also change, i.e. the
-      implementation creates a single instance of PVCopyNode.</dd>
-  <dt>clearModified</dt>
-    <dd>Clear all the modified fields.</dd>
+  <dt>updateSource</dt>
+    <dd>For each modified field in the PVStructure copy the value to the
+      corresponding field in the PVRecord.</dd>
 </dl>
 
 <p>A PVCopyServer is created by calling:</p>
 <pre>class PVCopyServerFactory {
-    public static PVCopyServer create(PVRecord pvRecord,
-        PVField[] pvFields,boolean shareArrayData);
+    public static PVCopyServer create(PVCopy pvCopy);
 }</pre>
 
 <p>The arguments are:</p>
 <dl>
-  <dt>pvRecord</dt>
-    <dd>The record the client is accessing.</dd>
-  <dt>pvFields</dt>
-    <dd>The fields of PVRecord the client is accessing. The implementation
-      will create a PVStructure which has a copy of each of these
-    PVFields.</dd>
-  <dt>shareArraydata</dt>
-    <dd>If this is true then for any array fields the underlying data array
-      will be the underlying data array of the PVField in the PVRecord. A
-      monitor will be set on the PVField of PVRecord so that the
-      implementation knows when the PVField has been modified.</dd>
+  <dt>pvCopy</dt>
+    <dd>The PVCopy interface.</dd>
 </dl>
 
 <h3 id="Server1">Server Put</h3>
@@ -259,7 +406,7 @@ it sends the PVField to the client.</p>
 <h2 style="text-align: center" id="Monitor">Monitor Server Support</h2>
 <hr />
 
-<h3 id="Definition2">Definitions</h3>
+<h3 id="Definition1">Definitions</h3>
 <pre>interface PVCopyMonitorRequester {
     boolean monitorEvent();
 }</pre>
@@ -268,24 +415,20 @@ it sends the PVField to the client.</p>
 data to report. If the client wants the event it call
 PVCopyMonitorServer.push. If not it can just ignore the event.</p>
 <pre>interface PVCopyMonitorServer {
-    void destroy();
-    PVStructure getCopyPVStructure();
+   void destroy();
     void start(PVCopyMonitorRequester requester);
     void stop();
     void push();
     boolean pop();
     int getNumberMissed();
     void release();
-    void startIterator(boolean  onlyModified);
-    PVCopyNode next();
+    MapToFromRecord getMapToFromRecord();
 }</pre>
 
 <p>where</p>
 <dl>
   <dt>destroy</dt>
     <dd>Clean up. No more calls will be made to this interface.</dd>
-  <dt>getCopyPVStructure</dt>
-    <dd>Get the structure created by PVCopyServer.</dd>
   <dt>start</dt>
     <dd>Start monitoring. An immediate monitorEvent will be called with the
       PVStructure itself marked as modified.</dd>
@@ -307,30 +450,21 @@ PVCopyMonitorServer.push. If not it can just ignore the event.</p>
       sets numberMissed to 0.</dd>
   <dt>release</dt>
     <dd>Put the element of the free list.</dd>
-  <dt>startIterator</dt>
-    <dd>Start iteratoring over the fields in PVStructure.</dd>
-  <dt>next</dt>
-    <dd>Get the next field. Note that as soon as startIterator or next is
-      called the values returned by PVCopyNode will also change, i.e. the
-      implementation creates a single instance of PVCopyNode.</dd>
+  <dt>getMapToFromRecord</dt>
+    <dd>Get the map for the queue element that for which pop was most
+      recently called..</dd>
 </dl>
 
 <p>A PVCopyMonitorServer is created by calling:</p>
 <pre>class PVCopyMonitorServerFactory {
-    public static PVCopyMonitorServer create(PVRecord pvRecord,
-            PVField[] pvFields,
-            boolean shareArrayData,int queueSize);
+    public static PVCopyMonitorServer create(PVCopy pvCopy,int queueSize);
 }</pre>
 
 <p>The arguments are:</p>
 <dl>
-  <dt>pvRecord</dt>
-    <dd>The record to monitor</dd>
-  <dt>pvFields</dt>
-    <dd>The fields to monitor.</dd>
-  <dt>shareArraydata</dt>
-    <dd>If this is true then for any array fields the underlying data array
-      will be the underlying data array of the PVField in the PVRecord.</dd>
+  <dt>pvCopy</dt>
+    <dd>The PVCopy interface which describes the record and fields to
+    monitor.</dd>
   <dt>queueSize</dt>
     <dd>If queueSize is 0 then no queues are kept otherwise queueSize should
       be at least 3.</dd>

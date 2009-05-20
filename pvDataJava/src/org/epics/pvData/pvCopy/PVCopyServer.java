@@ -12,13 +12,7 @@ import org.epics.pvData.pv.*;
  */
 public interface PVCopyServer {
     void destroy();
-    PVStructure getCopyPVStructure();
-    PVField getCopyPVField(int offset);
-    int getCopyOffset(PVField pvField);
+    MapToFromRecord getMapToFromRecord();
     void updateCopy();
-    void setModified(int offset);
     void updateSource();
-    void startIterator(boolean  onlyModified);
-    PVCopyNode next();
-    void clearModified();
 }

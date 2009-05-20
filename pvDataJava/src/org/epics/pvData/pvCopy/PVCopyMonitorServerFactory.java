@@ -10,31 +10,31 @@ import org.epics.pvData.pv.*;
  *
  */
 public class PVCopyMonitorServerFactory {
-    public static PVCopyMonitorServer create(PVRecord pvRecord,
-            PVField[] pvFields,
-            boolean shareArrayData,int queueSize)
+    public static PVCopyMonitorServer create(PVCopy pvCopy,int queueSize)
     {
-        return new PVCopyMonitorServerImpl(
-                pvRecord,pvFields,
-                shareArrayData,queueSize);
+        PVCopyMonitorServerImpl pvCopyMonitorServer = new PVCopyMonitorServerImpl(
+                pvCopy,queueSize);
+        pvCopyMonitorServer.init();
+        return pvCopyMonitorServer;
     }
     
    
     private static class PVCopyMonitorServerImpl implements PVCopyMonitorServer {
         
-        private PVCopyMonitorServerImpl(
-                PVRecord pvRecord,PVField[] pvFields,
-                boolean shareArrayData,int queueSize)
+        private PVCopyMonitorServerImpl(PVCopy pvCopy,int queueSize)
         {
-            this.pvRecord = pvRecord;
-            this.pvRecordFields = pvFields;
-            this.shareArrayData = shareArrayData;
+            this.pvCopy = pvCopy;
             this.queueSize = queueSize;
         }
+        
+        private void init() {
+            
+        }
+        private PVCopy pvCopy = null;
+        private int queueSize = 0;
         private PVRecord pvRecord = null;
         private PVField[] pvRecordFields = null;
         private PVStructure pvStructure = null;
-        private boolean shareArrayData = false;
-        private int queueSize = 0;
+        
     }
 }

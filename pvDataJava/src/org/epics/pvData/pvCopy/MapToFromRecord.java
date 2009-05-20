@@ -10,13 +10,11 @@ import org.epics.pvData.pv.*;
  * @author mrk
  *
  */
-public interface PVCopyClient {
-    void destroy();
-    PVStructure getPVStructure();
+public interface MapToFromRecord {
+    PVCopyIterator getPVCopyIterator();
+    int getPVStructureOffset(PVField recordPVField);
+    int getPVStructureOffset(PVStructure recordPVStructure,PVField recordPVField);
+    void getPVRecordField(int offsetInStructure);
+    int getPVFieldsIndex();
     PVField getPVField(int offset);
-    int getOffset(PVField pvField);
-    void setModified(int offset);
-    void startIterator(boolean  onlyModified);
-    PVCopyNode next();   
-    void clearModified();
 }

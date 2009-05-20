@@ -12,13 +12,11 @@ import org.epics.pvData.pv.*;
  */
 public interface PVCopyMonitorServer {
     void destroy();
-    PVStructure getCopyPVStructure();
     void start(PVCopyMonitorRequester requester);
     void stop();
     void push();
     boolean pop();
     int getNumberMissed();
     void release();
-    void startIterator(boolean  onlyModified);
-    PVCopyNode next();
+    MapToFromRecord getMapToFromRecord();
 }
