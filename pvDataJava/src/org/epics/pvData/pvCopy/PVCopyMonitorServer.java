@@ -18,5 +18,5 @@ public interface PVCopyMonitorServer {
     boolean pop();
     int getNumberMissed();
     void release();
-    MapToFromRecord getMapToFromRecord();
+    PVCopyIterator getIterator();
 }

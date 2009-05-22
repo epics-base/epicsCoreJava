@@ -12,7 +12,7 @@ import org.epics.pvData.pv.*;
  */
 public interface PVCopyServer {
     void destroy();
-    MapToFromRecord getMapToFromRecord();
+    PVCopyIterator getIterator();
     void updateCopy();
     void updateSource();
 }

@@ -21,13 +21,16 @@ public class PVCopyIteratorFactory {
     }
     
     private static int addNumFields(PVStructure pvStructure,int num) {
+        num++;
         PVField[] pvFields = pvStructure.getPVFields();
         for(PVField pvField : pvFields) {
             if(pvField.getField().getType()==Type.structure) {
-                num += addNumFields((PVStructure)pvField,num);
+                num = addNumFields((PVStructure)pvField,num);
+            } else {
+                num++;
             }
         }
-        return num += pvFields.length;
+        return num;
     }
     
     private static int setFields(PVField[] pvFields,int index,PVField pvField) {
@@ -49,7 +52,7 @@ public class PVCopyIteratorFactory {
         }
         
         private void init() {
-            numberFields = addNumFields(pvStructure,1);
+            numberFields = addNumFields(pvStructure,0);
             bitSet = new BitSet(numberFields);
             pvFields = new PVField[numberFields];
             setFields(pvFields,0,pvStructure);

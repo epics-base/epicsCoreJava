@@ -13,8 +13,9 @@ import org.epics.pvData.pv.*;
  */
 public interface PVCopy {
     PVRecord getPVRecord();
-    PVField[] getRecordPVFields();
-    int[] getStructureOffsets();
     Structure getStructure();
     PVStructure createPVStructure();
+    int getOffset(PVField recordPVField);
+    int getOffset(PVStructure recordPVStructure,PVField recordPVField);
+    PVField getPVField(int offset);
 }

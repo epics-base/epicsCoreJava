@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.05.20</h1>
+2009.05.22</h1>
 CONTENTS 
 
 <div class="toc">
@@ -26,7 +26,6 @@ CONTENTS
   <li><a href="#Server">Server Support</a>
     <ul>
       <li><a href="#PVCopy">PVCopy</a></li>
-      <li><a href="#MapToFromR">MapToFromRecord</a></li>
     </ul>
   </li>
   <li><a href="#Copy">Copy Server Support</a>
@@ -186,29 +185,30 @@ Support" describes support for monitors.</p>
 <p>The interface for PVCopy is:</p>
 <pre>interface PVCopy {
     PVRecord getPVRecord();
-    PVField[] getRecordPVFields();
-    int[] getStructureOffsets();
     Structure getStructure();
     PVStructure createPVStructure();
+    int getOffset(PVField recordPVField);
+    int getOffset(PVStructure recordPVStructure,PVField recordPVField);
+    PVField getPVField(int offset);
 }</pre>
 
 <p>where</p>
 <dl>
   <dt>getPVRecord</dt>
     <dd>Get the PVRecord to which the server is attached.</dd>
-  <dt>getRecordPVFields</dt>
-    <dd>Get the set of fields in the PVRecord to which the server is
-      attached. Note the a field can be a structure.</dd>
-  <dt>getStructureOffsets</dt>
-    <dd>An array of offsets into a PVStructure. offset[index] is the offset
-      into a PVStructure of the getRecordPVFields[index] of the PVRecord.
-      Normally channel access does not use this method but other code
-      implemented by pvCopy does.</dd>
   <dt>getStructure</dt>
     <dd>Get the introspection interface for the structure that that describes
       the fields in the copy.</dd>
   <dt>createPVStructure</dt>
     <dd>Create a PVStructure that holds the copy.</dd>
+  <dt>getOffset(PVField recordPVField)</dt>
+    <dd>Get the offset in the structure for the field in the record.</dd>
+  <dt>getOffset(PVStructure recordPVStructure,PVField recordPVField)</dt>
+    <dd>Get the offset on the recordPVField which is somewhere in the
+      recordPVStructure which is the the record.</dd>
+  <dt>getPVField</dt>
+    <dd>Get the field in the record that has the specified offset in the
+      structure.</dd>
 </dl>
 
 <p>A PVCopy is created by calling:</p>
@@ -314,37 +314,6 @@ again either a string or a structure, i.e. a recursive definition appears.</p>
      &lt;structure name = "alarm" extends = "alarm"&gt;
    &lt;/structure&gt;
 &lt;/structure&gt;</pre>
-
-<h3 id="MapToFromR">MapToFromRecord</h3>
-
-<p>This interface maps between fields in PVRecord and fields in PVStructure.
-The definition for MapToFromRecord is:</p>
-<pre>interface MapToFromRecord {
-    PVCopyIterator getPVCopyIterator();
-    int getPVStructureOffset(PVField recordPVField);
-    int getPVStructureOffset(PVStructure recordPVStructure,PVField recordPVField);
-    void getPVRecordField(int offsetInStructure);
-    int getPVFieldsIndex();
-    PVField getPVField(int offset);
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>getPVCopyIterator</dt>
-    <dd>Get the iterator for the structure. Note that the user does not
-      create an iterator but uses this iterator.</dd>
-  <dt>getPVStructureOffset</dt>
-    <dd>Given a PVField in the PVRecord return the offset into the
-      PVStructure.</dd>
-  <dt>getPVRecordField</dt>
-    <dd>Given an offset into the PVStructure find the index of the PVField[]
-      array of the PVRecord and the PVField of the record. The values can be
-      retrieved by calling the next two methods.</dd>
-  <dt>getPVFieldsIndex</dt>
-    <dd>Get the index computed by getPVRecordField</dd>
-  <dt>getPVField</dt>
-    <dd>Get the PVField found by getPVRecordField.</dd>
-</dl>
 <hr />
 
 <h2 style="text-align: center" id="Copy">Copy Server Support</h2>
@@ -355,7 +324,7 @@ The definition for MapToFromRecord is:</p>
 <p>The server interface is:</p>
 <pre>interface PVCopyServer {
     void destroy();
-    MapToFromRecord getMapToFromRecord();
+    PVCopyIterator getIterator();
     void updateCopy();
     void updateSource();
 }</pre>
@@ -364,8 +333,8 @@ The definition for MapToFromRecord is:</p>
 <dl>
   <dt>destroy</dt>
     <dd>Clean up. No more calls will be made to this interface.</dd>
-  <dt>getMapToFromRecord</dt>
-    <dd>Get the map intrface, which also suppliesa PVCopyIterator..</dd>
+  <dt>getIterator</dt>
+    <dd>Get the iterator for the structure.</dd>
   <dt>updateCopy</dt>
     <dd>Compare each PVField in the copy with the corresponding PVField in
       the source PVRecord. Copy any field that has changed and set the field
@@ -422,7 +391,7 @@ PVCopyMonitorServer.push. If not it can just ignore the event.</p>
     boolean pop();
     int getNumberMissed();
     void release();
-    MapToFromRecord getMapToFromRecord();
+    PVCopyIterator getIterator();
 }</pre>
 
 <p>where</p>
@@ -450,9 +419,9 @@ PVCopyMonitorServer.push. If not it can just ignore the event.</p>
       sets numberMissed to 0.</dd>
   <dt>release</dt>
     <dd>Put the element of the free list.</dd>
-  <dt>getMapToFromRecord</dt>
-    <dd>Get the map for the queue element that for which pop was most
-      recently called..</dd>
+  <dt>getIterator</dt>
+    <dd>Get the iterator for the queue element that for which pop was most
+      recently called.</dd>
 </dl>
 
 <p>A PVCopyMonitorServer is created by calling:</p>
