@@ -24,7 +24,7 @@ import org.epics.pvData.xml.XMLToPVDatabaseFactory;
 public class ParentTest extends TestCase {
     private static PVDatabase master = PVDatabaseFactory.getMaster();
     /**
-     * show the parent of various fields.
+     * show the parent of various nodes.
      */
     public static void testParent() {
         Requester iocRequester = new RequesterForTesting("accessTest");
