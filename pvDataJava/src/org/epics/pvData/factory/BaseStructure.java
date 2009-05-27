@@ -31,7 +31,7 @@ public class BaseStructure extends BaseField implements Structure {
     /**
      * Constructor for a structure field.
      * @param fieldName The field name.
-     * @param field The array of fields definitions for the fields of the structure.
+     * @param field The array of nodes definitions for the nodes of the structure.
      * @throws IllegalArgumentException if structureName is null;
      */
     public BaseStructure(String fieldName,Field[] field)
@@ -40,7 +40,7 @@ public class BaseStructure extends BaseField implements Structure {
         initializeFields(field);
     }
 	/**
-	 * Initialize fields.
+	 * Initialize nodes.
 	 * @param field
 	 * @throws IllegalArgumentException
 	 */
