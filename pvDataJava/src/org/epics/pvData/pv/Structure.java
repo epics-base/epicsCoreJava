@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
 public interface Structure extends Field{
     /**
      * Get the array of field names for the structure..
-     * @return The names of the fields.
+     * @return The names of the nodes.
      */
     String[] getFieldNames();
     /**
@@ -31,7 +31,7 @@ public interface Structure extends Field{
     /**
      * Get all the <i>Field</i>s for the structure.
      * @return An array of <i>Field</i> that describes
-     * each of the fields in the structure.
+     * each of the nodes in the structure.
      */
     Field[] getFields();
 }
