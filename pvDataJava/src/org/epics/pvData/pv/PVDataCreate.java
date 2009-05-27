@@ -52,7 +52,7 @@ public interface PVDataCreate {
      * Create implementation for PVStructure.
      * @param parent The parent interface.
      * @param fieldName The field name.
-     * @param fields Array of reflection interfaces for the subFields.
+     * @param nodes Array of reflection interfaces for the subFields.
      * @return The PVStructure implementation
      */
     PVStructure createPVStructure(PVStructure parent,String fieldName,Field[] fields);
@@ -77,7 +77,7 @@ public interface PVDataCreate {
     /**
      * Create a record instance.
      * @param recordName The instance name.
-     * @param fields Array of reflection interfaces for the subFields.
+     * @param nodes Array of reflection interfaces for the subFields.
      * @return The interface for accessing the record instance.
      */
     PVRecord createPVRecord(String recordName,Field[] fields);

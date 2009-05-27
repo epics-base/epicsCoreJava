@@ -126,12 +126,12 @@ public interface Convert {
     boolean isCopyStructureCompatible(Structure from, Structure to);
     /**
      * Copy from a structure pv to another structure pv.
-     * NOTE: Only compatible fields are copied. This means:
+     * NOTE: Only compatible nodes are copied. This means:
      * <ul>
-     *    <li>For scalar fields this means that isCopyScalarCompatible is true.</li>
-     *    <li>For array fields this means that isCopyArrayCompatible is true.</li>
-     *    <li>For structure fields this means that isCopyStructureCompatible is true.</li>
-     *    <li>Link fields are not copied.</li>
+     *    <li>For scalar nodes this means that isCopyScalarCompatible is true.</li>
+     *    <li>For array nodes this means that isCopyArrayCompatible is true.</li>
+     *    <li>For structure nodes this means that isCopyStructureCompatible is true.</li>
+     *    <li>Link nodes are not copied.</li>
      * </ul>
      * @param from The source.
      * @param to The destination.

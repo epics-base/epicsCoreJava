@@ -18,7 +18,7 @@ public interface PVStructure extends PVField {
      */
     Structure getStructure();
     /**
-     * Get the <i>PVField</i> array for the fields of the structure.
+     * Get the <i>PVField</i> array for the nodes of the structure.
      * @return array of PVField. One for each field.
      */
     PVField[] getPVFields();
