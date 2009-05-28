@@ -42,8 +42,7 @@ public class XMLToPVDatabaseFactory {
     private static IncludeSubstituteXMLReader iocxmlReader = IncludeSubstituteXMLReaderFactory.getReader();
     //  for use by private classes
     private static final Convert convert = ConvertFactory.getConvert();
-    private static final Pattern primitivePattern = Pattern.compile("[, ]");
-    private static final Pattern stringPattern = Pattern.compile("\\s*,\\s*");
+    private static final Pattern primitivePattern = Pattern.compile("[,]");
     private static PVDatabase pvDatabase;
     private static IncludeSubstituteXMLListener isListener;
     private static XMLToPVDatabaseListener pvListener;
@@ -653,13 +652,16 @@ public class XMLToPVDatabaseFactory {
             String value = arrayString;
             arrayString = null;
             if(value!=null && value.length()>0) {
+                if((value.charAt(0)=='[') && value.endsWith("]")) {
+                    int offset = value.lastIndexOf(']');
+                    value = value.substring(1, offset);
+                }
+            }
+            if(value!=null && value.length()>0) {
                 String[] values = null;
+                values = primitivePattern.split(value);
                 ScalarType type = pvArray.getArray().getElementType();
-                if(type!=ScalarType.pvString) {
-                    values = primitivePattern.split(value);
-                } else {
-                    // ignore blanks , is separator
-                    values = stringPattern.split(value);
+                if(type==ScalarType.pvString) {
                     for(int i=0; i<values.length; i++) {
                         String item = values[i];
                         int len = item.length();

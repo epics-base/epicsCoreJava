@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: xml<br />
 package: org.epics.pvData.xml<br />
-2009.05.11</h1>
-CONTENTS
+2009.05.28</h1>
+CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Database">Database XML Syntax</a>
+  <li><a href="#Database">Database XML Syntax</a> 
     <ul>
       <li><a href="#database">database</a></li>
       <li><a href="#auxInfo">auxInfo</a></li>
@@ -36,18 +36,18 @@ CONTENTS
       <li><a href="#Example">Example Include and Macro Substitution</a></li>
     </ul>
   </li>
-  <li><a href="#Database1">Database XML Code</a>
+  <li><a href="#Database1">Database XML Code</a> 
     <ul>
       <li><a href="#Warning">Warning About XML element syntax</a></li>
       <li><a href="#Java">Java Definitions</a></li>
-      <li><a href="#PVDatabase">XML To PVDatabase</a>
+      <li><a href="#PVDatabase">XML To PVDatabase</a> 
         <ul>
           <li><a href="#XMLToPVDat">XMLToPVDatabaseFactory</a></li>
           <li><a href="#XMLToPVDat1">XMLToPVDatabaseListener</a></li>
         </ul>
       </li>
       <li><a href="#Include1">Include and Substitution</a></li>
-      <li><a href="#IncludeSub">IncludeSubstituteXMLListener</a>
+      <li><a href="#IncludeSub">IncludeSubstituteXMLListener</a> 
         <ul>
           <li><a
           href="#IncludeSub1">IncludeSubstituteDetailsXMLListener</a></li>
@@ -61,7 +61,7 @@ CONTENTS
 </ul>
 </div>
 
-<p> </p>
+<p></p>
 <hr />
 
 <h2 style="text-align: center" id="Overview">Overview</h2>
@@ -246,6 +246,20 @@ scalar, scalarArray, or structure,.</p>
     <dd>Each is these is optional.</dd>
   <dt><span style="font-family: courier">arrayValues</span></dt>
 </dl>
+<p>arrayValues is a comma separated set of values appropriate to
+the element type. It can optionally be enclosed in []. Examples: </p>
+<pre>     &lt;array name = "field0" scalarType = "double"&gt;
+         2.3,5e10,66.0
+     &lt;/array&gt;
+     &lt;array name = "field1" scalarType = "double"&gt;
+         [2.3,5e10,66.0]
+     &lt;/array&gt;</pre>
+
+<p>For all array elementTypes except string the convert library will
+remove all white space so white space is permitted.
+If the elementType is string then white space is not removed.
+Also each array element is not allowed to have the character ','.
+What to do? Should also allow other escape sequences like \n, etc.</p>
 
 <p>A structure field is defined as follows:</p>
 <pre>  &lt;structure name = "fieldName" extends = "structureName"&gt;
@@ -304,23 +318,10 @@ via the corresponding Java type. Type string is implemented as a Java String.
     <dd>A valid Java string literal value</dd>
 </dl>
 
-<p>NOTE about byte, short, int. The syntax allows for end users that want
-unsigned instead of signed values. For example the following is legal syntax
-although Java would complain.</p>
+<p>NOTE about byte, short, int. The syntax allows unsigned instead of signed
+values for hex values. For example the following is legal syntax although
+Java would complain.</p>
 <pre>    &lt;scalar name = "mask" scalarType = "byte"&gt;0xff&lt;/scalar&gt;</pre>
-
-<p>For all scalarTypes except pvString, arrayValue for a scalarArray is a
-white space or comma separated set of values appropriate to the element type.
-Example: </p>
-<pre>     &lt;array name = "doubleArray" scalarType = "double"&gt;
-         2.3,5e10,66.0
-     &lt;/array&gt;</pre>
-
-<p>For pvString the elements must be separated by commas. Each element can
-optionally be encosed in double quotes. For example: </p>
-<pre>    &lt;array name = "stringArray" scalarType = "string"&gt;
-       " this has blanks ",noBlanks
-    &lt;/array&gt;</pre>
 
 <h3 style="text-align:center;" id="Examples">Examples</h3>
 
@@ -461,10 +462,10 @@ The syntax for a array initializer is:
 
 <p>The following perform the same initialization:</p>
 <pre>    &lt;array name = "intArray" scalarType = "double"&gt;
-        0.0, 1.0, 0.0
+        0.0,1.0,0.0
     &lt;/array&gt;
     &lt;array name = "intArray" scalarType = "double" length = "3"&gt;
-        0.0, 1.0
+        0.0,1.0
     &lt;/array&gt;</pre>
 
 <p>The following initializes an array of structures</p>
@@ -598,8 +599,8 @@ PVDatabase parsing, and last Include and Substitute.</p>
 <p>This is a warning for utility code that genetrates xml for PVData. The
 problem is the special XML characters:</p>
 <ul>
-  <li>Less than  &lt;</li>
-  <li>Greater Than  &gt;</li>
+  <li>Less than &lt;</li>
+  <li>Greater Than &gt;</li>
   <li>Quote "</li>
   <li>Apostrophe ''</li>
   <li>Ampersand &amp;</li>
@@ -607,17 +608,14 @@ problem is the special XML characters:</p>
 
 <p>These symbols are part of the xml syntax. This is a problem when the value
 for a string is being defined. For example:</p>
-<pre>    &lt;scalar name = "xxx" elementType = "string"&gt;value&lt;/scalar&gt;
-</pre>
+<pre>    &lt;scalar name = "xxx" elementType = "string"&gt;value&lt;/scalar&gt;</pre>
 
 <p>In order to set value = "a&lt;b" Then one of the following must be
 entered.</p>
-<pre>    &lt;scalar name = "xxx" elmentType = "string"&gt;a&amp;lt;b&lt;/scalar&gt;
-</pre>
+<pre>    &lt;scalar name = "xxx" elementType = "string"&gt;a&amp;lt;b&lt;/scalar&gt;</pre>
 
 <p>or</p>
-<pre>    &lt;scalar name = "xxx" elmentType = "string"&gt;&lt;![CDATA[a&lt;b]]&gt;&lt;/scalar&gt;
-</pre>
+<pre>    &lt;scalar name = "xxx" elmentType = "string"&gt;&lt;![CDATA[a&lt;b]]&gt;&lt;/scalar&gt;</pre>
 
 <p>I (Marty Kraimer) do not know how to determine, using SAX, which appears
 in the original xml source file. What appears to the ContentHandler callback
