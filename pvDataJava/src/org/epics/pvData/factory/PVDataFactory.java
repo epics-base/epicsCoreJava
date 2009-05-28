@@ -54,6 +54,7 @@ public class PVDataFactory {
         /* (non-Javadoc)
 		 * @see org.epics.pvData.pv.PVDataCreate#createPVField(org.epics.pvData.pv.PVStructure, org.epics.pvData.pv.Field)
 		 */
+        @Override
 		public PVField createPVField(PVStructure parent, Field field) {
 			switch(field.getType()) {
 			case scalar: 	  return createPVScalar(parent, (Scalar)field); 
@@ -62,7 +63,10 @@ public class PVDataFactory {
 			}
             throw new IllegalArgumentException("Illegal Type");
 		}
-		
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDataCreate#createPVScalar(org.epics.pvData.pv.PVStructure, org.epics.pvData.pv.Scalar)
+         */
+        @Override
         public PVScalar createPVScalar(PVStructure parent, Scalar scalar)
 		{
            switch(scalar.getScalarType()) {
@@ -81,14 +85,15 @@ public class PVDataFactory {
 		/* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVScalar(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
          */
+        @Override
         public PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType scalarType)
         {
         	return createPVScalar(parent, fieldCreate.createScalar(fieldName, scalarType));
         }
-
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVArray(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
          */
+        @Override
         public PVArray createPVArray(PVStructure parent,Array array)
         {
         	switch(array.getElementType()) {
@@ -106,13 +111,23 @@ public class PVDataFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVArray(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)
          */
+        @Override
         public PVArray createPVArray(PVStructure parent,String fieldName,ScalarType scalarType)
         {
         	return createPVArray(parent, fieldCreate.createArray(fieldName, scalarType));
         }
         /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.Structure)
+         */
+        @Override
+        public PVStructure createPVStructure(PVStructure parent,String fieldName, Structure structure)
+        {
+            return new BasePVStructure(parent,structure);
+        }
+        /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.Field[])
          */
+        @Override
         public PVStructure createPVStructure(PVStructure parent,String fieldName,Field[] fields) {
         	Structure structure = fieldCreate.createStructure(fieldName, fields);
             return new BasePVStructure(parent,structure);
@@ -120,6 +135,7 @@ public class PVDataFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.PVStructure)
          */
+        @Override
         public PVStructure createPVStructure(PVStructure parent,String fieldName,PVStructure structToClone)
         {
         	Field[] fields = null;
@@ -136,6 +152,7 @@ public class PVDataFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.PVDatabase, java.lang.String)
          */
+        @Override
         public PVStructure createPVStructure(PVStructure parent,String fieldName,PVDatabase pvDatabase,String structureName)
         {
         	PVStructure pvSource = pvDatabase.findStructure(structureName);
@@ -149,6 +166,7 @@ public class PVDataFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVRecord(java.lang.String, org.epics.pvData.pv.Field[])
          */
+        @Override
         public PVRecord createPVRecord(String recordName,Field[] fields) {
             Structure structure = fieldCreate.createStructure("", fields);
             PVRecord pvRecord = new BasePVRecord(recordName,structure);
@@ -157,6 +175,7 @@ public class PVDataFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVRecord(java.lang.String, org.epics.pvData.pv.PVStructure)
          */
+        @Override
         public PVRecord createPVRecord(String recordName,PVStructure structToClone) {
         	Field[] fields = null;
         	if(structToClone==null) {
@@ -172,6 +191,7 @@ public class PVDataFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVRecord(java.lang.String, org.epics.pvData.pv.PVDatabase, java.lang.String)
          */
+        @Override
         public PVRecord createPVRecord(String recordName,PVDatabase pvDatabase,String structureName) {
         	PVStructure structToClone = pvDatabase.findStructure(structureName);
         	if(structToClone==null) {
