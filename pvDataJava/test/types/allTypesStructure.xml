@@ -19,28 +19,28 @@
       <scalar name = "high">10.0</scalar>
   </structure>
   <array name = "booleanArray" scalarType = "boolean">
-      false true false
+      [false,true,false]
   </array>
   <array name = "byteArray" scalarType = "byte">
-      1 2 3
+      1,2,3
   </array>
   <array name = "shortArray" scalarType = "short">
-      10 20 30
+      10,20,30
   </array>
   <array name = "intArray" scalarType = "int">
-      100 200 300
+      100,200,300
   </array>
   <array name = "longArray" scalarType = "long">
-      1000 2000 3000
+      1000,2000,3000
   </array>
   <array name = "floatArray" scalarType = "float">
-      1.0 2.0 3.0
+      1.0,2.0,3.0
   </array>
   <array name = "doubleArray" scalarType = "double">
-      10.0 20.0 30.0
+      10.0,20.0,30.0
   </array>
   <array name = "stringArray" scalarType = "string">
-      one,two,three
+      [ one , two , three ]
   </array>
   <structure name = "structureArray" />
   <structure name = "arrayArray" />
