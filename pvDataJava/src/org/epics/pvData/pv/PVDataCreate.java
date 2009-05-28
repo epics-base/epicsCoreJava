@@ -52,6 +52,14 @@ public interface PVDataCreate {
      * Create implementation for PVStructure.
      * @param parent The parent interface.
      * @param fieldName The field name.
+     * @param structure The introspection interface.
+     * @return The PVStructure implementation
+     */
+    PVStructure createPVStructure(PVStructure parent,String fieldName,Structure structure);
+    /**
+     * Create implementation for PVStructure.
+     * @param parent The parent interface.
+     * @param fieldName The field name.
      * @param fields Array of reflection interfaces for the subFields.
      * @return The PVStructure implementation
      */
