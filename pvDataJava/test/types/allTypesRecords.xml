@@ -14,37 +14,39 @@
     <scalar name ="float" scalarType = "float" >1.0</scalar>
     <scalar name ="double" scalarType = "double" >-1e-5</scalar>
     <scalar name ="string" scalarType = "string">
+        <![CDATA[
         This is a string
+        ]]>
     </scalar>
     <structure name ="doubleLimit" extends = "doubleLimit">
         <scalar name = "low">0.0</scalar>
         <scalar name = "high">10.0</scalar>
     </structure>
     <array name ="booleanArray" scalarType = "boolean" length = "3">
-        false true
+        <![CDATA[
+        [false,true]
+        ]]>
     </array>
     <array name ="byteArray" scalarType = "byte"  capacity = "3">
-        1 2 3
+        1,2,3
     </array>
     <array name ="shortArray" scalarType = "short"  capacity = "4" offset = "2">
-        3 4
+        3,4
     </array>
     <array name ="intArray" scalarType = "int">
-        100 200
+        100,200
     </array>
     <array name ="longArray" scalarType = "long">
-        0xff 0xffffff
+        0xff,0xffffff
     </array>
     <array name ="floatArray" scalarType = "float">
-        1.0,2e10 -3.55e20
+        1.0,2e10,-3.55e20
     </array>
     <array name ="doubleArray" scalarType = "double"  capacity = "3">
         1.0,2.0,3.0
     </array>
     <array name ="stringArray" scalarType = "string" >
-        string1,
-        string 2,
-        string 3,string 4
+        [string1,string 2,string 3,string 4]
     </array>
     <structure name = "structureArray" >
         <structure name = "0" extends = "doubleLimit">
@@ -111,30 +113,28 @@
           <scalar name = "high">10.0</scalar>
       </structure>
       <array name ="booleanArray" scalarType = "boolean" length = "3">
-        false true
+        false,true
       </array>
       <array name ="byteArray" scalarType = "byte"  capacity = "3">
-        1 2 3
+        1,2,3
       </array>
       <array name ="shortArray" scalarType = "short"  capacity = "4" offset = "2">
-        3 4
+        3,4
       </array>
       <array name ="intArray" scalarType = "int">
-        100 200
+        100,200
       </array>
       <array name ="longArray" scalarType = "long">
-        0xff 0xffffff
+        0xff,0xffffff
       </array>
       <array name ="floatArray" scalarType = "float">
-        1.0,2e10 -3.55e20
+        1.0,2e10,-3.55e20
       </array>
       <array name ="doubleArray" scalarType = "double"  capacity = "3">
         1.0,2.0,3.0
       </array>
       <array name ="stringArray" scalarType = "string" >
-        string1,
-        string 2,
-        string 3,string 4
+        [string1,string 2,string 3,string 4]
       </array>
       <structure name = "structureArray" >
           <structure name = "0" extends = "doubleLimit">
