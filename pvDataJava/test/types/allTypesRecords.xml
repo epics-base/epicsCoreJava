@@ -113,28 +113,63 @@
           <scalar name = "high">10.0</scalar>
       </structure>
       <array name ="booleanArray" scalarType = "boolean" length = "3">
-        false,true
+        <![CDATA[
+         false,
+         
+         true
+         ]]>
       </array>
       <array name ="byteArray" scalarType = "byte"  capacity = "3">
-        1,2,3
+          <!-- test white space -->
+          <![CDATA[
+            1,
+            2,
+        
+            3
+         ]]>
       </array>
       <array name ="shortArray" scalarType = "short"  capacity = "4" offset = "2">
-        3,4
+        <![CDATA[
+        3,
+        
+        4
+        ]]>
       </array>
       <array name ="intArray" scalarType = "int">
-        100,200
+        <![CDATA[
+        100,
+        
+        200
+        ]]>
       </array>
       <array name ="longArray" scalarType = "long">
-        0xff,0xffffff
+        <![CDATA[
+        0xff,
+        
+        0xffffff
+        ]]>
       </array>
       <array name ="floatArray" scalarType = "float">
-        1.0,2e10,-3.55e20
+        <![CDATA[
+        1.0  ,2e10,
+        
+        -3.55e20
+        ]]>
       </array>
       <array name ="doubleArray" scalarType = "double"  capacity = "3">
-        1.0,2.0,3.0
+        <![CDATA[
+        1.0    ,
+        
+        2.0,3.0
+        ]]>
       </array>
       <array name ="stringArray" scalarType = "string" >
         [string1,string 2,string 3,string 4]
+      </array>
+      <array name = "emptyArrayValue" scalarType = "double">
+         <![CDATA[
+           []
+         ]]>
       </array>
       <structure name = "structureArray" >
           <structure name = "0" extends = "doubleLimit">
