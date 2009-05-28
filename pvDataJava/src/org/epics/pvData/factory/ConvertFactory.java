@@ -1874,7 +1874,17 @@ public final class ConvertFactory {
                     PVBooleanArray pvdata = (PVBooleanArray)pv;
                     boolean[] data = new boolean[1];
                     while(len>0) {
-                        data[0] = Boolean.parseBoolean(from[fromOffset]);
+                        String fromString = from[fromOffset];
+                        for(int i=fromString.length()-1; i>=0; i--) {
+                            if(Character.isWhitespace(fromString.charAt(i))) {
+                                if(i==fromString.length()-1) {
+                                    fromString = fromString.substring(0, i);
+                                } else {
+                                    fromString = fromString.substring(0, i) + fromString.substring(i+1);
+                                }
+                            }
+                        }
+                        data[0] = Boolean.parseBoolean(fromString);
                         if(pvdata.put(offset,1,data,0)==0) return ntransfered;
                         --len; ++ntransfered; ++offset; ++fromOffset;
                     }
@@ -1885,11 +1895,14 @@ public final class ConvertFactory {
                     byte[] data = new byte[1];
                     while(len>0) {
                         String fromString = from[fromOffset];
-                        while(true) {
-                            if(fromString.length()<=0) break;
-                            int index = fromString.lastIndexOf(' ');
-                            if(index<0) break;
-                            fromString = fromString.substring(0, index) + fromString.substring(index+1);
+                        for(int i=fromString.length()-1; i>=0; i--) {
+                            if(Character.isWhitespace(fromString.charAt(i))) {
+                                if(i==fromString.length()-1) {
+                                    fromString = fromString.substring(0, i);
+                                } else {
+                                    fromString = fromString.substring(0, i) + fromString.substring(i+1);
+                                }
+                            }
                         }
                         data[0] = Byte.decode(fromString);
                         if(pvdata.put(offset,1,data,0)==0) return ntransfered;
@@ -1902,11 +1915,14 @@ public final class ConvertFactory {
                     short[] data = new short[1];
                     while(len>0) {
                         String fromString = from[fromOffset];
-                        while(true) {
-                            if(fromString.length()<=0) break;
-                            int index = fromString.lastIndexOf(' ');
-                            if(index<0) break;
-                            fromString = fromString.substring(0, index) + fromString.substring(index+1);
+                        for(int i=fromString.length()-1; i>=0; i--) {
+                            if(Character.isWhitespace(fromString.charAt(i))) {
+                                if(i==fromString.length()-1) {
+                                    fromString = fromString.substring(0, i);
+                                } else {
+                                    fromString = fromString.substring(0, i) + fromString.substring(i+1);
+                                }
+                            }
                         }
                         data[0] = Short.decode(fromString);
                         if(pvdata.put(offset,1,data,0)==0) return ntransfered;
@@ -1919,11 +1935,14 @@ public final class ConvertFactory {
                     int[] data = new int[1];
                     while(len>0) {
                         String fromString = from[fromOffset];
-                        while(true) {
-                            if(fromString.length()<=0) break;
-                            int index = fromString.lastIndexOf(' ');
-                            if(index<0) break;
-                            fromString = fromString.substring(0, index) + fromString.substring(index+1);
+                        for(int i=fromString.length()-1; i>=0; i--) {
+                            if(Character.isWhitespace(fromString.charAt(i))) {
+                                if(i==fromString.length()-1) {
+                                    fromString = fromString.substring(0, i);
+                                } else {
+                                    fromString = fromString.substring(0, i) + fromString.substring(i+1);
+                                }
+                            }
                         }
                         data[0] = Integer.decode(fromString);
                         if(pvdata.put(offset,1,data,0)==0) return ntransfered;
@@ -1936,11 +1955,14 @@ public final class ConvertFactory {
                     long[] data = new long[1];
                     while(len>0) {
                         String fromString = from[fromOffset];
-                        while(true) {
-                            if(fromString.length()<=0) break;
-                            int index = fromString.lastIndexOf(' ');
-                            if(index<0) break;
-                            fromString = fromString.substring(0, index) + fromString.substring(index+1);
+                        for(int i=fromString.length()-1; i>=0; i--) {
+                            if(Character.isWhitespace(fromString.charAt(i))) {
+                                if(i==fromString.length()-1) {
+                                    fromString = fromString.substring(0, i);
+                                } else {
+                                    fromString = fromString.substring(0, i) + fromString.substring(i+1);
+                                }
+                            }
                         }
                         data[0] = Long.decode(fromString);
                         if(pvdata.put(offset,1,data,0)==0) return ntransfered;
@@ -1952,7 +1974,17 @@ public final class ConvertFactory {
                     PVFloatArray pvdata = (PVFloatArray)pv;
                     float[] data = new float[1];
                     while(len>0) {
-                        data[0] = Float.valueOf(from[fromOffset]);
+                        String fromString = from[fromOffset];
+                        for(int i=fromString.length()-1; i>=0; i--) {
+                            if(Character.isWhitespace(fromString.charAt(i))) {
+                                if(i==fromString.length()-1) {
+                                    fromString = fromString.substring(0, i);
+                                } else {
+                                    fromString = fromString.substring(0, i) + fromString.substring(i+1);
+                                }
+                            }
+                        }
+                        data[0] = Float.valueOf(fromString);
                         if(pvdata.put(offset,1,data,0)==0) return ntransfered;
                         --len; ++ntransfered; ++offset; ++fromOffset;
                     }
@@ -1962,7 +1994,17 @@ public final class ConvertFactory {
                     PVDoubleArray pvdata = (PVDoubleArray)pv;
                     double[]data = new double[1];
                     while(len>0) {
-                        data[0] = Double.valueOf(from[fromOffset]);
+                        String fromString = from[fromOffset];
+                        for(int i=fromString.length()-1; i>=0; i--) {
+                            if(Character.isWhitespace(fromString.charAt(i))) {
+                                if(i==fromString.length()-1) {
+                                    fromString = fromString.substring(0, i);
+                                } else {
+                                    fromString = fromString.substring(0, i) + fromString.substring(i+1);
+                                }
+                            }
+                        }
+                        data[0] = Double.valueOf(fromString);
                         if(pvdata.put(offset,1,data,0)==0) return ntransfered;
                         --len; ++ntransfered; ++offset; ++fromOffset;
                     }
