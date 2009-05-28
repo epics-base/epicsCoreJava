@@ -77,6 +77,25 @@ public interface Convert {
      */
     int toStringArray(PVArray pv, int offset, int length, String[]to, int toOffset);
     /**
+     * Are <i>from</i> and <i>to</i> valid arguments to copy.
+     * This first checks of both arguments have the same Type.
+     * Then calls one of isCopyScalarCompatible,
+     * isCopyArrayCompatible, or isCopyStructureCompatible.
+     * @param from The source.
+     * @param to The destination.
+     * @return (false,true) is the arguments (are not, are) compatible.
+     */
+    boolean isCopyCompatible(Field from, Field to);
+    /**
+     * Copy from a PVField to another PVField.
+     * This calls one on copyScalar, copyArray, copyStructure.
+     * The two arguments must be compatible.
+     * @param from The source.
+     * @param to The destination
+     * @throws IllegalArgumentException if the arguments are not compatible.
+     */
+    void copy(PVField from,PVField to);
+    /**
      * Are <i>from</i> and <i>to</i> valid arguments to copyScalar.
      * <i>false</i> will be returned if either argument is not a scalar as defined by <i>Type.isScalar()</i>.
      * If both are scalars the return value is <i>true</i> if any of the following are true.
