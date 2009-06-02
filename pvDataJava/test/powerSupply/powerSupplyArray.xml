@@ -1,0 +1,99 @@
+<?xml version="1.0" ?>
+<database>
+<import name = "org.epics.pvData.*" />
+<record recordName = "powerSupplyArray" >
+    <structure name = "alarm" extends = "alarm" />
+    <structure name = "timeStamp" extends = "timeStamp" />
+    <structure name = "supply">
+        <structure name = "0">
+            <structure name = "alarm" extends = "alarm" />
+            <structure name = "voltage">
+		        <scalar name = "value" scalarType = "double" />
+		        <structure name = "alarm" extends = "alarm" />
+		        <structure name = "display" extends = "display" />
+		        <structure name = "input">
+		            <scalar name = "value" scalarType = "double" />
+		            <structure name = "linearConvert">
+		                <scalar name = "deviceHigh" scalarType = "int" >4095</scalar>
+		                <scalar name = "deviceLow" scalarType = "int">0</scalar>
+		                <scalar name = "engUnitsLow" scalarType = "double">0.0</scalar>
+		                <scalar name = "engUnitsHigh" scalarType = "double">10.0</scalar>
+		            </structure>
+		            <structure name = "input">
+		                <scalar name = "pvname" scalarType = "string">adcVoltageEmbeded</scalar>
+		                <scalar name = "process" scalarType = "boolean">false</scalar>
+		            </structure>
+		        </structure>  
+		    </structure>
+		    <structure name = "current">
+		        <scalar name = "value" scalarType = "double">
+		            <auxInfo name = "supportFactory" scalarType = "string">org.epics.ioc.powerSupplyFactory</auxInfo>
+		        </scalar>
+		        <structure name = "alarm" extends = "alarm" />
+		        <structure name = "display" extends = "display" />
+		        <structure name = "output">
+		            <scalar name = "value" scalarType = "double" />
+		            <structure name = "linearConvert">
+		                <scalar name = "deviceHigh" scalarType = "int" >4095</scalar>
+		                <scalar name = "deviceLow" scalarType = "int">0</scalar>
+		                <scalar name = "engUnitsLow" scalarType = "double">0.0</scalar>
+		                <scalar name = "engUnitsHigh" scalarType = "double">10.0</scalar>
+		            </structure>
+		            <structure name = "output">
+		                <scalar name = "pvname" scalarType = "string">dacCurrentEmbeded</scalar>
+		                <scalar name = "process" scalarType = "boolean">true</scalar>
+		            </structure>
+		        </structure>
+		    </structure>
+		    <structure name = "power">
+		        <scalar name = "value" scalarType = "double" />
+		    </structure>
+        </structure>
+        <structure name = "1">
+            <structure name = "alarm" extends = "alarm" />
+            <structure name = "voltage">
+		        <scalar name = "value" scalarType = "double" />
+		        <structure name = "alarm" extends = "alarm" />
+		        <structure name = "display" extends = "display" />
+		        <structure name = "input">
+		            <scalar name = "value" scalarType = "double" />
+		            <structure name = "linearConvert">
+		                <scalar name = "deviceHigh" scalarType = "int" >4095</scalar>
+		                <scalar name = "deviceLow" scalarType = "int">0</scalar>
+		                <scalar name = "engUnitsLow" scalarType = "double">0.0</scalar>
+		                <scalar name = "engUnitsHigh" scalarType = "double">10.0</scalar>
+		            </structure>
+		            <structure name = "input">
+		                <scalar name = "pvname" scalarType = "string">adcVoltageEmbeded</scalar>
+		                <scalar name = "process" scalarType = "boolean">false</scalar>
+		            </structure>
+		        </structure>  
+		    </structure>
+		    <structure name = "current">
+		        <scalar name = "value" scalarType = "double">
+		            <auxInfo name = "supportFactory" scalarType = "string">org.epics.ioc.powerSupplyFactory</auxInfo>
+		        </scalar>
+		        <structure name = "alarm" extends = "alarm" />
+		        <structure name = "display" extends = "display" />
+		        <structure name = "output">
+		            <scalar name = "value" scalarType = "double" />
+		            <structure name = "linearConvert">
+		                <scalar name = "deviceHigh" scalarType = "int" >4095</scalar>
+		                <scalar name = "deviceLow" scalarType = "int">0</scalar>
+		                <scalar name = "engUnitsLow" scalarType = "double">0.0</scalar>
+		                <scalar name = "engUnitsHigh" scalarType = "double">10.0</scalar>
+		            </structure>
+		            <structure name = "output">
+		                <scalar name = "pvname" scalarType = "string">dacCurrentEmbeded</scalar>
+		                <scalar name = "process" scalarType = "boolean">true</scalar>
+		            </structure>
+		        </structure>
+		    </structure>
+		    <structure name = "power">
+		        <scalar name = "value" scalarType = "double" />
+		    </structure>
+        </structure>
+    </structure>
+</record>
+
+</database>
