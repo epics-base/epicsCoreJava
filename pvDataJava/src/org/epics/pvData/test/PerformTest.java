@@ -70,11 +70,14 @@ public class PerformTest extends TestCase {
         timeFunction = TimeFunctionFactory.create(convertCopy);
         perCall = timeFunction.timeCall();
         System.out.printf("convertCopy double to double seconds per call %e per element %e%n",perCall,perCall/arraySize);
-        
         convertCopy = new ConvertCopy(from,toLong);
         timeFunction = TimeFunctionFactory.create(convertCopy);
         perCall = timeFunction.timeCall();
         System.out.printf("convertCopy double to long seconds per call %e per element %e%n",perCall,perCall/arraySize);
+        Cast cast = new Cast(from);
+        timeFunction = TimeFunctionFactory.create(cast);
+        perCall = timeFunction.timeCall();
+        System.out.printf("cast PVField to PVDoubleArray seconds per call %e%n",perCall);
     }
     
     private static class ArrayCopy implements TimeFunctionRequester {
@@ -191,6 +194,24 @@ public class PerformTest extends TestCase {
         private Executor executor;
         private ExecutorNode executorNode;
         private boolean isWaiting = false;
+    }
+    
+    private static class Cast implements TimeFunctionRequester {
+        
+        private Cast(PVField from) {
+            this.from = from;
+        }
+
+        /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {
+            to = (PVDoubleArray) from;
+        }
+        
+        private PVField from;
+        private PVDoubleArray to;
+        
     }
 }
 
