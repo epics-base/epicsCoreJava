@@ -73,10 +73,12 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         	}
         	}
         }
+        if(parent==null) computeOffset();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#postPut()
      */
+    @Override
     public void postPut() {
         super.postPut();
         for(PVField pvField : pvFields) {
@@ -86,6 +88,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#postPut(org.epics.pvData.pv.PVField)
      */
+    @Override
     public void postPut(PVField subField) {
         Iterator<PVListener> iter;
         iter = super.pvListenerList.iterator();
@@ -99,18 +102,40 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getSubField(java.lang.String)
      */
+    @Override
     public PVField getSubField(String fieldName) {
         return findSubField(fieldName,this);
     }
     /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVStructure#getSubField(int)
+     */
+    @Override
+    public PVField getSubField(int fieldOffset) {
+        if(fieldOffset<=super.getFieldOffset()) {
+            if(fieldOffset==super.getFieldOffset()) return this;
+            return null;
+        }
+        if(fieldOffset>super.getNextFieldOffset()) return null;
+        for(PVField pvField: pvFields) {
+            if(pvField.getFieldOffset()==fieldOffset) return pvField;
+            if(pvField.getNextFieldOffset()<=fieldOffset) continue;
+            if(pvField.getField().getType()==Type.structure) {
+                return ((PVStructure)pvField).getSubField(fieldOffset);
+            }
+        }
+        throw new IllegalStateException("PVStructure.getSubField: Logic error");
+    }
+    /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getStructure()
      */
+    @Override
     public Structure getStructure() {
         return (Structure)getField();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#setRecord(org.epics.pvData.pv.PVRecord)
      */
+    @Override
     public void setRecord(PVRecord record) {
         super.setRecord(record);
         for(PVField pvField : pvFields) {
@@ -121,6 +146,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#replacePVField(java.lang.String, org.epics.pvData.pv.PVField)
      */
+    @Override
     public void replacePVField(String fieldName, PVField newPVField) {
         Structure structure = (Structure)super.getField();
         Field[] origFields = structure.getFields();
@@ -134,17 +160,19 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         pvFields[index] = newPVField;
         if(origFields[index]!=newPVField.getField()) replaceStructure();
+        computeOffset();
     }
-    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getPVFields()
      */
+    @Override
     public PVField[] getPVFields() {
         return pvFields;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getBooleanField(java.lang.String)
      */
+    @Override
     public PVBoolean getBooleanField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -161,6 +189,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getByteField(java.lang.String)
      */
+    @Override
     public PVByte getByteField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -177,6 +206,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getShortField(java.lang.String)
      */
+    @Override
     public PVShort getShortField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -193,6 +223,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getIntField(java.lang.String)
      */
+    @Override
     public PVInt getIntField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -209,6 +240,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getLongField(java.lang.String)
      */
+    @Override
     public PVLong getLongField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -225,6 +257,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getFloatField(java.lang.String)
      */
+    @Override
     public PVFloat getFloatField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -241,6 +274,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getDoubleField(java.lang.String)
      */
+    @Override
     public PVDouble getDoubleField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -257,6 +291,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getStringField(java.lang.String)
      */
+    @Override
     public PVString getStringField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) {
@@ -277,6 +312,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getStructureField(java.lang.String)
      */
+    @Override
     public PVStructure getStructureField(String fieldName) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -293,6 +329,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getArrayField(java.lang.String, org.epics.pvData.pv.ScalarType)
      */
+    @Override
     public PVArray getArrayField(String fieldName, ScalarType elementType) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) return null;
@@ -317,6 +354,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#appendPVField(org.epics.pvData.pv.PVField)
      */
+    @Override
     public void appendPVField(PVField pvField) {
         int origLength = pvFields.length;
         PVField[] newPVFields = new PVField[origLength + 1];
@@ -326,10 +364,12 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         newPVFields[newPVFields.length-1] = pvField;
         pvFields = newPVFields;
         replaceStructure();
+        computeOffset();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#removePVField(java.lang.String)
      */
+    @Override
     public void removePVField(String fieldName) {
         PVField pvField = getSubField(fieldName);
         if(pvField==null) {
@@ -352,6 +392,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     public String getExtendsStructureName() {
         return extendsStructureName;
     }
+    @Override
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#putExtendStructure(org.epics.pvData.pv.PVStructure)
      */
@@ -363,6 +404,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         String prefix = "structure " + super.getField().getFieldName();
         return toString(prefix,0);
@@ -370,6 +412,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#toString(int)
      */
+    @Override
     public String toString(int indentLevel) {
         return toString("structure",indentLevel);
     }       
@@ -383,6 +426,61 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         return getString(prefix,indentLevel);
     }
     
+    private void computeOffset() {
+        PVStructure pvStructure = super.getParent();
+        if(pvStructure!=null) {
+            BasePVStructure base = (BasePVStructure)pvStructure;
+            base.computeOffset();
+            return;
+        }
+        int offset = 0;
+        int nextOffset = 1;
+        for(int i=0; i < pvFields.length; i++) {
+            offset = nextOffset;
+            PVField pvField = (AbstractPVField)pvFields[i];
+            Field field = pvField.getField();
+            switch(field.getType()) {
+            case scalar:
+            case scalarArray: {
+                AbstractPVField pv = (AbstractPVField)pvField;
+                nextOffset++;
+                pv.setOffsets(offset, nextOffset);
+                break;
+            }
+            case structure: {
+                BasePVStructure pv = (BasePVStructure)pvField;
+                pv.computeOffset(offset);
+                nextOffset = pv.getNextFieldOffset();
+            }
+            }
+        }
+        super.setOffsets(0, nextOffset);
+    }
+    
+    private void computeOffset(int offset) {
+        int beginOffset = offset;
+        int nextOffset = offset + 1;
+        for(int i=0; i < pvFields.length; i++) {
+            offset = nextOffset;
+            PVField pvField = (AbstractPVField)pvFields[i];
+            Field field = pvField.getField();
+            switch(field.getType()) {
+            case scalar:
+            case scalarArray: {
+                AbstractPVField pv = (AbstractPVField)pvField;
+                nextOffset++;
+                pv.setOffsets(offset, nextOffset);
+                break;
+            }
+            case structure: {
+                BasePVStructure pv = (BasePVStructure)pvField;
+                pv.computeOffset(offset);
+                nextOffset = pv.getNextFieldOffset();
+            }
+            }
+        }
+        super.setOffsets(beginOffset, nextOffset);
+    }
     private void replaceStructure() {
         int length = pvFields.length;
         Field[] newFields = new Field[length];

@@ -202,6 +202,37 @@ public class PVDataFactory {
         	return createPVRecord(recordName,structToClone);
         }
         
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDataCreate#flattenPVStructure(org.epics.pvData.pv.PVStructure)
+         */
+        @Override
+        public PVField[] flattenPVStructure(PVStructure pvStructure) {
+            Flatten temp = new Flatten(pvStructure);
+            temp.initStructure(pvStructure);
+            return temp.pvFields;
+        }
+        
+        private static class Flatten {
+            
+            private Flatten(PVStructure pvStructure) {
+                pvFields = new PVField[pvStructure.getNextFieldOffset() - pvStructure.getFieldOffset()];
+            }
+            
+            private void initStructure(PVStructure pvStructure) {
+                this.pvFields[currentIndex++] = pvStructure;
+                PVField[] pvStructureFields = pvStructure.getPVFields();
+                for(PVField pvField : pvStructureFields) {
+                    if(pvField.getField().getType()==Type.structure) {
+                        initStructure((PVStructure)pvField);
+                    } else {
+                        this.pvFields[currentIndex++] = pvField;
+                    }
+                }
+            }
+            private PVField[] pvFields = null;
+            private int currentIndex = 0;
+        }
+        
         private void copyStructure(PVStructure from,PVStructure to)  {
         	Map<String,PVScalar> attributes = from.getPVAuxInfo().getInfos();
         	PVAuxInfo pvAttribute = to.getPVAuxInfo();

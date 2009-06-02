@@ -30,6 +30,12 @@ public interface PVStructure extends PVField {
      */
     PVField getSubField(String fieldName);
     /**
+     * Get the PVField with the specified offset.
+     * @param fieldOffset The offset.
+     * @return The PVField or null if the offset is not part of this structure.
+     */
+    PVField getSubField(int fieldOffset);
+    /**
      * Replace a field of a structure..
      * For an ioc record. This should only be called when a record is in the readyForInitialization state.
      * @param fieldName The field name.

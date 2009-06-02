@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2009.04.09</h1>
+2009.05.28</h1>
 CONTENTS 
 
 <div class="toc">
@@ -181,9 +181,6 @@ PVField</h2>
 MUST be a base class for any class that is an extension of PVField. </p>
 <pre>public abstract class AbstractPVField implements PVField{
     protected static Convert convert = ConvertFactory.getConvert();
-    protected static Pattern commaSpacePattern = Pattern.compile("[, ]");
-    protected static  Pattern periodPattern = Pattern.compile("[.]");
-
     protected AbstractPVField(PVField parent, Field field);
     protected void replaceField(Field field);
     protected void setRecord(PVRecord record);
@@ -198,12 +195,6 @@ protected methods are: </p>
   <dt>convert</dt>
     <dd>A convenience for derived classes since implementations often need
       access to the conversion facility.</dd>
-  <dt>commaSpacePattern</dt>
-    <dd>A convenience for derived classes that use a comma or space to
-      separate tokens.</dd>
-  <dt>periodPattern</dt>
-    <dd>A convenience for derived classes that use a period to separate
-      tokens.</dd>
   <dt>AbstractPVField</dt>
     <dd>The constructor which must be called by any derived class.</dd>
   <dt>replaceField</dt>

@@ -12,7 +12,28 @@ package org.epics.pvData.pv;
  *
  */
 public interface PVField extends Requester, Serializable {
-    
+    /**
+     * Get offset of the PVField field within top level structure.
+     * Every field within the PVStructure has a unique offset.
+     * The top level structure has an offset of 0.
+     * The first field within the structure has offset equal to 1.
+     * The other offsets are determined by recursively traversing each structure of the tree.
+     * @return The offset.
+     */
+    int getFieldOffset();
+    /**
+     * Get the next offset. If the field is a scalar or array field then this is just offset + 1.
+     * If the field is a structure it is the offset of the next field after this structure.
+     * Thus (nextOffset - offset) is always equal to the number of fields within the field.
+     * @return
+     */
+    int getNextFieldOffset();
+    /**
+     * Get the total number of fields in this field.
+     * This is equal to nextFieldOffset - fieldOffset.
+     * @return The number of fields.
+     */
+    int getNumberFields();
     /**
      * Get the PVAuxInfo interface for the PVField.
      * @return The PVAuxInfo interface.

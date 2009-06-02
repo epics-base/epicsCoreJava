@@ -105,4 +105,10 @@ public interface PVDataCreate {
      * @return The interface for accessing the record instance.
      */
     PVRecord createPVRecord(String recordName,PVDatabase pvDatabase,String structureName);
+    /**
+     * Get a PVField[] that has all field of pvStructure in offset order.
+     * @param pvStructure The structure.
+     * @return The array of PVField in offset order.
+     */
+    PVField[] flattenPVStructure(PVStructure pvStructure);
 }
