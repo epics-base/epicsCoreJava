@@ -38,8 +38,8 @@ public abstract class AbstractPVField implements PVField{
     private String fullFieldName = "";
     private String fullName = "";
     private Field field;
-    private PVStructure parent;
-    private PVRecord record = null;
+    private PVStructure pvParent;
+    private PVRecord pvRecord = null;
     protected LinkedList<PVListener> pvListenerList = new LinkedList<PVListener>();
     
     /**
@@ -48,7 +48,7 @@ public abstract class AbstractPVField implements PVField{
     protected static Convert convert = ConvertFactory.getConvert();
     /**
      * Constructor that must be called by derived classes.
-     * @param parent The parent PVStructure.
+     * @param pvParent The pvParent PVStructure.
      * @param field The introspection interface.
      * @throws IllegalArgumentException if field is null;
      */
@@ -58,12 +58,12 @@ public abstract class AbstractPVField implements PVField{
         }
         pvAuxInfo = new BasePVAuxInfo(this);
         this.field = field;
-        this.parent = parent;
+        this.pvParent = parent;
         if(parent==null) {
             fullFieldName = fullName = field.getFieldName();
             return;
         }
-        record = parent.getPVRecord();
+        pvRecord = parent.getPVRecord();
         createFullNameANDFullFieldName();
     }
     /**
@@ -76,10 +76,10 @@ public abstract class AbstractPVField implements PVField{
     }
     /**
      * Called by derived class to specify the PVRecord interface.
-     * @param record The PVRecord interface.
+     * @param pvRecord The PVRecord interface.
      */
     protected void setRecord(PVRecord record) {
-        this.record = record;
+        this.pvRecord = record;
         createFullNameANDFullFieldName();
     }
     /**
@@ -152,11 +152,11 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public void message(String message, MessageType messageType) {
-        if(record==null) {
+        if(pvRecord==null) {
             System.out.println(
                     messageType.toString() + " " + fullFieldName + " " + message);
         } else {
-            record.message(fullName + " " + message, messageType);
+            pvRecord.message(fullName + " " + message, messageType);
         }
     }
     /* (non-Javadoc)
@@ -171,6 +171,9 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public void setMutable(boolean value) {
+        if(!this.isMutable && value && pvRecord!=null) {
+            pvRecord.removeEveryListener();
+        }
         isMutable = value;
         
     }
@@ -199,14 +202,14 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public PVStructure getParent() {
-        return parent;
+        return pvParent;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#getPVRecord()
      */
     @Override
     public PVRecord getPVRecord() {
-       return record;
+       return pvRecord;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#replacePVField(org.epics.pvData.pv.PVField)
@@ -214,7 +217,7 @@ public abstract class AbstractPVField implements PVField{
     @Override
     public void replacePVField(PVField newPVField) {
         PVStructure parent = getParent();
-        if(parent==null) throw new IllegalArgumentException("no parent");
+        if(parent==null) throw new IllegalArgumentException("no pvParent");
         parent.replacePVField(field.getFieldName(), newPVField);
     }
     /* (non-Javadoc)
@@ -257,7 +260,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public boolean addListener(PVListener pvListener) {
-        if(!record.isRegisteredListener(pvListener)) return false;
+        if(!pvRecord.isRegisteredListener(pvListener)) return false;
         return pvListenerList.add(pvListener);
     }
     /* (non-Javadoc)
@@ -273,7 +276,7 @@ public abstract class AbstractPVField implements PVField{
     @Override
     public void postPut() {
         callListener();
-        if(parent!=null)parent.postPut(this);
+        if(pvParent!=null)pvParent.postPut(this);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#toString(int)
@@ -294,8 +297,8 @@ public abstract class AbstractPVField implements PVField{
     }
     
     private void createFullNameANDFullFieldName() {
-        if(this==record) {
-            fullName = record.getRecordName();
+        if(this==pvRecord) {
+            fullName = pvRecord.getRecordName();
             fullFieldName = "";
             return;
         }
@@ -306,7 +309,7 @@ public abstract class AbstractPVField implements PVField{
             fieldName.append(name);
         }
         PVField parent = getParent();
-        while(parent!=null && parent!=this.record) {
+        while(parent!=null && parent!=this.pvRecord) {
             field = parent.getField();
             name = field.getFieldName();
             if(name!=null && name.length()>0) {
@@ -315,8 +318,8 @@ public abstract class AbstractPVField implements PVField{
             parent = parent.getParent();
         }
         fullFieldName = fieldName.toString();
-        if(record!=null) {
-            fullName = record.getRecordName() + "." + fullFieldName;
+        if(pvRecord!=null) {
+            fullName = pvRecord.getRecordName() + "." + fullFieldName;
         } else {
             fullName = fullFieldName;
         }
