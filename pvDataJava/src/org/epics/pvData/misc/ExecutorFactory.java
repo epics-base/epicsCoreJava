@@ -62,7 +62,7 @@ public class ExecutorFactory {
         private LinkedList<ExecutorNodeImpl> runList = linkedListCreate.create();
         private ReentrantLock lock = new ReentrantLock();
         private Condition moreWork = lock.newCondition();
-        private boolean alive = true;
+        private volatile boolean alive = true;
 
         private ThreadInstance(String name,int priority) {
             threadCreate.create(name, priority, this);

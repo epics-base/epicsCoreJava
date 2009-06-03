@@ -42,7 +42,7 @@ public class TimerFactory {
     static private class TimerInstance implements Timer, Comparator<TimerNodeImpl> {
         private PriorityQueue<TimerNodeImpl> queue = new PriorityQueue<TimerNodeImpl>(16,this);
         private ThreadInstance thread;
-        private boolean isStopped = false;
+        private volatile boolean isStopped = false;
 
         private TimerInstance(String threadName, ThreadPriority priority) {
             thread = new ThreadInstance(threadName,priority.getJavaPriority());
@@ -112,7 +112,7 @@ public class TimerFactory {
 
         private class ThreadInstance implements RunnableReady {
 
-            private boolean alive = true;
+            private volatile boolean alive = true;
             private Thread thread = null;
 
             private ThreadInstance(String name,int priority) {
