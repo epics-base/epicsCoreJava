@@ -260,6 +260,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public boolean addListener(PVListener pvListener) {
+        if(pvRecord==null) return false;
         if(!pvRecord.isRegisteredListener(pvListener)) return false;
         return pvListenerList.add(pvListener);
     }
