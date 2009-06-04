@@ -19,6 +19,14 @@ public interface PVDataCreate {
      */
     PVField createPVField(PVStructure parent, Field field);
     /**
+     * Create a PVField using given a PVField to clone.
+     * This method calls the appropriate createPVScalar, createPVArray, or createPVStructure.
+     * @param parent The parent interface.
+     * @param fieldToClone The field to clone.
+     * @return The PVField implementation
+     */
+    PVField createPVField(PVStructure parent,String fieldName,PVField fieldToClone);
+    /**
      * Create an implementation of a scalar field reusing the Scalar introspection interface.
      * @param parent The parent.
      * @param scalar The introspection interface.
@@ -34,6 +42,15 @@ public interface PVDataCreate {
      */
     PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType fieldType);
     /**
+     * Create an implementation of a scalar field by cloning an existing PVScalar.
+     * The new PVScalar will have the same value and auxInfo as the original.
+     * @param parent The parent interface.
+     * @param fieldName The field name.
+     * @param scalarToClone The PVScalar to clone.
+     * @return The PVScalar implementation.
+     */
+    PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
+    /**
      * Create an implementation of an array field reusing the Array introspection interface.
      * @param parent The parent interface.
      * @param array The introspection interface.
@@ -48,6 +65,15 @@ public interface PVDataCreate {
      * @return The PVArray implementation.
      */
     PVArray createPVArray(PVStructure parent,String fieldName,ScalarType elementType);
+    /**
+     * Create an implementation of an array field by cloning an existing PVArray.
+     * The new PVArray will have the same value and auxInfo as the original.
+     * @param parent The parent interface.
+     * @param fieldName The field name.
+     * @param scalarToClone The PVScalar to clone.
+     * @return The PVArray implementation.
+     */
+    PVArray createPVArray(PVStructure parent,String fieldName,PVArray arrayToClone);
     /**
      * Create implementation for PVStructure.
      * @param parent The parent interface.
