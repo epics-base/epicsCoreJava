@@ -5,12 +5,7 @@ package org.epics.pvData.property;
 import java.util.TreeMap;
 
 import org.epics.pvData.misc.Enumerated;
-import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStringArray;
-import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.Type;
+import org.epics.pvData.pv.*;
 
 /**
  * Factory that creates Alarm
@@ -40,6 +35,10 @@ public class AlarmFactory {
         private PVString pvSeverityChoice = null;
         private PVStringArray pvSeverityChoices = null;
         private PVInt pvSeverityIndex = null;
+        private PVBoolean pvAckTransient = null;
+        private PVString pvAckSeverityChoice = null;
+        private PVStringArray pvAckSeverityChoices = null;
+        private PVInt pvAckSeverityIndex = null;
         
         private boolean isAlarm(PVField pvField) {
             if(pvField.getField().getType()!=Type.structure) return false;
@@ -53,32 +52,73 @@ public class AlarmFactory {
             pvSeverityIndex  = enumerated.getIndex();
             pvMessage = pvStructure.getStringField("message");
             if(pvMessage==null) return false;
+            pvAckTransient = pvStructure.getBooleanField("ackTransient");
+            if(pvAckTransient==null) return false;
+            pvStruct = pvStructure.getStructureField("ackSeverity");
+            if(pvStruct==null) return false;
+            enumerated = AlarmSeverity.getAlarmSeverity(pvStruct);
+            if(enumerated==null) return false;
+            pvAckSeverityChoice = enumerated.getChoice();
+            pvAckSeverityChoices = enumerated.getChoices();
+            pvAckSeverityIndex  = enumerated.getIndex();
             return true;
             
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.Alarm#getMessage()
          */
+        @Override
         public PVString getAlarmMessage() {
             return pvMessage;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.Alarm#getSeverityChoice()
          */
+        @Override
         public PVString getAlarmSeverityChoice() {
             return pvSeverityChoice;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.Alarm#getSeverityChoices()
          */
+        @Override
         public PVStringArray getAlarmSeverityChoices() {
             return pvSeverityChoices;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.Alarm#getSeverityIndex()
          */
+        @Override
         public PVInt getAlarmSeverityIndex() {
             return pvSeverityIndex;
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.property.Alarm#getAckAlarmSeverityChoice()
+         */
+        @Override
+        public PVString getAckAlarmSeverityChoice() {
+            return pvAckSeverityChoice;
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.property.Alarm#getAckAlarmSeverityChoices()
+         */
+        @Override
+        public PVStringArray getAckAlarmSeverityChoices() {
+            return pvAckSeverityChoices;
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.property.Alarm#getAckAlarmSeverityIndex()
+         */
+        @Override
+        public PVInt getAckAlarmSeverityIndex() {
+            return pvAckSeverityIndex;
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.property.Alarm#getAckTransient()
+         */
+        @Override
+        public PVBoolean getAckTransient() {
+            return null;
         }
         
     }

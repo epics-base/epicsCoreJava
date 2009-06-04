@@ -7,7 +7,7 @@ package org.epics.pvData.property;
 
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStringArray;
+import org.epics.pvData.pv.*;
 
 /**
  * Convenience interface for an alarm structure.
@@ -35,4 +35,24 @@ public interface Alarm {
      * @return The interface.
      */
     PVStringArray getAlarmSeverityChoices();
+    /**
+     * Get the interface for acknowledge transisnt alarm.
+     * @return The interface.
+     */
+    PVBoolean getAckTransient();
+    /**
+     * Get the interface for the acknowledge severity index.
+     * @return The interface.
+     */
+    PVInt getAckAlarmSeverityIndex();
+    /**
+     * Get the interface for the acknowledge severity choice.
+     * @return The interface.
+     */
+    PVString getAckAlarmSeverityChoice();
+    /**
+     * Get the interface for the acknowledge alarm severity choices.
+     * @return The interface.
+     */
+    PVStringArray getAckAlarmSeverityChoices();
 }
