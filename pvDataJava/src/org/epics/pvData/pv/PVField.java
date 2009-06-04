@@ -25,7 +25,7 @@ public interface PVField extends Requester, Serializable {
      * Get the next offset. If the field is a scalar or array field then this is just offset + 1.
      * If the field is a structure it is the offset of the next field after this structure.
      * Thus (nextOffset - offset) is always equal to the number of fields within the field.
-     * @return
+     * @return The offset.
      */
     int getNextFieldOffset();
     /**

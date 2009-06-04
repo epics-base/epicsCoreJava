@@ -70,7 +70,7 @@ public interface PVDataCreate {
      * The new PVArray will have the same value and auxInfo as the original.
      * @param parent The parent interface.
      * @param fieldName The field name.
-     * @param scalarToClone The PVScalar to clone.
+     * @param arrayToClone The PVArray to clone.
      * @return The PVArray implementation.
      */
     PVArray createPVArray(PVStructure parent,String fieldName,PVArray arrayToClone);
