@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pv<br />
 package: org.epics.pvData.pv<br />
-2009.05.06</h1>
+2009.06.04</h1>
 CONTENTS 
 
 <div class="toc">
@@ -197,6 +197,9 @@ PV record.</p>
 structure of every record instance has a PVField associated with it. A
 structure and a record also has an associated PVField.</p>
 <pre>    interface PVField extends Serializable, Requester {
+        int getFieldOffset();
+        int getNextFieldOffset();
+        int getNumberFields();
         PVAuxInfo getPVAuxInfo();
         boolean isMutable();
         void setMutable(boolean value);
@@ -219,6 +222,20 @@ structure and a record also has an associated PVField.</p>
   <dt>Requester</dt>
     <dd>PVField extends Requester which is described in the next
     sub-section.</dd>
+  <dt>getFieldOffset</dt>
+    <dd>Get offset of the PVField field within top level structure. Every
+      field within the PVStructure has a unique offset. The top level
+      structure has an offset of 0. The first field within the structure has
+      offset equal to 1. The other offsets are determined by recursively
+      traversing each structure of the tree. </dd>
+  <dt>getNextFieldOffset</dt>
+    <dd>Get the next offset. If the field is a scalar or array field then
+      this is just offset + 1. If the field is a structure it is the offset
+      of the next field after this structure. Thus (nextOffset - offset) is
+      always equal to the number of fields within the field. </dd>
+  <dt>getNumberFields</dt>
+    <dd>Get the total number of fields in this field. This is equal to
+      nextFieldOffset - fieldOffset. </dd>
   <dt>getPVAuxInfo</dt>
     <dd>Get the PVAuxInfo for this field. PVAuxInfo is described below.</dd>
   <dt>isMutable</dt>
@@ -582,6 +599,7 @@ following reads an entire array:</p>
         Structure getStructure();
         PVField[] getPVFields();
         PVField getSubField(String fieldName);
+        PVField getSubField(int fieldOffset);
         void replacePVField(String fieldName,PVField newPVField);
         void appendPVField(PVField pvField);
         void removePVField(String fieldName);
@@ -606,10 +624,14 @@ following reads an entire array:</p>
   <dt>getPVFields</dt>
     <dd>Returns the array of subfields. The set of subfields must all have
       different field names.</dd>
-  <dt>getSubField</dt>
+  <dt>getSubField(String fieldName)</dt>
     <dd>Get a subField of a field. For a PVStructure a non-null result is
       returned if fieldName is a field of the PVStructure. The fieldName can
       be of the form name.name...</dd>
+  <dt>getSubField(int fieldOffset)</dt>
+    <dd>Get the field located a fieldOffset, where fieldOffset is relative to
+      the top level structure. This returns null if the specified field is
+      not located within this PVStructure.</dd>
   <dt>replacePVField</dt>
     <dd>Replace a subfield of a PVStructure.</dd>
   <dt>appendPVField</dt>
@@ -736,10 +758,15 @@ that the thread does not block between lock and unlock.</p>
 interfaces. A factory is provided that creates PVDataCreate.</p>
 <pre>interface PVDataCreate {
     PVField createPVField(PVStructure parent, Field field);
+    PVField createPVField(PVStructure parent,String fieldName,PVField fieldToClone);
     PVScalar createPVScalar(PVStructure parent,Scalar scalar);
     PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType fieldType);
+    PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
     PVArray createPVArray(PVStructure parent,Array array);
     PVArray createPVArray(PVStructure parent,String fieldName,ScalarType elementType);
+    PVArray createPVArray(PVStructure parent,String fieldName,PVArray arrayToClone);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,
+        Structure structure);
     PVStructure createPVStructure(PVStructure parent,String fieldName,
         Field[] fields);
     PVStructure createPVStructure(PVStructure parent,String fieldName,
@@ -752,19 +779,31 @@ interfaces. A factory is provided that creates PVDataCreate.</p>
         PVStructure structToClone);
     PVRecord createPVRecord(String recordName,
         PVDatabase pvDatabase,String structureName);
+    PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
 where 
 <dl>
   <dt style="font-family: courier;">createPVField</dt>
-    <dd>The PVField is created reusing the Field interface.</dd>
+    <dd>The PVField is created reusing the Field interface. Two methods are
+      provided. Each calls the corresponding createPVScalar, createPVArray,
+      or createPVStructure depending in the type os the last argument.</dd>
   <dt style="font-family: courier;">createPVScalar</dt>
-    <dd>Creates an instance of a PVScalar.</dd>
+    <dd>Creates an instance of a PVScalar. Three versions are supplied. The
+      first is passed an introspection interface. The second provides the
+      field name and the scalarType. The last provides a field name and a
+      PVScalar to clone. The newly created PVScalar will have the same
+      auxInfos as the original.</dd>
   <dt style="font-family: courier;">createPVArray</dt>
-    <dd>Create an instance of a PVArray.</dd>
+    <dd>Create an instance of a PVArray. Three versions are supplied. The
+      first is passed an introspection interface. The second provides the
+      field name and the elementType. The last provides a field name and a
+      PVArray to clone. The newly created PVArray will have the same auxInfos
+      as the original.</dd>
   <dt style="font-family: courier;">createPVStructure</dt>
-    <dd>Create an instance of a PVStructure. Three methods are provided. The
-      first uses a Field array to initialize the sub-fields. The second
-      initializes the subfields by cloning the fields contained in
+    <dd>Create an instance of a PVStructure. Four methods are provided. The
+      first method uses a previously created structure introspection
+      interface. The second uses a Field array to initialize the sub-fields.
+      The third initializes the subfields by cloning the fields contained in
       structToClone. The newly created sub-fields will have the same values
       and auxInfos as the original. If structToClone is null then the new
       structure is initialized to have 0 sub-fields. The last method clones
@@ -772,6 +811,9 @@ where
   <dt style="font-family: courier;">createPVRecord</dt>
     <dd>Create a record instance. Like createPVStructure, three methods are
       provided with semantics just like createPVStructure.</dd>
+  <dt style="font-family: courier;">flattenPVStructure</dt>
+    <dd>Create an array of PVFields for the fields in the PVStructure. The
+      order is according to fieldOffset.</dd>
 </dl>
 
 <h3 id="PVDatabase">PVDatabase</h3>
@@ -902,6 +944,8 @@ put method. </p>
              int offset, int len, String[]from, int fromOffset);
         int toStringArray(PVArray pv,
              int offset, int len, String[]to, int toOffset);
+        boolean isCopyCompatible(Field from, Field to);
+        void copy(PVField from,PVField to);
         boolean isCopyScalarCompatible(Field from, Field to);
         void copyScalar(PVField from, PVField to);
         boolean isCopyArrayCompatible(Array from, Array to);
