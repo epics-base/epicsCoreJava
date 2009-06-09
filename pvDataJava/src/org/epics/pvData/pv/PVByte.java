@@ -18,8 +18,8 @@ public interface PVByte extends PVScalar{
     byte get();
     /**
      * Put the <i>byte</i> value into the field.
+     * If the field is immutable a message is generated and the field not modified.
      * @param value new byte value for field.
-     * @throws IllegalStateException if the field is not mutable.
      */
     void put(byte value);
 }
