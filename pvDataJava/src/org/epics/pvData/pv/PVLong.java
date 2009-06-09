@@ -18,8 +18,8 @@ public interface PVLong extends PVScalar{
     long get();
     /**
      * Put the <i>long</i> value into the field.
+     * If the field is immutable a message is generated and the field not modified.
      * @param value New value.
-     * @throws IllegalStateException if the field is not mutable.
      */
     void put(long value);
 }
