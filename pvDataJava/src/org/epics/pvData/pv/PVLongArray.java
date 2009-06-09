@@ -22,7 +22,7 @@ public interface PVLongArray extends PVArray{
      * Get sets these values. The caller must do the actual data transfer.
      * @return The number of elements that can be transfered.
      * This is always less than or equal to length.
-     * If the value is less then get should be called again.
+     * If the value is less then length then get should be called again.
      * If the return value is greater than 0 then data.data is
      * a reference to the array and data.offset is the offset into the
      * array.
@@ -36,8 +36,15 @@ public interface PVLongArray extends PVArray{
      * @param fromOffset The offset into from.
      * @return The number of elements transfered.
      * This is always less than or equal to length.
-     * If the value is less then put should be called again.
+     * If the value is less then length then put should be called again.
      * @throws IllegalStateException if the field is not mutable.
      */
     int put(int offset,int length, long[] from, int fromOffset);
+    /**
+     * Share the data from caller.
+     * The capacity and length are taken from the array and this array is made immutable.
+     * This should only be used to share immutable data.
+     * @param from The data to share.
+     */
+    void shareData(long[] from);
 }
