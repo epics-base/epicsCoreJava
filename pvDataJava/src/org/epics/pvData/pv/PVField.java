@@ -40,15 +40,15 @@ public interface PVField extends Requester, Serializable {
      */
     PVAuxInfo getPVAuxInfo();
     /**
-     * Can the data for the field be modified?
-     * @return If it can be modified
+     * Is the field immutable, i.e. does it not allow changes.
+     * @return (false,true) if it (is not, is) immutable.
      */
-    boolean isMutable();
+    boolean isImmutable();
     /**
-     * Specify if the data for the field can be modified
-     * @param value (false,true) if the data (can not, can) be modified
+     * Set the field to be immutable, i. e. it can no longer be modified.
+     * This is permanent, i.e. once done the field can onot be made mutable.
      */
-    void setMutable(boolean value);
+    void setImmutable();
     /**
      * Get the fullFieldName, i.e. the complete hierarchy.
      * @return The name.
@@ -98,7 +98,7 @@ public interface PVField extends Requester, Serializable {
     void removeListener(PVListener pvListener);
     /**
      * post that data has been modified.
-     * This must be called by the code that issues a put request..
+     * This must be called by the code that implements put.
      */
     void postPut();
     /**
