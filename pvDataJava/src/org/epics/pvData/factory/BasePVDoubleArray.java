@@ -13,6 +13,7 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.DoubleArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVDoubleArray;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 
 
@@ -24,7 +25,7 @@ import org.epics.pvData.pv.PVStructure;
 public class BasePVDoubleArray  extends AbstractPVArray implements PVDoubleArray
 {
     protected double[] value;
-    protected DoubleArrayData doubleArrayData = new DoubleArrayData();
+    private DoubleArrayData doubleArrayData = new DoubleArrayData();
     
     /**
      * Constructor.
@@ -71,10 +72,11 @@ public class BasePVDoubleArray  extends AbstractPVArray implements PVDoubleArray
      * @see org.epics.pvData.pv.PVDoubleArray#put(int, int, double[], int)
      */
     public int put(int offset, int len, double[]from, int fromOffset) {
-        if(!super.isMutable()) {
-            super.message("not isMutable", MessageType.error);
+        if(super.isImmutable()) {
+            super.message("field is immutable", MessageType.error);
             return 0;
-        }       
+        }
+        if(len<1) return 0;
         if(offset+len > length) {
             int newlength = offset + len;
             if(newlength>capacity) {
@@ -85,10 +87,23 @@ public class BasePVDoubleArray  extends AbstractPVArray implements PVDoubleArray
             }
             length = newlength;
         }
+        PVRecord pvRecord = super.getPVRecord();
+        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
+        super.postPut();
+        if(pvRecord!=null) pvRecord.endGroupPut();
         return len;      
     }     
 	/* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVDoubleArray#shareData(double[])
+     */
+    @Override
+    public void shareData(double[] from) {
+        this.value = from;
+        super.capacity = from.length;
+        super.length = from.length;
+    }
+    /* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
 	 */
 	public void serialize(ByteBuffer buffer, int offset, int count) {
@@ -132,9 +147,9 @@ public class BasePVDoubleArray  extends AbstractPVArray implements PVDoubleArray
 		// TODO anything else?
 		if (obj instanceof PVDoubleArray) {
 			PVDoubleArray b = (PVDoubleArray)obj;
-			DoubleArrayData bad = new DoubleArrayData();
-			b.get(0, b.getLength(), bad);
-			return Arrays.equals(bad.data, value);
+			b.get(0, b.getLength(), doubleArrayData);
+			if(doubleArrayData.data==value) return true;
+			return Arrays.equals(doubleArrayData.data, value);
 		}
 		else
 			return false;

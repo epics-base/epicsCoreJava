@@ -27,28 +27,26 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVShort#get()
      */
+    @Override
     public short get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVShort#put(short)
      */
+    @Override
     public void put(short value) {
-        if(super.isMutable()) {
-            this.value = value;
-            return ;
+        if(super.isImmutable()) {
+            super.message("field is immutable", MessageType.error);
+            return;
         }
-        super.message("not isMutable", MessageType.error);
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        return toString(0);
+        this.value = value;
+        super.postPut();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#toString(int)
      */
+    @Override
     public String toString(int indentLevel) {
         return convert.getString(this, indentLevel)
         + super.toString(indentLevel);
@@ -56,12 +54,14 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
      */
+    @Override
     public void serialize(ByteBuffer buffer) {
         buffer.putShort(value);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
      */
+    @Override
     public void deserialize(ByteBuffer buffer) {
         value = buffer.getShort();
     }

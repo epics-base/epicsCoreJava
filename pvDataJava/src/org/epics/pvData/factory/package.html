@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2009.05.28</h1>
+2009.06.09</h1>
 CONTENTS 
 
 <div class="toc">
@@ -140,7 +140,7 @@ The factory must provide a method:</p>
 
 <p>This section describes base classes for implementing Field instances ,
 i.e. introspection instances. For many applications they provide a complete
-introspection implementation but they could be extended if necessary.</p>
+introspection implementation but they could be extended if necessary. </p>
 <pre>    
     public class BaseField implements Field {
         public BaseField(String fieldName, Type type);
@@ -178,20 +178,24 @@ PVField</h2>
 <h3 id="AbstractPV">AbstractPVField</h3>
 
 <p>This is an abstract base class for implementing PVField interfaces. It
-MUST be a base class for any class that is an extension of PVField. </p>
+MUST be the base class for any class that is an extension of PVField. </p>
 <pre>public abstract class AbstractPVField implements PVField{
+    protected ArrayList&lt;PVListener&gt; pvListenerList = new ArrayList&lt;PVListener&gt;(0);
     protected static Convert convert = ConvertFactory.getConvert();
     protected AbstractPVField(PVField parent, Field field);
     protected void replaceField(Field field);
     protected void setRecord(PVRecord record);
     protected void postPutNoParent(AbstractPVField pvField);
-    protected void removeEveryListener() 
+    protected void removeEveryListener();
+    protected void setOffsets(int offset,int nextOffset);
     // All public methods of PVField
 }</pre>
 
 <p>The public methods are described in package org.epics.pvData.pv. The
 protected methods are: </p>
 <dl>
+  <dt>pvListenerList</dt>
+    <dd>Also used by BasePVStructure.</dd>
   <dt>convert</dt>
     <dd>A convenience for derived classes since implementations often need
       access to the conversion facility.</dd>
@@ -209,6 +213,8 @@ protected methods are: </p>
     <dd>Called by BasePVRecord.</dd>
   <dt>removeEveryListener</dt>
     <dd>Called by BasePCRecord.</dd>
+  <dt>setOffsets</dt>
+    <dd>Called by BasePVStructure</dd>
 </dl>
 <hr />
 
@@ -231,7 +237,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
 Any code that implements PVStructure MUST extend this class.</p>
 <pre>public class BasePVStructure extends AbstractPVField implements PVStructure
     public BasePVStructure(PVField parent, Structure structure);
-    
+    protected void removeEveryListener()
     protected String toString(String prefix,int indentLevel);
     public void postPut();
     // all public methods of PVStructure
@@ -326,8 +332,9 @@ implements any extension of PVArray must extend this class.</p>
     protected int length = 0;
     protected int capacity;
     protected boolean capacityMutable = true;
-
+    
     protected AbstractPVArray(PVField parent,Array array);
+    abstract public void setCapacity(int capacity);
     // public methods of PVArray
 }</pre>
 
@@ -339,7 +346,6 @@ classes.</p>
 <pre>public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArray
 {
     protected boolean[] value;
-    protected BooleanArrayData booleanArrayData = new BooleanArrayData();
     // implements all PVBooleanArray methods
 }</pre>
 
@@ -347,7 +353,6 @@ classes.</p>
 <pre>public class BasePVByteArray extends AbstractPVArray implements PVByteArray
 {
     protected byte[] value;
-    protected ByteArrayData byteArrayData = new ByteArrayData();
     // implements all PVByteArray methods
 }</pre>
 
@@ -355,7 +360,6 @@ classes.</p>
 <pre>public class BasePVShortArray extends AbstractPVArray implements PVShortArray
 {
     protected short[] value;
-    protected ShortArrayData shortArrayData = new ShortArrayData();
     // implements all PVShortArray methods
 }</pre>
 
@@ -363,7 +367,6 @@ classes.</p>
 <pre>public class BasePVIntArray extends AbstractPVArray implements PVIntArray
 {
     protected int[] value;
-    protected IntArrayData intArrayData = new IntArrayData();
     // implements all PVIntArray methods
 }</pre>
 
@@ -371,7 +374,6 @@ classes.</p>
 <pre>public class BasePVLongArray extends AbstractPVArray implements PVLongArray
 {
     protected long[] value;
-    protected LongArrayData longArrayData = new LongArrayData();
     // implements all PVLongArray methods
 }</pre>
 
@@ -379,7 +381,6 @@ classes.</p>
 <pre>public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
 {
     protected float[] value;
-    protected FloatArrayData floatArrayData = new FloatArrayData();
     // implements all PVFloatArray methods
 }</pre>
 
@@ -387,7 +388,6 @@ classes.</p>
 <pre>public class BasePVDoubleArray extends AbstractPVArray implements PVDoubleArray
 {
     protected double[] value;
-    protected DoubleArrayData doubleArrayData = new DoubleArrayData();
     // implements all PVDoubleArray methods
 }</pre>
 
@@ -395,7 +395,6 @@ classes.</p>
 <pre>public class BasePVStringArray extends AbstractPVArray implements PVStringArray
 {
     protected String[] value;
-    protected StringArrayData stringArrayData = new StringArrayData();
     // implements all PVStringArray methods
 }</pre>
 </body>

@@ -6,7 +6,6 @@
 package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
@@ -76,6 +75,28 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         if(parent==null) computeOffset();
     }
     /* (non-Javadoc)
+     * @see org.epics.pvData.factory.AbstractPVField#removeEveryListener()
+     */
+    @Override
+    protected void removeEveryListener() {
+        super.removeEveryListener();
+        for(PVField pvField :pvFields) {
+            AbstractPVField abstractPVField = (AbstractPVField)pvField;
+            abstractPVField.removeEveryListener();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.factory.AbstractPVField#removeListener(org.epics.pvData.pv.PVListener)
+     */
+    @Override
+    public void removeListener(PVListener recordListener) {
+        super.removeListener(recordListener);
+        for(PVField pvField :pvFields) {
+            AbstractPVField abstractPVField = (AbstractPVField)pvField;
+            abstractPVField.removeListener(recordListener);
+        }
+    }
+    /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#postPut()
      */
     @Override
@@ -90,11 +111,10 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      */
     @Override
     public void postPut(PVField subField) {
-        Iterator<PVListener> iter;
-        iter = super.pvListenerList.iterator();
-        while(iter.hasNext()) {
-            PVListener pvListener = iter.next();
-            pvListener.dataPut(this,subField);
+     // don't create iterator
+        for(int index=0; index<pvListenerList.size(); index++) {
+            PVListener pvListener = pvListenerList.get(index);
+            if(pvListener!=null) pvListener.dataPut(this,subField);
         }
         PVStructure pvParent = super.getParent();
         if(pvParent!=null) pvParent.postPut(subField);

@@ -13,6 +13,7 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.IntArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVIntArray;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 
 
@@ -24,7 +25,7 @@ import org.epics.pvData.pv.PVStructure;
 public class BasePVIntArray extends AbstractPVArray implements PVIntArray
 {
     protected int[] value;
-    protected IntArrayData intArrayData = new IntArrayData();
+    private IntArrayData intArrayData = new IntArrayData();
     
     /**
      * Constructor.
@@ -39,6 +40,7 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#toString(int)
      */
+    @Override
     public String toString(int indentLevel) {
         return convert.getString(this, indentLevel)
         + super.toString(indentLevel);
@@ -46,6 +48,7 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVArray#setCapacity(int)
      */
+    @Override
     public void setCapacity(int len) {
         if(!capacityMutable) {
             super.message("not capacityMutable", MessageType.error);
@@ -60,6 +63,7 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVIntArray#get(int, int, org.epics.pvData.pv.IntArrayData)
      */
+    @Override
     public int get(int offset, int len, IntArrayData data) {
         int n = len;
         if(offset+len > length) n = Math.max(0, length-offset);
@@ -70,9 +74,10 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVIntArray#put(int, int, int[], int)
      */
+    @Override
     public int put(int offset, int len, int[]from, int fromOffset) {
-        if(!super.isMutable()) {
-            super.message("not isMutable", MessageType.error);
+        if(super.isImmutable()) {
+            super.message("field is immutable", MessageType.error);
             return 0;
         }
         if(offset+len > length) {
@@ -85,12 +90,26 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
             }
             length = newlength;
         }
+        PVRecord pvRecord = super.getPVRecord();
+        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
-        return len;
+        super.postPut();
+        if(pvRecord!=null) pvRecord.endGroupPut();
+        return len;      
     }
 	/* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVIntArray#shareData(int[])
+     */
+    @Override
+    public void shareData(int[] from) {
+        this.value = from;
+        super.capacity = from.length;
+        super.length = from.length;
+    }
+    /* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
 	 */
+    @Override
 	public void serialize(ByteBuffer buffer, int offset, int count) {
 		// check bounds
 		if (offset < 0) offset = 0;
@@ -110,6 +129,7 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
 	 */
+    @Override
 	public void deserialize(ByteBuffer buffer) {
 		final int size = SerializeHelper.readSize(buffer);
 		if (size >= 0) {
@@ -132,9 +152,9 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
 		// TODO anything else?
 		if (obj instanceof PVIntArray) {
 			PVIntArray b = (PVIntArray)obj;
-			IntArrayData bad = new IntArrayData();
-			b.get(0, b.getLength(), bad);
-			return Arrays.equals(bad.data, value);
+			b.get(0, b.getLength(), intArrayData);
+			if(intArrayData.data==value) return true;
+			return Arrays.equals(intArrayData.data, value);
 		}
 		else
 			return false;

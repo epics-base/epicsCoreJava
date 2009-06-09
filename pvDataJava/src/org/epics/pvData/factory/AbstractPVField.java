@@ -5,8 +5,7 @@
  */
 package org.epics.pvData.factory;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
@@ -34,13 +33,14 @@ public abstract class AbstractPVField implements PVField{
     private int fieldOffset;
     private int nextFieldOffset;
     private PVAuxInfo pvAuxInfo = null;
-    private boolean isMutable = true;
+    private boolean isImmutable = false;
     private String fullFieldName = "";
     private String fullName = "";
     private Field field;
     private PVStructure pvParent;
     private PVRecord pvRecord = null;
-    protected LinkedList<PVListener> pvListenerList = new LinkedList<PVListener>();
+    // since list is mostly traversed an ArrayList is efficent.
+    protected ArrayList<PVListener> pvListenerList = new ArrayList<PVListener>(0);
     
     /**
      * Convenience for derived classes that perform conversions.
@@ -101,7 +101,9 @@ public abstract class AbstractPVField implements PVField{
      * @see org.epics.pvData.pv.PVField#removeEveryListener()
      */
     protected void removeEveryListener() {
+        if(pvListenerList.size()!=0) {
         pvListenerList.clear();
+        }
     }
     /**
      * Called by BasePVStructure
@@ -160,22 +162,21 @@ public abstract class AbstractPVField implements PVField{
         }
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVField#isMutable()
+     * @see org.epics.pvData.pv.PVField#isImmutable()
      */
     @Override
-    public boolean isMutable() {
-        return(isMutable);
+    public boolean isImmutable() {
+        return(isImmutable);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#setMutable(boolean)
      */
     @Override
-    public void setMutable(boolean value) {
-        if(!this.isMutable && value && pvRecord!=null) {
+    public void setImmutable() {
+        if(!isImmutable && pvRecord!=null) {
             pvRecord.removeEveryListener();
         }
-        isMutable = value;
-        
+        isImmutable = true;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#getFullFieldName()
@@ -280,6 +281,13 @@ public abstract class AbstractPVField implements PVField{
         if(pvParent!=null)pvParent.postPut(this);
     }
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+    /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#toString(int)
      */
     @Override
@@ -288,13 +296,11 @@ public abstract class AbstractPVField implements PVField{
     }
     
     private void callListener() {
-        Iterator<PVListener> iter;
-        iter = pvListenerList.iterator();
-        while(iter.hasNext()) {
-            PVListener pvListener = iter.next();
-            pvListener.dataPut(this);
+        // don't create iterator
+        for(int index=0; index<pvListenerList.size(); index++) {
+            PVListener pvListener = pvListenerList.get(index);
+            if(pvListener!=null) pvListener.dataPut(this);
         }
-        
     }
     
     private void createFullNameANDFullFieldName() {

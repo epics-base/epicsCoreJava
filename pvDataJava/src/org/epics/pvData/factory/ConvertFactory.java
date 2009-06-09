@@ -65,6 +65,15 @@ public final class ConvertFactory {
                 }
                 return singleImplementation;
         }
+        // The following are to prevent continually creation of new objects
+        static BooleanArrayData booleanArrayData = new BooleanArrayData();
+        static ByteArrayData byteArrayData = new ByteArrayData();
+        static ShortArrayData shortArrayData = new ShortArrayData();
+        static IntArrayData intArrayData = new IntArrayData();
+        static LongArrayData longArrayData = new LongArrayData();
+        static FloatArrayData floatArrayData = new FloatArrayData();
+        static DoubleArrayData doubleArrayData = new DoubleArrayData();
+        static StringArrayData stringArrayData = new StringArrayData();
         // Guarantee that ImplementConvert can only be created via getConvert
         private ImplementConvert() {}
         /* (non-Javadoc)
@@ -72,14 +81,14 @@ public final class ConvertFactory {
          */
         @Override
         public String getString(PVField pv) {
-            return ConvertToString(pv,0);
+            return convertToString(pv,0);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#getString(org.epics.pvData.pv.PVField, int)
          */
         @Override
         public String getString(PVField pv,int indentLevel) {
-            return ConvertToString(pv,indentLevel);
+            return convertToString(pv,indentLevel);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromString(org.epics.pvData.pv.PVScalar, java.lang.String)
@@ -143,8 +152,6 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
-            pv.postPut();
-            
         }       
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromStringArray(org.epics.pvData.pv.PVArray, int, int, java.lang.String[], int)
@@ -152,16 +159,14 @@ public final class ConvertFactory {
         @Override
         public int fromStringArray(PVArray pv, int offset, int len,String[] from, int fromOffset)
         {
-            int num = ConvertFromStringArray(pv,offset,len,from,fromOffset);
-            if(num>0) pv.postPut();
-            return num;
+            return convertFromStringArray(pv,offset,len,from,fromOffset);
         }       
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toStringArray(org.epics.pvData.pv.PVArray, int, int, java.lang.String[], int)
          */
         @Override
         public int toStringArray(PVArray pv, int offset, int len, String[] to, int toOffset) {
-            return ConvertToStringArray(pv,offset,len,to,toOffset);
+            return convertToStringArray(pv,offset,len,to,toOffset);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#isCopyCompatible(org.epics.pvData.pv.Field, org.epics.pvData.pv.Field)
@@ -234,7 +239,6 @@ public final class ConvertFactory {
                         PVBoolean dataTo = (PVBoolean)to;
                         dataTo.put(value);
                     }
-                    to.postPut();
                     break;
                 }
             case pvByte : {
@@ -303,25 +307,37 @@ public final class ConvertFactory {
         @Override
         public int copyArray(PVArray from, int offset, PVArray to, int toOffset, int len)
         {
-            ScalarType fromElementType = ((Array)from.getField()).getElementType();
-            ScalarType toElementType = ((Array)to.getField()).getElementType();
+            ScalarType fromElementType = from.getArray().getElementType();
+            ScalarType toElementType = to.getArray().getElementType();
+            
+            if(from.isImmutable() && (fromElementType==toElementType)) {
+                if(offset==0 && toOffset==0 && len==from.getLength()) {
+                    return copyArrayDataReference(from,to);
+                }
+            }
+            
             int ncopy = 0;
             if(toElementType.isNumeric() && fromElementType.isNumeric()) {
                 ncopy = CopyNumericArray(from,offset,to,toOffset,len);
             } else if(toElementType==ScalarType.pvBoolean && fromElementType==ScalarType.pvBoolean) {
                 PVBooleanArray pvfrom = (PVBooleanArray)from;
                 PVBooleanArray pvto = (PVBooleanArray)to;
-                BooleanArrayData data = new BooleanArrayData();
                 while(len>0) {
-                    int num = pvfrom.get(offset,len,data);
+                    int num = 0;
+                    boolean[] data = null;
+                    int fromOffset = 0;
+                    synchronized(booleanArrayData) {
+                        num = pvfrom.get(offset,len,booleanArrayData);
+                        data = booleanArrayData.data;
+                        fromOffset = booleanArrayData.offset;
+                    }
                     if(num<=0) break;
                     while(num>0) {
-                        int n = pvto.put(toOffset,num,data.data,data.offset);
+                        int n = pvto.put(toOffset,num,data,fromOffset);
                         if(n<=0) break;
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
                 }
-                to.postPut();
             } else if(toElementType==ScalarType.pvString) {
                 PVStringArray pvto = (PVStringArray)to;
                 ncopy = from.getLength();
@@ -333,15 +349,20 @@ public final class ConvertFactory {
                     pvto.put(toOffset,1,toData,0);
                     num--; offset++; toOffset++;
                 }
-                to.postPut();
             } else if(fromElementType==ScalarType.pvString) {
                 PVStringArray pvfrom = (PVStringArray)from;
-                StringArrayData data = new StringArrayData();
                 while(len>0) {
-                    int num = pvfrom.get(offset,len,data);
+                    int num = 0;
+                    String[] data = null;
+                    int fromOffset = 0;
+                    synchronized(stringArrayData) {
+                        num = pvfrom.get(offset,len,stringArrayData);
+                        data = stringArrayData.data;
+                        fromOffset = booleanArrayData.offset;
+                    }
                     if(num<=0) break;
                     while(num>0) {
-                        int n = fromStringArray(to,toOffset,num,data.data,data.offset);
+                        int n = fromStringArray(to,toOffset,num,data,fromOffset);
                         if(n<=0) break;
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
@@ -398,15 +419,12 @@ public final class ConvertFactory {
                 switch(fromType) {
                 case scalar:
                     copyScalar((PVScalar)fromData,(PVScalar)toData);
-                    toData.postPut();
                     break;
                 case scalarArray: 
                     copyArray((PVArray)fromData,0,(PVArray)toData,0,((PVArray)fromData).getLength());
-                    toData.postPut();
                     break;
                 case structure:
                     copyStructure((PVStructure)fromData,(PVStructure)toData);
-                    toData.postPut();
                     break;
                 }
             }
@@ -438,15 +456,13 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
-            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromByteArray(org.epics.pvData.pv.PVArray, int, int, byte[], int)
          */
         @Override
         public int fromByteArray(PVArray pv, int offset, int len,byte[] from, int fromOffset) {
-            int num = ConvertByteArrayFrom(pv,offset,len,from,fromOffset);
-            if(num>0) pv.postPut();
+            int num = convertFromByteArray(pv,offset,len,from,fromOffset);
             return num;
         }    
         /* (non-Javadoc)
@@ -476,15 +492,13 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
-            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromDoubleArray(org.epics.pvData.pv.PVArray, int, int, double[], int)
          */
         @Override
         public int fromDoubleArray(PVArray pv, int offset, int len, double[] from, int fromOffset) {
-            int num = ConvertDoubleArrayFrom(pv,offset,len,from,fromOffset);
-            if(num>0) pv.postPut();
+            int num = convertFromDoubleArray(pv,offset,len,from,fromOffset);
             return num;
         }    
         /* (non-Javadoc)
@@ -514,15 +528,13 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
-            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromFloatArray(org.epics.pvData.pv.PVArray, int, int, float[], int)
          */
         @Override
         public int fromFloatArray(PVArray pv, int offset, int len, float[] from, int fromOffset) {
-            int num = ConvertFloatArrayFrom(pv,offset,len,from,fromOffset);
-            if(num>0) pv.postPut();
+            int num = convertFromFloatArray(pv,offset,len,from,fromOffset);
             return num;
         }  
         /* (non-Javadoc)
@@ -552,15 +564,13 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
-            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromIntArray(org.epics.pvData.pv.PVArray, int, int, int[], int)
          */
         @Override
         public int fromIntArray(PVArray pv, int offset, int len,int[] from, int fromOffset) {
-            int num = ConvertIntArrayFrom(pv,offset,len,from,fromOffset);
-            if(num>0) pv.postPut();
+            int num = convertFromIntArray(pv,offset,len,from,fromOffset);
             return num;
         }    
         /* (non-Javadoc)
@@ -590,15 +600,13 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
-            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromLongArray(org.epics.pvData.pv.PVArray, int, int, long[], int)
          */
         @Override
         public int fromLongArray(PVArray pv, int offset, int len,long[] from, int fromOffset) {
-            int num = ConvertLongArrayFrom(pv,offset,len,from,fromOffset);
-            if(num>0) pv.postPut();
+            int num = convertFromLongArray(pv,offset,len,from,fromOffset);
             return num;
         }    
         /* (non-Javadoc)
@@ -628,7 +636,6 @@ public final class ConvertFactory {
                       + type.toString()
                     );
             }
-            pv.postPut();
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromShortArray(org.epics.pvData.pv.PVArray, int, int, short[], int)
@@ -636,8 +643,7 @@ public final class ConvertFactory {
         @Override
         public int fromShortArray(PVArray pv, int offset, int len,
             short[] from, int fromOffset) {
-            int num = ConvertShortArrayFrom(pv,offset,len,from,fromOffset);
-            if(num>0) pv.postPut();
+            int num = convertFromShortArray(pv,offset,len,from,fromOffset);
             return num;
         }
         /* (non-Javadoc)
@@ -672,7 +678,7 @@ public final class ConvertFactory {
         @Override
         public int toByteArray(PVArray pv, int offset, int len,
             byte[] to, int toOffset) {
-        	return ConvertByteArrayTo(pv,offset,len,to,toOffset);
+        	return convertToByteArray(pv,offset,len,to,toOffset);
         }   
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toDouble(org.epics.pvData.pv.PVScalar)
@@ -706,7 +712,7 @@ public final class ConvertFactory {
         @Override
         public int toDoubleArray(PVArray pv, int offset, int len,
             double[] to, int toOffset) {
-        	return ConvertDoubleArrayTo(pv,offset,len,to,toOffset);
+        	return convertToDoubleArray(pv,offset,len,to,toOffset);
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toFloat(org.epics.pvData.pv.PVScalar)
@@ -740,7 +746,7 @@ public final class ConvertFactory {
         @Override
         public int toFloatArray(PVArray pv, int offset, int len,
             float[] to, int toOffset) {
-        	return ConvertFloatArrayTo(pv,offset,len,to,toOffset);
+        	return convertToFloatArray(pv,offset,len,to,toOffset);
         }   
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toInt(org.epics.pvData.pv.PVScalar)
@@ -774,7 +780,7 @@ public final class ConvertFactory {
         @Override
         public int toIntArray(PVArray pv, int offset, int len,
             int[] to, int toOffset) {
-        	return ConvertIntArrayTo(pv,offset,len,to,toOffset);
+        	return convertToIntArray(pv,offset,len,to,toOffset);
         }    
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toLong(org.epics.pvData.pv.PVScalar)
@@ -808,7 +814,7 @@ public final class ConvertFactory {
         @Override
         public int toLongArray(PVArray pv, int offset, int len,
             long[] to, int toOffset) {
-        	return ConvertLongArrayTo(pv,offset,len,to,toOffset);
+        	return convertToLongArray(pv,offset,len,to,toOffset);
         }   
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#toShort(org.epics.pvData.pv.PVScalar)
@@ -842,11 +848,11 @@ public final class ConvertFactory {
         @Override
         public int toShortArray(PVArray pv, int offset, int len,
             short[] to, int toOffset) {
-        	return ConvertShortArrayTo(pv,offset,len,to,toOffset);
+        	return convertToShortArray(pv,offset,len,to,toOffset);
         }
     
     
-        private int ConvertByteArrayFrom(PVArray pv, int offset, int len,byte[]from, int fromOffset)
+        private int convertFromByteArray(PVArray pv, int offset, int len,byte[]from, int fromOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
             int ntransfered = 0;
@@ -918,19 +924,23 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertByteArrayTo(PVArray pv, int offset, int len,byte[]to, int toOffset)
+        private int convertToByteArray(PVArray pv, int offset, int len,byte[]to, int toOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
             int ntransfered = 0;
             switch(elemType) {
                 case pvByte : {
                     PVByteArray pvdata = (PVByteArray)pv;
-                    ByteArrayData data = new ByteArrayData();
                     while(len>0) {
-                        int num = pvdata.get(offset,len,data);
-                        if(num==0) break;
-                        byte[] dataArray = data.data;
-                        int dataOffset = data.offset;
+                        int num = 0;
+                        byte[] dataArray = null;
+                        int dataOffset = 0;
+                        synchronized(byteArrayData) {
+                            num = pvdata.get(offset,len,byteArrayData);
+                            dataArray = byteArrayData.data;
+                            dataOffset = byteArrayData.offset;
+                        }
+                        if(num<=0) break;
                         System.arraycopy(dataArray,dataOffset,to,toOffset,num);
                         len -= num; offset += num; toOffset += num; ntransfered += num;
                     }
@@ -1014,7 +1024,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertShortArrayFrom(PVArray pv, int offset, int len,
+        private int convertFromShortArray(PVArray pv, int offset, int len,
         short[]from, int fromOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1087,7 +1097,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertShortArrayTo(PVArray pv, int offset, int len,
+        private int convertToShortArray(PVArray pv, int offset, int len,
         short[]to, int toOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1109,12 +1119,16 @@ public final class ConvertFactory {
                 } 
                 case pvShort : {
                     PVShortArray pvdata = (PVShortArray)pv;
-                    ShortArrayData data = new ShortArrayData();
                     while(len>0) {
-                        int num = pvdata.get(offset,len,data);
-                        if(num==0) break;
-                        short[] dataArray = data.data;
-                        int dataOffset = data.offset;
+                        int num = 0;
+                        short[] dataArray = null;
+                        int dataOffset = 0;
+                        synchronized(shortArrayData) {
+                            num = pvdata.get(offset,len,shortArrayData);
+                            dataArray = shortArrayData.data;
+                            dataOffset = shortArrayData.offset;
+                        }
+                        if(num<=0) break;
                         System.arraycopy(dataArray,dataOffset,to,toOffset,num);
                         len -= num; offset += num; toOffset += num; ntransfered += num;
                     }
@@ -1184,7 +1198,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertIntArrayFrom(PVArray pv, int offset, int len,
+        private int convertFromIntArray(PVArray pv, int offset, int len,
             int[]from, int fromOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1257,7 +1271,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertIntArrayTo(PVArray pv, int offset, int len,
+        private int convertToIntArray(PVArray pv, int offset, int len,
             int[]to, int toOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1293,12 +1307,16 @@ public final class ConvertFactory {
                 } 
                 case pvInt : {
                     PVIntArray pvdata = (PVIntArray)pv;
-                    IntArrayData data = new IntArrayData();
                     while(len>0) {
-                        int num = pvdata.get(offset,len,data);
-                        if(num==0) break;
-                        int[] dataArray = data.data;
-                        int dataOffset = data.offset;
+                        int num = 0;
+                        int[] dataArray = null;
+                        int dataOffset = 0;
+                        synchronized(intArrayData) {
+                            num = pvdata.get(offset,len,intArrayData);
+                            dataArray = intArrayData.data;
+                            dataOffset = intArrayData.offset;
+                        }
+                        if(num<=0) break;
                         System.arraycopy(dataArray,dataOffset,to,toOffset,num);
                         len -= num; offset += num; toOffset += num; ntransfered += num;
                     }
@@ -1354,7 +1372,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertLongArrayFrom(PVArray pv, int offset, int len,
+        private int convertFromLongArray(PVArray pv, int offset, int len,
         long[]from, int fromOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1427,8 +1445,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertLongArrayTo(PVArray pv, int offset, int len,
-        long[]to, int toOffset)
+        private int convertToLongArray(PVArray pv, int offset, int len,long[]to, int toOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
             int ntransfered = 0;
@@ -1477,12 +1494,16 @@ public final class ConvertFactory {
                 } 
                 case pvLong : {
                     PVLongArray pvdata = (PVLongArray)pv;
-                    LongArrayData data = new LongArrayData();
                     while(len>0) {
-                        int num = pvdata.get(offset,len,data);
-                        if(num==0) break;
-                        long[] dataArray = data.data;
-                        int dataOffset = data.offset;
+                        int num = 0;
+                        long[] dataArray = null;
+                        int dataOffset = 0;
+                        synchronized(longArrayData) {
+                            num = pvdata.get(offset,len,longArrayData);
+                            dataArray = longArrayData.data;
+                            dataOffset = longArrayData.offset;
+                        }
+                        if(num<=0) break;
                         System.arraycopy(dataArray,dataOffset,to,toOffset,num);
                         len -= num; offset += num; toOffset += num; ntransfered += num;
                     }
@@ -1524,7 +1545,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertFloatArrayFrom(PVArray pv, int offset, int len,
+        private int convertFromFloatArray(PVArray pv, int offset, int len,
         float[]from, int fromOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1597,7 +1618,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertFloatArrayTo(PVArray pv, int offset, int len,
+        private int convertToFloatArray(PVArray pv, int offset, int len,
         float[]to, int toOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1661,12 +1682,16 @@ public final class ConvertFactory {
                 } 
                 case pvFloat : {
                     PVFloatArray pvdata = (PVFloatArray)pv;
-                    FloatArrayData data = new FloatArrayData();
                     while(len>0) {
-                        int num = pvdata.get(offset,len,data);
-                        if(num==0) break;
-                        float[] dataArray = data.data;
-                        int dataOffset = data.offset;
+                        int num = 0;
+                        float[] dataArray = null;
+                        int dataOffset = 0;
+                        synchronized(floatArrayData) {
+                            num = pvdata.get(offset,len,floatArrayData);
+                            dataArray = floatArrayData.data;
+                            dataOffset = floatArrayData.offset;
+                        }
+                        if(num<=0) break;
                         System.arraycopy(dataArray,dataOffset,to,toOffset,num);
                         len -= num; offset += num; toOffset += num; ntransfered += num;
                     }
@@ -1694,8 +1719,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertDoubleArrayFrom(PVArray pv, int offset, int len,
-        double[]from, int fromOffset)
+        private int convertFromDoubleArray(PVArray pv, int offset, int len,double[]from, int fromOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
             int ntransfered = 0;
@@ -1767,7 +1791,7 @@ public final class ConvertFactory {
             }
         }
     
-        private int ConvertDoubleArrayTo(PVArray pv, int offset, int len,
+        private int convertToDoubleArray(PVArray pv, int offset, int len,
         double[]to, int toOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -1845,12 +1869,16 @@ public final class ConvertFactory {
                 } 
                 case pvDouble : {
                     PVDoubleArray pvdata = (PVDoubleArray)pv;
-                    DoubleArrayData data = new DoubleArrayData();
                     while(len>0) {
-                        int num = pvdata.get(offset,len,data);
-                        if(num==0) break;
-                        double[] dataArray = data.data;
-                        int dataOffset = data.offset;
+                        int num = 0;
+                        double[] dataArray = null;
+                        int dataOffset = 0;
+                        synchronized(doubleArrayData) {
+                            num = pvdata.get(offset,len,doubleArrayData);
+                            dataArray = doubleArrayData.data;
+                            dataOffset = doubleArrayData.offset;
+                        }
+                        if(num<=0) break;
                         System.arraycopy(dataArray,dataOffset,to,toOffset,num);
                         len -= num; offset += num; toOffset += num; ntransfered += num;
                     }
@@ -1864,7 +1892,7 @@ public final class ConvertFactory {
             }
         }
         
-        private int ConvertFromStringArray(PVArray pv, int offset, int len,
+        private int convertFromStringArray(PVArray pv, int offset, int len,
                 String[]from, int fromOffset)
         {
             ScalarType elemType = pv.getArray().getElementType();
@@ -2026,7 +2054,7 @@ public final class ConvertFactory {
             }
         }
         
-        private int ConvertToStringArray(PVArray pv, int offset, int len,
+        private int convertToStringArray(PVArray pv, int offset, int len,
                 String[]to, int toOffset)
         {
             ScalarType elementType = pv.getArray().getElementType();
@@ -2134,14 +2162,21 @@ public final class ConvertFactory {
                 break;
             case pvString: {
                     PVStringArray pvdata = (PVStringArray)pv;
-                    StringArrayData data = new StringArrayData();
-                    for(int i=0; i<num; i++) {
-                        if(pvdata.get(offset+i,1,data)==1) {
-                            String[] dataArray = data.data;
-                            to[toOffset+i] = dataArray[data.offset];
-                        } else {
-                            to[toOffset+i] = "bad pv";
+                    while(num>0) {
+                        int numnow = 0;
+                        String[] dataArray = null;
+                        int dataOffset = 0;
+                        synchronized(stringArrayData) {
+                            numnow = pvdata.get(offset,num,stringArrayData);
+                            dataArray = stringArrayData.data;
+                            dataOffset = stringArrayData.offset;
                         }
+                        if(numnow<=0) {
+                            for(int i=0; i<num; i++) to[toOffset+i] = "bad pv";
+                            break;
+                        }
+                        System.arraycopy(dataArray,dataOffset,to,toOffset,num);
+                        num -= numnow; offset += numnow; toOffset += numnow;;
                     }
                 }
                 break;
@@ -2162,7 +2197,7 @@ public final class ConvertFactory {
         }
         private static String indentString = "    ";
 
-        private String ConvertToString(PVField pv,int indentLevel) {
+        private String convertToString(PVField pv,int indentLevel) {
             Type type = pv.getField().getType();
             if(type==Type.scalarArray) {
                 return convertArray((PVArray)pv,indentLevel);
@@ -2223,7 +2258,7 @@ public final class ConvertFactory {
                 Field fieldnow = fieldField.getField();
                 newLine(builder,indentLevel+1);
                 builder.append(String.format("%s = ", fieldnow.getFieldName()));
-                builder.append(ConvertToString(fieldField,indentLevel+1));
+                builder.append(convertToString(fieldField,indentLevel+1));
             }
             newLine(builder,indentLevel);
             builder.append("}");
@@ -2378,9 +2413,109 @@ public final class ConvertFactory {
             default:
                 builder.append(" array element is unknown PVType");
             }
+            if(pv.isImmutable()) {
+                builder.append(" immutable ");
+            }
             return builder.toString();
         }
 
+        private int copyArrayDataReference(PVArray from,PVArray to) {
+            ScalarType scalarType = from.getArray().getElementType();
+            switch(scalarType) {
+            case pvBoolean: {
+                PVBooleanArray pvfrom = (PVBooleanArray)from;
+                PVBooleanArray pvto = (PVBooleanArray)to;
+                boolean[] booleanArray = null;
+                synchronized(booleanArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), booleanArrayData);
+                    booleanArray = booleanArrayData.data;
+                }
+                pvto.shareData(booleanArray);
+                
+                break;
+            }
+            case pvByte: {
+                PVByteArray pvfrom = (PVByteArray)from;
+                PVByteArray pvto = (PVByteArray)to;
+                byte[] byteArray = null;
+                synchronized(byteArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), byteArrayData);
+                    byteArray = byteArrayData.data;
+                }
+                pvto.shareData(byteArray);
+                break;
+            }
+            case pvShort: {
+                PVShortArray pvfrom = (PVShortArray)from;
+                PVShortArray pvto = (PVShortArray)to;
+                short[] shortArray = null;
+                synchronized(shortArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), shortArrayData);
+                    shortArray = shortArrayData.data;
+                }
+                pvto.shareData(shortArray);
+                break;
+            }
+            case pvInt: {
+                PVIntArray pvfrom = (PVIntArray)from;
+                PVIntArray pvto = (PVIntArray)to;
+                int[] intArray = null;
+                synchronized(intArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), intArrayData);
+                    intArray = intArrayData.data;
+                }
+                pvto.shareData(intArray);
+                break;
+            }
+            case pvLong: {
+                PVLongArray pvfrom = (PVLongArray)from;
+                PVLongArray pvto = (PVLongArray)to;
+                long[] longArray = null;
+                synchronized(longArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), longArrayData);
+                    longArray = longArrayData.data;
+                }
+                pvto.shareData(longArray);
+                break;
+            }
+            case pvFloat: {
+                PVFloatArray pvfrom = (PVFloatArray)from;
+                PVFloatArray pvto = (PVFloatArray)to;
+                float[] floatArray = null;
+                synchronized(floatArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), floatArrayData);
+                    floatArray = floatArrayData.data;
+                }
+                pvto.shareData(floatArray);
+                break;
+            }
+            case pvDouble: {
+                PVDoubleArray pvfrom = (PVDoubleArray)from;
+                PVDoubleArray pvto = (PVDoubleArray)to;
+                double[] doubleArray = null;
+                synchronized(doubleArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), doubleArrayData);
+                    doubleArray = doubleArrayData.data;
+                }
+                pvto.shareData(doubleArray);
+                break;
+            }
+            case pvString: {
+                PVStringArray pvfrom = (PVStringArray)from;
+                PVStringArray pvto = (PVStringArray)to;
+                String[] stringArray = null;
+                synchronized(stringArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), stringArrayData);
+                    stringArray = stringArrayData.data;
+                }
+                pvto.shareData(stringArray);
+                break;
+            }
+            }
+            to.setImmutable();
+            return from.getLength();
+        }
+        
         private int CopyNumericArray(PVArray from, int offset, PVArray to, int toOffset, int len)
         {
             ScalarType fromElementType = ((Array)from.getField()).getElementType();
@@ -2388,12 +2523,18 @@ public final class ConvertFactory {
             switch(fromElementType) {
             case pvByte: {
                     PVByteArray pvfrom = (PVByteArray)from;
-                    ByteArrayData data = new ByteArrayData();
                     while(len>0) {
-                        int num = pvfrom.get(offset,len,data);
+                        int num = 0;
+                        byte[] data = null;
+                        int dataOffset = 0;
+                        synchronized(byteArrayData) {
+                            num = pvfrom.get(offset,len,byteArrayData);
+                            data = byteArrayData.data;
+                            dataOffset = byteArrayData.offset;
+                        }
                         if(num<=0) break;
                         while(num>0) {
-                            int n = fromByteArray(to,toOffset,num,data.data,data.offset);
+                            int n = fromByteArray(to,toOffset,num,data,dataOffset);
                             if(n<=0) break;
                             len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                         }
@@ -2401,78 +2542,104 @@ public final class ConvertFactory {
                     break;
                 }
             case pvShort: {
-                PVShortArray pvfrom = (PVShortArray)from;
-                ShortArrayData data = new ShortArrayData();
-                while(len>0) {
-                    int num = pvfrom.get(offset,len,data);
-                    if(num<=0) break;
-                    while(num>0) {
-                        int n = fromShortArray(to,toOffset,num,data.data,data.offset);
-                        if(n<=0) break;
-                        len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                    PVShortArray pvfrom = (PVShortArray)from;
+                    while(len>0) {
+                        int num = 0;
+                        short[] data = null;
+                        int dataOffset = 0;
+                        synchronized(shortArrayData) {
+                            num = pvfrom.get(offset,len,shortArrayData);
+                            data = shortArrayData.data;
+                            dataOffset = shortArrayData.offset;
+                        }
+                        if(num<=0) break;
+                        while(num>0) {
+                            int n = fromShortArray(to,toOffset,num,data,dataOffset);
+                            if(n<=0) break;
+                            len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                        }
                     }
-                }
-                break;
-                
+                    break;
                 }
             case pvInt: {
-                PVIntArray pvfrom = (PVIntArray)from;
-                IntArrayData data = new IntArrayData();
-                while(len>0) {
-                    int num = pvfrom.get(offset,len,data);
-                    if(num<=0) break;
-                    while(num>0) {
-                        int n = fromIntArray(to,toOffset,num,data.data,data.offset);
-                        if(n<=0) break;
-                        len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                    PVIntArray pvfrom = (PVIntArray)from;
+                    while(len>0) {
+                        int num = 0;
+                        int[] data = null;
+                        int dataOffset = 0;
+                        synchronized(intArrayData) {
+                            num = pvfrom.get(offset,len,intArrayData);
+                            data = intArrayData.data;
+                            dataOffset = intArrayData.offset;
+                        }
+                        if(num<=0) break;
+                        while(num>0) {
+                            int n = fromIntArray(to,toOffset,num,data,dataOffset);
+                            if(n<=0) break;
+                            len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                        }
                     }
-                }
-                break;
-                
+                    break;
                 }
             case pvLong: {
-                PVLongArray pvfrom = (PVLongArray)from;
-                LongArrayData data = new LongArrayData();
-                while(len>0) {
-                    int num = pvfrom.get(offset,len,data);
-                    if(num<=0) break;
-                    while(num>0) {
-                        int n = fromLongArray(to,toOffset,num,data.data,data.offset);
-                        if(n<=0) break;
-                        len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                    PVLongArray pvfrom = (PVLongArray)from;
+                    while(len>0) {
+                        int num = 0;
+                        long[] data = null;
+                        int dataOffset = 0;
+                        synchronized(longArrayData) {
+                            num = pvfrom.get(offset,len,longArrayData);
+                            data = longArrayData.data;
+                            dataOffset = longArrayData.offset;
+                        }
+                        if(num<=0) break;
+                        while(num>0) {
+                            int n = fromLongArray(to,toOffset,num,data,dataOffset);
+                            if(n<=0) break;
+                            len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                        }
                     }
-                }
-                break;
-                
+                    break;
                 }
             case pvFloat: {
-                PVFloatArray pvfrom = (PVFloatArray)from;
-                FloatArrayData data = new FloatArrayData();
-                while(len>0) {
-                    int num = pvfrom.get(offset,len,data);
-                    if(num<=0) break;
-                    while(num>0) {
-                        int n = fromFloatArray(to,toOffset,num,data.data,data.offset);
-                        if(n<=0) break;
-                        len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                    PVFloatArray pvfrom = (PVFloatArray)from;
+                    while(len>0) {
+                        int num = 0;
+                        float[] data = null;
+                        int dataOffset = 0;
+                        synchronized(floatArrayData) {
+                            num = pvfrom.get(offset,len,floatArrayData);
+                            data = floatArrayData.data;
+                            dataOffset = floatArrayData.offset;
+                        }
+                        if(num<=0) break;
+                        while(num>0) {
+                            int n = fromFloatArray(to,toOffset,num,data,dataOffset);
+                            if(n<=0) break;
+                            len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                        }
                     }
-                }
-                break;
-                
+                    break;
                 }
             case pvDouble: {
-                PVDoubleArray pvfrom = (PVDoubleArray)from;
-                DoubleArrayData data = new DoubleArrayData();
-                while(len>0) {
-                    int num = pvfrom.get(offset,len,data);
-                    if(num<=0) break;
-                    while(num>0) {
-                        int n = fromDoubleArray(to,toOffset,num,data.data,data.offset);
-                        if(n<=0) break;
-                        len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                    PVDoubleArray pvfrom = (PVDoubleArray)from;
+                    while(len>0) {
+                        int num = 0;
+                        double[] data = null;
+                        int dataOffset = 0;
+                        synchronized(doubleArrayData) {
+                            num = pvfrom.get(offset,len,doubleArrayData);
+                            data = doubleArrayData.data;
+                            dataOffset = doubleArrayData.offset;
+                        }
+                        if(num<=0) break;
+                        while(num>0) {
+                            int n = fromDoubleArray(to,toOffset,num,data,dataOffset);
+                            if(n<=0) break;
+                            len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                        }
                     }
-                }
-                break;
+                    break;
                 }
             }
             return ncopy;

@@ -11,6 +11,7 @@ import java.util.Arrays;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.MessageType;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.StringArrayData;
@@ -25,7 +26,7 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
 {
 
     protected String[] value;
-    protected StringArrayData stringArrayData = new StringArrayData();
+    private StringArrayData stringArrayData = new StringArrayData();
     
     /**
      * Constructor.
@@ -72,8 +73,8 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
      * @see org.epics.pvData.pv.PVStringArray#put(int, int, java.lang.String[], int)
      */
     public int put(int offset, int len, String[]from, int fromOffset) {
-        if(!super.isMutable()) {
-            super.message("not isMutable", MessageType.error);
+        if(super.isImmutable()) {
+            super.message("field is immutable", MessageType.error);
             return 0;
         }
         if(offset+len > length) {
@@ -86,10 +87,23 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
             }
             length = newlength;
         }
+        PVRecord pvRecord = super.getPVRecord();
+        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
-        return len;      
+        super.postPut();
+        if(pvRecord!=null) pvRecord.endGroupPut();
+        return len;     
     }
 	/* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVStringArray#shareData(java.lang.String[])
+     */
+    @Override
+    public void shareData(String[] from) {
+        this.value = from;
+        super.capacity = from.length;
+        super.length = from.length;
+    }
+    /* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
 	 */
 	public void serialize(ByteBuffer buffer, int offset, int count) {
@@ -133,9 +147,9 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
 		// TODO anything else?
 		if (obj instanceof PVStringArray) {
 			PVStringArray b = (PVStringArray)obj;
-			StringArrayData bad = new StringArrayData();
-			b.get(0, b.getLength(), bad);
-			return Arrays.equals(bad.data, value);
+			b.get(0, b.getLength(), stringArrayData);
+			if(stringArrayData.data==value) return true;
+			return Arrays.equals(stringArrayData.data, value);
 		}
 		else
 			return false;

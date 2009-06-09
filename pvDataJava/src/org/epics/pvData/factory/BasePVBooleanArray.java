@@ -13,6 +13,7 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVBooleanArray;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 
 
@@ -24,7 +25,7 @@ import org.epics.pvData.pv.PVStructure;
 public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArray
 {
     protected boolean[] value;
-    protected BooleanArrayData booleanArrayData = new BooleanArrayData();
+    private BooleanArrayData booleanArrayData = new BooleanArrayData();
     
     /**
      * Constructor.
@@ -39,6 +40,7 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#toString(int)
      */
+    @Override
     public String toString(int indentLevel) {
         return convert.getString(this, indentLevel)
         + super.toString(indentLevel);
@@ -46,6 +48,7 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVArray#setCapacity(int)
      */
+    @Override
     public void setCapacity(int len) {
         if(!capacityMutable) {
             super.message("not capacityMutable", MessageType.error);
@@ -60,6 +63,7 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVBooleanArray#get(int, int, org.epics.pvData.pv.BooleanArrayData)
      */
+    @Override
     public int get(int offset, int len, BooleanArrayData data) {
         int n = len;
         if(offset+len > length) n = Math.max(0, length-offset);
@@ -70,9 +74,10 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVBooleanArray#put(int, int, boolean[], int)
      */
+    @Override
     public int put(int offset, int len, boolean[]from, int fromOffset) {
-        if(!super.isMutable()) {
-            super.message("not isMutable", MessageType.error);
+        if(super.isImmutable()) {
+            super.message("field is immutable", MessageType.error);
             return 0;
         }
         if(offset+len > length) {
@@ -85,12 +90,26 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
             }
             length = newlength;
         }
+        PVRecord pvRecord = super.getPVRecord();
+        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
+        super.postPut();
+        if(pvRecord!=null) pvRecord.endGroupPut();
         return len;       
     }
 	/* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVBooleanArray#shareData(boolean[])
+     */
+    @Override
+    public void shareData(boolean[] from) {
+        this.value = from;
+        super.capacity = from.length;
+        super.length = from.length;
+    }
+    /* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
 	 */
+    @Override
 	public void serialize(ByteBuffer buffer, int offset, int count) {
 		// check bounds
 		if (offset < 0) offset = 0;
@@ -110,6 +129,7 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
 	 */
+    @Override
 	public void deserialize(ByteBuffer buffer) {
 		final int size = SerializeHelper.readSize(buffer);
 		if (size >= 0) {
@@ -132,9 +152,9 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
 		// TODO anything else?
 		if (obj instanceof PVBooleanArray) {
 			PVBooleanArray b = (PVBooleanArray)obj;
-			BooleanArrayData bad = new BooleanArrayData();
-			b.get(0, b.getLength(), bad);
-			return Arrays.equals(bad.data, value);
+			b.get(0, b.getLength(), booleanArrayData);
+			if(booleanArrayData.data==value) return true;
+			return Arrays.equals(booleanArrayData.data, value);
 		}
 		else
 			return false;

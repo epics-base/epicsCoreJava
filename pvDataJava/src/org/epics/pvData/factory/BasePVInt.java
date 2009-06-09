@@ -27,28 +27,33 @@ public class BasePVInt extends AbstractPVScalar implements PVInt
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVInt#get()
      */
+    @Override
     public int get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVInt#put(int)
      */
+    @Override
     public void put(int value) {
-        if(super.isMutable()) {
-            this.value = value;
-            return ;
+        if(super.isImmutable()) {
+            super.message("field is immutable", MessageType.error);
+            return;
         }
-        super.message("not isMutable", MessageType.error);
+        this.value = value;
+        super.postPut();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return toString(0);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVField#toString(int)
      */
+    @Override
     public String toString(int indentLevel) {
         return convert.getString(this, indentLevel)
         + super.toString(indentLevel);
@@ -56,12 +61,14 @@ public class BasePVInt extends AbstractPVScalar implements PVInt
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
      */
+    @Override
     public void serialize(ByteBuffer buffer) {
         buffer.putInt(value);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
      */
+    @Override
     public void deserialize(ByteBuffer buffer) {
         value = buffer.getInt();
     }
