@@ -18,8 +18,8 @@ public interface PVString extends PVScalar{
     String get();
     /**
      * Put the <i>String</i> value into the field.
+     * If the field is immutable a message is generated and the field not modified.
      * @param value New value.
-     * @throws IllegalStateException if the field is not mutable.
      */
     void put(String value);
 }

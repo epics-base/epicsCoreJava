@@ -23,8 +23,7 @@ package org.epics.pvData.pv;
  * <i>fromStringArray</i> converts an array of <i>String</i>
  * to a <i>pvArray</i>, which must have a scaler element type.
  * A scalar field is a numeric field or <i>pvBoolean</i> or <i>pvString</i>.</p>
- * <p>All from methods put data into a PVField, e.g. from means where the PVField gets it's data.
- * All from methods call postPut after calling the appropriate put method.</p>
+ * <p>All from methods put data into a PVField, e.g. from means where the PVField gets it's data.</p>
  * @author mrk
  *
  */
