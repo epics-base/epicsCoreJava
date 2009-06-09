@@ -18,8 +18,8 @@ public interface PVBoolean extends PVScalar{
     boolean get();
     /**
      * Put the field from a <i>boolean</i> value.
+     * If the field is immutable a message is generated and the field not modified.
      * @param value The new boolean value for field.
-     * @throws IllegalStateException if the field is not mutable.
      */
     void put(boolean value);
 }
