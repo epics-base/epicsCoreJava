@@ -18,8 +18,8 @@ public interface PVDouble extends PVScalar{
     double get();
     /**
      * Put the <i>double</i> value into the field.
-     * @param value New value.
-     * @throws IllegalStateException if the field is not mutable.
+     * If the field is immutable a message is generated and the field not modified.
+     * @param value The new value.
      */
     void put(double value);
 }
