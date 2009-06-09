@@ -81,7 +81,6 @@ public enum AlarmSeverity {
                 return null;
             }
         }
-        pvChoices.setMutable(false);
         return enumerated;
     }
 }
