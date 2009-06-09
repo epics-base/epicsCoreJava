@@ -4,9 +4,12 @@
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvData.pvCopy;
-import java.util.*;
+import java.util.BitSet;
 
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.PVField;
+import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Structure;
 
 
 /**

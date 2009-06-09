@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: property<br />
 package: org.epics.pvData.property<br />
-2009.02.24</h1>
+2009.06.09</h1>
 CONTENTS 
 
 <div class="toc">
@@ -25,6 +25,12 @@ CONTENTS
       <li><a href="#Limits">Limits</a></li>
       <li><a href="#Display">Display</a></li>
       <li><a href="#Control">Control</a></li>
+    </ul>
+  </li>
+  <li><a href="#Interfaces">Interfaces for Standard Properties</a>
+    <ul>
+      <li><a href="#TimeStamp1">TimeStamp</a></li>
+      <li><a href="#Alarm1">Alarm</a></li>
     </ul>
   </li>
 </ul>
@@ -212,8 +218,7 @@ properties.</p>
   &lt;scalar name = "message" type = "string" /&gt;
   &lt;scalar name = "ackTransient" type = "boolean" /&gt;
   &lt;structure name = "ackSeverity" type = "alarmSeverity" /&gt;
-&lt;/structure&gt;
-</pre>
+&lt;/structure&gt;</pre>
 
 <h3 id="Limits">Limits</h3>
 <pre>&lt;structure name = "byteLimit"&gt;
@@ -256,10 +261,51 @@ properties.</p>
 &lt;/structure&gt;</pre>
 
 <h3 id="Control">Control</h3>
-<pre>
-&lt;structure name = "control"&gt;
+<pre>&lt;structure name = "control"&gt;
     &lt;structure name = "limit" type = "doubleLimit" /&gt;
     &lt;scalar name = "minStep" type = "double" /&gt;
 &lt;/structure&gt;</pre>
+<hr />
+
+<h2 style="text-align: center" id="Interfaces">Interfaces for Standard
+Properties</h2>
+<hr />
+
+<h3 id="TimeStamp1">TimeStamp</h3>
+
+<p>The following priovides convient access to a timeStamp structure.</p>
+<pre>interface TimeStamp {
+    long getSecondsPastEpoch();
+    int getNanoSeconds();
+    void put(long secondsPastEpoch,int nanoSeconds);
+    long getMilliSeconds();
+    void put(long milliSeconds);
+}
+
+class TimeStampFactory{
+    public static TimeStamp create(long secondsPastEpoch,int nanoSeconds);
+    // following returns null if pvStructure is not a timeStamp structure.
+    public static TimeStamp getTimeStamp(PVStructure pvStructure);</pre>
+
+<h3 id="Alarm1">Alarm</h3>
+
+<p>The following provides convient access to the fields of an alarm
+structure.</p>
+<pre>interface Alarm {
+    PVString getAlarmMessage();
+    PVInt getAlarmSeverityIndex();
+    PVString getAlarmSeverityChoice();
+    PVStringArray getAlarmSeverityChoices();
+    PVBoolean getAckTransient();
+    PVInt getAckAlarmSeverityIndex();
+    PVString getAckAlarmSeverityChoice();
+    PVStringArray getAckAlarmSeverityChoices();
+}
+
+class AlarmFactory {
+    // returns null if pvField is not an alarm structure.
+    public static Alarm getAlarm(PVField pvField);
+}
+</pre>
 </body>
 </html>

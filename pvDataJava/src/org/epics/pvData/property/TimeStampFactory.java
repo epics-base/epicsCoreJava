@@ -11,6 +11,7 @@ import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVLong;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
@@ -96,19 +97,21 @@ public class TimeStampFactory{
          * @see org.epics.pvData.property.TimeStamp#put(long, int)
          */
         public void put(long secondsPastEpoch, int nanoSeconds) {
+            PVRecord pvRecord = pvSecond.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             pvSecond.put(secondsPastEpoch);
             pvNano.put(nanoSeconds);
-            pvSecond.postPut();
-            pvNano.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#put(long)
          */
         public void put(long milliSeconds) {
+            PVRecord pvRecord = pvSecond.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             pvSecond.put(milliSeconds/1000);
             pvNano.put(((int)(milliSeconds%1000))*1000000);
-            pvSecond.postPut();
-            pvNano.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
         } 
     }
     

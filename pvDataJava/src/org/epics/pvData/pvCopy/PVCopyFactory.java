@@ -5,10 +5,22 @@
  */
 package org.epics.pvData.pvCopy;
 
-import java.util.*;
+import java.util.BitSet;
 
-import org.epics.pvData.pv.*;
-import org.epics.pvData.factory.*;
+import org.epics.pvData.factory.ConvertFactory;
+import org.epics.pvData.factory.FieldFactory;
+import org.epics.pvData.factory.PVDataFactory;
+import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.FieldCreate;
+import org.epics.pvData.pv.PVDataCreate;
+import org.epics.pvData.pv.PVField;
+import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVString;
+import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.Type;
+import org.epics.pvData.pvShare.PVShareFactory;
 /**
  * A Factory that creates a PVCopy interface which describes a subset of the fields
  * within a PVRecord. It can be used by Channel Access servers.
@@ -78,6 +90,7 @@ public class PVCopyFactory {
             StructureNode structureNode = new StructureNode();
             createStructureNodes(structureNode,pvRecord,pvRequest,cacheInitStructure);
             headNode = structureNode;
+            referenceImmutable(cacheInitStructure,headNode);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pvCopy.PVCopy#getPVRecord()
@@ -103,7 +116,38 @@ public class PVCopyFactory {
                 cacheInitStructure = null;
                 return save;
             }
-            return pvDataCreate.createPVStructure(null, "", structure);
+            PVStructure pvStructure =  pvDataCreate.createPVStructure(null, "", structure);
+            if(headNode!=null) {
+                referenceImmutable(pvStructure,headNode);
+            }
+            return pvStructure;
+        }
+        private void referenceImmutable(PVField pvField,Node node) {
+            if(node.isStructure) {
+                StructureNode structureNode = (StructureNode)node;
+                Node[] nodes = structureNode.nodes;
+                PVStructure pvStructure = (PVStructure)pvField;
+                for(Node nextNode : nodes) {
+                    referenceImmutable(pvStructure.getSubField(nextNode.structureOffset),nextNode);
+                }
+            } else {
+                RecordNode recordNode = (RecordNode)node;
+                referenceImmutable(pvField,recordNode.recordPVField);
+            }
+        }
+        
+        private void referenceImmutable(PVField copyPVField,PVField recordPVField) {
+            if(recordPVField.getField().getType()==Type.structure) {
+                PVField[] copyPVFields = ((PVStructure)copyPVField).getPVFields();
+                PVField[] recordPVFields = ((PVStructure)recordPVField).getPVFields();
+                for(int i=0; i<copyPVFields.length; i++) {
+                    referenceImmutable(copyPVFields[i],recordPVFields[i]);
+                }
+                return;
+            }
+            if(!recordPVField.isImmutable()) return;
+            PVField pvField = PVShareFactory.create(copyPVField, recordPVField);
+            copyPVField.getParent().replacePVField(copyPVField.getField().getFieldName(), pvField);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pvCopy.PVCopy#getOffset(org.epics.pvData.pv.PVField)

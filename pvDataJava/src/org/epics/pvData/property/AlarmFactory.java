@@ -2,10 +2,14 @@
  * 
  */
 package org.epics.pvData.property;
-import java.util.TreeMap;
-
 import org.epics.pvData.misc.Enumerated;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.PVBoolean;
+import org.epics.pvData.pv.PVField;
+import org.epics.pvData.pv.PVInt;
+import org.epics.pvData.pv.PVString;
+import org.epics.pvData.pv.PVStringArray;
+import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Type;
 
 /**
  * Factory that creates Alarm
@@ -19,17 +23,12 @@ public class AlarmFactory {
      * @return interface
      */
     public static Alarm getAlarm(PVField pvField) {
-        String key = pvField.getFullName();
-        Alarm alarm = alarmMap.get(key);
-        if(alarm!=null) return alarm;
         AlarmImpl alarmImpl = new AlarmImpl();
         if(alarmImpl.isAlarm(pvField)) {
-            alarmMap.put(key, alarmImpl);
             return alarmImpl;
         }
         return null;
     }
-    private static TreeMap<String,Alarm> alarmMap = new TreeMap<String,Alarm>();
     private static class AlarmImpl implements Alarm {
         private PVString pvMessage = null;
         private PVString pvSeverityChoice = null;
