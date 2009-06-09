@@ -5,9 +5,10 @@
  */
 package org.epics.pvData.property;
 
+import org.epics.pvData.pv.PVBoolean;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.PVStringArray;
 
 /**
  * Convenience interface for an alarm structure.
