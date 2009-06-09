@@ -121,6 +121,7 @@ public class XMLToPVDatabaseFactory {
         private PVArray pvArray = null;
         private String arrayString = null;
         private State arrayPrevState = null;
+        private boolean immutable = false;
         private int capacity = 0;
         private int length = 0;
         private int offset = 0;
@@ -513,6 +514,12 @@ public class XMLToPVDatabaseFactory {
         
         private void startScalar(String name,Map<String,String> attributes)
         {
+            String immutableString = attributes.get("immutable");
+            if(immutableString!=null && immutableString.equals("true")) {
+                immutable = true;
+            } else {
+                immutable = false;
+            }
         	scalarString = null;
             String fieldName = attributes.get("name");
             if(fieldName==null || fieldName.length() == 0) {
@@ -560,6 +567,7 @@ public class XMLToPVDatabaseFactory {
             if(scalarString!=null && scalarString.length()>0) {
                 convert.fromString(pvScalar, scalarString);
             }
+            if(immutable) pvScalar.setImmutable();
             scalarString = null;
             pvScalar = null;
             state = scalarPrevState;
@@ -570,6 +578,12 @@ public class XMLToPVDatabaseFactory {
         
         private void startScalarArray(String name,Map<String,String> attributes)
         {
+            String immutableString = attributes.get("immutable");
+            if(immutableString!=null && immutableString.equals("true")) {
+                immutable = true;
+            } else {
+                immutable = false;
+            }
             arrayString = null;
             String fieldName = attributes.get("name");
             if(fieldName==null || fieldName.length() == 0) {
@@ -682,6 +696,7 @@ public class XMLToPVDatabaseFactory {
                         MessageType.warning);
                 }
             }
+            if(immutable) pvArray.setImmutable();
             if(!capacityMutable) pvArray.setCapacityMutable(false);
             if(pvListener!=null) pvListener.endArray();
             pvArray = null;

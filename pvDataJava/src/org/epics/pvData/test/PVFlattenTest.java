@@ -7,46 +7,14 @@ package org.epics.pvData.test;
 
 import junit.framework.TestCase;
 
-import org.epics.pvData.factory.*;
-import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
-import org.epics.pvData.pv.*;
-import org.epics.pvData.pv.BooleanArrayData;
-import org.epics.pvData.pv.ByteArrayData;
-import org.epics.pvData.pv.Convert;
-import org.epics.pvData.pv.Field;
-import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.PVArray;
-import org.epics.pvData.pv.PVAuxInfo;
-import org.epics.pvData.pv.PVBoolean;
-import org.epics.pvData.pv.PVBooleanArray;
-import org.epics.pvData.pv.PVByte;
-import org.epics.pvData.pv.PVByteArray;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVDatabase;
-import org.epics.pvData.pv.PVDouble;
-import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVFloat;
-import org.epics.pvData.pv.PVFloatArray;
-import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVIntArray;
-import org.epics.pvData.pv.PVLong;
-import org.epics.pvData.pv.PVLongArray;
-import org.epics.pvData.pv.PVScalar;
-import org.epics.pvData.pv.PVShort;
-import org.epics.pvData.pv.PVShortArray;
-import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStringArray;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
-import org.epics.pvData.pv.Scalar;
-import org.epics.pvData.pv.ScalarType;
-import org.epics.pvData.pv.StringArrayData;
-import org.epics.pvData.pv.Structure;
-import org.epics.pvData.pv.*;
-import org.epics.pvData.pvCopy.*;
 import org.epics.pvData.xml.XMLToPVDatabaseFactory;
 
 

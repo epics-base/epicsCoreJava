@@ -474,13 +474,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVBoolean#put(boolean)
          */
         public void put(boolean value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -532,13 +531,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVByte#put(byte)
          */
         public void put(byte value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -590,13 +588,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVShort#put(short)
          */
         public void put(short value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -648,13 +645,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVInt#put(int)
          */
         public void put(int value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -706,13 +702,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVLong#put(long)
          */
         public void put(long value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -764,13 +759,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVFloat#put(float)
          */
         public void put(float value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -822,13 +816,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVDouble#put(double)
          */
         public void put(double value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -880,13 +873,12 @@ public class ReplaceTest extends TestCase {
          * @see org.epics.ioc.pv.PVString#put(java.lang.String)
          */
         public void put(String value) {
-            if(super.isMutable()) {
+            if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
-                super.postPut();
                 return ;
             }
-            throw new IllegalStateException("PVField.isMutable is false");
+            throw new IllegalStateException("PVField is immutable");
         }
         
         /* (non-Javadoc)
@@ -954,15 +946,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, boolean[]from, int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
         /* (non-Javadoc)
@@ -1022,15 +1016,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, byte[]from, int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
 
@@ -1089,15 +1085,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, short[]from, int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
         /* (non-Javadoc)
@@ -1156,15 +1154,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, int[]from,int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
         /* (non-Javadoc)
@@ -1222,15 +1222,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, long[]from, int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
         /* (non-Javadoc)
@@ -1289,15 +1291,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, float[]from,int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
         /* (non-Javadoc)
@@ -1357,15 +1361,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, double[]from, int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
         /* (non-Javadoc)
@@ -1423,15 +1429,17 @@ public class ReplaceTest extends TestCase {
          */
         public int put(int offset, int len, String[]from, int fromOffset) {
             System.out.printf("%n    **%s.put**",getField().getType().toString());
-            if(!super.isMutable())
-                throw new IllegalStateException("PVField.isMutable is false");
+            if(super.isImmutable())
+                throw new IllegalStateException("PVField is immutable");
             if(offset+len > length) {
                  int newlength = offset + len;
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
+            PVRecord pvRecord = super.getPVRecord();
+            if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
-            super.postPut();
+            if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
         /* (non-Javadoc)

@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.test;
 
+import java.util.ArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -128,6 +129,7 @@ public class PerformTest extends TestCase {
     }
     
     
+    
     private static class CurrentTimeFunction implements TimeFunctionRequester {
         
         private CurrentTimeFunction() {}
@@ -143,6 +145,63 @@ public class PerformTest extends TestCase {
         
     }
 
+    public static void testListIterator() {
+        System.out.printf("%nSystem.listIteratorMillis%n");
+        ListIteratorFunction listIteratorFunction = new ListIteratorFunction();
+        TimeFunction timeFunction = TimeFunctionFactory.create(listIteratorFunction);
+        double perCallIterator = timeFunction.timeCall();
+        assertTrue(listIteratorFunction.total==3);
+        ListSumFunction listSumFunction = new ListSumFunction();
+        timeFunction = TimeFunctionFactory.create(listSumFunction);
+        double perCallSum = timeFunction.timeCall();
+        assertTrue(listSumFunction.total==3);
+        System.out.printf(
+            "listIterator seconds per call iterator %e total %d sum %e total %d%n",
+            perCallIterator,listIteratorFunction.total,perCallSum,listSumFunction.total);
+    }
+    
+    private static class ListIteratorFunction implements TimeFunctionRequester {
+        
+        private ListIteratorFunction() {
+            arrayList.add(1);
+            arrayList.add(2);
+        }
+
+        /* private static class ListIteratorFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {
+            total = 0;
+            for(Integer value : arrayList) {
+                total += value;
+            }
+        }
+        private int total = 0;
+        private ArrayList<Integer> arrayList = new ArrayList<Integer>(2);
+        
+    }
+    
+    private static class ListSumFunction implements TimeFunctionRequester {
+        
+        private ListSumFunction() {
+            arrayList.add(1);
+            arrayList.add(2);
+        }
+
+        /* private static class ListIteratorFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {
+            total = 0;
+            for(int i=0; i<arrayList.size(); i++) {
+                total += arrayList.get(i);
+            }
+        }
+        private int total = 0;
+        private ArrayList<Integer> arrayList = new ArrayList<Integer>(2);
+        
+    }
+    
     public static void testThreadSwitch() {
         System.out.printf("%nthreadSwitch%n");
         Executor executor = ExecutorFactory.create("testThreadSwitch", ThreadPriority.higher);
@@ -207,6 +266,11 @@ public class PerformTest extends TestCase {
          */
         public void function() {
             to = (PVDoubleArray) from;
+        }
+        
+        // this suppresses warning message about to being inread
+        public PVDoubleArray getTo() {
+            return to;
         }
         
         private PVField from;
