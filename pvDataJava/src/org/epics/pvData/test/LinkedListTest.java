@@ -163,7 +163,7 @@ public class LinkedListTest extends TestCase {
         System.out.printf("%nTime test%n");
         long beginTime = System.currentTimeMillis();
         for(int i=0; i<ntimes; i++) {
-            for(Node node: nodes) linkedList.addTail(node.listNode);
+            for(Node node : nodes) linkedList.addTail(node.listNode);
             LinkedListNode<Node> listNode = linkedList.removeHead();
             while(listNode!=null) listNode = linkedList.removeHead();
         }
@@ -222,8 +222,42 @@ public class LinkedListTest extends TestCase {
         long beginTime = System.currentTimeMillis();
         for(int i=0; i<ntimes; i++) {
             for(Node node: nodes) arrayList.add(node);
-            for(int j=0; j<nodes.length; j++) {
+            while(true) {
                 arrayList.remove(0);
+                if(arrayList.isEmpty()) break;
+            }
+        }
+        long endTime = System.currentTimeMillis();
+        double diff = endTime - beginTime;
+        System.out.println("diff " + diff);
+        diff = diff/1000.0; // convert from milliseconds to seconds
+        diff = diff/ntimes; // seconds per outer loop
+        diff = diff*1e6; // converty to microseconds
+        System.out.println("time per iteration " + diff + " microseconds");
+        diff = diff/(numNodes*2); // convert to per addTail/removeHead
+        System.out.println("time per addTail/removeHead " + diff + " microseconds");
+        assertTrue(arrayList.isEmpty());
+    }
+    
+    public static void testArrayListTimeLocked() {
+        numNodes = 1000;
+        ArrayList<Node> arrayList = new ArrayList<Node>();
+        Node[] nodes = new Node[numNodes];
+        for(int i=0; i<numNodes; i++) {
+            nodes[i] = new Node(i);
+        }
+        int ntimes = 1000;
+        System.out.printf("%nTime ArrayList test locked%n");
+        long beginTime = System.currentTimeMillis();
+        for(int i=0; i<ntimes; i++) {
+            for(Node node: nodes) {
+                synchronized(arrayList) {arrayList.add(node);}
+            }
+            while(true) {
+                synchronized(arrayList) {
+                    arrayList.remove(0);
+                    if(arrayList.isEmpty()) break;
+                }
             }
         }
         long endTime = System.currentTimeMillis();
