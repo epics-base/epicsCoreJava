@@ -83,7 +83,7 @@ public class RenameTest extends TestCase {
         
         PVField[] pvFields = pvStructure.getPVFields();
         for(PVField pvField: pvFields) {
-            System.out.println(blanks + pvField.getFullFieldName() + " " + pvField.getFullName());
+            System.out.println(blanks + pvField.getField().getFieldName() + " " + pvField.getFullFieldName() + " " + pvField.getFullName());
             if(pvField.getField().getType()==Type.structure) printSubFields((PVStructure)pvField,level +1);
         }
     }
