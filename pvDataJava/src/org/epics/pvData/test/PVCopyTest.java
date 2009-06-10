@@ -284,7 +284,9 @@ public class PVCopyTest extends TestCase {
     }
     
     static void showModified(String message,PVStructure pvStructure,BitSet bitSet) {
-        System.out.println(message + "modifiedFields");
+        System.out.println();
+        System.out.println(message);
+        System.out.println("modifiedFields");
         int size = bitSet.size();
         int index = -1;
         while(++index < size) {
@@ -296,6 +298,7 @@ public class PVCopyTest extends TestCase {
     }
     
     static void compareCopyWithRecord(String message,PVStructure pvStructure,PVCopy pvCopy) {
+        System.out.println();
         System.out.println(message);
         int length = pvStructure.getNumberFields();
         for(int offset=0; offset<length; offset++) {
