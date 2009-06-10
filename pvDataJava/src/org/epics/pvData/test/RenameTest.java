@@ -7,9 +7,9 @@ package org.epics.pvData.test;
 
 import junit.framework.TestCase;
 
-import org.epics.pvData.factory.PVDatabaseFactory;
+import org.epics.pvData.factory.*;
 import org.epics.pvData.factory.PVReplaceFactory;
-import org.epics.pvData.pv.PVDatabase;
+import org.epics.pvData.pv.*;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
@@ -24,15 +24,14 @@ import org.epics.pvData.xml.XMLToPVDatabaseFactory;
  *
  */
 public class RenameTest extends TestCase {
+    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     /**
      * test DBListener.
      */
-    public static void testXML() {
+    public static void testRename() {
     	PVDatabase master = PVDatabaseFactory.getMaster();
         Requester iocRequester = new RequesterForTesting("xmlTest");
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester,false,null,null,null);
-//        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/analog/ai.xml", iocRequester);
-//        XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/powerSupply/powerSupplyDB.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"test/types/allTypesStructure.xml", iocRequester,false,null,null,null);
         XMLToPVDatabaseFactory.convert(master,"test/types/allTypesRecords.xml", iocRequester,false,null,null,null);
         PVReplaceFactory.replace(master);
@@ -50,13 +49,30 @@ public class RenameTest extends TestCase {
         pvField = pvRecord.getSubField("allTypes.structureArray.1");
         assertTrue(pvField!=null);
         rename(pvField);
+        PVStructure pvStructure = master.findStructure("org.epics.pvData.alarm");
+        pvStructure = pvDataCreate.createPVStructure(null, "alarm", pvStructure);
+        pvField = pvStructure.getSubField("message");
+        assertTrue(pvField!=null);
+        rename(pvField);
+        pvField = pvStructure.getSubField("severity.index");
+        assertTrue(pvField!=null);
+        rename(pvField);
+        rename(pvStructure);
     }
     
     private static void rename (PVField pvField) {
         System.out.println();
-        System.out.println("before rename fullFieldName " + pvField.getFullFieldName() + " fullName " + pvField.getFullName());
+        System.out.println(
+              "before rename"
+              + " fieldName "+ pvField.getField().getFieldName()
+              + " fullFieldName " + pvField.getFullFieldName()
+              + " fullName " + pvField.getFullName());
         pvField.renameField("replaceName");
-        System.out.println("after rename fullFieldName " + pvField.getFullFieldName() + " fullName " + pvField.getFullName());
+        System.out.println(
+             "after rename"
+              + " fieldName "+ pvField.getField().getFieldName()
+              + " fullFieldName " + pvField.getFullFieldName()
+              + " fullName " + pvField.getFullName());
         if(pvField.getField().getType()==Type.structure) printSubFields((PVStructure)pvField,1);
     }
     
