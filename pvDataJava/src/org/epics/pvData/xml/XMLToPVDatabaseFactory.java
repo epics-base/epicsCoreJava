@@ -42,7 +42,7 @@ public class XMLToPVDatabaseFactory {
     private static IncludeSubstituteXMLReader iocxmlReader = IncludeSubstituteXMLReaderFactory.getReader();
     //  for use by private classes
     private static final Convert convert = ConvertFactory.getConvert();
-    private static final Pattern primitivePattern = Pattern.compile("[,]");
+    private static final Pattern commaPattern = Pattern.compile("[,]");
     private static PVDatabase pvDatabase;
     private static IncludeSubstituteXMLListener isListener;
     private static XMLToPVDatabaseListener pvListener;
@@ -673,7 +673,7 @@ public class XMLToPVDatabaseFactory {
             }
             if(value!=null && value.length()>0) {
                 String[] values = null;
-                values = primitivePattern.split(value);
+                values = commaPattern.split(value);
                 ScalarType type = pvArray.getArray().getElementType();
                 if(type==ScalarType.pvString) {
                     for(int i=0; i<values.length; i++) {
