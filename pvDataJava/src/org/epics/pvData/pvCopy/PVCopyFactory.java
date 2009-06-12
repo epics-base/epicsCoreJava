@@ -5,7 +5,9 @@
  */
 package org.epics.pvData.pvCopy;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.regex.Pattern;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.FieldFactory;
@@ -20,7 +22,6 @@ import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
-import org.epics.pvData.pvShare.PVShareFactory;
 /**
  * A Factory that creates a PVCopy interface which describes a subset of the fields
  * within a PVRecord. It can be used by Channel Access servers.
@@ -34,17 +35,19 @@ public class PVCopyFactory {
      * @param pvRecord The PVREcord.
      * @param pvRequest A PVStructure which describes the set of fields of PVRecord that
      * should be mapped. See the packaged overview for details.
+     * @param structureName TODO
      * @return The PVCopy interface.
      */
-    public static PVCopy create(PVRecord pvRecord,PVStructure pvRequest) {
+    public static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,String structureName) {
         PVCopyImpl impl = new PVCopyImpl(pvRecord);
-        impl.init(pvRequest);
+        impl.init(pvRequest,structureName);
         return impl;
     }
     
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private static final Convert convert = ConvertFactory.getConvert();
+    private static final Pattern commaPattern = Pattern.compile("[,]");
     
     private static class Node {
         boolean isStructure;
@@ -73,7 +76,7 @@ public class PVCopyFactory {
         private Node headNode = null;
         private PVStructure cacheInitStructure = null;
         
-        private void init(PVStructure pvRequest) {
+        private void init(PVStructure pvRequest,String structureName) {
             if(pvRequest.getPVFields().length==0) {
                 // asking for entire record is special case.
                 structure = pvRecord.getStructure();
@@ -85,7 +88,7 @@ public class PVCopyFactory {
                 recordNode.nfields = pvRecord.getNumberFields();
                 return;
             }
-            structure = createStructure(pvRecord,pvRequest);
+            structure = createStructure(pvRecord,pvRequest,structureName);
             cacheInitStructure = createPVStructure();
             StructureNode structureNode = new StructureNode();
             createStructureNodes(structureNode,pvRecord,pvRequest,cacheInitStructure);
@@ -145,9 +148,7 @@ public class PVCopyFactory {
                 }
                 return;
             }
-            if(!recordPVField.isImmutable()) return;
-            PVField pvField = PVShareFactory.create(copyPVField, recordPVField);
-            copyPVField.getParent().replacePVField(copyPVField.getField().getFieldName(), pvField);
+            if(recordPVField.isImmutable()) convert.copy(recordPVField, copyPVField);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pvCopy.PVCopy#getOffset(org.epics.pvData.pv.PVField)
@@ -248,18 +249,6 @@ public class PVCopyFactory {
             }
         }
         
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pvCopy.PVCopy#checkBitSet(java.util.BitSet)
-         */
-        @Override
-        public boolean checkBitSet(BitSet bitSet) {
-            if(headNode.isStructure) {
-                return checkBitSetStructureNode((StructureNode)headNode,bitSet);
-            } else {
-                return checkBitSetRecordPVField(((RecordNode)headNode).recordPVField,bitSet,headNode.structureOffset);
-            }
-        }
-        
         private boolean updateStructureNode(PVStructure pvCopy,StructureNode structureNode,BitSet bitSet, boolean toCopy) {
             boolean atLeastOneBitSet = false;
             for(Node node : structureNode.nodes) {
@@ -318,16 +307,7 @@ public class PVCopyFactory {
 
                 }
             }
-            if(!atLeastOneBitSet) return false;
-            int offset = pvCopy.getFieldOffset();
-            int nextOffset = pvCopy.getNextFieldOffset();
-            int nextClear = bitSet.nextClearBit(offset+1);
-            if(nextClear==-1 || nextClear>=nextOffset) {
-                bitSet.set(offset);
-                int next = offset;
-                while(++next < nextOffset) bitSet.clear(next);
-            }
-            return true;
+            return atLeastOneBitSet;
         }
         
 
@@ -354,113 +334,38 @@ public class PVCopyFactory {
             }
             return null;
         }
-        
-        private boolean checkBitSetStructureNode(StructureNode structureNode,BitSet bitSet) {
-            boolean atLeastOneBitSet = false;
-            boolean allBitsSet = true;
-            for(Node node : structureNode.nodes) {
-                if(node.isStructure) {
-                    if(checkBitSetStructureNode((StructureNode)node,bitSet)) {
-                        atLeastOneBitSet = true;
-                    }
-                } else {
-                    if(checkBitSetRecordPVField(((RecordNode)node).recordPVField,bitSet,node.structureOffset)) {
-                        atLeastOneBitSet = true;
-                    }
-                }
-                if(!bitSet.get(node.structureOffset)) {
-                    allBitsSet = false;
-                }
-            }
-            if(allBitsSet) {
-                int offset = structureNode.structureOffset;
-                int nbits = structureNode.nfields;
-                bitSet.clear(offset+1, offset+nbits+1);
-                bitSet.set(offset);
-            } else {
-                bitSet.clear(structureNode.structureOffset);
-            }
-            return atLeastOneBitSet;
-        }
-        
-        private boolean checkBitSetRecordPVField(PVField pvRecordField,BitSet bitSet,int initialOffset) {
-            boolean atLeastOneBitSet = false;
-            boolean allBitsSet = true;
-            int offset = initialOffset;
-            int nbits = pvRecordField.getNumberFields();
-            while(offset<initialOffset + nbits) {
-                PVField recordPVField = getRecordPVField(offset);
-                int nbitsNow = recordPVField.getNumberFields();
-                if(nbitsNow==1) {
-                    if(bitSet.get(offset)) {
-                        atLeastOneBitSet = true;
-                    } else {
-                        allBitsSet = false;
-                    }
-                    offset++;
-                } else {
-                    offset++;
-                    PVStructure pvRecordStructure = (PVStructure)pvRecordField;
-                    PVField[] pvRecordFields = pvRecordStructure.getPVFields();
-                    for(PVField pvField: pvRecordFields) {
-                        boolean result = checkBitSetRecordPVField(pvField,bitSet,offset);
-                        if(result) {
-                            atLeastOneBitSet = true;
-                            if(!bitSet.get(offset)) {
-                                allBitsSet = false;
-                            }
-                        } else {
-                            allBitsSet = false;
-                        }
-                        offset += pvField.getNumberFields();
-                    }
-                }
-            }
-            if(allBitsSet) {
-                if(nbits>1) {
-                    bitSet.clear(initialOffset+1, initialOffset+nbits + 1);
-                }
-                bitSet.set(initialOffset);
-            }
-            return atLeastOneBitSet;
-        }
     }
     
     
-    private static Structure createStructure(PVStructure pvRecord,PVStructure pvFromRequest) {
+    private static Structure createStructure(PVStructure pvRecord,PVStructure pvFromRequest,String fieldName) {
         PVField[] pvFromFields = pvFromRequest.getPVFields();
         int length = pvFromFields.length;
-        Field[] fields = new Field[length];
-        int numberNull = 0;
+        ArrayList<Field> fieldList = new ArrayList<Field>(length);
         for(int i=0; i<length; i++) {
             PVField pvField = pvFromFields[i];
             if(pvField.getField().getType()==Type.structure) {
-                fields[i] = createStructure(pvRecord,(PVStructure)pvField);
+                fieldList.add(createStructure(pvRecord,(PVStructure)pvField,pvField.getField().getFieldName()));
             } else {
                 PVString pvString = (PVString)pvFromFields[i];
-                PVField pvRecordField = pvRecord.getSubField(pvString.get());
-                if(pvRecordField==null) {
-                    fields[i] = null;
-                    numberNull++;
+                if(pvString.getField().getFieldName().equals("fieldList")) {
+                    String[] fieldNames = commaPattern.split(pvString.get());
+                    for(int j=0; j<fieldNames.length; j++) {
+                        PVField pvRecordField = pvRecord.getSubField(fieldNames[j]);;
+                        if(pvRecordField!=null) {
+                            fieldList.add(pvRecordField.getField());
+                        }
+                    }
                 } else {
-                    fields[i] = pvRecordField.getField();
+                    PVField pvRecordField = pvRecord.getSubField(pvString.get());
+                    if(pvRecordField!=null) {
+                        fieldList.add(pvRecordField.getField());
+                    }
                 }
             }
         }
-        if(numberNull>0) {
-            int newLength = length-numberNull;
-            Field[] newFields = new Field[newLength];
-            int next = 0;
-            for(Field field : fields) {
-                if(field!=null) {
-                    newFields[next++] = field;
-                    
-                }
-            }
-            length = newFields.length;
-            fields = newFields;
-        }
-        return fieldCreate.createStructure(pvFromRequest.getField().getFieldName(), fields);
+        Field[] fields = new Field[fieldList.size()];
+        fields = fieldList.toArray(fields);
+        return fieldCreate.createStructure(fieldName, fields);
     }
     
     private static void createStructureNodes(StructureNode structureNode,
@@ -470,35 +375,46 @@ public class PVCopyFactory {
     {
         PVField[] pvFromStructureFields = pvFromStructure.getPVFields();
         PVField[] pvFromRequestFields = pvFromRequest.getPVFields();
-        int indRequestFields = 0;
         int length = pvFromStructureFields.length;
         structureNode.isStructure = true;
         structureNode.nodes = new Node[length];
         structureNode.structureOffset = pvFromStructure.getFieldOffset();
         structureNode.nfields = pvFromStructure.getNumberFields();
         int nextOffset = structureNode.structureOffset + 1;
-        for(int i=0; i<length; i++) {
+        int index = 0;
+        for(int indRequestFields= 0; indRequestFields <pvFromRequestFields.length;indRequestFields++) {
             PVField pvRequest = pvFromRequestFields[indRequestFields];
             if(pvRequest.getField().getType()==Type.structure) {
-                indRequestFields++;
-                PVStructure pvFromStruct = (PVStructure)pvFromStructureFields[i];
+                PVStructure pvFromStruct = (PVStructure)pvFromStructureFields[index];
                 StructureNode newNode = new StructureNode();
                 createStructureNodes(newNode,pvRecord,(PVStructure)pvRequest,pvFromStruct);
-                structureNode.nodes[i] = newNode;
+                structureNode.nodes[index++] = newNode;
                 nextOffset = newNode.structureOffset + 1;
+                continue;
             } else {
-                RecordNode recordNode = new RecordNode();
-                while(true) {
-                    PVString pvString = (PVString)pvFromRequestFields[indRequestFields];
+                PVString pvString = (PVString)pvFromRequestFields[indRequestFields];
+                if(pvString.getField().getFieldName().equals("fieldList")) {
+                    String[] fieldNames = commaPattern.split(pvString.get());
+                    for(int j=0; j<fieldNames.length; j++) {
+                        PVField pvRecordField = pvRecord.getSubField(fieldNames[j]);;
+                        if(pvRecordField!=null) {
+                            RecordNode recordNode = new RecordNode();
+                            recordNode.recordPVField = pvRecordField;
+                            structureNode.nodes[index++] = recordNode;
+                            recordNode.nfields = pvRecordField.getNumberFields();
+                            recordNode.structureOffset = nextOffset;
+                            nextOffset += recordNode.nfields;
+                        }
+                    }
+                } else {
                     PVField pvRecordField = pvRecord.getSubField(pvString.get());
-                    indRequestFields++;
                     if(pvRecordField!=null) {
+                        RecordNode recordNode = new RecordNode();
                         recordNode.recordPVField = pvRecordField;
-                        structureNode.nodes[i] = recordNode;
+                        structureNode.nodes[index++] = recordNode;
                         recordNode.nfields = pvRecordField.getNumberFields();
                         recordNode.structureOffset = nextOffset;
                         nextOffset += recordNode.nfields;
-                        break;
                     }
                 }
             }

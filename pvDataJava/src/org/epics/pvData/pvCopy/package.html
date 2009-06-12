@@ -10,11 +10,26 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.06.02</h1>
+2009.06.12</h1>
 CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#BitSetUtil">BitSetUtil</a></li>
+  <li><a href="#PVCopy">PVCopy</a></li>
+  <li><a href="#PVCopyFact">PVCopyFactory</a>
+    <ul>
+      <li><a href="#Java">Java Definition</a></li>
+      <li><a href="#PVStructur">PVStructure pvRequest</a></li>
+      <li><a href="#Examples">Examples</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
 <hr />
 
-<h2 style="text-align: center">Overview</h2>
+<h2 style="text-align: center" id="Overview">Overview</h2>
 <hr />
 
 <p>This package provides support for copying PVData between a client and
@@ -25,8 +40,11 @@ support for transfering the data between client and server but provides
 support for code that does, e. g. it can be used by channel access. In the
 examples below the data transfer code is called channel access.</p>
 
-<p>PVField and PVStructure provide support for locating a field within a
-PVStructure or PVRecord via a field offset. PVField provides the methods:</p>
+<p>This package uses the field offsets provided by PVField and also requires
+that user code creates a java.util.BitSet.</p>
+
+<p>PVField provides support for locating a field within a PVStructure or
+PVRecord via a field offset. PVField provides the methods:</p>
 <dl>
   <dt>getFieldOffset</dt>
     <dd>Get offset of the PVField field within top level structure. Every
@@ -49,18 +67,70 @@ created via:</p>
 <pre>    BitSet bitSet = new BitSet(pvStructure.getNumberFields());</pre>
 
 <p>The offsets for bitSet match the fieldOffsets. On the client side of
-Channel Access only a PVStructure a BitSet created from the PVStructure is
-required. On the server side PVCopy provides a way to map between the field
-in a PVRecord and the fields in the PVStructure. A copy of the PVStructure
-resides on both the Channel Access client and server. The client and server
-exchange data via these two PVStructures. PVCopy maps between the PVStructure
-and the PVRecord on the server side of Channel Access. </p>
+Channel Access only a BitSet created from the PVStructure is required. On the
+server side PVCopy provides a way to map between the field in a PVRecord and
+the fields in the PVStructure. A copy of the PVStructure resides on both the
+Channel Access client and server. The client and server exchange data via
+these two PVStructures. PVCopy maps between the PVStructure and the PVRecord
+on the server side of Channel Access. </p>
+
+<p>This package provides the following:</p>
+<dl>
+  <dt>BitSetUtil</dt>
+    <dd>An interface that cuurently has only one method compress which
+      optimizes the bit settings for a PVStructure.</dd>
+  <dt>PVCopy</dt>
+    <dd>An interface for mapping between a PVRecord and a PVStructure that
+      contains data for a subset of the fields in the PVRecord</dd>
+  <dt>PVCopyFactory</dt>
+    <dd>The factory that implements PVCopy. It accepts a PVStructure that
+      describes the set of fields of a PVRecord that should be mapped.</dd>
+</dl>
 <hr />
 
-<h2 style="text-align: center">PVCopy</h2>
+<h2 style="text-align: center" id="BitSetUtil">BitSetUtil</h2>
 <hr />
 
-<p>x</p>
+<p>This provides functions that operate of a BitSet for a PVStructure. It has
+the definitions:</p>
+<pre>interface BitSetUtil {
+    boolean compress(BitSet bitSet,PVStructure pvStructure);
+}
+
+class BitSetUtilFactory {
+    public static BitSetUtil getCompressBitSet();
+}</pre>
+
+<p>It currently has only one method:</p>
+<dl>
+  <dt><span style="font-family: Courier">compress</span></dt>
+    <dd>Compress the bits in a BitSet related to a structure.<br />
+      For each structure: 
+      <ol>
+        <li>If the bit for the structure is set then the bit for all
+          subfields of the structure are cleared. </li>
+        <li>If the bit for the structure is not set but all immediate
+          subfields have their bit set then the bit for the structure is set
+          and the bits for all subfields are cleared. </li>
+      </ol>
+      Note that this is a recursive algorithm. That is if every immediate
+      subfield has it's offset bit set then the bits for ALL fields that
+      reside in the structure will be cleared.</dd>
+    <dd>Channel Access can call this before sending data. It can then pass
+      entire structures if the structure offset bit is set. </dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="PVCopy">PVCopy</h2>
+<hr />
+
+<p>This is the interface for mapping between a PVStructure that contain a
+copy of the data for a subset of the fields in a PVRecord. Note that this
+interface is NOT for a single PVStructure but for a single PVRecord and a
+single Structure introspection interface that describes a sunset of the
+fields in the PVRecord. For example if a server supports monitor queues then
+the server will allocate a PVStructure for each queue element but will create
+a single PVCopy.</p>
 <pre>    interface PVCopy {
         PVRecord getPVRecord();
         Structure getStructure();
@@ -71,40 +141,58 @@ and the PVRecord on the server side of Channel Access. </p>
         void initCopy(PVStructure pvCopy, BitSet bitSet);
         boolean updateCopy(PVStructure pvCopy,BitSet bitSet);
         boolean updateRecord(PVStructure pvCopy,BitSet bitSet);
-        boolean checkBitSet(BitSet bitSet);
     }</pre>
 
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">getPVRecord</span></dt>
-    <dd>x</dd>
+    <dd>Get the PVRecord to which this PVCopy is attached</dd>
   <dt><span style="font-family: Courier">getStructure</span></dt>
-    <dd>x</dd>
+    <dd>Get the introspection interface which describes the subset of the
+      fields in the PVRecord.</dd>
   <dt><span style="font-family: Courier">createPVStructure</span></dt>
-    <dd>x</dd>
+    <dd><p>Create a PVStructure which can hold a subset of the data from the
+      PVRecord. A client may require multiple PVStructures. For example if a
+      monitor request supports a queue than a PVStructure is required for
+      each queue element.</p>
+    </dd>
   <dt><span style="font-family: Courier">getCopyOffset(PVField
   recordPVField)</span></dt>
-    <dd>x</dd>
+    <dd><p>Given a PVField from the record determine the offset within the
+      PVStructure where the copy of the data is located.
+      PVStructure.getSubField(offset) can be called to locate the PVField
+      within the PVStructure.</p>
+    </dd>
   <dt><span style="font-family: Courier">getCopyOffset(PVStructure
   recordPVStructure,PVField recordPVField)</span></dt>
-    <dd>x</dd>
+    <dd><p>Given a recordPVField within a recordPVStructure determine the
+      offset within the PVStructure where the copy of the data is located.
+      PVStructure.getSubField(offset) can be called to locate the PVField
+      within the PVStructure.</p>
+      <p></p>
+    </dd>
   <dt><span style="font-family: Courier">getRecordPVField</span></dt>
-    <dd>x</dd>
+    <dd>Given an offset within a PVStructure return the corresponding PVField
+      in the PVRecord.</dd>
   <dt><span style="font-family: Courier">initCopy</span></dt>
-    <dd>x</dd>
+    <dd><p>Initialize PVStructure with the current data from the PVRecord.
+      The bitSet will have offset 0 set to 1 and all other bits set to 0.</p>
+      <p></p>
+    </dd>
   <dt><span style="font-family: Courier">updateCopy</span></dt>
-    <dd>x</dd>
+    <dd>Update PVStructure from PVRecord. The BitSet shows which fields in
+      PVStructure have changed.</dd>
   <dt><span style="font-family: Courier">updateRecord</span></dt>
-    <dd>x</dd>
-  <dt><span style="font-family: Courier">checkBitSet</span></dt>
-    <dd>x</dd>
+    <dd><p>Update the fields in PVRecord with data from PVStructure. Only
+      fields that have the offset in bitSet set to true are modified.</p>
+    </dd>
 </dl>
 <hr />
 
-<h2 style="text-align: center">PVCopyFactory</h2>
+<h2 style="text-align: center" id="PVCopyFact">PVCopyFactory</h2>
 <hr />
 
-<h3>Java Definition</h3>
+<h3 id="Java">Java Definition</h3>
 <pre>    class PVCopyFactory {
         static PVCopy create(PVRecord pvRecord,PVStructure pvRequest);
     }</pre>
@@ -118,20 +206,28 @@ and the PVRecord on the server side of Channel Access. </p>
       server wants access.</dd>
 </dl>
 
-<h3>PVStructure pvRequest</h3>
+<h3 id="PVStructur">PVStructure pvRequest</h3>
 
 <p>This is a PVStructure that describes the fields in PVRecord that are to be
 accessed. It looks like the following:</p>
 <pre>    &lt;structure&gt;
-        &lt;!-- 0 or more scalar string definitions of the following form --&gt;
-        &lt;scalar name = "fieldName" scalarType = "string"&gt;
-           fullPVRecordFieldName
-        &lt;/scalar&gt;
-        &lt;!-- 0 or more structure definitions of the form --&gt;
-        &lt;sructure name = "fieldName"&gt;
+         &lt;!-- 0 or 1 scalar string definition of the form --&gt;
+         &lt;scalar name = "fieldList" scalarType = "string"&gt;
+             fullPVRecordFieldName,fullPVRecordFieldName,...
+         &lt;/scalar&gt;
+         &lt;!-- 0 or more scalar string definitions of the following form --&gt;
+         &lt;scalar name = "fieldName" scalarType = "string"&gt;
+            fullPVRecordFieldName
+         &lt;/scalar&gt;
+         &lt;!-- 0 or more structure definitions of the form --&gt;
+         &lt;sructure name = "fieldName"&gt;
             &lt;!-- 0 or more scalar string definitions of the following form --&gt;
             &lt;scalar name = "fieldName" scalarType = "string"&gt;
                fullPVRecordFieldName
+            &lt;/scalar&gt;
+            &lt;!-- 0 or 1 scalar string definition of the form --&gt;
+            &lt;scalar name = "fieldList" scalarType = "string"&gt;
+                fullPVRecordFieldName,fullPVRecordFieldName,...
             &lt;/scalar&gt;
             &lt;!-- 0 or more structure definitions of the form --&gt;
             &lt;sructure name = "fieldName"&gt;
@@ -141,6 +237,12 @@ accessed. It looks like the following:</p>
 
 <p>where</p>
 <dl>
+  <dt>fieldList</dt>
+    <dd>A comma separated list of fullPVRecordFieldNames. Each will become a
+      single field in the structure created by PVCopy with a field name that
+      is the same as the field name of the corresponding
+      fullPVRecordFieldName. For example if the fullPVFieldName =
+      "power.value" then the field name is "value". </dd>
   <dt>fieldName</dt>
     <dd>The name of the field that will appear in the field of the
       introspection Structure that is generated from the pvRequest and the
@@ -152,5 +254,101 @@ accessed. It looks like the following:</p>
 
 <p>Note that the definition is recursive, i.e. an arbitarily complex
 structure can be defined.</p>
+
+<h3 id="Examples">Examples</h3>
+
+<p>Assume that the following structures have been put into the master
+PVDatabase:</p>
+<pre>&lt;structure structureName = "powerFromPowerSupply"&gt;
+    &lt;scalar name = "fieldList" scalarType = "string"&gt;
+       alarm,timeStamp,power.value
+    &lt;/scalar&gt;
+&lt;/structure&gt;
+
+&lt;structure structureName = "powerSupplyFromPowerSupply"&gt;
+    &lt;scalar name = "alarm" scalarType = "string"&gt;alarm&lt;/scalar&gt;
+    &lt;scalar name = "timeStamp" scalarType = "string"&gt;timeStamp&lt;/scalar&gt;
+    &lt;structure name = "power"&gt;
+        &lt;scalar name = "fieldList" scalarType = "string"&gt;
+             power.value,power.alarm
+        &lt;/scalar&gt;
+    &lt;/structure&gt;
+    &lt;structure name = "current"&gt;
+        &lt;scalar name = "fieldList" scalarType = "string"&gt;
+             current.value,current.alarm
+        &lt;/scalar&gt;
+    &lt;/structure&gt;
+    &lt;structure name = "voltage"&gt;
+        &lt;scalar name = "fieldList" scalarType = "string"&gt;
+             voltage.value,voltage.alarm
+        &lt;/scalar&gt;
+    &lt;/structure&gt;
+&lt;/structure&gt;
+</pre>
+
+<p>Then the following shows example code for creating a PVCopy:</p>
+
+<p></p>
+<pre>    
+    private static PVDatabase master = PVDatabaseFactory.getMaster();
+    private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static BitSetUtil bitSetUtil = BitSetUtilFactory.getCompressBitSet();
+
+        // definitions for request structure to pass to PVCopyFactory
+        PVRecord pvRecord = null;
+        PVStructure pvRequest = null;
+        // definitions for PVCopy
+        PVCopy pvCopy = null;
+        PVStructure pvCopyStructure = null;
+        BitSet bitSet = null;
+
+        //alarm,timeStamp,power.value from powerSupply
+        pvRecord = master.findRecord("powerSupply");
+        pvRequest = master.findStructure("powerFromPowerSupply");
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
+        pvCopyStructure = pvCopy.createPVStructure();
+        bitSet = new BitSet(pvCopyStructure.getNumberFields());
+        pvCopy.updateCopy(pvCopyStructure, bitSet);
+        System.out.println(pvCopyStructure.toString());
+
+        //power, current, voltage. For each value and alarm
+        pvRequest = master.findStructure("powerSupplyFromPowerSupply");
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
+        pvCopyStructure = pvCopy.createPVStructure();
+        bitSet = new BitSet(pvCopyStructure.getNumberFields());
+        pvCopy.initCopy(pvCopyStructure, bitSet);
+        System.out.println(pvCopyStructure.toString());
+</pre>
+
+<p>The following shows how the first example could be done by directly
+calling pvDataCreate.</p>
+<pre>        PVRecord pvRecord = master.findRecord("powerSupply");
+        System.out.printf("%nvalue, alarm, timeStamp%n");
+        pvRequest = pvDataCreate.createPVStructure(null, "", new Field[0]);
+        newField = fieldCreate.createScalar("value", ScalarType.pvString);
+        pvString = (PVString)pvDataCreate.createPVField(pvRequest, newField);
+        pvString.put("power.value");
+        pvRequest.appendPVField(pvString);
+        newField = fieldCreate.createScalar("alarm", ScalarType.pvString);
+        pvString = (PVString)pvDataCreate.createPVField(pvRequest, newField);
+        pvString.put("alarm");
+        pvRequest.appendPVField(pvString);
+        newField = fieldCreate.createScalar("timeStamp", ScalarType.pvString);
+        pvString = (PVString)pvDataCreate.createPVField(pvRequest, newField);
+        pvString.put("timeStamp");
+        pvRequest.appendPVField(pvString);
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
+        pvCopyStructure = pvCopy.createPVStructure();
+        bitSet = new BitSet(pvCopyStructure.getNumberFields());
+        pvCopy.updateCopy(pvCopyStructure, bitSet);
+        System.out.println(pvCopyStructure.toString());
+
+
+        </pre>
+<pre>
+</pre>
+<pre>
+</pre>
 </body>
 </html>
