@@ -15,9 +15,11 @@ import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
+import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Structure;
@@ -36,11 +38,12 @@ public class PVCopyFactory {
      * @param pvRequest A PVStructure which describes the set of fields of PVRecord that
      * should be mapped. See the packaged overview for details.
      * @param structureName TODO
+     * @param shareData TODO
      * @return The PVCopy interface.
      */
-    public static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,String structureName) {
+    public static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,String structureName,boolean shareData) {
         PVCopyImpl impl = new PVCopyImpl(pvRecord);
-        impl.init(pvRequest,structureName);
+        impl.init(pvRequest,structureName,shareData);
         return impl;
     }
     
@@ -70,13 +73,14 @@ public class PVCopyFactory {
             this.pvRecord = pvRecord;
         }
         
-        
         private PVRecord pvRecord;
+        private boolean shareData = false;
         private Structure structure = null;
         private Node headNode = null;
         private PVStructure cacheInitStructure = null;
         
-        private void init(PVStructure pvRequest,String structureName) {
+        private void init(PVStructure pvRequest,String structureName,boolean shareData) {
+            this.shareData = shareData;
             if(pvRequest.getPVFields().length==0) {
                 // asking for entire record is special case.
                 structure = pvRecord.getStructure();
@@ -125,6 +129,7 @@ public class PVCopyFactory {
             }
             return pvStructure;
         }
+        
         private void referenceImmutable(PVField pvField,Node node) {
             if(node.isStructure) {
                 StructureNode structureNode = (StructureNode)node;
@@ -135,7 +140,11 @@ public class PVCopyFactory {
                 }
             } else {
                 RecordNode recordNode = (RecordNode)node;
-                referenceImmutable(pvField,recordNode.recordPVField);
+                if(shareData) {
+                    makeShared(pvField,recordNode.recordPVField);
+                } else {
+                    referenceImmutable(pvField,recordNode.recordPVField);
+                }
             }
         }
         
@@ -149,6 +158,24 @@ public class PVCopyFactory {
                 return;
             }
             if(recordPVField.isImmutable()) convert.copy(recordPVField, copyPVField);
+        }
+        
+        private void makeShared(PVField copyPVField,PVField recordPVField) {
+            switch(recordPVField.getField().getType()) {
+            case structure: {
+                PVField[] copyPVFields = ((PVStructure)copyPVField).getPVFields();
+                PVField[] recordPVFields = ((PVStructure)recordPVField).getPVFields();
+                for(int i=0; i<copyPVFields.length; i++) {
+                    makeShared(copyPVFields[i],recordPVFields[i]);
+                }
+                break;
+            }
+            case scalar:
+                PVShareFactory.replace((PVScalar)copyPVField,(PVScalar)recordPVField);
+                break;
+            case scalarArray:
+                PVShareFactory.replace((PVArray)copyPVField,(PVArray)recordPVField);
+            }
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pvCopy.PVCopy#getOffset(org.epics.pvData.pv.PVField)
