@@ -25,7 +25,6 @@ import org.epics.pvData.pv.ShortArrayData;
 public class BasePVShortArray extends AbstractPVArray implements PVShortArray
 {
     protected short[] value;
-    private ShortArrayData shortArrayData = new ShortArrayData();
     
     /**
      * Constructor.
