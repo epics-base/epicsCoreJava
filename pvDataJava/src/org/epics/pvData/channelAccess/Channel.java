@@ -8,17 +8,11 @@ package org.epics.pvData.channelAccess;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
-import org.epics.pvData.pv.Structure;
 
 
 /**
  * Interface for accessing a channel.
- * A channel is created via a call to ChannelFactory.createChannel(String pvName, ...).
- * The pvName is of the form recordName.name.name...{options}
- * channel.getField returns name.name...
- * channel.gertProperty returns name.name....value if name.name... locates a structure
- * that has a field named "value", i.e. a structure that follows the data model.
- * For an IOC database a channel allows access to all the fields in a single record instance.
+ * A channel is created via a call to ChannelAccess.createChannel(String channelName).
  * @author mrk
  *
  */
@@ -52,23 +46,24 @@ public interface Channel extends Requester{
     boolean isConnected();
     /**
      * Get a Structure which describes the subField.
+     * GetStructureRequester.getDone is called after both client and server have processed the getStructure request.
      * This is for clients that want to introspect a PVRecord via channel access.
      * MAJEJ Neither client or server needs to save this info.
      * @param subField The name of the subField.
      * If this is null or an empty string the returned Structure is for the entire record.
      * @return The Structure.
      */
-    Structure getStructure(String subField);
+    void getStructure(String subField);
     /**
      * Create a PVStructure for communication with the server.
+     * CreatePVStructureRequester.createDone is called after both client and server have processed the create request.
      * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
      * This has the same form as a pvRequest to PVCopyFactory.create.
      * @param structureName The name to give to the created PVStructure.
      * MATEJ Should it be required that this is unique for each call to getStructure?
      * @param shareData On the remote side should the companion PVStructure share data with the PVRecord. 
-     * @return The PVStructure. Note that a companion structure is created on the server.
      */
-    PVStructure createPVStructure(PVStructure pvRequest,String structureName,boolean shareData);
+    void createPVStructure(CreatePVStructureRequester rquester,PVStructure pvRequest,String structureName,boolean shareData);
     /**
      * Get the access rights for a field of a PVStructure created via a call to createPVStructure.
      * MATEJ Channel access can store this info via auxInfo.
@@ -95,7 +90,7 @@ public interface Channel extends Requester{
      * @param process Process before getting data.
      */
     void createChannelGet(
-        PVStructure pvStructure,ChannelGetRequester channelGetRequester,boolean process);
+            ChannelGetRequester channelGetRequester,PVStructure pvStructure,boolean process);
     /**
      * Create a ChannelPut.
      * ChannelPutRequester.channelPutReady is called after both client and server are ready for
@@ -105,8 +100,7 @@ public interface Channel extends Requester{
      * @param process Should record be processed after put.
      */
     void createChannelPut(
-            PVStructure pvStructure,ChannelPutRequester channelPutRequester,
-        boolean process);
+        ChannelPutRequester channelPutRequester,PVStructure pvStructure,boolean process);
     /**
      * Create a ChannelPutGet.
      * ChannelPutGetRequester.channelPutGetReady is called after both client and server are ready for
@@ -117,8 +111,8 @@ public interface Channel extends Requester{
      * @param process Process after put and before get.
      */
     void createChannelPutGet(
-            PVStructure pvPutStructure,PVStructure pvGetStructure,
         ChannelPutGetRequester channelPutGetRequester,
+        PVStructure pvPutStructure,PVStructure pvGetStructure,
         boolean process);
     /**
      * Create a ChannelMonitor.
@@ -129,5 +123,5 @@ public interface Channel extends Requester{
      * @param channelMonitorRequester The channelMonitorRequester.
      */
     void createChannelMonitor(
-            PVStructure pvStructure,ChannelMonitorRequester channelMonitorRequester);
+        ChannelMonitorRequester channelMonitorRequester,PVStructure pvStructure);
 }

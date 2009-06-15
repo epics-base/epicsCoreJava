@@ -8,6 +8,7 @@ package org.epics.pvData.channelAccess;
 import java.util.BitSet;
 
 /**
+ * Interface for ChannelMonitor.
  * @author mrk
  *
  */

@@ -8,7 +8,7 @@ package org.epics.pvData.channelAccess;
 import org.epics.pvData.pv.Requester;
 
 /**
- * Requester for a Get.get request.
+ * Requester for channelGet.
  * @author mrk
  *
  */

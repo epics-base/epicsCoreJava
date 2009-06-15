@@ -6,7 +6,7 @@
 package org.epics.pvData.channelAccess;
 
 /**
- * Requester for a putGet request.
+ * Requester for ChannelPutGet.
  * @author mrk
  *
  */

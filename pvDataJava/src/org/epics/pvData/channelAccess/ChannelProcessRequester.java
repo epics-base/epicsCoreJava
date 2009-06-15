@@ -8,7 +8,7 @@ package org.epics.pvData.channelAccess;
 import org.epics.pvData.pv.Requester;
 
 /**
- * Callback for a channel process request.
+ * Requester for channelProcess.
  * @author mrk
  *
  */

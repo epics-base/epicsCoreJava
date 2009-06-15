@@ -8,7 +8,7 @@ package org.epics.pvData.channelAccess;
 import org.epics.pvData.pv.Requester;
 
 /**
- *  Requester that monitors a channel without requesting data.
+ *  Requester for ChannelMonitor.
  * @author mrk
  *
  */
