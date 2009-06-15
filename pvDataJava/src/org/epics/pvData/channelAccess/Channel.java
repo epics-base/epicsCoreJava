@@ -8,6 +8,7 @@ package org.epics.pvData.channelAccess;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
+import org.epics.pvData.pv.Structure;
 
 
 /**
@@ -50,16 +51,27 @@ public interface Channel extends Requester{
      */
     boolean isConnected();
     /**
+     * Get a Structure which describes the subField.
+     * This is for clients that want to introspect a PVRecord via channel access.
+     * MAJEJ Neither client or server needs to save this info.
+     * @param subField The name of the subField.
+     * If this is null or an empty string the returned Structure is for the entire record.
+     * @return The Structure.
+     */
+    Structure getStructure(String subField);
+    /**
      * Create a PVStructure for communication with the server.
      * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
      * This has the same form as a pvRequest to PVCopyFactory.create.
-     * @param structureName The name to give to the created PVStructure
+     * @param structureName The name to give to the created PVStructure.
+     * MATEJ Should it be required that this is unique for each call to getStructure?
      * @param shareData On the remote side should the companion PVStructure share data with the PVRecord. 
      * @return The PVStructure. Note that a companion structure is created on the server.
      */
     PVStructure createPVStructure(PVStructure pvRequest,String structureName,boolean shareData);
     /**
      * Get the access rights for a field of a PVStructure created via a call to createPVStructure.
+     * MATEJ Channel access can store this info via auxInfo.
      * @param pvField The field for which access rights is desired.
      * @return The access rights.
      */

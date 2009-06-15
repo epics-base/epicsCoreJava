@@ -14,8 +14,7 @@ package org.epics.pvData.channelAccess;
 public interface ChannelAccess {
     /**
      * Create a channel.
-     * @param channelName The channel name.
-     * For communication with a server that supports PVData this is a record name.
+     * @param channelName The channel name, which is also the record name.
      * @return The channel or null if it could not be created.
      */
     Channel createChannel(String channelName, ChannelListener listener);
