@@ -14,6 +14,12 @@ import org.epics.pvData.pv.Requester;
  */
 public interface ChannelProcessRequester extends Requester {
     /**
+     * The client and server have both completed the createChannelProcess request.
+     * @param channelProcess The channelProcess interface or null if the client could not become
+     * the record processor.
+     */
+    void channelProcessConnect(ChannelProcess channelProcess);
+    /**
      * The process request is done. This is always called with no locks held.
      * @param success was the record actually processed?
      */

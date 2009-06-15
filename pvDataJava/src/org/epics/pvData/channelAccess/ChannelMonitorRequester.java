@@ -14,6 +14,11 @@ import org.epics.pvData.pv.Requester;
  */
 public interface ChannelMonitorRequester extends Requester{
     /**
+     * The client and server have both completed the createMonitor request.
+     * @param channelMonitor The channelMonitor interface or null if the request failed.
+     */
+    void channelMonitorConnect(ChannelMonitor channelMonitor);
+    /**
      * A monitor event has occured.
      */
     void monitorEvent();

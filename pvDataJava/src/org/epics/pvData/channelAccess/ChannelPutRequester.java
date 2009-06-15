@@ -14,8 +14,14 @@ import org.epics.pvData.pv.Requester;
  */
 public interface ChannelPutRequester extends Requester {
     /**
+     * The client and server have both processed the createChannelPut request.
+     * @param channelPut The channelPut interface or null if the request failed.
+     * @param isProcessor is the client the record processor?
+     */
+    void channelPutConnect(ChannelPut channelPut,boolean isProcessor);
+    /**
      * The request is done. This is always called with no locks held.
-     * @param success Was to request successful.
+     * @param success Was the request successful.
      */
     void putDone(boolean success);
 }

@@ -14,6 +14,12 @@ import org.epics.pvData.pv.Requester;
  */
 public interface ChannelGetRequester extends Requester {
     /**
+     * The client and server have both completed the createChannelGet request.
+     * @param channelGet The channelGet interface or null if the request failed.
+     * @param isProcessor is the client the record processor?
+     */
+    void channelGetConnect(ChannelGet channelGet,boolean isProcessor);
+    /**
      * The request is done. This is always called with no locks held.
      * @param success Was to request successful.
      */

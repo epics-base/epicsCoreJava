@@ -78,51 +78,56 @@ public interface Channel extends Requester{
     AccessRights getAccessRights(PVField pvField);
     /**
      * Create a ChannelProcess.
-     * @param channelProcessRequester The interface for notifying when channel completes processing.
-     * @return An interface for the ChannelProcess or null if the caller can't process the record.
+     * ChannelProcessRequester.channelProcessReady is called after both client and server are ready for
+     * the client to make a process request.
+     * @param channelProcessRequester The interface for notifying when this request is complete
+     * and when channel completes processing.
      */
-    ChannelProcess createChannelProcess(
+    void createChannelProcess(
         ChannelProcessRequester channelProcessRequester);
     /**
      * Create a ChannelGet.
-     * The channel will be processed before reading data if process is true.
+     * ChannelGetRequester.channelGetReady is called after both client and server are ready for
+     * the client to make a get request.
      * @param pvStructure A PVStructure created via a call to createPVStructure.
-     * @param channelGetRequester The channelGetRequester.
+     * @param channelGetRequester The interface for notifying when this request is complete
+     * and when a channel get completes.
      * @param process Process before getting data.
-     * @return An interface for the Get or null if the caller can't process the record.
      */
-    ChannelGet createChannelGet(
-        PVStructure pvStructure,ChannelGetRequester channelGetRequester,
-        boolean process);
+    void createChannelGet(
+        PVStructure pvStructure,ChannelGetRequester channelGetRequester,boolean process);
     /**
      * Create a ChannelPut.
+     * ChannelPutRequester.channelPutReady is called after both client and server are ready for
+     * the client to make a put request.
      * @param pvStructure A PVStructure created via a call to createPVStructure.
      * @param channelPutRequester The channelPutRequester.
      * @param process Should record be processed after put.
-     * @return An interface for the CDPut or null if the caller can't process the record.
      */
-    ChannelPut createChannelPut(
+    void createChannelPut(
             PVStructure pvStructure,ChannelPutRequester channelPutRequester,
         boolean process);
     /**
      * Create a ChannelPutGet.
+     * ChannelPutGetRequester.channelPutGetReady is called after both client and server are ready for
+     * the client to make a putGet request.
      * @param pvPutStructure A PVStructure created via a call to createPVStructure.
      * @param pvGetStructure A PVStructure created via a call to createPVStructure.
      * @param channelPutGetRequester The channelPutGetRequester.
      * @param process Process after put and before get.
-     * @return An interface for the ChannelPutGet or null if the caller can't process the record.
      */
-    ChannelPutGet createChannelPutGet(
+    void createChannelPutGet(
             PVStructure pvPutStructure,PVStructure pvGetStructure,
         ChannelPutGetRequester channelPutGetRequester,
         boolean process);
     /**
      * Create a ChannelMonitor.
+     * ChannelMonitorRequester.channelMonitorReady is called after both client and server are ready for
+     * the client to make a monitor request.
      * @param pvStructure A PVStructure created via a call to createPVStructure.
      * This can be null in which case a monitor event will be issues whenever any field in the PVRecord is modified.
      * @param channelMonitorRequester The channelMonitorRequester.
-     * @return The ChannelMonitor interface.
      */
-    ChannelMonitor createChannelMonitor(
+    void createChannelMonitor(
             PVStructure pvStructure,ChannelMonitorRequester channelMonitorRequester);
 }
