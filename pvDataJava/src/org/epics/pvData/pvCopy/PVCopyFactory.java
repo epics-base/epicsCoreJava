@@ -34,11 +34,13 @@ public class PVCopyFactory {
     
     /**
      * Map a subset of the fields within a PVRecord.
-     * @param pvRecord The PVREcord.
+     * @param pvRecord The PVRecord.
      * @param pvRequest A PVStructure which describes the set of fields of PVRecord that
      * should be mapped. See the packaged overview for details.
-     * @param structureName TODO
-     * @param shareData TODO
+     * @param structureName The name to give to the Structure
+     * that describes the subset of the fields of PVRecord that are actually mapped.
+     * @param shareData Should the PVStructure created by called PVCopy.createPVStructure share the data from
+     * PVRecord of should it keep a separate copy.
      * @return The PVCopy interface.
      */
     public static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,String structureName,boolean shareData) {
