@@ -54,6 +54,7 @@ public class PVCopyTest extends TestCase {
         PVReplaceFactory.replace(master);
         exampleTest();
         exampleShareDataTest();
+        copyMonitorTest();
         longTest();
     }
     
@@ -106,7 +107,6 @@ public class PVCopyTest extends TestCase {
         // definitions for PVCopy
         PVCopy pvCopy = null;
         PVStructure pvCopyStructure = null;
-        BitSet bitSet = null;
         
         System.out.printf(
                 "%nalarm,timeStamp,power.value from powerSupply%n");
@@ -133,6 +133,92 @@ public class PVCopyTest extends TestCase {
         System.out.println(pvCopyStructure.toString());
     }
     
+    public static void copyMonitorTest() {
+        System.out.printf("%n%n****Copy Monitor****%n");
+        // definitions for request structure to pass to PVCopyFactory
+        PVRecord pvRecord = master.findRecord("powerSupply");
+        PVLong pvRecordSeconds = (PVLong)pvRecord.getSubField("timeStamp.secondsPastEpoch");
+        PVInt pvRecordNanoSeconds = (PVInt)pvRecord.getSubField("timeStamp.nanoSeconds");
+        PVDouble pvRecordPowerValue = (PVDouble)pvRecord.getSubField("power.value");
+        PVStructure pvRequest = null;
+        // definitions for PVCopy
+        PVCopy pvCopy = null;
+        PVStructure pvCopyStructure = null;
+        BitSet changeBitSet = null;
+        BitSet overrunBitSet = null;
+         
+        System.out.printf(
+             "%npower, current, voltage. For each value and alarm."
+              + " Note that PVRecord.power does NOT have an alarm field.%n");
+        pvRequest = master.findStructure("powerSupplyFromPowerSupply");        
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "", false);
+        pvCopyStructure = pvCopy.createPVStructure();
+        PVLong pvCopySeconds = (PVLong)pvCopyStructure.getSubField("timeStamp.secondsPastEpoch");
+        PVInt pvCopyNanoSeconds = (PVInt)pvCopyStructure.getSubField("timeStamp.nanoSeconds");
+        PVDouble pvCopyPowerValue = (PVDouble)pvCopyStructure.getSubField("power.value");
+        changeBitSet = new BitSet(pvCopyStructure.getNumberFields());
+        overrunBitSet = new BitSet(pvCopyStructure.getNumberFields());
+        pvCopy.initCopy(pvCopyStructure, changeBitSet, true);
+        CopyMonitorRequester copyMonitorRequester = new CopyMonitorRequester(pvCopy);
+        changeBitSet.clear();
+        overrunBitSet.clear();
+        copyMonitorRequester.startMonitoring(changeBitSet, overrunBitSet);
+        pvRecord.beginGroupPut();
+        assertFalse(changeBitSet.get(pvCopySeconds.getFieldOffset()));
+        assertFalse(changeBitSet.get(pvCopyNanoSeconds.getFieldOffset()));
+        assertFalse(changeBitSet.get(pvCopyPowerValue.getFieldOffset()));
+        pvRecordSeconds.put(5000);
+        pvRecordNanoSeconds.put(6000);
+        pvRecordPowerValue.put(1.56);
+        assertTrue(changeBitSet.get(pvCopySeconds.getFieldOffset()));
+        assertTrue(changeBitSet.get(pvCopyNanoSeconds.getFieldOffset()));
+        assertTrue(changeBitSet.get(pvCopyPowerValue.getFieldOffset()));
+        assertFalse(overrunBitSet.get(pvCopyPowerValue.getFieldOffset()));
+        pvRecordPowerValue.put(2.0);
+        assertTrue(overrunBitSet.get(pvCopyPowerValue.getFieldOffset()));
+        assertFalse(copyMonitorRequester.dataChanged);
+        pvRecord.endGroupPut();
+        assertTrue(copyMonitorRequester.dataChanged);
+    }
+    
+    private static class CopyMonitorRequester implements PVCopyMonitorRequester {
+        private PVCopyMonitor pvCopyMonitor = null;
+        private boolean dataChanged = false;
+        
+
+        private CopyMonitorRequester(PVCopy pvCopy) {
+            pvCopyMonitor = pvCopy.createPVCopyMonitor(this);
+        }
+        
+        private void startMonitoring(BitSet changeBitSet, BitSet overrunBitSet) {
+            pvCopyMonitor.startMonitoring(changeBitSet, overrunBitSet);
+        }
+        
+        private void stopMonitoring() {
+            pvCopyMonitor.stopMonitoring();
+        }
+        
+        private void switchBitSets(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord) {
+            pvCopyMonitor.switchBitSets(newChangeBitSet, newOverrunBitSet, lockRecord);
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pvCopy.PVCopyMonitorRequester#dataChanged()
+         */
+        @Override
+        public void dataChanged() {
+            dataChanged = true;
+        }
+
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pvCopy.PVCopyMonitorRequester#unlisten()
+         */
+        @Override
+        public void unlisten() {
+            // TODO Auto-generated method stub
+            
+        }
+        
+    }
     public static void longTest() {  
         System.out.printf("%n%n****Long Test****%n");
         // definitions for request structure to pass to PVCopyFactory
