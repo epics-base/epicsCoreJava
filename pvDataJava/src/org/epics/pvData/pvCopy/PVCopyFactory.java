@@ -408,7 +408,6 @@ public class PVCopyFactory {
         
         private class CopyMonitor implements PVCopyMonitor, PVListener {
             private PVCopyMonitorRequester pvCopyMonitorRequester;
-            private PVStructure pvStructure = null;
             private BitSet changeBitSet = null;
             private BitSet overrunBitSet = null;
             private boolean isGroupPut = false;
@@ -421,12 +420,9 @@ public class PVCopyFactory {
              * @see org.epics.pvData.pvCopy.PVCopyMonitor#startMonitoring(org.epics.pvData.pv.PVStructure, java.util.BitSet, java.util.BitSet)
              */
             @Override
-            public void startMonitoring(PVStructure pvStructure, BitSet changeBitSet, BitSet overrunBitSet) {
-                this.pvStructure = pvStructure;
-                int nfields = pvStructure.getNumberFields();
+            public void startMonitoring(BitSet changeBitSet, BitSet overrunBitSet) {
                 this.changeBitSet = changeBitSet;
                 this.overrunBitSet = overrunBitSet;
-                overrunBitSet = new BitSet(nfields);
                 isGroupPut = false;
                 pvRecord.registerListener(this);
                 addListener(headNode);
@@ -438,16 +434,14 @@ public class PVCopyFactory {
             @Override
             public void stopMonitoring() {
                 pvRecord.unregisterListener(this);
-                pvStructure = null;
             }
             /* (non-Javadoc)
              * @see org.epics.pvData.pvCopy.PVCopyMonitor#updateCopy(java.util.BitSet, java.util.BitSet, boolean)
              */
             @Override
-            public void updateCopy(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord) {
+            public void switchBitSets(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord) {
                 if(lockRecord) pvRecord.lock();
                 try {
-                    if(shareData) updateCopyFromBitSet(pvStructure,changeBitSet,false);
                     changeBitSet = newChangeBitSet;
                     overrunBitSet = newOverrunBitSet;
                 } finally {

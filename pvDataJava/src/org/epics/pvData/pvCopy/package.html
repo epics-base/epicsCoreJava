@@ -203,8 +203,8 @@ a single PVCopy.</p>
 <p>PVCopyMonitor is a PVListener for the PVRecord to which PVCopy is
 attached. It updates two bitSets when it receives PVListener.dataPut
 callbacks. changeBit shows all fields that have changed between calls to
-updateCopy. overrunBitSet shows all fields that have changed value more than
-once between calls to updateCopy. It notifies the PVCopyMonitorRequester when
+switchBitSets. overrunBitSet shows all fields that have changed value more than
+once between calls to switchBitSets. It notifies the PVCopyMonitorRequester when
 data has changed. </p>
 <pre>interface PVCopyMonitorRequester {
     void dataChanged();
@@ -212,9 +212,9 @@ data has changed. </p>
 }
 
 interface PVCopyMonitor {
-    void startMonitoring(PVStructure pvStructure, BitSet changeBitSet, BitSet overrunBitSet);
+    void startMonitoring(BitSet changeBitSet, BitSet overrunBitSet);
     void stopMonitoring();
-    void updateCopy(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord);
+    void switchBitSets(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord);
 }</pre>
 
 <p>PVCopyMonitorRequester is the interface implemented by the caller that
@@ -234,7 +234,7 @@ PVCopy.createPVCopyMonitor.</p>
     <dd>Start monitoring.</dd>
   <dt><span style="font-family: Courier">stopMonitoring</span></dt>
     <dd>Stop monitoring.</dd>
-  <dt><span style="font-family: Courier">updateCopy</span></dt>
+  <dt><span style="font-family: Courier">switchBitSets</span></dt>
     <dd>If the pvStructure is not shared all fields that changeBitSet shows
       were changed are copied from the corresponding PVField of the PVRecord
       to the PVField of the PVStructure. Then the bitSets are replaced by the
@@ -364,7 +364,7 @@ PVDatabase:</p>
         pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
-        pvCopy.updateCopy(pvCopyStructure, bitSet);
+        pvCopy.initeCopy(pvCopyStructure, bitSet,true);
         System.out.println(pvCopyStructure.toString());
 
         //power, current, voltage. For each value and alarm
@@ -372,7 +372,7 @@ PVDatabase:</p>
         pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
-        pvCopy.initCopy(pvCopyStructure, bitSet);
+        pvCopy.initCopy(pvCopyStructure, bitSet,true);
         System.out.println(pvCopyStructure.toString());</pre>
 
 <p>The following shows how the first example could be done by directly
@@ -395,10 +395,8 @@ calling pvDataCreate.</p>
         pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
-        pvCopy.updateCopy(pvCopyStructure, bitSet);
+        pvCopy.initeCopy(pvCopyStructure, bitSet,true);
         System.out.println(pvCopyStructure.toString());
-
-
         </pre>
 <hr />
 

@@ -6,7 +6,6 @@
 package org.epics.pvData.pvCopy;
 import java.util.BitSet;
 
-import org.epics.pvData.pv.PVStructure;
 
 /**
  * PVCopyMonitor is a PVListener for the PVRecord to which PVCopy is attached.
@@ -15,25 +14,24 @@ import org.epics.pvData.pv.PVStructure;
  * overrunBitSet shows all fields that have changed value more than once between calls
  * to updateCopy.
  * It notifies the PVCopyMonitorRequester when data has changed.
+ * The caller can use this for a queue of monitors, a shared PVStructure,
+ * or just a single non-shared PVStructure.
  * @author mrk
  *
  */
 public interface PVCopyMonitor {
     /**
      * Start monitoring.
-     * @param pvStructure The PVStructure that holds the monitored data.
      * @param changeBitSet The initial changeBitSet.
      * @param overrunBitSet The overrun bitSet.
      */
-    void startMonitoring(PVStructure pvStructure, BitSet changeBitSet, BitSet overrunBitSet);
+    void startMonitoring(BitSet changeBitSet, BitSet overrunBitSet);
     /**
      * Stop monitoring.
      */
     void stopMonitoring();
     /**
-     * If the pvStructure is not shared all fields that changeBitSet shows were changed are
-     * copied from the corresponding PVField of the PVRecord to the PVField of the PVStructure.
-     * Then the bitSets are replaced by the new bitSets.
+     * The bitSets are replaced by the new bitSets.
      * Note that a client needs just two instances of the bitSets and can just cycle between the
      * two sets.
      * Even if the PVStructure is shared this method is important since the caller will not miss data changes.
@@ -42,5 +40,5 @@ public interface PVCopyMonitor {
      * @param lockRecord This should be true unless the caller knows that the record is
      * already locked.
      */
-    void updateCopy(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord);
+    void switchBitSets(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord);
 }
