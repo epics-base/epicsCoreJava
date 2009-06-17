@@ -14,8 +14,16 @@ package org.epics.pvData.channelAccess;
 public interface ChannelAccess {
     /**
      * Create a channel.
+     * If successful channelRequester.channelCreated is called.
      * @param channelName The channel name, which is also the record name.
-     * @return The channel or null if it could not be created.
+     * @param channelRequester The requester.
      */
-    Channel createChannel(String channelName, ChannelListener listener);
+    void createChannel(String channelName, ChannelRequester channelRequester);
+    /**
+     * Cancel a previous createChannel request.
+     * @param channelName The channel name.
+     * @param channelRequester The requester.
+     */
+    void cancelCreateChannel(String channelName, ChannelRequester channelRequester);
+    
 }

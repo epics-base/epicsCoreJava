@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.channelAccess;
 
+import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 
 /**
@@ -16,9 +17,9 @@ public interface ChannelPutRequester extends Requester {
     /**
      * The client and server have both processed the createChannelPut request.
      * @param channelPut The channelPut interface or null if the request failed.
-     * @param isProcessor is the client the record processor?
+     * @param pvStructure The PVStructure that holds the data.
      */
-    void channelPutConnect(ChannelPut channelPut,boolean isProcessor);
+    void channelPutConnect(ChannelPut channelPut,PVStructure pvStructure);
     /**
      * The request is done. This is always called with no locks held.
      * @param success Was the request successful.

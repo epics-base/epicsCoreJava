@@ -11,7 +11,12 @@ import org.epics.pvData.pv.Requester;
  * @author mrk
  *
  */
-public interface ChannelListener extends Requester {
+public interface ChannelRequester extends Requester {
+    /**
+     * A channel has been created.
+     * @param channel The channel.
+     */
+    void channelCreated(Channel channel);
     /**
      * The channel has put connection state.
      * @param c The channel.

@@ -5,18 +5,23 @@
  */
 package org.epics.pvData.channelAccess;
 
+import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Requester;
+
 /**
  * Requester for ChannelPutGet.
  * @author mrk
  *
  */
-public interface ChannelPutGetRequester {
+public interface ChannelPutGetRequester extends Requester
+{
     /**
      * The client and server have both completed the createChannelPutGet request.
      * @param channelPutGet The channelPutGet interface or null if the request failed.
-     * @param isProcessor is the client the record processor?
+     * @param pvPutStructure The PVStructure that holds the putData.
+     * @param pvGetStructure The PVStructure that holds the getData.
      */
-    void channelPutGetConnect(ChannelPutGet channelPutGet,boolean isProcessor);
+    void channelPutGetConnect(ChannelPutGet channelPutGet,PVStructure pvPutStructure,PVStructure pvGetStructure);
     /**
      * The request is done. This is always called with no locks held.
      * @param success Was the request successful

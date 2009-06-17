@@ -19,7 +19,7 @@ public interface ChannelMonitorRequester extends Requester{
      */
     void channelMonitorConnect(ChannelMonitor channelMonitor);
     /**
-     * A monitor event has occured.
+     * A monitor event has occurrence.
      */
     void monitorEvent();
     /**
