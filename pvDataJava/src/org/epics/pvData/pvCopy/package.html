@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.06.12</h1>
+2009.06.17</h1>
 CONTENTS 
 
 <div class="toc">
@@ -18,6 +18,7 @@ CONTENTS
   <li><a href="#Overview">Overview</a></li>
   <li><a href="#BitSetUtil">BitSetUtil</a></li>
   <li><a href="#PVCopy">PVCopy</a></li>
+  <li><a href="#PVCopyMoni">PVCopyMonitor</a></li>
   <li><a href="#PVCopyFact">PVCopyFactory</a>
     <ul>
       <li><a href="#Java">Java Definition</a></li>
@@ -25,6 +26,7 @@ CONTENTS
       <li><a href="#Examples">Examples</a></li>
     </ul>
   </li>
+  <li><a href="#PVShare">PVShare</a></li>
 </ul>
 </div>
 <hr />
@@ -81,10 +83,16 @@ on the server side of Channel Access. </p>
       optimizes the bit settings for a PVStructure.</dd>
   <dt>PVCopy</dt>
     <dd>An interface for mapping between a PVRecord and a PVStructure that
-      contains data for a subset of the fields in the PVRecord</dd>
+      contains data for a subset of the fields in the PVRecord.</dd>
+  <dt>PVCopyMonitor</dt>
+    <dd>An interrface for monitoring changes to fields of the PVRecord that
+      have a corresponding field in PVStructure.</dd>
   <dt>PVCopyFactory</dt>
     <dd>The factory that implements PVCopy. It accepts a PVStructure that
       describes the set of fields of a PVRecord that should be mapped.</dd>
+  <dt>PVShareFactory</dt>
+    <dd>A factory that replaces a PVField with an implementation that
+      accesses the data from a shared field.</dd>
 </dl>
 <hr />
 
@@ -127,7 +135,7 @@ class BitSetUtilFactory {
 <p>This is the interface for mapping between a PVStructure that contain a
 copy of the data for a subset of the fields in a PVRecord. Note that this
 interface is NOT for a single PVStructure but for a single PVRecord and a
-single Structure introspection interface that describes a sunset of the
+single Structure introspection interface that describes a subset of the
 fields in the PVRecord. For example if a server supports monitor queues then
 the server will allocate a PVStructure for each queue element but will create
 a single PVCopy.</p>
@@ -138,9 +146,11 @@ a single PVCopy.</p>
         int getCopyOffset(PVField recordPVField);
         int getCopyOffset(PVStructure recordPVStructure,PVField recordPVField);
         PVField getRecordPVField(int structureOffset);
-        void initCopy(PVStructure pvCopy, BitSet bitSet);
-        boolean updateCopy(PVStructure pvCopy,BitSet bitSet);
-        boolean updateRecord(PVStructure pvCopy,BitSet bitSet);
+        void initCopy(PVStructure pvCopy, BitSet bitSet,boolean recordLocked);
+        void updateCopySetBitSet(PVStructure copyPVStructure,BitSet bitSet,boolean lockRecord);
+        void updateCopyFromBitSet(PVStructure copyPVStructure,BitSet bitSet,boolean lockRecord);
+        boolean updateRecord(PVStructure pvCopy,BitSet bitSet,boolean lockRecord);
+        PVCopyMonitor (PVCopyMonitorRequester pvCopyMonitorRequester);
     }</pre>
 
 <p>where</p>
@@ -151,41 +161,87 @@ a single PVCopy.</p>
     <dd>Get the introspection interface which describes the subset of the
       fields in the PVRecord.</dd>
   <dt><span style="font-family: Courier">createPVStructure</span></dt>
-    <dd><p>Create a PVStructure which can hold a subset of the data from the
+    <dd>Create a PVStructure which can hold a subset of the data from the
       PVRecord. A client may require multiple PVStructures. For example if a
       monitor request supports a queue than a PVStructure is required for
-      each queue element.</p>
-    </dd>
+      each queue element. </dd>
   <dt><span style="font-family: Courier">getCopyOffset(PVField
   recordPVField)</span></dt>
-    <dd><p>Given a PVField from the record determine the offset within the
+    <dd>Given a PVField from the record determine the offset within the
       PVStructure where the copy of the data is located.
       PVStructure.getSubField(offset) can be called to locate the PVField
-      within the PVStructure.</p>
-    </dd>
+      within the PVStructure. </dd>
   <dt><span style="font-family: Courier">getCopyOffset(PVStructure
   recordPVStructure,PVField recordPVField)</span></dt>
-    <dd><p>Given a recordPVField within a recordPVStructure determine the
-      offset within the PVStructure where the copy of the data is located.
+    <dd>Given a recordPVField within a recordPVStructure determine the offset
+      within the PVStructure where the copy of the data is located.
       PVStructure.getSubField(offset) can be called to locate the PVField
-      within the PVStructure.</p>
-      <p></p>
-    </dd>
+      within the PVStructure. </dd>
   <dt><span style="font-family: Courier">getRecordPVField</span></dt>
     <dd>Given an offset within a PVStructure return the corresponding PVField
       in the PVRecord.</dd>
   <dt><span style="font-family: Courier">initCopy</span></dt>
-    <dd><p>Initialize PVStructure with the current data from the PVRecord.
-      The bitSet will have offset 0 set to 1 and all other bits set to 0.</p>
-      <p></p>
-    </dd>
-  <dt><span style="font-family: Courier">updateCopy</span></dt>
+    <dd>Initialize PVStructure with the current data from the PVRecord. The
+      bitSet will have offset 0 set to 1 and all other bits set to 0. </dd>
+  <dt><span style="font-family: Courier">updateCopySetBitSet</span></dt>
     <dd>Update PVStructure from PVRecord. The BitSet shows which fields in
       PVStructure have changed.</dd>
+  <dt><span style="font-family: Courier">updateCopyFromBitSet</span></dt>
+    <dd>Update PVStructure from PVRecord. Only fields that have the offset in
+      bitSet set to true are modified.</dd>
   <dt><span style="font-family: Courier">updateRecord</span></dt>
-    <dd><p>Update the fields in PVRecord with data from PVStructure. Only
-      fields that have the offset in bitSet set to true are modified.</p>
-    </dd>
+    <dd>Update the fields in PVRecord with data from PVStructure. Only fields
+      that have the offset in bitSet set to true are modified. </dd>
+  <dt><span style="font-family: Courier">createPVCopyMonitor</span></dt>
+    <dd>Create a PVCopyMonitor. See next section.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="PVCopyMoni">PVCopyMonitor</h2>
+<hr />
+
+<p>PVCopyMonitor is a PVListener for the PVRecord to which PVCopy is
+attached. It updates two bitSets when it receives PVListener.dataPut
+callbacks. changeBit shows all fields that have changed between calls to
+updateCopy. overrunBitSet shows all fields that have changed value more than
+once between calls to updateCopy. It notifies the PVCopyMonitorRequester when
+data has changed. </p>
+<pre>interface PVCopyMonitorRequester {
+    void dataChanged();
+    void unlisten();
+}
+
+interface PVCopyMonitor {
+    void startMonitoring(PVStructure pvStructure, BitSet changeBitSet, BitSet overrunBitSet);
+    void stopMonitoring();
+    void updateCopy(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord);
+}</pre>
+
+<p>PVCopyMonitorRequester is the interface implemented by the caller that
+calls PVCopy.createPVCopyMonitor:</p>
+<dl>
+  <dt><span style="font-family: Courier">dataChanged</span></dt>
+    <dd>Data being monitored has changed.</dd>
+  <dt><span style="font-family: Courier">unlisten</span></dt>
+    <dd>PVCopyMonitor has been told to unlisten so not more monitors will
+      occur. </dd>
+</dl>
+
+<p>PVCopyMonitor is the interface returned by a call to
+PVCopy.createPVCopyMonitor.</p>
+<dl>
+  <dt><span style="font-family: Courier">startMonitoring</span></dt>
+    <dd>Start monitoring.</dd>
+  <dt><span style="font-family: Courier">stopMonitoring</span></dt>
+    <dd>Stop monitoring.</dd>
+  <dt><span style="font-family: Courier">updateCopy</span></dt>
+    <dd>If the pvStructure is not shared all fields that changeBitSet shows
+      were changed are copied from the corresponding PVField of the PVRecord
+      to the PVField of the PVStructure. Then the bitSets are replaced by the
+      new bitSets. Note that a client needs just two instances of the bitSets
+      and can just cycle between the two sets. Even if the PVStructure is
+      shared this method is important since the caller will not miss data
+      changes. </dd>
 </dl>
 <hr />
 
@@ -283,8 +339,7 @@ PVDatabase:</p>
              voltage.value,voltage.alarm
         &lt;/scalar&gt;
     &lt;/structure&gt;
-&lt;/structure&gt;
-</pre>
+&lt;/structure&gt;</pre>
 
 <p>Then the following shows example code for creating a PVCopy:</p>
 
@@ -318,8 +373,7 @@ PVDatabase:</p>
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
         pvCopy.initCopy(pvCopyStructure, bitSet);
-        System.out.println(pvCopyStructure.toString());
-</pre>
+        System.out.println(pvCopyStructure.toString());</pre>
 
 <p>The following shows how the first example could be done by directly
 calling pvDataCreate.</p>
@@ -346,9 +400,17 @@ calling pvDataCreate.</p>
 
 
         </pre>
-<pre>
-</pre>
-<pre>
-</pre>
+<hr />
+
+<h2 style="text-align: center" id="PVShare">PVShare</h2>
+<hr />
+
+<p>This is a factory that replaces a scalar or scalarArray field with a
+version that shares the data from another field. When a get or put is issued
+the get or put method of the shared PVField is called.</p>
+<pre>class PVShareFactory {
+    public static PVScalar replace(PVScalar pvNow,PVScalar pvShare);
+    public static PVArray replace(PVArray pvNow,PVArray pvShare);
+}</pre>
 </body>
 </html>

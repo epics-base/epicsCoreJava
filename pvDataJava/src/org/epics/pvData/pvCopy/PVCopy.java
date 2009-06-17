@@ -63,21 +63,36 @@ public interface PVCopy {
      * The bitSet will have offset 0 set to 1 and all other bits set to 0. 
      * @param copyPVStructure The PVStructure.
      * @param bitSet The bitSet for PVStructure.
+     * @param lockRecord lock the record while initializing.
      */
-    void initCopy(PVStructure copyPVStructure, BitSet bitSet);
+    void initCopy(PVStructure copyPVStructure, BitSet bitSet, boolean lockRecord);
     /**
      * Update PVStructure from PVRecord. The BitSet shows which fields in PVStructure have changed.
      * @param copyPVStructure The PVStructure.
      * @param bitSet The BitSet which shows the fields that were modified.
-     * @return (false,true) if (no fields, at least one) field was modified.
+     * @param lockRecord lock the record while updating.
      */
-    boolean updateCopy(PVStructure copyPVStructure,BitSet bitSet);
+    void updateCopySetBitSet(PVStructure copyPVStructure,BitSet bitSet,boolean lockRecord);
+    /**
+     * Update PVStructure from the bitSet. Thus each PVField of PVStructure for which
+     * bitSet.get(pvField.getOffset) is true is updated with the data from the PVRecord.
+     * @param copyPVStructure The PVStructure.
+     * @param bitSet The bitSet which shows which fields should be updated.
+     * @param lockRecord Should the pvRecord be locked while updating.
+     */
+    void updateCopyFromBitSet(PVStructure copyPVStructure,BitSet bitSet,boolean lockRecord);
     /**
      * Update the fields in PVRecord with data from PVStructure. Only fields
      * that have the offset in bitSet set to true are modified.
      * @param copyPVStructure The PVStructure.
      * @param bitSet The offsets within PVStructure that have new data.
-     * @return false,true) if (no fields, at least one) field was modified.
+     * @param lockRecord lock the record while updating.
      */
-    boolean updateRecord(PVStructure copyPVStructure,BitSet bitSet);
+    void updateRecord(PVStructure copyPVStructure,BitSet bitSet,boolean lockRecord);
+    /**
+     * Create a PVCopyMonitor.
+     * @param pvCopyMonitorRequester The PVCopyMonitorRequester.
+     * @return The PVCopyMonitor.
+     */
+    PVCopyMonitor createPVCopyMonitor(PVCopyMonitorRequester pvCopyMonitorRequester);
 }
