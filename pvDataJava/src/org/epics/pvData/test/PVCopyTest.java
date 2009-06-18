@@ -491,7 +491,7 @@ public class PVCopyTest extends TestCase {
     static void showModified(String message,PVStructure pvStructure,BitSet bitSet) {
         System.out.println();
         System.out.println(message);
-        System.out.printf("modifiedFields bitSet %x%n",bitSet.toLongArray()[0]);
+        System.out.printf("modifiedFields bitSet %s%n", bitSet);
         int size = bitSet.size();
         int index = -1;
         while(++index < size) {
