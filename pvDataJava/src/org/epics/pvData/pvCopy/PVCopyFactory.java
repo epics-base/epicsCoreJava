@@ -470,6 +470,7 @@ public class PVCopyFactory {
                 if(wasSet) overrunBitSet.set(offset);
                 changeBitSet.set(offset);
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();
+                dataChanged = true;
             }
             /* (non-Javadoc)
              * @see org.epics.pvData.pv.PVListener#dataPut(org.epics.pvData.pv.PVStructure, org.epics.pvData.pv.PVField)
@@ -481,11 +482,13 @@ public class PVCopyFactory {
                     throw new IllegalStateException("Logic error");
                 }
                 RecordNode recordNode = (RecordNode)node;
-                int offset = pvField.getFieldOffset() - recordNode.recordPVField.getFieldOffset();
+                int offset = recordNode.structureOffset
+                    + (pvField.getFieldOffset() - recordNode.recordPVField.getFieldOffset());
                 boolean wasSet = changeBitSet.get(offset);
                 if(wasSet) overrunBitSet.set(offset);
                 changeBitSet.set(offset);
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();
+                dataChanged = true;
             }
             /* (non-Javadoc)
              * @see org.epics.pvData.pv.PVListener#endGroupPut(org.epics.pvData.pv.PVRecord)
@@ -523,6 +526,7 @@ public class PVCopyFactory {
                 if(!node.isStructure) {
                     RecordNode recordNode = (RecordNode)node;
                     if(recordNode.recordPVField==pvField) return node;
+                    return null;
                 }
                 StructureNode structureNode = (StructureNode)node;
                 for(int i=0; i<structureNode.nodes.length; i++) {
