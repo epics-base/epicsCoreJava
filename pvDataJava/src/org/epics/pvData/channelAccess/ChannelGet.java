@@ -21,8 +21,9 @@ public interface ChannelGet {
      * Get data from the channel.
      * This fails if the request can not be satisfied.
      * If it fails ChannelGetRequester.getDone is called before get returns.
+     * @param lastRequest Is this the last request?
      */
-    void get();
+    void get(boolean lastRequest);
     /**
      * Destroy the ChannelGet.
      */

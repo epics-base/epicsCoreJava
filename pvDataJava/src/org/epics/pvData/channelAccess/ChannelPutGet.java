@@ -29,8 +29,9 @@ public interface ChannelPutGet {
      * Issue a put/get request.
      * This fails if the request can not be satisfied.
      * If it fails ChannelPutGetRequester.putDone is called before putGet returns.
+     * @param lastRequest Is this the last request?
      */
-    void putGet();
+    void putGet(boolean lastRequest);
     /**
      * Destroy the ChannelPutGet
      */

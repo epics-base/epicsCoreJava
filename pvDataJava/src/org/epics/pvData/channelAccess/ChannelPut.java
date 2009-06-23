@@ -1,5 +1,5 @@
 /**
- * Copyright - See the COPYRIGHT that is included with this disctibution.
+ * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
@@ -23,8 +23,9 @@ public interface ChannelPut {
      * Put data to a channel.
      * This fails if the request can not be satisfied.
      * If it fails ChannelPutRequester.putDone is called before put returns.
+     * @param lastRequest Is this the last request?
      */
-    void put();
+    void put(boolean lastRequest);
     /**
      * Destroy the ChannelPut.
      */

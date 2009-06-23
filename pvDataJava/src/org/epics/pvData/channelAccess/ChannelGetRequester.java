@@ -22,7 +22,7 @@ public interface ChannelGetRequester extends Requester {
     void channelGetConnect(ChannelGet channelGet,PVStructure pvStructure);
     /**
      * The request is done. This is always called with no locks held.
-     * @param success Was to request successful.
+     * @param success Was the request successful.
      */
     void getDone(boolean success);
 }
