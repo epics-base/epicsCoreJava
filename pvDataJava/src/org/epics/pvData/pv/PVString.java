@@ -10,7 +10,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVString extends PVScalar{
+public interface PVString extends PVScalar, SerializableArray{
     /**
      * Get the <i>String</i> value stored in the field.
      * @return string value of field.
