@@ -107,7 +107,7 @@ public class IncludeSubstituteXMLReaderFactory {
             int end = fileName.indexOf("}");
             if(start>=0 && end>start) {
                 String name = fileName.substring(start+2, end);
-                name = System.getenv(name);
+                name = System.getProperty(name, System.getenv(name));
                 fileName = fileName.substring(0, start) + name + fileName.substring(end+1);
                 
             }
