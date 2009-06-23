@@ -4,6 +4,8 @@
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvData.pvCopy;
+import java.nio.ByteBuffer;
+
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.ByteArrayData;
@@ -490,6 +492,17 @@ public class PVShareFactory {
                 return pvShare.equals(obj);
             } finally {
                 super.unlockThis();
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
+         */
+        public void serialize(ByteBuffer buffer, int offset, int count) {
+            lockShare();
+            try {
+                pvShare.serialize(buffer, offset, count);
+            } finally {
+                unlockShare();
             }
         }
     }

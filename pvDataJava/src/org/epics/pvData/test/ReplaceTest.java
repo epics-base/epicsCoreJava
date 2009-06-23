@@ -908,6 +908,12 @@ public class ReplaceTest extends TestCase {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, int, int)
+		 */
+		public void serialize(ByteBuffer buffer, int offset, int count) {
+			throw new UnsupportedOperationException("not supported");
+		}
+		/* (non-Javadoc)
 		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
 		 */
 		public void deserialize(ByteBuffer buffer) {
