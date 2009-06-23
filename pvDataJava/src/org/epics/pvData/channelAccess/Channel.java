@@ -146,10 +146,11 @@ public interface Channel extends Requester{
      * Create a ChannelMonitor.
      * ChannelMonitorRequester.channelMonitorReady is called after both client and server are ready for
      * the client to make a monitor request.
+     * @param channelMonitorRequester The channelMonitorRequester.
      * @param pvStructure A PVStructure created via a call to createPVStructure.
      * This can be null in which case a monitor event will be issued whenever any field in the PVRecord is modified.
-     * @param channelMonitorRequester The channelMonitorRequester.
+     * @param queueSize The queueSize. 0 means to share data. 
      */
     void createChannelMonitor(
-        ChannelMonitorRequester channelMonitorRequester,PVStructure pvStructure);
+        ChannelMonitorRequester channelMonitorRequester,PVStructure pvStructure,byte queueSize);
 }
