@@ -61,6 +61,19 @@ public final class SerializeHelper {
 
 	/**
 	 * String serializaton helper method.
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 */
+	public final static void serializeSubstring(final String value, int offset, int length, ByteBuffer buffer) {
+		if (value == null)
+			writeSize(-1, buffer);
+		else {
+			writeSize(length, buffer);
+			buffer.put(value.getBytes(), offset, length);	// UTF-8
+		}
+	}
+
+	/**
+	 * String serializaton helper method.
 	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
 	 */
 	public final static String deserializeString(ByteBuffer buffer) {

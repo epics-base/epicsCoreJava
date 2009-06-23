@@ -274,6 +274,25 @@ public class EnumeratedFactory {
                 SerializeHelper.serializeString(get(), buffer);
             }
             /* (non-Javadoc)
+             * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, int, int)
+             */
+            @Override
+        	public void serialize(ByteBuffer buffer, int offset, int count) {
+        		// check bounds
+            	final String value = get();
+            	final int length = (value == null) ? 0 : value.length();
+        		if (offset < 0) offset = 0;
+        		else if (offset > length) offset = length;
+        		if (count < 0) count = length;
+
+        		final int maxCount = length - offset;
+        		if (count > maxCount)
+        			count = maxCount;
+        		
+        		// write
+        		SerializeHelper.serializeSubstring(value, offset, count, buffer);
+        	}
+            /* (non-Javadoc)
              * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
              */
             @Override
