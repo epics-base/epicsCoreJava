@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: xml<br />
 package: org.epics.pvData.xml<br />
-2009.05.28</h1>
-CONTENTS 
+2009.06.24</h1>
+CONTENTS
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Database">Database XML Syntax</a> 
+  <li><a href="#Database">Database XML Syntax</a>
     <ul>
       <li><a href="#database">database</a></li>
       <li><a href="#auxInfo">auxInfo</a></li>
@@ -24,6 +24,7 @@ CONTENTS
       <li><a href="#package">package and import</a></li>
       <li><a href="#Field">Field definition</a></li>
       <li><a href="#Scalar">Scalar Types</a></li>
+      <li><a href="#Enumerated">Enumerated Structure</a></li>
       <li><a href="#Examples">Examples</a></li>
       <li><a href="#Field1">Field Initialization</a></li>
       <li><a href="#Scalar1">Scalar Types</a></li>
@@ -36,18 +37,18 @@ CONTENTS
       <li><a href="#Example">Example Include and Macro Substitution</a></li>
     </ul>
   </li>
-  <li><a href="#Database1">Database XML Code</a> 
+  <li><a href="#Database1">Database XML Code</a>
     <ul>
       <li><a href="#Warning">Warning About XML element syntax</a></li>
       <li><a href="#Java">Java Definitions</a></li>
-      <li><a href="#PVDatabase">XML To PVDatabase</a> 
+      <li><a href="#PVDatabase">XML To PVDatabase</a>
         <ul>
           <li><a href="#XMLToPVDat">XMLToPVDatabaseFactory</a></li>
           <li><a href="#XMLToPVDat1">XMLToPVDatabaseListener</a></li>
         </ul>
       </li>
       <li><a href="#Include1">Include and Substitution</a></li>
-      <li><a href="#IncludeSub">IncludeSubstituteXMLListener</a> 
+      <li><a href="#IncludeSub">IncludeSubstituteXMLListener</a>
         <ul>
           <li><a
           href="#IncludeSub1">IncludeSubstituteDetailsXMLListener</a></li>
@@ -61,7 +62,7 @@ CONTENTS
 </ul>
 </div>
 
-<p></p>
+<p> </p>
 <hr />
 
 <h2 style="text-align: center" id="Overview">Overview</h2>
@@ -246,8 +247,9 @@ scalar, scalarArray, or structure,.</p>
     <dd>Each is these is optional.</dd>
   <dt><span style="font-family: courier">arrayValues</span></dt>
 </dl>
-<p>arrayValues is a comma separated set of values appropriate to
-the element type. It can optionally be enclosed in []. Examples: </p>
+
+<p>arrayValues is a comma separated set of values appropriate to the element
+type. It can optionally be enclosed in []. Examples: </p>
 <pre>     &lt;array name = "field0" scalarType = "double"&gt;
          2.3,5e10,66.0
      &lt;/array&gt;
@@ -255,11 +257,11 @@ the element type. It can optionally be enclosed in []. Examples: </p>
          [2.3,5e10,66.0]
      &lt;/array&gt;</pre>
 
-<p>For all array elementTypes except string the convert library will
-remove all white space so white space is permitted.
-If the elementType is string then white space is not removed.
-Also each array element is not allowed to have the character ','.
-What to do? Should also allow other escape sequences like \n, etc.</p>
+<p>For all array elementTypes except string the convert library will remove
+all white space so white space is permitted. If the elementType is string
+then white space is not removed. Also each array element is not allowed to
+have the character ','. What to do? Should also allow other escape sequences
+like \n, etc.</p>
 
 <p>A structure field is defined as follows:</p>
 <pre>  &lt;structure name = "fieldName" extends = "structureName"&gt;
@@ -322,6 +324,27 @@ via the corresponding Java type. Type string is implemented as a Java String.
 values for hex values. For example the following is legal syntax although
 Java would complain.</p>
 <pre>    &lt;scalar name = "mask" scalarType = "byte"&gt;0xff&lt;/scalar&gt;</pre>
+
+<h3 style="text-align:center;" id="Enumerated">Enumerated Structure</h3>
+
+<p>An enumerated structure is a structure that:</p>
+<ol>
+  <li>Has exactly two fields.</li>
+  <li>The first field is named <span
+    style="font-family: courier">index</span> and has scalarType <span
+    style="font-family: courier">int</span></li>
+  <li>The second field is named <span
+    style="font-family: courier">choices</span> and is an array with element
+    type <span style="font-family: courier">string</span></li>
+</ol>
+
+<p>If the current structure is an enumerated structure then the following
+syntax is allowed:</p>
+<pre>    &lt;scalar name = "choice"&gt;someChoice&lt;/scalar&gt;</pre>
+
+<p>where <span style="font-family: courier">someChoice</span> must be one of
+the elements of <span style="font-family: courier">choices</span>. This
+results in the index field being initialized to the correct value. </p>
 
 <h3 style="text-align:center;" id="Examples">Examples</h3>
 
@@ -617,12 +640,12 @@ entered.</p>
 <p>or</p>
 <pre>    &lt;scalar name = "xxx" elmentType = "string"&gt;&lt;![CDATA[a&lt;b]]&gt;&lt;/scalar&gt;</pre>
 
-<p>I (Marty Kraimer) do not know how to determine, using SAX, which appears
-in the original xml source file. What appears to the ContentHandler callback
-is just the converted characters. What to do? One suggestion is that any code
+<p>I (Marty Kraimer) do not know how to determine, using SAX, what appears in
+the original xml source file. What appears to the ContentHandler callback is
+just the converted characters. What to do? One suggestion is that any code
 that generates PVData xml should look at all string scalar and scalar array
-element values. If any of the special XML characters are present to should
-use the&lt;![CDATA[value]]&gt; method of encoding the value.</p>
+element values. If any of the special XML characters are present then use
+the&lt;![CDATA[value]]&gt; method of encoding the value.</p>
 
 <h3 id="Java">Java Definitions</h3>
 <pre>    class XMLToPVDatabaseFactory {
