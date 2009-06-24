@@ -1,8 +1,8 @@
+org.epics.pvData.channelAccess
 org.epics.pvData.factory
 org.epics.pvData.misc
 org.epics.pvData.property
 org.epics.pvData.pv
 org.epics.pvData.pvCopy
-org.epics.pvData.pvShare
 org.epics.pvData.test
 org.epics.pvData.xml
