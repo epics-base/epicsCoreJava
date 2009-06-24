@@ -17,7 +17,6 @@ import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
@@ -47,8 +46,8 @@ public class EnumeratedFactory {
         PVStructure pvStructure = (PVStructure)pvField;
         Structure structure = pvStructure.getStructure();
         Field[] fields = structure.getFields();
-        if(fields.length!=3) {
-            pvStructure.message("structure does not have exactly three fields", MessageType.error);
+        if(fields.length!=2) {
+            pvStructure.message("structure does not have exactly two fields", MessageType.error);
             return;
         }
         Field field = fields[0];
@@ -57,22 +56,17 @@ public class EnumeratedFactory {
             return;
         }
         field = fields[1];
-        if(!field.getFieldName().equals("choice") || field.getType()!=Type.scalar || ((Scalar)field).getScalarType()!=ScalarType.pvString) {
-            pvStructure.message("structure does not have field choice of type string", MessageType.error);
-            return;
-        }
-        field = fields[2];
         if(!field.getFieldName().equals("choices") || field.getType()!=Type.scalarArray || ((Array)field).getElementType()!=ScalarType.pvString) {
             pvStructure.message("structure does not have field choices of type array", MessageType.error);
             return;
         }
-        Array array = (Array)fields[2];
+        Array array = (Array)fields[1];
         if(array.getElementType()!=ScalarType.pvString) {
             pvStructure.message("elementType for choices is not string", MessageType.error);
             return;
         }
         PVField[] pvFields = pvStructure.getPVFields();
-        new EnumeratedImpl(pvStructure,(PVInt)pvFields[0],(PVString)pvFields[1],(PVStringArray)pvFields[2]);
+        new EnumeratedImpl(pvStructure,(PVInt)pvFields[0],(PVStringArray)pvFields[1]);
     }
     /**
      * getEnumerated.
@@ -88,7 +82,6 @@ public class EnumeratedFactory {
         private int index;
         private String[] choices;
         private Index pvIndex;
-        private Choice pvChoice;
         private Choices pvChoices;
         private StringArrayData stringArrayData = new StringArrayData();
 
@@ -98,10 +91,10 @@ public class EnumeratedFactory {
          * @param dbChoice The PVField for the choice.
          * @param dbChoices The PVField for the choices.
          */
-        private EnumeratedImpl(PVStructure pvField,PVInt pvOldIndex, PVString pvOldChoice, PVStringArray pvOldChoices) {
+        private EnumeratedImpl(PVStructure pvField,PVInt pvOldIndex,PVStringArray pvOldChoices) {
             super(pvField.getParent(),pvField.getStructure());
-            pvIndex = new Index(this,pvOldIndex.getScalar());
-            pvChoice = new Choice(this,pvOldChoice.getScalar());      
+            index = pvOldIndex.get();
+            pvIndex = new Index(this,pvOldIndex.getScalar());    
             pvChoices = new Choices(this,pvOldChoices.getArray());
             if(pvOldChoices.getLength()>0) {
                 int len = pvOldChoices.getLength();
@@ -113,13 +106,10 @@ public class EnumeratedFactory {
                     pvChoices.put(0, len, stringArrayData.data , 0);
                 }
             }        
-            String choice = pvOldChoice.get();
-            if(choice!=null) pvChoice.put(choice);
             pvField.replacePVField(this);
             PVField[] pvFields = super.getPVFields();
             pvFields[0].replacePVField(pvIndex);
-            pvFields[1].replacePVField(pvChoice);
-            pvFields[2].replacePVField(pvChoices);
+            pvFields[1].replacePVField(pvChoices);
         }       
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.Enumerated#getPV()
@@ -132,8 +122,8 @@ public class EnumeratedFactory {
          * @see org.epics.pvData.misc.Enumerated#getChoice()
          */
         @Override
-        public PVString getChoice() {
-            return pvChoice;
+        public String getChoice() {
+            return choices[pvIndex.get()];
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.Enumerated#getChoices()
@@ -179,7 +169,6 @@ public class EnumeratedFactory {
                     index = value;
                 }
                 super.postPut();
-                pvChoice.postPut();
             }
             /* (non-Javadoc)
              * @see org.epics.pvData.factory.AbstractPVField#toString(int)
@@ -212,106 +201,6 @@ public class EnumeratedFactory {
                 if (obj instanceof PVInt) {
                     PVInt b = (PVInt)obj;
                     return b.get() == index;
-                }
-                else
-                    return false;
-            }
-        }
-
-        private class Choice extends AbstractPVScalar implements PVString {
-
-            private Choice(PVStructure parent,Scalar scalar) {
-                super(parent,scalar);
-            }
-            /* (non-Javadoc)
-             * @see org.epics.pvData.pv.PVString#get()
-             */
-            @Override
-            public String get() {
-                if(index>=choices.length) return null;
-                return choices[index];
-            }
-            /* (non-Javadoc)
-             * @see org.epics.pvData.pv.PVString#put(java.lang.String)
-             */
-            @Override
-            public void put(String value) {
-                if(super.isImmutable()) {   
-                    super.message("not isMutable", MessageType.error);
-                }
-                for(int i=0; i<choices.length; i++) {
-                    if(value.equals(choices[i])) {
-                        if(index!=i) {
-                            index = i;
-                            pvIndex.postPut();
-                            super.postPut();
-                        }
-                        return;
-                    }
-                }
-                super.message("illegal choice", MessageType.error);
-            }
-            /* (non-Javadoc)
-             * @see java.lang.Object#toString()
-             */
-            @Override
-            public String toString() {
-                return toString(0);
-            }
-            /* (non-Javadoc)
-             * @see org.epics.pvData.factory.AbstractPVField#toString(int)
-             */
-            @Override
-            public String toString(int indentLevel) {
-                return convert.getString(this, indentLevel)
-                + super.toString(indentLevel);
-            }
-            /* (non-Javadoc)
-             * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-             */
-            @Override
-            public void serialize(ByteBuffer buffer) {
-                SerializeHelper.serializeString(get(), buffer);
-            }
-            /* (non-Javadoc)
-             * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, int, int)
-             */
-            @Override
-        	public void serialize(ByteBuffer buffer, int offset, int count) {
-        		// check bounds
-            	final String value = get();
-            	final int length = (value == null) ? 0 : value.length();
-        		if (offset < 0) offset = 0;
-        		else if (offset > length) offset = length;
-        		if (count < 0) count = length;
-
-        		final int maxCount = length - offset;
-        		if (count > maxCount)
-        			count = maxCount;
-        		
-        		// write
-        		SerializeHelper.serializeSubstring(value, offset, count, buffer);
-        	}
-            /* (non-Javadoc)
-             * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-             */
-            @Override
-            public void deserialize(ByteBuffer buffer) {
-                put(SerializeHelper.deserializeString(buffer));
-            }
-            /* (non-Javadoc)
-             * @see java.lang.Object#equals(java.lang.Object)
-             */
-            @Override
-            public boolean equals(Object obj) {
-             // TODO anything else?
-                if (obj instanceof PVString) {
-                    PVString b = (PVString)obj;
-                    final String bv = b.get();
-                    if (bv != null)
-                        return bv.equals(choices[index]);
-                    else
-                        return ((choices.length==0) ? true : false);
                 }
                 else
                     return false;
@@ -384,7 +273,6 @@ public class EnumeratedFactory {
                 if(index>=length) {
                     index = 0;
                     pvIndex.postPut();
-                    pvChoice.postPut();
                 }
                 return len;      
             }

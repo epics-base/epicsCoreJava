@@ -10,20 +10,20 @@
 <body>
 <h1 style="text-align: center">EPICS PVData : misc<br />
 package: org.epics.pvData.misc<br />
-2009.05.13</h1>
+2009.06.24</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
   <li><a href="#Enumeratio">Enumeration</a></li>
-  <li><a href="#Message">Message Support</a>
+  <li><a href="#Message">Message Support</a> 
     <ul>
       <li><a href="#Definition">Definitions</a></li>
       <li><a href="#MessageQue">MessageQueue</a></li>
     </ul>
   </li>
-  <li><a href="#Thread">Thread Support</a>
+  <li><a href="#Thread">Thread Support</a> 
     <ul>
       <li><a href="#ThreadPrio">ThreadPriority</a></li>
       <li><a href="#ThreadCrea">ThreadCreate</a></li>
@@ -32,7 +32,7 @@ CONTENTS
   </li>
   <li><a href="#Time">Time Function Call</a></li>
   <li><a href="#Linked">Linked List</a></li>
-  <li><a href="#Timer">Timer</a>
+  <li><a href="#Timer">Timer</a> 
     <ul>
       <li><a href="#Java">Java Definitions</a></li>
       <li><a href="#TimerCallb">TimerCallback</a></li>
@@ -52,7 +52,7 @@ CONTENTS
 <dl>
   <dt>Enumerated Support</dt>
     <dd>Support for an enumerated structure, which is a structure containing
-      fields index, choice, and choices.</dd>
+      two fields: index and choices.</dd>
   <dt>Message Support</dt>
     <dd>Support for queuing messages to give to requesters.</dd>
   <dt>Thread Support</dt>
@@ -75,7 +75,7 @@ and choices. Index is an integer, choice is a string, and choices is an array
 of strings. Both index and choice select one of the choices.</p>
 <pre>    public interface Enumerated {
         PVInt getIndex();
-        PVString getChoice();
+        String getChoice();
         PVStringArray getChoices();
         PVStructure getPV();
     }
@@ -90,7 +90,7 @@ of strings. Both index and choice select one of the choices.</p>
   <dt>getIndex</dt>
     <dd>Returns the interface for field index.</dd>
   <dt>getChoice</dt>
-    <dd>Returns the interface for field choice.</dd>
+    <dd>Returns the choice for the current index.</dd>
   <dt>getChoices</dt>
     <dd>Returns the interface for field choices.</dd>
   <dt>getPV</dt>
