@@ -123,7 +123,7 @@ public interface Channel extends Requester{
      * Create a ChannelPutGet.
      * ChannelPutGetRequester.channelPutGetReady is called after both client and server are ready for
      * the client to make a putGet request.
-     * @param channelPutRequester The interface for notifying when this request is complete
+     * @param channelPutGetRequester The interface for notifying when this request is complete
      * and when a channel get completes.
      * @param pvPutRequest A structure describing the desired set of fields from the remote PVRecord.
      * This has the same form as a pvRequest to PVCopyFactory.create.
