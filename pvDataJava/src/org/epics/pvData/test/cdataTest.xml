@@ -9,7 +9,7 @@
     </scalar>
     <scalar name = "c" scalarType = "string">
     <![CDATA[
-    function matchwo(a,b){
+    function matchtwo(a,b){
         if (a < b && a < 0) then {
             return 1;
         } else {
