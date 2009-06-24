@@ -265,7 +265,7 @@ public class PVDataFactory {
         private static class Flatten {
             
             private Flatten(PVStructure pvStructure) {
-                pvFields = new PVField[pvStructure.getNextFieldOffset() - pvStructure.getFieldOffset()];
+                pvFields = new PVField[pvStructure.getNumberFields()];
             }
             
             private void initStructure(PVStructure pvStructure) {
