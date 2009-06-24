@@ -27,17 +27,17 @@ public interface Alarm {
      */
     PVInt getAlarmSeverityIndex();
     /**
-     * Get the interface for the severity choice.
-     * @return The interface.
+     * Get the value of the alarm severity.
+     * @return The string value for the severity.
      */
-    PVString getAlarmSeverityChoice();
+    String getAlarmSeverityChoice();
     /**
      * Get the interface for the alarm severity choices.
      * @return The interface.
      */
     PVStringArray getAlarmSeverityChoices();
     /**
-     * Get the interface for acknowledge transisnt alarm.
+     * Get the interface for acknowledge transient alarm.
      * @return The interface.
      */
     PVBoolean getAckTransient();
@@ -47,10 +47,10 @@ public interface Alarm {
      */
     PVInt getAckAlarmSeverityIndex();
     /**
-     * Get the interface for the acknowledge severity choice.
-     * @return The interface.
+     * Get the value of the acknowledge severity.
+     * @return The string value.
      */
-    PVString getAckAlarmSeverityChoice();
+    String getAckAlarmSeverityChoice();
     /**
      * Get the interface for the acknowledge alarm severity choices.
      * @return The interface.
