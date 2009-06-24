@@ -7,7 +7,6 @@ package org.epics.pvData.misc;
 
 
 import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 
@@ -23,10 +22,10 @@ public interface Enumerated {
      */
     PVInt getIndex();
     /**
-     * Get the choice field of an enumerated structure.
-     * @return The interface.
+     * Get the choice of an enumerated structure.
+     * @return The string value of the choice.
      */
-    PVString getChoice();
+    String getChoice();
     /**
      * * Get the choices field of an enumerated structure.
      * @return The interface.
