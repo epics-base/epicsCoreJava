@@ -20,7 +20,6 @@ import org.epics.pvData.factory.BasePVShortArray;
 import org.epics.pvData.factory.BasePVStringArray;
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
-import org.epics.pvData.factory.PVReplaceFactory;
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.ByteArrayData;
@@ -96,7 +95,6 @@ public class ReplaceTest extends TestCase {
 //            System.out.print(record.toString());
 //        }
         
-        PVReplaceFactory.replace(master);
         
         System.out.printf("%ntest replaceField%n");
         testReplace("ai","input.value");
@@ -905,12 +903,6 @@ public class ReplaceTest extends TestCase {
 		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
 		 */
 		public void serialize(ByteBuffer buffer) {
-			throw new UnsupportedOperationException("not supported");
-		}
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, int, int)
-		 */
-		public void serialize(ByteBuffer buffer, int offset, int count) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)

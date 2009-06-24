@@ -8,7 +8,6 @@ package org.epics.pvData.test;
 import junit.framework.TestCase;
 
 import org.epics.pvData.factory.PVDatabaseFactory;
-import org.epics.pvData.factory.PVReplaceFactory;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
@@ -59,7 +58,6 @@ public class ParentTest extends TestCase {
 //            System.out.print(record.toString());
 //        }
 
-        PVReplaceFactory.replace(master);
         
         showParent("ai","alarm.severity");
         showParent("ai","timeStamp");

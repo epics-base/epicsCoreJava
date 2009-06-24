@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
-import org.epics.pvData.factory.PVReplaceFactory;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
@@ -68,7 +67,6 @@ public class ListenerTest extends TestCase {
 //            System.out.print(record.toString());
 //        }
         
-        PVReplaceFactory.replace(master);
         
         System.out.printf("%ntest put and listen exampleAi%n");
         new PVListenerForTesting(master,"aiRawCounter","scan",false,true);

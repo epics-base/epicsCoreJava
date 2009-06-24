@@ -21,7 +21,7 @@ import org.epics.pvData.xml.XMLToPVDatabaseFactory;
 
 /**
  * JUnit test for pvAccess.
- * It also provides examples of how to use the pvAccess interfaces.
+ * It also provides examples of how to create a PVField[] that has all the fields in a structure..
  * @author mrk
  *
  */
@@ -36,7 +36,7 @@ public class PVFlattenTest extends TestCase {
         PVRecord pvRecord = master.findRecord("psEmbeded");
         
         PVField[] pvFields = dataCreate.flattenPVStructure(pvRecord);
-        assertTrue(pvFields.length==(pvRecord.getNextFieldOffset()-pvRecord.getFieldOffset()));
+        assertTrue(pvFields.length==pvRecord.getNumberFields());
         int offset = 0;
         for(PVField pvField: pvFields) {
             PVField fromPVRecord = pvRecord.getSubField(offset);

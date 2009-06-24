@@ -22,12 +22,16 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVLong;
 import org.epics.pvData.pv.PVRecord;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.ScalarType;
-import org.epics.pvData.pvCopy.*;
+import org.epics.pvData.pvCopy.BitSetUtil;
+import org.epics.pvData.pvCopy.BitSetUtilFactory;
+import org.epics.pvData.pvCopy.PVCopy;
 import org.epics.pvData.pvCopy.PVCopyFactory;
+import org.epics.pvData.pvCopy.PVCopyMonitor;
+import org.epics.pvData.pvCopy.PVCopyMonitorRequester;
 import org.epics.pvData.xml.XMLToPVDatabaseFactory;
 
 

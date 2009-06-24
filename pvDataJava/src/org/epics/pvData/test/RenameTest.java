@@ -7,9 +7,11 @@ package org.epics.pvData.test;
 
 import junit.framework.TestCase;
 
-import org.epics.pvData.factory.*;
+import org.epics.pvData.factory.PVDataFactory;
+import org.epics.pvData.factory.PVDatabaseFactory;
 import org.epics.pvData.factory.PVReplaceFactory;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.PVDataCreate;
+import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;

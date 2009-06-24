@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
-import org.epics.pvData.factory.PVReplaceFactory;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
@@ -54,7 +53,6 @@ public class MatejListenerTest extends TestCase {
           System.out.println(pvRecord1.toString());
         }
         */
-        PVReplaceFactory.replace(master);
         
         new PVListenerForTesting(master,"ai",null,false,true);
 
