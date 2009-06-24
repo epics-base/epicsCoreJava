@@ -3,12 +3,13 @@
 <include addPath = "${PVDATA}/xml/structure" />
 <package name = "org.epics.pvData" />
 <import name = "org.epics.pvData.*" />
+<include href = "enumerated.xml" />
+<include href = "alarm.xml" />
+<include href = "timeStamp.xml" />
 <include href = "limit.xml" />
 <include href = "display.xml" />
 <include href = "control.xml" />
-<include href = "enumerated.xml" />
-<include href = "timeStamp.xml" />
-<include href = "alarm.xml" />
+
 <!--
 
 -->

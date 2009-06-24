@@ -5,11 +5,8 @@
    xmlns:model="urn:schemas-cosylab-com:model:1.0"
    name="database">
 
-<structure structureName = "alarmSeverity">
-  <auxInfo name = "pvReplaceFactory" scalarType = "string">org.epics.pvData.enumeratedFactory</auxInfo>
-  <scalar name = "index" scalarType = "int" />
-  <scalar name = "choice" scalarType = "string" />
-  <array name = "choices" scalarType = "string" immutable = "true" >
+<structure structureName = "alarmSeverity" extends = "enumerated" >
+  <array name = "choices"  immutable = "true" >
     [none,minor,major,invalid]</array>
 </structure>
 
