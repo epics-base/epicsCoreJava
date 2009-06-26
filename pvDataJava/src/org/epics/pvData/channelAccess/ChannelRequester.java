@@ -13,10 +13,14 @@ import org.epics.pvData.pv.Requester;
  */
 public interface ChannelRequester extends Requester {
     /**
-     * A channel has been created.
+     * A channel has been created. This may be called multiple times if there are multiple providers.
      * @param channel The channel.
      */
     void channelCreated(Channel channel);
+    /**
+     * Channel not created. This may be called multiple times if there are multiple providers.
+     */
+    void channelNotCreated();
     /**
      * The channel has put connection state.
      * @param c The channel.

@@ -17,13 +17,7 @@ public interface ChannelAccess {
      * If successful channelRequester.channelCreated is called.
      * @param channelName The channel name, which is also the record name.
      * @param channelRequester The requester.
+     * @param timeOut timeout value.
      */
-    void createChannel(String channelName, ChannelRequester channelRequester);
-    /**
-     * Cancel a previous createChannel request.
-     * @param channelName The channel name.
-     * @param channelRequester The requester.
-     */
-    void cancelCreateChannel(String channelName, ChannelRequester channelRequester);
-    
+    void createChannel(String channelName, ChannelRequester channelRequester, double timeOut);
 }

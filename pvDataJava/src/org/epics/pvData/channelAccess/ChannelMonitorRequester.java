@@ -5,6 +5,9 @@
  */
 package org.epics.pvData.channelAccess;
 
+import java.util.BitSet;
+
+import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 
 /**
@@ -20,8 +23,11 @@ public interface ChannelMonitorRequester extends Requester{
     void channelMonitorConnect(ChannelMonitor channelMonitor);
     /**
      * A monitor event has occurrence.
+     * @param pvStructure The PVStructure holding data.
+     * @param changeBitSet The bitSet showing which fields changed.
+     * @param overrunBitSet The bitSet showing which fields were changed more than once.
      */
-    void monitorEvent();
+    void monitorEvent(PVStructure pvStructure, BitSet changeBitSet, BitSet overrunBitSet);
     /**
      * unlisten 
      */

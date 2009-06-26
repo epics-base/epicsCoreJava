@@ -5,7 +5,6 @@
  */
 package org.epics.pvData.channelAccess;
 
-import java.util.BitSet;
 
 /**
  * Interface for ChannelMonitor.
@@ -13,11 +12,6 @@ import java.util.BitSet;
  *
  */
 public interface ChannelMonitor {
-    /**
-     * Get the BitSet which describes which fields have been modified since the last monitor.
-     * @return The BitSet.
-     */
-    BitSet getBitSet();
     /**
      * Start monitoring.
      */

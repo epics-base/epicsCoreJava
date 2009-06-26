@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.channelAccess;
 
+import org.epics.pvData.misc.Executor;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
@@ -147,10 +148,15 @@ public interface Channel extends Requester{
      * ChannelMonitorRequester.channelMonitorReady is called after both client and server are ready for
      * the client to make a monitor request.
      * @param channelMonitorRequester The channelMonitorRequester.
-     * @param pvStructure A PVStructure created via a call to createPVStructure.
-     * This can be null in which case a monitor event will be issued whenever any field in the PVRecord is modified.
-     * @param queueSize The queueSize. 0 means to share data. 
+     * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
+     * This has the same form as a pvRequest to PVCopyFactory.create.
+     * @param structureName The name to give to the created PVStructure.
+     * @param pvOption Monitor options.
+     * @param executor An executor for calling requester.
      */
     void createChannelMonitor(
-        ChannelMonitorRequester channelMonitorRequester,PVStructure pvStructure,byte queueSize);
+        ChannelMonitorRequester channelMonitorRequester,
+        PVStructure pvRequest,String structureName,
+        PVStructure pvOption,
+        Executor executor);
 }
