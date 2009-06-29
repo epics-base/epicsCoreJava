@@ -53,7 +53,7 @@ public interface PVCopy {
      */
     int getCopyOffset(PVStructure recordPVStructure,PVField recordPVField);
     /**
-     * Given an offset within a PVStructure return the corresponding PVField in the PVREcord.
+     * Given an offset within a PVStructure return the corresponding PVField in the PVRecord.
      * @param structureOffset The offset within the PVStructure.
      * @return The interface within the PVRecord.
      */
