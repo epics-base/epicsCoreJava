@@ -17,6 +17,7 @@ import org.epics.pvData.factory.BasePVFloatArray;
 import org.epics.pvData.factory.BasePVIntArray;
 import org.epics.pvData.factory.BasePVLongArray;
 import org.epics.pvData.factory.BasePVShortArray;
+import org.epics.pvData.factory.BasePVString;
 import org.epics.pvData.factory.BasePVStringArray;
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
@@ -857,7 +858,7 @@ public class ReplaceTest extends TestCase {
 
     }
 
-    private static class StringData extends AbstractPVScalar implements PVString {
+    private static class StringData extends BasePVString implements PVString {
 
         /* (non-Javadoc)
          * @see org.epics.ioc.pv.PVString#get()
