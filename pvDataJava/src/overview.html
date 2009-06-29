@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData<br />
 Overview<br />
-2009.02.24</h1>
+2009.06.29</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Introducti">Introduction</a></li>
-  <li><a href="#Interface">Interface Definitions</a> 
+  <li><a href="#Interface">Interface Definitions</a>
     <ul>
       <li><a href="#Types">Types</a></li>
       <li><a href="#Introspect">Introspection Interfaces</a></li>
@@ -25,7 +25,7 @@ CONTENTS
       <li><a href="#PVData">PVData Conversion</a></li>
     </ul>
   </li>
-  <li><a href="#Package">Package Summary</a> 
+  <li><a href="#Package">Package Summary</a>
     <ul>
       <li><a href="#L239">{@link org.epics.pvData.pv}</a></li>
       <li><a href="#L243">{@link org.epics.pvData.factory}</a></li>
@@ -33,9 +33,11 @@ CONTENTS
       <li><a href="#L283">{@link org.epics.pvData.xml}</a></li>
       <li><a href="#L287">{@link org.epics.pvData.misc}</a></li>
       <li><a href="#L291">{@link org.epics.pvData.test}</a></li>
+      <li><a href="#L295">{@link org.epics.pvData.pvCopy}</a></li>
+      <li><a href="#L299">{@link org.epics.pvData.channelAccess}</a></li>
     </ul>
   </li>
-  <li><a href="#Unresolved">Unresolved Issues</a> 
+  <li><a href="#Unresolved">Unresolved Issues</a>
     <ul>
       <li><a href="#Property">Property</a></li>
       <li><a href="#Attribute">Attribute</a></li>
@@ -221,7 +223,6 @@ public interface Requester {
 
 public interface Serializable {
     void serialize(ByteBuffer buffer);
-    int getSerializationSize();
     void deserialize(ByteBuffer buffer);
 }
 
@@ -233,6 +234,9 @@ public interface PVAuxInfo {
 }
 
 public interface PVField extends Requester, Serializable {
+    int getFieldOffset();
+    int getNextFieldOffset();
+    int getNumberFields();
     Field getField();
     PVStructure getParent();
     PVRecord getPVRecord();
@@ -242,6 +246,7 @@ public interface PVField extends Requester, Serializable {
     boolean isMutable();
     void setMutable(boolean value);
     void replacePVField(PVField newPVField);
+    void renameField(String newName);
     // following methods are for monitoring changes
     boolean addListener(PVListener pvListener);
     void removeListener(PVListener pvListener);
@@ -287,6 +292,7 @@ public interface PVDoubleArray extends PVArray{
     PVField getSubField(String fieldName);
     boolean replaceStructureField(String fieldName,Structure structure);
     void appendPVField(PVField pvField);
+    void removePVField(String fieldName);
     void postPut(PVField subField);
     // The following are convenience methods
     PVBoolean getBooleanField(String fieldName);
@@ -299,7 +305,8 @@ public interface PVDoubleArray extends PVArray{
     PVString getStringField(String fieldName);
     PVStructure getStructureField(String fieldName);
     PVArray getArrayField(String fieldName,ScalarType elementType);
-
+    String getExtendsStructureName();
+    boolean putExtendsStructureName(String extendsStructureName);
 }</pre>
 
 <h3 id="Introspect1">Introspection and Data creation</h3>
@@ -314,22 +321,22 @@ public interface PVDoubleArray extends PVArray{
 <p>The following interface creates data instances:</p>
 <pre>public interface PVDataCreate {
     PVField createPVField(PVStructure parent, Field field);
+    PVField createPVField(PVStructure parent,String fieldName,PVField fieldToClone);
     PVScalar createPVScalar(PVStructure parent,Scalar scalar);
-    PVScalar createPVScalar(PVStructure parent,String fieldName,
-        ScalarType fieldType);
+    PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType fieldType);
+    PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
     PVArray createPVArray(PVStructure parent,Array array);
-    PVArray createPVArray(PVStructure parent,String fieldName,
-        ScalarType elementType);
-    PVStructure createPVStructure(PVStructure parent,String fieldName,
-        Field[] fields);
-    PVStructure createPVStructure(PVStructure parent,String fieldName,
-        PVStructure structToClone);
+    PVArray createPVArray(PVStructure parent,String fieldName,ScalarType elementType);
+    PVArray createPVArray(PVStructure parent,String fieldName,PVArray arrayToClone);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,Field[] fields);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,PVStructure structToClone);
     PVStructure createPVStructure(PVStructure parent,String fieldName,
          PVDatabase pvDatabase,String structureName);
     PVRecord createPVRecord(String recordName,Field[] fields);
     PVRecord createPVRecord(String recordName,PVStructure structToClone);
     PVRecord createPVRecord(String recordName,PVDatabase pvDatabase,
          String structureName);
+    PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
 
 <h3 id="PVData">PVData Conversion</h3>
@@ -407,6 +414,17 @@ also be useful to software that uses PVData.</p>
 <h3 id="L291">{@link org.epics.pvData.test}</h3>
 
 <p>Test code.</p>
+
+<h3 id="L295">{@link org.epics.pvData.pvCopy}</h3>
+
+<p>This package provides support implementing a structure that hold data from
+an arbitrary subset of the fields in a record. It is designed for use by
+channel access.</p>
+
+<h3 id="L299">{@link org.epics.pvData.channelAccess}</h3>
+
+<p>This is a proposed set of interfaces for channel access. The
+implementation will probably not be part of pvbData.</p>
 <hr />
 
 <h2 style="text-align: center" id="Unresolved">Unresolved Issues</h2>

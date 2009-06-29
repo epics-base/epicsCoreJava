@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.06.17</h1>
+2009.06.29</h1>
 CONTENTS 
 
 <div class="toc">
@@ -19,7 +19,7 @@ CONTENTS
   <li><a href="#BitSetUtil">BitSetUtil</a></li>
   <li><a href="#PVCopy">PVCopy</a></li>
   <li><a href="#PVCopyMoni">PVCopyMonitor</a></li>
-  <li><a href="#PVCopyFact">PVCopyFactory</a>
+  <li><a href="#PVCopyFact">PVCopyFactory</a> 
     <ul>
       <li><a href="#Java">Java Definition</a></li>
       <li><a href="#PVStructur">PVStructure pvRequest</a></li>
@@ -203,9 +203,9 @@ a single PVCopy.</p>
 <p>PVCopyMonitor is a PVListener for the PVRecord to which PVCopy is
 attached. It updates two bitSets when it receives PVListener.dataPut
 callbacks. changeBit shows all fields that have changed between calls to
-switchBitSets. overrunBitSet shows all fields that have changed value more than
-once between calls to switchBitSets. It notifies the PVCopyMonitorRequester when
-data has changed. </p>
+switchBitSets. overrunBitSet shows all fields that have changed value more
+than once between calls to switchBitSets. It notifies the
+PVCopyMonitorRequester when data has changed. </p>
 <pre>interface PVCopyMonitorRequester {
     void dataChanged();
     void unlisten();
@@ -250,7 +250,8 @@ PVCopy.createPVCopyMonitor.</p>
 
 <h3 id="Java">Java Definition</h3>
 <pre>    class PVCopyFactory {
-        static PVCopy create(PVRecord pvRecord,PVStructure pvRequest);
+        static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,
+               String structureName,boolean shareData);
     }</pre>
 
 <p>where create has the arguments</p>
@@ -260,6 +261,12 @@ PVCopy.createPVCopyMonitor.</p>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>A PVStructure which describes the fields of PVREcord to which the
       server wants access.</dd>
+  <dt><span style="font-family: Courier">structureName</span></dt>
+    <dd>The name to give to the structure that describes the subset of the
+      fields of PVRecord that are actually mapped.</dd>
+  <dt><span style="font-family: Courier">shareData</span></dt>
+    <dd>Should the PVStructure created by calling PVCopy.createPVStructure
+      share the data from PVRecord of should it keep a separate copy.</dd>
 </dl>
 
 <h3 id="PVStructur">PVStructure pvRequest</h3>
@@ -361,7 +368,7 @@ PVDatabase:</p>
         //alarm,timeStamp,power.value from powerSupply
         pvRecord = master.findRecord("powerSupply");
         pvRequest = master.findStructure("powerFromPowerSupply");
-        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "",false);
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
         pvCopy.initeCopy(pvCopyStructure, bitSet,true);
@@ -369,7 +376,7 @@ PVDatabase:</p>
 
         //power, current, voltage. For each value and alarm
         pvRequest = master.findStructure("powerSupplyFromPowerSupply");
-        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "",false);
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
         pvCopy.initCopy(pvCopyStructure, bitSet,true);

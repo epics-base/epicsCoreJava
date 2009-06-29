@@ -40,7 +40,7 @@ public class PVCopyFactory {
      * should be mapped. See the packaged overview for details.
      * @param structureName The name to give to the Structure
      * that describes the subset of the fields of PVRecord that are actually mapped.
-     * @param shareData Should the PVStructure created by called PVCopy.createPVStructure share the data from
+     * @param shareData Should the PVStructure created by calling PVCopy.createPVStructure share the data from
      * PVRecord of should it keep a separate copy.
      * @return The PVCopy interface.
      */
