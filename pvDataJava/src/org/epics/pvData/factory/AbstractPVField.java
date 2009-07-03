@@ -30,8 +30,8 @@ import org.epics.pvData.pv.Type;
  */
 public abstract class AbstractPVField implements PVField{
     private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private int fieldOffset;
-    private int nextFieldOffset;
+    private int fieldOffset = 0;;
+    private int nextFieldOffset = 0;;
     private PVAuxInfo pvAuxInfo = null;
     private boolean isImmutable = false;
     private String fullFieldName = "";
@@ -277,6 +277,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public void postPut() {
+        if(nextFieldOffset==0) return; // setOffsets has never been called.
         callListener();
         if(pvParent!=null)pvParent.postPut(this);
     }
