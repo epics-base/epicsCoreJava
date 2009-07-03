@@ -132,6 +132,13 @@ public class PVCopyFactory {
             }
             return pvStructure;
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pvCopy.PVCopy#isShared()
+         */
+        @Override
+        public boolean isShared() {
+            return shareData;
+        }
         
         private void referenceImmutable(PVField pvField,Node node) {
             if(node.isStructure) {
