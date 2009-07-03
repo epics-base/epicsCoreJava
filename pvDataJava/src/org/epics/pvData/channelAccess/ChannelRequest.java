@@ -5,19 +5,13 @@
  */
 package org.epics.pvData.channelAccess;
 
-
 /**
- * Interface for ChannelMonitor.
- * @author mrk
- *
+ * Base interface for all channel requests.
+ * @author mse
  */
-public interface ChannelMonitor extends ChannelRequest {
+public interface ChannelRequest {
     /**
-     * Start monitoring.
+     * Destroy the request.
      */
-    void start();
-    /**
-     * Stop Monitoring.
-     */
-    void stop();
+    void destroy();
 }

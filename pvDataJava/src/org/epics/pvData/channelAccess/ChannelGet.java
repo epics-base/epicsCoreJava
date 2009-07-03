@@ -11,7 +11,7 @@ import java.util.BitSet;
  * @author mrk
  *
  */
-public interface ChannelGet {
+public interface ChannelGet extends ChannelRequest {
     /**
      * Get the BitSet which describes which fields have been modified since the last request.
      * @return The BitSet.
@@ -24,8 +24,4 @@ public interface ChannelGet {
      * @param lastRequest Is this the last request?
      */
     void get(boolean lastRequest);
-    /**
-     * Destroy the ChannelGet.
-     */
-    void destroy();
 }

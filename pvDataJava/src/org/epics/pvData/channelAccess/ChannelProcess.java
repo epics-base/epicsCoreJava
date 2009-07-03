@@ -11,7 +11,7 @@ package org.epics.pvData.channelAccess;
  * @author mrk
  *
  */
-public interface ChannelProcess {
+public interface ChannelProcess extends ChannelRequest {
     /**
      * Issue a process request.
      * This fails if the request can not be satisfied.
@@ -19,8 +19,4 @@ public interface ChannelProcess {
      * @param lastRequest Is this the last request?
      */
     void process(boolean lastRequest);
-    /**
-     * Destroy the ChannelProcess.
-     */
-    void destroy();
 }
