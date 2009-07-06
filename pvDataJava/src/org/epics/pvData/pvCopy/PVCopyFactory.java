@@ -348,7 +348,9 @@ public class PVCopyFactory {
                     boolean callRecursive = doAll;
                     if(!doAll) {
                         int nfields = pvCopy.getNumberFields();
-                        if(bitSet.nextSetBit(offset) < nfields) callRecursive = true;
+                        int nextSet = bitSet.nextSetBit(offset);
+                        if(nextSet==-1) return;
+                        if(nextSet < nfields) callRecursive = true;
                     }
                     if(callRecursive) {
                         StructureNode subStructureNode = (StructureNode)node;
@@ -369,7 +371,9 @@ public class PVCopyFactory {
             if(!doAll) {
                 int offset = pvCopy.getFieldOffset();
                 int nfields = pvCopy.getNumberFields();
-                if(bitSet.nextSetBit(offset)>=(offset + nfields)) return;
+                int nextSet = bitSet.nextSetBit(offset);
+                if(nextSet==-1) return;
+                if(nextSet>=(offset + nfields)) return;
             }
             if(pvCopy.getField().getType()==Type.structure) {
                 PVStructure pvCopyStructure = (PVStructure)pvCopy;
