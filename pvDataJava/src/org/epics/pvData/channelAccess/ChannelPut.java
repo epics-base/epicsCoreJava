@@ -26,4 +26,8 @@ public interface ChannelPut  extends ChannelRequest {
      * @param lastRequest Is this the last request?
      */
     void put(boolean lastRequest);
+    /**
+     * Get the current data.
+     */
+    void get();
 }

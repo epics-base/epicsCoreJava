@@ -25,4 +25,9 @@ public interface ChannelPutRequester extends Requester {
      * @param success Was the request successful.
      */
     void putDone(boolean success);
+    /**
+     * The get request is done. This is always called with no locks held.
+     * @param success Was the request successful.
+     */
+    void getDone(boolean success);
 }
