@@ -13,6 +13,7 @@ import java.util.BitSet;
  * changeBit shows all fields that have changed between calls to updateCopy.
  * overrunBitSet shows all fields that have changed value more than once between calls
  * to updateCopy.
+ * It synchronizes on changeBitSet when it accesses the two bitSets.
  * It notifies the PVCopyMonitorRequester when data has changed.
  * The caller can use this for a queue of monitors, a shared PVStructure,
  * or just a single non-shared PVStructure.

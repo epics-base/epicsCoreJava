@@ -437,6 +437,15 @@ public class PVCopyFactory {
                 isGroupPut = false;
                 pvRecord.registerListener(this);
                 addListener(headNode);
+                pvRecord.lock();
+                try {
+                    changeBitSet.clear();
+                    overrunBitSet.clear();
+                    changeBitSet.set(0);
+                    pvCopyMonitorRequester.dataChanged();
+                } finally {
+                    pvRecord.unlock();
+                }
             }
 
             /* (non-Javadoc)
@@ -477,9 +486,11 @@ public class PVCopyFactory {
                     throw new IllegalStateException("Logic error");
                 }
                 int offset = node.structureOffset;
-                boolean wasSet = changeBitSet.get(offset);
-                if(wasSet) overrunBitSet.set(offset);
-                changeBitSet.set(offset);
+                synchronized(changeBitSet) {
+                    boolean wasSet = changeBitSet.get(offset);
+                    if(wasSet) overrunBitSet.set(offset);
+                    changeBitSet.set(offset);
+                }
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();
                 dataChanged = true;
             }
@@ -494,10 +505,12 @@ public class PVCopyFactory {
                 }
                 RecordNode recordNode = (RecordNode)node;
                 int offset = recordNode.structureOffset
-                    + (pvField.getFieldOffset() - recordNode.recordPVField.getFieldOffset());
-                boolean wasSet = changeBitSet.get(offset);
-                if(wasSet) overrunBitSet.set(offset);
-                changeBitSet.set(offset);
+                + (pvField.getFieldOffset() - recordNode.recordPVField.getFieldOffset());
+                synchronized(changeBitSet) {
+                    boolean wasSet = changeBitSet.get(offset);
+                    if(wasSet) overrunBitSet.set(offset);
+                    changeBitSet.set(offset);
+                }
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();
                 dataChanged = true;
             }
