@@ -26,10 +26,18 @@ public interface ChannelPutGet extends ChannelRequest {
      */
     BitSet getGetBitSet();
     /**
-     * Issue a put/get request.
+     * Issue a put/get request. If process was requested when the ChannelPutGet was created this is a put, process, get.
      * This fails if the request can not be satisfied.
      * If it fails ChannelPutGetRequester.putDone is called before putGet returns.
      * @param lastRequest Is this the last request?
      */
     void putGet(boolean lastRequest);
+    /**
+     * Get the put PVStructure. The record will not be processed.
+     */
+    void getPut();
+    /**
+     * Get the get PVStructure. The record will not be processed.
+     */
+    void getGet();
 }

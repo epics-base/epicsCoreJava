@@ -23,8 +23,18 @@ public interface ChannelPutGetRequester extends Requester
      */
     void channelPutGetConnect(ChannelPutGet channelPutGet,PVStructure pvPutStructure,PVStructure pvGetStructure);
     /**
-     * The request is done. This is always called with no locks held.
+     * The putGet request is done. This is always called with no locks held.
      * @param success Was the request successful
      */
     void putGetDone(boolean success);
+    /**
+     * The getPut request is done. This is always called with no locks held.
+     * @param success Was the request successful
+     */
+    void getPutDone(boolean success);
+    /**
+     * The getGet request is done. This is always called with no locks held.
+     * @param success Was the request successful
+     */
+    void getGetDone(boolean success);
 }
