@@ -61,17 +61,6 @@ public interface Channel extends Requester{
      */
     void getField(GetFieldRequester requester,String subField);
     /**
-     * Create a PVStructure for communication with the server.
-     * CreatePVStructureRequester.createDone is called after both client and server have processed the create request.
-     * @param requester The requester.
-     * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
-     * This has the same form as a pvRequest to PVCopyFactory.create.
-     * @param structureName The name to give to the created PVStructure.
-     * MATEJ Should it be required that this is unique for each call to getStructure?
-     * @param shareData On the remote side should the companion PVStructure share data with the PVRecord. 
-     */
-    void createPVStructure(CreatePVStructureRequester requester,PVStructure pvRequest,String structureName,boolean shareData);
-    /**
      * Get the access rights for a field of a PVStructure created via a call to createPVStructure.
      * MATEJ Channel access can store this info via auxInfo.
      * @param pvField The field for which access rights is desired.
@@ -79,17 +68,37 @@ public interface Channel extends Requester{
      */
     AccessRights getAccessRights(PVField pvField);
     /**
+     * Create a PVStructure for communication with the server.
+     * CreatePVStructureRequester.createDone is called after both client and server have processed the create request.
+     * @param channel The channel.
+     * @param requester The requester.
+     * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
+     * This has the same form as a pvRequest to PVCopyFactory.create.
+     * @param structureName The name to give to the created PVStructure.
+     * MATEJ Should it be required that this is unique for each call to getStructure?
+     * @param shareData On the remote side should the companion PVStructure share data with the PVRecord. 
+     */
+    void createPVStructure(
+            Channel channel,
+            CreatePVStructureRequester requester,PVStructure pvRequest,
+            String structureName,
+            boolean shareData);
+    /**
      * Create a ChannelProcess.
      * ChannelProcessRequester.channelProcessReady is called after both client and server are ready for
      * the client to make a process request.
+     * @param channel The channel.
      * @param channelProcessRequester The interface for notifying when this request is complete
      * and when channel completes processing.
      */
-    void createChannelProcess(ChannelProcessRequester channelProcessRequester);
+    void createChannelProcess(
+            Channel channel,
+            ChannelProcessRequester channelProcessRequester);
     /**
      * Create a ChannelGet.
      * ChannelGetRequester.channelGetReady is called after both client and server are ready for
      * the client to make a get request.
+     * @param channel The channel.
      * @param channelGetRequester The interface for notifying when this request is complete
      * and when a channel get completes.
      * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
@@ -99,14 +108,15 @@ public interface Channel extends Requester{
      * @param process Process before getting data.
      */
     void createChannelGet(
-            ChannelGetRequester channelGetRequester,
-            PVStructure pvRequest,String structureName,
-            boolean shareData,
-            boolean process);
+            Channel channel,
+            ChannelGetRequester channelGetRequester,PVStructure pvRequest,
+            String structureName,
+            boolean shareData, boolean process);
     /**
      * Create a ChannelPut.
      * ChannelPutRequester.channelPutReady is called after both client and server are ready for
      * the client to make a put request.
+     * @param channel The channel.
      * @param channelPutRequester The interface for notifying when this request is complete
      * and when a channel get completes.
      * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
@@ -116,14 +126,15 @@ public interface Channel extends Requester{
      * @param process Process before getting data.
      */
     void createChannelPut(
-        ChannelPutRequester channelPutRequester,
-        PVStructure pvRequest,String structureName,
-        boolean shareData,
-        boolean process);
+        Channel channel,
+        ChannelPutRequester channelPutRequester,PVStructure pvRequest,
+        String structureName,
+        boolean shareData, boolean process);
     /**
      * Create a ChannelPutGet.
      * ChannelPutGetRequester.channelPutGetReady is called after both client and server are ready for
      * the client to make a putGet request.
+     * @param channel The channel.
      * @param channelPutGetRequester The interface for notifying when this request is complete
      * and when a channel get completes.
      * @param pvPutRequest A structure describing the desired set of fields from the remote PVRecord.
@@ -137,16 +148,17 @@ public interface Channel extends Requester{
      * @param process Process after put and before get.
      */
     void createChannelPutGet(
-        ChannelPutGetRequester channelPutGetRequester,
-        PVStructure pvPutRequest,String putStructureName,
-        boolean sharePutData,
-        PVStructure pvGetRequest,String getStructureName,
-        boolean shareGetData,
-        boolean process);
+        Channel channel,
+        ChannelPutGetRequester channelPutGetRequester,PVStructure pvPutRequest,
+        String putStructureName,
+        boolean sharePutData,PVStructure pvGetRequest,
+        String getStructureName,
+        boolean shareGetData, boolean process);
     /**
      * Create a ChannelMonitor.
      * ChannelMonitorRequester.channelMonitorReady is called after both client and server are ready for
      * the client to make a monitor request.
+     * @param channel The channel.
      * @param channelMonitorRequester The channelMonitorRequester.
      * @param pvRequest A structure describing the desired set of fields from the remote PVRecord.
      * This has the same form as a pvRequest to PVCopyFactory.create.
@@ -155,8 +167,8 @@ public interface Channel extends Requester{
      * @param executor An executor for calling requester.
      */
     void createChannelMonitor(
-        ChannelMonitorRequester channelMonitorRequester,
-        PVStructure pvRequest,String structureName,
-        PVStructure pvOption,
-        Executor executor);
+        Channel channel,
+        ChannelMonitorRequester channelMonitorRequester,PVStructure pvRequest,
+        String structureName,
+        PVStructure pvOption, Executor executor);
 }
