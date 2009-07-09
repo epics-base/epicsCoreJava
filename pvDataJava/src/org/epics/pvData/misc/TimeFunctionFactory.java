@@ -13,7 +13,7 @@ package org.epics.pvData.misc;
 public class TimeFunctionFactory {
     /**
      * Create a TimeFunction.
-     * @param requester The functioin to call.
+     * @param requester The function to call.
      * @return The interface.
      */
     public static TimeFunction create(TimeFunctionRequester requester){
