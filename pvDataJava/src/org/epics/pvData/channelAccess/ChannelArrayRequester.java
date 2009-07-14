@@ -5,8 +5,8 @@
  */
 package org.epics.pvData.channelAccess;
 
-import org.epics.pvData.pv.*;
-import org.epics.pvData.misc.*;
+import org.epics.pvData.pv.PVArray;
+import org.epics.pvData.pv.Requester;
 
 /**
  * The requester for a ChannelArray.
