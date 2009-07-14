@@ -171,4 +171,14 @@ public interface Channel extends Requester{
         ChannelMonitorRequester channelMonitorRequester,PVStructure pvRequest,
         String structureName,
         PVStructure pvOption, Executor executor);
+    
+    /**
+     * Create a ChannelArray.
+     * @param channel The channel.
+     * @param channelArrayRequester The ChannelArrayRequester
+     * @param subField The subfield of the remote PVRecord.
+     */
+    void createChannelArray(
+        Channel channel,
+        ChannelArrayRequester channelArrayRequester, String subField);
 }
