@@ -44,13 +44,23 @@ public interface Convert {
      */
     String getString(PVField pv);
     /**
-     * Convert a <i>PV</i> from a <i>String</i>.
+     * Convert from a <i>String</i> to a <i>PVScalar</i>
      * The <i>PV</i> must be a scaler.
      * @param pv The PV.
      * @param from The String value to convert and put into a PV.
      * @throws NumberFormatException if the String does not have a valid value.
      */
     void fromString(PVScalar pv,String from);
+    /**
+     * Convert  from a <i>String</i> to a <i>PVArray</i>
+     * The String must be a comma separated set of values optionally enclosed in []
+     * @param pv The PV.
+     * @param from The String value to convert and put into a PV.
+     * @return The number of elements converted.
+     * @throws IllegalArgumentException if the element Type is not a scalar.
+     * @throws NumberFormatException if the String does not have a valid array values.
+     * */
+    int fromString(PVArray pv,String from);
     /**
      * Convert a <i>PV</i> array from a <i>String</i> array.
      * The array element type must be a scalar.
