@@ -5,6 +5,8 @@
  */
 package org.epics.pvData.factory;
 
+import java.util.regex.Pattern;
+
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.ByteArrayData;
@@ -58,6 +60,7 @@ public final class ConvertFactory {
     }
 
     private static final class ImplementConvert implements Convert{
+        private static final Pattern separatorPattern = Pattern.compile("[,]");
         private static ImplementConvert singleImplementation = null;
         private static synchronized ImplementConvert getConvert() {
                 if (singleImplementation==null) {
@@ -153,6 +156,18 @@ public final class ConvertFactory {
                     );
             }
         }       
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.Convert#fromString(org.epics.pvData.pv.PVArray, java.lang.String)
+         */
+        @Override
+        public int fromString(PVArray pv, String from) {
+            if((from.charAt(0)=='[') && from.endsWith("]")) {
+                int offset = from.lastIndexOf(']');
+                from = from.substring(1, offset);
+            }
+            String[] values = separatorPattern.split(from);
+            return fromStringArray(pv,0,values.length,values,0);
+        }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#fromStringArray(org.epics.pvData.pv.PVArray, int, int, java.lang.String[], int)
          */
