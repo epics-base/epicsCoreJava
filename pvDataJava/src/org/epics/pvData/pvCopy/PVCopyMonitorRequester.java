@@ -16,7 +16,7 @@ public interface PVCopyMonitorRequester {
      */
     void dataChanged();
     /**
-     * PVCopyMonitor has been told to unlisten so not more monitors will occur.
+     * PVCopyMonitor has been told to unlisten. No more monitors will occur.
      */
     void unlisten();
 }
