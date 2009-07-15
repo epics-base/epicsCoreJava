@@ -288,12 +288,14 @@ public class PVCopyFactory {
             boolean doAll = bitSet.get(0);
             if(lockRecord) pvRecord.lock();
             try {
+                pvRecord.beginGroupPut();
                 if(headNode.isStructure) {
                     updateStructureNodeFromBitSet(copyPVStructure,(StructureNode)headNode,bitSet, false,doAll);
                 } else {
                     RecordNode recordNode = (RecordNode)headNode;
                     updateSubFieldFromBitSet(copyPVStructure,recordNode.recordPVField,bitSet, false,doAll);
                 }
+                pvRecord.endGroupPut();
             } finally {
                 if(lockRecord) pvRecord.unlock();
             }
