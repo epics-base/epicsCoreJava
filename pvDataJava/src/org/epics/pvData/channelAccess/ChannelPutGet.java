@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.channelAccess;
 
-import java.util.BitSet;
-
 
 /**
  * Channel access put/get request.
@@ -15,16 +13,6 @@ import java.util.BitSet;
  *
  */
 public interface ChannelPutGet extends ChannelRequest {
-    /**
-     * Get the BitSet which describes the output fields that the requester has modified since the last request.
-     * @return The BitSet.
-     */
-    BitSet getPutBitSet();
-    /**
-     * Get the BitSet which describes which input fields have been modified since the last request.
-     * @return The BitSet.
-     */
-    BitSet getGetBitSet();
     /**
      * Issue a put/get request. If process was requested when the ChannelPutGet was created this is a put, process, get.
      * This fails if the request can not be satisfied.

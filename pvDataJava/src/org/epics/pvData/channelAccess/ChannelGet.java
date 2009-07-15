@@ -4,7 +4,6 @@
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvData.channelAccess;
-import java.util.BitSet;
 
 /**
  * Request to get data from a channel.
@@ -12,11 +11,6 @@ import java.util.BitSet;
  *
  */
 public interface ChannelGet extends ChannelRequest {
-    /**
-     * Get the BitSet which describes which fields have been modified since the last request.
-     * @return The BitSet.
-     */
-    BitSet getBitSet();
     /**
      * Get data from the channel.
      * This fails if the request can not be satisfied.

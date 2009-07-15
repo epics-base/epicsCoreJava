@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.channelAccess;
 
+import java.util.BitSet;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 
@@ -18,8 +19,9 @@ public interface ChannelGetRequester extends Requester {
      * The client and server have both completed the createChannelGet request.
      * @param channelGet The channelGet interface or null if the request failed.
      * @param pvStructure The PVStructure that holds the data.
+     * @param bitSet The bitSet for that shows what data has changed.
      */
-    void channelGetConnect(ChannelGet channelGet,PVStructure pvStructure);
+    void channelGetConnect(ChannelGet channelGet,PVStructure pvStructure,BitSet bitSet);
     /**
      * The request is done. This is always called with no locks held.
      * @param success Was the request successful.
