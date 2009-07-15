@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ShortArrayData;
@@ -89,11 +88,8 @@ public class BasePVShortArray extends AbstractPVArray implements PVShortArray
             }
             length = newlength;
         }
-        PVRecord pvRecord = super.getPVRecord();
-        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
         super.postPut();
-        if(pvRecord!=null) pvRecord.endGroupPut();
         return len;       
     }
 	/* (non-Javadoc)

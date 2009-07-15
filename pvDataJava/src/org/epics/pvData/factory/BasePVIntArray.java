@@ -13,7 +13,6 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.IntArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVIntArray;
-import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 
 
@@ -90,11 +89,8 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
             }
             length = newlength;
         }
-        PVRecord pvRecord = super.getPVRecord();
-        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
         super.postPut();
-        if(pvRecord!=null) pvRecord.endGroupPut();
         return len;      
     }
 	/* (non-Javadoc)

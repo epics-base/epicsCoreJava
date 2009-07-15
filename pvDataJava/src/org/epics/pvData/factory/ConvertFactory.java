@@ -353,6 +353,25 @@ public final class ConvertFactory {
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
                 }
+            } else if(toElementType==ScalarType.pvString && fromElementType==ScalarType.pvString) {
+                PVStringArray pvfrom = (PVStringArray)from;
+                PVStringArray pvto = (PVStringArray)to;
+                while(len>0) {
+                    int num = 0;
+                    String[] data = null;
+                    int fromOffset = 0;
+                    synchronized(stringArrayData) {
+                        num = pvfrom.get(offset,len,stringArrayData);
+                        data = stringArrayData.data;
+                        fromOffset = stringArrayData.offset;
+                    }
+                    if(num<=0) break;
+                    while(num>0) {
+                        int n = pvto.put(toOffset,num,data,fromOffset);
+                        if(n<=0) break;
+                        len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                    }
+                }
             } else if(toElementType==ScalarType.pvString) {
                 PVStringArray pvto = (PVStringArray)to;
                 ncopy = from.getLength();

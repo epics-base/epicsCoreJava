@@ -13,7 +13,6 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVBooleanArray;
-import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 
 
@@ -90,11 +89,8 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
             }
             length = newlength;
         }
-        PVRecord pvRecord = super.getPVRecord();
-        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
         super.postPut();
-        if(pvRecord!=null) pvRecord.endGroupPut();
         return len;       
     }
 	/* (non-Javadoc)

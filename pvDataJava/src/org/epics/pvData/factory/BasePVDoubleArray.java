@@ -13,7 +13,6 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.DoubleArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVDoubleArray;
-import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 
 
@@ -87,11 +86,8 @@ public class BasePVDoubleArray  extends AbstractPVArray implements PVDoubleArray
             }
             length = newlength;
         }
-        PVRecord pvRecord = super.getPVRecord();
-        if(pvRecord!=null) pvRecord.beginGroupPut();
         System.arraycopy(from,fromOffset,value,offset,len);
         super.postPut();
-        if(pvRecord!=null) pvRecord.endGroupPut();
         return len;      
     }     
 	/* (non-Javadoc)
