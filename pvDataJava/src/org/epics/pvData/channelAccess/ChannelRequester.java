@@ -1,5 +1,5 @@
 /**
- * Copyright - See the COPYRIGHT that is included with this disctibution.
+ * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
@@ -22,7 +22,7 @@ public interface ChannelRequester extends Requester {
      */
     void channelNotCreated();
     /**
-     * The channel has put connection state.
+     * A channel connection state change has occurred.
      * @param c The channel.
      * @param isConnected (false,true) if new state (is not, is) connected.
      */
