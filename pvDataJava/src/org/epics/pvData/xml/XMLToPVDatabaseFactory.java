@@ -182,10 +182,14 @@ public class XMLToPVDatabaseFactory {
                     } else {
                         importNameList.add(value);
                     }
+                } else if(name.equals("auxInfo")) {
+                    iocxmlReader.message(
+                            "auxInfo not valid in idle state",
+                            MessageType.info);
                 } else {
                     iocxmlReader.message(
                             "startElement " + name + " not understood",
-                            MessageType.error);
+                            MessageType.info);
                 }
                 return;
             case record:
@@ -387,7 +391,7 @@ public class XMLToPVDatabaseFactory {
                     if(pvStructure==null) {
                         iocxmlReader.message(
                                 "type " + extendsName + " is not a known structure",
-                                MessageType.warning);
+                                MessageType.error);
                     }
                 }
                 
@@ -414,7 +418,7 @@ public class XMLToPVDatabaseFactory {
             if(!pvDatabase.addRecord(pvRecord)) {
                 iocxmlReader.message(
                         "record " + pvRecord.getRecordName() + " not added to database",
-                        MessageType.warning);
+                        MessageType.error);
             }
             state = structureState.prevState;
             structureState = null;
@@ -446,7 +450,7 @@ public class XMLToPVDatabaseFactory {
                         if(pvType==null) {
                             iocxmlReader.message(
                                     "type " + extendsName + " not a known structure",
-                                    MessageType.warning);
+                                    MessageType.error);
                         }
                     }
                     if(pvType!=null) {
@@ -474,7 +478,7 @@ public class XMLToPVDatabaseFactory {
                 	if(pvType==null) {
                 		iocxmlReader.message(
             					"type " + extendsName + " not a known structure",
-            					MessageType.warning);
+            					MessageType.error);
                 	}
                 }
                 PVField pvField = null;
@@ -574,7 +578,7 @@ public class XMLToPVDatabaseFactory {
                     if(typeName!=null) {
                         iocxmlReader.message(
                                 "type is ignored because field already exists",
-                                MessageType.warning);
+                                MessageType.error);
                     }
                     if(pvField.getField().getType()!=Type.scalar) {
                         iocxmlReader.message(
@@ -657,7 +661,7 @@ public class XMLToPVDatabaseFactory {
                 if(typeName!=null) {
                     iocxmlReader.message(
                             "type is ignored because field already exists",
-                            MessageType.warning);
+                            MessageType.error);
                 }
                 if(pvField.getField().getType()!=Type.scalarArray) {
                     iocxmlReader.message(
@@ -688,7 +692,7 @@ public class XMLToPVDatabaseFactory {
                 } catch (NumberFormatException e) {
                     iocxmlReader.message(
                             e.toString(),
-                            MessageType.warning);
+                            MessageType.error);
                 }
             }
             value = attributes.get("length");
@@ -698,7 +702,7 @@ public class XMLToPVDatabaseFactory {
                 } catch (NumberFormatException e) {
                     iocxmlReader.message(
                             e.toString(),
-                            MessageType.warning);
+                            MessageType.error);
                 }
             }
             value = attributes.get("offset");
@@ -708,7 +712,7 @@ public class XMLToPVDatabaseFactory {
                 } catch (NumberFormatException e) {
                     iocxmlReader.message(
                             e.toString(),
-                            MessageType.warning);
+                            MessageType.error);
                 }
             }
             value = attributes.get("capacityMutable");
@@ -751,7 +755,7 @@ public class XMLToPVDatabaseFactory {
                 } catch (NumberFormatException e) {
                     iocxmlReader.message(
                         e.toString(),
-                        MessageType.warning);
+                        MessageType.error);
                 }
             }
             if(immutable) pvArray.setImmutable();

@@ -420,7 +420,7 @@ public class IncludeSubstituteXMLReaderFactory {
                 String convertedPath = convertFieldName(removePath);
                 if(!pathList.remove(convertedPath)) {
                     message("path " + removePath + " not in pathList",
-                            MessageType.warning);
+                            MessageType.error);
                 } else {
                     if(detailsListener!=null) detailsListener.removePath(removePath);
                 }
@@ -434,7 +434,7 @@ public class IncludeSubstituteXMLReaderFactory {
             String href = atts.getValue("href");
             if(href==null) {
                 if(removePath==null && addPath==null) {
-                    message("no attribute was recognized",MessageType.warning);
+                    message("no attribute was recognized",MessageType.error);
                 }
                 return;
             }
@@ -461,7 +461,7 @@ public class IncludeSubstituteXMLReaderFactory {
             if(remove!=null) {
                 if(substituteMap.remove(remove)==null) {
                     message(remove + " not found",
-                            MessageType.warning);
+                            MessageType.error);
                 } else {
                     if(detailsListener!=null) detailsListener.removeSubstitute(remove);
                 }
@@ -471,7 +471,7 @@ public class IncludeSubstituteXMLReaderFactory {
                 String to = atts.getValue("to");
                 if(to==null) {
                     message("from without corresonding to",
-                            MessageType.warning);
+                            MessageType.error);
                 } else {
                     substituteMap.put(from,to);
                     if(detailsListener!=null) detailsListener.substitute(from, to);
@@ -481,7 +481,7 @@ public class IncludeSubstituteXMLReaderFactory {
             if(fromTo==null) {
                 if(remove==null && from==null) {
                     message("no attribute was recognized",
-                            MessageType.warning);
+                            MessageType.error);
                 }
                 return;
             }
@@ -490,7 +490,7 @@ public class IncludeSubstituteXMLReaderFactory {
                 String[] parts = equalPattern.split(item);
                 if(parts.length!=2) {
                     message(item + " is not a valid substitution",
-                            MessageType.warning);
+                            MessageType.error);
                 } else {
                     substituteMap.put(parts[0],parts[1]);
                     if(detailsListener!=null) detailsListener.substitute(parts[0],parts[1]);
