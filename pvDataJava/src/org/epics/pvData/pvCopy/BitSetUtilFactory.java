@@ -5,8 +5,7 @@
  */
 package org.epics.pvData.pvCopy;
 
-import java.util.BitSet;
-
+import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 
@@ -31,7 +30,7 @@ public class BitSetUtilFactory {
     
     private static final class CompressBitSetImpl implements BitSetUtil{
         /* (non-Javadoc)
-         * @see org.epics.pvData.pvCopy.BitSetUtil#compress(java.util.BitSet, org.epics.pvData.pv.PVStructure)
+         * @see org.epics.pvData.pvCopy.BitSetUtil#compress(org.epics.pvData.misc.BitSet, org.epics.pvData.pv.PVStructure)
          */
         @Override
         public boolean compress(BitSet bitSet, PVStructure pvStructure) {
