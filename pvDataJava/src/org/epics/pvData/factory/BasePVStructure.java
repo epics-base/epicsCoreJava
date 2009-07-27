@@ -7,6 +7,7 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
@@ -576,7 +577,73 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         for (int i = 0; i < pvFields.length; i++)
         	pvFields[i].deserialize(buffer);
 	}
-    /* (non-Javadoc)
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pvCopy.BitSetSerializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.misc.BitSet)
+	 */
+	public void deserialize(ByteBuffer buffer, BitSet bitSet) {
+        int offset = getFieldOffset();
+        int numberFields = getNumberFields();
+        int next = bitSet.nextSetBit(offset);
+        
+        // no more changes or no changes in this structure
+        if (next<0 || next>=offset+numberFields) return;
+
+        // entire structure
+        if(offset==next)
+        	deserialize(buffer);
+        
+        for (int i = 0; i < pvFields.length; i++)
+        {
+        	final PVField pvField = pvFields[i];
+            offset = pvField.getFieldOffset();
+            numberFields = pvField.getNumberFields();
+            next = bitSet.nextSetBit(offset);
+            // no more changes
+            if (next<0) return;
+            //  no change in this pvField
+            if (next>=offset+numberFields) continue;
+            
+            // serialize field or fields
+            if (numberFields == 1)
+            	pvField.deserialize(buffer);
+            else
+            	((PVStructure)pvField).deserialize(buffer, bitSet);
+        }
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pvCopy.BitSetSerializable#serialize(java.nio.ByteBuffer, org.epics.pvData.misc.BitSet)
+	 */
+	public void serialize(ByteBuffer buffer, BitSet bitSet) {
+        int offset = getFieldOffset();
+        int numberFields = getNumberFields();
+        int next = bitSet.nextSetBit(offset);
+        
+        // no more changes or no changes in this structure
+        if (next<0 || next>=offset+numberFields) return;
+
+        // entire structure
+        if(offset==next)
+        	serialize(buffer);
+        
+        for (int i = 0; i < pvFields.length; i++)
+        {
+        	final PVField pvField = pvFields[i];
+            offset = pvField.getFieldOffset();
+            numberFields = pvField.getNumberFields();
+            next = bitSet.nextSetBit(offset);
+            // no more changes
+            if (next<0) return;
+            //  no change in this pvField
+            if (next>=offset+numberFields) continue;
+            
+            // serialize field or fields
+            if (numberFields == 1)
+            	pvField.serialize(buffer);
+            else
+            	((PVStructure)pvField).serialize(buffer, bitSet);
+        }
+	}
+	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

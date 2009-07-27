@@ -5,13 +5,15 @@
  */
 package org.epics.pvData.pv;
 
+import org.epics.pvData.pvCopy.BitSetSerializable;
+
 
 /**
  * PVStructure interface.
  * @author mrk
  *
  */
-public interface PVStructure extends PVField {
+public interface PVStructure extends PVField, BitSetSerializable {
     /**
      * Get the Structure introspection interface.
      * @return The introspection interface.
