@@ -4,7 +4,8 @@
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvData.pvCopy;
-import java.util.BitSet;
+
+import org.epics.pvData.misc.BitSet;
 
 
 /**

@@ -5,14 +5,13 @@
  */
 package org.epics.pvData.test;
 
-import java.util.BitSet;
-
 import junit.framework.TestCase;
 
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
 import org.epics.pvData.factory.PVReplaceFactory;
+import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.PVDataCreate;

@@ -20,4 +20,7 @@ public interface ChannelAccess {
      * @param timeOut timeout value.
      */
     void createChannel(String channelName, ChannelRequester channelRequester, double timeOut);
+    
+    // TODO temporary (also needs to be async)
+    boolean findChannel(String channelName);
 }

@@ -5,8 +5,7 @@
  */
 package org.epics.pvData.channelAccess;
 
-import java.util.BitSet;
-
+import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 

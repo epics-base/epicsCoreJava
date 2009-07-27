@@ -6,12 +6,12 @@
 package org.epics.pvData.pvCopy;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.regex.Pattern;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
+import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
@@ -236,7 +236,7 @@ public class PVCopyFactory {
             return pvStructure.getSubField(pvField.getFieldOffset() + diff);
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pvCopy.PVCopy#initCopy(org.epics.pvData.pv.PVStructure, java.util.BitSet)
+         * @see org.epics.pvData.pvCopy.PVCopy#initCopy(org.epics.pvData.pv.PVStructure, org.epics.pvData.misc.BitSet)
          */
         @Override
         public void initCopy(PVStructure copyPVStructure, BitSet bitSet, boolean lockRecord) {
@@ -245,7 +245,7 @@ public class PVCopyFactory {
             updateCopyFromBitSet(copyPVStructure,bitSet,lockRecord);
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pvCopy.PVCopy#updateCopySetBitSet(org.epics.pvData.pv.PVStructure, java.util.BitSet, boolean)
+         * @see org.epics.pvData.pvCopy.PVCopy#updateCopySetBitSet(org.epics.pvData.pv.PVStructure, org.epics.pvData.misc.BitSet, boolean)
          */
         @Override
         public void updateCopySetBitSet(PVStructure copyPVStructure,BitSet bitSet, boolean lockRecord)
@@ -263,7 +263,7 @@ public class PVCopyFactory {
             }
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pvCopy.PVCopy#updateCopyFromBitSet(org.epics.pvData.pv.PVStructure, java.util.BitSet, boolean)
+         * @see org.epics.pvData.pvCopy.PVCopy#updateCopyFromBitSet(org.epics.pvData.pv.PVStructure, org.epics.pvData.misc.BitSet, boolean)
          */
         @Override
         public void updateCopyFromBitSet(PVStructure copyPVStructure,BitSet bitSet, boolean lockRecord) {
@@ -281,7 +281,7 @@ public class PVCopyFactory {
             }
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pvCopy.PVCopy#updateRecord(org.epics.pvData.pv.PVStructure, java.util.BitSet, boolean)
+         * @see org.epics.pvData.pvCopy.PVCopy#updateRecord(org.epics.pvData.pv.PVStructure, org.epics.pvData.misc.BitSet, boolean)
          */
         @Override
         public void updateRecord(PVStructure copyPVStructure, BitSet bitSet,boolean lockRecord) {
@@ -430,7 +430,7 @@ public class PVCopyFactory {
                 this.pvCopyMonitorRequester = pvCopyMonitorRequester;
             }
             /* (non-Javadoc)
-             * @see org.epics.pvData.pvCopy.PVCopyMonitor#startMonitoring(org.epics.pvData.pv.PVStructure, java.util.BitSet, java.util.BitSet)
+             * @see org.epics.pvData.pvCopy.PVCopyMonitor#startMonitoring(org.epics.pvData.pv.PVStructure, org.epics.pvData.misc.BitSet, org.epics.pvData.misc.BitSet)
              */
             @Override
             public void startMonitoring(BitSet changeBitSet, BitSet overrunBitSet) {
@@ -458,7 +458,7 @@ public class PVCopyFactory {
                 pvRecord.unregisterListener(this);
             }
             /* (non-Javadoc)
-             * @see org.epics.pvData.pvCopy.PVCopyMonitor#updateCopy(java.util.BitSet, java.util.BitSet, boolean)
+             * @see org.epics.pvData.pvCopy.PVCopyMonitor#updateCopy(org.epics.pvData.misc.BitSet, org.epics.pvData.misc.BitSet, boolean)
              */
             @Override
             public void switchBitSets(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord) {
