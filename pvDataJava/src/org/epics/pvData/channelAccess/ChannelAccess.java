@@ -7,20 +7,20 @@ package org.epics.pvData.channelAccess;
 
 
 /**
- * Interface returned by some factory that is not part of pvData.
+ * Interface for locating channel providers.
  * @author mrk
  *
  */
 public interface ChannelAccess {
     /**
-     * Create a channel.
-     * If successful channelRequester.channelCreated is called.
-     * @param channelName The channel name, which is also the record name.
-     * @param channelRequester The requester.
-     * @param timeOut timeout value.
+     * Get the provider with the specified name.
+     * @param providerName The name of the provider.
+     * @return The interface for the provider or null if the provider is not known.
      */
-    void createChannel(String channelName, ChannelRequester channelRequester, double timeOut);
-    
-    // TODO temporary (also needs to be async)
-    boolean findChannel(String channelName);
+    ChannelProvider getProvider(String providerName);
+    /**
+     * Get a array of the names of all the known providers.
+     * @return The names.
+     */
+    String[] getProviderNames();
 }

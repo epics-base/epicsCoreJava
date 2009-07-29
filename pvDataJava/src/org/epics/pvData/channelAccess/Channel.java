@@ -168,9 +168,11 @@ public interface Channel extends Requester{
      */
     void createChannelMonitor(
         Channel channel,
-        ChannelMonitorRequester channelMonitorRequester,PVStructure pvRequest,
+        ChannelMonitorRequester channelMonitorRequester,
+        PVStructure pvRequest,
         String structureName,
-        PVStructure pvOption, Executor executor);
+        PVStructure pvOption,
+        Executor executor);
     
     /**
      * Create a ChannelArray.
