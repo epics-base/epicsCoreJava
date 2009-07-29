@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.06.29</h1>
+2009.07.23</h1>
 CONTENTS 
 
 <div class="toc">
@@ -150,7 +150,7 @@ a single PVCopy.</p>
         void updateCopySetBitSet(PVStructure copyPVStructure,BitSet bitSet,boolean lockRecord);
         void updateCopyFromBitSet(PVStructure copyPVStructure,BitSet bitSet,boolean lockRecord);
         boolean updateRecord(PVStructure pvCopy,BitSet bitSet,boolean lockRecord);
-        PVCopyMonitor (PVCopyMonitorRequester pvCopyMonitorRequester);
+        PVCopyMonitor createPVCopyMonitor(PVCopyMonitorRequester pvCopyMonitorRequester);
     }</pre>
 
 <p>where</p>
