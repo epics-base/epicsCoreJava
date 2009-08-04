@@ -222,7 +222,6 @@ public final class ConvertFactory {
          */
         @Override
         public boolean isCopyScalarCompatible(Scalar fromField, Scalar toField) {
-           
             ScalarType fromScalarType = fromField.getScalarType();
             ScalarType toScalarType = toField.getScalarType();
             if(fromScalarType==toScalarType) return true;
@@ -236,6 +235,9 @@ public final class ConvertFactory {
          */
         @Override
         public void copyScalar(PVScalar from, PVScalar to) {
+            if(to.isImmutable()) {
+                throw new IllegalArgumentException("Convert.copyScalar destination is immutable");
+            }
             ScalarType fromType = from.getScalar().getScalarType();
             ScalarType toType = to.getScalar().getScalarType();
             switch(fromType) {
@@ -322,6 +324,9 @@ public final class ConvertFactory {
         @Override
         public int copyArray(PVArray from, int offset, PVArray to, int toOffset, int len)
         {
+            if(to.isImmutable()) {
+                throw new IllegalArgumentException("Convert.copyArray destination is immutable");
+            }
             ScalarType fromElementType = from.getArray().getElementType();
             ScalarType toElementType = to.getArray().getElementType();
             
@@ -437,6 +442,9 @@ public final class ConvertFactory {
          */
         @Override
         public void copyStructure(PVStructure from, PVStructure to) {
+            if(to.isImmutable()) {
+                throw new IllegalArgumentException("Convert.copyStructure destination is immutable");
+            }
             PVField[] fromDatas = from.getPVFields();
             PVField[] toDatas = to.getPVFields();
             if(fromDatas.length!=toDatas.length) {
