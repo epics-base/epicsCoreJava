@@ -342,6 +342,7 @@ public final class ConvertFactory {
             } else if(toElementType==ScalarType.pvBoolean && fromElementType==ScalarType.pvBoolean) {
                 PVBooleanArray pvfrom = (PVBooleanArray)from;
                 PVBooleanArray pvto = (PVBooleanArray)to;
+                outer:
                 while(len>0) {
                     int num = 0;
                     boolean[] data = null;
@@ -354,13 +355,14 @@ public final class ConvertFactory {
                     if(num<=0) break;
                     while(num>0) {
                         int n = pvto.put(toOffset,num,data,fromOffset);
-                        if(n<=0) break;
+                        if(n<=0) break outer;
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
                 }
             } else if(toElementType==ScalarType.pvString && fromElementType==ScalarType.pvString) {
                 PVStringArray pvfrom = (PVStringArray)from;
                 PVStringArray pvto = (PVStringArray)to;
+                outer:
                 while(len>0) {
                     int num = 0;
                     String[] data = null;
@@ -373,7 +375,7 @@ public final class ConvertFactory {
                     if(num<=0) break;
                     while(num>0) {
                         int n = pvto.put(toOffset,num,data,fromOffset);
-                        if(n<=0) break;
+                        if(n<=0) break outer;
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
                 }
@@ -385,11 +387,12 @@ public final class ConvertFactory {
                 String[] toData = new String[1];
                 while(num>0) {
                     toStringArray(from,offset,1,toData,0);
-                    pvto.put(toOffset,1,toData,0);
+                    if(pvto.put(toOffset,1,toData,0)<=0) break;
                     num--; offset++; toOffset++;
                 }
             } else if(fromElementType==ScalarType.pvString) {
                 PVStringArray pvfrom = (PVStringArray)from;
+                outer:
                 while(len>0) {
                     int num = 0;
                     String[] data = null;
@@ -402,7 +405,7 @@ public final class ConvertFactory {
                     if(num<=0) break;
                     while(num>0) {
                         int n = fromStringArray(to,toOffset,num,data,fromOffset);
-                        if(n<=0) break;
+                        if(n<=0) break outer;
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
                 }
