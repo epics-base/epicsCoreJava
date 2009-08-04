@@ -397,7 +397,6 @@ public class XMLToPVDatabaseFactory {
                 
                 pvRecord = pvDataCreate.createPVRecord(recordName, pvStructure);
                 if(pvStructure!=null) {
-                    convert.copyStructure(pvStructure, pvRecord.getPVStructure());
                     pvRecord.putExtendsStructureName(extendsName);
                 }
             }
