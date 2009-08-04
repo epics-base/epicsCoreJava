@@ -236,6 +236,7 @@ public final class ConvertFactory {
         @Override
         public void copyScalar(PVScalar from, PVScalar to) {
             if(to.isImmutable()) {
+                if(from.equals(to)) return;
                 throw new IllegalArgumentException("Convert.copyScalar destination is immutable");
             }
             ScalarType fromType = from.getScalar().getScalarType();
@@ -325,6 +326,7 @@ public final class ConvertFactory {
         public int copyArray(PVArray from, int offset, PVArray to, int toOffset, int len)
         {
             if(to.isImmutable()) {
+                if(from.equals(to)) return 0;
                 throw new IllegalArgumentException("Convert.copyArray destination is immutable");
             }
             ScalarType fromElementType = from.getArray().getElementType();
@@ -446,6 +448,7 @@ public final class ConvertFactory {
         @Override
         public void copyStructure(PVStructure from, PVStructure to) {
             if(to.isImmutable()) {
+                if(from.equals(to)) return;
                 throw new IllegalArgumentException("Convert.copyStructure destination is immutable");
             }
             PVField[] fromDatas = from.getPVFields();
