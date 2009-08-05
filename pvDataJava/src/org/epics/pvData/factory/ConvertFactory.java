@@ -456,6 +456,26 @@ public final class ConvertFactory {
             if(fromDatas.length!=toDatas.length) {
                 throw new IllegalArgumentException("Illegal copyStructure");
             }
+            if(fromDatas.length==2) { // look for enumerated structure and copy choices first
+                if(fromDatas[0].getField().getFieldName().equals("index")){
+                    Field fieldIndex = fromDatas[0].getField();
+                    Field fieldChoices = fromDatas[1].getField();
+                    if(fieldIndex.getType()==Type.scalar
+                    && fieldChoices.getFieldName().equals("choices")
+                    && fieldChoices.getType()==Type.scalarArray) {
+                        PVScalar pvScalar = (PVScalar)fromDatas[0];
+                        PVArray pvArray = (PVArray)fromDatas[1];
+                        if((pvScalar.getScalar().getScalarType()==ScalarType.pvInt)
+                        && (pvArray.getArray().getElementType()==ScalarType.pvString)) {
+                           PVArray toArray = (PVArray)toDatas[1];
+                           copyArray(pvArray,0,toArray,0,pvArray.getLength());
+                           PVScalar toScalar = (PVScalar)toDatas[0];
+                           copyScalar(pvScalar,toScalar);
+                           return;
+                        }
+                    }
+                }
+            }
             for(int i=0; i < fromDatas.length; i++) {
                 PVField fromData = fromDatas[i];
                 PVField toData = toDatas[i];
