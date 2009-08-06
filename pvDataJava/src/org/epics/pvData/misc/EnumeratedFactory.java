@@ -274,6 +274,7 @@ public class EnumeratedFactory {
                     index = 0;
                     pvIndex.postPut();
                 }
+                super.postPut();
                 return len;      
             }
         	/* (non-Javadoc)
