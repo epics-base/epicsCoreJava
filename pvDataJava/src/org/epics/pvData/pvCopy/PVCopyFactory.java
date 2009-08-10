@@ -617,7 +617,7 @@ public class PVCopyFactory {
                 StructureNode newNode = new StructureNode();
                 createStructureNodes(newNode,pvRecord,(PVStructure)pvRequest,pvFromStruct);
                 structureNode.nodes[index++] = newNode;
-                nextOffset = newNode.structureOffset + 1;
+                nextOffset = pvFromStruct.getNextFieldOffset();
                 continue;
             } else {
                 PVString pvString = (PVString)pvFromRequestFields[indRequestFields];
