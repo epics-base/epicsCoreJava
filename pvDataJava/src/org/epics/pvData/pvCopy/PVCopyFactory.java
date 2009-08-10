@@ -341,23 +341,17 @@ public class PVCopyFactory {
         
         private void updateStructureNodeFromBitSet(PVStructure pvCopy,StructureNode structureNode,BitSet bitSet,boolean toCopy,boolean doAll) {
             int offset = structureNode.structureOffset;
+            int nextSet = bitSet.nextSetBit(offset);
+            if(nextSet==-1) return;
+            if(offset>=pvCopy.getNextFieldOffset()) return;
             if(!doAll) doAll = bitSet.get(offset);
             Node[] nodes = structureNode.nodes;
             for(int i=0; i<nodes.length; i++) {
                 Node node = nodes[i];
                 PVField pvField = pvCopy.getSubField(node.structureOffset);
                 if(node.isStructure) {
-                    boolean callRecursive = doAll;
-                    if(!doAll) {
-                        int nfields = pvCopy.getNumberFields();
-                        int nextSet = bitSet.nextSetBit(offset);
-                        if(nextSet==-1) return;
-                        if(nextSet < nfields) callRecursive = true;
-                    }
-                    if(callRecursive) {
-                        StructureNode subStructureNode = (StructureNode)node;
-                        updateStructureNodeFromBitSet((PVStructure)pvField,subStructureNode,bitSet,toCopy,doAll);
-                    }
+                    StructureNode subStructureNode = (StructureNode)node;
+                    updateStructureNodeFromBitSet((PVStructure)pvField,subStructureNode,bitSet,toCopy,doAll);
                 } else {
                     RecordNode recordNode = (RecordNode)node;
                     updateSubFieldFromBitSet(pvField,recordNode.recordPVField,bitSet,toCopy,doAll);
@@ -372,10 +366,9 @@ public class PVCopyFactory {
             }
             if(!doAll) {
                 int offset = pvCopy.getFieldOffset();
-                int nfields = pvCopy.getNumberFields();
                 int nextSet = bitSet.nextSetBit(offset);
                 if(nextSet==-1) return;
-                if(nextSet>=(offset + nfields)) return;
+                if(nextSet>=pvCopy.getNextFieldOffset()) return;
             }
             if(pvCopy.getField().getType()==Type.structure) {
                 PVStructure pvCopyStructure = (PVStructure)pvCopy;
