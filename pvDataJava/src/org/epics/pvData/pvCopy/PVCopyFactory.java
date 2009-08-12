@@ -67,7 +67,6 @@ public class PVCopyFactory {
     
     private static class StructureNode extends Node {
         Node[] nodes;
-        
     }
     
     private static class PVCopyImpl implements PVCopy{
