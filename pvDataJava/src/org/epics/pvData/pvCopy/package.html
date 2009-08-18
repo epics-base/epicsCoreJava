@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.07.23</h1>
+2009.08.18</h1>
 CONTENTS 
 
 <div class="toc">
@@ -371,7 +371,7 @@ PVDatabase:</p>
         pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "",false);
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
-        pvCopy.initeCopy(pvCopyStructure, bitSet,true);
+        pvCopy.initCopy(pvCopyStructure, bitSet,true);
         System.out.println(pvCopyStructure.toString());
 
         //power, current, voltage. For each value and alarm
@@ -387,23 +387,9 @@ calling pvDataCreate.</p>
 <pre>        PVRecord pvRecord = master.findRecord("powerSupply");
         System.out.printf("%nvalue, alarm, timeStamp%n");
         pvRequest = pvDataCreate.createPVStructure(null, "", new Field[0]);
-        newField = fieldCreate.createScalar("value", ScalarType.pvString);
-        pvString = (PVString)pvDataCreate.createPVField(pvRequest, newField);
-        pvString.put("power.value");
+        pvString = (PVString)pvDataCreate.createPVField(pvRequest,"fieldList",ScalarType.pvString);
+        pvString.put("alarm,timeStamp,power.value");
         pvRequest.appendPVField(pvString);
-        newField = fieldCreate.createScalar("alarm", ScalarType.pvString);
-        pvString = (PVString)pvDataCreate.createPVField(pvRequest, newField);
-        pvString.put("alarm");
-        pvRequest.appendPVField(pvString);
-        newField = fieldCreate.createScalar("timeStamp", ScalarType.pvString);
-        pvString = (PVString)pvDataCreate.createPVField(pvRequest, newField);
-        pvString.put("timeStamp");
-        pvRequest.appendPVField(pvString);
-        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "");
-        pvCopyStructure = pvCopy.createPVStructure();
-        bitSet = new BitSet(pvCopyStructure.getNumberFields());
-        pvCopy.initeCopy(pvCopyStructure, bitSet,true);
-        System.out.println(pvCopyStructure.toString());
         </pre>
 <hr />
 
