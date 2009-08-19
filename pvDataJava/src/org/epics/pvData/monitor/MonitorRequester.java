@@ -8,6 +8,7 @@ package org.epics.pvData.monitor;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
+import org.epics.pvData.pv.Structure;
 
 /**
  *  Requester for ChannelMonitor.
@@ -17,9 +18,10 @@ import org.epics.pvData.pv.Requester;
 public interface MonitorRequester extends Requester{
     /**
      * The client and server have both completed the createMonitor request.
+     * @param structure The introspection interface for the data.
      * @param channelMonitor The channelMonitor interface or null if the request failed.
      */
-    void monitorConnect(Monitor monitor);
+    void monitorConnect(Monitor monitor, Structure structure);
     /**
      * The get request is done. The requester must call Monitor.poll to get data.
      * @param monitor
