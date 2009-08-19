@@ -21,6 +21,11 @@ public interface MonitorRequester extends Requester{
      */
     void monitorConnect(Monitor monitor);
     /**
+     * The get request is done. The requester must call Monitor.poll to get data.
+     * @param monitor
+     */
+    void getDone(Monitor monitor);
+    /**
      * A monitor event has occurred. The requester must call Monitor.poll to get data.
      */
     void monitorEvent(Monitor monitor);

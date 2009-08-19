@@ -21,6 +21,10 @@ public interface Monitor  {
      */
     void stop();
     /**
+     * Get original data.
+     */
+    void get();
+    /**
      * If monitor has occurred return data.
      * @return monitorElement for modified data on null if no monitors have occurred.
      */
