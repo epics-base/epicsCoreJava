@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.monitor;
 
-import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.PVStructure;
 
 /**
  * A queue for monitors.
