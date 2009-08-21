@@ -13,6 +13,10 @@ package org.epics.pvData.monitor;
  */
 public interface Monitor  {
     /**
+     * Destroy the monitor.
+     */
+    void destroy();
+    /**
      * Start monitoring.
      */
     void start();
@@ -20,10 +24,6 @@ public interface Monitor  {
      * Stop Monitoring.
      */
     void stop();
-    /**
-     * Get original data.
-     */
-    void get();
     /**
      * If monitor has occurred return data.
      * @return monitorElement for modified data on null if no monitors have occurred.

@@ -5,15 +5,9 @@
  */
 package org.epics.pvData.monitor;
 
-import org.epics.ca.channelAccess.client.Channel;
-import org.epics.ca.channelAccess.client.ChannelMonitor;
-import org.epics.ca.channelAccess.client.ChannelMonitorRequester;
-import org.epics.ca.channelAccess.server.ChannelServer;
-import org.epics.ca.channelAccess.server.MonitorCreate;
-import org.epics.ca.channelAccess.server.impl.ChannelServerFactory;
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.misc.Executor;
 import org.epics.pvData.pv.PVField;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pvCopy.PVCopy;
 
@@ -24,10 +18,9 @@ import org.epics.pvData.pvCopy.PVCopy;
 public class MonitorOnPutFactory{
     private static final String name = "onPut";
     private static final MonitorOnPut monitorOnPut = new MonitorOnPut();
-    private static final ChannelServer channelServer = ChannelServerFactory.getChannelServer();
 
-    public static void start() {
-        channelServer.registerMonitor(monitorOnPut);
+    public static MonitorCreate getMonitorCreate() {
+        return monitorOnPut;
     }
     
     private static class MonitorOnPut implements MonitorCreate {
@@ -35,14 +28,13 @@ public class MonitorOnPutFactory{
          * @see org.epics.ioc.channelAccess.MonitorCreate#create(org.epics.ca.channelAccess.client.Channel, org.epics.ca.channelAccess.client.ChannelMonitorRequester, org.epics.pvData.pv.PVStructure, org.epics.pvData.pvCopy.PVCopy, int, org.epics.pvData.misc.Executor)
          */
         public Monitor create(
-                Channel channel,
-                ChannelMonitorRequester channelMonitorRequester,
+                PVRecord pvRecord,
+                MonitorRequester monitorRequester,
                 PVStructure pvOption,
                 PVCopy pvCopy,
-                int queueSize,
-                Executor executor)
+                int queueSize)
         {
-            return new Monitor(channel,channelMonitorRequester,pvCopy,queueSize,executor);
+            return new Monitor(pvRecord,monitorRequester,pvCopy,queueSize);
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorCreate#getName()
@@ -55,13 +47,12 @@ public class MonitorOnPutFactory{
 
     private static class Monitor extends BaseMonitor {
         private Monitor(
-                Channel channel,
-                ChannelMonitorRequester channelMonitorRequester,
+                PVRecord pvRecord,
+                MonitorRequester monitorRequester,
                 PVCopy pvCopy,
-                int queueSize,
-                Executor executor)
+                int queueSize)
         {
-            super(channel,channelMonitorRequester,pvCopy,queueSize,executor);
+            super(pvRecord,monitorRequester,pvCopy,queueSize);
             PVStructure pvStructure = pvCopy.createPVStructure();
             PVField pvField = pvStructure.getSubField("timeStamp");
             if(pvField!=null) {

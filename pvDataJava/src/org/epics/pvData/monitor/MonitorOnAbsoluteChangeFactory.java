@@ -7,7 +7,6 @@ package org.epics.pvData.monitor;
 
 
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.misc.Executor;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVDouble;
 import org.epics.pvData.pv.PVField;

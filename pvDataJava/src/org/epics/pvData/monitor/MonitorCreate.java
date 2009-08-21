@@ -6,8 +6,8 @@
 package org.epics.pvData.monitor;
 
 
-import org.epics.pvData.misc.Executor;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pvCopy.PVCopy;
 
 /**
