@@ -5,7 +5,10 @@
  */
 package org.epics.pvData.monitor;
 
-import org.epics.pvData.misc.*;
+import org.epics.pvData.misc.BitSet;
+import org.epics.pvData.misc.Queue;
+import org.epics.pvData.misc.QueueCreate;
+import org.epics.pvData.misc.QueueElement;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pvCopy.PVCopy;
 
