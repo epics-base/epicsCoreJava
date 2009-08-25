@@ -29,12 +29,13 @@ public class MonitorOnPutFactory{
          */
         public Monitor create(
                 PVRecord pvRecord,
+                MonitorCreator monitorCreator,
                 MonitorRequester monitorRequester,
                 PVStructure pvOption,
                 PVCopy pvCopy,
                 int queueSize)
         {
-            return new Monitor(pvRecord,monitorRequester,pvCopy,queueSize);
+            return new Monitor(pvRecord,monitorCreator,monitorRequester,pvCopy,queueSize);
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorCreate#getName()
@@ -48,11 +49,12 @@ public class MonitorOnPutFactory{
     private static class Monitor extends BaseMonitor {
         private Monitor(
                 PVRecord pvRecord,
+                MonitorCreator monitorCreator,
                 MonitorRequester monitorRequester,
                 PVCopy pvCopy,
                 int queueSize)
         {
-            super(pvRecord,monitorRequester,pvCopy,queueSize);
+            super(pvRecord,monitorCreator,monitorRequester,pvCopy,queueSize);
             PVStructure pvStructure = pvCopy.createPVStructure();
             PVField pvField = pvStructure.getSubField("timeStamp");
             if(pvField!=null) {

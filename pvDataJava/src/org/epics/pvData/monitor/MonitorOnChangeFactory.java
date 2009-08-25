@@ -33,6 +33,7 @@ public class MonitorOnChangeFactory {
          */
         public Monitor create(
                 PVRecord pvRecord,
+                MonitorCreator monitorCreator,
                 MonitorRequester monitorRequester,
                 PVStructure pvOption,
                 PVCopy pvCopy,
@@ -45,7 +46,7 @@ public class MonitorOnChangeFactory {
                 return null;
             }
             pvField = pvCopy.getRecordPVField(pvField.getFieldOffset());
-            return new Monitor(pvRecord,monitorRequester,pvCopy,queueSize,pvField);
+            return new Monitor(pvRecord,monitorCreator,monitorRequester,pvCopy,queueSize,pvField);
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorCreate#getName()
@@ -60,12 +61,13 @@ public class MonitorOnChangeFactory {
     private static class Monitor extends BaseMonitor {
         private Monitor(
                 PVRecord pvRecord,
+                MonitorCreator monitorCreator,
                 MonitorRequester monitorRequester,
                 PVCopy pvCopy,
                 int queueSize,
                 PVField valuePVField)
         {
-            super(pvRecord,monitorRequester,pvCopy,queueSize);
+            super(pvRecord,monitorCreator,monitorRequester,pvCopy,queueSize);
             this.valuePVField = valuePVField;
             pvPrev = pvDataCreate.createPVField(null, null, valuePVField);
         }

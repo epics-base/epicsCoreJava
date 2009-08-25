@@ -28,7 +28,8 @@ public class MonitorQueueFactory {
      */
     public static MonitorQueue create(PVCopy pvCopy, int queueSize) {
         if(queueSize<2) {
-            throw new IllegalStateException("queueSize must be at least 2");
+            Thread.dumpStack();
+            throw new IllegalStateException("queueSize must be at least 2 ");
         }
         QueueElement<MonitorElement>[] queueElements = new QueueElement[queueSize];
         for(int i=0; i<queueElements.length; i++) {

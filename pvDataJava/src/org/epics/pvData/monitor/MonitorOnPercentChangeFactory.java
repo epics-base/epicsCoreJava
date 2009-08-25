@@ -35,6 +35,7 @@ public class MonitorOnPercentChangeFactory {
          */
         public Monitor create(
                 PVRecord pvRecord,
+                MonitorCreator monitorCreator,
                 MonitorRequester monitorRequester,
                 PVStructure pvOption,
                 PVCopy pvCopy,
@@ -61,7 +62,7 @@ public class MonitorOnPercentChangeFactory {
                 return null;
             }
             pvField = pvCopy.getRecordPVField(pvField.getFieldOffset());
-            return new Monitor(pvRecord,monitorRequester,pvCopy,queueSize,pvDeadband.get(),(PVScalar)pvField);
+            return new Monitor(pvRecord,monitorCreator,monitorRequester,pvCopy,queueSize,pvDeadband.get(),(PVScalar)pvField);
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorCreate#getName()
@@ -75,13 +76,14 @@ public class MonitorOnPercentChangeFactory {
     private static class Monitor extends BaseMonitor {
         private Monitor(
                 PVRecord pvRecord,
+                MonitorCreator monitorCreator,
                 MonitorRequester monitorRequester,
                 PVCopy pvCopy,
                 int queueSize,
                 double deadband,
                 PVScalar valuePVField)
         {
-            super(pvRecord,monitorRequester,pvCopy,queueSize);
+            super(pvRecord,monitorCreator,monitorRequester,pvCopy,queueSize);
             this.deadband = deadband;
             this.valuePVField = valuePVField;
             prevValue = convert.toDouble(valuePVField);
