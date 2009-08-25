@@ -413,6 +413,7 @@ public class PVCopyFactory {
         
         private class CopyMonitor implements PVCopyMonitor, PVListener {
             private PVCopyMonitorRequester pvCopyMonitorRequester;
+            private boolean notifyOnly = true;
             private BitSet changeBitSet = null;
             private BitSet overrunBitSet = null;
             private boolean isGroupPut = false;
@@ -422,10 +423,20 @@ public class PVCopyFactory {
                 this.pvCopyMonitorRequester = pvCopyMonitorRequester;
             }
             /* (non-Javadoc)
+             * @see org.epics.pvData.pvCopy.PVCopyMonitor#startMonitoring()
+             */
+            @Override
+            public void startMonitoring() {
+                notifyOnly = true;
+                pvRecord.registerListener(this);
+                addListener(headNode);
+            }
+            /* (non-Javadoc)
              * @see org.epics.pvData.pvCopy.PVCopyMonitor#startMonitoring(org.epics.pvData.pv.PVStructure, org.epics.pvData.misc.BitSet, org.epics.pvData.misc.BitSet)
              */
             @Override
             public void startMonitoring(BitSet changeBitSet, BitSet overrunBitSet) {
+                notifyOnly = false;
                 this.changeBitSet = changeBitSet;
                 this.overrunBitSet = overrunBitSet;
                 isGroupPut = false;
@@ -454,6 +465,9 @@ public class PVCopyFactory {
              */
             @Override
             public void switchBitSets(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord) {
+                if(notifyOnly) {
+                    throw new IllegalStateException("Can not switchBitSets since notifyOnly is true");
+                }
                 if(lockRecord) pvRecord.lock();
                 try {
                     changeBitSet = newChangeBitSet;
@@ -475,15 +489,17 @@ public class PVCopyFactory {
              */
             @Override
             public void dataPut(PVField pvField) {
-                Node node = findNode(headNode,pvField);
-                if(node==null) {
-                    throw new IllegalStateException("Logic error");
-                }
-                int offset = node.structureOffset;
-                synchronized(changeBitSet) {
-                    boolean wasSet = changeBitSet.get(offset);
-                    if(wasSet) overrunBitSet.set(offset);
-                    changeBitSet.set(offset);
+                if(!notifyOnly) {
+                    Node node = findNode(headNode,pvField);
+                    if(node==null) {
+                        throw new IllegalStateException("Logic error");
+                    }
+                    int offset = node.structureOffset;
+                    synchronized(changeBitSet) {
+                        boolean wasSet = changeBitSet.get(offset);
+                        if(wasSet) overrunBitSet.set(offset);
+                        changeBitSet.set(offset);
+                    }
                 }
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();
                 dataChanged = true;
@@ -493,17 +509,19 @@ public class PVCopyFactory {
              */
             @Override
             public void dataPut(PVStructure requested, PVField pvField) {
-                Node node = findNode(headNode,requested);
-                if(node==null || node.isStructure) {
-                    throw new IllegalStateException("Logic error");
-                }
-                RecordNode recordNode = (RecordNode)node;
-                int offset = recordNode.structureOffset
-                + (pvField.getFieldOffset() - recordNode.recordPVField.getFieldOffset());
-                synchronized(changeBitSet) {
-                    boolean wasSet = changeBitSet.get(offset);
-                    if(wasSet) overrunBitSet.set(offset);
-                    changeBitSet.set(offset);
+                if(!notifyOnly) {
+                    Node node = findNode(headNode,requested);
+                    if(node==null || node.isStructure) {
+                        throw new IllegalStateException("Logic error");
+                    }
+                    RecordNode recordNode = (RecordNode)node;
+                    int offset = recordNode.structureOffset
+                    + (pvField.getFieldOffset() - recordNode.recordPVField.getFieldOffset());
+                    synchronized(changeBitSet) {
+                        boolean wasSet = changeBitSet.get(offset);
+                        if(wasSet) overrunBitSet.set(offset);
+                        changeBitSet.set(offset);
+                    }
                 }
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();
                 dataChanged = true;
