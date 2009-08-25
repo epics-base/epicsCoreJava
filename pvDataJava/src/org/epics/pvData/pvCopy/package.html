@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.08.18</h1>
+2009.08.25</h1>
 CONTENTS 
 
 <div class="toc">
@@ -212,6 +212,7 @@ PVCopyMonitorRequester when data has changed. </p>
 }
 
 interface PVCopyMonitor {
+    void startMonitoring();
     void startMonitoring(BitSet changeBitSet, BitSet overrunBitSet);
     void stopMonitoring();
     void switchBitSets(BitSet newChangeBitSet,BitSet newOverrunBitSet, boolean lockRecord);
@@ -231,7 +232,8 @@ calls PVCopy.createPVCopyMonitor:</p>
 PVCopy.createPVCopyMonitor.</p>
 <dl>
   <dt><span style="font-family: Courier">startMonitoring</span></dt>
-    <dd>Start monitoring.</dd>
+    <dd>Start monitoring. The version without bitset arguments is for clients
+      that just want to be notified of changes.</dd>
   <dt><span style="font-family: Courier">stopMonitoring</span></dt>
     <dd>Stop monitoring.</dd>
   <dt><span style="font-family: Courier">switchBitSets</span></dt>
@@ -241,7 +243,8 @@ PVCopy.createPVCopyMonitor.</p>
       new bitSets. Note that a client needs just two instances of the bitSets
       and can just cycle between the two sets. Even if the PVStructure is
       shared this method is important since the caller will not miss data
-      changes. </dd>
+      changes. It is illegal to call this if startMonitoring was called with
+      no arguments.</dd>
 </dl>
 <hr />
 
