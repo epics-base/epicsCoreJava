@@ -24,6 +24,7 @@ public interface MonitorCreate {
     /**
      * Create a Monitor.
      * @param pvRecord The record;
+     * @param monitorCreator The create caller.
      * @param MonitorRequester The requester.
      * @param pvOption Options for the algorithm.
      * @param pvCopy The PVCopy that maps to a subset of the fields in a PVRecord.
@@ -32,6 +33,7 @@ public interface MonitorCreate {
      */
     Monitor create(
             PVRecord pvRecord,
+            MonitorCreator monitorCreator,
             MonitorRequester monitorRequester,
             PVStructure pvOption,
             PVCopy pvCopy,
