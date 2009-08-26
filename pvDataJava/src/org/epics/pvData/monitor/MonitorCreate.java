@@ -25,7 +25,7 @@ public interface MonitorCreate {
      * Create a Monitor.
      * @param pvRecord The record;
      * @param monitorCreator The create caller.
-     * @param MonitorRequester The requester.
+     * @param monitorRequester The requester.
      * @param pvOption Options for the algorithm.
      * @param pvCopy The PVCopy that maps to a subset of the fields in a PVRecord.
      * @param queueSize The queue size.
