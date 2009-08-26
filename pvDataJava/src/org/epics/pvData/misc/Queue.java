@@ -32,9 +32,9 @@ public interface Queue<T> {
     QueueElement<T> getFree();
     /**
      * Set the getFree element to used;
-     * @param monitorElement The monitorElement, which must be the
+     * @param queueElement The queueElement, which must be the
      * element returned by the oldest call to getFree that was not setUsed.
-     * @throws IllegalStateException if monitorElement is not the element
+     * @throws IllegalStateException if queueElement is not the element
      * returned by the oldest call to getFree that was not setUsed.
      */
     void setUsed(QueueElement<T> queueElement);
@@ -45,9 +45,9 @@ public interface Queue<T> {
     QueueElement<T> getUsed();
     /**
      * Release the getUsed structure.
-     * @param monitorElement The monitorElement, which must be the
+     * @param queueElement The queueElement, which must be the
      * element returned by the most recent call to getUsed.
-     * @throws IllegalStateException if monitorElement is not the element
+     * @throws IllegalStateException if queueElement is not the element
      * returned by the most recent call to getUsed.
      */
     void releaseUsed(QueueElement<T> queueElement);
