@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData<br />
 Overview<br />
-2009.06.29</h1>
+2009.08.26</h1>
 CONTENTS 
 
 <div class="toc">
@@ -27,21 +27,20 @@ CONTENTS
   </li>
   <li><a href="#Package">Package Summary</a>
     <ul>
-      <li><a href="#L239">{@link org.epics.pvData.pv}</a></li>
-      <li><a href="#L243">{@link org.epics.pvData.factory}</a></li>
-      <li><a href="#L275">{@link org.epics.pvData.property}</a></li>
-      <li><a href="#L283">{@link org.epics.pvData.xml}</a></li>
-      <li><a href="#L287">{@link org.epics.pvData.misc}</a></li>
-      <li><a href="#L291">{@link org.epics.pvData.test}</a></li>
-      <li><a href="#L295">{@link org.epics.pvData.pvCopy}</a></li>
-      <li><a href="#L299">{@link org.epics.pvData.channelAccess}</a></li>
+      <li><a href="#L236">{@link org.epics.pvData.pv}</a></li>
+      <li><a href="#L240">{@link org.epics.pvData.factory}</a></li>
+      <li><a href="#L272">{@link org.epics.pvData.property}</a></li>
+      <li><a href="#L280">{@link org.epics.pvData.xml}</a></li>
+      <li><a href="#L284">{@link org.epics.pvData.misc}</a></li>
+      <li><a href="#L288">{@link org.epics.pvData.test}</a></li>
+      <li><a href="#L292">{@link org.epics.pvData.pvCopy}</a></li>
+      <li><a href="#L296">{@link org.epics.pvData.monitor}</a></li>
     </ul>
   </li>
   <li><a href="#Unresolved">Unresolved Issues</a>
     <ul>
       <li><a href="#Property">Property</a></li>
       <li><a href="#Attribute">Attribute</a></li>
-      <li><a href="#Remote">Remote Procedure Call</a></li>
     </ul>
   </li>
   <li><a href="#License">License Agreement</a></li>
@@ -54,6 +53,12 @@ CONTENTS
 
 <p>This product is available via the <a href="#LicenseAgreement">open source
 license</a> described at the end of this document.</p>
+
+<p>PVData is one of a set of related projects. It describes and implements
+the data that the other projects support. Thus it is not useful by itself but
+understanding PVData is required in order to understand the other projects.
+The reader should also become familar with projects CAJv4 and javaIOC, which
+are located via the same sourceforge site as this project.</p>
 
 <p>PVData (Process Variable Data) defines and implements an efficent way to
 store, access, and transmit memory resident structured data.</p>
@@ -353,13 +358,13 @@ other languages such as C++.</p>
 <p>PVData is distributed as a eclipse Java Project named pvData. This project
 consists of the following java packages:</p>
 
-<h3 id="L239">{@link org.epics.pvData.pv}</h3>
+<h3 id="L236">{@link org.epics.pvData.pv}</h3>
 
 <p>The Java enum, interface, and class definitions that define PVData. This
 section provides a complete definition of what PVData is. This package
 completely describes how PVData is accessed.</p>
 
-<h3 id="L243">{@link org.epics.pvData.factory}</h3>
+<h3 id="L240">{@link org.epics.pvData.factory}</h3>
 
 <p>Java Facilities for creating a PV Database and PVData. It provides
 everything required for creating PVData. It provides the following
@@ -386,7 +391,7 @@ data types, often it is desirable to provide other implementations. To make
 it easy to create alternate implementations a set of abstract and base
 classes are supplied.</p>
 
-<h3 id="L275">{@link org.epics.pvData.property}</h3>
+<h3 id="L272">{@link org.epics.pvData.property}</h3>
 
 <p>Provides a way to associated properties with a field. </p>
 
@@ -399,30 +404,31 @@ package overview for details.</p>
 timeStamp, alarm, display,etc. Code that uses PVData can be simplified by
 using this support.</p>
 
-<h3 id="L283">{@link org.epics.pvData.xml}</h3>
+<h3 id="L280">{@link org.epics.pvData.xml}</h3>
 
 <p>One way to create a PV database is via an xml parser. This package defines
 the syntax and provides a parser.</p>
 
-<h3 id="L287">{@link org.epics.pvData.misc}</h3>
+<h3 id="L284">{@link org.epics.pvData.misc}</h3>
 
 <p>This package provides support that is used by pvData factories and might
 also be useful to software that uses PVData.</p>
 
-<h3 id="L291">{@link org.epics.pvData.test}</h3>
+<h3 id="L288">{@link org.epics.pvData.test}</h3>
 
 <p>Test code.</p>
 
-<h3 id="L295">{@link org.epics.pvData.pvCopy}</h3>
+<h3 id="L292">{@link org.epics.pvData.pvCopy}</h3>
 
 <p>This package provides support implementing a structure that hold data from
 an arbitrary subset of the fields in a record. It is designed for use by
 channel access.</p>
 
-<h3 id="L299">{@link org.epics.pvData.channelAccess}</h3>
+<h3 id="L296">{@link org.epics.pvData.monitor}</h3>
 
-<p>This is a proposed set of interfaces for channel access. The
-implementation will probably not be part of pvbData.</p>
+<p>This defines interfaces for monitors and a complete implementation of
+monitors for a pvData database. The implementation is used by CAJv4 to
+implement the server side of monitor support.</p>
 <hr />
 
 <h2 style="text-align: center" id="Unresolved">Unresolved Issues</h2>
@@ -440,24 +446,6 @@ the property name. A record can have multiple value fields.</p>
 
 <p>Do we also want attributes for a field? Are both property and attribute
 desirable? Why?</p>
-
-<h3 id="Remote">Remote Procedure Call</h3>
-
-<p>Although this document does not discuss remote procedure calls, an RPC
-facility could easily be implemented via PVData. The following is a possible
-interface for a remote procedure call.</p>
-<pre>    interface PVRPC {
-        PVString methodName;
-        PVStructure arguments;
-        PVStructure result;
-    }</pre>
-
-<p>The Channel access methods can be implemented via a PVRPC. Method names
-would be something like: get, put, putGet, processGet, putProcess,
-putProcessGet. Each would have a appropriate combination of arguments and
-result. What about monitors? Perhaps the client could just call
-PVRecord.registerListener and PVField.addListener on client side
-implementations of a "shadow" of a record in the server.</p>
 
 <h2 style="text-align: center" id="License">License Agreement</h2>
 <pre>Copyright (c) 2008 Martin R. Kraimer

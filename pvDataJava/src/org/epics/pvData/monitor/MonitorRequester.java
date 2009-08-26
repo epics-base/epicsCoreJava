@@ -16,8 +16,8 @@ import org.epics.pvData.pv.Structure;
 public interface MonitorRequester extends Requester{
     /**
      * The client and server have both completed the createMonitor request.
-     * @param structure The introspection interface for the data.
-     * @param channelMonitor The channelMonitor interface or null if the request failed.
+     * @param monitor The monitor
+     * @param structure The structure defining the data.
      */
     void monitorConnect(Monitor monitor, Structure structure);
     /**
