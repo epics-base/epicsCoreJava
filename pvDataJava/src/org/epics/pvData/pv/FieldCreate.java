@@ -12,6 +12,13 @@ package org.epics.pvData.pv;
  */
 public interface FieldCreate {
     /**
+     * Create a new Field like an existing field but with a different name.
+     * @param fieldName The field name.
+     * @param field An existing field
+     * @return a <i>Field</i> interface for the newly created object.
+     */
+    Field create(String fieldName,Field field);
+    /**
      * Create a <i>ScalarField</i>.
      * @param fieldName The field name.
      * @param scalarType The scalar type.
