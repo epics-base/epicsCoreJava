@@ -35,6 +35,18 @@ public final class FieldFactory {
     
     private static final class FieldCreateImpl implements FieldCreate{
         /* (non-Javadoc)
+         * @see org.epics.pvData.pv.FieldCreate#create(java.lang.String, org.epics.pvData.pv.Field)
+         */
+        @Override
+        public Field create(String fieldName, Field field) {
+            switch(field.getType()) {
+            case scalar: return createScalar(fieldName,((Scalar)field).getScalarType());
+            case scalarArray:return createArray(fieldName,((Array)field).getElementType());
+            case structure: return createStructure(fieldName,((Structure)field).getFields());
+            }
+            throw new IllegalStateException("Logic error. Should never get here");
+        }
+        /* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createArray(java.lang.String, org.epics.pvData.pv.ScalarType)
          */
         public Array createArray(String fieldName, ScalarType elementType)
