@@ -596,7 +596,8 @@ public class PVCopyFactory {
                 } else {
                     PVField pvRecordField = pvRecord.getSubField(pvString.get());
                     if(pvRecordField!=null) {
-                        fieldList.add(pvRecordField.getField());
+                        Field field = fieldCreate.create(pvField.getField().getFieldName(),pvRecordField.getField());
+                        fieldList.add(field);
                     }
                 }
             }
