@@ -277,14 +277,17 @@ public class IncludeSubstituteXMLReaderFactory {
                     } else {
                         StringBuilder builder = new StringBuilder();
                         if(prefix>0) builder.append(value.substring(0,prefix));
-                        String temp = value.substring(prefix+2,end);
-                        temp = substituteMap.get(temp);
-                        if(temp==null) {
+                        String from = value.substring(prefix+2,end);
+                        String to = substituteMap.get(from);
+                        if(to==null) {
+                            to = System.getenv(from);
+                        }
+                        if(to==null) {
                             message("attribute " + name + " no substitution found",
                                     MessageType.error);
                             builder.append(value.substring(0,end+1));
                         } else {
-                            builder.append(temp);
+                            builder.append(to);
                         }
                         if(end+1<value.length()) {
                             builder.append(value.substring(end+1));
