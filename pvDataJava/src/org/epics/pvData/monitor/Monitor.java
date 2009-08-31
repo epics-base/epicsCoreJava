@@ -5,17 +5,15 @@
  */
 package org.epics.pvData.monitor;
 
+import org.epics.pvData.misc.Destroyable;
+
 
 /**
  * Interface for Monitor.
  * @author mrk
  *
  */
-public interface Monitor  {
-    /**
-     * Destroy the monitor.
-     */
-    void destroy();
+public interface Monitor extends Destroyable {
     /**
      * Start monitoring.
      */
