@@ -167,10 +167,10 @@ public class PVDataFactory {
             return pvArray;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.Structure)
+         * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, org.epics.pvData.pv.Structure)
          */
         @Override
-        public PVStructure createPVStructure(PVStructure parent,String fieldName, Structure structure)
+        public PVStructure createPVStructure(PVStructure parent,Structure structure)
         {
             return new BasePVStructure(parent,structure);
         }

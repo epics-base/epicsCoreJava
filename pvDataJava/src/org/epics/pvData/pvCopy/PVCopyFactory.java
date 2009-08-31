@@ -125,7 +125,7 @@ public class PVCopyFactory {
                 cacheInitStructure = null;
                 return save;
             }
-            PVStructure pvStructure =  pvDataCreate.createPVStructure(null, "", structure);
+            PVStructure pvStructure =  pvDataCreate.createPVStructure(null, structure);
             if(headNode!=null) {
                 referenceImmutable(pvStructure,headNode);
             }
