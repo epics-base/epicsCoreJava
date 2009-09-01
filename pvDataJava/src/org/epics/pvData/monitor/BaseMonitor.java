@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.monitor;
 
+import java.util.concurrent.atomic.*;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.misc.BitSet;
@@ -48,7 +49,13 @@ abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
         this.queueSize = queueSize;
         pvRecord = pvCopy.getPVRecord();
         pvCopyMonitor = pvCopy.createPVCopyMonitor(this);
-        if(queueSize==1)  {
+        if(queueSize==0) {
+            numberMonitors = new AtomicInteger(0);
+            pvStructure = pvCopy.createPVStructure();
+            BitSet changeBitSet = new BitSet(pvStructure.getNumberFields());
+            BitSet overrunBitSet = new BitSet(pvStructure.getNumberFields());
+            monitorElement = new MonitorElementImpl(pvStructure,changeBitSet,overrunBitSet);
+        } else if(queueSize==1)  {
             pvStructure = pvCopy.createPVStructure();
             monitorElements = new MonitorElement[2];
             for(int i=0; i<2; i++) {
@@ -69,7 +76,8 @@ abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
     private PVCopyMonitor pvCopyMonitor;
     private boolean firstMonitor = false;
     private int queueSize;
-    // note that queueSize can be 0
+    // following used if queueSize is 0. It also uses monitorElement
+    private AtomicInteger numberMonitors = null;
     // following only used if queueSize ==1
     private PVStructure pvStructure = null;
     private int indexMonitorElement = 0;
@@ -106,7 +114,9 @@ abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
         BitSet changeBitSet = null;
         BitSet overrunBitSet = null;
         // if queueSize==0 than changeBitSet and overrunBitSet will stay null
-        if(queueSize>0) {
+        if(queueSize==0) {
+            
+        } else {
             pvRecord.lock();
             try {
                 if(queueSize==1) {
@@ -142,7 +152,14 @@ abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
      */
     @Override
     public void dataChanged() {
-        if(queueSize==1) {
+        if(queueSize==0) {
+            BitSet changedBitSet = monitorElement.getChangedBitSet();
+            if(!firstMonitor && !generateMonitor(changedBitSet)) return;
+            synchronized(monitorElement) {
+                pvCopy.updateCopySetBitSet(pvStructure, changedBitSet, false);
+            }
+            numberMonitors.addAndGet(1);
+        } else if(queueSize==1) {
             BitSet changedBitSet = null;
             synchronized(monitorElements) {
                 changedBitSet =monitorElements[indexMonitorElement].getChangedBitSet();
@@ -204,7 +221,10 @@ abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
      */
     @Override
     public MonitorElement poll() {
-        if(queueSize==0) return null;
+        if(queueSize==0) {
+            if(numberMonitors.get()==0) return null;
+            return monitorElement;
+        }
         if(queueSize==1) {
             MonitorElement monitorElement = null;
             BitSet changeBitSet = null;
@@ -247,6 +267,12 @@ abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
      */
     @Override
     public void release(MonitorElement monitorElement) {
+        if(queueSize==0) {
+            synchronized(monitorElement) {
+                monitorElement.getChangedBitSet().clear();
+            }
+            numberMonitors.decrementAndGet();
+        }
         if(queueSize<2) return;
         synchronized(monitorQueue) {
             monitorQueue.releaseUsed(monitorElement);
