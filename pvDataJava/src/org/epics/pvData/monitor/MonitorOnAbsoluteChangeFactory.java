@@ -74,7 +74,7 @@ public class MonitorOnAbsoluteChangeFactory {
         }
     }
     
-    private static class Monitor extends BaseMonitor {
+    private static class Monitor extends AbstractLocalMonitor {
         private Monitor(
                 PVRecord pvRecord,
                 MonitorCreator monitorCreator,
