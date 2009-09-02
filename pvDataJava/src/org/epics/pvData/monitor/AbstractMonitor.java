@@ -22,8 +22,6 @@ import org.epics.pvData.pvCopy.BitSetUtilFactory;
  *
  */
 abstract public class AbstractMonitor implements Monitor{
-    
-    
     abstract PVStructure createPVStructure();
     abstract void startMonitoring();
     abstract void startMonitoring(BitSet changeBitSet,BitSet overrunBitSet);
@@ -54,30 +52,37 @@ abstract public class AbstractMonitor implements Monitor{
     {
         this.monitorCreator = monitorCreator;
         this.monitorRequester = monitorRequester;
-        if(queueSize<0) queueSize = 0;
+        if(queueSize<-1) queueSize = -1;
         this.queueSize = queueSize;
+        if(queueSize==-1) {
+            monitorType = MonitorType.notify;
+        } else if(queueSize==0) {
+            monitorType = MonitorType.entire;
+        } else if(queueSize==1) {
+            monitorType = MonitorType.single;
+        } else {
+            monitorType = MonitorType.queue;
+        }
     }
     /**
      * This must be called by derived class after calling constructor AbstractMonitor
      * @param structure
      */
     protected void init(Structure structure) {
-        
-        if(queueSize==0) {
+        switch(monitorType) {
+        case notify:
             numberMonitors = new AtomicInteger(0);
-            pvStructure = createPVStructure();
-            BitSet changeBitSet = new BitSet(pvStructure.getNumberFields());
-            BitSet overrunBitSet = new BitSet(pvStructure.getNumberFields());
-            monitorElement = new MonitorElementImpl(pvStructure,changeBitSet,overrunBitSet);
-        } else if(queueSize==1)  {
-            pvStructure = createPVStructure();
-            monitorElements = new MonitorElement[2];
-            for(int i=0; i<2; i++) {
-                BitSet changeBitSet = new BitSet(pvStructure.getNumberFields());
-                BitSet overrunBitSet = new BitSet(pvStructure.getNumberFields());
-                monitorElements[i] = new MonitorElementImpl(pvStructure,changeBitSet,overrunBitSet);
-            }
-        } else if(queueSize>2){
+            monitorElement = MonitorQueueFactory.createMonitorElement(null);
+            break;
+        case entire:
+            numberMonitors = new AtomicInteger(0);
+            monitorElement = MonitorQueueFactory.createMonitorElement(createPVStructure());
+            break;
+        case single:
+            numberMonitors = new AtomicInteger(0);
+            monitorElement = MonitorQueueFactory.createMonitorElement(createPVStructure());
+            break;
+        case queue:
             MonitorElement[] monitorElements = new MonitorElement[queueSize];
             for(int i=0; i<queueSize; i++) {
                 PVStructure pvStructure = pvDataCreate.createPVStructure(null, structure);
@@ -86,6 +91,13 @@ abstract public class AbstractMonitor implements Monitor{
             monitorQueue = MonitorQueueFactory.create(monitorElements);
         }
     }
+    static enum MonitorType {
+        notify,
+        entire,
+        single,
+        queue
+    }
+    
     protected static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     protected static final Convert convert = ConvertFactory.getConvert();
     protected static final BitSetUtil bitSetUtil = BitSetUtilFactory.getCompressBitSet();
@@ -93,12 +105,9 @@ abstract public class AbstractMonitor implements Monitor{
     protected MonitorRequester monitorRequester;
     protected boolean firstMonitor = false;
     protected int queueSize;
-    // following used if queueSize is 0. It also uses monitorElement
+    private MonitorType monitorType;
+    // following used if queueSize is <= 1. It also uses monitorElement
     private AtomicInteger numberMonitors = null;
-    // following only used if queueSize ==1
-    private PVStructure pvStructure = null;
-    private int indexMonitorElement = 0;
-    private MonitorElement[] monitorElements = null;
     // following only used if queueSize>=2
     private MonitorQueue monitorQueue = null;
     private MonitorElement monitorElement = null;
@@ -123,44 +132,42 @@ abstract public class AbstractMonitor implements Monitor{
     public void start() {
         BitSet changeBitSet = null;
         BitSet overrunBitSet = null;
-        // if queueSize==0 than changeBitSet and overrunBitSet will stay null
-        if(queueSize==0) {
-
-        } else {
-            if(queueSize==1) {
-                indexMonitorElement = 0;
-                changeBitSet = monitorElements[0].getChangedBitSet();
-                overrunBitSet = monitorElements[0].getOverrunBitSet();
-            } else {
-                monitorQueue.clear();
-                monitorElement = monitorQueue.getFree();
-                changeBitSet = monitorElement.getChangedBitSet();
-                overrunBitSet = monitorElement.getOverrunBitSet();
-            }
-        }
         firstMonitor = true;
-        if(queueSize==0) {
+        switch(monitorType) {
+        case notify:
             startMonitoring();
-        } else {
-            startMonitoring(changeBitSet,overrunBitSet);
+            return;
+        case entire:
+        case single:
+            changeBitSet = monitorElement.getChangedBitSet();
+            overrunBitSet = monitorElement.getOverrunBitSet();
+            break;
+        case queue:
+            monitorQueue.clear();
+            monitorElement = monitorQueue.getFree();
+            changeBitSet = monitorElement.getChangedBitSet();
+            overrunBitSet = monitorElement.getOverrunBitSet();
+            break;
         }
+        startMonitoring(changeBitSet,overrunBitSet);
     }
     
     protected void dataChanged() {
-        if(queueSize==0) {
+        switch(monitorType) {
+        case notify:
+        case entire:
+            numberMonitors.addAndGet(1);
+            break;
+        case single: {
             BitSet changedBitSet = monitorElement.getChangedBitSet();
             if(!firstMonitor && !generateMonitor(changedBitSet)) return;
             synchronized(monitorElement) {
-                updateCopySetBitSet(pvStructure, changedBitSet);
+                updateCopySetBitSet(monitorElement.getPVStructure(), changedBitSet);
             }
             numberMonitors.addAndGet(1);
-        } else if(queueSize==1) {
-            BitSet changedBitSet = null;
-            synchronized(monitorElements) {
-                changedBitSet =monitorElements[indexMonitorElement].getChangedBitSet();
-            }
-            if(!firstMonitor && !generateMonitor(changedBitSet)) return;
-        } else if(queueSize>2){
+            break;
+        }
+        case queue: {
             PVStructure pvStructure = monitorElement.getPVStructure();
             BitSet changedBitSet = monitorElement.getChangedBitSet();
             BitSet overrunBitSet = monitorElement.getOverrunBitSet();
@@ -207,6 +214,7 @@ abstract public class AbstractMonitor implements Monitor{
             }
             monitorElement = newElement;
         }
+        }
         firstMonitor = false;
         monitorRequester.monitorEvent(this);
     }
@@ -216,92 +224,53 @@ abstract public class AbstractMonitor implements Monitor{
      */
     @Override
     public MonitorElement poll() {
-        if(queueSize==0) {
+        switch(monitorType) {
+        case notify:
             if(numberMonitors.get()==0) return null;
             return monitorElement;
-        }
-        if(queueSize==1) {
-            MonitorElement monitorElement = null;
-            BitSet changeBitSet = null;
-            BitSet overrunBitSet = null;
-            synchronized(monitorElements) {
-                monitorElement = monitorElements[indexMonitorElement];
-                changeBitSet = monitorElement.getChangedBitSet();
-                overrunBitSet = monitorElement.getOverrunBitSet();
-                int nextIndex = (indexMonitorElement + 1) % 2;
-                BitSet nextChangeBitSet = monitorElements[nextIndex].getChangedBitSet();
-                BitSet nextOverrunBitSet = monitorElements[nextIndex].getOverrunBitSet();
-                nextChangeBitSet.clear();
-                nextOverrunBitSet.clear();
-                updateCopyFromBitSet(pvStructure, changeBitSet);
-                switchBitSets(nextChangeBitSet, nextOverrunBitSet);
-                indexMonitorElement = nextIndex;
-            }
-            bitSetUtil.compress(changeBitSet, pvStructure);
-            bitSetUtil.compress(overrunBitSet, pvStructure);
-            if(changeBitSet.nextSetBit(0)<0) return null;
+        case entire:
+            if(numberMonitors.get()==0) return null;
+            BitSet bitSet = monitorElement.getChangedBitSet();
+            bitSet.clear();
+            bitSet.set(0);
+            bitSet = monitorElement.getOverrunBitSet();
+            bitSet.clear();
             return monitorElement;
-        } else { // using queue
-            while(true) {
-                MonitorElement monitorElement = null;
-                synchronized(monitorQueue) {
-                    monitorElement = monitorQueue.getUsed();
-                }
-                return monitorElement;
+        case single:
+            if(numberMonitors.get()==0) return null;
+            return monitorElement;
+        case queue:
+            MonitorElement monitorElement = null;
+            synchronized(monitorQueue) {
+                monitorElement = monitorQueue.getUsed();
             }
+            return monitorElement;
         }
+        throw new IllegalStateException("logic error");
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.monitor.Monitor#release(org.epics.pvData.monitor.MonitorElement)
      */
     @Override
     public void release(MonitorElement monitorElement) {
-        if(queueSize==0) {
+        switch(monitorType) {
+        case notify:
+        case entire:
+            numberMonitors.decrementAndGet();
+            return;
+        case single:
             synchronized(monitorElement) {
                 monitorElement.getChangedBitSet().clear();
             }
             numberMonitors.decrementAndGet();
+            return;
+        case queue:
+            synchronized(monitorQueue) {
+                monitorQueue.releaseUsed(monitorElement);
+            }
+            return;
         }
-        if(queueSize<2) return;
-        synchronized(monitorQueue) {
-            monitorQueue.releaseUsed(monitorElement);
-        }
-    }
-    
-    private static class MonitorElementImpl implements MonitorElement {
-        private PVStructure pvStructure;
-        private BitSet changedBitSet;
-        private BitSet overrunBitSet;
-        
-
-        MonitorElementImpl(PVStructure pvStructure,BitSet changedBitSet, BitSet overrunBitSet) {
-            super();
-            this.pvStructure = pvStructure;
-            this.changedBitSet = changedBitSet;
-            this.overrunBitSet = overrunBitSet;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.monitor.MonitorElement#getChangedBitSet()
-         */
-        @Override
-        public BitSet getChangedBitSet() {
-            return changedBitSet;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.monitor.MonitorElement#getOverrunBitSet()
-         */
-        @Override
-        public BitSet getOverrunBitSet() {
-            return overrunBitSet;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.monitor.MonitorElement#getPVStructure()
-         */
-        @Override
-        public PVStructure getPVStructure() {
-            return pvStructure;
-        }
-        
+        throw new IllegalStateException("logic error");
     }
 }
 
