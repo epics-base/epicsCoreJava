@@ -10,7 +10,6 @@ import org.epics.pvData.misc.Queue;
 import org.epics.pvData.misc.QueueCreate;
 import org.epics.pvData.misc.QueueElement;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pvCopy.PVCopy;
 
 /**
  * Factory that creates a MonitorQueue.
@@ -21,20 +20,20 @@ public class MonitorQueueFactory {
     
     /**
      * Create a MonitorQueue.
-     * @param pvCopy The PVCopy to create the data in each queue element.
-     * @param queueSize The queue size which must be at least 2.
+     * @param monitorElements This is MonitorElement array. Each monitorElement must be created by
+     * calling MonitorQueueFactory.createMonitorElement.
      * @throws IllegalStateException if the queue size is not at least 2.
      * @return The MonitorQueue interface.
      */
-    public static MonitorQueue create(PVCopy pvCopy, int queueSize) {
-        if(queueSize<2) {
+    public static MonitorQueue create(MonitorElement[] monitorElements) {
+        int length = monitorElements.length;
+        if(length<2) {
             Thread.dumpStack();
             throw new IllegalStateException("queueSize must be at least 2 ");
         }
-        QueueElement<MonitorElement>[] queueElements = new QueueElement[queueSize];
-        for(int i=0; i<queueElements.length; i++) {
-            PVStructure pvStructure = pvCopy.createPVStructure();
-            MonitorElementImlp monitorElement = new MonitorElementImlp(pvStructure);
+        QueueElement<MonitorElement>[] queueElements = new QueueElement[length];
+        for(int i=0; i<length; i++) {
+            MonitorElementImlp monitorElement = (MonitorElementImlp)monitorElements[i];
             QueueElement<MonitorElement> queueElement = queueCreate.createQueueElement(monitorElement);
             monitorElement.setQueueElement(queueElement);
             queueElements[i] = queueElement;
@@ -43,13 +42,29 @@ public class MonitorQueueFactory {
         return new MonitorQueueImpl(queue);
     }
     
-    private static QueueCreate<MonitorElement> queueCreate = new QueueCreate<MonitorElement>();
+    /**
+     * Create a MonitorElememnt.
+     * @param pvStructure The data structure for the monitorElement.
+     * @return The monitorElement.
+     */
+    public static MonitorElement createMonitorElement(PVStructure pvStructure) {
+        return new MonitorElementImlp(pvStructure);
+    }
+    
+    private static final QueueCreate<MonitorElement> queueCreate = new QueueCreate<MonitorElement>();
     
     private static class MonitorElementImlp implements MonitorElement {
+        
         MonitorElementImlp(PVStructure pvStructure) {
             this.pvStructure = pvStructure;
-            changedBitSet = new BitSet(pvStructure.getNumberFields());
-            overrunBitSet = new BitSet(pvStructure.getNumberFields());
+            int numberFields = 0;
+            if(pvStructure!=null) {
+            changedBitSet = new BitSet(numberFields);
+            overrunBitSet = new BitSet(numberFields);
+            } else {
+                changedBitSet = null;
+                overrunBitSet = null;
+            }
         }
         
         private final PVStructure pvStructure;

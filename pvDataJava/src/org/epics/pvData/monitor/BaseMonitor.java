@@ -7,9 +7,9 @@ package org.epics.pvData.monitor;
 
 import java.util.concurrent.atomic.*;
 
-import org.epics.pvData.factory.ConvertFactory;
+import org.epics.pvData.factory.*;
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.*;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pvCopy.BitSetUtil;
@@ -23,6 +23,7 @@ import org.epics.pvData.pvCopy.PVCopyMonitorRequester;
  *
  */
 abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
+    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     /**
      * Constructor for BaseMonitor
      * @param pvRecord The record;
@@ -64,7 +65,12 @@ abstract public class BaseMonitor implements Monitor,PVCopyMonitorRequester{
                 monitorElements[i] = new MonitorElementImpl(pvStructure,changeBitSet,overrunBitSet);
             }
         } else if(queueSize>2){
-            monitorQueue = MonitorQueueFactory.create(pvCopy, queueSize);
+            MonitorElement[] monitorElements = new MonitorElement[queueSize];
+            for(int i=0; i<queueSize; i++) {
+                PVStructure pvStructure = pvDataCreate.createPVStructure(null, pvCopy.getStructure());
+                monitorElements[i] = MonitorQueueFactory.createMonitorElement(pvStructure);
+            }
+            monitorQueue = MonitorQueueFactory.create(monitorElements);
         }
     }
     protected static final Convert convert = ConvertFactory.getConvert();
