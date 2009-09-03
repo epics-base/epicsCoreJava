@@ -280,7 +280,7 @@ public class IncludeSubstituteXMLReaderFactory {
                         String from = value.substring(prefix+2,end);
                         String to = substituteMap.get(from);
                         if(to==null) {
-                            to = System.getenv(from);
+                            to = System.getProperty(from, System.getenv(from));
                         }
                         if(to==null) {
                             message("attribute " + name + " no substitution found",
