@@ -10,36 +10,37 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2009.06.09</h1>
+2009.09.02</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Factory">Factory</a> 
+  <li><a href="#Factory">Factory</a>
     <ul>
       <li><a href="#PVDatabase">PVDatabaseFactory</a></li>
       <li><a href="#FieldFacto">FieldFactory</a></li>
       <li><a href="#PVDataFact">PVDataFactory</a></li>
       <li><a href="#ConvertFac">ConvertFactory</a></li>
       <li><a href="#PVReplaceF">PVReplaceFactory</a></li>
+      <li><a href="#StatusFact">StatusFactory</a></li>
     </ul>
   </li>
   <li><a href="#Base">Base Introspection Classes</a></li>
-  <li><a href="#Abstract">Abstract and Base Classes for PVField</a> 
+  <li><a href="#Abstract">Abstract and Base Classes for PVField</a>
     <ul>
       <li><a href="#BasePVAuxI">BasePVAuxInfo</a></li>
       <li><a href="#AbstractPV">AbstractPVField</a></li>
     </ul>
   </li>
-  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRecord</a> 
+  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRecord</a>
     <ul>
       <li><a href="#AbstractPV1">AbstractPVScalar</a></li>
       <li><a href="#BasePVStru">BasePVStructure</a></li>
       <li><a href="#BasePVReco">BasePVRecord</a></li>
     </ul>
   </li>
-  <li><a href="#Classes1">Classes For PVScalar</a> 
+  <li><a href="#Classes1">Classes For PVScalar</a>
     <ul>
       <li><a href="#BasePVBool">BasePVBoolean</a></li>
       <li><a href="#BasePVByte">BasePVByte</a></li>
@@ -51,7 +52,7 @@ CONTENTS
       <li><a href="#BasePVStri">BasePVString</a></li>
     </ul>
   </li>
-  <li><a href="#Classes2">Classes for PVArray</a> 
+  <li><a href="#Classes2">Classes for PVArray</a>
     <ul>
       <li><a href="#AbstractPV2">AbstractPVArray</a></li>
       <li><a href="#BasePVBool1">BasePVBooleanArray</a></li>
@@ -128,11 +129,16 @@ pvDatabase. For each field it looks for PVAuxInfo with key =
 "pvReplaceFactory". For each such key the value provided by PVAuxInfo is the
 name of a factory that provides a replacement for the PVField implementation.
 The factory must provide a method:</p>
-
-<p></p>
 <pre>    public static void replacePVField(PVField pvField);</pre>
 
 <p>This method is called.</p>
+
+<h3 id="StatusFact">StatusFactory</h3>
+<pre>    public final class StatusFactory {
+        public static StatusCreate getStatusCreate();
+    }</pre>
+
+<p>This provides a singleton that implements StatusCreate.</p>
 <hr />
 
 <h2 style="text-align: center" id="Base">Base Introspection Classes</h2>
