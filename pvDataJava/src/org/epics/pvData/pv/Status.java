@@ -24,7 +24,7 @@ public interface Status {
 		/** Operation failed due to an unexpected error. */
 		FATAL
 	};
-	
+
 	/**
 	 * Get status type. 
 	 * @return status type, non-<code>null</code>.
@@ -42,4 +42,11 @@ public interface Status {
 	 * @return stack dump.
 	 */
 	String getStackDump();
+	
+	/**
+	 * Convenient OK test.
+	 * Same as <code>(getType() == StatusType.OK)</code>.
+	 * @return OK status.
+	 */
+	boolean isOK();
 }

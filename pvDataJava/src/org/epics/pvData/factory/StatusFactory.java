@@ -109,6 +109,13 @@ public final class StatusFactory {
 			return type;
 		}
 		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Status#isOK()
+		 */
+		@Override
+		public boolean isOK() {
+			return (type == StatusType.OK);
+		}
+		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
 		 */
 		@Override
