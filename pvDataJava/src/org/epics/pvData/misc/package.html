@@ -10,20 +10,20 @@
 <body>
 <h1 style="text-align: center">EPICS PVData : misc<br />
 package: org.epics.pvData.misc<br />
-2009.06.24</h1>
+2009.09.04</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
   <li><a href="#Enumeratio">Enumeration</a></li>
-  <li><a href="#Message">Message Support</a> 
+  <li><a href="#Message">Message Queue</a> 
     <ul>
       <li><a href="#Definition">Definitions</a></li>
       <li><a href="#MessageQue">MessageQueue</a></li>
     </ul>
   </li>
-  <li><a href="#Thread">Thread Support</a> 
+  <li><a href="#Thread">Thread</a> 
     <ul>
       <li><a href="#ThreadPrio">ThreadPriority</a></li>
       <li><a href="#ThreadCrea">ThreadCreate</a></li>
@@ -41,6 +41,10 @@ CONTENTS
       <li><a href="#TimerFacto">TimerFactory</a></li>
     </ul>
   </li>
+  <li><a href="#BitSet">BitSet</a></li>
+  <li><a href="#Queue">Queue</a></li>
+  <li><a href="#Destroyabl">Destroyable</a></li>
+  <li><a href="#Serialize">Serialize</a></li>
 </ul>
 </div>
 <hr />
@@ -50,19 +54,31 @@ CONTENTS
 
 <p>This package provides utility code:</p>
 <dl>
-  <dt>Enumerated Support</dt>
+  <dt>Enumerated</dt>
     <dd>Support for an enumerated structure, which is a structure containing
       two fields: index and choices.</dd>
-  <dt>Message Support</dt>
+  <dt>Message Queue</dt>
     <dd>Support for queuing messages to give to requesters.</dd>
-  <dt>Thread Support</dt>
+  <dt>Thread</dt>
     <dd>ThreadCreate and Executor</dd>
   <dt>TimeFunction</dt>
-    <dd>Time how long a function call requiresd.</dd>
+    <dd>Time how long a function call requires.</dd>
   <dt>LinkedList</dt>
     <dd>A douuble linked list facility that requires the user to allocate a
       node. It is more efficient that ArrayList and does not require the
       implementation to allocate storage for the nodes.</dd>
+  <dt>Timer</dt>
+    <dd>An implementation of Timer that does not require an object to be
+      created for each timer request.</dd>
+  <dt>BitSet</dt>
+    <dd>An implementation of BitSet that can be serialized.</dd>
+  <dt>Queue</dt>
+    <dd>A queue implementation that allows the latest queue element to
+      continue to be used when no free element is available.</dd>
+  <dt>Destroyable</dt>
+    <dd>A base interface for destroy.</dd>
+  <dt>Serialize</dt>
+    <dd>A helper for serialization.</dd>
 </dl>
 <hr />
 
@@ -70,9 +86,9 @@ CONTENTS
 <hr />
 
 <p>Enumerated is a convenience interface for a structure that happens to be
-an enumerated structure, which is a structure that has fields index, choice,
-and choices. Index is an integer, choice is a string, and choices is an array
-of strings. Both index and choice select one of the choices.</p>
+an enumerated structure, which is a structure that has fields index and
+choices. Index is an integer and choices is an array of strings. Both index
+selects one of the choices.</p>
 <pre>    public interface Enumerated {
         PVInt getIndex();
         String getChoice();
@@ -87,28 +103,28 @@ of strings. Both index and choice select one of the choices.</p>
 
 <p>where</p>
 <dl>
-  <dt>getIndex</dt>
+  <dt style="font-family: courier;">getIndex</dt>
     <dd>Returns the interface for field index.</dd>
-  <dt>getChoice</dt>
+  <dt style="font-family: courier;">getChoice</dt>
     <dd>Returns the choice for the current index.</dd>
-  <dt>getChoices</dt>
+  <dt style="font-family: courier;">getChoices</dt>
     <dd>Returns the interface for field choices.</dd>
-  <dt>getPV</dt>
+  <dt style="font-family: courier;">getPV</dt>
     <dd>Returns the interface for the PVStructure for the enumerated
       structure.</dd>
-  <dt>replacePVField</dt>
+  <dt style="font-family: courier;">replacePVField</dt>
     <dd>Replace the PVField implementation. The new implementation implements
       interface Enumerated and also replaces the implementations of fields
       index, choice, and choices. The new implementation updates index when
       choice is changed and choice when index is changed. If choices is
       changed the index is set to 0.</dd>
-  <dt>getEnumerated</dt>
+  <dt style="font-family: courier;">getEnumerated</dt>
     <dd>If the field is an enumerated structure and replacePVField was called
       for the field then interface Enumerated is returned.</dd>
 </dl>
 <hr />
 
-<h2 style="text-align: center;" id="Message">Message Support</h2>
+<h2 style="text-align: center;" id="Message">Message Queue</h2>
 <hr />
 
 <h3 id="Definition">Definitions</h3>
@@ -210,7 +226,7 @@ higher priority threads.</p>
     }</pre>
 <hr />
 
-<h2 style="text-align: center;" id="Thread">Thread Support</h2>
+<h2 style="text-align: center;" id="Thread">Thread</h2>
 <hr />
 
 <h3 id="ThreadPrio">ThreadPriority</h3>
@@ -272,12 +288,12 @@ is NOT added to the list when add is called.</p>
     }</pre>
 where 
 <dl>
-  <dt>createNode</dt>
+  <dt style="font-family: courier;">createNode</dt>
     <dd>Create a ExecutorNode that can be passed to execute.</dd>
-  <dt>execute</dt>
+  <dt style="font-family: courier;">execute</dt>
     <dd>Request that command be executed. If it is already on the run list
       nothing is done.</dd>
-  <dt>stop</dt>
+  <dt style="font-family: courier;">stop</dt>
     <dd>Stop the thread and refuse additional execute requests.</dd>
 </dl>
 <hr />
@@ -354,14 +370,34 @@ greater than the length of the current LinkNode array.</p>
     }</pre>
 
 <p>LinkedListCreate is created as follows:</p>
-<pre>    LinkedListCreate&lt;SomeObject&gt; = new LinkedListCreate&lt;SomeObject&gt;();</pre>
+<pre>    LinkedListCreate&lt;SomeObject&gt; linkedListCreate = new LinkedListCreate&lt;SomeObject&gt;();</pre>
+
+<p>Then a linked list can be created as follows:</p>
+<pre>    LinkedList&lt;SomeObject&gt; linkedList = linkedListCreate.create();</pre>
 
 <p>The only way a node can be allocated is by calling
 linkedListCreate.createNode(SomeObject object). The object passed to
-createNode is what is returned by LinkedList.getObject.</p>
+createNode is what is returned by LinkedList.getObject. For example:</p>
+<pre>    private static class SomeObject {
+        private LinkedListNode&lt;SomeObject&gt; listNode = null;
+        // other definitions
+
+
+        private Node(/* arguments*/) {
+            listNode = linkedListCreate.createNode(this);
+        }
+
+        LinkedListNode&lt;SomeObject&gt; getListNode() {return listNode};
+    }
+
+    // then
+
+    SomeObject someObject = new SomeObject(/* args */);
+    linkedList.addTail(someObject);
+</pre>
 
 <p>A node can only be on one list at a time but can be put, at different
-times, on different lists as long as they all hole the same type of
+times, on different lists as long as they all hold the same type of
 objects.</p>
 
 <p>The class does not provide a lock but the user can synchronized via calls
@@ -423,13 +459,13 @@ class TimerFactory {
 <p>This is an interface that must be implemented by the user. It has the
 following methods: </p>
 <dl>
-  <dt>callback</dt>
+  <dt style="font-family: courier;">callback</dt>
     <dd>This is called when a timer expires. This is called with no locks
       held. When called a delay timer is no longer on the queue but a
       periodioc timer is on a queue. Thus the callback for a delay timer can
       issue a new schedule request but a periodic timer must not. Note the
       explaination of TimerNode.cancel below.</dd>
-  <dt>timerStopped</dt>
+  <dt style="font-family: courier;">timerStopped</dt>
     <dd>Timer.stop was called when a timer request was queued. or if the
       timer is stopped and a schedule request is made.</dd>
 </dl>
@@ -440,7 +476,7 @@ following methods: </p>
 calling TimerFactory.createNode. It is passed as an argument when scheduling
 a callback. It has the single method:</p>
 <dl>
-  <dt>cancel</dt>
+  <dt style="font-family: courier;">cancel</dt>
     <dd>This is called to cancel a timer request. If a callback has been
       dequeued but the callback not called when cancel is called then a
       callback may still happen. New schedule requests can be made after a
@@ -452,14 +488,14 @@ a callback. It has the single method:</p>
 <p>This is the interface for scheduling a timer callback. A timer is created
 by calling TimerFactory.create. It has the methods:</p>
 <dl>
-  <dt>scheduleAfterDelay</dt>
+  <dt style="font-family: courier;">scheduleAfterDelay</dt>
     <dd>A request to schedule a callback after a delay specified in seconds.
       If stop has been called then TimerCallback.timerStopped is called
       immediately.</dd>
-  <dt>schedulePeriodic</dt>
+  <dt style="font-family: courier;">schedulePeriodic</dt>
     <dd>Schedule a periodic callback. If stop has been called then
       TimerCallback.timerStopped is called immediately.</dd>
-  <dt>stop</dt>
+  <dt style="font-family: courier;">stop</dt>
     <dd>Stop the timer. The queue is emptied and TimerCallback.timerStopped
       is called for each element of the queue. Further schedule calls result
       in a call to TimerCallback.timerStopped. Once stopped a timer is no
@@ -471,12 +507,151 @@ by calling TimerFactory.create. It has the methods:</p>
 <p>This is the factory that implements the Timer and TimerNode interfaces. It
 has the methods:</p>
 <dl>
-  <dt>create</dt>
+  <dt style="font-family: courier;">create</dt>
     <dd>Create a new Timer.</dd>
-  <dt>createNode</dt>
+  <dt style="font-family: courier;">createNode</dt>
     <dd>Create a TimerNode. A timerNode can be used to schedule any timer but
       a timeNode can only be on a single timer queue and only once on a given
       timer queue.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center;" id="BitSet">BitSet</h2>
+<hr />
+
+<p>This is adapted from the java.util.BitSet. It adds serializable. See
+java.util.BitSet for a description.</p>
+<hr />
+
+<h2 style="text-align: center;" id="Queue">Queue</h2>
+<hr />
+
+<p>This provides a queue which has an immutable capacity, which is specified
+when the queue is created. When the queue is full the user code is expected
+to keep using the current el;ement until a new free element becomes avalable.
+This is used by pvData.monitor.</p>
+<pre>public class QueueCreate&lt;T&gt; {
+    public Queue&lt;T&gt; create(QueueElement&lt;T&gt;[] queueElements) {
+        return new QueueImpl&lt;T&gt;(queueElements);
+    }
+
+    public QueueElement&lt;T&gt; createQueueElement(T object) {
+        return new QueueElementImpl&lt;T&gt;(object);
+    }
+}
+
+public interface QueueElement&lt;T&gt; {
+    public T getObject();
+}
+
+public interface Queue&lt;T&gt; {
+    void clear();
+    int getNumberFree();
+    int capacity();
+    QueueElement&lt;T&gt; getFree();
+    void setUsed(QueueElement&lt;T&gt; queueElement);
+    QueueElement&lt;T&gt; getUsed();
+    void releaseUsed(QueueElement&lt;T&gt; queueElement);
+}</pre>
+
+<p>A queueCreate instance is created via a call like the following:</p>
+<pre> QueueCreate&lt;MyObject&gt; queueCreate = new QueueCreate&lt;MyObject&gt;();</pre>
+
+<p>Once a queueCreate is available a queue instance is created via code like
+the following:</p>
+<pre>Queue&lt;MyObject&gt; queue create(MyObject[] myObjects) {
+    QueueElement&lt;MyObject&gt;[] queueElements = new QueueElement[length];
+    for(int i=0; i&lt;length; i++) {
+        QueueElement&lt;MonitorElement&gt; queueElement =
+                 queueCreate.createQueueElement(myObjects[i);
+        queueElements[i] = queueElement;
+    }
+    return queueCreate.create(queueElements);
+}</pre>
+
+<p>The queue methods are:</p>
+<dl>
+  <dt style="font-family: courier;">clear</dt>
+    <dd>Make the queue empty.</dd>
+  <dt style="font-family: courier;">getNumberFree</dt>
+    <dd>Get the number of fee elements in the queue.</dd>
+  <dt style="font-family: courier;">capacity</dt>
+    <dd>Get the capacity, i.e. the maximun number of elements the queue can
+      hold.</dd>
+  <dt style="font-family: courier;">getFree</dt>
+    <dd>Get the next free element. Null is returned if no free elements are
+      available. If a non null value is returned then the element belongs to
+      the caller until setUsed is called.</dd>
+  <dt style="font-family: courier;">setUsed</dt>
+    <dd>Set a queue element used. This <span
+      style="font-weight:bold;">must</span> be the element returned by the
+      last call to getFree. </dd>
+  <dt style="font-family: courier;">getUsed</dt>
+    <dd>Get the next used element of null if no more used elements are
+      available.</dd>
+  <dt style="font-family: courier;">releaseUsed</dt>
+    <dd>Set a queue element free. This must be the element returned by the
+      last call to getUsed. </dd>
+</dl>
+
+<p>A producer calls getFree and setUsed via code like the following:</p>
+<pre>   MyObject getFree() {
+       QueueElement&lt;MyObject&gt; queueElement = queue.getFree();
+       if(queueElement==null) return null;
+       return queueElement.getObject();
+  }</pre>
+
+<p>A consumer calls getUsed and releaseUsed via code like the following:</p>
+<pre>     while(true) {
+         QueueElement&lt;MyObject&gt; queueElement = queue.getUsed();
+         if(queueElement==null) break;
+         MyObject myObject = queueElement.getObject();
+         // do something with myObject
+         queue.releaseUsed(queueElement);
+     }</pre>
+<hr />
+
+<h2 style="text-align: center;" id="Destroyabl">Destroyable</h2>
+<hr />
+
+<p>This is a base interface used by many other interfaces.</p>
+<pre>interface Destroyable  {
+    void destroy();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">destroy</dt>
+    <dd>Destroy the object.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center;" id="Serialize">Serialize</h2>
+<hr />
+
+<p>This is a helper class for serialization, which is required for sending
+and receiving pvData over the nerwork.</p>
+<pre>class SerializeHelper {
+    static void writeSize(final int s, ByteBuffer buffer);
+    static int readSize(ByteBuffer buffer);
+    static void serializeString(final String value, ByteBuffer buffer);
+    static void serializeSubstring(final String value,
+         int offset, int length, ByteBuffer buffer);
+    static String deserializeString(ByteBuffer buffer);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">writeSize</dt>
+    <dd>Serialize the size.</dd>
+  <dt style="font-family: courier;">readSize</dt>
+    <dd>Deserialize the size.</dd>
+  <dt style="font-family: courier;">serializeString</dt>
+    <dd>Serialize a String.</dd>
+  <dt style="font-family: courier;">serializeSubstring</dt>
+    <dd>Serialize a substring.</dd>
+  <dt style="font-family: courier;">deserializeString</dt>
+    <dd>Deserialize a string.</dd>
 </dl>
 </body>
 </html>
