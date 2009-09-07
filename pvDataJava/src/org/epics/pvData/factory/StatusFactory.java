@@ -5,6 +5,9 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
+
+import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
@@ -56,7 +59,22 @@ public final class StatusFactory {
 			return new StatusImpl(type, message, stackDump);
 		}
 
-    	/**
+    	/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.StatusCreate#deserializeStatus(java.nio.ByteBuffer)
+		 */
+		@Override
+		public Status deserializeStatus(ByteBuffer buffer) {
+			final byte typeCode = buffer.get();
+			if (typeCode == (byte)-1)
+				return okStatus;
+			else {
+				final String message = SerializeHelper.deserializeString(buffer);
+				final String stackDump = SerializeHelper.deserializeString(buffer);
+				return new StatusImpl(StatusType.values()[typeCode], message, stackDump);
+			}
+		}
+
+		/**
          * Print our stack trace as a cause for the specified stack trace.
          */
         private void printStackTraceAsCause(StringBuffer s, Throwable parent, Throwable cause)
@@ -87,10 +105,10 @@ public final class StatusFactory {
     }
     
     private static final class StatusImpl implements Status {
-    	private final StatusType type;
-    	private final String message;
-    	private final String stackDump;
-    	
+    	private StatusType type;
+    	private String message;
+    	private String stackDump;
+    	    	
 		public StatusImpl(StatusType type, String message, String stackDump) {
 			this.type = type;
 			this.message = message;
@@ -130,6 +148,74 @@ public final class StatusFactory {
 			return buff.toString();
 		}
 		
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 */
+		@Override
+		public void deserialize(ByteBuffer buffer) {
+			throw new RuntimeException("use StatusCreate.deserialize()");
+		}
+		
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 */
+		@Override
+		public void serialize(ByteBuffer buffer) {
+			if (this == getStatusCreate().getStatusOK())
+			{
+				// special code for okStatus (optimization)
+				buffer.put((byte)-1);
+			}
+			else
+			{
+				buffer.put((byte)type.ordinal());
+				SerializeHelper.serializeString(message, buffer);
+				SerializeHelper.serializeString(stackDump, buffer);
+			}
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result
+					+ ((message == null) ? 0 : message.hashCode());
+			result = prime * result
+					+ ((stackDump == null) ? 0 : stackDump.hashCode());
+			result = prime * result + ((type == null) ? 0 : type.hashCode());
+			return result;
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			StatusImpl other = (StatusImpl) obj;
+			if (message == null) {
+				if (other.message != null)
+					return false;
+			} else if (!message.equals(other.message))
+				return false;
+			if (stackDump == null) {
+				if (other.stackDump != null)
+					return false;
+			} else if (!stackDump.equals(other.stackDump))
+				return false;
+			if (type == null) {
+				if (other.type != null)
+					return false;
+			} else if (!type.equals(other.type))
+				return false;
+			return true;
+		}
 		
     }
 }
