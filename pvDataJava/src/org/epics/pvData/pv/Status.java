@@ -9,7 +9,7 @@ package org.epics.pvData.pv;
  * Status interface.
  * @author mse
  */
-public interface Status {
+public interface Status extends Serializable {
 	
 	/**
 	 * Status type enum.

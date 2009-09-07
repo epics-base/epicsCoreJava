@@ -5,9 +5,12 @@
  */
 package org.epics.pvData.test;
 
+import java.nio.ByteBuffer;
+
 import junit.framework.TestCase;
 
 import org.epics.pvData.factory.StatusFactory;
+import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
 
@@ -41,6 +44,33 @@ public class StatusTest extends TestCase {
 				System.out.println(statusCreate.createStatus(StatusType.FATAL, "fatal", th));
 			}
 		}
+	}
+
+	public void testSerializationOKStatus() {
+		ByteBuffer buffer = ByteBuffer.allocate(1024);
+		
+		Status okStatus = statusCreate.getStatusOK();
+		okStatus.serialize(buffer);
+		
+		buffer.flip();
+		
+		Status deserializedStatus = statusCreate.deserializeStatus(buffer);
+		
+		assertSame(okStatus, deserializedStatus);
+	}
+	
+	public void testSerialization() {
+		ByteBuffer buffer = ByteBuffer.allocate(1024*2);
+		
+		Status status = statusCreate.createStatus(StatusType.ERROR, "error", new RuntimeException("simple exception"));
+
+		status.serialize(buffer);
+		
+		buffer.flip();
+		
+		Status deserializedStatus = statusCreate.deserializeStatus(buffer);
+		
+		assertEquals(status, deserializedStatus);
 	}
 	
 }

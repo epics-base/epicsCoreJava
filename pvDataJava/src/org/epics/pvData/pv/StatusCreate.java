@@ -5,6 +5,8 @@
  */
 package org.epics.pvData.pv;
 
+import java.nio.ByteBuffer;
+
 import org.epics.pvData.pv.Status.StatusType;
 
 /**
@@ -28,4 +30,12 @@ public interface StatusCreate {
 	 * @return status instance.
 	 */
 	Status createStatus(StatusType type, String message, Throwable cause);
+	
+	/**
+	 * Deserialize status.
+	 * NOTE: use this method instead of <code>Status.deserialize()</code>, since this allows OK status optimization. 
+	 * @param buffer deserialization buffer.
+	 * @return status instance.
+	 */
+	Status deserializeStatus(ByteBuffer buffer);
 }
