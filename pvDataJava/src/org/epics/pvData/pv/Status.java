@@ -44,9 +44,17 @@ public interface Status extends Serializable {
 	String getStackDump();
 	
 	/**
-	 * Convenient OK test.
-	 * Same as <code>(getType() == StatusType.OK)</code>.
+	 * Convenient OK test. Same as <code>(getType() == StatusType.OK)</code>. 
+	 * NOTE: this will return <code>false</code> on WARNING message although operation succeeded.
+	 * To check if operation succeeded, use <code>success</code>.
 	 * @return OK status.
+	 * @see #success()
 	 */
 	boolean isOK();
+
+	/**
+	 * Check if operation succeeded.
+	 * @return operation success status.
+	 */
+	boolean isSuccess();
 }
