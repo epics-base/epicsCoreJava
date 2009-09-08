@@ -6,6 +6,7 @@
 package org.epics.pvData.monitor;
 
 import org.epics.pvData.misc.Destroyable;
+import org.epics.pvData.pv.Status;
 
 
 /**
@@ -16,12 +17,14 @@ import org.epics.pvData.misc.Destroyable;
 public interface Monitor extends Destroyable {
     /**
      * Start monitoring.
+     * @return completion status.
      */
-    void start();
+    Status start();
     /**
      * Stop Monitoring.
+     * @return completion status.
      */
-    void stop();
+    Status stop();
     /**
      * If monitor has occurred return data.
      * @return monitorElement for modified data on null if no monitors have occurred.
