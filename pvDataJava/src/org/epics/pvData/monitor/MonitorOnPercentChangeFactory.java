@@ -93,7 +93,7 @@ public class MonitorOnPercentChangeFactory {
         private PVScalar valuePVField;
         private double prevValue = 0.0;
         /* (non-Javadoc)
-         * @see org.epics.ioc.channelAccess.BaseMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
+         * @see org.epics.pvData.monitor.AbstractMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
          */
         @Override
         protected boolean generateMonitor(BitSet changeBitSet) {

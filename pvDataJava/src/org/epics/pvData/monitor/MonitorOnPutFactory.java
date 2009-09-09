@@ -66,7 +66,7 @@ public class MonitorOnPutFactory{
         private int timeStampOffset = -1;
         private int afterTimeStampOffset = -1;
         /* (non-Javadoc)
-         * @see org.epics.ioc.channelAccess.BaseMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
+         * @see org.epics.pvData.monitor.AbstractMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
          */
         @Override
         protected boolean generateMonitor(BitSet bitSet) {
