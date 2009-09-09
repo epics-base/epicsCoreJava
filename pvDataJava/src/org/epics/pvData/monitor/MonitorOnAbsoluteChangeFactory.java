@@ -94,7 +94,7 @@ public class MonitorOnAbsoluteChangeFactory {
         private PVScalar valuePVField = null;
         private double prevValue;
         /* (non-Javadoc)
-         * @see org.epics.ioc.channelAccess.BaseMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
+         * @see org.epics.pvData.monitor.AbstractMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
          */
         @Override
         protected boolean generateMonitor(BitSet changeBitSet) {
