@@ -20,20 +20,45 @@ import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pvCopy.BitSetUtil;
 import org.epics.pvData.pvCopy.BitSetUtilFactory;
 /**
- * A Base class for implementing a ChannelMonitor.
+ * An abstract base class for implementing a ChannelMonitor.
  * @author mrk
  *
  */
 abstract public class AbstractMonitor implements Monitor{
-
     protected static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
     protected static final Status okStatus = statusCreate.getStatusOK();
-
-	abstract PVStructure createPVStructure();
+    /**
+     * Create a structure to hold data.
+     * @return The interface.
+     */
+    abstract PVStructure createPVStructure();
+    /**
+     * Start monitoring for notify only, i.e. no data will be transfered.
+     */
     abstract void startMonitoring();
+    /**
+     * Start monitoring and data will be transfered.
+     * @param changeBitSet The initial change bitSet.
+     * @param overrunBitSet The initial overrun bitSet.
+     */
     abstract void startMonitoring(BitSet changeBitSet,BitSet overrunBitSet);
+    /**
+     * Update the pvStructure and set bits in the bitSet for all changed fields.
+     * @param pvStructure The structure holding the data.
+     * @param bitSet The bitSet for changed fields.
+     */
     abstract void updateBitSet(PVStructure pvStructure,BitSet bitSet);
+    /**
+     * Update the destination from the pvStructure and the bitSet.
+     * @param pvStructure The structure holding the new data.
+     * @param bitSet The bitSet showing which fields to change.
+     */
     abstract void updateFromBitSet(PVStructure pvStructure,BitSet bitSet);
+    /**
+     * Switch bit sets.
+     * @param changedBitSet The new bitSet for changes.
+     * @param overrunBitSet The new bitSet for overrun.
+     */
     abstract void switchBitSets(BitSet changedBitSet,BitSet overrunBitSet);
     /**
      * A method that must be implemented by a derived class.
