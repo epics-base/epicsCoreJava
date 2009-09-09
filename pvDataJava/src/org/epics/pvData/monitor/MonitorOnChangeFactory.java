@@ -75,7 +75,7 @@ public class MonitorOnChangeFactory {
         private PVField valuePVField;
         private PVField pvPrev;
         /* (non-Javadoc)
-         * @see org.epics.ioc.channelAccess.BaseMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
+         * @see org.epics.pvData.monitor.AbstractMonitor#generateMonitor(org.epics.pvData.misc.BitSet)
          */
         @Override
         protected boolean generateMonitor(BitSet changeBitSet) {
