@@ -8,6 +8,7 @@ package org.epics.pvData.monitor;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Status;
 import org.epics.pvData.pvCopy.PVCopy;
 import org.epics.pvData.pvCopy.PVCopyMonitor;
 import org.epics.pvData.pvCopy.PVCopyMonitorRequester;
@@ -58,11 +59,11 @@ abstract public class AbstractLocalMonitor extends AbstractMonitor implements PV
         pvCopyMonitor.startMonitoring(changeBitSet,overrunBitSet);
     }
     @Override
-    protected void updateCopySetBitSet(PVStructure pvStructure,BitSet bitSet) {
+    protected void updateBitSet(PVStructure pvStructure,BitSet bitSet) {
         pvCopy.updateCopySetBitSet(pvStructure, bitSet, false);
     }
     @Override
-    protected void updateCopyFromBitSet(PVStructure pvStructure,BitSet bitSet) {
+    protected void updateFromBitSet(PVStructure pvStructure,BitSet bitSet) {
         pvCopy.updateCopyFromBitSet(pvStructure, bitSet, false);
     }
     @Override
@@ -82,8 +83,9 @@ abstract public class AbstractLocalMonitor extends AbstractMonitor implements PV
      * @see org.epics.pvData.monitor.Monitor#stop()
      */
     @Override
-    public void stop() {
+    public Status stop() {
         pvCopyMonitor.stopMonitoring();
+        return okStatus;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pvCopy.PVCopyMonitorRequester#dataChanged()

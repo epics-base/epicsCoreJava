@@ -9,10 +9,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDataFactory;
+import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Status;
+import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pvCopy.BitSetUtil;
 import org.epics.pvData.pvCopy.BitSetUtilFactory;
@@ -22,11 +25,15 @@ import org.epics.pvData.pvCopy.BitSetUtilFactory;
  *
  */
 abstract public class AbstractMonitor implements Monitor{
-    abstract PVStructure createPVStructure();
+
+    protected static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
+    protected static final Status okStatus = statusCreate.getStatusOK();
+
+	abstract PVStructure createPVStructure();
     abstract void startMonitoring();
     abstract void startMonitoring(BitSet changeBitSet,BitSet overrunBitSet);
-    abstract void updateCopySetBitSet(PVStructure pvStructure,BitSet bitSet);
-    abstract void updateCopyFromBitSet(PVStructure pvStructure,BitSet bitSet);
+    abstract void updateBitSet(PVStructure pvStructure,BitSet bitSet);
+    abstract void updateFromBitSet(PVStructure pvStructure,BitSet bitSet);
     abstract void switchBitSets(BitSet changedBitSet,BitSet overrunBitSet);
     /**
      * A method that must be implemented by a derived class.
@@ -101,11 +108,11 @@ abstract public class AbstractMonitor implements Monitor{
     protected static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     protected static final Convert convert = ConvertFactory.getConvert();
     protected static final BitSetUtil bitSetUtil = BitSetUtilFactory.getCompressBitSet();
-    protected MonitorCreator monitorCreator;
-    protected MonitorRequester monitorRequester;
+    protected final MonitorCreator monitorCreator;
+    protected final MonitorRequester monitorRequester;
     protected boolean firstMonitor = false;
-    protected int queueSize;
-    private MonitorType monitorType;
+    protected final int queueSize;
+    private final MonitorType monitorType;
     // following used if queueSize is <= 1. It also uses monitorElement
     private AtomicInteger numberMonitors = null;
     // following only used if queueSize>=2
@@ -129,14 +136,14 @@ abstract public class AbstractMonitor implements Monitor{
      * @see org.epics.pvData.monitor.Monitor#start()
      */
     @Override
-    public void start() {
+    public Status start() {
         BitSet changeBitSet = null;
         BitSet overrunBitSet = null;
         firstMonitor = true;
         switch(monitorType) {
         case notify:
             startMonitoring();
-            return;
+            return okStatus;
         case entire:
         case single:
             changeBitSet = monitorElement.getChangedBitSet();
@@ -150,6 +157,7 @@ abstract public class AbstractMonitor implements Monitor{
             break;
         }
         startMonitoring(changeBitSet,overrunBitSet);
+        return okStatus;
     }
     
     protected void dataChanged() {
@@ -162,7 +170,7 @@ abstract public class AbstractMonitor implements Monitor{
             BitSet changedBitSet = monitorElement.getChangedBitSet();
             if(!firstMonitor && !generateMonitor(changedBitSet)) return;
             synchronized(monitorElement) {
-                updateCopySetBitSet(monitorElement.getPVStructure(), changedBitSet);
+                updateBitSet(monitorElement.getPVStructure(), changedBitSet);
             }
             numberMonitors.addAndGet(1);
             break;
@@ -171,7 +179,7 @@ abstract public class AbstractMonitor implements Monitor{
             PVStructure pvStructure = monitorElement.getPVStructure();
             BitSet changedBitSet = monitorElement.getChangedBitSet();
             BitSet overrunBitSet = monitorElement.getOverrunBitSet();
-            updateCopyFromBitSet(pvStructure, changedBitSet);
+            updateFromBitSet(pvStructure, changedBitSet);
             if(!firstMonitor &&!generateMonitor(monitorElement.getChangedBitSet())) return;
             MonitorElement newElement = null;
             synchronized(monitorQueue) {
