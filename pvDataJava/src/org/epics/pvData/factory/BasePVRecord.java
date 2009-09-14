@@ -77,6 +77,12 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      */
     public void addRequester(Requester requester) {
         // no need to synchronize because record must be locked when this is called.
+        if(requesterList.contains(requester)) {
+            requester.message(
+                    "addRequester " + requester.getRequesterName() + " but already on requesterList",
+                    MessageType.warning);
+            return;
+        }
         requesterList.add(requester);
     }
     /* (non-Javadoc)
@@ -141,6 +147,12 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      * @see org.epics.pvData.pv.PVRecord#registerListener(org.epics.pvData.pv.PVListener)
      */
     public void registerListener(PVListener recordListener) {
+        if(pvAllListenerList.contains(recordListener)) {
+            message(
+                "PVRecord.registerListener called but listener " + recordListener.toString() + " already registered",
+                MessageType.warning);
+            return;
+        }
         pvAllListenerList.add(recordListener);
     }
     /* (non-Javadoc)
