@@ -46,9 +46,9 @@ public interface Status extends Serializable {
 	/**
 	 * Convenient OK test. Same as <code>(getType() == StatusType.OK)</code>. 
 	 * NOTE: this will return <code>false</code> on WARNING message although operation succeeded.
-	 * To check if operation succeeded, use <code>success</code>.
+	 * To check if operation succeeded, use <code>isSuccess</code>.
 	 * @return OK status.
-	 * @see #success()
+	 * @see #isSuccess()
 	 */
 	boolean isOK();
 
