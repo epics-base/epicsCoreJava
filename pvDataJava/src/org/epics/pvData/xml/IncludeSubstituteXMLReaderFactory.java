@@ -451,7 +451,7 @@ public class IncludeSubstituteXMLReaderFactory {
                     file = new File(fileName);
                     if(file.exists()) break outer;
                 }
-                message("file " + href + " not found",MessageType.error);
+                message("file " + href + " not found in path: " + pathList,MessageType.error);
                 return;
             }
             pvReader.create(this,fileName);
