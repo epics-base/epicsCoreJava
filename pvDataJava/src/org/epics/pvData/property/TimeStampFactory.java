@@ -63,6 +63,16 @@ public class TimeStampFactory{
         PVInt nanoSeconds = (PVInt)fieldPvField; 
         return new TimeStampImpl(secondsPastEpoch,nanoSeconds);
     }
+    /**
+     * Create a TimeStamp.
+     * @param milliSeconds the number of milliSeconds since the January 1, 1970, 00:00:00 UTC
+     * @return The TimeStamp interface.
+     */
+    public static TimeStamp create(long milliSeconds) {
+    	final TimeStamp timeStamp = TimeStampFactory.create(0, 0);
+    	timeStamp.put(milliSeconds);
+    	return timeStamp;
+    }
     
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
@@ -112,7 +122,35 @@ public class TimeStampFactory{
             pvSecond.put(milliSeconds/1000);
             pvNano.put(((int)(milliSeconds%1000))*1000000);
             if(pvRecord!=null) pvRecord.endGroupPut();
-        } 
+        }
+
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			TimeStampImpl other = (TimeStampImpl) obj;
+			if (pvNano == null) {
+				if (other.pvNano != null)
+					return false;
+			} else if (!pvNano.equals(other.pvNano))
+				return false;
+			if (pvSecond == null) {
+				if (other.pvSecond != null)
+					return false;
+			} else if (!pvSecond.equals(other.pvSecond))
+				return false;
+			return true;
+		}
+        
+        
+        
     }
     
 }
