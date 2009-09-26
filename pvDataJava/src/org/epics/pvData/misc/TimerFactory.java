@@ -138,12 +138,12 @@ public class TimerFactory {
                                         nodeToCall = timerNode;
                                     }
                                     queue.poll();
-                                    timerNode.isQueued = false;
                                     period = timerNode.period;
                                     if(period>0 && !timerNode.isCanceled) {
                                         timerNode.timeToRun = currentTime + period;
                                         queue.add(timerNode);
                                     } else {
+                                        timerNode.isQueued = false;
                                         timerNode.timerInstance = null;
                                     }
                                     timerNode = queue.peek();
@@ -202,5 +202,15 @@ public class TimerFactory {
                 }
             }
         }
+
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.misc.Timer.TimerNode#isScheduled()
+		 */
+		@Override
+		public boolean isScheduled() {
+			return isQueued;
+		}
+        
+        
     }
 }
