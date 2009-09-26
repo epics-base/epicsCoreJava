@@ -41,6 +41,11 @@ public interface Timer {
          * The TimerNode can be reused by calling a schedule method.
          */
         void cancel();
+        /**
+         * Check if this TimerNode is being scheduled.
+         * @return the scheduled status flag.
+         */
+        boolean isScheduled();
     }
     /**
      * Scheduler a call back after a specified delay.
