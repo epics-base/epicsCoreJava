@@ -159,7 +159,7 @@ public class TimerFactory {
                             nodeToCall.timerCallback.callback();
                         }
                         long delay = timeToRun - currentTime;
-                        if(delay>0) {
+                        if(alive && delay>0) {		// TODO race condition still possible in combination of stop()
                             Thread.sleep(delay);
                         }
                     }catch(InterruptedException e) {}
