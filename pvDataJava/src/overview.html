@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData<br />
 Overview<br />
-2009.08.26</h1>
+2009.10.05</h1>
 CONTENTS 
 
 <div class="toc">
@@ -35,12 +35,6 @@ CONTENTS
       <li><a href="#L288">{@link org.epics.pvData.test}</a></li>
       <li><a href="#L292">{@link org.epics.pvData.pvCopy}</a></li>
       <li><a href="#L296">{@link org.epics.pvData.monitor}</a></li>
-    </ul>
-  </li>
-  <li><a href="#Unresolved">Unresolved Issues</a>
-    <ul>
-      <li><a href="#Property">Property</a></li>
-      <li><a href="#Attribute">Attribute</a></li>
     </ul>
   </li>
   <li><a href="#License">License Agreement</a></li>
@@ -429,23 +423,6 @@ channel access.</p>
 <p>This defines interfaces for monitors and a complete implementation of
 monitors for a pvData database. The implementation is used by CAJv4 to
 implement the server side of monitor support.</p>
-<hr />
-
-<h2 style="text-align: center" id="Unresolved">Unresolved Issues</h2>
-<hr />
-
-<h3 id="Property">Property</h3>
-
-<p>How should properties be associated with a field? Package
-org.epics.pvData.property implements a simple way to define properties. Only
-a field named value has associated properties. The properties are all the
-other fields in the same structure as the value field. The field name is also
-the property name. A record can have multiple value fields.</p>
-
-<h3 id="Attribute">Attribute</h3>
-
-<p>Do we also want attributes for a field? Are both property and attribute
-desirable? Why?</p>
 
 <h2 style="text-align: center" id="License">License Agreement</h2>
 <pre>Copyright (c) 2008 Martin R. Kraimer
