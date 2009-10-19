@@ -113,10 +113,9 @@ public class TimerFactory {
         private class ThreadInstance implements RunnableReady {
 
             private volatile boolean alive = true;
-            private Thread thread = null;
 
             private ThreadInstance(String name,int priority) {
-                thread = threadCreate.create(name, priority, this);
+                threadCreate.create(name, priority, this);
             } 
             /* (non-Javadoc)
              * @see org.epics.pvData.misc.RunnableReady#run(org.epics.pvData.misc.ThreadReady)
@@ -159,20 +158,31 @@ public class TimerFactory {
                             nodeToCall.timerCallback.callback();
                         }
                         long delay = timeToRun - currentTime;
-                        if(alive && delay>0) {		// TODO race condition still possible in combination of stop()
-                            Thread.sleep(delay);
+                        if(alive && delay>0) {
+                        	synchronized (this) {
+                        		if (!wokenUp)
+                        			this.wait(delay);
+                        		wokenUp = false;
+                        	}
                         }
                     }catch(InterruptedException e) {}
                 } 
             }
 
+            private boolean wokenUp = false;
             private void wakeUp() {
-                thread.interrupt();
+            	synchronized (this) {
+	                wokenUp = true;
+            		this.notifyAll();
+            	}
             }
 
             private void stop() {
-                alive = false;
-                thread.interrupt();
+            	synchronized (this) {
+	                alive = false;
+	                wokenUp = true;
+	                this.notifyAll();
+            	}
             }
         }
     }
