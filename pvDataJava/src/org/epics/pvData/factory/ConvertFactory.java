@@ -216,7 +216,7 @@ public final class ConvertFactory {
                 PVArray fromArray = (PVArray)from;
                 PVArray toArray = (PVArray)to;
                 int length = copyArray(fromArray,0,toArray,0,fromArray.getLength());
-                toArray.setLength(length);
+                if(toArray.getLength()!=length) toArray.setLength(length);
                 return;
             case structure:
                 copyStructure((PVStructure)from,(PVStructure)to);
@@ -332,7 +332,7 @@ public final class ConvertFactory {
         public int copyArray(PVArray from, int offset, PVArray to, int toOffset, int len)
         {
             if(to.isImmutable()) {
-                if(from.equals(to)) return 0;
+                if(from.equals(to)) return from.getLength();
                 throw new IllegalArgumentException("Convert.copyArray destination is immutable");
             }
             ScalarType fromElementType = from.getArray().getElementType();
@@ -498,7 +498,7 @@ public final class ConvertFactory {
                     PVArray fromArray = (PVArray)fromData;
                     PVArray toArray = (PVArray)toData;
                     int length = copyArray(fromArray,0,toArray,0,fromArray.getLength());
-                    toArray.setLength(length);
+                    if(toArray.getLength()!=length) toArray.setLength(length);
                     break;
                 case structure:
                     copyStructure((PVStructure)fromData,(PVStructure)toData);
