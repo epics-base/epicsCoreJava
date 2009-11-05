@@ -11,6 +11,7 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.SerializableControl;
 
 /**
  * Abstract base class for any PVArray field.
@@ -104,11 +105,11 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
         length = len;
     }
     /* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-	 */
+     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
+     */
     @Override
-	public void serialize(ByteBuffer buffer) {
-		serialize(buffer, 0, -1);
+	public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+		serialize(buffer, flusher, 0, -1);
 	}
 	
 }
