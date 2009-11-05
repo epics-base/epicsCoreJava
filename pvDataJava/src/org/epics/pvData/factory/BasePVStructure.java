@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
@@ -29,6 +30,7 @@ import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 
@@ -564,23 +566,23 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     }
     
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 	 */
-	public void serialize(ByteBuffer buffer) {
+	public void serialize(ByteBuffer buffer, SerializableControl flusher) {
         for (int i = 0; i < pvFields.length; i++)
-        	pvFields[i].serialize(buffer);
+        	pvFields[i].serialize(buffer, flusher);
 	}
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 	 */
-	public void deserialize(ByteBuffer buffer) {
+	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
         for (int i = 0; i < pvFields.length; i++)
-        	pvFields[i].deserialize(buffer);
+        	pvFields[i].deserialize(buffer, control);
 	}
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pvCopy.BitSetSerializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.misc.BitSet)
+	 * @see org.epics.pvData.pvCopy.BitSetSerializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl, org.epics.pvData.misc.BitSet)
 	 */
-	public void deserialize(ByteBuffer buffer, BitSet bitSet) {
+	public void deserialize(ByteBuffer buffer, DeserializableControl control, BitSet bitSet) {
         int offset = getFieldOffset();
         int numberFields = getNumberFields();
         int next = bitSet.nextSetBit(offset);
@@ -589,8 +591,10 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         if (next<0 || next>=offset+numberFields) return;
 
         // entire structure
-        if(offset==next)
-        	deserialize(buffer);
+        if(offset==next) {
+        	deserialize(buffer, control);
+        	return;
+        }
         
         for (int i = 0; i < pvFields.length; i++)
         {
@@ -605,15 +609,15 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             
             // serialize field or fields
             if (numberFields == 1)
-            	pvField.deserialize(buffer);
+            	pvField.deserialize(buffer, control);
             else
-            	((PVStructure)pvField).deserialize(buffer, bitSet);
+            	((PVStructure)pvField).deserialize(buffer, control, bitSet);
         }
 	}
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pvCopy.BitSetSerializable#serialize(java.nio.ByteBuffer, org.epics.pvData.misc.BitSet)
+	 * @see org.epics.pvData.pvCopy.BitSetSerializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, org.epics.pvData.misc.BitSet)
 	 */
-	public void serialize(ByteBuffer buffer, BitSet bitSet) {
+	public void serialize(ByteBuffer buffer, SerializableControl flusher, BitSet bitSet) {
         int offset = getFieldOffset();
         int numberFields = getNumberFields();
         int next = bitSet.nextSetBit(offset);
@@ -622,8 +626,10 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         if (next<0 || next>=offset+numberFields) return;
 
         // entire structure
-        if(offset==next)
-        	serialize(buffer);
+        if(offset==next) {
+        	serialize(buffer, flusher);
+        	return;
+        }
         
         for (int i = 0; i < pvFields.length; i++)
         {
@@ -638,9 +644,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             
             // serialize field or fields
             if (numberFields == 1)
-            	pvField.serialize(buffer);
+            	pvField.serialize(buffer, flusher);
             else
-            	((PVStructure)pvField).serialize(buffer, bitSet);
+            	((PVStructure)pvField).serialize(buffer, flusher, bitSet);
         }
 	}
 	/* (non-Javadoc)

@@ -8,6 +8,8 @@ package org.epics.pvData.factory;
 import java.nio.ByteBuffer;
 
 import org.epics.pvData.misc.SerializeHelper;
+import org.epics.pvData.pv.DeserializableControl;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
@@ -59,11 +61,11 @@ public final class StatusFactory {
 			return new StatusImpl(type, message, stackDump);
 		}
 
-    	/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.StatusCreate#deserializeStatus(java.nio.ByteBuffer)
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.StatusCreate#deserializeStatus(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
 		@Override
-		public Status deserializeStatus(ByteBuffer buffer) {
+		public Status deserializeStatus(ByteBuffer buffer, DeserializableControl control) {
 			final byte typeCode = buffer.get();
 			if (typeCode == (byte)-1)
 				return okStatus;
@@ -156,18 +158,18 @@ public final class StatusFactory {
 		}
 		
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
 		@Override
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new RuntimeException("use StatusCreate.deserialize()");
 		}
 		
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
 		@Override
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			if (this == getStatusCreate().getStatusOK())
 			{
 				// special code for okStatus (optimization)
@@ -175,9 +177,10 @@ public final class StatusFactory {
 			}
 			else
 			{
+				flusher.ensureBuffer(1);
 				buffer.put((byte)type.ordinal());
-				SerializeHelper.serializeString(message, buffer);
-				SerializeHelper.serializeString(stackDump, buffer);
+				SerializeHelper.serializeString(message, buffer, flusher);
+				SerializeHelper.serializeString(stackDump, buffer, flusher);
 			}
 		}
 		/* (non-Javadoc)

@@ -10,9 +10,11 @@ import java.util.Arrays;
 
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Array;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.StringArrayData;
 
 
@@ -100,9 +102,10 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
         super.length = from.length;
     }
     /* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
-	 */
-	public void serialize(ByteBuffer buffer, int offset, int count) {
+     * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, int, int)
+     */
+    @Override
+	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
 		// check bounds
 		if (offset < 0) offset = 0;
 		else if (offset > length) offset = length;
@@ -113,23 +116,23 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
 			count = maxCount;
 		
 		// write
-		SerializeHelper.writeSize(count, buffer);
+		SerializeHelper.writeSize(count, buffer, flusher);
 		final int end = offset + count;
 		for (int i = offset; i < end; i++)
-			SerializeHelper.serializeString(value[i], buffer);
+			SerializeHelper.serializeString(value[i], buffer, flusher);
 	}
 	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 	 */
-	public void deserialize(ByteBuffer buffer) {
-		final int size = SerializeHelper.readSize(buffer);
+	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+		final int size = SerializeHelper.readSize(buffer, control);
 		if (size >= 0) {
 			// prepare array, if necessary
 			if (size > capacity)
 				setCapacity(size);
 			// retrieve value from the buffer
 			for (int i = 0; i < size; i++)
-				value[i] = SerializeHelper.deserializeString(buffer);
+				value[i] = SerializeHelper.deserializeString(buffer, control);
 			// set new length
 			length = size;
 		}

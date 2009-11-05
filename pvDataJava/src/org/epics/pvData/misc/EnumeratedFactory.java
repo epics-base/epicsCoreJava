@@ -13,6 +13,7 @@ import org.epics.pvData.factory.AbstractPVArray;
 import org.epics.pvData.factory.AbstractPVScalar;
 import org.epics.pvData.factory.BasePVStructure;
 import org.epics.pvData.pv.Array;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVField;
@@ -21,6 +22,7 @@ import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
@@ -178,18 +180,20 @@ public class EnumeratedFactory {
                 return convert.getString(this, indentLevel)
                 + super.toString(indentLevel);
             }
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-			 */
+            /* (non-Javadoc)
+             * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
+             */
             @Override
-			public void serialize(ByteBuffer buffer) {
+			public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+            	flusher.ensureBuffer(Integer.SIZE/Byte.SIZE);
 		        buffer.putInt(index);
 			}
-			/* (non-Javadoc)
-			 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-			 */
+            /* (non-Javadoc)
+             * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
+             */
             @Override
-			public void deserialize(ByteBuffer buffer) {
+			public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+            	control.ensureBuffer(Integer.SIZE/Byte.SIZE);
 		        index = buffer.getInt();
 			}
             /* (non-Javadoc)
@@ -288,10 +292,10 @@ public class EnumeratedFactory {
                 super.setImmutable();
             }
             /* (non-Javadoc)
-        	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
-        	 */
+             * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, int, int)
+             */
             @Override
-        	public void serialize(ByteBuffer buffer, int offset, int count) {
+        	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
         		// check bounds
         		if (offset < 0) offset = 0;
         		if (count < 0) count = length;
@@ -299,23 +303,23 @@ public class EnumeratedFactory {
         		if (count > maxCount)
         			count = maxCount;
         		// write
-        		SerializeHelper.writeSize(count, buffer);
+        		SerializeHelper.writeSize(count, buffer, flusher);
         		for (int i = 0; i < count; i++)
-        			SerializeHelper.serializeString(choices[i], buffer);
+        			SerializeHelper.serializeString(choices[i], buffer, flusher);
         	}
-        	/* (non-Javadoc)
-        	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-        	 */
+            /* (non-Javadoc)
+             * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
+             */
             @Override
-        	public void deserialize(ByteBuffer buffer) {
-        		final int size = SerializeHelper.readSize(buffer);
+        	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+        		final int size = SerializeHelper.readSize(buffer, control);
         		if (size >= 0) {
         			// prepare array, if necessary
         			if (size > capacity)
         				setCapacity(size);
         			// retrieve value from the buffer
         			for (int i = 0; i < size; i++)
-        				choices[i] = SerializeHelper.deserializeString(buffer);
+        				choices[i] = SerializeHelper.deserializeString(buffer, control);
         			// set new length
         			length = size;
         		}

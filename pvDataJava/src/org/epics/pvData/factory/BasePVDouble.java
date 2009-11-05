@@ -5,10 +5,12 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVDouble;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.SerializableControl;
 
 /**
  * Base class for PVDouble.
@@ -52,17 +54,19 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
         + super.toString(indentLevel);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override
-    public void serialize(ByteBuffer buffer) {
+    public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+    	flusher.ensureBuffer(Double.SIZE/Byte.SIZE);
         buffer.putDouble(value);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
      */
     @Override
-    public void deserialize(ByteBuffer buffer) {
+    public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+    	control.ensureBuffer(Double.SIZE/Byte.SIZE);
         value = buffer.getDouble();
     }
     /* (non-Javadoc)

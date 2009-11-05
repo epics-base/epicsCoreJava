@@ -10,10 +10,12 @@ import java.util.Arrays;
 
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Array;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.FloatArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVFloatArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.SerializableControl;
 
 
 /**
@@ -103,10 +105,10 @@ public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
         super.length = from.length;
     }
     /* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
-	 */
+     * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, int, int)
+     */
     @Override
-	public void serialize(ByteBuffer buffer, int offset, int count) {
+	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
 		// check bounds
 		if (offset < 0) offset = 0;
 		else if (offset > length) offset = length;
@@ -117,24 +119,42 @@ public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
 			count = maxCount;
 		
 		// write
-		SerializeHelper.writeSize(count, buffer);
+		SerializeHelper.writeSize(count, buffer, flusher);
 		final int end = offset + count;
-		for (int i = offset; i < end; i++)
-			buffer.putFloat(value[i]);
+		int i = offset;
+		while (true)
+		{
+        	final int maxIndex = Math.min(end-i, buffer.remaining()/(Float.SIZE/Byte.SIZE))+i;
+			for (; i < maxIndex; i++)
+				buffer.putFloat(value[i]);
+			if (i < end)
+				flusher.flushSerializeBuffer();
+			else
+				break;
+		}
 	}
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-	 */
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
+     */
     @Override
-	public void deserialize(ByteBuffer buffer) {
-		final int size = SerializeHelper.readSize(buffer);
+	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+		final int size = SerializeHelper.readSize(buffer, control);
 		if (size >= 0) {
 			// prepare array, if necessary
 			if (size > capacity)
 				setCapacity(size);
 			// retrieve value from the buffer
-			for (int i = 0; i < size; i++)
-				value[i] = buffer.getFloat();
+			int i = 0;
+			while (true)
+			{
+				final int maxIndex = Math.min(size-i, buffer.remaining()/(Float.SIZE/Byte.SIZE))+i;
+				for (; i < maxIndex; i++)
+					value[i] = buffer.getFloat();
+				if (i < size)
+					control.ensureBuffer(-1);
+				else
+					break;
+			}
 			// set new length
 			length = size;
 		}

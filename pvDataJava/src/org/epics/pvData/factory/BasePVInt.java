@@ -5,10 +5,12 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.SerializableControl;
 
 /**
  * Base class for PVInt.
@@ -59,17 +61,19 @@ public class BasePVInt extends AbstractPVScalar implements PVInt
         + super.toString(indentLevel);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override
-    public void serialize(ByteBuffer buffer) {
+    public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+    	flusher.ensureBuffer(Integer.SIZE/Byte.SIZE);
         buffer.putInt(value);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
      */
     @Override
-    public void deserialize(ByteBuffer buffer) {
+    public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+    	control.ensureBuffer(Integer.SIZE/Byte.SIZE);
         value = buffer.getInt();
     }
     /* (non-Javadoc)

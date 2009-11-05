@@ -6,10 +6,12 @@ package org.epics.pvData.factory;
 import java.nio.ByteBuffer;
 
 import org.epics.pvData.misc.SerializeHelper;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.SerializableControl;
 
 /**
  * Base class for PVString.
@@ -61,17 +63,17 @@ public class BasePVString extends AbstractPVScalar implements PVString
         + super.toString(indentLevel);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override
-    public void serialize(ByteBuffer buffer) {
-        SerializeHelper.serializeString(value, buffer);
+    public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+        SerializeHelper.serializeString(value, buffer, flusher);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, int, int)
+     * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, int, int)
      */
     @Override
-	public void serialize(ByteBuffer buffer, int offset, int count) {
+	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
 		// check bounds
     	final int length = (value == null) ? 0 : value.length();
 		if (offset < 0) offset = 0;
@@ -83,14 +85,14 @@ public class BasePVString extends AbstractPVScalar implements PVString
 			count = maxCount;
 		
 		// write
-		SerializeHelper.serializeSubstring(value, offset, count, buffer);
+		SerializeHelper.serializeSubstring(value, offset, count, buffer, flusher);
 	}
-	/* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
      */
     @Override
-    public void deserialize(ByteBuffer buffer) {
-        value = SerializeHelper.deserializeString(buffer);
+    public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+        value = SerializeHelper.deserializeString(buffer, control);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)

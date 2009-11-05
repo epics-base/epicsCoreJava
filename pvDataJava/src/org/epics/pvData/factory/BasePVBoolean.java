@@ -5,10 +5,12 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVBoolean;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.SerializableControl;
 
 /**
  * Base class for PVBoolean.
@@ -51,17 +53,19 @@ public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
         + super.toString(indentLevel);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override
-    public void serialize(ByteBuffer buffer) {
+    public void serialize(ByteBuffer buffer, SerializableControl flush) {
+    	flush.ensureBuffer(1);
         buffer.put(value ? (byte)1 : (byte)0);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
      */
     @Override
-    public void deserialize(ByteBuffer buffer) {
+    public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+    	control.ensureBuffer(1);
         value = buffer.get() != 0;
     }
     /* (non-Javadoc)
