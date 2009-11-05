@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import junit.framework.TestCase;
 
 import org.epics.pvData.factory.StatusFactory;
+import org.epics.pvData.pv.DeserializableControl;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
@@ -20,6 +22,35 @@ import org.epics.pvData.pv.Status.StatusType;
  *
  */
 public class StatusTest extends TestCase {
+
+	private static class SerializableFlushImpl implements SerializableControl {
+
+		@Override
+		public void ensureBuffer(int size) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void flushSerializeBuffer() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	private static SerializableControl flusher = new SerializableFlushImpl();
+	
+
+	private static class DeserializableControlImpl implements DeserializableControl {
+
+		@Override
+		public void ensureBuffer(int size) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	private static DeserializableControl control = new DeserializableControlImpl();
 	
 	private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
 
@@ -50,11 +81,11 @@ public class StatusTest extends TestCase {
 		ByteBuffer buffer = ByteBuffer.allocate(1024);
 		
 		Status okStatus = statusCreate.getStatusOK();
-		okStatus.serialize(buffer);
+		okStatus.serialize(buffer, flusher);
 		
 		buffer.flip();
 		
-		Status deserializedStatus = statusCreate.deserializeStatus(buffer);
+		Status deserializedStatus = statusCreate.deserializeStatus(buffer, control);
 		
 		assertSame(okStatus, deserializedStatus);
 	}
@@ -64,11 +95,11 @@ public class StatusTest extends TestCase {
 		
 		Status status = statusCreate.createStatus(StatusType.ERROR, "error", new RuntimeException("simple exception"));
 
-		status.serialize(buffer);
+		status.serialize(buffer, flusher);
 		
 		buffer.flip();
 		
-		Status deserializedStatus = statusCreate.deserializeStatus(buffer);
+		Status deserializedStatus = statusCreate.deserializeStatus(buffer, control);
 		
 		assertEquals(status, deserializedStatus);
 	}

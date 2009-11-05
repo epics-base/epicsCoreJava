@@ -25,6 +25,7 @@ import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.ByteArrayData;
 import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.DoubleArrayData;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FloatArrayData;
@@ -47,6 +48,7 @@ import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.ShortArrayData;
 import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.Type;
@@ -502,15 +504,15 @@ public class ReplaceTest extends TestCase {
         
         private boolean value;
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new UnsupportedOperationException("not supported");
 		}
 
@@ -559,15 +561,15 @@ public class ReplaceTest extends TestCase {
         
         private byte value;
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new UnsupportedOperationException("not supported");
 		}
 
@@ -616,15 +618,15 @@ public class ReplaceTest extends TestCase {
         
         private short value;
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new UnsupportedOperationException("not supported");
 		}
 
@@ -673,15 +675,15 @@ public class ReplaceTest extends TestCase {
         
         private int value;
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new UnsupportedOperationException("not supported");
 		}
 
@@ -730,15 +732,15 @@ public class ReplaceTest extends TestCase {
         
         private long value;
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new UnsupportedOperationException("not supported");
 		}
 
@@ -787,15 +789,15 @@ public class ReplaceTest extends TestCase {
         
         private float value;
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new UnsupportedOperationException("not supported");
 		}
 
@@ -844,15 +846,15 @@ public class ReplaceTest extends TestCase {
         
         private double value;
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
 		 */
-		public void serialize(ByteBuffer buffer) {
+		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 			throw new UnsupportedOperationException("not supported");
 		}
 		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
-		public void deserialize(ByteBuffer buffer) {
+		public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 			throw new UnsupportedOperationException("not supported");
 		}
 
@@ -898,21 +900,6 @@ public class ReplaceTest extends TestCase {
             super(parent,(Scalar)field);
             value = null;
         }
-        
-        private String value;
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
-		 */
-		public void serialize(ByteBuffer buffer) {
-			throw new UnsupportedOperationException("not supported");
-		}
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
-		 */
-		public void deserialize(ByteBuffer buffer) {
-			throw new UnsupportedOperationException("not supported");
-		}
-
     }
     
     private static class BooleanArray extends  BasePVBooleanArray

@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.pv.Array;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.PVArray;
@@ -37,6 +38,7 @@ import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
 
 /**
@@ -46,6 +48,35 @@ import org.epics.pvData.pv.Structure;
  */
 public class SerializationTest extends TestCase {
 	
+	private static class SerializableFlushImpl implements SerializableControl {
+
+		@Override
+		public void ensureBuffer(int size) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void flushSerializeBuffer() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	private static SerializableControl flusher = new SerializableFlushImpl();
+	
+
+	private static class DeserializableControlImpl implements DeserializableControl {
+
+		@Override
+		public void ensureBuffer(int size) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+	private static DeserializableControl control = new DeserializableControlImpl();
+
 	public void testScalarEquals()
 	{
 		PVDataCreate factory = PVDataFactory.getPVDataCreate();
@@ -62,14 +93,14 @@ public class SerializationTest extends TestCase {
 	{
 		// serialize
 		ByteBuffer buffer = ByteBuffer.allocate(1 << 16);
-		field.serialize(buffer);
+		field.serialize(buffer, flusher);
 		
 		// deserialize
 		buffer.flip();
 		
 		// create new instance and deserialize
 		PVField deserializedField = PVDataFactory.getPVDataCreate().createPVField(null, field.getField());
-		deserializedField.deserialize(buffer);
+		deserializedField.deserialize(buffer, control);
 	
 		// must equal
 		assertEquals(field.getFullName(), field, deserializedField);
