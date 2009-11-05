@@ -19,12 +19,14 @@ public interface Serializable {
 	/**
      * Serialize field into given buffer.
 	 * @param buffer serialization buffer.
+	 * @param flusher flush interface.
 	 */
-	void serialize(ByteBuffer buffer);
+	void serialize(ByteBuffer buffer, SerializableControl flusher);
 
 	/**
      * Deserialize buffer.
 	 * @param buffer serialization buffer.
+	 * @param control deserialization control.
 	 */
-     void deserialize(ByteBuffer buffer);
+     void deserialize(ByteBuffer buffer, DeserializableControl control);
 }

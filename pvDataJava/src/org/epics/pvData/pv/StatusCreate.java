@@ -35,7 +35,8 @@ public interface StatusCreate {
 	 * Deserialize status.
 	 * NOTE: use this method instead of <code>Status.deserialize()</code>, since this allows OK status optimization. 
 	 * @param buffer deserialization buffer.
+	 * @param control deserialization control.
 	 * @return status instance.
 	 */
-	Status deserializeStatus(ByteBuffer buffer);
+	Status deserializeStatus(ByteBuffer buffer, DeserializableControl control);
 }
