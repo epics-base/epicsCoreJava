@@ -9,11 +9,13 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvData.factory.AbstractPVField;
 import org.epics.pvData.pv.Array;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.SerializableControl;
 
 
 /**
@@ -84,11 +86,11 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
     }
 
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override
-    public void serialize(ByteBuffer buffer) {
-        serialize(buffer, 0, -1);
+    public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+        serialize(buffer, flusher, 0, -1);
     }
 
     /* (non-Javadoc)
@@ -221,23 +223,25 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
         }
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
+     * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, int, int)
      */
-    public void serialize(ByteBuffer buffer, int offset, int count) {
-        lockShare();
+    @Override
+    public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
+        lockShare();		// TODO this can block !!!
         try {
-            pvShare.serialize(buffer, offset, count);
+            pvShare.serialize(buffer, flusher, offset, count);
         } finally {
             unlockShare();
         }
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
      */
-    public void deserialize(ByteBuffer buffer) {
-        lockShare();
+    @Override
+    public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+        lockShare();	// TODO this can block !!!
         try {
-        pvShare.deserialize(buffer);
+        pvShare.deserialize(buffer, control);
         } finally {
             unlockShare();
         }

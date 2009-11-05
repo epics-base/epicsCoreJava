@@ -8,11 +8,13 @@ package org.epics.pvData.pvCopy;
 import java.nio.ByteBuffer;
 
 import org.epics.pvData.factory.AbstractPVScalar;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.SerializableControl;
 
 /**
  * @author mrk
@@ -141,26 +143,26 @@ public abstract class AbstractSharePVScalar extends AbstractPVScalar implements 
     }
 
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
      */
     @Override
-    public void deserialize(ByteBuffer buffer) {
+    public void deserialize(ByteBuffer buffer, DeserializableControl control) {
         lockShare();
         try {
-        pvShare.deserialize(buffer);
+        pvShare.deserialize(buffer, control);
         } finally {
             unlockShare();
         }
     }
 
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer)
+     * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override
-    public void serialize(ByteBuffer buffer) {
-        lockShare();
+    public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+        lockShare();		// TODO this can block !!!
         try {
-            pvShare.serialize(buffer);
+            pvShare.serialize(buffer, flusher);
         } finally {
             unlockShare();
         }
