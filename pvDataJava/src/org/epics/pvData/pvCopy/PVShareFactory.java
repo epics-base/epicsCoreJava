@@ -34,6 +34,7 @@ import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.ShortArrayData;
 import org.epics.pvData.pv.StringArrayData;
 
@@ -495,12 +496,12 @@ public class PVShareFactory {
             }
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, int, int)
+         * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, int, int)
          */
-        public void serialize(ByteBuffer buffer, int offset, int count) {
+        public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
             lockShare();
             try {
-                pvShare.serialize(buffer, offset, count);
+                pvShare.serialize(buffer, flusher, offset, count);
             } finally {
                 unlockShare();
             }
