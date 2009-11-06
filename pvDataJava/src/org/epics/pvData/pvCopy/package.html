@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.08.25</h1>
+2009.11.04</h1>
 CONTENTS 
 
 <div class="toc">
@@ -19,10 +19,11 @@ CONTENTS
   <li><a href="#BitSetUtil">BitSetUtil</a></li>
   <li><a href="#PVCopy">PVCopy</a></li>
   <li><a href="#PVCopyMoni">PVCopyMonitor</a></li>
-  <li><a href="#PVCopyFact">PVCopyFactory</a> 
+  <li><a href="#PVCopyFact">PVCopyFactory</a>
     <ul>
       <li><a href="#Java">Java Definition</a></li>
       <li><a href="#PVStructur">PVStructure pvRequest</a></li>
+      <li><a href="#PVStructur1">PVStructure createRequest</a></li>
       <li><a href="#Examples">Examples</a></li>
     </ul>
   </li>
@@ -253,24 +254,25 @@ PVCopy.createPVCopyMonitor.</p>
 
 <h3 id="Java">Java Definition</h3>
 <pre>    class PVCopyFactory {
-        static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,
-               String structureName,boolean shareData);
+        static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,boolean shareData);
+        static PVStructure createRequest(String request);
     }</pre>
 
-<p>where create has the arguments</p>
+<p><span style="font-family: Courier">create</span> has the arguments</p>
 <dl>
   <dt><span style="font-family: Courier">pvRecord</span></dt>
     <dd>The PVRecord to which the server is attached.</dd>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>A PVStructure which describes the fields of PVREcord to which the
-      server wants access.</dd>
-  <dt><span style="font-family: Courier">structureName</span></dt>
-    <dd>The name to give to the structure that describes the subset of the
-      fields of PVRecord that are actually mapped.</dd>
+      server wants access. It is described below.</dd>
   <dt><span style="font-family: Courier">shareData</span></dt>
     <dd>Should the PVStructure created by calling PVCopy.createPVStructure
       share the data from PVRecord of should it keep a separate copy.</dd>
 </dl>
+
+<p><span style="font-family: Courier">createRequest</span> is an easy way to
+create a pvRequest structure to pass to <span
+style="font-family: Courier">create</span>. It is described below.</p>
 
 <h3 id="PVStructur">PVStructure pvRequest</h3>
 
@@ -321,6 +323,31 @@ accessed. It looks like the following:</p>
 <p>Note that the definition is recursive, i.e. an arbitarily complex
 structure can be defined.</p>
 
+<h3 id="PVStructur1">PVStructure createRequest</h3>
+
+<p>As mentioned above <span
+style="font-family: Courier">PVCopyFactory.createRequest(String
+request)</span> provides an easy way to create a pvRequest structure.</p>
+
+<p>request is of the form:</p>
+<pre>    fieldDef,...,fieldDef</pre>
+
+<p>That is request is a comma separated set of fieldDef which is of the
+form:</p>
+<pre>    fullFieldName</pre>
+or 
+<pre>    fieldName{request}</pre>
+
+<p>A fullFieldName is the full name of a field in the PVRecord. The name in a
+generated data structure will have just the field name. If fieldName{request}
+is given then the generated data structure will have a structure field with
+subfields defined by request. Note that request is a recursive definition.</p>
+
+<p>As a simple example if a record has value, timeStamp, alarm, and display
+as top level fields then the following is all that is required:</p>
+<pre>    PVStructure pvRequest = channelAccess.createRequest(
+       "value,alarm,timeStamp,display");</pre>
+
 <h3 id="Examples">Examples</h3>
 
 <p>Assume that the following structures have been put into the master
@@ -352,8 +379,6 @@ PVDatabase:</p>
 &lt;/structure&gt;</pre>
 
 <p>Then the following shows example code for creating a PVCopy:</p>
-
-<p></p>
 <pre>    
     private static PVDatabase master = PVDatabaseFactory.getMaster();
     private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
@@ -371,7 +396,7 @@ PVDatabase:</p>
         //alarm,timeStamp,power.value from powerSupply
         pvRecord = master.findRecord("powerSupply");
         pvRequest = master.findStructure("powerFromPowerSupply");
-        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "",false);
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest,false);
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
         pvCopy.initCopy(pvCopyStructure, bitSet,true);
@@ -379,7 +404,7 @@ PVDatabase:</p>
 
         //power, current, voltage. For each value and alarm
         pvRequest = master.findStructure("powerSupplyFromPowerSupply");
-        pvCopy = PVCopyFactory.create(pvRecord, pvRequest, "",false);
+        pvCopy = PVCopyFactory.create(pvRecord, pvRequest,false);
         pvCopyStructure = pvCopy.createPVStructure();
         bitSet = new BitSet(pvCopyStructure.getNumberFields());
         pvCopy.initCopy(pvCopyStructure, bitSet,true);
@@ -394,6 +419,15 @@ calling pvDataCreate.</p>
         pvString.put("alarm,timeStamp,power.value");
         pvRequest.appendPVField(pvString);
         </pre>
+
+<p><span style="font-family: Courier">PVCopyFactory.createRequest(String
+request)</span> creates the same pvRequest structure for the second example
+if the following is specified:</p>
+<pre>    PVStructure pvRequest = channelAccess.createRequest(
+       "alarm,timeStamp"
+       + ",power{power.value,power.alarm}"
+       + ",current{current.value,current.alarm}"
+       + ",voltage{voltage.value,voltage.alarm}");</pre>
 <hr />
 
 <h2 style="text-align: center" id="PVShare">PVShare</h2>

@@ -23,6 +23,7 @@ import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 /**
@@ -38,16 +39,78 @@ public class PVCopyFactory {
      * @param pvRecord The PVRecord.
      * @param pvRequest A PVStructure which describes the set of fields of PVRecord that
      * should be mapped. See the packaged overview for details.
-     * @param structureName The name to give to the Structure
-     * that describes the subset of the fields of PVRecord that are actually mapped.
      * @param shareData Should the PVStructure created by calling PVCopy.createPVStructure share the data from
      * PVRecord of should it keep a separate copy.
      * @return The PVCopy interface.
      */
-    public static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,String structureName,boolean shareData) {
+    public static PVCopy create(PVRecord pvRecord,PVStructure pvRequest,boolean shareData) {
         PVCopyImpl impl = new PVCopyImpl(pvRecord);
-        impl.init(pvRequest,structureName,shareData);
+        impl.init(pvRequest,shareData);
         return impl;
+    }
+    /**
+     * Create a request structure for the create calls in Channel.
+     * See the package overview documentation for details.
+     * @param request The field request. See the package overview documentation for details.
+     * @return The request structure or null if request was not legal.
+     * @throws IllegalArgumentException if invalid request.
+     */
+    public static PVStructure createRequest(String request) {
+        PVStructure pvStructure =  pvDataCreate.createPVStructure(null,"", new Field[0]);
+        createRequest(pvStructure,request);
+        return pvStructure;
+    }
+    
+    private static void createRequest(PVStructure pvParent,String request) {
+        int indexLeftBracket = request.indexOf('{');
+        if(indexLeftBracket==0) {
+            throw new IllegalArgumentException(request + "does not have a fieldName before the {");
+        }
+        int indexComma = request.indexOf(',');
+        if(indexComma==0) {
+            createRequest(pvParent,request.substring(1));
+            return;
+        }
+        if(indexLeftBracket>=0 && (indexComma==-1 || indexLeftBracket < indexComma)) {
+            String fieldName = request.substring(0, indexLeftBracket);
+            if(fieldName.indexOf('.')>=0) {
+                throw new IllegalArgumentException(request + "illegal field name " + fieldName);
+            }
+            int indexRightBracket = request.indexOf('}');
+            if(indexRightBracket <= indexLeftBracket) {
+                throw new IllegalArgumentException(request + "{ does not have matching }");
+            }
+            PVStructure pvStructure = pvDataCreate.createPVStructure(pvParent, fieldName, new Field[0]);
+            createRequest(pvStructure,request.substring(indexLeftBracket + 1, indexRightBracket));
+            pvParent.appendPVField(pvStructure);
+            if(request.length()<=indexRightBracket+1) return;
+            if(request.charAt(indexRightBracket+1)!=',') {
+                throw new IllegalArgumentException(request + "expect , after }");
+            }
+            String rest = request.substring(indexRightBracket+1);
+            createRequest(pvParent,rest);
+            return;
+        }
+        String fullName = null;
+        if(indexComma>0) {
+            fullName = request.substring(0,indexComma);
+            request = request.substring(indexComma+1);
+        } else {
+            fullName = request;
+            request = null;
+        }
+        int indexLastPeriod = fullName.lastIndexOf('.');
+        String fieldName = null;
+        if(indexLastPeriod>=0) {
+            fieldName = fullName.substring(indexLastPeriod+1);
+        } else {
+            fieldName = fullName;
+        }
+        PVString pvString = (PVString)pvDataCreate.createPVScalar(pvParent, fieldName, ScalarType.pvString);
+        pvParent.appendPVField(pvString);
+        pvString.put(fullName);
+        if(request==null) return;
+        createRequest(pvParent,request);
     }
     
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
@@ -81,7 +144,7 @@ public class PVCopyFactory {
         private Node headNode = null;
         private PVStructure cacheInitStructure = null;
         
-        private void init(PVStructure pvRequest,String structureName,boolean shareData) {
+        private void init(PVStructure pvRequest,boolean shareData) {
             this.shareData = shareData;
             if(pvRequest.getPVFields().length==0) {
                 // asking for entire record is special case.
@@ -94,7 +157,7 @@ public class PVCopyFactory {
                 recordNode.nfields = pvRecord.getNumberFields();
                 return;
             }
-            structure = createStructure(pvRecord,pvRequest,structureName);
+            structure = createStructure(pvRecord,pvRequest,"");
             cacheInitStructure = createPVStructure();
             StructureNode structureNode = new StructureNode();
             createStructureNodes(structureNode,pvRecord,pvRequest,cacheInitStructure);
