@@ -66,7 +66,7 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureBuffer(Short.SIZE/Byte.SIZE);
+    	control.ensureData(Short.SIZE/Byte.SIZE);
         value = buffer.getShort();
     }
     /* (non-Javadoc)

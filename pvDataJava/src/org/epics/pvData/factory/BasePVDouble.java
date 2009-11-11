@@ -66,7 +66,7 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureBuffer(Double.SIZE/Byte.SIZE);
+    	control.ensureData(Double.SIZE/Byte.SIZE);
         value = buffer.getDouble();
     }
     /* (non-Javadoc)

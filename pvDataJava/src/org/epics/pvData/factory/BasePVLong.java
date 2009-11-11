@@ -66,7 +66,7 @@ public class BasePVLong extends AbstractPVScalar implements PVLong
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureBuffer(Long.SIZE/Byte.SIZE);
+    	control.ensureData(Long.SIZE/Byte.SIZE);
         value = buffer.getLong();
     }
     /* (non-Javadoc)

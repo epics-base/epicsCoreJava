@@ -151,7 +151,7 @@ public class BasePVIntArray extends AbstractPVArray implements PVIntArray
 				for (; i < maxIndex; i++)
 					value[i] = buffer.getInt();
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(Integer.SIZE/Byte.SIZE);
 				else
 					break;
 			}

@@ -66,7 +66,7 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureBuffer(1);
+    	control.ensureData(1);
         value = buffer.get();
     }
     /* (non-Javadoc)

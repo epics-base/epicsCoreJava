@@ -151,7 +151,7 @@ public class BasePVLongArray extends AbstractPVArray implements PVLongArray
 				for (; i < maxIndex; i++)
 					value[i] = buffer.getLong();
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(Long.SIZE/Byte.SIZE);
 				else
 					break;
 			}

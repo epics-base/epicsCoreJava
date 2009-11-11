@@ -70,8 +70,8 @@ public final class StatusFactory {
 			if (typeCode == (byte)-1)
 				return okStatus;
 			else {
-				final String message = SerializeHelper.deserializeString(buffer);
-				final String stackDump = SerializeHelper.deserializeString(buffer);
+				final String message = SerializeHelper.deserializeString(buffer, control);
+				final String stackDump = SerializeHelper.deserializeString(buffer, control);
 				return new StatusImpl(StatusType.values()[typeCode], message, stackDump);
 			}
 		}

@@ -147,7 +147,7 @@ public class BasePVDoubleArray  extends AbstractPVArray implements PVDoubleArray
 				for (; i < maxIndex; i++)
 					value[i] = buffer.getDouble();
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(Double.SIZE/Byte.SIZE);
 				else
 					break;
 			}

@@ -151,7 +151,7 @@ public class BasePVByteArray extends AbstractPVArray implements PVByteArray
 				buffer.get(value, i, toRead);
 				i += toRead;
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(1);
 				else
 					break;
 			}

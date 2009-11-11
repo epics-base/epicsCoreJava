@@ -66,7 +66,7 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureBuffer(Float.SIZE/Byte.SIZE);
+    	control.ensureData(Float.SIZE/Byte.SIZE);
         value = buffer.getFloat();
     }
     /* (non-Javadoc)

@@ -150,7 +150,7 @@ public class BasePVShortArray extends AbstractPVArray implements PVShortArray
 				for (; i < maxIndex; i++)
 					value[i] = buffer.getShort();
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(Short.SIZE/Byte.SIZE);
 				else
 					break;
 			}

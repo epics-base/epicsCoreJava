@@ -151,7 +151,7 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
 				for (; i < maxIndex; i++)
 					value[i] = (buffer.get() == 0) ? false : true;
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(1);
 				else
 					break;
 			}

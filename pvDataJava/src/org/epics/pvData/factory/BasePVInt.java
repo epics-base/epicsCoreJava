@@ -73,7 +73,7 @@ public class BasePVInt extends AbstractPVScalar implements PVInt
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureBuffer(Integer.SIZE/Byte.SIZE);
+    	control.ensureData(Integer.SIZE/Byte.SIZE);
         value = buffer.getInt();
     }
     /* (non-Javadoc)

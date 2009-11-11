@@ -65,7 +65,7 @@ public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureBuffer(1);
+    	control.ensureData(1);
         value = buffer.get() != 0;
     }
     /* (non-Javadoc)

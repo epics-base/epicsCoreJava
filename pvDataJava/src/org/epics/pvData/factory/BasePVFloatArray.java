@@ -151,7 +151,7 @@ public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
 				for (; i < maxIndex; i++)
 					value[i] = buffer.getFloat();
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(Float.SIZE/Byte.SIZE);
 				else
 					break;
 			}
