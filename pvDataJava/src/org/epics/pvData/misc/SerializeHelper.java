@@ -31,7 +31,7 @@ public final class SerializeHelper {
 	 * @param s size to encode.
 	 * @param buffer serialization buffer.
 	 */
-	public final static void writeSize(final int s, ByteBuffer buffer) {
+	private final static void writeSize(final int s, ByteBuffer buffer) {
 		if (s == -1)					// null
 			buffer.put((byte)-1);
 		else if (s < 254)
@@ -47,14 +47,12 @@ public final class SerializeHelper {
 	 */
 	public final static int readSize(ByteBuffer buffer, DeserializableControl control)
 	{
-		if (control != null)
-			control.ensureBuffer(1);
+		control.ensureData(1);
 		final byte b = buffer.get();
 		if (b == -1)
 			return -1;
 		else if (b == -2) {
-			if (control != null) 
-				control.ensureBuffer(4);
+			control.ensureData(Integer.SIZE/Byte.SIZE);
 			final int s = buffer.getInt();
 			if (s < 0)
 				throw new RuntimeException("negative array size");
@@ -62,28 +60,6 @@ public final class SerializeHelper {
 		}
 		else
 			return (int)(b < 0 ? b + 256 : b);
-	}
-
-	/**
-	 * Deserialize array size.
-	 * @param buffer deserialization buffer.
-	 * @return array size.
-	 */
-	public final static int readSize(ByteBuffer buffer)
-	{
-		return readSize(buffer, null);
-	}
-
-	/**
-	 * String serialization helper method.
-	 */
-	public final static void serializeString(final String value, ByteBuffer buffer) {
-		if (value == null)
-			writeSize(-1, buffer);
-		else {
-			writeSize(value.length(), buffer);
-			buffer.put(value.getBytes());	// UTF-8
-		}
 	}
 
 	/**
@@ -105,18 +81,6 @@ public final class SerializeHelper {
 				else
 					break;
 			}
-		}
-	}
-
-	/**
-	 * String serialization helper method.
-	 */
-	public final static void serializeSubstring(final String value, int offset, int length, ByteBuffer buffer) {
-		if (value == null)
-			writeSize(-1, buffer);
-		else {
-			writeSize(length-offset, buffer);
-			buffer.put(value.getBytes(), offset, length);	// UTF-8
 		}
 	}
 
@@ -145,20 +109,6 @@ public final class SerializeHelper {
 	/**
 	 * String serializaton helper method.
 	 */
-	public final static String deserializeString(ByteBuffer buffer) {
-		int size = SerializeHelper.readSize(buffer);
-		if (size >= 0) {
-			byte[] bytes = new byte[size];
-			buffer.get(bytes);
-			return new String(bytes);
-		}
-		else
-			return null;
-	}
-
-	/**
-	 * String serializaton helper method.
-	 */
 	public final static String deserializeString(ByteBuffer buffer, DeserializableControl control) {
 		int size = SerializeHelper.readSize(buffer, control);
 		if (size >= 0) {
@@ -170,7 +120,7 @@ public final class SerializeHelper {
 				buffer.get(bytes, i, toRead);
 				i += toRead;
 				if (i < size)
-					control.ensureBuffer(-1);
+					control.ensureData(1);
 				else
 					break;
 			}

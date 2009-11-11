@@ -16,5 +16,5 @@ public interface DeserializableControl {
 	 * Helper method. Ensures specified size of bytes, provides it if necessary.
 	 * @param size
 	 */
-	void ensureBuffer(int size);
+	void ensureData(int size);
 }
