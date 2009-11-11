@@ -44,7 +44,7 @@ public class StatusTest extends TestCase {
 	private static class DeserializableControlImpl implements DeserializableControl {
 
 		@Override
-		public void ensureBuffer(int size) {
+		public void ensureData(int size) {
 			// TODO Auto-generated method stub
 			
 		}
