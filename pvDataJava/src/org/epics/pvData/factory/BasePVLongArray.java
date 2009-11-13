@@ -109,6 +109,10 @@ public class BasePVLongArray extends AbstractPVArray implements PVLongArray
      */
     @Override
 	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
+    	// cache
+    	final int length = this.length;
+    	final long[] value = this.value;
+
 		// check bounds
 		if (offset < 0) offset = 0;
 		else if (offset > length) offset = length;

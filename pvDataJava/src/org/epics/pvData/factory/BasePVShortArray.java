@@ -108,6 +108,10 @@ public class BasePVShortArray extends AbstractPVArray implements PVShortArray
      */
     @Override
 	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
+    	// cache
+    	final int length = this.length;
+    	final short[] value = this.value;
+
 		// check bounds
 		if (offset < 0) offset = 0;
 		else if (offset > length) offset = length;

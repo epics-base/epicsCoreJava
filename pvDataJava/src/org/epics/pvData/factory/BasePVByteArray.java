@@ -109,7 +109,11 @@ public class BasePVByteArray extends AbstractPVArray implements PVByteArray
      */
     @Override
 	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
-		// check bounds
+    	// cache
+    	final int length = this.length;
+    	final byte[] value = this.value;
+
+    	// check bounds
 		if (offset < 0) offset = 0;
 		else if (offset > length) offset = length;
 		if (count < 0) count = length;
