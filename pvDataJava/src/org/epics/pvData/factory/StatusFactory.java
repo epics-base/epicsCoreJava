@@ -66,6 +66,7 @@ public final class StatusFactory {
 		 */
 		@Override
 		public Status deserializeStatus(ByteBuffer buffer, DeserializableControl control) {
+			control.ensureData(1);
 			final byte typeCode = buffer.get();
 			if (typeCode == (byte)-1)
 				return okStatus;
@@ -170,6 +171,7 @@ public final class StatusFactory {
 		 */
 		@Override
 		public void serialize(ByteBuffer buffer, SerializableControl flusher) {
+			flusher.ensureBuffer(1);
 			if (this == getStatusCreate().getStatusOK())
 			{
 				// special code for okStatus (optimization)
@@ -177,7 +179,6 @@ public final class StatusFactory {
 			}
 			else
 			{
-				flusher.ensureBuffer(1);
 				buffer.put((byte)type.ordinal());
 				SerializeHelper.serializeString(message, buffer, flusher);
 				SerializeHelper.serializeString(stackDump, buffer, flusher);
