@@ -81,7 +81,7 @@ public class ThreadCreateFactory {
             private Thread thread;
             private ReentrantLock lock = new ReentrantLock();
             private Condition waitForReady = lock.newCondition();
-            private boolean isReady = false;
+            private volatile boolean isReady = false;
             /* (non-Javadoc)
              * @see java.lang.Runnable#run()
              */
