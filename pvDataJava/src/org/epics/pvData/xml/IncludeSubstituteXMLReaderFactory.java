@@ -382,18 +382,19 @@ public class IncludeSubstituteXMLReaderFactory {
         
         private String convertSeparator(String original) {
             if(File.separator.equals("/")) return original;
-            String convertedString = "";
+            StringBuilder builder = new StringBuilder();
+            builder.append("");
             String subString = original;
             while(subString.length()>0) {
                 int index = subString.indexOf('/');
                 if(index<0) {
-                    convertedString += subString;
+                    builder.append(subString);
                     break;
                 }
-                convertedString += subString.substring(0, index) + File.separator;
+                builder.append(subString.substring(0, index) + File.separator);
                 subString = subString.substring(index+1);
             }
-            return convertedString;
+            return builder.toString();
         }
         
         private String convertFieldName(String string) {
