@@ -312,6 +312,7 @@ public class XMLToPVDatabaseFactory {
                 return;
             case scalarArray:
                 arrayString = content;
+                return;
             case auxInfo:
                 auxInfoString = content;
                 return;
@@ -492,7 +493,7 @@ public class XMLToPVDatabaseFactory {
                 	if(pvField!=null) {
                 		pvStructure = (PVStructure)pvField;
                 	} else {// add new field
-                        pvStructure = pvDataCreate.createPVStructure(pvParent, fieldName,pvType);
+                        pvStructure = pvDataCreate.createPVStructure(pvParent, fieldName,new Field[0]);
                         pvParent.appendPVField(pvStructure);
                     }
                 } else {

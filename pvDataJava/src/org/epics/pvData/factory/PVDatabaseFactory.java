@@ -275,15 +275,16 @@ public class PVDatabaseFactory {
                 TreeMap<String,PVStructure> structure,
                 LinkedHashMap<String,PVRecord> from)
         {
-            Set<String> keys;
+            
             rwLock.writeLock().lock();
             try {
-                keys = structure.keySet();
-                for(String key: keys) {
-                    structureMap.put(key,structure.get(key));
+                Set<Map.Entry<String, PVStructure>> set0 = structure.entrySet();
+                for(Map.Entry<String,PVStructure> entry : set0) {
+                    structureMap.put(entry.getKey(), entry.getValue());
                 }
-                keys = from.keySet();
-                for(String key: keys) {
+                Set<Map.Entry<String, PVRecord>> set1 = from.entrySet();
+                for(Map.Entry<String,PVRecord> entry : set1) {
+                    String key = entry.getKey();
                     PVRecord pvRecord = from.get(key);
                     pvRecord.addRequester(this);
                     recordMap.put(key,pvRecord);
