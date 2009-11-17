@@ -5,6 +5,7 @@ package org.epics.pvData.test;
 import java.util.Map;
 import java.util.Set;
 
+import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.xml.IncludeSubstituteDetailsXMLListener;
 
 /**
@@ -54,8 +55,9 @@ public class IncludeSubstituteDetailsXMLLIstenerForTesting implements IncludeSub
      */
     public void startElementBeforeSubstitution(String name,Map<String, String> attributes) {
         System.out.println("startElementBeforeSubstitution " + name);
-        Set<String> keys =attributes.keySet();
-        for(String key : keys) {
+        Set<Map.Entry<String, String>> set = attributes.entrySet();
+        for(Map.Entry<String,String> entry : set) {
+            String key = entry.getKey();
             String value = attributes.get(key);
             if(value.indexOf("${")>=0) {
                 System.out.println("   " +key + " is " + value);

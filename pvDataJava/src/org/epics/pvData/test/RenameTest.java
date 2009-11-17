@@ -80,12 +80,20 @@ public class RenameTest extends TestCase {
     
     private static final String prefix = "  ";
     private static void printSubFields(PVStructure pvStructure,int level) {
-        String blanks = prefix;
-        for(int i=0; i<level; i++) blanks += blanks;
-        
+        StringBuilder builder = new StringBuilder();
+        builder.append(prefix);
+        for(int i=0; i<level; i++) builder.append(prefix);
+        String blanks = builder.toString();
         PVField[] pvFields = pvStructure.getPVFields();
         for(PVField pvField: pvFields) {
-            System.out.println(blanks + pvField.getField().getFieldName() + " " + pvField.getFullFieldName() + " " + pvField.getFullName());
+            builder.setLength(0);
+            builder.append(blanks);
+            builder.append(pvField.getField().getFieldName());
+            builder.append(' ');
+            builder.append(pvField.getFullFieldName());
+            builder.append(' ');
+            builder.append(pvField.getFullName());
+            System.out.println(builder.toString());
             if(pvField.getField().getType()==Type.structure) printSubFields((PVStructure)pvField,level +1);
         }
     }
