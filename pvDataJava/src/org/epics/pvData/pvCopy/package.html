@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pvCopy<br />
 package: org.epics.pvData.pvCopy<br />
-2009.11.04</h1>
+2009.11.09</h1>
 CONTENTS 
 
 <div class="toc">
@@ -19,7 +19,7 @@ CONTENTS
   <li><a href="#BitSetUtil">BitSetUtil</a></li>
   <li><a href="#PVCopy">PVCopy</a></li>
   <li><a href="#PVCopyMoni">PVCopyMonitor</a></li>
-  <li><a href="#PVCopyFact">PVCopyFactory</a>
+  <li><a href="#PVCopyFact">PVCopyFactory</a> 
     <ul>
       <li><a href="#Java">Java Definition</a></li>
       <li><a href="#PVStructur">PVStructure pvRequest</a></li>
@@ -428,6 +428,33 @@ if the following is specified:</p>
        + ",power{power.value,power.alarm}"
        + ",current{current.value,current.alarm}"
        + ",voltage{voltage.value,voltage.alarm}");</pre>
+
+<p>A final example is for a channel access link in a javaIOC record. The
+example connects the a record which has an integer value field to the
+value.index of a record with a value field that is an enumerated structure.
+The following shows the xml definitions. The structure with the name request
+connects to the value.index and to alarm.</p>
+<pre>&lt;record recordName = "enumerated"&gt;
+    &lt;structure name = "value" extends = "enumerated"/&gt;
+    &lt;structure name = "alarm" extends = "alarm" /&gt;
+    &lt;!-- more stuff --&gt;
+&lt;/record&gt;
+
+
+&lt;record recordName = "enumeratedMonitorIndex"&gt;
+    &lt;scalar name = "value" scalarType = "int"/&gt;
+    &lt;structure name = "alarm" extends = "alarm" /&gt;
+    &lt;structure name = "timeStamp" extends = "timeStamp" /&gt;
+    &lt;structure name = "input" extends = "caMonitorLink"&gt;
+        &lt;scalar name = "pvname"&gt;enumerated&lt;/scalar&gt;
+        &lt;structure name = "request"&gt;
+            &lt;scalar name = "value" scalarType = "string"&gt;value.index&lt;/scalar&gt;
+            &lt;scalar name = "alarm" scalarType = "string"&gt;alarm&lt;/scalar&gt;
+        &lt;/structure&gt;
+        &lt;scalar name = "process"&gt;true&lt;/scalar&gt;
+    &lt;/structure&gt;
+&lt;/record&gt;
+</pre>
 <hr />
 
 <h2 style="text-align: center" id="PVShare">PVShare</h2>
