@@ -228,7 +228,7 @@ public class PerformTest extends TestCase {
             executor.execute(executorNode);
             lock.lock();
             try {
-                if(isWaiting) wakeUp.await();
+                while(isWaiting) wakeUp.await();
             } catch(InterruptedException e) {
             } finally {
                 lock.unlock();
@@ -252,7 +252,7 @@ public class PerformTest extends TestCase {
         private Condition wakeUp = lock.newCondition();
         private Executor executor;
         private ExecutorNode executorNode;
-        private boolean isWaiting = false;
+        private volatile boolean isWaiting = false;
     }
     
     private static class Cast implements TimeFunctionRequester {
