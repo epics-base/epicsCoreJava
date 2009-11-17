@@ -2128,7 +2128,7 @@ public final class ConvertFactory {
                     for(int i=0; i<num; i++) {
                         if(pvdata.get(offset+i,1,data)==1) {
                             boolean[] dataArray = data.data;
-                            Boolean value = new Boolean(dataArray[data.offset]);
+                            Boolean value = Boolean.valueOf(dataArray[data.offset]);
                             to[toOffset+i] = value.toString();
                         } else {
                             to[toOffset+i] = "bad pv";
@@ -2142,7 +2142,7 @@ public final class ConvertFactory {
                     for(int i=0; i<num; i++) {
                         if(pvdata.get(offset+i,1,data)==1) {
                             byte[] dataArray = data.data;
-                            Byte value = new Byte(dataArray[data.offset]);
+                            Byte value = Byte.valueOf(dataArray[data.offset]);
                             to[toOffset+i] = value.toString();
                         } else {
                             to[toOffset+i] = "bad pv";
@@ -2156,7 +2156,7 @@ public final class ConvertFactory {
                     for(int i=0; i<num; i++) {
                         if(pvdata.get(offset+i,1,data)==1) {
                             short[] dataArray = data.data;
-                            Short value = new Short(dataArray[data.offset]);
+                            Short value = Short.valueOf(dataArray[data.offset]);
                             to[toOffset+i] = value.toString();
                         } else {
                             to[toOffset+i] = "bad pv";
@@ -2170,7 +2170,7 @@ public final class ConvertFactory {
                     for(int i=0; i<num; i++) {
                         if(pvdata.get(offset+i,1,data)==1) {
                             int[] dataArray = data.data;
-                            Integer value = new Integer(dataArray[data.offset]);
+                            Integer value = Integer.valueOf(dataArray[data.offset]);
                             to[toOffset+i] = value.toString();
                         } else {
                             to[toOffset+i] = "bad pv";
@@ -2184,7 +2184,7 @@ public final class ConvertFactory {
                     for(int i=0; i<num; i++) {
                         if(pvdata.get(offset+i,1,data)==1) {
                             long[] dataArray = data.data;
-                            Long value = new Long(dataArray[data.offset]);
+                            Long value = Long.valueOf(dataArray[data.offset]);
                             to[toOffset+i] = value.toString();
                         } else {
                             to[toOffset+i] = "bad pv";

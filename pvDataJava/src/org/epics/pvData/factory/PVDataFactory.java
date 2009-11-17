@@ -115,8 +115,9 @@ public class PVDataFactory {
             convert.copyScalar(scalarToClone, pvScalar);
             Map<String,PVScalar> attributes = scalarToClone.getPVAuxInfo().getInfos();
             PVAuxInfo pvAttribute = pvScalar.getPVAuxInfo();
-            Set<String> keys = attributes.keySet();
-            for(String key : keys) {
+            Set<Map.Entry<String, PVScalar>> set = attributes.entrySet();
+            for(Map.Entry<String,PVScalar> entry : set) {
+                String key = entry.getKey();
                 PVScalar fromAttribute = attributes.get(key);
                 PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
                 convert.copyScalar(fromAttribute, toAttribute);
@@ -158,8 +159,9 @@ public class PVDataFactory {
             convert.copyArray(arrayToClone,0, pvArray,0,arrayToClone.getLength());
             Map<String,PVScalar> attributes = arrayToClone.getPVAuxInfo().getInfos();
             PVAuxInfo pvAttribute = pvArray.getPVAuxInfo();
-            Set<String> keys = attributes.keySet();
-            for(String key : keys) {
+            Set<Map.Entry<String, PVScalar>> set = attributes.entrySet();
+            for(Map.Entry<String,PVScalar> entry : set) {
+                String key = entry.getKey();
                 PVScalar fromAttribute = attributes.get(key);
                 PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
                 convert.copyScalar(fromAttribute, toAttribute);
@@ -284,10 +286,11 @@ public class PVDataFactory {
         }
         
         private void copyStructure(PVStructure from,PVStructure to)  {
-        	Map<String,PVScalar> attributes = from.getPVAuxInfo().getInfos();
-        	PVAuxInfo pvAttribute = to.getPVAuxInfo();
-        	Set<String> keys = attributes.keySet();
-            for(String key : keys) {
+            Map<String,PVScalar> attributes = from.getPVAuxInfo().getInfos();
+            PVAuxInfo pvAttribute = to.getPVAuxInfo();
+            Set<Map.Entry<String, PVScalar>> set = attributes.entrySet();
+            for(Map.Entry<String,PVScalar> entry : set) {
+                String key = entry.getKey();
                 PVScalar fromAttribute = attributes.get(key);
                 PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
                 convert.copyScalar(fromAttribute, toAttribute);
@@ -304,8 +307,9 @@ public class PVDataFactory {
             	}
             	attributes = fromPV.getPVAuxInfo().getInfos();
             	pvAttribute = toPV.getPVAuxInfo();
-            	keys = attributes.keySet();
-                for(String key : keys) {
+            	set = attributes.entrySet();
+                for(Map.Entry<String,PVScalar> entry : set) {
+                    String key = entry.getKey();
                     PVScalar fromAttribute = attributes.get(key);
                     PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
                     convert.copyScalar(fromAttribute, toAttribute);

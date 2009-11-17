@@ -71,11 +71,15 @@ public class BasePVAuxInfo implements PVAuxInfo {
      * @see org.epics.pvData.pv.PVAuxInfo#toString(int)
      */
     public synchronized String toString(int indentLevel) {
-        String result = "";
-        Set<String> keys = attributeMap.keySet();
-        for(String key : keys) {
-            result += " " + key + "=" + attributeMap.get(key);
+        StringBuilder builder = new StringBuilder();
+        builder.append("");
+        Set<Map.Entry<String, PVScalar>> set = attributeMap.entrySet();
+        for(Map.Entry<String,PVScalar> entry : set) {
+            String key = entry.getKey();
+            builder.append(' ');
+            builder.append('=');
+            builder.append(attributeMap.get(key));
         }
-        return result;
+        return builder.toString();
     }
 }
