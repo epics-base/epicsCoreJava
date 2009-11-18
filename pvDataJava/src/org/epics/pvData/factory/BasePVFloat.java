@@ -82,4 +82,12 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
         else
             return false;
     }
+
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return (int)value;
+	}
 }
