@@ -82,4 +82,12 @@ public class BasePVLong extends AbstractPVScalar implements PVLong
         else
             return false;
     }
+
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return (int)value;
+	}
 }
