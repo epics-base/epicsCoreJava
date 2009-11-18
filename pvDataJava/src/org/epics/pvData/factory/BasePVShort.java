@@ -82,4 +82,11 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
         else
             return false;
     }
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return value;
+	}
 }
