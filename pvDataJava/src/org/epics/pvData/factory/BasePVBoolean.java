@@ -81,4 +81,12 @@ public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
         else
             return false;
     }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return (value ? 1231 : 1237);
+	}    
+    
 }
