@@ -194,4 +194,21 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
             if(pvField.getField().getType()==Type.structure) removeListener((PVStructure)pvField,pvListener);
         }
     }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return id;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		return (obj instanceof BasePVRecord && ((BasePVRecord)obj).id == id);
+	}
+    
 }
