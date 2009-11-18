@@ -179,4 +179,11 @@ public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArra
 		else
 			return false;
 	}
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(value);
+	}
 }
