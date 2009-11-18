@@ -148,9 +148,17 @@ public class TimeStampFactory{
 				return false;
 			return true;
 		}
-        
-        
-        
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((pvNano == null) ? 0 : pvNano.hashCode());
+			result = prime * result + ((pvSecond == null) ? 0 : pvSecond.hashCode());
+			return result;
+		}
     }
     
 }

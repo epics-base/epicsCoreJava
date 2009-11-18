@@ -166,6 +166,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVByteImpl extends AbstractSharePVScalar implements PVByte
@@ -213,6 +225,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVShortImpl extends AbstractSharePVScalar implements PVShort
@@ -260,6 +284,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVIntImpl extends AbstractSharePVScalar implements PVInt
@@ -307,6 +343,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVLongImpl extends AbstractSharePVScalar implements PVLong
@@ -354,6 +402,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVFloatImpl extends AbstractSharePVScalar implements PVFloat
@@ -401,6 +461,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVDoubleImpl extends AbstractSharePVScalar implements PVDouble
@@ -448,6 +520,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVStringImpl extends AbstractSharePVScalar implements PVString
@@ -495,6 +579,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl, int, int)
          */
@@ -564,6 +660,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVByteArrayImpl extends AbstractSharePVArray implements PVByteArray
@@ -622,6 +730,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVShortArrayImpl extends AbstractSharePVArray implements PVShortArray
@@ -680,6 +800,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVIntArrayImpl extends AbstractSharePVArray implements PVIntArray
@@ -738,6 +870,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVLongArrayImpl extends AbstractSharePVArray implements PVLongArray
@@ -796,6 +940,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVFloatArrayImpl extends AbstractSharePVArray implements PVFloatArray
@@ -854,6 +1010,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVDoubleArrayImpl extends AbstractSharePVArray implements PVDoubleArray
@@ -912,6 +1080,18 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
     
     private static class SharePVStringArrayImpl extends AbstractSharePVArray implements PVStringArray
@@ -970,5 +1150,17 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
     }
 }

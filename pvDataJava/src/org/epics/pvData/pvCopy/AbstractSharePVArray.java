@@ -166,6 +166,18 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
             unlockShare();
         }
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+	    lockShare();
+        try {
+            return pvShare.hashCode();
+        } finally {
+            unlockShare();
+        }
+	}
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVListener#beginGroupPut(org.epics.pvData.pv.PVRecord)
      */
