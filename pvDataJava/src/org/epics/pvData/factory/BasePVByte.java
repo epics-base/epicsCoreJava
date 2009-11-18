@@ -82,4 +82,13 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
         else
             return false;
     }
+
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return value;
+	}
+    
 }
