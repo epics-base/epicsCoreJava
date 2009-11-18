@@ -6,6 +6,7 @@
 package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Array;
@@ -671,5 +672,17 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 		}
 		else
 			return false;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((extendsStructureName == null) ? 0 : extendsStructureName.hashCode());
+		result = prime * result + Arrays.hashCode(pvFields);
+		return result;
 	}
 }
