@@ -142,7 +142,37 @@ public class EnumeratedFactory {
             return pvIndex;
         }
 
-        private class Index extends AbstractPVScalar implements PVInt {
+        /* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = super.hashCode();
+			result = prime * result + Arrays.hashCode(choices);
+			result = prime * result + index;
+			return result;
+		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			EnumeratedImpl other = (EnumeratedImpl) obj;
+			if (!Arrays.equals(choices, other.choices))
+				return false;
+			if (index != other.index)
+				return false;
+			return true;
+		}
+
+		private class Index extends AbstractPVScalar implements PVInt {
             private Index(PVStructure parent,Scalar scalar) {
                 super(parent,scalar);
             }
@@ -209,6 +239,13 @@ public class EnumeratedFactory {
                 else
                     return false;
             }
+            /* (non-Javadoc)
+        	 * @see java.lang.Object#hashCode()
+        	 */
+        	@Override
+        	public int hashCode() {
+        		return index;
+        	}
         }
 
         private class Choices extends AbstractPVArray implements PVStringArray
@@ -344,6 +381,13 @@ public class EnumeratedFactory {
                 else
                     return false;
             }
+            /* (non-Javadoc)
+        	 * @see java.lang.Object#hashCode()
+        	 */
+        	@Override
+        	public int hashCode() {
+        		return Arrays.hashCode(choices);
+        	}
         }
     }
 
