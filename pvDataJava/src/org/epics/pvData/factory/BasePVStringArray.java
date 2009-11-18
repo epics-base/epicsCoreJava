@@ -157,4 +157,11 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
 		else
 			return false;
 	}
+    /* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(value);
+	}
 }
