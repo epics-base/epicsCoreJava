@@ -9,13 +9,11 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Structure;
-import org.epics.pvData.pv.Type;
 
 
 
@@ -160,7 +158,7 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      */
     public void unregisterListener(PVListener recordListener) {
         pvAllListenerList.remove(recordListener);
-        removeListener(this,recordListener);
+        super.getPVRecordField().removeListener(recordListener);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#isRegisteredListener(org.epics.pvData.pv.PVListener)
@@ -173,8 +171,11 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      * @see org.epics.pvData.factory.AbstractPVField#removeEveryListener()
      */
     public void removeEveryListener() {
-        super.removeEveryListener();
-        pvAllListenerList.clear();
+        while(pvAllListenerList.size()>0) {
+            PVListener pvListener = pvAllListenerList.remove(pvAllListenerList.size()-1);
+            pvListener.unlisten(this);
+            super.getPVRecordField().removeListener(pvListener);
+        }
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.BasePVStructure#toString()
@@ -186,21 +187,13 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
     public String toString(int indentLevel) {
         return super.toString("record " + recordName,indentLevel);
     } 
-    private void removeListener(PVStructure pvStructure,PVListener pvListener) {
-        pvStructure.removeListener(pvListener);
-        PVField[] pvFields = pvStructure.getPVFields();
-        for(PVField pvField : pvFields) {
-            pvField.removeListener(pvListener);
-            if(pvField.getField().getType()==Type.structure) removeListener((PVStructure)pvField,pvListener);
-        }
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        return id;
     }
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return id;
-	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -210,5 +203,4 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
 			return true;
 		return (obj instanceof BasePVRecord && ((BasePVRecord)obj).id == id);
 	}
-    
 }
