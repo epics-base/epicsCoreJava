@@ -23,9 +23,8 @@ import org.epics.pvData.pv.PVDouble;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVFloat;
 import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVLong;
-import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVShort;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
@@ -78,51 +77,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         if(parent==null) computeOffset();
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#removeEveryListener()
-     */
-    @Override
-    protected void removeEveryListener() {
-        super.removeEveryListener();
-        for(PVField pvField :pvFields) {
-            AbstractPVField abstractPVField = (AbstractPVField)pvField;
-            abstractPVField.removeEveryListener();
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#removeListener(org.epics.pvData.pv.PVListener)
-     */
-    @Override
-    public void removeListener(PVListener recordListener) {
-        super.removeListener(recordListener);
-        for(PVField pvField :pvFields) {
-            AbstractPVField abstractPVField = (AbstractPVField)pvField;
-            abstractPVField.removeListener(recordListener);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#postPut()
-     */
-    @Override
-    public void postPut() {
-        super.postPut();
-        for(PVField pvField : pvFields) {
-            postPutNoParent((AbstractPVField)pvField);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVStructure#postPut(org.epics.pvData.pv.PVField)
-     */
-    @Override
-    public void postPut(PVField subField) {
-     // don't create iterator
-        for(int index=0; index<pvListenerList.size(); index++) {
-            PVListener pvListener = pvListenerList.get(index);
-            if(pvListener!=null) pvListener.dataPut(this,subField);
-        }
-        PVStructure pvParent = super.getParent();
-        if(pvParent!=null) pvParent.postPut(subField);
-    }
+    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getSubField(java.lang.String)
      */
@@ -157,17 +112,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         return (Structure)getField();
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#setRecord(org.epics.pvData.pv.PVRecord)
-     */
-    @Override
-    public void setRecord(PVRecord record) {
-        super.setRecord(record);
-        for(PVField pvField : pvFields) {
-            AbstractPVField abstractPVField = (AbstractPVField)pvField;
-            abstractPVField.setRecord(record);
-        }
-    }
-    /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#replacePVField(java.lang.String, org.epics.pvData.pv.PVField)
      */
     @Override
@@ -184,7 +128,52 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         pvFields[index] = newPVField;
         if(origFields[index]!=newPVField.getField()) replaceStructure();
+        PVRecordField pvRecordField = super.getPVRecordField();
+        if(pvRecordField!=null) {
+            AbstractPVField pvField = (AbstractPVField)newPVField;
+            pvField.setRecord(pvRecordField.getPVRecord());
+        }
         computeOffset();
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVStructure#appendPVField(org.epics.pvData.pv.PVField)
+     */
+    @Override
+    public void appendPVField(PVField pvField) {
+        int origLength = pvFields.length;
+        PVField[] newPVFields = new PVField[origLength + 1];
+        for(int i=0; i<origLength; i++) {
+            newPVFields[i] = pvFields[i];
+        }
+        newPVFields[newPVFields.length-1] = pvField;
+        pvFields = newPVFields;
+        replaceStructure();
+        PVRecordField pvRecordField = super.getPVRecordField();
+        if(pvRecordField!=null) {
+            AbstractPVField abstractPVField = (AbstractPVField)pvField;
+            abstractPVField.setRecord(pvRecordField.getPVRecord());
+        }
+        computeOffset();
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVStructure#removePVField(java.lang.String)
+     */
+    @Override
+    public void removePVField(String fieldName) {
+        PVField pvField = getSubField(fieldName);
+        if(pvField==null) {
+            super.message("removePVField " + fieldName + " does not exist", MessageType.error);
+            return;
+        }
+        int origLength = pvFields.length;
+        PVField[] newPVFields = new PVField[origLength - 1];
+        int newIndex = 0;
+        for(int i=0; i<origLength; i++) {
+            if(pvFields[i]==pvField) continue;
+            newPVFields[newIndex++] = pvFields[i];
+        }
+        pvFields = newPVFields;
+        replaceStructure();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getPVFields()
@@ -374,41 +363,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
                 return null;
         }
         return (PVArray)pvField;
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVStructure#appendPVField(org.epics.pvData.pv.PVField)
-     */
-    @Override
-    public void appendPVField(PVField pvField) {
-        int origLength = pvFields.length;
-        PVField[] newPVFields = new PVField[origLength + 1];
-        for(int i=0; i<origLength; i++) {
-            newPVFields[i] = pvFields[i];
-        }
-        newPVFields[newPVFields.length-1] = pvField;
-        pvFields = newPVFields;
-        replaceStructure();
-        computeOffset();
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVStructure#removePVField(java.lang.String)
-     */
-    @Override
-    public void removePVField(String fieldName) {
-        PVField pvField = getSubField(fieldName);
-        if(pvField==null) {
-            super.message("removePVField " + fieldName + " does not exist", MessageType.error);
-            return;
-        }
-        int origLength = pvFields.length;
-        PVField[] newPVFields = new PVField[origLength - 1];
-        int newIndex = 0;
-        for(int i=0; i<origLength; i++) {
-            if(pvFields[i]==pvField) continue;
-            newPVFields[newIndex++] = pvFields[i];
-        }
-        pvFields = newPVFields;
-        replaceStructure();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getExtendStructure()
