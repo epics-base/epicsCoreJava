@@ -612,7 +612,7 @@ public class PVCopyFactory {
             private void addListener(Node node) {
                 if(!node.isStructure) {
                     PVField pvRecordField = getRecordPVField(node.structureOffset);
-                    pvRecordField.addListener(this);
+                    pvRecordField.getPVRecordField().addListener(this);
                     return;
                 }
                 StructureNode structureNode = (StructureNode)node;
