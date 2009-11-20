@@ -5,7 +5,6 @@ package org.epics.pvData.test;
 import java.util.Map;
 import java.util.Set;
 
-import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.xml.IncludeSubstituteDetailsXMLListener;
 
 /**
