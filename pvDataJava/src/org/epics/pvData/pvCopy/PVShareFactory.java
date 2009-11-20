@@ -632,7 +632,7 @@ public class PVShareFactory {
         public int put(int offset, int length, boolean[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
@@ -702,7 +702,7 @@ public class PVShareFactory {
         public int put(int offset, int length, byte[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
@@ -772,7 +772,7 @@ public class PVShareFactory {
         public int put(int offset, int length, short[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
@@ -842,7 +842,7 @@ public class PVShareFactory {
         public int put(int offset, int length, int[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
@@ -912,7 +912,7 @@ public class PVShareFactory {
         public int put(int offset, int length, long[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
@@ -982,7 +982,7 @@ public class PVShareFactory {
         public int put(int offset, int length, float[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
@@ -1052,7 +1052,7 @@ public class PVShareFactory {
         public int put(int offset, int length, double[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
@@ -1122,7 +1122,7 @@ public class PVShareFactory {
         public int put(int offset, int length, String[] from, int fromOffset) {
             super.lockShare();
             try {
-                PVRecord pvShareRecord = pvShare.getPVRecord();
+                PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
                 int number = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
