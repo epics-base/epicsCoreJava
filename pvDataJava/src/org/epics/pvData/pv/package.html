@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pv<br />
 package: org.epics.pvData.pv<br />
-2009.09.02</h1>
+2009.11.19</h1>
 CONTENTS 
 
 <div class="toc">
@@ -26,6 +26,7 @@ CONTENTS
   <li><a href="#PVField">PVField - Data Interfaces</a>
     <ul>
       <li><a href="#PVField1">PVField</a></li>
+      <li><a href="#PVRecordFi">PVRecordField</a></li>
       <li><a href="#Requester">Requester</a></li>
       <li><a href="#PVAuxInfo">PVAuxInfo</a></li>
       <li><a href="#PVListener">PVListener</a></li>
@@ -67,9 +68,17 @@ CONTENTS
 definitions that describe PVData. The implementation is provided in package
 org.epics.pvData.factory.</p>
 
-<p>A PVDatabase consists of a set of PVRecords. Each PVRecord has a unique
-record name and is the top level PVStructure, which is a structured set of
-PVFields. A PVRecord can be:</p>
+<p>A PVDatabase consists of :</p>
+<ol>
+  <li>A set of structures. Each has a unique name and is implemented as a top
+    level PVStructure. The primary use of these structures is as "templates"
+    for creating structure fields within a PVRecord.</li>
+  <li>A set of record instances. Each has a unique name and is implemented as
+    a PVRecord.</li>
+</ol>
+
+<p>Each PVRecord has a unique record name and is a top level PVStructure,
+which is a structured set of PVFields. A PVRecord can be:</p>
 <dl>
   <dt>locked</dt>
     <dd>Whenever a record is accessed it can be locked. The JavaIOC requires
@@ -88,11 +97,13 @@ PVFields. A PVRecord can be:</p>
       a message is generated.</dd>
 </dl>
 
-<p>As mentioned a PVRecord has a structured set of fields. Each field has
-code for accessing the field. The interface for each field is PVField or an
-interace that extends PVField. Each field also has an introspection
-interface, which is Field or an extension of Field. This package overview
-describes the complete set of data and introspection interfaces.</p>
+<p>A PVRecord is a top level PVStructure. A PVStructure is a field that
+contains an array of subfields. Each field has code for accessing the field.
+The interface for each field is PVField or an interface that extends PVField.
+Each field also has an introspection interface, which is Field or an
+extension of Field. If a PVField is in a record then it also has an
+associated PVRecordField. This package overview describes the complete set of
+data and introspection interfaces for pvData.</p>
 
 <p>This package also describes an interface Convert, which provides a rich
 set of methods for converting and copying data between field.</p>
@@ -219,8 +230,7 @@ over the network.</p>
 <p>Status provides a way to pass status back to client code. It is new and
 not currently used by pvData but may be in the future. It is used by code
 that uses pvData.</p>
-<pre>
-    interface Status {
+<pre>    interface Status {
         public enum StatusType {OK,WARNING,ERROR,FATAL};
         StatusType getType();
         String getMessage();
@@ -230,8 +240,7 @@ that uses pvData.</p>
     interface StatusCreate {
         Status getStatusOK(); 
         Status createStatus(StatusType type, String message, Throwable cause);
-    }
-</pre>
+    }</pre>
 
 <p>The Status methods are:</p>
 <dl>
@@ -277,11 +286,9 @@ structure and a record also has an associated PVField.</p>
         String getFullName();
         Field getField();
         PVStructure getParent();
-        PVRecord getPVRecord();
+        PVRecordField getPVRecordField();
         void replacePVField(PVField newPVField);
         void renameField(String newName);
-        boolean addListener(PVListener pvListener);
-        void removeListener(PVListener pvListener);
         void postPut();
         String toString();
         String toString(int indentLevel);
@@ -326,15 +333,38 @@ structure and a record also has an associated PVField.</p>
   <dt>getParent</dt>
     <dd>Get the interface for the parent or null if this is the PVRecord
       itself.</dd>
-  <dt>getPVRecord</dt>
-    <dd>Get the interface for the record that contains this field. This can
-      be null.</dd>
+  <dt>getPVRecordField</dt>
+    <dd>Get the PVRecordField interface for field. This is null if this field
+      is not part of a record.</dd>
   <dt>replacePVField</dt>
     <dd>Replace this PVField. This is called by support code that wants to
       replace the default implementation of a data field with it's own
       implementation.</dd>
   <dt>renameField</dt>
     <dd>Rename the field name.</dd>
+  <dt>postPut</dt>
+    <dd>If this field is a field of a record pvRecordField.postPut() is
+      called. If not a field of a record nothing happens.</dd>
+  <dt>toString</dt>
+    <dd>Converts the field data to a string. This is mostly for debugging
+      purposes.</dd>
+</dl>
+
+<h3 id="PVRecordFi">PVRecordField</h3>
+
+<p>For each field within a PVRecord the PVField has an associated
+PVRecordField:</p>
+<pre>    interface PVRecordField{
+        PVRecord getPVRecord();
+        boolean addListener(PVListener pvListener);
+        void removeListener(PVListener pvListener);
+        void postPut();
+    }</pre>
+
+<p>where</p>
+<dl>
+  <dt>getPVRecord</dt>
+    <dd>Returns the PVRecord to which this field belongs.</dd>
   <dt>addListener</dt>
     <dd>Add A PVListener to this field. Whenever this field or any subfield
       if this field is modified the listener will be notified. PVListener is
@@ -343,12 +373,8 @@ structure and a record also has an associated PVField.</p>
   <dt>removeListener</dt>
     <dd>Remove a PVListener.</dd>
   <dt>postPut</dt>
-    <dd>Post a change to a field. This must be called by any code that
-      directly calls the put method of a field. In particular the
-      ConvertFactory calls this.</dd>
-  <dt>toString</dt>
-    <dd>Converts the field data to a string. This is mostly for debugging
-      purposes.</dd>
+    <dd>This is called by the code that implements the data interface. It is
+      called whenever the put method is called.</dd>
 </dl>
 
 <h3 id="Requester">Requester</h3>
@@ -708,7 +734,6 @@ to coordinate access to the array.</p>
         void replacePVField(String fieldName,PVField newPVField);
         void appendPVField(PVField pvField);
         void removePVField(String fieldName);
-        void postPut(PVField pvSubField);
         // the following are convenience methods
         PVBoolean getBooleanField(String fieldName);
         PVByte getByteField(String fieldName);
