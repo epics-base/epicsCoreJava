@@ -70,10 +70,10 @@ public interface PVField extends Requester, Serializable {
      */
     PVStructure getParent();
     /**
-     * Get the record.
-     * @return The record interface.
+     * Get the PVRecordField for this PVField.
+     * @return The interface or null if this field is not in a PVRecord.
      */
-    PVRecord getPVRecord();
+    PVRecordField getPVRecordField();
     /**
      * Replace the data implementation for a field.
      * @param newPVField The new implementation for this field.
@@ -85,20 +85,7 @@ public interface PVField extends Requester, Serializable {
      */
     void renameField(String newName);
     /**
-     * Add a listener to this field.
-     * @param pvListener The pvListener to add to list for postPut notification.
-     * @return (false,true) if the pvListener (was not,was) added.
-     * If the listener was already in the list false is returned.
-     */
-    boolean addListener(PVListener pvListener);
-    /**
-     * remove a pvListener.
-     * @param pvListener The listener to remove.
-     */
-    void removeListener(PVListener pvListener);
-    /**
-     * post that data has been modified.
-     * This must be called by the code that implements put.
+     * postPut. Called when the data for a field is updated by the implementation.
      */
     void postPut();
     /**
