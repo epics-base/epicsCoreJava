@@ -14,6 +14,7 @@ import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -41,9 +42,12 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
      * Lock the shared record.
      */
     protected void lockShare() {
-        PVRecord sharePVRecord = pvShare.getPVRecord();
-        PVRecord thisPVRecord = super.getPVRecord();
-        if(sharePVRecord==null) return;
+        PVRecordField pvRecordField = pvShare.getPVRecordField();
+        if(pvRecordField==null) return;
+        PVRecord sharePVRecord = pvRecordField.getPVRecord();
+        pvRecordField = super.getPVRecordField();
+        PVRecord thisPVRecord = null;
+        if(pvRecordField!=null) thisPVRecord = pvRecordField.getPVRecord();
         if(thisPVRecord==null) {
             sharePVRecord.lock();
         } else {
@@ -54,16 +58,20 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
      * Unlock the shared record
      */
     protected void unlockShare() {
-        PVRecord sharePVRecord = pvShare.getPVRecord();
-        if(sharePVRecord!=null) sharePVRecord.unlock();
+        PVRecordField pvRecordField = pvShare.getPVRecordField();
+        if(pvRecordField==null) return;
+        pvRecordField.getPVRecord().unlock();
     }
     /**
      * lock this record.
      */
     protected void lockThis() {
-        PVRecord sharePVRecord = pvShare.getPVRecord();
-        PVRecord thisPVRecord = super.getPVRecord();
-        if(thisPVRecord==null) return;
+        PVRecordField pvRecordField = super.getPVRecordField();
+        if(pvRecordField==null) return;
+        PVRecord thisPVRecord = pvRecordField.getPVRecord();
+        pvRecordField = pvShare.getPVRecordField();
+        PVRecord sharePVRecord = null;
+        if(pvRecordField!=null) sharePVRecord = pvRecordField.getPVRecord();
         if(sharePVRecord==null) {
             thisPVRecord.lock();
         } else {
@@ -74,8 +82,9 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
      * unlock this record.
      */
     protected void unlockThis() {
-        PVRecord thisPVRecord = super.getPVRecord();
-        if(thisPVRecord!=null) thisPVRecord.unlock();
+        PVRecordField pvRecordField = super.getPVRecordField();
+        if(pvRecordField==null) return;
+        pvRecordField.getPVRecord().unlock();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVArray#getArray()
@@ -185,7 +194,7 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
     public void beginGroupPut(PVRecord pvRecord) {
         lockThis();
         try {
-        PVRecord thisPVRecord = this.getPVRecord();
+        PVRecord thisPVRecord = this.getPVRecordField().getPVRecord();
         if(thisPVRecord!=null) thisPVRecord.beginGroupPut();
         } finally {
             unlockThis();
@@ -215,7 +224,7 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
     public void endGroupPut(PVRecord pvRecord) {
         lockThis();
         try {
-        PVRecord thisPVRecord = this.getPVRecord();
+        PVRecord thisPVRecord = this.getPVRecordField().getPVRecord();
         if(thisPVRecord!=null) thisPVRecord.endGroupPut();
         } finally {
             unlockThis();
@@ -228,7 +237,7 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
     public void unlisten(PVRecord pvRecord) {
         lockThis();
         try {
-        PVRecord thisPVRecord = this.getPVRecord();
+        PVRecord thisPVRecord = this.getPVRecordField().getPVRecord();
         if(thisPVRecord!=null) thisPVRecord.removeEveryListener();
         } finally {
             unlockThis();
