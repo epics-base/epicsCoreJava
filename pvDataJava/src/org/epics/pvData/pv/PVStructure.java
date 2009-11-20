@@ -55,11 +55,6 @@ public interface PVStructure extends PVField, BitSetSerializable {
      */
     void removePVField(String fieldName);
     /**
-     * postPut to a subfield of the structure.
-     * @param pvSubField The subfield.
-     */
-    void postPut(PVField pvSubField);
-    /**
      * Find a boolean subfield with the specified fieldName.
      * The fieldName is of the form name.name...
      * @param fieldName The field name to find
