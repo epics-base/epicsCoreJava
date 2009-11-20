@@ -139,13 +139,13 @@ public class PVListenerForTesting implements PVListener{
         actualFieldName = pvField.getField().getFieldName();
         fullName = pvField.getFullName();
         pvRecord.registerListener(this);
-        pvField.addListener(this);
+        pvField.getPVRecordField().addListener(this);
         if(monitorProperties) {
             String[] propertyNames = pvProperty.getPropertyNames(pvField);
             if(propertyNames!=null) {
                 for(String propertyName : propertyNames) {
                     PVField pvf = pvProperty.findProperty(pvField, propertyName);
-                   pvf.addListener(this);
+                   pvf.getPVRecordField().addListener(this);
                 }
             }
         }

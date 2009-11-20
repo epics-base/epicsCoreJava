@@ -414,7 +414,7 @@ public class XMLToPVDatabaseFactory {
         private void endRecord(String name)
         {
             if(pvListener!=null) pvListener.endRecord();   
-            PVRecord pvRecord = structureState.pvStructure.getPVRecord();
+            PVRecord pvRecord = structureState.pvStructure.getPVRecordField().getPVRecord();
             if(!pvDatabase.addRecord(pvRecord)) {
                 iocxmlReader.message(
                         "record " + pvRecord.getRecordName() + " not added to database",

@@ -125,7 +125,7 @@ public class ParentTest extends TestCase {
             System.out.printf("field %s not in record %s%n",fieldName,recordName);
             return;
         }
-        PVRecord record = pvField.getPVRecord();
+        PVRecord record = pvField.getPVRecordField().getPVRecord();
         System.out.printf("fieldName %s actualField %s record %s fullFieldName %s fullName %s%n",
             fieldName,
             pvField.getField().getFieldName(),
@@ -134,7 +134,7 @@ public class ParentTest extends TestCase {
             pvField.getFullName());
         PVField parent = pvField.getParent();
         while(parent!=null) {
-            record = parent.getPVRecord();
+            record = parent.getPVRecordField().getPVRecord();
             System.out.printf("     parent %s\n",parent.getFullName());
             parent = parent.getParent();
         }

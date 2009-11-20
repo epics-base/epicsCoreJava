@@ -939,7 +939,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
@@ -1009,7 +1009,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
@@ -1078,7 +1078,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
@@ -1147,7 +1147,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
@@ -1215,7 +1215,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
@@ -1284,7 +1284,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
@@ -1354,7 +1354,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
@@ -1422,7 +1422,7 @@ public class ReplaceTest extends TestCase {
                  if(newlength>capacity) setCapacity(newlength);
                  length = newlength;
             }
-            PVRecord pvRecord = super.getPVRecord();
+            PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
             if(pvRecord!=null) pvRecord.endGroupPut();
