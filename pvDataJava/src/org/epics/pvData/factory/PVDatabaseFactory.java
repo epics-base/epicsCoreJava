@@ -119,7 +119,7 @@ public class PVDatabaseFactory {
         public boolean addRecord(PVRecord record) {
             rwLock.writeLock().lock();
             try {
-                String key = record.getPVRecord().getRecordName();
+                String key = record.getRecordName();
                 if(recordMap.containsKey(key)) {
                     message("record already exists",MessageType.warning);
                     return false;
@@ -133,7 +133,7 @@ public class PVDatabaseFactory {
                 rwLock.writeLock().unlock();
             }
             if(isMaster) {
-                record.getPVRecord().addRequester(this);
+                record.addRequester(this);
             }
             return true;
         }
@@ -356,11 +356,11 @@ public class PVDatabaseFactory {
          */
         public boolean removeRecord(PVRecord record) {
             if(isMaster) {
-                record.getPVRecord().removeRequester(this);
+                record.removeRequester(this);
             }
             rwLock.writeLock().lock();
             try {
-                String key = record.getPVRecord().getRecordName();
+                String key = record.getRecordName();
                 if(recordMap.remove(key)!=null) return true;
                 return false;
             } finally {
