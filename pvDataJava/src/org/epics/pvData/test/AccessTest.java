@@ -131,7 +131,7 @@ public class AccessTest extends TestCase {
             return;
         }
         PVField parent = pvField.getParent();
-        PVRecord record = pvField.getPVRecord();
+        PVRecord record = pvField.getPVRecordField().getPVRecord();
         String parentName = "none";
         Field field = pvField.getField();
         if(parent!=null) parentName = parent.getFullFieldName();
