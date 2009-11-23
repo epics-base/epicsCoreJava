@@ -38,11 +38,12 @@ public class TimeFunctionFactory {
                 startTime = System.nanoTime();
                 for(int i=0; i<ntimes; i++) requester.function();
                 endTime = System.nanoTime();
-                double diff = (double)(endTime - startTime)/1e9;
-                if(diff>=.5) {
+                double diff = ((double)(endTime - startTime))/1e9;
+                if(diff>=1.0) {
                     perCall = diff/(double)ntimes;
                     break;
                 }
+
                 ntimes *= 2;
             }
             return perCall;
