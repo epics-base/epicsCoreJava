@@ -1235,7 +1235,7 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
 			for (; i < maxIndex; i++)
 				words[i] = buffer.getLong();
 			if (i < wordsInUse)
-				control.ensureData(-1);
+				control.ensureData(Long.SIZE/Byte.SIZE);
 			else
 				break;
 		}
