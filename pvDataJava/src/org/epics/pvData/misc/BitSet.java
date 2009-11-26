@@ -119,15 +119,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
     }
 
     /**
-     * Every public method must preserve these invariants.
-     */
-    private void checkInvariants() {
-        assert(wordsInUse == 0 || words[wordsInUse - 1] != 0);
-        assert(wordsInUse >= 0 && wordsInUse <= words.length);
-        assert(wordsInUse == words.length || words[wordsInUse] == 0);
-    }
-
-    /**
      * Sets the field wordsInUse to the logical size in words of the bit set.
      * WARNING:This method assumes that the number of words actually in use is
      * less than or equal to the current value of wordsInUse!
@@ -179,7 +170,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
     private BitSet(long[] words) {
         this.words = words;
         this.wordsInUse = words.length;
-        checkInvariants();
     }
 
     /**
@@ -385,7 +375,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         words[wordIndex] ^= (1L << bitIndex);
 
         recalculateWordsInUse();
-        checkInvariants();
     }
 
     /**
@@ -429,7 +418,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         }
 
         recalculateWordsInUse();
-        checkInvariants();
     }
 
     /**
@@ -447,8 +435,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         expandTo(wordIndex);
 
         words[wordIndex] |= (1L << bitIndex); // Restores invariants
-
-        checkInvariants();
     }
 
     /**
@@ -505,8 +491,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
             // Handle last word (restores invariants)
             words[endWordIndex] |= lastWordMask;
         }
-
-        checkInvariants();
     }
 
     /**
@@ -546,7 +530,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         words[wordIndex] &= ~(1L << bitIndex);
 
         recalculateWordsInUse();
-        checkInvariants();
     }
 
     /**
@@ -595,7 +578,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         }
 
         recalculateWordsInUse();
-        checkInvariants();
     }
 
     /**
@@ -622,8 +604,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         if (bitIndex < 0)
             throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
 
-        checkInvariants();
-
         int wordIndex = wordIndex(bitIndex);
         return (wordIndex < wordsInUse)
             && ((words[wordIndex] & (1L << bitIndex)) != 0);
@@ -643,8 +623,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
      */
     public BitSet get(int fromIndex, int toIndex) {
         checkRange(fromIndex, toIndex);
-
-        checkInvariants();
 
         int len = length();
 
@@ -680,7 +658,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         // Set wordsInUse correctly
         result.wordsInUse = targetWords;
         result.recalculateWordsInUse();
-        result.checkInvariants();
 
         return result;
     }
@@ -707,8 +684,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
     public int nextSetBit(int fromIndex) {
         if (fromIndex < 0)
             throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
-
-        checkInvariants();
 
         int u = wordIndex(fromIndex);
         if (u >= wordsInUse)
@@ -739,8 +714,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         // See 4816253.
         if (fromIndex < 0)
             throw new IndexOutOfBoundsException("fromIndex < 0: " + fromIndex);
-
-        checkInvariants();
 
         int u = wordIndex(fromIndex);
         if (u >= wordsInUse)
@@ -786,8 +759,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
                 "fromIndex < -1: " + fromIndex);
         }
 
-        checkInvariants();
-
         int u = wordIndex(fromIndex);
         if (u >= wordsInUse)
             return length() - 1;
@@ -823,8 +794,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
             throw new IndexOutOfBoundsException(
                 "fromIndex < -1: " + fromIndex);
         }
-
-        checkInvariants();
 
         int u = wordIndex(fromIndex);
         if (u >= wordsInUse)
@@ -918,7 +887,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
             words[i] &= set.words[i];
 
         recalculateWordsInUse();
-        checkInvariants();
     }
 
     /**
@@ -952,7 +920,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
                              wordsInUse - wordsInCommon);
 
         // recalculateWordsInUse() is unnecessary
-        checkInvariants();
     }
 
     /**
@@ -988,7 +955,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
                              set.wordsInUse - wordsInCommon);
 
         recalculateWordsInUse();
-        checkInvariants();
     }
 
     /**
@@ -1005,7 +971,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
             words[i] &= ~set.words[i];
 
         recalculateWordsInUse();
-        checkInvariants();
     }
 
     /**
@@ -1067,9 +1032,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
 
         BitSet set = (BitSet) obj;
 
-        checkInvariants();
-        set.checkInvariants();
-
         if (wordsInUse != set.wordsInUse)
             return false;
 
@@ -1097,7 +1059,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         try {
             BitSet result = (BitSet) super.clone();
             result.words = words.clone();
-            result.checkInvariants();
             return result;
         } catch (CloneNotSupportedException e) {
             throw new InternalError();
@@ -1112,7 +1073,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
     private void trimToSize() {
         if (wordsInUse != words.length) {
             words = Arrays.copyOf(words, wordsInUse);
-            checkInvariants();
         }
     }
 
@@ -1122,8 +1082,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
      */
     private void writeObject(ObjectOutputStream s)
         throws IOException {
-
-        checkInvariants();
 
         if (! sizeIsSticky)
             trimToSize();
@@ -1149,7 +1107,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         wordsInUse = words.length;
         recalculateWordsInUse();
         // COMMETED FROM ORIGINAL sizeIsSticky = (words.length > 0 && words[words.length-1] == 0L); // heuristic
-        checkInvariants();
     }
 
     /**
@@ -1176,7 +1133,6 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
      * @return a string representation of this bit set
      */
     public String toString() {
-        checkInvariants();
 
         int numBits = (wordsInUse > 128) ?
             cardinality() : wordsInUse * BITS_PER_WORD;
@@ -1204,9 +1160,10 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
      */
 	@Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
-    	SerializeHelper.writeSize(wordsInUse, buffer, flusher);
+		/*
+		SerializeHelper.writeSize(wordsInUse, buffer, flusher);
     	int i = 0;
-    	while (true)
+    	while (i < wordsInUse)
     	{
         	final int spaceLeft = buffer.remaining() / (Long.SIZE/Byte.SIZE);
         	final int maxIndex = Math.min(wordsInUse, i + spaceLeft);
@@ -1215,9 +1172,26 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         	
         	if (i < wordsInUse)
         		flusher.flushSerializeBuffer();
-        	else
-        		break;
     	}
+    	*/
+    	
+        final int n = wordsInUse;
+        if (n == 0) {
+    		SerializeHelper.writeSize(0, buffer, flusher);
+    		return;
+        }
+        int len = 8 * (n-1);
+        for (long x = words[n - 1]; x != 0; x >>>= 8)
+            len++;
+
+		SerializeHelper.writeSize(len, buffer, flusher);
+		flusher.ensureBuffer(len);
+
+        for (int i = 0; i < n - 1; i++)
+        	buffer.putLong(words[i]);
+        
+        for (long x = words[n - 1]; x != 0; x >>>= 8)
+        	buffer.put((byte) (x & 0xff));
     }
 
 	/* (non-Javadoc)
@@ -1225,23 +1199,46 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
 	 */
 	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+
+		final int bytes = SerializeHelper.readSize(buffer, control);	// in bytes
+		
+		wordsInUse = (bytes + 7) / 8;
+		if (wordsInUse > words.length)
+    		words = new long[wordsInUse];
+
+		if (wordsInUse == 0)
+			return;
+		
+		control.ensureData(bytes);
+		
+		int i = 0;
+		final int longs = bytes / 8;
+        while (i < longs)
+            words[i++] = buffer.getLong();
+        
+        for (int j = i; j < wordsInUse; j++)
+        	words[j] = 0;
+        
+        for (int remaining = (bytes - longs * 8), j = 0; j < remaining; j++)
+            words[i] |= (buffer.get() & 0xffL) << (8 * j);
+        
+		/*
+		
 		wordsInUse = SerializeHelper.readSize(buffer, control);
     	if (wordsInUse > words.length)
     		words = new long[wordsInUse];
     	int i = 0;
-		while (true)
+		while (i < wordsInUse)
 		{
 			final int maxIndex = Math.min(wordsInUse-i, buffer.remaining()/(Long.SIZE/Byte.SIZE))+i;
 			for (; i < maxIndex; i++)
 				words[i] = buffer.getLong();
 			if (i < wordsInUse)
 				control.ensureData(Long.SIZE/Byte.SIZE);
-			else
-				break;
 		}
     	for (; i < words.length; i++)
     		words[i] = 0;
-        checkInvariants();
+    	*/
 	}
     
 }
