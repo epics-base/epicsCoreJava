@@ -42,6 +42,24 @@ public class PerformTest extends TestCase {
     private static PVDataCreate dataCreate = PVDataFactory.getPVDataCreate();
     private static Convert convert = ConvertFactory.getConvert();
     private static final int arraySize = 1000;
+    
+    public static void testEmpty() {
+        EmptyFunction emptyFunction = new EmptyFunction();
+        TimeFunction timeFunction = TimeFunctionFactory.create(emptyFunction);
+        double perCall = timeFunction.timeCall();
+        System.out.printf("%nemptyFunction calls per microsecond %12.0f%n",(1.0/perCall)/1e6);
+    }
+    
+    
+    
+    private static class EmptyFunction implements TimeFunctionRequester {
+        
+        private EmptyFunction() {}
+        /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
+         * @see org.epics.pvData.misc.TimeFunctionRequester#function()
+         */
+        public void function() {}
+    }
     /**
      * test copy array of double.
      */
