@@ -50,10 +50,7 @@ public class PerformTest extends TestCase {
         System.out.printf("%nemptyFunction calls per microsecond %12.0f%n",(1.0/perCall)/1e6);
     }
     
-    
-    
     private static class EmptyFunction implements TimeFunctionRequester {
-        
         private EmptyFunction() {}
         /* private static class CurrentTimeFunction implements TimeFunctionRequester {(non-Javadoc)
          * @see org.epics.pvData.misc.TimeFunctionRequester#function()
