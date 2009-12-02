@@ -33,17 +33,16 @@ public class TimeFunctionFactory {
         public double timeCall() {
             double perCall = 0.0;
             long startTime,endTime;
-            int ntimes = 1;
+            long ntimes = 1;
             while(true) {
                 startTime = System.nanoTime();
-                for(int i=0; i<ntimes; i++) requester.function();
+                for(long i=0; i<ntimes; i++) requester.function();
                 endTime = System.nanoTime();
                 double diff = ((double)(endTime - startTime))/1e9;
                 if(diff>=1.0) {
                     perCall = diff/(double)ntimes;
                     break;
                 }
-
                 ntimes *= 2;
             }
             return perCall;
