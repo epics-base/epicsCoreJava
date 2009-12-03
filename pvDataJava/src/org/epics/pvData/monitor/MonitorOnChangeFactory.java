@@ -6,10 +6,8 @@
 package org.epics.pvData.monitor;
 
 
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVStructure;
@@ -22,7 +20,6 @@ import org.epics.pvData.pvCopy.PVCopy;
 public class MonitorOnChangeFactory {
     private static final String name = "onChange";
     private static final MonitorOnChange monitorOnChange = new MonitorOnChange();
-    private static final PVDataCreate pvDataCreate= PVDataFactory.getPVDataCreate();
 
     public static MonitorCreate getMonitorCreate() {
         return monitorOnChange;
