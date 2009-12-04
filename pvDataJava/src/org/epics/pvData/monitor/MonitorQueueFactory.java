@@ -55,17 +55,17 @@ public class MonitorQueueFactory {
     
     private static class MonitorElementImlp implements MonitorElement {
         
-        MonitorElementImlp(PVStructure pvStructure) {
-            this.pvStructure = pvStructure;
-            int numberFields = 0;
-            if(pvStructure!=null) {
-            changedBitSet = new BitSet(numberFields);
-            overrunBitSet = new BitSet(numberFields);
-            } else {
-                changedBitSet = null;
-                overrunBitSet = null;
-            }
-        }
+    	MonitorElementImlp(PVStructure pvStructure) {
+    		this.pvStructure = pvStructure;
+    		if(pvStructure!=null) {
+    			int numberFields = pvStructure.getNumberFields();
+    			changedBitSet = new BitSet(numberFields);
+    			overrunBitSet = new BitSet(numberFields);
+    		} else {
+    			changedBitSet = null;
+    			overrunBitSet = null;
+    		}
+    	}
         
         private final PVStructure pvStructure;
         private final BitSet changedBitSet;
