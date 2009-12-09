@@ -38,7 +38,7 @@ abstract public class AbstractLocalMonitor extends AbstractMonitor implements PV
         this.pvRecord = pvRecord;
         this.pvCopy = pvCopy;
         pvCopyMonitor = pvCopy.createPVCopyMonitor(this);
-        super.init(pvCopy.getStructure());
+        super.init(pvCopy.createPVStructure());
     }
    
     protected PVRecord pvRecord;
@@ -68,7 +68,7 @@ abstract public class AbstractLocalMonitor extends AbstractMonitor implements PV
     }
     @Override
     protected void switchBitSets(BitSet changedBitSet,BitSet overrunBitSet) {
-        pvCopyMonitor.switchBitSets(changedBitSet,overrunBitSet , false);
+    	pvCopyMonitor.switchBitSets(changedBitSet, overrunBitSet, false);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.monitor.Monitor#destroy()
