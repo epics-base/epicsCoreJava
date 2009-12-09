@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS pvData: monitor<br />
 package: org.epics.pvData.monitor<br />
-2009.09.04</h1>
+2009.12.09</h1>
 CONTENTS 
 
 <div class="toc">
@@ -43,12 +43,6 @@ CONTENTS
 
 <h2 style="text-align: center" id="Overview">Overview</h2>
 <hr />
-
-<p>MARTY: CHANGE AbstractMonitor:</p>
-<ul>
-  <li>updateCopySetBitSet to updateSet</li>
-  <li>updateCopyFromBitSet to updateFromBitSet</li>
-</ul>
 
 <p>This package provides the ability to monitor changes to an arbitrary
 subset of the fields in a record. It is of interest to developers not to
@@ -124,15 +118,19 @@ support for the following queue sizes.</p>
       whenever a monitor occurs.</dd>
   <dt>0</dt>
     <dd>No queue. The entire set of requested data is given to the client
-      whenever a monitor occurs.</dd>
+      whenever a monitor occurs. If multiple monitors occur before the client
+      responds the data for the last monitor is returned without any
+      indication of overflow.</dd>
   <dt>1</dt>
     <dd>No queue is kept but only modified data is sent to the client. The
       data may often change multiple times between times that the client
       receivers data but for applications like display managers this is what
-      is wanted.</dd>
+      is wanted. If a field is updated multiple time before the client polls
+      the overflow bit is set for the field.</dd>
   <dt>&gt;=2</dt>
     <dd>A MonitiorQueue is used. Since a monitor queue has a fixed size over
-      runs can still occur but are less likely. </dd>
+      runs can still occur but are less likely. The client receives notice of
+      any overflows.</dd>
 </dl>
 <hr />
 
