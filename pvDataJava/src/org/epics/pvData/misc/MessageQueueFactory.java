@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.misc;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.epics.pvData.pv.MessageType;
 
 /**
@@ -25,7 +23,6 @@ public class MessageQueueFactory {
     }
     
     private static class MessageQueueImpl implements MessageQueue {
-        private ReentrantLock lock = new ReentrantLock();
         private MessageNode[] messageNodes;
         private int size;
         private int numFree;
@@ -40,18 +37,6 @@ public class MessageQueueFactory {
             }
             this.size = size;
             numFree = size;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.misc.MessageQueue#lock()
-         */
-        public void lock() {
-            lock.lock();
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.misc.MessageQueue#unlock()
-         */
-        public void unlock() {
-            lock.unlock();
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.MessageQueue#get()
