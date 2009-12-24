@@ -725,6 +725,8 @@ public class XMLToPVDatabaseFactory {
         
         private void endScalarArray(String name)
         {
+        	if(capacity>0) pvArray.setCapacity(capacity);
+        	if(length>0 && length<=capacity) pvArray.setLength(length);
             String value = arrayString;
             arrayString = null;
             if(value!=null && value.length()>0) {
@@ -748,8 +750,6 @@ public class XMLToPVDatabaseFactory {
                         }
                     }
                 }
-                if(capacity>0) pvArray.setCapacity(capacity);
-                if(length>0) pvArray.setLength(length);
                 try {
                     convert.fromStringArray(pvArray,offset,values.length,values,0);
                 } catch (NumberFormatException e) {
