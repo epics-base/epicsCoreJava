@@ -106,7 +106,7 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
      * the user knows what he's doing and try harder to preserve it.
      */
     // COMMETED FROM ORIGINAL private transient boolean sizeIsSticky = false;
-    private final transient boolean sizeIsSticky = true;
+    //private final transient boolean sizeIsSticky = true;
 
     /* use serialVersionUID from JDK 1.0.2 for interoperability */
     private static final long serialVersionUID = 7997698588986878753L;
@@ -123,7 +123,7 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
      * WARNING:This method assumes that the number of words actually in use is
      * less than or equal to the current value of wordsInUse!
      */
-    private void recalculateWordsInUse() {
+    private final void recalculateWordsInUse() {
         // Traverse the bitset until a used word is found
         int i;
         for (i = wordsInUse-1; i >= 0; i--)
@@ -1053,8 +1053,8 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
      * @see    #size()
      */
     public Object clone() {
-        if (! sizeIsSticky)
-            trimToSize();
+        //if (! sizeIsSticky)
+        //   trimToSize();
 
         try {
             BitSet result = (BitSet) super.clone();
@@ -1083,8 +1083,8 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
     private void writeObject(ObjectOutputStream s)
         throws IOException {
 
-        if (! sizeIsSticky)
-            trimToSize();
+        //if (! sizeIsSticky)
+        //    trimToSize();
 
         ObjectOutputStream.PutField fields = s.putFields();
         fields.put("bits", words);
