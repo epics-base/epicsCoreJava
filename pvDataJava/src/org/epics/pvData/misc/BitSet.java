@@ -67,7 +67,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author  Martin Buchholz
  * @since   JDK1.0
  */
-public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData.pv.Serializable {
+public final class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData.pv.Serializable {
     /*
      * BitSets are packed into arrays of "words."  Currently a word is
      * a long, which consists of 64 bits, requiring 6 address bits.
@@ -437,6 +437,19 @@ public class BitSet implements Cloneable, java.io.Serializable, org.epics.pvData
         words[wordIndex] |= (1L << bitIndex); // Restores invariants
     }
 
+    /**
+     * Fast copy operation.
+     * @param src bit-set to be copied from.
+     */
+    public void set(BitSet src) {
+    	// we ensure that words array size is adequate (and not wordsInUse to ensure capacity to the future)
+    	if (src.words.length > this.words.length)
+    		this.words = new long[src.words.length];
+    	
+    	System.arraycopy(src.words, 0, this.words, 0, src.wordsInUse);
+    	this.wordsInUse = src.wordsInUse;
+    }
+    
     /**
      * Sets the bit at the specified index to the specified value.
      *
