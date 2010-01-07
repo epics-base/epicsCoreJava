@@ -903,6 +903,20 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
     }
 
     /**
+     * Perform AND operation on <code>set1</code> and <code>set2</code>,
+     * and OR on result and this instance.
+     * @param set1
+     * @param set2
+     */
+    public void or_and(BitSet set1, BitSet set2) {
+    	int inUse = Math.min(set1.wordsInUse, set2.wordsInUse);
+    	
+        // Perform logical AND on words in common
+        for (int i = 0; i < inUse; i++)
+            words[i] |= (set1.words[i] & set2.words[i]);
+    }
+    
+    /**
      * Performs a logical <b>OR</b> of this bit set with the bit set
      * argument. This bit set is modified so that a bit in it has the
      * value {@code true} if and only if it either already had the
