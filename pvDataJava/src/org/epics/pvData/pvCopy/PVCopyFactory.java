@@ -132,13 +132,13 @@ public class PVCopyFactory {
         Node[] nodes;
     }
     
-    private static class PVCopyImpl implements PVCopy{
+    private static final class PVCopyImpl implements PVCopy{
         
         private PVCopyImpl(PVRecord pvRecord) {
             this.pvRecord = pvRecord;
         }
         
-        private PVRecord pvRecord;
+        private final PVRecord pvRecord;
         private boolean shareData = false;
         private Structure structure = null;
         private Node headNode = null;
@@ -474,8 +474,8 @@ public class PVCopyFactory {
             return null;
         }
         
-        private class CopyMonitor implements PVCopyMonitor, PVListener {
-            private PVCopyMonitorRequester pvCopyMonitorRequester;
+        private final class CopyMonitor implements PVCopyMonitor, PVListener {
+            private final PVCopyMonitorRequester pvCopyMonitorRequester;
             private boolean notifyOnly = true;
             private BitSet changeBitSet = null;
             private BitSet overrunBitSet = null;
@@ -559,9 +559,8 @@ public class PVCopyFactory {
                     }
                     int offset = node.structureOffset;
                     synchronized(changeBitSet) {
-                        boolean wasSet = changeBitSet.get(offset);
-                        if(wasSet) overrunBitSet.set(offset);
-                        changeBitSet.set(offset);
+                        if (changeBitSet.getAndSet(offset))
+                        	overrunBitSet.set(offset);
                     }
                 }
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();
@@ -581,9 +580,8 @@ public class PVCopyFactory {
                     int offset = recordNode.structureOffset
                     + (pvField.getFieldOffset() - recordNode.recordPVField.getFieldOffset());
                     synchronized(changeBitSet) {
-                        boolean wasSet = changeBitSet.get(offset);
-                        if(wasSet) overrunBitSet.set(offset);
-                        changeBitSet.set(offset);
+                        if (changeBitSet.getAndSet(offset))
+                        	overrunBitSet.set(offset);
                     }
                 }
                 if(!isGroupPut) pvCopyMonitorRequester.dataChanged();

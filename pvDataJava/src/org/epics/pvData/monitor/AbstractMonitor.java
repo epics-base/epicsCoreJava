@@ -156,10 +156,10 @@ abstract public class AbstractMonitor implements Monitor{
     	public void release(MonitorElement monitorElement);
     }
     
-    private class MonitorNotify implements MonitorImpl {
-    	private AbstractMonitor monitor;
-    	private AtomicBoolean gotMonitor = new AtomicBoolean(false);
-        private MonitorElement monitorElement = null;
+    private final class MonitorNotify implements MonitorImpl {
+    	private final AbstractMonitor monitor;
+        private final MonitorElement monitorElement;
+    	private volatile boolean gotMonitor = false;
         
     	MonitorNotify(AbstractMonitor monitor) {
     		this.monitor = monitor;
@@ -167,88 +167,92 @@ abstract public class AbstractMonitor implements Monitor{
     	}
     	public Status start() {
     		startMonitoring();
+    		gotMonitor = false;
             return okStatus;
     	}
         public void dataChanged() {
-        	gotMonitor.set(true);
+        	gotMonitor = true;
         	monitorRequester.monitorEvent(monitor);
         }
         public MonitorElement poll() {
-        	if(!gotMonitor.get()) return null;
+        	if (!gotMonitor) return null;
             return monitorElement;
         }
         public void release(MonitorElement monitorElement) {
-        	gotMonitor.set(false);
+        	gotMonitor = false;
         }
      }
     
-    private class MonitorEntire  implements MonitorImpl {
-    	private AbstractMonitor monitor;
+    private final class MonitorEntire implements MonitorImpl {
+    	private final AbstractMonitor monitor;
+        private final MonitorElement monitorElement;
     	private volatile boolean gotMonitor = false;
-        private MonitorElement monitorElement = null;
+    	private final BitSet dummyChangedBitSet;
+    	private final BitSet dummyOverrunBitSet;
+    	
         
     	MonitorEntire(AbstractMonitor monitor) {
     		this.monitor = monitor;
             monitorElement = MonitorQueueFactory.createMonitorElement(createPVStructure());
+            // clear and set it once for all
+    		BitSet changeBitSet = monitorElement.getChangedBitSet();
+            BitSet overrunBitSet = monitorElement.getOverrunBitSet();
+    		changeBitSet.clear();
+    		changeBitSet.set(0);
+            overrunBitSet.clear();
+            
+            // prepare dummies (clone cleared)
+            dummyChangedBitSet = (BitSet)overrunBitSet.clone();
+            dummyOverrunBitSet = (BitSet)overrunBitSet.clone();
     	}
     	public Status start() {
     		gotMonitor = false;
-    		BitSet changeBitSet = monitorElement.getChangedBitSet();
-    		changeBitSet.clear();
-    		changeBitSet.set(0);
-            BitSet overrunBitSet = monitorElement.getOverrunBitSet();
-            overrunBitSet.clear();
-            startMonitoring(changeBitSet,overrunBitSet);
+            startMonitoring(dummyChangedBitSet,dummyOverrunBitSet);
             return okStatus;
     	}
         public void dataChanged() {
-        	synchronized(monitorElement) {
-        		gotMonitor = true;
-        	}
+    		gotMonitor = true;
         	monitorRequester.monitorEvent(monitor);
         }
         public MonitorElement poll() {
-            synchronized(monitorElement) {
-            	if(!gotMonitor) return null;
-            	BitSet bitSet = monitorElement.getChangedBitSet();
-            	bitSet.clear();
-            	bitSet.set(0);
-            	bitSet = monitorElement.getOverrunBitSet();
-            	bitSet.clear();
-            	return monitorElement;
-            }
+        	if (!gotMonitor) return null;
+        	dummyChangedBitSet.clear();	// not to do too much work on setting overrun bitSet
+        	return monitorElement;
         }
         public void release(MonitorElement monitorElement) {
-        	synchronized(monitorElement) {
-        		gotMonitor = false;
-        	}
+    		gotMonitor = false;
         }
      }
     
-    private class MonitorSingle  implements MonitorImpl {
-    	private AbstractMonitor monitor;
+    private final class MonitorSingle implements MonitorImpl {
+    	private final AbstractMonitor monitor;
+    	
     	private volatile boolean gotMonitor = false;
-        private MonitorElement monitorElement = null;
-        private BitSet monitorElementChangeBitSet = null;
-        private BitSet monitorElementOverrunBitSet = null;
-        private BitSet dataChangeBitSet = null;
-        private BitSet dataOverrunBitSet = null;
+        private final MonitorElement monitorElement;
+        private final PVStructure monitorElementStructure;
+        private final BitSet monitorElementChangeBitSet;
+        private final BitSet monitorElementOverrunBitSet;
+        private final BitSet dataChangeBitSet;
+        private final BitSet dataOverrunBitSet;
         private boolean firstMonitor = false;
-        
+
         MonitorSingle(AbstractMonitor monitor) {
         	this.monitor = monitor;
         	monitorElement = MonitorQueueFactory.createMonitorElement(createPVStructure());
+        	monitorElementStructure = monitorElement.getPVStructure();
         	monitorElementChangeBitSet = monitorElement.getChangedBitSet();
         	monitorElementOverrunBitSet = monitorElement.getOverrunBitSet();
         	dataChangeBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
         	dataOverrunBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
     	}
     	public Status start() {
-    		gotMonitor = false;
-    		firstMonitor = true;
-    		dataChangeBitSet.clear();
-    		dataOverrunBitSet.clear();
-            startMonitoring(dataChangeBitSet,dataOverrunBitSet);
+        	synchronized(monitorElement) {
+	    		gotMonitor = false;
+	    		firstMonitor = true;
+	    		dataChangeBitSet.clear();
+	    		dataOverrunBitSet.clear();
+	            startMonitoring(dataChangeBitSet,dataOverrunBitSet);
+        	}
             return okStatus;
     	}
         public void dataChanged() {
@@ -261,17 +265,9 @@ abstract public class AbstractMonitor implements Monitor{
         		if(!gotMonitor) { 
         			dataOverrunBitSet.clear();
         		} else {
-        			int nextSet = 0;
-        			while(true) {
-        				nextSet = dataChangeBitSet.nextSetBit(nextSet);
-        				if(nextSet<0) break;
-        				if(monitorElementChangeBitSet.get(nextSet)) {
-        					dataOverrunBitSet.set(nextSet);
-        				}
-        				nextSet++;
-        			}
+        			dataOverrunBitSet.or_and(dataChangeBitSet, monitorElementChangeBitSet);
         		}
-        		updateBitSet(monitorElement.getPVStructure(), dataChangeBitSet);    
+        		updateFromBitSet(monitorElementStructure, dataChangeBitSet);
         		gotMonitor = true;
         	}
             if(!firstMonitor && !generateMonitor(dataChangeBitSet)) return;
@@ -281,10 +277,8 @@ abstract public class AbstractMonitor implements Monitor{
         public MonitorElement poll() {
             synchronized(monitorElement) {
             	if(!gotMonitor) return null;
-            	monitorElementChangeBitSet.clear();
-            	monitorElementChangeBitSet.or(dataChangeBitSet);
-            	monitorElementOverrunBitSet.clear();
-            	monitorElementOverrunBitSet.or(dataOverrunBitSet);
+            	monitorElementChangeBitSet.set(dataChangeBitSet);
+            	monitorElementOverrunBitSet.set(dataOverrunBitSet);
             }
             return monitorElement;
         }
@@ -298,9 +292,10 @@ abstract public class AbstractMonitor implements Monitor{
         }
      }
     
-    private class MonitorWithQueue  implements MonitorImpl {
-    	private AbstractMonitor monitor;
-        private MonitorQueue monitorQueue = null;
+    private final class MonitorWithQueue implements MonitorImpl {
+    	private final AbstractMonitor monitor;
+        private final MonitorQueue monitorQueue;
+        
         private volatile MonitorElement monitorElement = null;
         private BitSet overrunChangeBitSet = null;
         private volatile boolean firstMonitor = false;
