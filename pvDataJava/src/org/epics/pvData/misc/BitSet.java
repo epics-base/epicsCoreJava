@@ -438,6 +438,29 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
     }
 
     /**
+     * Gets and sets the bit at the specified index to {@code true}.
+     *
+     * @param  bitIndex a bit index
+     * @return the value of the bit with the specified index
+     * @throws IndexOutOfBoundsException if the specified index is negative
+     * @since  JDK1.0
+     */
+    public boolean getAndSet(int bitIndex) {
+        if (bitIndex < 0)
+            throw new IndexOutOfBoundsException("bitIndex < 0: " + bitIndex);
+
+        final int wordIndex = wordIndex(bitIndex);
+        final long mask = 1L << bitIndex;
+        final boolean retVal = (wordIndex < wordsInUse) && ((words[wordIndex] & mask) != 0);
+        
+        expandTo(wordIndex);
+
+        words[wordIndex] |= mask; // Restores invariants
+        
+        return retVal;
+    }
+
+    /**
      * Fast copy operation.
      * @param src bit-set to be copied from.
      */
