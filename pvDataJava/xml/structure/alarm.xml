@@ -13,8 +13,6 @@
 <structure structureName = "alarm">
   <structure name = "severity" extends = "alarmSeverity" />
   <scalar name = "message" scalarType = "string" />
-  <scalar name = "ackTransient" scalarType = "boolean" />
-  <structure name = "ackSeverity" extends = "alarmSeverity" />
 </structure>
 
 </database>
