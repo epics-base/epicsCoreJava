@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData : misc<br />
 package: org.epics.pvData.misc<br />
-2009.09.04</h1>
+2010.01.08</h1>
 CONTENTS 
 
 <div class="toc">
@@ -393,8 +393,7 @@ createNode is what is returned by LinkedList.getObject. For example:</p>
     // then
 
     SomeObject someObject = new SomeObject(/* args */);
-    linkedList.addTail(someObject);
-</pre>
+    linkedList.addTail(someObject);</pre>
 
 <p>A node can only be on one list at a time but can be put, at different
 times, on different lists as long as they all hold the same type of
@@ -520,7 +519,26 @@ has the methods:</p>
 <hr />
 
 <p>This is adapted from the java.util.BitSet. It adds serializable. See
-java.util.BitSet for a description.</p>
+java.util.BitSet for a description. This implementation adds the following
+additional methods:</p>
+<pre>    public boolean getAndSet(int bitIndex);
+    public void set(BitSet src);
+    public void or_and(BitSet set1, BitSet set2);
+</pre>
+
+<p>where</p>
+<dl>
+  <dt>getAndSet</dt>
+    <dd>gets and sets the bit at bitIndex.</dd>
+  <dt>set</dt>
+    <dd>fast copy operation from src to this bitSet</dd>
+  <dt>or_and</dt>
+    <dd>The result is the or of the current bitSet with the value of set1.and
+      set2. The number of bits is the
+    Math.max(set1.bitsInUse,set2.bitsInUse);</dd>
+</dl>
+<pre>
+    </pre>
 <hr />
 
 <h2 style="text-align: center;" id="Queue">Queue</h2>
