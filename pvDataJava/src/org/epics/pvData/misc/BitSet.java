@@ -933,6 +933,12 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      */
     public void or_and(BitSet set1, BitSet set2) {
     	int inUse = Math.min(set1.wordsInUse, set2.wordsInUse);
+
+    	// ensure capacity
+    	if (wordsInUse < inUse) {
+            words = Arrays.copyOf(words, inUse);
+            wordsInUse = inUse;
+        }
     	
         // Perform logical AND on words in common
         for (int i = 0; i < inUse; i++)
