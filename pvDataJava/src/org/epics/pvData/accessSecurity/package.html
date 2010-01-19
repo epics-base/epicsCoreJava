@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>EPICS JavaIOC: Access Security</title>
+</head>
+
+<body>
+<h1 style="text-align: center">EPICS PVData: Access Security<br />
+package: org.epics.pvData.accessSecurity<br />
+2009.11.19</h1>
+CONTENTS 
+<hr />
+<h2 style="text-align: center">Overview</h2>
+<hr />
+<p>Access Security limits access to A PVData database.
+Access Security for a PVData database is modeled closely after the EPICS V3
+access security as described in the
+<a href="http://aps.anl.gov/epics/base/R3-14/11-docs/AppDevGuide.pdf">
+V3 Application Developer's Guide.</a>
+In that document read chapter "Access Security".
+The main difference is that the rules provide for process access in addition
+to read and write access.</p>
+<p>This document discusses the following:</p>
+<ul>
+  <li>Quick start
+     <br />A summary of the steps necessary to start access security.</li>
+  <li>User’s Guide
+     <br />This explains what access security is and how to use it.</li>
+  <li>Design Summary
+     <br />Functional Requirements and Design Overview.</li>
+  <li>Implementation Overview</li>
+  <li>Java IOC Support<br />
+     A description of support provided by the javaIOC for access security.</li>
+  <li>Channel Access Support<br />
+     A description of support provided by Channel Access for access security.</li>
+  <li>Trapping Channel Access Puts<br />
+     This allows trapping of put and process requests to a PVData database.</li>
+</ul>
+<p>The requirements for access security were generated at ANL/APS in 1992. The requirements document is:
+<a href="http://www.aps.anl.gov/epics/EpicsDocumentation/EpicsGeneral/WorkInProgress/casecsp.html">Channel Access Security Requirements</a>
+
+
+<hr />
+<h2 style="text-align: center">Quick Start</h2>
+<hr />
+<p>TBD. This section will describe how to start access security for a javaIOC.</p>
+
+<hr />
+<h2 style="text-align: center">User's Guide</h2>
+<hr />
+<h3>Feautures</h3>
+<p>Access security protects IOC databases from unauthorized Channel Access Clients. Access security is based on the
+following:</p>
+<ul>
+  <li>Who<br />userid of the channel access client.</li>
+  <li>Where<br />Hostid where the user is logged on. This is the host on which the channel access client exists. Thus no
+  attempt is made to see if a user is local or is remotely logged on to the host.
+  </li>
+  <li>What<br />Individual fields of records are protected. Each record has a field containing the Access Security Group
+  (ASG) to which the record belongs. Each field has an access security level, which must be 0 or 1.The security level
+  is defined in the ascii record definition file. Thus the access security level for a field is the same for all record
+  instances of a record type.
+  </li>
+  <li>When<br />Access rules can contain input links and calculations similar to the calculation record.</li>
+</ul>
+
+<h3>Limitations</h3>
+<p>Channel Access can be enhanced to implement authorization for CA udp and tcp access
+to a PVData database but this is not the responsibility of access secuity.</p>
+<p>An PVData database can be accessed only via Channel Access or via a shell.
+It is assumed that access to the
+shell is protected via physical security and standard networking and
+physical security methods.
+</p>
+<p>No attempt has been made to protect against the sophisticated saboteur. Network security methods must be used to limit
+access to the subnet on which the iocs reside.
+</p>
+<h3>Definitions</h3>
+<p>This document uses the following definitions:</p>
+<ul>
+   <li>ASL<br />Access Security Level (Called access level in Req Doc)</li>
+   <li>ASG<br />Access Security Group (Called PV Group in Req Doc)</li>
+   <li>UAG<br />User Access Group</li>
+   <li>HAG<br />Host Access Group</li>
+</ul>
+<h3>Access Security Configuration File</h3>
+<p>This section describes the format of a file containing definitions of the user access groups, host access groups, and access security groups.
+Lets first give a simple example and then a complete description of the syntax.
+</p>
+<h4>Simple Example</h4>
+<pre>
+x
+</pre>
+
+
+<hr />
+<h2 style="text-align: center">Design Summary</h2>
+<p>TBD.</p>
+<hr />
+
+<hr />
+<h2 style="text-align: center">Implementation Overview</h2>
+<hr />
+<p>TBD.</p>
+
+<hr />
+<h2 style="text-align: center">Java IOC Support</h2>
+<hr />
+<p>TBD. The plan is to start/restart access security via record instances
+that have support that interfaces to access security</p>
+
+<hr />
+<h2 style="text-align: center">Channel Access Support</h2>
+<hr />
+<p>TBD.</p>
+
+<hr />
+<h2 style="text-align: center">Trapping Channel Access Puts/h2>
+<hr />
+<p>TBD.</p>
+
+</body>
+</html>
