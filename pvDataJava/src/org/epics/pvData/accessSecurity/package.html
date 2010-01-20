@@ -10,117 +10,475 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: Access Security<br />
 package: org.epics.pvData.accessSecurity<br />
-2009.11.19</h1>
+2010.01.20</h1>
 CONTENTS 
 <hr />
+
+<h2 style="text-align: center">Required Changes to Existing Packages</h2>
+<hr />
+
+<p>This section is temporary. It will be removed after access security is
+implemented.</p>
+
+<h3>pvData</h3>
+
+<p>PVField must implement getAccessSecurityLevel(). In addition the xml
+parser must accept an extra xml attribute:</p>
+<pre>    accessSecurityLevel = "level"</pre>
+
+<p>If a structure field is created via an extends attribute than all fields
+inherit the accessSecurityLevel attribute. But the inherited level can be
+overridden.</p>
+
+<h3>CAJv4</h3>
+
+<p>TBD</p>
+
+<h3>javaIOC</h3>
+
+<p>Allow support to be used without the record process provided by javaIOC.
+Perhaps this means the ability to initialize support with other record
+processors.</p>
+<hr />
+
 <h2 style="text-align: center">Overview</h2>
 <hr />
-<p>Access Security limits access to A PVData database.
-Access Security for a PVData database is modeled closely after the EPICS V3
-access security as described in the
-<a href="http://aps.anl.gov/epics/base/R3-14/11-docs/AppDevGuide.pdf">
-V3 Application Developer's Guide.</a>
-In that document read chapter "Access Security".
-The main difference is that the rules provide for process access in addition
-to read and write access.</p>
+
+<p>Access Security limits access to A PVData database. Access Security for a
+PVData database is modeled closely after the EPICS V3 access security. The
+requirements for access security were generated at ANL/APS in 1992. The
+requirements document is: <a
+href="http://www.aps.anl.gov/epics/EpicsDocumentation/EpicsGeneral/WorkInProgress/casecsp.html">Channel
+Access Security Requirements</a> The V3 implementation is described in the <a
+href="http://aps.anl.gov/epics/base/R3-14/11-docs/AppDevGuide.pdf">V3
+Application Developer's Guide.</a> In that document read chapter "Access
+Security".</p>
+
 <p>This document discusses the following:</p>
 <ul>
-  <li>Quick start
-     <br />A summary of the steps necessary to start access security.</li>
-  <li>User’s Guide
-     <br />This explains what access security is and how to use it.</li>
-  <li>Design Summary
-     <br />Functional Requirements and Design Overview.</li>
+  <li>Quick start <br />
+    A summary of the steps necessary to start access security.</li>
+  <li>User's Guide <br />
+    This explains what access security is and how to use it.</li>
+  <li>Design Summary <br />
+    Functional Requirements and Design Overview.</li>
   <li>Implementation Overview</li>
   <li>Java IOC Support<br />
-     A description of support provided by the javaIOC for access security.</li>
+    A description of support provided by the javaIOC for access security.</li>
   <li>Channel Access Support<br />
-     A description of support provided by Channel Access for access security.</li>
+    A description of support provided by Channel Access for access
+  security.</li>
   <li>Trapping Channel Access Puts<br />
-     This allows trapping of put and process requests to a PVData database.</li>
+    This allows trapping of put and process requests to a PVData
+  database.</li>
 </ul>
-<p>The requirements for access security were generated at ANL/APS in 1992. The requirements document is:
-<a href="http://www.aps.anl.gov/epics/EpicsDocumentation/EpicsGeneral/WorkInProgress/casecsp.html">Channel Access Security Requirements</a>
-
-
 <hr />
+
 <h2 style="text-align: center">Quick Start</h2>
 <hr />
-<p>TBD. This section will describe how to start access security for a javaIOC.</p>
 
+<p>TBD. This section will describe how to start access security for a
+javaIOC.</p>
 <hr />
+
 <h2 style="text-align: center">User's Guide</h2>
 <hr />
+
 <h3>Feautures</h3>
-<p>Access security protects IOC databases from unauthorized Channel Access Clients. Access security is based on the
-following:</p>
+
+<p>Access security protects IOC databases from unauthorized Channel Access
+Clients. Access security is based on the following:</p>
 <ul>
-  <li>Who<br />userid of the channel access client.</li>
-  <li>Where<br />Hostid where the user is logged on. This is the host on which the channel access client exists. Thus no
-  attempt is made to see if a user is local or is remotely logged on to the host.
-  </li>
-  <li>What<br />Individual fields of records are protected. Each record has a field containing the Access Security Group
-  (ASG) to which the record belongs. Each field has an access security level, which must be 0 or 1.The security level
-  is defined in the ascii record definition file. Thus the access security level for a field is the same for all record
-  instances of a record type.
-  </li>
-  <li>When<br />Access rules can contain input links and calculations similar to the calculation record.</li>
+  <li>Who<br />
+    userid of the channel access client.</li>
+  <li>Where<br />
+    Hostid where the user is logged on. This is the host on which the channel
+    access client exists. Thus no attempt is made to see if a user is local
+    or is remotely logged on to the host. </li>
+  <li>What<br />
+    The user is given one of the following access rights: none, read, write,
+    process. A higher access right also means all the lower rights. Thus a
+    client that has process access also has read and write access. Individual
+    fields of records are protected. Each record belongs to an Access
+    Security Group. Each field has an access security level, which must be 0
+    or 1. If a user has read/write/process access to a level 1 fields then
+    the user also has that same access to level 0 fields. Thus a higher level
+    means stricter access.</li>
+  <li>When<br />
+    Access rules can include state. The state can be determined via support
+    similar to that provided by the javaIOC or by the javaIOC itself. Thus
+    links to records and calculations can be used to determine state.</li>
 </ul>
+
+<p>Each PVRecord can optionally have a scalar string field named asg, which
+names the access security group to which the record belongs. If no field
+named asg is present than the record is in group default.</p>
+
+<p>The PVField interface for each field has a method <pre>    int  getAccessLevel();</pre>
+By default the level is 1. Fields that are meant to be set by channel access
+clients have the level set to 0.</p>
 
 <h3>Limitations</h3>
-<p>Channel Access can be enhanced to implement authorization for CA udp and tcp access
-to a PVData database but this is not the responsibility of access secuity.</p>
-<p>An PVData database can be accessed only via Channel Access or via a shell.
-It is assumed that access to the
-shell is protected via physical security and standard networking and
-physical security methods.
-</p>
-<p>No attempt has been made to protect against the sophisticated saboteur. Network security methods must be used to limit
-access to the subnet on which the iocs reside.
-</p>
+
+<p>Channel Access can be enhanced to implement authentication for CA udp and
+tcp access to a PVData database but this is not the responsibility of access
+secuity.</p>
+
+<p>A PVData database can be accessed only via Channel Access or via a shell.
+It is assumed that access to the shell is protected via physical security and
+standard networking and physical security methods. </p>
+
+<p>No attempt has been made to protect against the sophisticated saboteur.
+Network security methods must be used to limit access to the subnet on which
+the iocs reside. </p>
+
 <h3>Definitions</h3>
+
 <p>This document uses the following definitions:</p>
 <ul>
-   <li>ASL<br />Access Security Level (Called access level in Req Doc)</li>
-   <li>ASG<br />Access Security Group (Called PV Group in Req Doc)</li>
-   <li>UAG<br />User Access Group</li>
-   <li>HAG<br />Host Access Group</li>
+  <li>ASL<br />
+    Access Security Level (Called access level in Req Doc)</li>
+  <li>ASG<br />
+    Access Security Group (Called PV Group in Req Doc)</li>
+  <li>UAG<br />
+    User Access Group</li>
+  <li>HAG<br />
+    Host Access Group</li>
 </ul>
+
 <h3>Access Security Configuration File</h3>
-<p>This section describes the format of a file containing definitions of the user access groups, host access groups, and access security groups.
-Lets first give a simple example and then a complete description of the syntax.
+
+<p>This section describes the format of a file containing definitions of the
+user access groups, host access groups, and access security groups. Lets
+first give a simple example and then a complete description of the syntax.
 </p>
+
 <h4>Simple Example</h4>
-<pre>
-x
-</pre>
+<pre>&lt;accessSecurity&gt;
+  &lt;uag name = "users"&gt;[user1,user2]&lt;/uag&gt;
+  &lt;hag name = "hosts"&gt;[host1,host2]&lt;/hag&gt;
+  &lt;asg name = "default"&gt;
+     &lt;rule&gt;
+         &lt;level&gt;1&lt;/level&gt;
+         &lt;access&gt;read&lt;/access&gt;
+     &lt;/rule&gt;
+     &lt;rule&gt;
+         &lt;level&gt;1&lt;/level&gt;
+         &lt;access&gt;process&lt;/access&gt;
+         &lt;uag&gt;users&lt;/uag&gt;
+         &lt;hag&gt;hosts&lt;/hag&gt;
+     &lt;/rule&gt;
+&lt;/accessSecurity&gt;</pre>
 
+<p>These rules provide read access to anyone located anywhere and
+read/write/process access to user1 and user2 if they are located at host1 or
+host2.</p>
 
+<h4>Syntax Definition</h4>
+
+<p>An access security configuration file must start and end as follows:</p>
+<pre>&lt;?xml version="1.0" ?&gt;
+&lt;accessSecurity&gt;
+   &lt;!-- uag, hag, asg definitions --&gt;
+&lt;/accessSecurity&gt;</pre>
+
+<p>??? Should accessSecurity tag define xmlns or xsi ?</p>
+
+<p>Between the accessSecurity tags the following definitions appear:</p>
+<pre>  &lt;uag name = "name"&gt;[user,...user]&lt;/uag&gt;
+  &lt;!-- an arbitrary number of uags can be defined --&gt;
+  &lt;hag name = "name"&gt;[host,...,host]&lt;/hag&gt;
+  &lt;!-- an arbitrary number of hags can be defined --&gt;
+  &lt;state name = "name" extends = "accessSecurityState"&gt;
+      &lt;!-- this is a pvData structure --&gt;
+      &lt;!-- has fields named 1) value which has type boolean, 2) alarm, and 3) input which is a structure--&gt;
+      &lt;!-- input must attach to support that sets the value field. May by a calculation --&gt;
+  &lt;/state&gt;
+  &lt;!-- an arbitrary number of states may appear --&gt;
+  &lt;asg name = "name"&gt;
+     &lt;rule&gt;
+         &lt;level&gt;level&lt;/level&gt;
+         &lt;state&gt;name=value&lt;/state&gt;
+         &lt;trapWrite&gt;value&lt;/trapWrite&gt;
+         &lt;access&gt;access&lt;/access&gt;
+         &lt;uag&gt;[name,...,name]&lt;/uag&gt;
+         &lt;hag&gt;[name,...,name]&lt;/hag&gt;
+     &lt;/rule&gt;
+     &lt;!-- an arbitrary number of rules may appear --&gt;
+  &lt;/asg&gt; 
+  &lt;!-- an arbitrary number of asgs can be defined --&gt;</pre>
+
+<p>Where</p>
+<dl>
+  <dt>uag</dt>
+    <dd><p>User Access Group. This is a string array of user names. The array
+      may be empty. The same user can appear in multiple uags.</p>
+    </dd>
+  <dt>hag</dt>
+    <dd>Host Access Group. This is a string array of host names. The array
+      may be empty. The same host can appear in multiple hags.</dd>
+  <dt>state</dt>
+    <dd>This has the same syntax as a pvData structure. The state structure
+      has a scalar boolean field named value and an alarm field as defined by
+      pvData. The state structure also has a structure field named input. The
+      input structure can be initiliized just like a structure field for the
+      javaIOC, i.e. it can have attached support. One example is the channel
+      access link support implemented by the javaIOC. Another example is a
+      combination of calculation and link support. The support must provide a
+      value for state.value, i.e. it must produce a boolean value.</dd>
+  <dt>asg</dt>
+    <dd><p>An access security group. The group &rdquo;default&rdquo; is a
+      special case. If a record specifies a null group or a group which has
+      no asg definition then the member is assigned to group default.</p>
+    </dd>
+  <dt>asg.rule</dt>
+    <dd>This defines access permissions.</dd>
+  <dt>asg.rule.level</dt>
+    <dd>level, which refers to the access security level for fields, must be
+      0 or 1.</dd>
+  <dt>asg.rule.state</dt>
+    <dd>The name of the state that determines if this rule is active.</dd>
+  <dt>asg.rule.trapWrite</dt>
+    <dd>If value is set to true than all puts that match this rule will be
+      trapped. See the section below on trapping Channel Access writes for
+      details. The default is false.</dd>
+  <dt>asg.rule.access</dt>
+    <dd>Permission for a level 1 field implies permission for level 0 fields.
+      The permissions are none, read, write, and process. write permission
+      implies read permission. process implies read and write.</dd>
+  <dt>asg.rule.uag</dt>
+    <dd>The UAGs that are allowed access by this rule.</dd>
+  <dt>asg.rule.hag</dt>
+    <dd>The HAGs that are allowed access by this rule.</dd>
+</dl>
+
+<p>The access privilege for a channel access client is determined as
+follows:</p>
+<ol>
+  <li>The ASG associated with the record is searched.</li>
+  <li>Each RULE is checked for the following: 
+    <ul>
+      <li>The field's level must be less than or equal to the level for this
+        RULE.</li>
+      <li>If state is specified, the state must be true. If the state has
+        alarm severity invalid than the calculation is considered false.</li>
+      <li>If UAG is defined, the user must belong to one of the specified
+        UAGs. If UAG is not defined all users are accepted.</li>
+      <li>If HAG is defined, the user's host must belong to one of the HAGs.
+        If HAG is not defined all hosts are accepted.</li>
+      <li>If the rule does not apply then access is none.</li>
+    </ul>
+  </li>
+  <li>The maximum access allowed by step 2 is the access chosen.</li>
+</ol>
+
+<p>Multiple RULEs can be defined for a given ASG, even RULEs with identical
+levels and access permission.</p>
+
+<h4>Example</h4>
+
+<p>Lets design a set of rules for a Linac. Assume the following:</p>
+<ol>
+  <li>Anyone can have read access to all fields at anytime.</li>
+  <li>Linac engineers, located in the control room, can have process access
+    to most lee access to most level 0 fields only if the Linac is not in
+    operational mode.</li>
+  <li>Operators, located in the control room, can have process access to most
+    level 0 fields anytime.</li>
+  <li>The operations supervisor, linac supervisor, and the application
+    developers can have process access to all fields but must have some way
+    of not changing something inadvertently.</li>
+  <li>Most records use the above rules but a few (high voltage power
+    supplies, etc.) are placed under tighter control. These will follow rules
+    1 and 4 but not 2 or 3.</li>
+  <li>IOC channel access clients always have level 1 process privilege.</li>
+</ol>
+
+<p>Most Linac IOC records will not have the ASG field defined and will thus
+be placed in group default.</p>
+
+<p>The following records will have an ASG defined:</p>
+<ul>
+  <li>LI:OPSTATE<br />
+    and any other records that need tighter control have asg critical. One
+    such record could be a record used to cause a new access configuration
+    file to be loaded. LI:OPSTATE has the value (false,true) if the Linac is
+    (not operational, operational).</li>
+  <li>LI:lev1permit has asg permit. In order for the opSup, linacSup, or an
+    appDev to have process privilege to everything this record must be set to
+    the value true. Thus rule 4) above is satisfied by making the operations
+    supervisor first set this record true before other changes are allowed.
+    After changes this record should be set back to false.</li>
+</ul>
+
+<p>The following access configuration satisfies the above rules.</p>
+<pre>&lt;uag name = "op"&gt;[op1,op2,superguy]&lt;/uag&gt;
+&lt;uag name = "opSup"&gt;[superguy]&lt;/uag&gt;
+&lt;uag name = "linac"&gt;[waw,nassiri,grelick,berg,fuja,gsm]&lt;/uag&gt;
+&lt;uag name = "linacSup"&gt;[gsm]&lt;/uag&gt;
+&lt;uag name = "appDev"&gt;[nda,kko]&lt;/uag&gt;
+&lt;hag name = "cr"&gt;[mars,hera,gold]&lt;/hag&gt;
+&lt;hag name = "ioc"&gt;[ioclic1,ioclic2,ioclid1,ioclid2,ioclid3,ioclid4,ioclid5]&lt;/hag&gt;
+&lt;asg name = "default"&gt;
+   &lt;state name = "opstate" extends = "accessSecurityState"&gt;
+      &lt;structure name = "input" extends = "caInputLink"&gt;
+           &lt;scalar name = "pvname"&gt;LI:OPSTATE&lt;/scalar
+           &lt;scalar name = "request" scalarType = "string" &gt;value,alarm&lt;/scalar&gt;
+      &lt;/structure&gt;
+   &lt;/state&gt;
+   &lt;state name = "lev1Permit" extends = "accessSecurityState"&gt;
+      &lt;structure name = "input" extends = "caInputLink"&gt;
+           &lt;scalar name = "pvname"&gt;LI:lev1permit&lt;/scalar&gt;
+           &lt;scalar name = "request" scalarType = "string" &gt;value,alarm&lt;/scalar&gt;
+      &lt;/structure&gt;
+   &lt;/state&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;level&gt;
+      &lt;access&gt;process&lt;/access&gt;
+      &lt;state&gt;opstate=true&lt;/state&gt;
+      &lt;uag&gt;op&lt;/uag&gt;
+      &lt;hag&gt;cr&lt;/hag&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;level&gt;
+      &lt;access&gt;process&lt;/access&gt;
+      &lt;state&gt;opstate=false&lt;/state&gt;
+      &lt;!-- when not operational operators do not have process access --&gt;
+      &lt;uag&gt;[opSup,linacSup,appdev]&lt;/uag&gt;
+      &lt;hag&gt;cr&lt;/hag&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;level&gt;
+      &lt;access&gt;process&lt;/access&gt;
+      &lt;state&gt;lev1Permit=true&lt;/state&gt;
+      &lt;uag&gt;[op,linac,appdev]&lt;/uag&gt;
+      &lt;hag&gt;cr&lt;/hag&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;/level&gt;
+      &lt;access&gt;read&lt;/access&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;/level&gt;
+      &lt;access&gt;process&lt;/access&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/rule&gt;
+&lt;/asg&gt;
+&lt;asg name = "critical"&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;/level&gt;
+      &lt;access&gt;process&lt;/access&gt;
+      &lt;uag&gt;[opSup,linacSup,appDev]&lt;/uag&gt;
+      &lt;state&gt;lev1Permit=true&lt;/state&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;/level&gt;
+      &lt;access&gt;read&lt;/access&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;/level&gt;
+      &lt;access&gt;process&lt;/access&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/rule&gt;
+&lt;/asg&gt;
+&lt;asg name = "permit"&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;level&gt;
+      &lt;access&gt;write&lt;/access&gt;
+      &lt;uag&gt;opSup&lt;/uag&gt;  
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;/level&gt;
+      &lt;access&gt;read&lt;/access&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;/level&gt;
+      &lt;access&gt;process&lt;/access&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/rule&gt;
+&lt;/asg&gt;</pre>
 <hr />
+
 <h2 style="text-align: center">Design Summary</h2>
-<p>TBD.</p>
 <hr />
 
+<h3>Summary of Design Requirements</h3>
+
+<p>A brief summary of the Functional Requirements is:</p>
+<ol>
+  <li>Each field of each record type is assigned an access security
+  level.</li>
+  <li>Each record instance is assigned to a unique access security group.</li>
+  <li>Each user is assigned to one or more user access groups.</li>
+  <li>Each node is assigned to a host access group.</li>
+  <li>For each access security group a set of access rules can be defined.
+    Each rule specifies: 
+    <ul>
+      <li>Access security level</li>
+      <li>READ or READ/WRITE access.</li>
+      <li>An optional list of User Access Groups or * meaning anyone.</li>
+      <li>An optional list of Host Access Groups or * meaning anywhere.</li>
+      <li>Conditions based on values of process variables</li>
+    </ul>
+  </li>
+</ol>
+
+<h3>Additional Requirements</h3>
+<dl>
+  <dt>Performance</dt>
+    <dd>Although the functional requirements does not mention it, a
+      fundamental goal is performance. The design provides almost no overhead
+      during normal database access and moderate overhead for the following:
+      channel access client/server connection, ioc initialization, a change
+      in value of a process variable referenced by an access calculation, and
+      dynamically changing a records access control group. Dynamically
+      changing the user access groups, host access groups, or the rules,
+      however, can be a time consuming operation. This is done, however, by a
+      low priority thread and thus does not impact normal record processing.
+    </dd>
+  <dt>Generic Implementation</dt>
+    <dd>Access security should be implemented as a stand alone system, i.e.
+      it should not be imbedded tightly in database or channel access. For
+      example it should be usable by a gatway gateway as well as by a
+      javaIOC. </dd>
+  <dt>No Access Security within a javaIOC</dt>
+    <dd>Within an IOC no access security is invoked. This means that database
+      links and local channel access clients calls are not subject to access
+      control. Also test routines such as dbgf should not be subject to
+      access control. </dd>
+  <dt>Defaults</dt>
+    <dd>It must be possible to easily define default access rules.</dd>
+  <dt>Access Security is Optional</dt>
+    <dd>When a javaIOC is initialized, access security is optional.</dd>
+  <dt>process</dt>
+    <dd>Since CAJv4 allows the client to request processing ( For V3 this was
+      determined by record type database definition), the access rights must
+      include process in addition to read and write.</dd>
+</dl>
 <hr />
+
 <h2 style="text-align: center">Implementation Overview</h2>
 <hr />
-<p>TBD.</p>
 
+<p>TBD.</p>
 <hr />
+
 <h2 style="text-align: center">Java IOC Support</h2>
 <hr />
+
 <p>TBD. The plan is to start/restart access security via record instances
 that have support that interfaces to access security</p>
-
 <hr />
+
 <h2 style="text-align: center">Channel Access Support</h2>
 <hr />
-<p>TBD.</p>
 
-<hr />
-<h2 style="text-align: center">Trapping Channel Access Puts/h2>
-<hr />
 <p>TBD.</p>
+<hr />
 
+<h2 style="text-align: center">Trapping Channel Access Puts</h2>
+<hr />
+
+<p>TBD.</p>
 </body>
 </html>
