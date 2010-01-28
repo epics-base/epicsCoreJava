@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: Access Security<br />
 package: org.epics.pvData.accessSecurity<br />
-2010.01.20</h1>
+2010.01.28</h1>
 CONTENTS 
 <hr />
 
@@ -96,14 +96,15 @@ Clients. Access security is based on the following:</p>
     access client exists. Thus no attempt is made to see if a user is local
     or is remotely logged on to the host. </li>
   <li>What<br />
-    The user is given one of the following access rights: none, read, write,
-    process. A higher access right also means all the lower rights. Thus a
-    client that has process access also has read and write access. Individual
-    fields of records are protected. Each record belongs to an Access
-    Security Group. Each field has an access security level, which must be 0
-    or 1. If a user has read/write/process access to a level 1 fields then
-    the user also has that same access to level 0 fields. Thus a higher level
-    means stricter access.</li>
+    The user is given one of the following access rights: none, read, write.
+    A higher access right also means all the lower rights. Thus a client that
+    has process access also has read and write access. Individual fields of
+    records are protected. Each record belongs to an Access Security Group.
+    Each field has an access security level, which must be 0 or 1. If a user
+    has read/write/ access to a level 1 fields then the user also has that
+    same access to level 0 fields. Thus a higher level means stricter access.
+    In addition the user can optionally have the right to request that
+    records be processed,</li>
   <li>When<br />
     Access rules can include state. The state can be determined via support
     similar to that provided by the javaIOC or by the javaIOC itself. Thus
@@ -159,20 +160,19 @@ first give a simple example and then a complete description of the syntax.
   &lt;hag name = "hosts"&gt;[host1,host2]&lt;/hag&gt;
   &lt;asg name = "default"&gt;
      &lt;rule&gt;
-         &lt;level&gt;1&lt;/level&gt;
+         &lt;level&gt;0&lt;/level&gt;
          &lt;access&gt;read&lt;/access&gt;
      &lt;/rule&gt;
      &lt;rule&gt;
-         &lt;level&gt;1&lt;/level&gt;
-         &lt;access&gt;process&lt;/access&gt;
+         &lt;level&gt;0&lt;/level&gt;
+         &lt;access&gt;write&lt;/access&gt;
          &lt;uag&gt;users&lt;/uag&gt;
          &lt;hag&gt;hosts&lt;/hag&gt;
      &lt;/rule&gt;
 &lt;/accessSecurity&gt;</pre>
 
-<p>These rules provide read access to anyone located anywhere and
-read/write/process access to user1 and user2 if they are located at host1 or
-host2.</p>
+<p>These rules provide read access to anyone located anywhere and read/write
+access to user1 and user2 if they are located at host1 or host2.</p>
 
 <h4>Syntax Definition</h4>
 
@@ -205,6 +205,13 @@ host2.</p>
          &lt;hag&gt;[name,...,name]&lt;/hag&gt;
      &lt;/rule&gt;
      &lt;!-- an arbitrary number of rules may appear --&gt;
+     &lt;process&gt;
+         &lt;state&gt;name=value&lt;/state&gt;
+         &lt;trapProcess&gt;value&lt;/trapProcess&gt;
+         &lt;uag&gt;[name,...,name]&lt;/uag&gt;
+         &lt;hag&gt;[name,...,name]&lt;/hag&gt;
+     &lt;/process&gt;
+     &lt;!-- an arbitrary number of process rules may appear --&gt;
   &lt;/asg&gt; 
   &lt;!-- an arbitrary number of asgs can be defined --&gt;</pre>
 
@@ -234,8 +241,8 @@ host2.</p>
   <dt>asg.rule</dt>
     <dd>This defines access permissions.</dd>
   <dt>asg.rule.level</dt>
-    <dd>level, which refers to the access security level for fields, must be
-      0 or 1.</dd>
+    <dd>level refers to the access security level for fields. For now only
+      levels 0 and 1 are used.</dd>
   <dt>asg.rule.state</dt>
     <dd>The name of the state that determines if this rule is active.</dd>
   <dt>asg.rule.trapWrite</dt>
@@ -244,12 +251,15 @@ host2.</p>
       details. The default is false.</dd>
   <dt>asg.rule.access</dt>
     <dd>Permission for a level 1 field implies permission for level 0 fields.
-      The permissions are none, read, write, and process. write permission
-      implies read permission. process implies read and write.</dd>
+      The permissions are none, read, and write. write permission implies
+      read permission.</dd>
   <dt>asg.rule.uag</dt>
     <dd>The UAGs that are allowed access by this rule.</dd>
   <dt>asg.rule.hag</dt>
     <dd>The HAGs that are allowed access by this rule.</dd>
+  <dt>asg.process</dt>
+    <dd>This defines pemission to request processing. State, uag, and hag are
+      just like for asg.rule. trapProcess is similar to asg.trapWrite.</dd>
 </dl>
 
 <p>The access privilege for a channel access client is determined as
@@ -258,8 +268,8 @@ follows:</p>
   <li>The ASG associated with the record is searched.</li>
   <li>Each RULE is checked for the following: 
     <ul>
-      <li>The field's level must be less than or equal to the level for this
-        RULE.</li>
+      <li>The field's level must be greater than or equal to the level for
+        this RULE.</li>
       <li>If state is specified, the state must be true. If the state has
         alarm severity invalid than the calculation is considered false.</li>
       <li>If UAG is defined, the user must belong to one of the specified
@@ -270,28 +280,43 @@ follows:</p>
     </ul>
   </li>
   <li>The maximum access allowed by step 2 is the access chosen.</li>
+  <li>PROCESS priviledge is checked for the following:
+    <ul>
+      <li>If state is specified, the state must be true. If the state has
+        alarm severity invalid than the calculation is considered false.</li>
+      <li>If UAG is defined, the user must belong to one of the specified
+        UAGs. If UAG is not defined all users are accepted.</li>
+      <li>If HAG is defined, the user's host must belong to one of the HAGs.
+        If HAG is not defined all hosts are accepted.</li>
+      <li>If the rule does not apply then access is none.</li>
+    </ul>
+  </li>
+  <li>If any of the PROCESS rules alow process access that process is allowed
+    otherwise it is not allowed. </li>
 </ol>
 
 <p>Multiple RULEs can be defined for a given ASG, even RULEs with identical
-levels and access permission.</p>
+levels and access permission. Multiple PROCESSs can be defined for a given
+ASG.</p>
 
 <h4>Example</h4>
 
 <p>Lets design a set of rules for a Linac. Assume the following:</p>
 <ol>
   <li>Anyone can have read access to all fields at anytime.</li>
-  <li>Linac engineers, located in the control room, can have process access
-    to most lee access to most level 0 fields only if the Linac is not in
-    operational mode.</li>
-  <li>Operators, located in the control room, can have process access to most
-    level 0 fields anytime.</li>
+  <li>Linac engineers, located in the control room, can have write access to
+    most level 0 fields only if the Linac is not in operational mode. In this
+    case they also have process privilege.</li>
+  <li>Operators, located in the control room, can have write access to most
+    level 0 fields and process privilege anytime.</li>
   <li>The operations supervisor, linac supervisor, and the application
-    developers can have process access to all fields but must have some way
-    of not changing something inadvertently.</li>
+    developers can have write access to all fields and process privilege but
+    must have some way of not changing something inadvertently.</li>
   <li>Most records use the above rules but a few (high voltage power
     supplies, etc.) are placed under tighter control. These will follow rules
     1 and 4 but not 2 or 3.</li>
-  <li>IOC channel access clients always have level 1 process privilege.</li>
+  <li>IOC channel access clients always have level 1 write privilege and
+    process privilege.</li>
 </ol>
 
 <p>Most Linac IOC records will not have the ASG field defined and will thus
@@ -304,8 +329,8 @@ be placed in group default.</p>
     such record could be a record used to cause a new access configuration
     file to be loaded. LI:OPSTATE has the value (false,true) if the Linac is
     (not operational, operational).</li>
-  <li>LI:lev1permit has asg permit. In order for the opSup, linacSup, or an
-    appDev to have process privilege to everything this record must be set to
+  <li>LI:leve1permit has asg permit. In order for the opSup, linacSup, or an
+    appDev to have write privilege to everything this record must be set to
     the value true. Thus rule 4) above is satisfied by making the operations
     supervisor first set this record true before other changes are allowed.
     After changes this record should be set back to false.</li>
@@ -326,76 +351,108 @@ be placed in group default.</p>
            &lt;scalar name = "request" scalarType = "string" &gt;value,alarm&lt;/scalar&gt;
       &lt;/structure&gt;
    &lt;/state&gt;
-   &lt;state name = "lev1Permit" extends = "accessSecurityState"&gt;
+   &lt;state name = "level1Permit" extends = "accessSecurityState"&gt;
       &lt;structure name = "input" extends = "caInputLink"&gt;
-           &lt;scalar name = "pvname"&gt;LI:lev1permit&lt;/scalar&gt;
+           &lt;scalar name = "pvname"&gt;LI:level1Permit&lt;/scalar&gt;
            &lt;scalar name = "request" scalarType = "string" &gt;value,alarm&lt;/scalar&gt;
       &lt;/structure&gt;
    &lt;/state&gt;
    &lt;rule&gt;
-      &lt;level&gt;0&lt;level&gt;
-      &lt;access&gt;process&lt;/access&gt;
+      &lt;level&gt;1&lt;level&gt;
+      &lt;access&gt;write&lt;/access&gt;
       &lt;state&gt;opstate=true&lt;/state&gt;
       &lt;uag&gt;op&lt;/uag&gt;
       &lt;hag&gt;cr&lt;/hag&gt;
    &lt;/rule&gt;
+   &lt;process&gt;
+      &lt;state&gt;opstate=true&lt;/state&gt;
+      &lt;uag&gt;op&lt;/uag&gt;
+      &lt;hag&gt;cr&lt;/hag&gt;
+   &lt;/process&gt;
    &lt;rule&gt;
-      &lt;level&gt;0&lt;level&gt;
-      &lt;access&gt;process&lt;/access&gt;
+      &lt;level&gt;1&lt;level&gt;
+      &lt;access&gt;write&lt;/access&gt;
       &lt;state&gt;opstate=false&lt;/state&gt;
       &lt;!-- when not operational operators do not have process access --&gt;
       &lt;uag&gt;[opSup,linacSup,appdev]&lt;/uag&gt;
       &lt;hag&gt;cr&lt;/hag&gt;
    &lt;/rule&gt;
-   &lt;rule&gt;
-      &lt;level&gt;1&lt;level&gt;
-      &lt;access&gt;process&lt;/access&gt;
-      &lt;state&gt;lev1Permit=true&lt;/state&gt;
-      &lt;uag&gt;[op,linac,appdev]&lt;/uag&gt;
+   &lt;process&gt;
+      &lt;state&gt;opstate=false&lt;/state&gt;
+      &lt;!-- when not operational operators do not have process access --&gt;
+      &lt;uag&gt;[opSup,linacSup,appdev]&lt;/uag&gt;
       &lt;hag&gt;cr&lt;/hag&gt;
-   &lt;/rule&gt;
-   &lt;rule&gt;
-      &lt;level&gt;1&lt;/level&gt;
-      &lt;access&gt;read&lt;/access&gt;
-   &lt;/rule&gt;
-   &lt;rule&gt;
-      &lt;level&gt;1&lt;/level&gt;
-      &lt;access&gt;process&lt;/access&gt;
-      &lt;hag&gt;ioc&lt;/hag&gt;
-   &lt;/rule&gt;
-&lt;/asg&gt;
-&lt;asg name = "critical"&gt;
-   &lt;rule&gt;
-      &lt;level&gt;1&lt;/level&gt;
-      &lt;access&gt;process&lt;/access&gt;
-      &lt;uag&gt;[opSup,linacSup,appDev]&lt;/uag&gt;
-      &lt;state&gt;lev1Permit=true&lt;/state&gt;
-   &lt;/rule&gt;
-   &lt;rule&gt;
-      &lt;level&gt;1&lt;/level&gt;
-      &lt;access&gt;read&lt;/access&gt;
-   &lt;/rule&gt;
-   &lt;rule&gt;
-      &lt;level&gt;1&lt;/level&gt;
-      &lt;access&gt;process&lt;/access&gt;
-      &lt;hag&gt;ioc&lt;/hag&gt;
-   &lt;/rule&gt;
-&lt;/asg&gt;
-&lt;asg name = "permit"&gt;
+   &lt;/process&gt;
    &lt;rule&gt;
       &lt;level&gt;0&lt;level&gt;
       &lt;access&gt;write&lt;/access&gt;
-      &lt;uag&gt;opSup&lt;/uag&gt;  
+      &lt;state&gt;level1Permit=true&lt;/state&gt;
+      &lt;uag&gt;[op,linac,appdev]&lt;/uag&gt;
+      &lt;hag&gt;cr&lt;/hag&gt;
    &lt;/rule&gt;
+   &lt;process&gt;
+      &lt;state&gt;level1Permit=true&lt;/state&gt;
+      &lt;uag&gt;[op,linac,appdev]&lt;/uag&gt;
+      &lt;hag&gt;cr&lt;/hag&gt;
+   &lt;/process&gt;
    &lt;rule&gt;
-      &lt;level&gt;1&lt;/level&gt;
+      &lt;level&gt;0&lt;/level&gt;
       &lt;access&gt;read&lt;/access&gt;
    &lt;/rule&gt;
    &lt;rule&gt;
-      &lt;level&gt;1&lt;/level&gt;
-      &lt;access&gt;process&lt;/access&gt;
+      &lt;level&gt;0&lt;/level&gt;
+      &lt;access&gt;write&lt;/access&gt;
       &lt;hag&gt;ioc&lt;/hag&gt;
    &lt;/rule&gt;
+   &lt;process&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/process&gt;
+&lt;/asg&gt;
+&lt;asg name = "critical"&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;/level&gt;
+      &lt;access&gt;write&lt;/access&gt;
+      &lt;uag&gt;[opSup,linacSup,appDev]&lt;/uag&gt;
+      &lt;state&gt;leve1Permit=true&lt;/state&gt;
+   &lt;/rule&gt;
+   &lt;process&gt;
+      &lt;uag&gt;[opSup,linacSup,appDev]&lt;/uag&gt;
+      &lt;state&gt;leve1Permit=true&lt;/state&gt;
+   &lt;/process&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;/level&gt;
+      &lt;access&gt;read&lt;/access&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;/level&gt;
+      &lt;access&gt;write&lt;/access&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/rule&gt;
+   &lt;process&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/process&gt;
+&lt;/asg&gt;
+&lt;asg name = "permit"&gt;
+   &lt;rule&gt;
+      &lt;level&gt;1&lt;level&gt;
+      &lt;access&gt;write&lt;/access&gt;
+      &lt;uag&gt;opSup&lt;/uag&gt;  
+   &lt;/rule&gt;
+   &lt;process&gt;
+      &lt;uag&gt;opSup&lt;/uag&gt;  
+   &lt;/process&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;/level&gt;
+      &lt;access&gt;read&lt;/access&gt;
+   &lt;/rule&gt;
+   &lt;rule&gt;
+      &lt;level&gt;0&lt;/level&gt;
+      &lt;access&gt;write&lt;/access&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/rule&gt;
+   &lt;process&gt;
+      &lt;hag&gt;ioc&lt;/hag&gt;
+   &lt;/process&gt;
 &lt;/asg&gt;</pre>
 <hr />
 
