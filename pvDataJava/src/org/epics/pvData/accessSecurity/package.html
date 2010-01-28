@@ -280,7 +280,7 @@ follows:</p>
     </ul>
   </li>
   <li>The maximum access allowed by step 2 is the access chosen.</li>
-  <li>PROCESS priviledge is checked for the following:
+  <li>PROCESS priviledge is checked for the following: 
     <ul>
       <li>If state is specified, the state must be true. If the state has
         alarm severity invalid than the calculation is considered false.</li>
@@ -477,6 +477,15 @@ be placed in group default.</p>
       <li>An optional list of Host Access Groups or * meaning anywhere.</li>
       <li>Conditions based on values of process variables</li>
     </ul>
+  </li>
+  <li>For each access security group process privilege can be determined via
+    a set of process rules. Each process rule specifies:
+    <ul>
+      <li>An optional list of User Access Groups or * meaning anyone.</li>
+      <li>An optional list of Host Access Groups or * meaning anywhere.</li>
+      <li>Conditions based on values of process variables</li>
+    </ul>
+    <p> </p>
   </li>
 </ol>
 
