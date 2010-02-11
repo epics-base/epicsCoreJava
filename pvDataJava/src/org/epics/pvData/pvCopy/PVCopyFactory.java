@@ -146,26 +146,27 @@ public class PVCopyFactory {
         
         private void init(PVStructure pvRequest,boolean shareData) {
             this.shareData = shareData;
+            PVStructure pvStructure = pvRecord.getPVStructure();
             if(pvRequest.getPVFields().length==0) {
                 // asking for entire record is special case.
-                structure = pvRecord.getStructure();
+                structure = pvStructure.getStructure();
                 RecordNode recordNode = new RecordNode();
                 headNode = recordNode;
                 recordNode.isStructure = false;
                 recordNode.structureOffset = 0;
-                recordNode.recordPVField = pvRecord;
-                recordNode.nfields = pvRecord.getNumberFields();
+                recordNode.recordPVField = pvStructure;
+                recordNode.nfields = pvStructure.getNumberFields();
                 return;
             }
-            structure = createStructure(pvRecord,pvRequest,"");
+            structure = createStructure(pvStructure,pvRequest,"");
             cacheInitStructure = createPVStructure();
             StructureNode structureNode = new StructureNode();
-            createStructureNodes(structureNode,pvRecord,pvRequest,cacheInitStructure);
+            createStructureNodes(structureNode,pvStructure,pvRequest,cacheInitStructure);
             headNode = structureNode;
             referenceImmutable(cacheInitStructure,headNode);
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pvCopy.PVCopy#getPVRecord()
+         * @see org.epics.pvData.pvCopy.PVCopy#getpvStructure()
          */
         @Override
         public PVRecord getPVRecord() {
