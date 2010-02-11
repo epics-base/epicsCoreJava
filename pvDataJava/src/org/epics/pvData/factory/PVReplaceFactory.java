@@ -31,17 +31,17 @@ public class PVReplaceFactory {
      */
     public static void replace(PVDatabase pvDatabase) {
         for(PVRecord pvRecord: pvDatabase.getRecords()) {
-            replace(pvDatabase,pvRecord);
+            replace(pvDatabase,pvRecord.getPVStructure());
         }
     }
     
     /**
      * Look at every field of the record and see if the field implementation should be replaced.
      * @param pvDatabase The database to look for pvReplaceFactorys
-     * @param pvRecord The record.
+     * @param pvStructure The record.
      */
-    public static void replace(PVDatabase pvDatabase,PVRecord pvRecord) {
-       replace(pvDatabase,pvRecord.getPVFields());
+    public static void replace(PVDatabase pvDatabase,PVStructure pvStructure) {
+       replace(pvDatabase,pvStructure.getPVFields());
     }
     
     /**

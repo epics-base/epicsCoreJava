@@ -22,8 +22,8 @@ import org.epics.pvData.pv.Structure;
  * @author mrk
  *
  */
-public class BasePVRecord extends BasePVStructure implements PVRecord {
-    
+public class BasePVRecord implements PVRecord {
+    private BasePVStructure pvStructure = null;
     private String recordName;
     private ArrayList<Requester> requesterList = new ArrayList<Requester>(0); 
     private ArrayList<PVListener> pvAllListenerList = new ArrayList<PVListener>(0);
@@ -38,15 +38,14 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      */
     public BasePVRecord(String recordName,Structure structure)
     {
-        super(null,structure);
+    	pvStructure = new BasePVStructure(this,structure);
         this.recordName = recordName;
-        super.setRecord(this);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#getPVStructure()
      */
     public PVStructure getPVStructure() {
-        return (PVStructure)this;
+        return pvStructure;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#getRecordName()
@@ -158,7 +157,7 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      */
     public void unregisterListener(PVListener recordListener) {
         pvAllListenerList.remove(recordListener);
-        super.getPVRecordField().removeListener(recordListener);
+        pvStructure.getPVRecordField().removeListener(recordListener);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVRecord#isRegisteredListener(org.epics.pvData.pv.PVListener)
@@ -174,7 +173,7 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
         while(pvAllListenerList.size()>0) {
             PVListener pvListener = pvAllListenerList.remove(pvAllListenerList.size()-1);
             pvListener.unlisten(this);
-            super.getPVRecordField().removeListener(pvListener);
+            pvStructure.getPVRecordField().removeListener(pvListener);
         }
     }
     /* (non-Javadoc)
@@ -185,7 +184,7 @@ public class BasePVRecord extends BasePVStructure implements PVRecord {
      * @see org.epics.pvData.factory.BasePVStructure#toString(int)
      */
     public String toString(int indentLevel) {
-        return super.toString("record " + recordName,indentLevel);
+        return pvStructure.toString("record " + recordName,indentLevel);
     } 
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

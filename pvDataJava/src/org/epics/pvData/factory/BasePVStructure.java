@@ -24,6 +24,7 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVFloat;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVLong;
+import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVShort;
 import org.epics.pvData.pv.PVString;
@@ -54,7 +55,18 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      */
     public BasePVStructure(PVStructure parent, Structure structure) {
         super(parent,structure);
-        Field[] fields = structure.getFields();
+        constructorCommon(parent,structure);
+    }
+    
+    public BasePVStructure(PVRecord pvRecord, Structure structure) {
+    	super(null,structure);
+    	constructorCommon(null,structure);
+    	super.setRecord(pvRecord);
+    }
+    
+    private void constructorCommon(PVStructure parent,Structure structure)
+    {
+    	Field[] fields = structure.getFields();
         pvFields = new PVField[fields.length];
         for(int i=0; i < pvFields.length; i++) {
         	Field field = fields[i];

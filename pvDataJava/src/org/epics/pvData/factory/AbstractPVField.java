@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.factory;
 
-import java.util.ArrayList;
-
 import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
@@ -14,7 +12,6 @@ import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVAuxInfo;
 import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVStructure;
@@ -39,7 +36,7 @@ public abstract class AbstractPVField implements PVField{
     private String fullName = "";
     private Field field;
     private PVStructure pvParent;
-    private PVRecordFieldImpl pvRecordField = null;
+    private PVRecordField pvRecordField = null;
     /**
      * Convenience for derived classes that perform conversions.
      */
@@ -75,7 +72,7 @@ public abstract class AbstractPVField implements PVField{
      * @param pvRecord The PVRecord interface.
      */
     protected void setRecord(PVRecord record) {
-        pvRecordField = new PVRecordFieldImpl(this,record);
+        pvRecordField = new BasePVRecordField(this,record);
         // call setRecord for all subfields.
         if(field.getType()==Type.structure) {
             PVField[] pvFields = ((PVStructure)this).getPVFields();
@@ -263,10 +260,16 @@ public abstract class AbstractPVField implements PVField{
     
     private void createFullNameANDFullFieldName() {
         PVRecord pvRecord = null;
-        if(pvRecordField!=null) pvRecord = pvRecordField.getPVRecord();
-        if(this==pvRecord) {
-            fullName = pvRecord.getRecordName();
-            fullFieldName = "";
+        if(pvRecordField!=null) {
+        	pvRecord = pvRecordField.getPVRecord();
+        	if(this==pvRecord.getPVStructure()) {
+        		fullName = pvRecord.getRecordName();
+        		fullFieldName = "";
+        		return;
+        	}
+        }
+        if(pvParent==null) {
+            fullFieldName = fullName = field.getFieldName();
             return;
         }
         StringBuilder fieldName = new StringBuilder();
@@ -290,103 +293,5 @@ public abstract class AbstractPVField implements PVField{
         } else {
             fullName = fullFieldName;
         }
-    }
-    
-    private class PVRecordFieldImpl implements PVRecordField {
-        private PVField pvField = null;
-        private PVRecord pvRecord = null;
-        private boolean isStructure = false;
-        // since list is mostly traversed an ArrayList is efficent.
-        private ArrayList<PVListener> pvListenerList = new ArrayList<PVListener>(0);
-        
-        PVRecordFieldImpl(PVField pvField,PVRecord pvRecord) {
-            this.pvField = pvField;
-            this.pvRecord = pvRecord;
-            if(pvField.getField().getType()==Type.structure) isStructure = true;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVField#getPVRecord()
-         */
-        @Override
-        public PVRecord getPVRecord() {
-           return pvRecord;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVField#addListener(org.epics.pvData.pv.PVListener)
-         */
-        @Override
-        public boolean addListener(PVListener pvListener) {
-            if(!pvRecord.isRegisteredListener(pvListener)) return false;
-            return pvListenerList.add(pvListener);
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVRecordField#removeListener(org.epics.pvData.pv.PVListener)
-         */
-        @Override
-        public void removeListener(PVListener pvListener) {
-            pvListenerList.remove(pvListener);
-            if(isStructure) {
-                PVStructure pvStructure = (PVStructure)pvField;
-                PVField[] pvFields = pvStructure.getPVFields();
-                for(int i=0; i<pvFields.length; i++) {
-                    PVRecordField pvRecordField = (PVRecordFieldImpl)pvFields[i].getPVRecordField();
-                    pvRecordField.removeListener(pvListener);
-                }
-            }
-        }
-        
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVField#postPut()
-         */
-        @Override
-        public void postPut() {
-            if(nextFieldOffset==0) return; // setOffsets has never been called.
-            callListener();
-            if(pvParent!=null) {
-                PVRecordFieldImpl pvRecordField = (PVRecordFieldImpl)pvParent.getPVRecordField();
-                pvRecordField.postParent(pvField);
-            }
-            if(isStructure) {
-                PVStructure pvStructure = (PVStructure)pvField;
-                PVField[] pvFields = pvStructure.getPVFields();
-                for(int i=0; i<pvFields.length; i++) {
-                    PVRecordFieldImpl pvRecordField = (PVRecordFieldImpl)pvFields[i].getPVRecordField();
-                    postSubField(pvRecordField);
-                }
-            }
-        }
-        
-        private void postParent(PVField subField) {
-            for(int index=0; index<pvListenerList.size(); index++) {
-                PVListener pvListener = pvListenerList.get(index);
-                if(pvListener!=null) pvListener.dataPut((PVStructure)pvField,subField);
-            }
-            PVStructure pvParent = pvField.getParent();
-            if(pvParent!=null) {
-                PVRecordFieldImpl pvRecordField = (PVRecordFieldImpl)pvParent.getPVRecordField();
-                pvRecordField.postParent(subField);
-            }
-        }
-        
-        private void postSubField(PVRecordFieldImpl pvRecordField) {
-            pvRecordField.callListener();
-            if(pvRecordField.pvField.getField().getType()==Type.structure) {
-                PVStructure pvStructure = (PVStructure)pvRecordField.pvField;
-                PVField[] pvFields = pvStructure.getPVFields();
-                for(int i=0; i<pvFields.length; i++) {
-                    PVRecordFieldImpl nextPVRecordField = (PVRecordFieldImpl)pvFields[i].getPVRecordField();
-                    postSubField(nextPVRecordField);
-                }
-            }
-        }
-        
-        private void callListener() {
-            // don't create iterator
-            for(int index=0; index<pvListenerList.size(); index++) {
-                PVListener pvListener = pvListenerList.get(index);
-                if(pvListener!=null) pvListener.dataPut(pvField);
-            }
-        }
-        
-    }
+    }    
 }
