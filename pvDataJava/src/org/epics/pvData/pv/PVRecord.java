@@ -12,7 +12,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVRecord extends PVStructure {
+public interface PVRecord {
     /**
      * Get the PVStructure.
      * @return The PVStructure interface.
