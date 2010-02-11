@@ -5,8 +5,6 @@
  */
 package org.epics.pvData.monitor;
 
-import java.util.concurrent.atomic.*;
-
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.StatusFactory;
