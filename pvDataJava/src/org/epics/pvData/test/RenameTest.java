@@ -39,27 +39,28 @@ public class RenameTest extends TestCase {
         PVReplaceFactory.replace(master);
         PVRecord pvRecord = master.findRecord("allTypesInitial");
         assertTrue(pvRecord!=null);
-        PVField pvField = pvRecord.getSubField("boolean");
+        PVStructure pvStructure = pvRecord.getPVStructure();
+        PVField pvField = pvStructure.getSubField("boolean");
         assertTrue(pvField!=null);
         rename(pvField);
-        pvField = pvRecord.getSubField("allTypes.byteArray");
+        pvField = pvStructure.getSubField("allTypes.byteArray");
         assertTrue(pvField!=null);
         rename(pvField);
-        pvField = pvRecord.getSubField("allTypes.doubleLimit");
+        pvField = pvStructure.getSubField("allTypes.doubleLimit");
         assertTrue(pvField!=null);
         rename(pvField);
-        pvField = pvRecord.getSubField("allTypes.structureArray.1");
+        pvField = pvStructure.getSubField("allTypes.structureArray.1");
         assertTrue(pvField!=null);
         rename(pvField);
-        PVStructure pvStructure = master.findStructure("org.epics.pvData.alarm");
-        pvStructure = pvDataCreate.createPVStructure(null, "alarm", pvStructure);
-        pvField = pvStructure.getSubField("message");
+        PVStructure pvStruct = master.findStructure("org.epics.pvData.alarm");
+        pvStruct = pvDataCreate.createPVStructure(null, "alarm", pvStruct);
+        pvField = pvStruct.getSubField("message");
         assertTrue(pvField!=null);
         rename(pvField);
-        pvField = pvStructure.getSubField("severity.index");
+        pvField = pvStruct.getSubField("severity.index");
         assertTrue(pvField!=null);
         rename(pvField);
-        rename(pvStructure);
+        rename(pvStruct);
     }
     
     private static void rename (PVField pvField) {
