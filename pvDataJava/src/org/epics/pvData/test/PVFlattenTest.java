@@ -34,21 +34,21 @@ public class PVFlattenTest extends TestCase {
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/xml/structures.xml", iocRequester);
         XMLToPVDatabaseFactory.convert(master,"${JAVAIOC}/test/powerSupply/powerSupplyDB.xml", iocRequester);
         PVRecord pvRecord = master.findRecord("psEmbeded");
-        
-        PVField[] pvFields = dataCreate.flattenPVStructure(pvRecord);
-        assertTrue(pvFields.length==pvRecord.getNumberFields());
+        PVStructure pvStructure = pvRecord.getPVStructure();
+        PVField[] pvFields = dataCreate.flattenPVStructure(pvStructure);
+        assertTrue(pvFields.length==pvStructure.getNumberFields());
         int offset = 0;
         for(PVField pvField: pvFields) {
-            PVField fromPVRecord = pvRecord.getSubField(offset);
+            PVField fromPVRecord = pvStructure.getSubField(offset);
             assertTrue(pvField==fromPVRecord);
             offset++;
         }
-        PVStructure pvCurrent = (PVStructure)pvRecord.getSubField("current");
+        PVStructure pvCurrent = (PVStructure)pvStructure.getSubField("current");
         pvFields = dataCreate.flattenPVStructure(pvCurrent);
         assertTrue(pvFields.length==(pvCurrent.getNextFieldOffset()-pvCurrent.getFieldOffset()));
         offset = pvCurrent.getFieldOffset();
         for(PVField pvField: pvFields) {
-            PVField fromPVRecord = pvRecord.getSubField(offset);
+            PVField fromPVRecord = pvStructure.getSubField(offset);
             assertTrue(pvField==fromPVRecord);
             offset++;
         }

@@ -127,9 +127,9 @@ public class PVListenerForTesting implements PVListener{
         }
         PVField pvField;
         if(pvName==null || pvName.length()==0) {
-            pvField = pvRecord;
+            pvField = pvRecord.getPVStructure();
         } else {
-            pvField = pvRecord.getSubField(pvName);
+            pvField = pvRecord.getPVStructure().getSubField(pvName);
             if(pvField==null){
                 System.out.printf("name %s not in record %s%n",pvName,recordName);
                 System.out.printf("%s\n",pvRecord.toString());

@@ -73,7 +73,6 @@ public class ParentTest extends TestCase {
         showParent("powerSupplyArray","supply.0.power.value");
         showParent("powerSupplyArray","supply.0.current");
         showParent("powerSupplyArray","supply.0.voltage");
-        showParent("powerSupplyArray","supply.0.voltage.input.value");
         System.out.printf("%n");
         showParent("powerSupplyArray","supply.1");
         System.out.printf("%n");
@@ -91,7 +90,7 @@ public class ParentTest extends TestCase {
         showParent("allTypesInitial","longArray");
         showParent("allTypesInitial","floatArray");
         showParent("allTypesInitial","doubleArray");
-        showParent("allTypesInitial","structArray");
+        showParent("allTypesInitial","structureArray");
         showParent("allTypesInitial","arrayArray");
         showParent("allTypesInitial","allTypes.boolean");
         showParent("allTypesInitial","allTypes.byte");
@@ -107,9 +106,9 @@ public class ParentTest extends TestCase {
         showParent("allTypesInitial","allTypes.longArray");
         showParent("allTypesInitial","allTypes.floatArray");
         showParent("allTypesInitial","allTypes.doubleArray");
-        showParent("allTypesInitial","allTypes.structArray");
-        showParent("allTypesInitial","allTypes.structArray.0");
-        showParent("allTypesInitial","allTypes.structArray.0.low");
+        showParent("allTypesInitial","allTypes.structureArray");
+        showParent("allTypesInitial","allTypes.structureArray.0");
+        showParent("allTypesInitial","allTypes.structureArray.0.low");
         showParent("allTypesInitial","allTypes.arrayArray");
         showParent("allTypesInitial","allTypes.arrayArray.0");
     }
@@ -120,7 +119,7 @@ public class ParentTest extends TestCase {
             System.out.printf("record %s not found%n",recordName);
             return;
         }
-        PVField pvField = pvRecord.getSubField(fieldName);
+        PVField pvField = pvRecord.getPVStructure().getSubField(fieldName);
         if(pvField==null){
             System.out.printf("field %s not in record %s%n",fieldName,recordName);
             return;
