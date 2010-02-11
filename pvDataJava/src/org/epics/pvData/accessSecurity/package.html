@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: Access Security<br />
 package: org.epics.pvData.accessSecurity<br />
-2010.02.08</h1>
+2010.02.11</h1>
 CONTENTS 
 <hr />
 
@@ -20,49 +20,25 @@ CONTENTS
 <p>This section is temporary. It will be removed after access security is
 implemented.</p>
 
-<h3>field role</h3>
+<h3>access security level</h3>
 
 <p>Epics Access Security had the concept of field level with only two levels
-allowed. Instead of this PVData will be changed to allow a role to be
-assigned to each field of a record. This interface PVField will have a new
-method:</p>
-<pre>     Role getRole();</pre>
+allowed. For pvData more than two levels are allowed. In addition names can
+be associated with levels via inteface:</p>
+<pre>interface AccessSecurityLevel {
+    String getName(int level) throws IndexOutOfBoundsException;
+    int getLevel(String name) throws NoSuchFieldException;
+    String[] getNames();
+}
+</pre>
 
-<p>The Role will be specified when the field is created and is then
-immutable. The set of roles will be extensible. Inteface Role will implement
-at least the following methods:</p>
-<pre>    interface Role {
-        String getName();
-    }</pre>
+<p>A default implementation provides the following definition for names:</p>
+<pre>   String[] names = {"internal","configuration","calibration","runtime"};
+</pre>
 
-<p>Project pvData will provide a factory that creates a default set of roles.
-It will provide the following role names:</p>
-<dl>
-  <dt>unknown</dt>
-    <dd>The role is unknown. This is the default.</dd>
-  <dt>processSet</dt>
-    <dd>A field that is given a value during record processing but is not of
-      interest to most users.</dd>
-  <dt>processGet</dt>
-    <dd>A field that is used during record processing but is not changed.
-      Examples are gain settings, conversion info, etc.</dd>
-  <dt>userSet</dt>
-    <dd>A field that is meant to be given a value by code that uses the
-      record, e.g. channel access clients.</dd>
-  <dt>userGet</dt>
-    <dd>A field that is meant to be read by code that uses the record, e.g.
-      channel access clients. Examples are value, alarm, and timeStamp.</dd>
-</dl>
-
-<h3>access.group.rule</h3>
-
-<p>Currently only one state definition is allowed within a rule. Since this
-allows multiple choices I think it is OK.</p>
-
-<p>Currently only one group definition is allowed. Since a boolean expression
-is allowed for determining groups I think it is OK.</p>
-
-<p></p>
+<p>Another implementations can also be provided but any implementation should
+define levels starting with 0. Level 0 should be acceptable as the
+default.</p>
 
 <p></p>
 <hr />
@@ -94,9 +70,8 @@ Security".</p>
     A description of support provided by the javaIOC for access security.</li>
   <li>PVAccess Support<br />
     A description of support provided by PVAccess for access security.</li>
-  <li>Trapping PVAccess Puts<br />
-    This allows trapping of put and process requests to a PVData
-  database.</li>
+  <li>Logging PVAccess Puts<br />
+    This allows logging of put and process requests to a PVData database.</li>
 </ul>
 <hr />
 
@@ -116,31 +91,42 @@ javaIOC.</p>
 Access security is based on the following:</p>
 <ul>
   <li>Who<br />
-    The PVAccess client.</li>
+    The PVAccess client. This is implemented via a concept of credentials,
+    which supports both who and where.</li>
   <li>Where<br />
     Where the client is located.</li>
   <li>What<br />
-    The user is given some combination of the following access rights: none,
-    read, write, and process Individual fields of records are protected. Each
-    record is assigned to an Access Security Group. Each field is assigned a
-    role. Access can be granted for some combination of roles.</li>
+    The user is given either no access (none) or some combination of the
+    following access rights: read, write, and process Individual fields of
+    records are protected. Each record is assigned to an Access Security
+    Group. Each field is assigned an access security level.</li>
   <li>When<br />
     Rules may apply only when particular states are active. States are
     defined via enumerated records accessable via PVAccess.</li>
 </ul>
 
 <p>Each record is assigned an assess security group or is put by default into
-a group named "default". Each field of each record is assigned a role.</p>
+a group named "default".</p>
 
-<p>A good convention is that most fields are level 0 except fields meant to
-be changed by PVAccess clients. These should be assigned a higher level.
-Possibly all can be assigned level 1.</p>
+<p>Each field of each record is assigned an access security level which is an
+integer that is greater than or equal to 0. Level 0 is the highest security
+level. If a client has access for level n then the client also has access for
+all levels greater than n. In addition names can be associated with the
+levels, which is implemeted via interface AccessSecurityLevel. A default
+implementation is provided which defines the names
+"internal","configuration","calibration" and ,"runtime". Other
+implementations can also be created but a particular site should define and
+use a common implementation.</p>
+
+<p>NOTE: The definion of access security level is an extension to what V3
+epics supports. It allows only two levels: 0 and 1 with 1 being the highest
+security level.</p>
 
 <h3>Limitations</h3>
 
-<p>PVAccess can be enhanced to implement authentication for CA udp and tcp
+<p>PVAccess can be enhanced to implement authentication for udp and tcp
 access to a PVData database but this is not the responsibility of access
-secuity. The configuration file, however, provides sytax that allows for
+security. The configuration file, however, provides sytax that allows for
 authentication. </p>
 
 <p>A PVData database can be accessed only via PVAccess or via a shell. It is
@@ -180,7 +166,6 @@ first give a simple example and then a complete description of the syntax.
         &lt;/rule&gt;
         &lt;rule&gt;
            &lt;right&gt;[read,write,process]&lt;/right&gt;
-           &lt;process&gt;true&lt;/process&gt;
            &lt;group&gt;users.AND.hosts&lt;/group&gt;
         &lt;/rule&gt;
       &lt;/group&gt;
@@ -228,8 +213,7 @@ host2.</p>
   &lt;/states&gt;
   &lt;access&gt;
      &lt;group name = "name"&gt;
-        &lt;rule&gt;
-            &lt;role&gt;[role,...,role]&lt;/role&gt;
+        &lt;rule accessSecurityLevel = "name" &gt;
             &lt;right&gt;[right,...,right]&lt;/right&gt;
             &lt;state name = "name"&gt;[state,...,state]&lt;/state&gt;
             &lt;group&gt;expression&lt;/group&gt;
@@ -241,8 +225,7 @@ host2.</p>
   &lt;/access&gt;
   &lt;log&gt;
      &lt;group name = "name"&gt;
-        &lt;rule&gt;
-            &lt;role&gt;[role,...,role]&lt;/role&gt;
+        &lt;rule accessSecurityLevel = "name" &gt;
             &lt;right&gt;[right,...,right]&lt;/right&gt;
             &lt;state name = "name"&gt;[state,...,state]&lt;/state&gt;
             &lt;group&gt;expression&lt;/group&gt;
@@ -278,9 +261,7 @@ room can be combined in a group named controlRoom.</p>
 <h4>states</h4>
 
 <p>states alow rules to apply only when something is or is not in a
-particular state. A single xml element "states" holds all possible states.
-Each state contains the name for PVAccess, i.e. it is the name of a record in
-an ioc. </p>
+particular state. A single xml element "states" holds all possible states.</p>
 
 <p>Each state has a name, which is referenced in access rules, and has two
 sub-elements: provider and pvname:</p>
@@ -303,7 +284,7 @@ access group defines an arbitrary number of rules. Each record being
 proctected by access security is assigned to an accesss security group. Thus
 each record instance belongs to a single access group. The default group has
 the name "default", which is the group for all records that do not have the
-accessGroup defined. Unlike a V3 access group the access group name will bot
+accessGroup defined. Unlike a V3 access group the access group name will not
 be available via the PVRecord interface but will be assigned and kept within
 the access security system itself.</p>
 
@@ -311,11 +292,11 @@ the access security system itself.</p>
 the access group applies. The group contains an arbitrary set of rule
 definitions.</p>
 
-<p>Within a rule the following elements can appear:</p>
+<p>A rule optionally has an attribute accessSecurityLevel, which chooses an
+access security level. If the access security level is not specified then
+level 0 is assumed. The value for accessSecurityLevel is the name associated
+with the level. Within a rule the following elements can appear:</p>
 <dl>
-  <dt>role</dt>
-    <dd>The field roles to which this rule applys. If not specified it means
-      any role.</dd>
   <dt>right</dt>
     <dd>The access rights which is any combination of read, write, process or
       else just none. If not specified no access is allowed..</dd>
@@ -324,7 +305,7 @@ definitions.</p>
       is one of the states in the array then the rule is valid.</dd>
   <dt>group</dt>
     <dd>This selects groups from the groups defined above. An expression that
-      can use the following operators: '(', ')', '|.OR., '.AND.', and
+      can use the following operators: '(', ')', '.OR.', '.AND.', and
       '.NOT.'. Each variable is a name of a group defined in groups. The
       syntax for the expression follows the same precedence rules as Java.
       Note that all arguments are of the form "Is the client part of the
@@ -338,8 +319,10 @@ definitions.</p>
   <li>The access group associated with the record is searched.</li>
   <li>Each rule for that access group is checked for the following: 
     <ul>
-      <li>The field's role must be one of the roles specified in element
-        role. If element role does not appear than any role is allowed.</li>
+      <li>The field of the record being accessed must have an access security
+        level that is greater than or equal to the access security level
+        associated with the rule. If it does not than the rule does not
+      apply.</li>
       <li>If state is specified, the state must be one of the choices
         specified. If link to the state record is bad or the alarm severity
         is invalid than the rule will not apply.</li>
@@ -359,6 +342,11 @@ definitions.</p>
 <p>The definitions are similar to those for access and access group. But
 these are differences:</p>
 <ul>
+  <li>access security level
+    <p>The level is now the maximum level to log rather than the minimum.
+    Thus if the rule specifies level 0 than only level 0 fields are
+    logged.</p>
+  </li>
   <li>right 
     <p>none means no logging, read means log reads, etc.</p>
   </li>
@@ -401,7 +389,7 @@ numerical IP of the client. </p>
    &lt;group name = "supervisor" credential = "user"&gt;[superguy]&lt;/group&gt;
    &lt;group name = "physicist" credential = "user"&gt;[joe,bill,sheng]&lt;/group&gt;
    &lt;group name = "controlRoom" credential = "host"&gt;[crhosr0,crhost1,crhost2]&lt;/group&gt;
-   &lt;group name = "ioc" credential = "ip"&gt;[192.168.143.0/24,192.168.143.1,192.168.143.2]&lt;/group&gt;
+   &lt;group name = "ioc" credential = "ip"&gt;[192.168.143.0/24,192.168.144.1,192.168.144.2]&lt;/group&gt;
 &lt;/group&gt;</pre>
 
 <h3>States</h3>
@@ -409,18 +397,18 @@ numerical IP of the client. </p>
 <p>The following:</p>
 <pre>&lt;states&gt;
     &lt;state name = "ringOpState"&gt;
-        &lt;provider&gt;cav3&lt;/provider&gt;
+        &lt;provider&gt;CAV3&lt;/provider&gt;
         &lt;pvname&gt;OpIOC:ringOpState&lt;/pvname&gt;
     &lt;/state&gt;
     &lt;state name = "linacOpState"&gt;
-        &lt;provider&gt;cav3&lt;/provider&gt;
+        &lt;provider&gt;CAV3&lt;/provider&gt;
         &lt;pvname&gt;OpIOC:linacOpState&lt;/pvname&gt;
     &lt;/state&gt;
 &lt;/states&gt;</pre>
 
 <p>Defines states for a storage ring and for the linac. The choices for each
-state are determined by the site. They might be something like: "offline",
-"standy", and "operational"</p>
+state are determined by the site. As an example they could be something like:
+"offline", "standy", and "operational"</p>
 
 <h3>Access Rules</h3>
 
@@ -429,7 +417,7 @@ state are determined by the site. They might be something like: "offline",
    &lt;group name = "default"&gt;
        &lt;rule&gt;
           &lt;right&gt;[read]&lt;/right&gt;
-       &lt;/rule&gt;
+       &lt;/rule accessSecurityLevel = "runtime"&gt;
        &lt;rule&gt;
           &lt;right&gt;[read,write,process]&lt;/right&gt;
           &lt;group&gt;(operator|physicist).AND.controlRoom&lt;/group&gt;
@@ -446,8 +434,8 @@ follows:</p>
 <ul>
   <li>Any client can read any field of any record.</li>
   <li>Operators and Physicists located in the control room have write and
-    read to all fields in any record. in addition they can request that a
-    record be processed</li>
+    read to fields, with accessSecurityLevel runtime, in any record. In
+    addition they can request that a record be processed</li>
   <li>Ring developers can read and write any field but only when state is
     offLine.</li>
 </ul>
@@ -458,11 +446,11 @@ follows:</p>
 <pre>&lt;log&gt;
    &lt;group name = "default"&gt;
        &lt;rule&gt;
-            &lt;right&gt;[read,write,process]&lt;/right&gt;
+            &lt;right&gt;[write,process]&lt;/right&gt;
             &lt;group&gt;.NOT.((operators.OR.physicists).AND.controlRoom)&lt;/group&gt;
        &lt;/rule&gt;
        &lt;rule&gt;
-            &lt;right&gt;[read,write,process]&lt;/right&gt;
+            &lt;right&gt;[write,process]&lt;/right&gt;
             &lt;state name = "ringOpState"&gt;[offLine]&lt;/state&gt;
             &lt;group&gt;.NOT.ringDevelopers&lt;/group&gt;
        &lt;/rule&gt;
@@ -482,19 +470,21 @@ in access group default except:</p>
 <p>Lets design a set of rules for a Linac. Assume the following:</p>
 <ol>
   <li>Anyone can have read access to all fields at anytime.</li>
-  <li>Linac application developer's, located in the control room, can have
-    write access to most level 0 fields only if the Linac in development. In
-    this case they also have process privilege.</li>
-  <li>Operators, located in the control room, can have write access to most
-    level 1 fields and process privilege.</li>
+  <li>Linac application developers, located in the control room, have read,
+    write, and process access to all fields only if the Linac in
+  development.</li>
+  <li>Operators, located in the control room, can have read, write, and
+    process access to fields that have access security level corresponding to
+    runtime.</li>
   <li>The operations supervisor, linac supervisor, and the application
-    developers can have write access to all fields but must have some way of
-    not changing something inadvertently.</li>
+    developers can have read,write, and process access to all fields but must
+    have some way of not changing something inadvertently.</li>
   <li>Most records use the above rules but a few (high voltage power
     supplies, etc.) are placed under tighter control. These will follow rules
-    1 and 4 but not 2 or 3.</li>
-  <li>IOC PVAccess clients always have level 0 write privilege and process
-    privilege.</li>
+    1 and 4 but not 2 or 3. These records will be in access security group
+    "permit".</li>
+  <li>IOC PVAccess clients always have read, write, and process access to all
+    fields of all records except those in group permit.</li>
 </ol>
 
 <p>Most Linac IOC records will not have the ASG field defined and will thus
@@ -505,7 +495,7 @@ be placed in group default.</p>
   <li>LI:OPSTATE<br />
     and any other records that need tighter control have asg critical. Two of
     the choices for LI:OPSTATE are "development" and "operational".</li>
-  <li>LI:leve0permit is in accessSecurityGroup permit. Thus has choices
+  <li>LI:permit is in accessSecurityGroup permit. Thus has choices
     [false,true] In order for the opSup, linacSup, or an appDev to have write
     privilege to everything this record must be set to the value true. Thus
     rule 4) above is satisfied by making the operations supervisor first set
@@ -537,23 +527,22 @@ be placed in group default.</p>
    &lt;group name = "appDev" credential = "user"&gt;[nda,kko]&lt;/group&gt;
    &lt;group name = "cr" credential = "host"&gt;[mars,hera,gold]&lt;/group&gt;
    &lt;group name = "ioc" credential = "ip"&gt;
-       [192.168.143.0/24,192.168.143.1,192.168.143.2]
+       [192.168.143.0/24,192.168.144.1,192.168.144.2]
    &lt;/group&gt;
 &lt;/groups&gt;
 &lt;states/&gt;
    &lt;state name = "opstate"&gt;
-      &lt;provider&gt;caV3&lt;/provider&gt;
+      &lt;provider&gt;CAV3&lt;/provider&gt;
       &lt;pvname&gt;LI:OPSTATE&lt;/pvname&gt;
    &lt;/state&gt;
-   &lt;state name = "level0Permit"&gt;
-      &lt;provider&gt;caV3&lt;/provider&gt;
-      &lt;pvname&gt;LI:level0Permit&lt;/pvname&gt;
+   &lt;state name = "permit"&gt;
+      &lt;provider&gt;CAV3&lt;/provider&gt;
+      &lt;pvname&gt;LI:permit&lt;/pvname&gt;
    &lt;/state&gt;
 &lt;/states&gt;
 &lt;access&gt;
    &lt;group name = "default"&gt;
-      &lt;rule level = "1"&gt;
-         &lt;role&gt;[unknown,userSet]&lt;/role&gt;
+      &lt;rule accessSecurityLevel = "runtime"&gt;
          &lt;right&gt;[read,write,process]&lt;/right&gt;
          &lt;state name = "opstate"&gt;[operational]&lt;/state&gt;
          &lt;group&gt;op.AND.cr&lt;/group&gt;
@@ -567,7 +556,7 @@ be placed in group default.</p>
       &lt;/rule&gt;
       &lt;rule&gt;
           &lt;right&gt;[read,write,process]&lt;/right&gt;
-          &lt;state name = "level0Permit"&gt;[true]&lt;/state&gt;
+          &lt;state name = "permit"&gt;[true]&lt;/state&gt;
           &lt;group&gt;(opSup.OR.linacSup.OR.appdev).AND.cr&lt;/group&gt;
       &lt;/rule&gt;
       &lt;rule&gt;
@@ -581,7 +570,7 @@ be placed in group default.</p>
    &lt;group name = "critical"&gt;
        &lt;rule&gt;
          &lt;right&gt;[read,write,process]&lt;/right&gt;
-         &lt;state name = "level0Permit"&gt;[true]&lt;/state&gt;
+         &lt;state name = "permit"&gt;[true]&lt;/state&gt;
          &lt;group&gt;(opSup.OR.linacSup.OR.appDev)&lt;/group&gt;
       &lt;/rule&gt;
       &lt;rule&gt;
@@ -611,14 +600,15 @@ be placed in group default.</p>
 
 <p>A brief summary of the Functional Requirements is:</p>
 <ol>
-  <li>Each field of each record type is assigned a role.</li>
+  <li>Each field of each record type is assigned an access security
+  level.</li>
   <li>Each record instance is assigned to a unique access security group.</li>
   <li>Each user is assigned to one or more user access groups.</li>
   <li>Each host is assigned to a host access group.</li>
   <li>For each access security group a set of access rules can be defined.
     Each rule specifies: 
     <ul>
-      <li>Access roles .</li>
+      <li>access security level.</li>
       <li>read, write, process right.</li>
       <li>An expression selecting the groups allowed.</li>
       <li>Allowed states.</li>
@@ -653,9 +643,9 @@ be placed in group default.</p>
   <dt>Access Security is Optional</dt>
     <dd>When a javaIOC is initialized, access security is optional.</dd>
   <dt>process</dt>
-    <dd>Since CAJv4 allows the client to request processing ( For V3 this was
-      determined by record type database definition), the access rights must
-      include process in addition to read and write.</dd>
+    <dd>Since PVAccess allows the client to request processing ( For V3 this
+      was determined by record type database definition), the access rights
+      must include process in addition to read and write.</dd>
 </dl>
 <hr />
 
@@ -675,7 +665,7 @@ that have support that interfaces to access security</p>
 <h2 style="text-align: center">PVAccess Support</h2>
 <hr />
 
-<p>Must implement Role.</p>
+<p>TBD.</p>
 <hr />
 
 <h2 style="text-align: center">Logging PVAccess Puts</h2>
