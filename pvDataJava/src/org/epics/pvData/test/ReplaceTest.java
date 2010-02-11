@@ -103,17 +103,17 @@ public class ReplaceTest extends TestCase {
         testReplace("ai","input.value");
         testReplace("ai","value");
         System.out.printf("%n");
-        new PVListenerForTesting(master,"ai","input.value");
-        new PVListenerForTesting(master,"ai","value");
+        new PVListenerForTesting(master,"ai","input.value",false,true);
+        new PVListenerForTesting(master,"ai","value",false,true);
         testPut("ai","input.value",2.0);
         testPut("ai","value",5.0);
         System.out.printf("%ntest put and listen psSimple%n");
         testReplace("psSimple","power.value");
         testReplace("psSimple","current.value");
         testReplace("psSimple","voltage.value");
-        new PVListenerForTesting(master,"psSimple","power.value");
-        new PVListenerForTesting(master,"psSimple","current.value");
-        new PVListenerForTesting(master,"psSimple","voltage.value");
+        new PVListenerForTesting(master,"psSimple","power.value",false,true);
+        new PVListenerForTesting(master,"psSimple","current.value",false,true);
+        new PVListenerForTesting(master,"psSimple","voltage.value",false,true);
         testPut("psSimple","current.value",25.0);
         testPut("psSimple","voltage.value",2.0);
         testPut("psSimple","power.value",50.0);
@@ -124,12 +124,12 @@ public class ReplaceTest extends TestCase {
         testReplace("powerSupplyArray","supply.1.power.value");
         testReplace("powerSupplyArray","supply.1.current.value");
         testReplace("powerSupplyArray","supply.1.voltage.value");
-        new PVListenerForTesting(master,"powerSupplyArray","supply.0.power.value");
-        new PVListenerForTesting(master,"powerSupplyArray","supply.0.current.value");
-        new PVListenerForTesting(master,"powerSupplyArray","supply.0.voltage.value");
-        new PVListenerForTesting(master,"powerSupplyArray","supply.1.power.value");
-        new PVListenerForTesting(master,"powerSupplyArray","supply.1.current.value");
-        new PVListenerForTesting(master,"powerSupplyArray","supply.1.voltage.value");
+        new PVListenerForTesting(master,"powerSupplyArray","supply.0.power.value",false,true);
+        new PVListenerForTesting(master,"powerSupplyArray","supply.0.current.value",false,true);
+        new PVListenerForTesting(master,"powerSupplyArray","supply.0.voltage.value",false,true);
+        new PVListenerForTesting(master,"powerSupplyArray","supply.1.power.value",false,true);
+        new PVListenerForTesting(master,"powerSupplyArray","supply.1.current.value",false,true);
+        new PVListenerForTesting(master,"powerSupplyArray","supply.1.voltage.value",false,true);
         testPut("powerSupplyArray","supply.0.current.value",25.0);
         testPut("powerSupplyArray","supply.0.voltage.value",2.0);
         testPut("powerSupplyArray","supply.0.power.value",50.0);
@@ -168,36 +168,36 @@ public class ReplaceTest extends TestCase {
         testReplace("allTypesInitial","allTypes.floatArray");
         testReplace("allTypesInitial","allTypes.doubleArray");
        
-        new PVListenerForTesting(master,"allTypesInitial","boolean");
-        new PVListenerForTesting(master,"allTypesInitial","byte");
-        new PVListenerForTesting(master,"allTypesInitial","short");
-        new PVListenerForTesting(master,"allTypesInitial","int");
-        new PVListenerForTesting(master,"allTypesInitial","long");
-        new PVListenerForTesting(master,"allTypesInitial","float");
-        new PVListenerForTesting(master,"allTypesInitial","double");
-        new PVListenerForTesting(master,"allTypesInitial","string");
-        new PVListenerForTesting(master,"allTypesInitial","booleanArray");
-        new PVListenerForTesting(master,"allTypesInitial","byteArray");
-        new PVListenerForTesting(master,"allTypesInitial","shortArray");
-        new PVListenerForTesting(master,"allTypesInitial","intArray");
-        new PVListenerForTesting(master,"allTypesInitial","longArray");
-        new PVListenerForTesting(master,"allTypesInitial","floatArray");
-        new PVListenerForTesting(master,"allTypesInitial","doubleArray");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.boolean");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.byte");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.short");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.int");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.long");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.float");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.double");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.string");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.booleanArray");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.byteArray");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.shortArray");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.intArray");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.longArray");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.floatArray");
-        new PVListenerForTesting(master,"allTypesInitial","allTypes.doubleArray");
+        new PVListenerForTesting(master,"allTypesInitial","boolean",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","byte",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","short",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","int",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","long",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","float",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","double",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","string",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","booleanArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","byteArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","shortArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","intArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","longArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","floatArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","doubleArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.boolean",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.byte",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.short",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.int",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.long",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.float",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.double",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.string",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.booleanArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.byteArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.shortArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.intArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.longArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.floatArray",false,true);
+        new PVListenerForTesting(master,"allTypesInitial","allTypes.doubleArray",false,true);
         testPutBoolean("allTypesInitial","boolean",true);
         testPut("allTypesInitial","byte",1.0);
         testPut("allTypesInitial","short",2.0);
@@ -236,7 +236,7 @@ public class ReplaceTest extends TestCase {
             System.out.printf("%nrecord %s not found%n",recordName);
             return;
         }
-        PVField pvField = pvRecord.getSubField(fieldName);
+        PVField pvField = pvRecord.getPVStructure().getSubField(fieldName);
         if(pvField==null){
             System.out.printf("%nfield %s not in record %s%n",fieldName,recordName);
             return;
@@ -255,8 +255,8 @@ public class ReplaceTest extends TestCase {
                 fieldName,recordName);
             return;
         }
-        PVStructure pvStructure = (PVStructure)pvField;
-        PVField[] pvFields = pvStructure.getPVFields();
+        PVStructure pvStruct = (PVStructure)pvField;
+        PVField[] pvFields = pvStruct.getPVFields();
         System.out.printf("%ntestPut begin structure put %s%n",
                 recordName + pvField.getFullFieldName());
         pvRecord.beginGroupPut();
@@ -289,7 +289,7 @@ public class ReplaceTest extends TestCase {
             System.out.printf("record %s not found%n",recordName);
             return;
         }
-        PVField pvField = pvRecord.getSubField(fieldName);
+        PVField pvField = pvRecord.getPVStructure().getSubField(fieldName);
         if(pvField==null) {
             System.out.printf("field %s not in record %s%n",
                 fieldName,recordName);
@@ -324,7 +324,7 @@ public class ReplaceTest extends TestCase {
             System.out.printf("record %s not found%n",recordName);
             return;
         }
-        PVField pvField = pvRecord.getSubField(fieldName);
+        PVField pvField = pvRecord.getPVStructure().getSubField(fieldName);
         if(pvField==null) {
             System.out.printf("field %s not in record %s%n",
                 fieldName,recordName);
@@ -349,7 +349,7 @@ public class ReplaceTest extends TestCase {
             System.out.printf("record %s not found%n",recordName);
             return;
         }
-        PVField pvField = pvRecord.getSubField(fieldName);
+        PVField pvField = pvRecord.getPVStructure().getSubField(fieldName);
         if(pvField==null) {
             System.out.printf("field %s not in record %s%n",
                 fieldName,recordName);
@@ -374,7 +374,7 @@ public class ReplaceTest extends TestCase {
             System.out.printf("record %s not found%n",recordName);
             return;
         }
-        PVField oldField = pvRecord.getSubField(fieldName);
+        PVField oldField = pvRecord.getPVStructure().getSubField(fieldName);
         if(oldField==null) {
             System.out.printf("field %s not in record %s%n",
                 fieldName,recordName);
@@ -478,6 +478,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -535,6 +536,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -592,6 +594,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -649,6 +652,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -706,6 +710,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -763,6 +768,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -820,6 +826,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -877,6 +884,7 @@ public class ReplaceTest extends TestCase {
             if(!super.isImmutable()) {
                 System.out.printf("%n    **%s.put**",getField().getType().toString());
                 this.value = value;
+                super.postPut();
                 return ;
             }
             throw new IllegalStateException("PVField is immutable");
@@ -942,6 +950,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
@@ -1012,6 +1021,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
@@ -1081,6 +1091,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
@@ -1150,6 +1161,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
@@ -1218,6 +1230,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
@@ -1287,6 +1300,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
@@ -1357,6 +1371,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
@@ -1425,6 +1440,7 @@ public class ReplaceTest extends TestCase {
             PVRecord pvRecord = super.getPVRecordField().getPVRecord();
             if(pvRecord!=null) pvRecord.beginGroupPut();
             System.arraycopy(from,fromOffset,value,offset,len);
+            super.postPut();
             if(pvRecord!=null) pvRecord.endGroupPut();
             return len;
         }
