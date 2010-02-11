@@ -66,7 +66,7 @@ public class PerformTest extends TestCase {
         Field fieldLong = fieldCreate.createArray("long",ScalarType.pvLong);
         Field[] fields = new Field[]{fieldFrom,fieldTo,fieldLong};
         PVRecord pvRecord = dataCreate.createPVRecord("test", fields);
-        PVField[] pvDatas = pvRecord.getPVFields();
+        PVField[] pvDatas = pvRecord.getPVStructure().getPVFields();
         PVDoubleArray from = (PVDoubleArray)pvDatas[0];
         PVDoubleArray to = (PVDoubleArray)pvDatas[1];
         PVLongArray toLong = (PVLongArray)pvDatas[2];
