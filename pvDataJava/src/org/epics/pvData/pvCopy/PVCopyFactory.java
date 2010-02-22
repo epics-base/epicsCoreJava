@@ -57,7 +57,7 @@ public class PVCopyFactory {
      */
     public static PVStructure createRequest(String request) {
         PVStructure pvStructure =  pvDataCreate.createPVStructure(null,"", new Field[0]);
-        createRequest(pvStructure,request);
+        if(request!=null && request.length()>0) createRequest(pvStructure,request);
         return pvStructure;
     }
     
