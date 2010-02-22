@@ -52,7 +52,7 @@ public class PVCopyFactory {
      * Create a request structure for the create calls in Channel.
      * See the package overview documentation for details.
      * @param request The field request. See the package overview documentation for details.
-     * @return The request structure or null if request was not legal.
+     * @return The request structure.
      * @throws IllegalArgumentException if invalid request.
      */
     public static PVStructure createRequest(String request) {
