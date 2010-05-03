@@ -12,7 +12,7 @@ import org.epics.pvData.pv.Requester;
 public class RequesterForTesting implements Requester {
 	private String requesterName = null;
 	
-	RequesterForTesting(String requesterName) {
+	public RequesterForTesting(String requesterName) {
 		this.requesterName = requesterName;
 	}
 	/* (non-Javadoc)
