@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>EPICS Java Channel Access Version 4: server</title>
+</head>
+
+<body>
+<h1 style="text-align: center">EPICS Java Channel Access Version 4: server<br
+/>
+package: org/epics/ca/channelAccess/server<br />
+2010.19.27</h1>
+CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#Channel">Channel Processor</a></li>
+  <li><a href="#Channel1">Channel Server</a></li>
+  <li><a href="#Server">Server Context</a></li>
+</ul>
+</div>
+<hr />
+
+<h2 style="text-align: center" id="Overview">Overview</h2>
+<hr />
+
+<p>This package defines the server interfaces for pvAccess, which is the version
+of channel access that fully supports structured data as defined by PVData.
+This package describes: </p>
+<dl>
+  <dt>Channel Processor</dt>
+    <dd>An application that uses the pvAccess server to make a local PVDatabase
+      available to the network can implement support for processing records,
+      i.e. implement support for the process option of the various
+      Channel.createChannelXXX methods. For example the javaIOC imnplements
+      this by interfacing pvAccess to the RecordProcess facility implemented by
+      the javaIOC.</dd>
+  <dt>Channel Server</dt>
+    <dd>The ChannelServer interface is described.</dd>
+  <dt>Server Context</dt>
+    <dd>The ServerContext implemented by pvAccess is described.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="Channel">Channel Processor</h2>
+<hr />
+
+<p>Three interfaces are involved with support for a client asking that a
+record be processed. ChannelProcessor and ChannelProcessorProvider are
+implemented by the application, e. g. the javaIOC. ChannelProcessorRequester
+is implemented bu pvAccess.</p>
+
+<p>ChannelProcessor, which is attached to a specific PVRecord, is defined
+as:</p>
+<pre>interface ChannelProcessor {
+    void detach();
+    void requestProcess();
+    void process(boolean leaveActive,TimeStamp timeStamp);
+    void setInactive();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">detach</span></dt>
+    <dd>End of being a channel processor.</dd>
+  <dt><span style="font-family: Courier">requestProcess</span></dt>
+    <dd>Request to process. ChannelProcessorRequester.becomeProcessor is
+      called when the requester can call setActive and/or process.</dd>
+  <dt><span style="font-family: Courier">setActive</span></dt>
+    <dd>Set the record active. This is called if the requester wants to put
+      to the record before the record starts processing. If this is
+      successful than the requester must call process after the put is
+      complete.</dd>
+  <dt><span style="font-family: Courier">process</span></dt>
+    <dd><p>Process the record. A value of false means that the request
+      failed. If leaveActive is true the record is left active after process
+      is complete. This allows the caller to read data from the record before
+      the record is released.The caller must call setInactive after the
+      caller is done reading data.</p>
+    </dd>
+  <dt><span style="font-family: Courier">setInactive</span></dt>
+    <dd>Called if leaveActive was true.</dd>
+</dl>
+
+<p>ChannelProcessorPrivider is defined as:</p>
+<pre>interface ChannelProcessorProvider {
+    ChannelProcessor requestChannelProcessor(PVRecord pvRecord,
+         ChannelProcessorRequester channelProcessorRequester);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">requestChannelProcessor</span></dt>
+    <dd>Request to become record processor. A null is returned if the caller
+      could not become the record processor.</dd>
+</dl>
+
+<p>ChannelProcessorRequester is defined as:</p>
+<pre>interface ChannelProcessorRequester extends Requester{
+    void becomeProcessor();
+    void canNotProcess(String reason);
+    void recordProcessResult(Status status);
+    void recordProcessComplete();
+    void lostRightToProcess();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">becomeProcessor</span></dt>
+    <dd>Called as a result of a call to requestProcess.</dd>
+  <dt><span style="font-family: Courier">canNotProcess</span></dt>
+    <dd>A request was made to become processor but record can not be
+      processed.</dd>
+  <dt><span style="font-family: Courier">recordProcessResult</span></dt>
+    <dd>Called to report result of record processing. This is called before
+      the record is unlocked.</dd>
+  <dt><span style="font-family: Courier">recordProcessComplete</span></dt>
+    <dd>Called when all processing is complete and record is unlocked.</dd>
+  <dt><span style="font-family: Courier">lostRightToProcess</span></dt>
+    <dd>The process requester has lost the right to request processing.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="Channel1">Channel Server</h2>
+<hr />
+
+<p>This is an interface implemented by local server:</p>
+<pre>interface ChannelServer extends ChannelProvider{
+    void registerMonitor(MonitorCreate monitorCreate);
+    boolean registerChannelProcessProvider(
+        ChannelProcessorProvider channelProcessProvider);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">registerMonitor</span></dt>
+    <dd>register a monitor algorithm.</dd>
+  <dt><span style="font-family: Courier">registerChannelProcessProvider
+  </span></dt>
+    <dd>Register the ChannelProcessProvider.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="Server">Server Context</h2>
+<hr />
+
+<p>This is an interface implemented by pvAccess server:</p>
+<pre>interface ServerContext {
+    Version getVersion();
+    void initialize(ChannelAccess channelAccess) throws CAException, IllegalStateException;
+    void run(int seconds) throws CAException, IllegalStateException;
+    void shutdown() throws CAException, IllegalStateException;
+    void destroy() throws CAException, IllegalStateException;
+    void printInfo();
+    void printInfo(PrintStream out);
+    void dispose();
+    void setBeaconServerStatusProvider(BeaconServerStatusProvider beaconServerStatusProvider);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">getVersion</span></dt>
+    <dd>x</dd>
+  <dt><span style="font-family: Courier">initialize</span></dt>
+    <dd>x</dd>
+  <dt><span style="font-family: Courier">run</span></dt>
+    <dd>x</dd>
+  <dt><span style="font-family: Courier">shutdown</span></dt>
+    <dd>x</dd>
+  <dt><span style="font-family: Courier">destroy</span></dt>
+    <dd>x</dd>
+  <dt><span style="font-family: Courier">printInfo</span></dt>
+    <dd>x</dd>
+  <dt><span style="font-family: Courier">dispose</span></dt>
+    <dd>x</dd>
+  <dt><span
+  style="font-family: Courier">setBeaconServerStatusProvider</span></dt>
+    <dd>x</dd>
+</dl>
+</body>
+</html>
