@@ -5,8 +5,9 @@
  */
 package org.epics.pvData.factory;
 
-import java.util.ArrayList;
-
+import org.epics.pvData.misc.LinkedList;
+import org.epics.pvData.misc.LinkedListCreate;
+import org.epics.pvData.misc.LinkedListNode;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
@@ -19,11 +20,11 @@ import org.epics.pvData.pv.Type;
  *
  */
 public class BasePVRecordField implements PVRecordField{
+	 private static LinkedListCreate<PVListener> linkedListCreate = new LinkedListCreate<PVListener>();
 	 private PVField pvField = null;
      private PVRecord pvRecord = null;
      private boolean isStructure = false;
-     // since list is mostly traversed an ArrayList is efficent.
-     private ArrayList<PVListener> pvListenerList = new ArrayList<PVListener>(0);
+     private LinkedList<PVListener> pvListenerList = linkedListCreate.create();
      
      BasePVRecordField(PVField pvField,PVRecord pvRecord) {
          this.pvField = pvField;
@@ -43,7 +44,9 @@ public class BasePVRecordField implements PVRecordField{
      @Override
      public boolean addListener(PVListener pvListener) {
          if(!pvRecord.isRegisteredListener(pvListener)) return false;
-         return pvListenerList.add(pvListener);
+         LinkedListNode<PVListener> listNode = linkedListCreate.createNode(pvListener);
+         pvListenerList.addTail(listNode);
+         return true;
      }
      /* (non-Javadoc)
       * @see org.epics.pvData.pv.PVRecordField#removeListener(org.epics.pvData.pv.PVListener)
@@ -84,9 +87,11 @@ public class BasePVRecordField implements PVRecordField{
      }
      
      private void postParent(PVField subField) {
-         for(int index=0; index<pvListenerList.size(); index++) {
-             PVListener pvListener = pvListenerList.get(index);
-             if(pvListener!=null) pvListener.dataPut((PVStructure)pvField,subField);
+    	 LinkedListNode<PVListener> listNode = pvListenerList.getHead();
+    	 while(listNode!=null) {
+    		 PVListener pvListener = listNode.getObject();
+             pvListener.dataPut((PVStructure)pvField,subField);
+             listNode = pvListenerList.getNext(listNode);
          }
          PVStructure pvParent = pvField.getParent();
          if(pvParent!=null) {
@@ -108,10 +113,11 @@ public class BasePVRecordField implements PVRecordField{
      }
      
      private void callListener() {
-         // don't create iterator
-         for(int index=0; index<pvListenerList.size(); index++) {
-             PVListener pvListener = pvListenerList.get(index);
-             if(pvListener!=null) pvListener.dataPut(pvField);
+    	 LinkedListNode<PVListener> listNode = pvListenerList.getHead();
+    	 while(listNode!=null) {
+    		 PVListener pvListener = listNode.getObject();
+             pvListener.dataPut(pvField);
+             listNode = pvListenerList.getNext(listNode);
          }
      }
 }
