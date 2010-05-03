@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>EPICS CA</title>
+</head>
+
+<body>
+<h1 style="text-align: center">EPICS CA: ca<br />
+package: org.epics.ca<br />
+2009.09.25</h1>
+CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#Overview">Overview</a></li>
+  <li><a href="#Factories">Factories</a></li>
+  <li><a href="#CAConstant">CAConstants</a></li>
+  <li><a href="#CAExceptio">CAException</a></li>
+  <li><a href="#Version">Version</a></li>
+</ul>
+</div>
+<hr />
+
+<h2 style="text-align: center" id="Overview">Overview</h2>
+<hr />
+
+<p>This package provides:</p>
+<dl>
+  <dt>Factories</dt>
+    <dd>Factories are available to start pvAccess channel access. This includes
+      local channel access and the client and server for remote pvAccess.</dd>
+  <dt>CAConstants</dt>
+    <dd>A set of constants used by the pvAccess implementation.</dd>
+  <dt>CAException</dt>
+    <dd>A extension of Exception for pvAccess.</dd>
+  <dt>Version</dt>
+    <dd>Administrative class to keep track of the version number.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="Factories">Factories</h2>
+<hr />
+
+<p>Each factory has a single public method:</p>
+<pre>    public static synchronized void start();</pre>
+
+<p>For example the pvAccess client can be started by calling:</p>
+<pre>    org.epics.ca.ClientFactory.start();</pre>
+
+<p>The following factories are available:</p>
+<dl>
+  <dt><span style="font-family: Courier">ClientFactory</span></dt>
+    <dd>This starts the client side of the network support for pvAccess. This is
+      the only support that needs to be started by a stand-alone client.</dd>
+  <dt><span style="font-family: Courier">LocalFactory</span></dt>
+    <dd>This is called for accessing a local PVDatabase. It is also required
+      by the ServerFactory and must be started before the server factory. An
+      application that wants to use channel access to access the local
+      database must start this. For example the JavaIOC starts this.</dd>
+  <dt><span style="font-family: Courier">ServerFactory</span></dt>
+    <dd>This must be started in order to allow pvAccess clients to access the
+      local PVDatabase. For example the javaIOC can start this.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="CAConstant">CAConstants</h2>
+<hr />
+
+<p>This defines a number of constants used by the implementation. It is not
+of interest to users. Look at the source for details.</p>
+<hr />
+
+<h2 style="text-align: center" id="CAExceptio">CAException</h2>
+<hr />
+
+<p>This is a simple extension of the Java Exception class. It is defined so
+that channel access specific exceptions can be thrown.</p>
+<hr />
+
+<h2 style="text-align: center" id="Version">Version</h2>
+<hr />
+
+<p>This is an administrative class to keep track of the version number. See
+the code for details.</p>
+</body>
+</html>
