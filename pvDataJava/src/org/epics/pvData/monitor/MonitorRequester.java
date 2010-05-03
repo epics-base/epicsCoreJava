@@ -24,10 +24,12 @@ public interface MonitorRequester extends Requester{
     void monitorConnect(Status status, Monitor monitor, Structure structure);
     /**
      * A monitor event has occurred. The requester must call Monitor.poll to get data.
+     * @param monitor The monitor.
      */
     void monitorEvent(Monitor monitor);
     /**
-     * unlisten 
+     * The data source is no longer available.
+     * @param monitor The monitor.
      */
-    void unlisten();
+    void unlisten(Monitor monitor);
 }

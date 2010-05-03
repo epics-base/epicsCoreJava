@@ -16,5 +16,13 @@ public interface MonitorAlgorithm {
      * @return The name.
      */
     String getAlgorithmName();
-    
+    /**
+     * Should the current value cause a monitor?
+     * @return (false,true) if a monitor (should not, should) be raised.
+     */
+    boolean causeMonitor();
+    /**
+     * A monitor was raised. The implementation should update to the latest value.
+     */
+    void monitorIssued();
 }
