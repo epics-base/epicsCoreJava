@@ -15,13 +15,11 @@ public class DoubleArrayData {
     /**
      * The double[].
      * PVDoubleArray.get sets this value.
-     * PVDoubleArray.put requires that the caller set the value. 
      */
     public double[] data;
     /**
      * The offset.
-     * PVDoubleArray.get sets this value.
-     * PVDoubleArray.put requires that the caller set the value. 
+     * PVDoubleArray.get sets this value. 
      */
     public int offset;
 }

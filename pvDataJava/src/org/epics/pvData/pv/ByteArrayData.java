@@ -15,13 +15,11 @@ public class ByteArrayData {
     /**
      * The byte[].
      * PVByteArray.get sets this value.
-     * PVByteArray.put requires that the caller set the value. 
      */
     public byte[] data;
     /**
      * The offset.
      * PVByteArray.get sets this value.
-     * PVByteArray.put requires that the caller set the value. 
      */
     public int offset;
 }
