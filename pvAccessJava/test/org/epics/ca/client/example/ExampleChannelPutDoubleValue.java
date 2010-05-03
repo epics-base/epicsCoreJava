@@ -53,7 +53,7 @@ public class ExampleChannelPutDoubleValue {
         System.exit(0);
     }
     
-    private static final String providerName = "caV4";
+    private static final String providerName = "pvAccess";
     private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     
