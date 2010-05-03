@@ -95,9 +95,4 @@ public interface PVCopy {
      * @return The PVCopyMonitor.
      */
     PVCopyMonitor createPVCopyMonitor(PVCopyMonitorRequester pvCopyMonitorRequester);
-    /**
-     * Are the PVStructures being created to share data?
-     * @return isShared.
-     */
-    boolean isShared();
 }
