@@ -33,14 +33,19 @@ import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVStructureArray;
+import org.epics.pvData.pv.PVStructureScalar;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.ShortArrayData;
 import org.epics.pvData.pv.StringArrayData;
+import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.StructureArrayData;
+import org.epics.pvData.pv.StructureScalar;
 
 /**
  * Create a PVField that shares the data from another PVField.
- * The original pvField is replaced by the newlt created PVField.
+ * The original pvField is replaced by the newly created PVField.
  * @author mrk
  *
  */
@@ -93,9 +98,10 @@ public class PVShareFactory {
             return new SharePVDoubleImpl(pvParent,(PVDouble)pvShare);
         case pvString:
             return new SharePVStringImpl(pvParent,(PVString)pvShare);
+        case pvStructure:
+        	return new SharePVStructureScalarImpl(pvParent,(PVStructureScalar)pvShare);
         }
         return null;
-        
     }
     
     private static PVArray createArray(PVStructure pvParent,PVArray pvShare) {
@@ -117,6 +123,8 @@ public class PVShareFactory {
             return new SharePVDoubleArrayImpl(pvParent,(PVDoubleArray)pvShare);
         case pvString:
             return new SharePVStringArrayImpl(pvParent,(PVStringArray)pvShare);
+        case pvStructure:
+        	return new SharePVStructureArrayImpl(pvParent,(PVStructureArray)pvShare);
         }
         return null;
     }
@@ -604,6 +612,43 @@ public class PVShareFactory {
         }
     }
     
+    private static class SharePVStructureScalarImpl extends AbstractSharePVScalar implements PVStructureScalar
+    {
+        private PVStructureScalar pvShare;
+        
+        private SharePVStructureScalarImpl(PVStructure parent,PVStructureScalar pvShare) {
+            super(parent,pvShare);
+            this.pvShare = pvShare;;
+        }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.PVStructureScalar#getPVStructure()
+		 */
+		@Override
+		public PVStructure getPVStructure() {
+			return pvShare.getPVStructure();
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.PVStructureScalar#getStructureScalar()
+		 */
+		@Override
+		public StructureScalar getStructureScalar() {
+			return pvShare.getStructureScalar();
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.PVStructureScalar#put()
+		 */
+		@Override
+		public void put() {
+			super.lockShare();
+			try {
+				pvShare.put();
+			} finally {
+				super.unlockShare();
+			}
+			super.postPut();
+		}        
+    }
+    
     private static class SharePVBooleanArrayImpl extends AbstractSharePVArray implements PVBooleanArray
     {
         private PVBooleanArray pvShare;
@@ -630,16 +675,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, boolean[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVBooleanArray#shareData(boolean[])
@@ -700,16 +747,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, byte[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVByteArray#shareData(byte[])
@@ -770,16 +819,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, short[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVShortArray#shareData(short[])
@@ -840,16 +891,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, int[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVIntArray#shareData(int[])
@@ -910,16 +963,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, long[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVLongArray#shareData(long[])
@@ -980,16 +1035,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, float[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVFloatArray#shareData(float[])
@@ -1050,16 +1107,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, double[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDoubleArray#shareData(double[])
@@ -1120,16 +1179,18 @@ public class PVShareFactory {
          */
         @Override
         public int put(int offset, int length, String[] from, int fromOffset) {
+        	int len = 0;
             super.lockShare();
             try {
                 PVRecord pvShareRecord = pvShare.getPVRecordField().getPVRecord();
                 if(pvShareRecord!=null) pvShareRecord.beginGroupPut();
-                int number = pvShare.put(offset, length, from, fromOffset);
+                len = pvShare.put(offset, length, from, fromOffset);
                 if(pvShareRecord!=null) pvShareRecord.endGroupPut();
-                return number;
             } finally {
                 super.unlockShare();
             }
+            super.postPut();
+            return len;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVStringArray#shareData(java.lang.String[])
@@ -1150,6 +1211,65 @@ public class PVShareFactory {
                 super.unlockThis();
             }
         }
+		/* (non-Javadoc)
+		 * @see java.lang.Object#hashCode()
+		 */
+		@Override
+		public int hashCode() {
+            super.lockThis();
+            try {
+                return pvShare.hashCode();
+            } finally {
+                super.unlockThis();
+            }
+		}
+    }
+    
+    private static class SharePVStructureArrayImpl extends AbstractSharePVArray implements PVStructureArray
+    {
+        private PVStructureArray pvShare;
+        
+        private SharePVStructureArrayImpl(PVStructure parent,PVStructureArray pvShare)
+        {
+            super(parent,pvShare);
+            this.pvShare = pvShare;
+        }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.PVStructureArray#get(int, int, org.epics.pvData.pv.StructureArrayData)
+		 */
+		@Override
+		public int get(int offset, int length, StructureArrayData data) {
+			return pvShare.get(offset, length, data);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.PVStructureArray#put(int, int, org.epics.pvData.pv.PVStructure[], int)
+		 */
+		@Override
+		public int put(int offset, int length, PVStructure[] from,int fromOffset) {
+			int len = 0;
+			super.lockShare();
+			try {
+				len = pvShare.put(offset, length, from, fromOffset);
+			} finally {
+				super.unlockShare();
+			}
+			super.postPut();
+			return len;
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.PVStructureArray#getStructureArray()
+		 */
+		@Override
+		public StructureArray getStructureArray() {
+			return pvShare.getStructureArray();
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.PVStructureArray#shareData(org.epics.pvData.pv.PVStructure[])
+		 */
+		@Override
+		public void shareData(PVStructure[] from) {
+			pvShare.shareData(from);
+		}
 		/* (non-Javadoc)
 		 * @see java.lang.Object#hashCode()
 		 */
