@@ -34,7 +34,7 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
     /**
      * Constructor.
      * @param parent The parent.
-     * @param array The Introspection interface.
+     * @param structureArray The Introspection interface.
      */
     public BasePVStructureArray(PVStructure parent,StructureArray structureArray)
     {
