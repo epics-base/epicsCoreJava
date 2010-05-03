@@ -24,11 +24,6 @@ import org.epics.pvData.misc.BitSet;
 public interface PVCopyMonitor {
     /**
      * Start monitoring.
-     * Monitoring without bitsets is for clients that just want to know when monitored fields have changed.
-     */
-    void startMonitoring();
-    /**
-     * Start monitoring.
      * @param changeBitSet The initial changeBitSet.
      * @param overrunBitSet The overrun bitSet.
      */
