@@ -27,6 +27,9 @@ public class BaseScalar extends BaseField implements Scalar {
     public BaseScalar(String fieldName,ScalarType scalarType) {
         super(fieldName, Type.scalar);
         this.scalarType = scalarType;
+        if(scalarType==null) {
+        	throw new NullPointerException("scalarType is null");
+        }
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Scalar#getScalarType()
