@@ -14,13 +14,11 @@ public class StringArrayData {
     /**
      * The PVString[].
      * PVStringArray.get sets this value.
-     * PVStringArray.put requires that the caller set the value. 
      */
     public String[] data;
     /**
      * The offset.
      * PVStringArray.get sets this value.
-     * PVStringArray.put requires that the caller set the value. 
      */
     public int offset;
 }

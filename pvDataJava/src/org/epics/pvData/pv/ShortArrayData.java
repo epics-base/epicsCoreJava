@@ -14,13 +14,11 @@ public class ShortArrayData {
     /**
      * The PVShort[].
      * PVShortArray.get sets this value.
-     * PVShortArray.put requires that the caller set the value. 
      */
     public short[] data;
     /**
      * The offset.
      * PVShortArray.get sets this value.
-     * PVShortArray.put requires that the caller set the value. 
      */
     public int offset;
 }
