@@ -30,6 +30,7 @@ import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVLongArray;
 import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 
 /**
@@ -65,7 +66,8 @@ public class PerformTest extends TestCase {
         Field fieldTo = fieldCreate.createArray("to",ScalarType.pvDouble);
         Field fieldLong = fieldCreate.createArray("long",ScalarType.pvLong);
         Field[] fields = new Field[]{fieldFrom,fieldTo,fieldLong};
-        PVRecord pvRecord = dataCreate.createPVRecord("test", fields);
+        PVStructure pvStruct = dataCreate.createPVStructure(null, "", fields);
+        PVRecord pvRecord = dataCreate.createPVRecord("test", pvStruct);
         PVField[] pvDatas = pvRecord.getPVStructure().getPVFields();
         PVDoubleArray from = (PVDoubleArray)pvDatas[0];
         PVDoubleArray to = (PVDoubleArray)pvDatas[1];
