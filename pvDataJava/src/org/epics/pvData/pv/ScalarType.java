@@ -42,8 +42,11 @@ public enum ScalarType {
     /**
      * Value has type <i>String</i>.
      */
-    pvString;
-    
+    pvString,
+    /**
+     * The element is a structure that must be accessed as a single entity, i.e. it is not possible to access subfields of the structure.
+     */
+    pvStructure;
     /**
      * Is this an integer. true if byte, short, int, or long.
      * @return true if it is an integer type.
@@ -89,6 +92,7 @@ public enum ScalarType {
         if(type.equals("float")) return ScalarType.pvFloat;
         if(type.equals("double")) return ScalarType.pvDouble;
         if(type.equals("string")) return ScalarType.pvString;
+        if(type.equals("structure")) return ScalarType.pvStructure;
         return null;
     }
 }
