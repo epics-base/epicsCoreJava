@@ -14,13 +14,11 @@ public class FloatArrayData {
     /**
      * The float[].
      * PVFloatArray.get sets this value.
-     * PVFloatArray.put requires that the caller set the value. 
      */
     public float[] data;
     /**
      * The offset.
-     * PVFloatArray.get sets this value.
-     * PVFloatArray.put requires that the caller set the value. 
+     * PVFloatArray.get sets this value. 
      */
     public int offset;
 }

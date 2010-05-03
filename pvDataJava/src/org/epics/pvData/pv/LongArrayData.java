@@ -14,13 +14,11 @@ public class LongArrayData {
     /**
      * The PVLong[].
      * PVLongArray.get sets this value.
-     * PVLongArray.put requires that the caller set the value. 
      */
     public long[] data;
     /**
      * The offset.
-     * PVLongArray.get sets this value.
-     * PVLongArray.put requires that the caller set the value. 
+     * PVLongArray.get sets this value. 
      */
     public int offset;
 }

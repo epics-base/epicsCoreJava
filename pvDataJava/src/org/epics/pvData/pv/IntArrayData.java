@@ -14,13 +14,11 @@ public class IntArrayData {
     /**
      * The int[].
      * PVIntArray.get sets this value.
-     * PVIntArray.put requires that the caller set the value. 
      */
     public int[] data;
     /**
      * The offset.
      * PVIntArray.get sets this value.
-     * PVIntArray.put requires that the caller set the value. 
      */
     public int offset;
 }
