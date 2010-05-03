@@ -27,7 +27,7 @@ public interface AccessSecurityLevel {
     int getLevel(String name) throws NoSuchFieldException;
     /**
      * Get an array of names for each access security level.
-     * @return
+     * @return An String[] of names.
      */
     String[] getNames();
 }
