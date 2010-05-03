@@ -15,7 +15,7 @@ package org.epics.pvData.pv;
  */
 public interface PVByteArray extends PVArray{
     /**
-     * Get values from a <i>PVByteArray</i> and put them into <i>byte[]to</i>.
+     * Get values from a <i>PVByteArray</i> and put them into <i>byte[]from</i>.
      * @param offset The offset to the first element to get.
      * @param length The maximum number of elements to transfer.
      * @param data The class containing the data and an offset into the data.

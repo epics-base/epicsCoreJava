@@ -30,7 +30,7 @@ public interface PVStringArray extends PVArray{
      */
     int get(int offset, int length, StringArrayData data);
     /**
-     * Put values into a <i>PVStringArray</i> from <i>String[]to</i>.
+     * Put values into a <i>PVStringArray</i> from <i>String[]from</i>.
      * @param offset The offset to the first element to put.
      * @param length The maximum number of elements to transfer.
      * @param from The array from which to get the data.

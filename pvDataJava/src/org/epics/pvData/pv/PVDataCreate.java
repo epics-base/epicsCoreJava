@@ -51,6 +51,21 @@ public interface PVDataCreate {
      */
     PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
     /**
+     * Create an implementation of a scalar field which is a PVStructure.
+     * @param parent The parent.
+     * @param structureScalar The introspection interface.
+     * @return The PVStructureScalar implementation.
+     */
+    PVStructureScalar createPVStructureScalar(PVStructure parent,StructureScalar structureScalar);
+    /**
+     * Create an implementation of a scalar field which is a PVStructure.
+     * @param parent The parent.
+     * @param fieldName The field name.
+     * @param structureToClone The structure to clone.
+     * @return The PVStructureScalar implementation.
+     */
+    PVStructureScalar createPVStructureScalar(PVStructure parent,String fieldName,PVStructure structureToClone);
+    /**
      * Create an implementation of an array field reusing the Array introspection interface.
      * @param parent The parent interface.
      * @param array The introspection interface.
@@ -74,6 +89,14 @@ public interface PVDataCreate {
      * @return The PVArray implementation.
      */
     PVArray createPVArray(PVStructure parent,String fieldName,PVArray arrayToClone);
+    /**
+     * Create an implementation of an array with structure elements.
+     * @param parent The parent interface.
+     * @param structureArray The introspection interface.
+     * All elements share the same introspection interface.
+     * @return The PVStructureArray implementation.
+     */
+    PVStructureArray createPVStructureArray(PVStructure parent,StructureArray structureArray);
     /**
      * Create implementation for PVStructure.
      * @param parent The parent interface.
@@ -108,28 +131,12 @@ public interface PVDataCreate {
      */
     PVStructure createPVStructure(PVStructure parent,String fieldName,PVDatabase pvDatabase,String structureName);
     /**
-     * Create a record instance.
+     * Create a record instance for the top level pvStructure.
      * @param recordName The instance name.
-     * @param fields Array of reflection interfaces for the subFields.
+     * @param pvStructure The top level pvStructure.
      * @return The interface for accessing the record instance.
      */
-    PVRecord createPVRecord(String recordName,Field[] fields);
-    /**
-     * Create a record instance.
-     * @param recordName The instance name.
-     * @param structToClone A structure. Each subfield and any auxInfo is cloned and added to the newly created structure.
-     * @return The interface for accessing the record instance.
-     */
-    PVRecord createPVRecord(String recordName,PVStructure structToClone);
-    /**
-     * Create a record instance.
-     * @param recordName The instance name.
-     * @param pvDatabase The database where structureName is located.
-     * @param structureName The structure with this name is located in pvDatabase.
-     * Each subfield and any auxInfo is cloned and added to the newly created structure.
-     * @return The interface for accessing the record instance.
-     */
-    PVRecord createPVRecord(String recordName,PVDatabase pvDatabase,String structureName);
+    PVRecord createPVRecord(String recordName,PVStructure pvStructure);
     /**
      * Get a PVField[] that has all field of pvStructure in offset order.
      * @param pvStructure The structure.

@@ -30,7 +30,7 @@ public interface PVBooleanArray extends PVArray{
      */
     int get(int offset, int length, BooleanArrayData data);
     /**
-     * Put values into a <i>PVBooleanArray</i> from <i>boolean[]to</i>.
+     * Put values into a <i>PVBooleanArray</i> from <i>boolean[]from</i>.
      * If the field is immutable a message is generated, the field is not modified and 0 is returned.
      * @param offset The offset to the first element to put.
      * @param length The maximum number of elements to transfer.

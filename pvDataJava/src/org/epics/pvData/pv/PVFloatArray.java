@@ -30,7 +30,7 @@ public interface PVFloatArray extends PVArray{
      */
     int get(int offset, int length, FloatArrayData data);
     /**
-     * Put values into a <i>PVFloatArray</i> from <i>float[]to</i>.
+     * Put values into a <i>PVFloatArray</i> from <i>float[]from</i>.
      * @param offset The offset to the first element to put.
      * @param length The maximum number of elements to transfer.
      * @param from The array from which to get the data.

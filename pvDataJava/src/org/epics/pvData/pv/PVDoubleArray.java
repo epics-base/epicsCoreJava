@@ -30,7 +30,7 @@ public interface PVDoubleArray extends PVArray{
      */
     int get(int offset, int length, DoubleArrayData data);
     /**
-     * Put values into a <i>PVDoubleArray</i> from <i>double[]to</i>
+     * Put values into a <i>PVDoubleArray</i> from <i>double[]from</i>
      * @param offset The offset to the first element to put.
      * @param length The maximum number of elements to transfer.
      * @param from The array from which to get the data.

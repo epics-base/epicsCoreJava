@@ -29,7 +29,7 @@ public interface PVLongArray extends PVArray{
      */
     int get(int offset, int length, LongArrayData data);
     /**
-     * Put values into a <i>PVLongArray</i> from <i>long[]to</i>.
+     * Put values into a <i>PVLongArray</i> from <i>long[]from</i>.
      * @param offset The offset to the first element to put.
      * @param length The maximum number of elements to transfer.
      * @param from The array from which to get the data.
