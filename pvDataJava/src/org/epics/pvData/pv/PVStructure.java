@@ -5,7 +5,6 @@
  */
 package org.epics.pvData.pv;
 
-import org.epics.pvData.pvCopy.BitSetSerializable;
 
 
 /**
@@ -39,91 +38,112 @@ public interface PVStructure extends PVField, BitSetSerializable {
     PVField getSubField(int fieldOffset);
     /**
      * Replace a field of a structure..
-     * For an ioc record. This should only be called when a record is in the readyForInitialization state.
+     * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
      * @param fieldName The field name.
      * @param newPVField The new field.
      */
     void replacePVField(String fieldName,PVField newPVField);
     /**
      * Append a new PVField to this structure.
+     * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
      * @param pvField The field to append.
      */
     void appendPVField(PVField pvField);
     /**
      * Remove a field.
+     * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
      * @param fieldName The name of the field to remove.
      */
     void removePVField(String fieldName);
     /**
+     * One or more of the PVField[] of the PVStructure has been replaced.
+     * Update the implementation.
+     */
+    void updateInternal();
+    /**
      * Find a boolean subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVBoolean getBooleanField(String fieldName);
     /**
      * Find a byte subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVByte getByteField(String fieldName);
     /**
      * Find a short subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVShort getShortField(String fieldName);
     /**
      * Find an int subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVInt getIntField(String fieldName);
     /**
      * Find a long subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVLong getLongField(String fieldName);
     /**
      * Find a float subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVFloat getFloatField(String fieldName);
     /**
      * Find a double subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVDouble getDoubleField(String fieldName);
     /**
      * Find a string subfield with the specified fieldName.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVString getStringField(String fieldName);
     /**
+     * Find a structureScalar subfield with the specified fieldName.
+     * The fieldName is of the form name.name...
+     * @param fieldName The field name to find.
+     * @return The interface if the field of the correct type is found or null if not found.
+     */
+    PVStructureScalar getStructureScalarField(String fieldName);
+    /**
      * Find a structure subfield with the specified fieldName
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVStructure getStructureField(String fieldName);
     /**
      * Find an array subfield with the specified fieldName and elementType.
      * The fieldName is of the form name.name...
-     * @param fieldName The field name to find
+     * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
     PVArray getArrayField(String fieldName,ScalarType elementType);
+    /**
+     * Find a structureArray subfield with the specified fieldName.
+     * The fieldName is of the form name.name...
+     * @param fieldName The field name to find.
+     * @return The interface if the field of the correct type is found or null if not found.
+     */
+    PVStructureArray getStructureArrayField(String fieldName);
     /**
      * Get the name of structure that this structure extends.
      * @return The name or null if this structure does not extend a structure.
