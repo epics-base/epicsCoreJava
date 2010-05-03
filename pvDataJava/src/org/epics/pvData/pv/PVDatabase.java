@@ -38,7 +38,7 @@ public interface PVDatabase extends Requester{
     /**
      * Add a new record instance.
      * @param record The record instance.
-     * @return true if the record was created.
+     * @return true if the record was added and false if the record was already in the database.
      */
     boolean addRecord(PVRecord record);
     /**
