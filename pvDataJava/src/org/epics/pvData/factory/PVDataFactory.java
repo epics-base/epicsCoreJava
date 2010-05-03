@@ -100,7 +100,7 @@ public class PVDataFactory {
             case pvString:  return new BasePVString(parent,scalar);
             }
             throw new IllegalArgumentException(
-                "Illegal Type. Must be pvBoolean,...,pvStructure");
+                "Illegal Type. Must be pvBoolean,...,pvString");
 	 	}
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVScalar(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.ScalarType)

@@ -83,6 +83,8 @@ public class SerializationTest extends TestCase {
 		ScalarType[] types = ScalarType.values();
 		for (int i = 0; i < types.length; i++)
 		{
+			ScalarType scalarType = types[i];
+			if(scalarType==ScalarType.pvStructure) break;
 			PVScalar scalar1 = factory.createPVScalar(null, types[i].name(), types[i]);
 			PVScalar scalar2 = factory.createPVScalar(null, types[i].name(), types[i]);
 			assertEquals(scalar1, scalar2);
