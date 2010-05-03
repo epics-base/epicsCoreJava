@@ -77,6 +77,7 @@ public class BasePVAuxInfo implements PVAuxInfo {
         for(Map.Entry<String,PVScalar> entry : set) {
             String key = entry.getKey();
             builder.append(' ');
+            builder.append(key);
             builder.append('=');
             builder.append(attributeMap.get(key));
         }

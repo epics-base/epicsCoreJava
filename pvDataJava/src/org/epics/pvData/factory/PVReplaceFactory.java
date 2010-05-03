@@ -36,9 +36,9 @@ public class PVReplaceFactory {
     }
     
     /**
-     * Look at every field of the record and see if the field implementation should be replaced.
+     * Look at every field of pvStructure and see if the field implementation should be replaced.
      * @param pvDatabase The database to look for pvReplaceFactorys
-     * @param pvStructure The record.
+     * @param pvStructure The pvStructure
      */
     public static void replace(PVDatabase pvDatabase,PVStructure pvStructure) {
        replace(pvDatabase,pvStructure.getPVFields());
