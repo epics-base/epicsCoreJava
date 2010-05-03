@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<database>
+
+<structure structureName = "test.point">
+  <scalar name = "x" scalarType = "double" />
+  <scalar name = "y" scalarType = "double" />
+</structure>
+
+<structure structureName = "test.testStructure">
+    <scalar name = "value" scalarType = "double">10.0</scalar>
+    <structure name = "location" extends = "test.point" />
+</structure>
+
+<record recordName = "structureArrayTest">
+    <array name = "value" scalarType = "structure" extends = "test.testStructure" capacity = "2">
+       <structure>
+          <scalar name = "value">100.0</scalar>
+          <structure name = "location">
+             <scalar name = "x">0.0</scalar>
+              <scalar name = "y">0.0</scalar>>
+          </structure>
+       </structure>
+        <structure>
+          <scalar name = "value">200.0</scalar>
+          <structure name = "location">
+             <scalar name = "x">5.0</scalar>
+              <scalar name = "y">10.0</scalar>>
+          </structure>
+       </structure>
+       
+    </array>
+</record>
+
+</database>
