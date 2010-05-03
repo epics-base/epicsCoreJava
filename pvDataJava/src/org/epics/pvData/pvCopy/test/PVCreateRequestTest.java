@@ -81,6 +81,7 @@ public class PVCreateRequestTest extends TestCase {
         assertFalse(pvRequest==null);
         System.out.printf("request %s%n%s%n",request,pvRequest.toString());
         request = "record[process=true,xxx=yyy]field(alarm,timeStamp[shareData=true],power.value";
+        System.out.printf("%nError Expected for next call!!%n");
         pvRequest = PVCopyFactory.createRequest(request,requester);
         assertTrue(pvRequest==null);
         request = "record[process=true,xxx=yyy]"
@@ -94,6 +95,7 @@ public class PVCreateRequestTest extends TestCase {
         	+ "ps1.alarm,ps1.timeStamp,power{ps1.power.value,ps1.power.alarm},"
         	+ "current{ps1.current.value,ps1.current.alarm},voltage{ps1.voltage.value,ps1.voltage.alarm}"
         	+ ")";
+        System.out.printf("%nError Expected for next call!!%n");
         pvRequest = PVCopyFactory.createRequest(request,requester);
         assertTrue(pvRequest==null);
     }
