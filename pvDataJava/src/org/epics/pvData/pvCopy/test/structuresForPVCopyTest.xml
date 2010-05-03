@@ -1,0 +1,170 @@
+<?xml version="1.0" ?>
+<database>
+
+<structure structureName = "powerFromPowerSupply">
+<structure name = "record">
+        <scalar name = "process" scalarType = "string">true</scalar>
+    </structure>
+    <structure name = "field">
+        <scalar name = "fieldList" scalarType = "string">
+           alarm,timeStamp,power.value
+        </scalar>
+    </structure>
+</structure>
+
+<structure structureName = "powerFromPowerSupplyMonitorOptions">
+    <structure name = "record">
+        <scalar name = "queueSize" scalarType = "string">2</scalar>
+    </structure>
+    <structure name = "field">
+        <scalar name = "fieldList" scalarType = "string">
+           alarm,timeStamp
+        </scalar>
+        <structure name = "value">
+            <scalar name = "leaf" scalarType = "string">power.value</scalar>
+            <structure name = "monitor">
+                <scalar name = "algorithm" scalarType = "string">numericScalar</scalar>
+                <structure name = "deadband">
+                    <scalar name = "type" scalarType = "string">archive</scalar>
+                </structure>
+            </structure>
+        </structure>
+    </structure>
+</structure>
+
+<structure structureName = "powerSupplyFromPowerSupply">
+    <structure name = "field">
+       <scalar name = "alarm" scalarType = "string">alarm</scalar>
+       <scalar name = "timeStamp" scalarType = "string">timeStamp</scalar>
+       <structure name = "power">
+           <scalar name = "fieldList" scalarType = "string">power.value,power.alarm</scalar>
+       </structure>
+       <structure name = "current">
+           <scalar name = "fieldList" scalarType = "string">current.value,current.alarm</scalar>
+       </structure>
+       <structure name = "voltage">
+           <scalar name = "fieldList" scalarType = "string">voltage.value,voltage.alarm</scalar>
+       </structure>
+    </structure>
+</structure>
+
+<structure structureName = "powerSupplyFromPowerSupplyArray">
+    <structure name = "field">
+       <scalar name = "fieldList" scalarType = "string">alarm,timeStamp</scalar>
+       <structure name = "power">
+          <scalar name = "fieldList" scalarType = "string">supply.0.power.value,supply.0.power.alarm</scalar>
+       </structure>
+       <structure name = "current">
+          <scalar name = "fieldList" scalarType = "string">supply.0.current.value,supply.0.current.alarm</scalar>
+       </structure>
+       <structure name = "voltage">
+          <scalar name = "fieldList" scalarType = "string">supply.0.voltage.value,supply.0.voltage.alarm</scalar>
+       </structure>
+    </structure>
+</structure>
+
+<structure structureName = "powerFromPowerSupplyShared">
+    <structure name = "field">
+        <structure name = "alarm">
+          <scalar name = "leaf" scalarType = "string">alarm</scalar>
+          <scalar name = "shareData" scalarType = "string">true</scalar>
+       </structure>
+       <structure name = "timeStamp">
+          <scalar name = "leaf" scalarType = "string">timeStamp</scalar>
+          <scalar name = "shareData" scalarType = "string">true</scalar>
+       </structure>
+       <structure name = "value">
+          <scalar name = "leaf" scalarType = "string">power.value</scalar>
+          <scalar name = "shareData" scalarType = "string">true</scalar>
+       </structure>
+    </structure>
+</structure>
+
+<structure structureName = "powerSupplyFromPowerSupplyShared">
+    <structure name = "field">
+       <structure name = "alarm">
+          <scalar name = "leaf" scalarType = "string">alarm</scalar>
+          <scalar name = "shareData" scalarType = "string">true</scalar>
+       </structure>
+       <structure name = "timeStamp">
+          <scalar name = "leaf" scalarType = "string">timeStamp</scalar>
+          <scalar name = "shareData" scalarType = "string">true</scalar>
+       </structure>
+       <structure name = "power">
+           <structure name = "value">
+             <scalar name = "leaf" scalarType = "string">power.value</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+           <structure name = "alarm">
+             <scalar name = "leaf" scalarType = "string">power.alarm</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+       </structure>
+       <structure name = "current">
+           <structure name = "value">
+             <scalar name = "leaf" scalarType = "string">current.value</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+           <structure name = "alarm">
+             <scalar name = "leaf" scalarType = "string">current.alarm</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+       </structure>
+       <structure name = "voltage">
+           <structure name = "value">
+             <scalar name = "leaf" scalarType = "string">voltage.value</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+           <structure name = "alarm">
+             <scalar name = "leaf" scalarType = "string">voltage.alarm</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+       </structure>
+    </structure>
+</structure>
+
+<structure structureName = "powerSupplyFromPowerSupplyArrayShared">
+    <structure name = "field">
+       <structure name = "alarm">
+          <scalar name = "leaf" scalarType = "string">alarm</scalar>
+          <scalar name = "shareData" scalarType = "string">true</scalar>
+       </structure>
+       <structure name = "timeStamp">
+          <scalar name = "leaf" scalarType = "string">timeStamp</scalar>
+          <scalar name = "shareData" scalarType = "string">true</scalar>
+       </structure>
+       <structure name = "power">
+           <structure name = "value">
+             <scalar name = "leaf" scalarType = "string">supply.0.power.value</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+           <structure name = "alarm">
+             <scalar name = "leaf" scalarType = "string">supply.0.power.alarm</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+       </structure>
+       <structure name = "current">
+           <structure name = "value">
+             <scalar name = "leaf" scalarType = "string">supply.0.current.value</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+           <structure name = "alarm">
+             <scalar name = "leaf" scalarType = "string">supply.0.current.alarm</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+       </structure>
+       <structure name = "voltage">
+           <structure name = "value">
+             <scalar name = "leaf" scalarType = "string">supply.0.voltage.value</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+           <structure name = "alarm">
+             <scalar name = "leaf" scalarType = "string">supply.0.voltage.alarm</scalar>
+             <scalar name = "shareData" scalarType = "string">true</scalar>
+           </structure>
+       </structure>
+    </structure>
+</structure>
+
+</database>
+

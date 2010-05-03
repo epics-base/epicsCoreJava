@@ -9,6 +9,7 @@
 <include href = "limit.xml" />
 <include href = "display.xml" />
 <include href = "control.xml" />
+<include href = "deadband.xml" />
 <include href = "channelAccess.xml" />
 <include removePath = "${PVDATA}/xml/structure" />
 </database>
