@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: property<br />
 package: org.epics.pvData.property<br />
-2009.06.24</h1>
+2010.04.28</h1>
 CONTENTS 
 
 <div class="toc">
@@ -39,6 +39,9 @@ CONTENTS
 
 <h2 style="text-align: center" id="Definition">Definition of Property</h2>
 <hr />
+
+<p>NOTE: The use of property is discouraged. But the Interfaces for standard
+properties are encouraged.</p>
 
 <p>Only fields named "value" have properties. A record can have multiple
 value fields, which can appear in the top level structure of a record or in a
@@ -212,9 +215,6 @@ properties.</p>
 &lt;structure name = "alarm"&gt;
   &lt;structure name = "severity" extends = "alarmSeverity" /&gt;
   &lt;scalar name = "message" scalarType = "string" /&gt;
-  &lt;scalar name = "ackTransient" scalarTan" /&gt;
-  &lt;structure nameype = "boolean" /&gt;
-  &lt;structure name = "ackSeverity" extends = "alarmSeverity" /&gt;
 &lt;/structure&gt;</pre>
 
 <h3 id="Limits">Limits</h3>
