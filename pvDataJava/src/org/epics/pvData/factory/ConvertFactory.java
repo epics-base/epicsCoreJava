@@ -36,11 +36,16 @@ import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVStructureArray;
+import org.epics.pvData.pv.PVStructureScalar;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.ShortArrayData;
 import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.StructureArrayData;
+import org.epics.pvData.pv.StructureScalar;
 import org.epics.pvData.pv.Type;
 
 /**
@@ -77,6 +82,7 @@ public final class ConvertFactory {
         static FloatArrayData floatArrayData = new FloatArrayData();
         static DoubleArrayData doubleArrayData = new DoubleArrayData();
         static StringArrayData stringArrayData = new StringArrayData();
+        static StructureArrayData structureArrayData = new StructureArrayData();
         // Guarantee that ImplementConvert can only be created via getConvert
         private ImplementConvert() {}
         /* (non-Javadoc)
@@ -98,15 +104,7 @@ public final class ConvertFactory {
          */
         @Override
         public void fromString(PVScalar pv, String from) {
-            Field field = pv.getField();
-            Type type = field.getType();
-            if(field.getType()!=Type.scalar) {
-                throw new IllegalArgumentException(
-                        "Illegal PVType. Must be numeric but it is "
-                        + type.toString()
-                      );
-            }
-            Scalar scalar = (Scalar)field;
+            Scalar scalar = pv.getScalar();
             ScalarType scalarType = scalar.getScalarType();
             switch(scalarType) {
                 case pvBoolean: {
@@ -149,10 +147,14 @@ public final class ConvertFactory {
                         value.put(from);
                         break;
                     }
+                case pvStructure : {
+                	throw new IllegalArgumentException(
+                            "Illegal PVType fromString not supported for pvStructure "
+                          );
+                }
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Unknown scalarType  "+ scalarType.toString()
                     );
             }
         }       
@@ -161,6 +163,11 @@ public final class ConvertFactory {
          */
         @Override
         public int fromString(PVArray pv, String from) {
+        	if(pv.getArray().getElementType()==ScalarType.pvStructure) {
+        		throw new IllegalArgumentException(
+                        "Illegal fromString not supported for pvStructureArray "
+                      );
+        	}
             if((from.charAt(0)=='[') && from.endsWith("]")) {
                 int offset = from.lastIndexOf(']');
                 from = from.substring(1, offset);
@@ -178,6 +185,11 @@ public final class ConvertFactory {
         @Override
         public int fromStringArray(PVArray pv, int offset, int len,String[] from, int fromOffset)
         {
+        	if(pv.getArray().getElementType()==ScalarType.pvStructure) {
+        		throw new IllegalArgumentException(
+                        "Illegal PVType fromStringArray not supported for pvStructure "
+                      );
+        	}
             return convertFromStringArray(pv,offset,len,from,fromOffset);
         }       
         /* (non-Javadoc)
@@ -230,6 +242,12 @@ public final class ConvertFactory {
         public boolean isCopyScalarCompatible(Scalar fromField, Scalar toField) {
             ScalarType fromScalarType = fromField.getScalarType();
             ScalarType toScalarType = toField.getScalarType();
+            if(fromScalarType==ScalarType.pvStructure||toScalarType==ScalarType.pvStructure) {
+            	if(fromScalarType!=ScalarType.pvStructure||toScalarType!=ScalarType.pvStructure) return false;
+            	Structure fromStructure = ((StructureScalar)fromField).getStructure();
+            	Structure toStructure = ((StructureScalar)toField).getStructure();
+            	return isCopyStructureCompatible(fromStructure,toStructure);
+            }
             if(fromScalarType==toScalarType) return true;
             if(fromScalarType.isNumeric()&&toScalarType.isNumeric()) return true;
             if(fromScalarType==ScalarType.pvString) return true;
@@ -307,6 +325,17 @@ public final class ConvertFactory {
                     fromString(to,value);
                     break;
                 }
+            case pvStructure: {
+            	PVStructureScalar fromStructureScalar = (PVStructureScalar)from;
+            	PVStructureScalar toStructureScalar = (PVStructureScalar)to;
+            	PVStructure pvFrom = fromStructureScalar.getPVStructure();
+            	PVStructure pvTo = toStructureScalar.getPVStructure();
+            	if(pvFrom!=pvTo) {
+            	    copyStructure(pvFrom,pvTo);
+            	}
+            	toStructureScalar.put();
+            	break;
+            }
             default:
                 throw new IllegalArgumentException(
                         "Convert.copyScalar arguments are not compatible");
@@ -319,6 +348,12 @@ public final class ConvertFactory {
         public boolean isCopyArrayCompatible(Array fromArray, Array toArray) {
             ScalarType fromType = fromArray.getElementType();
             ScalarType toType = toArray.getElementType();
+            if(fromType==ScalarType.pvStructure||toType==ScalarType.pvStructure) {
+            	if(fromType!=ScalarType.pvStructure||toType!=ScalarType.pvStructure) return false;
+            	Structure fromStructure = ((StructureArray)fromArray).getStructure();
+            	Structure toStructure = ((StructureArray)toArray).getStructure();
+            	return isCopyStructureCompatible(fromStructure,toStructure);
+            }
             if(fromType==toType) return true;
             if(fromType.isNumeric() && toType.isNumeric()) return true;
             if(toType==ScalarType.pvString) return true;
@@ -386,6 +421,36 @@ public final class ConvertFactory {
                         if(n<=0) break outer;
                         len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
                     }
+                }
+            } else if(toElementType==ScalarType.pvStructure && fromElementType==ScalarType.pvStructure) {
+                PVStructureArray pvfrom = (PVStructureArray)from;
+                PVStructureArray pvto = (PVStructureArray)to;
+                PVStructure[] fromData = null;
+                PVStructure[] toData = null;
+                synchronized(structureArrayData) {
+                	pvfrom.get(0,1,structureArrayData);
+                	fromData = structureArrayData.data;
+                	pvto.get(0,1,structureArrayData);
+                	toData = structureArrayData.data;
+                }
+                if(fromData!=toData) {
+                	outer:
+                		while(len>0) {
+                			int num = 0;
+                			PVStructure[] data = null;
+                			int fromOffset = 0;
+                			synchronized(structureArrayData) {
+                				num = pvfrom.get(offset,len,structureArrayData);
+                				data = structureArrayData.data;
+                				fromOffset = structureArrayData.offset;
+                			}
+                			if(num<=0) break;
+                			while(num>0) {
+                				int n = pvto.put(toOffset,num,data,fromOffset);
+                				if(n<=0) break outer;
+                				len -= n; num -= n; ncopy+=n; offset += n; toOffset += n; 
+                			}
+                		}
                 }
             } else if(toElementType==ScalarType.pvString) {
                 PVStringArray pvto = (PVStringArray)to;
@@ -457,6 +522,7 @@ public final class ConvertFactory {
                 if(from.equals(to)) return;
                 throw new IllegalArgumentException("Convert.copyStructure destination is immutable");
             }
+            if(from==to) return;
             PVField[] fromDatas = from.getPVFields();
             PVField[] toDatas = to.getPVFields();
             if(fromDatas.length!=toDatas.length) {
@@ -529,7 +595,7 @@ public final class ConvertFactory {
                     {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
+                      "Illegal ScalarType "
                       + type.toString()
                     );
             }
@@ -565,7 +631,7 @@ public final class ConvertFactory {
                     {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
+                      "Illegal ScalarType "
                       + type.toString()
                     );
             }
@@ -601,8 +667,7 @@ public final class ConvertFactory {
                     {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -637,8 +702,7 @@ public final class ConvertFactory {
                     {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -673,8 +737,7 @@ public final class ConvertFactory {
                     {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -709,8 +772,7 @@ public final class ConvertFactory {
                     {PVString value = (PVString)pv; value.put(String.valueOf(from)); break;}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -743,8 +805,7 @@ public final class ConvertFactory {
                     {PVDouble value = (PVDouble)pv; return (byte)value.get();}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }
@@ -776,8 +837,7 @@ public final class ConvertFactory {
                     {PVDouble value = (PVDouble)pv; return (double)value.get();}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }
@@ -809,8 +869,7 @@ public final class ConvertFactory {
                     {PVDouble value = (PVDouble)pv; return (float)value.get();}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -842,8 +901,7 @@ public final class ConvertFactory {
                     {PVDouble value = (PVDouble)pv; return (int)value.get();}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -875,8 +933,7 @@ public final class ConvertFactory {
                     {PVDouble value = (PVDouble)pv; return (long)value.get();}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -908,8 +965,7 @@ public final class ConvertFactory {
                     {PVDouble value = (PVDouble)pv; return (short)value.get();}
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + type.toString()
+                      "Illegal ScalarType " + type.toString()
                     );
             }
         }    
@@ -988,8 +1044,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1088,8 +1143,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1160,8 +1214,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1260,8 +1313,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1332,8 +1384,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1432,8 +1483,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1504,8 +1554,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1604,8 +1653,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1676,8 +1724,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1776,8 +1823,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1848,8 +1894,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -1948,8 +1993,7 @@ public final class ConvertFactory {
                 } 
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be numeric but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be numeric but it is " + elemType.toString()
                     );
             }
         }
@@ -2109,8 +2153,7 @@ public final class ConvertFactory {
                     return ntransfered;
                 default:
                     throw new IllegalArgumentException(
-                      "Illegal PVType. Must be scalar but it is "
-                      + elemType.toString()
+                      "Illegal ScalarType. Must be scalar but it is "  + elemType.toString()
                     );
             }
         }
@@ -2242,8 +2285,7 @@ public final class ConvertFactory {
                 break;
             default:    
                 throw new IllegalArgumentException(
-                        "Illegal PVType. Must be scalar but it is "
-                        + elementType.toString()
+                        "Illegal ScalarType. Must be scalar but it is " + elementType.toString()
                       );
             }
             return ncopy;
@@ -2304,8 +2346,12 @@ public final class ConvertFactory {
                     PVString data = (PVString)pv;
                     return data.get();
                 }
+            case pvStructure: {
+            	PVStructure pvStructure = ((PVStructureScalar)pv).getPVStructure();
+            	return convertStructure(pvStructure,indentLevel);
+            }
             default:
-                return "unknown PVType";
+                return "unknown ScalarType";
             }
         }
     
@@ -2454,24 +2500,45 @@ public final class ConvertFactory {
                     break;
                 }
             case pvString: {
-                    PVStringArray pvdata = (PVStringArray)pv;
-                    StringArrayData data = new StringArrayData();
-                    builder.append("[");
-                    for(int i=0; i < pvdata.getLength(); i++) {
-                        if(i!=0) builder.append(",");
-                        int num = pvdata.get(i,1,data);
-                        String[] value = data.data;
-                        if(num==1 && value[data.offset]!=null) {
-                            builder.append(value[data.offset]);
-                        } else {
-                            builder.append("null");
-                        }
-                  }
-                  builder.append("]");
-                    break;
-                }
+            	PVStringArray pvdata = (PVStringArray)pv;
+            	StringArrayData data = new StringArrayData();
+            	builder.append("[");
+            	for(int i=0; i < pvdata.getLength(); i++) {
+            		if(i!=0) builder.append(",");
+            		int num = pvdata.get(i,1,data);
+            		String[] value = data.data;
+            		if(num==1 && value[data.offset]!=null) {
+            			builder.append(value[data.offset]);
+            		} else {
+            			builder.append("null");
+            		}
+            	}
+            	builder.append("]");
+            	break;
+            }
+            case pvStructure: {
+            	PVStructureArray pvdata = (PVStructureArray)pv;
+            	StructureArrayData data = new StructureArrayData();
+            	pvdata.get(0, pvdata.getLength(), data);
+            	builder.append("[");
+            	for(int i=0; i < pvdata.getLength(); i++) {
+            		if(i!=0) {
+            			builder.append(",");
+            		}
+            		newLine(builder,indentLevel+1);
+            		PVStructure pvStructure = data.data[i];
+            		if(pvStructure==null) {
+            			builder.append("null");
+            		} else {
+            			builder.append(pvStructure.toString(indentLevel+1));
+            		}
+            	}
+            	newLine(builder,indentLevel);
+            	builder.append("]");
+            	break;
+            }
             default:
-                builder.append(" array element is unknown PVType");
+                builder.append(" array element is unknown ScalarType");
             }
             if(pv.isImmutable()) {
                 builder.append(" immutable ");
