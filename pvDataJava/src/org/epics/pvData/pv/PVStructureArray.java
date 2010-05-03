@@ -16,7 +16,7 @@ package org.epics.pvData.pv;
 public interface PVStructureArray extends PVArray{
 	/**
 	 * Get the introspection interface.
-	 * @return
+	 * @return The interface.
 	 */
 	StructureArray getStructureArray();
     /**

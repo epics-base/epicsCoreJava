@@ -43,7 +43,7 @@ public interface FieldCreate {
     /**
      * Create an <i>Array</i> field that is has element type <i>Structure</i>
      * @param fieldName The field name
-     * @param fields The <i>Structure</i> for each array element.
+     * @param elementStructure The <i>Structure</i> for each array element.
      * @return An <i>Array</i> Interface for the newly created object.
      */
     StructureArray createStructureArray(String fieldName,Structure elementStructure);
