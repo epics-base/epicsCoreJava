@@ -30,7 +30,6 @@ public abstract class AbstractSharePVScalar extends AbstractPVScalar implements 
      */
     protected AbstractSharePVScalar(PVStructure parent, PVScalar  pvShare) {
         super(parent,pvShare.getScalar());
-        super.setImmutable();
         this.pvShare = pvShare;
     }
     
