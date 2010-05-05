@@ -40,6 +40,8 @@ import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.StructureScalar;
 
 /**
  * JUnit test for PVData serialization.
@@ -84,10 +86,25 @@ public class SerializationTest extends TestCase {
 		for (int i = 0; i < types.length; i++)
 		{
 			ScalarType scalarType = types[i];
-			if(scalarType==ScalarType.pvStructure) break;
-			PVScalar scalar1 = factory.createPVScalar(null, types[i].name(), types[i]);
-			PVScalar scalar2 = factory.createPVScalar(null, types[i].name(), types[i]);
-			assertEquals(scalar1, scalar2);
+			if(scalarType==ScalarType.pvStructure)
+			{
+		        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+		        Field[] fields = new Field[2];
+		        fields[0] = fieldCreate.createScalar("secondsSinceEpoch",ScalarType.pvLong);
+		        fields[1] = fieldCreate.createScalar("nanoSeconds",ScalarType.pvInt);
+		        Structure structure = fieldCreate.createStructure("timeStamp",fields);
+
+		        StructureScalar structureScalar = fieldCreate.createStructureScalar("timeStampScalar",structure);
+				PVScalar scalar1 = factory.createPVStructureScalar(null, structureScalar);
+				PVScalar scalar2 = factory.createPVStructureScalar(null, structureScalar);
+				assertEquals(scalar1, scalar2);
+			}
+			else
+			{
+				PVScalar scalar1 = factory.createPVScalar(null, types[i].name(), types[i]);
+				PVScalar scalar2 = factory.createPVScalar(null, types[i].name(), types[i]);
+				assertEquals(scalar1, scalar2);
+			}
 		}
 	}
 
@@ -114,7 +131,23 @@ public class SerializationTest extends TestCase {
 		ScalarType[] types = ScalarType.values();
 		for (int i = 0; i < types.length; i++)
 		{
-			PVScalar scalar = factory.createPVScalar(null, types[i].name(), types[i]);
+			ScalarType scalarType = types[i];
+			PVScalar scalar;
+			if(scalarType==ScalarType.pvStructure)
+			{
+		        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+		        Field[] fields = new Field[2];
+		        fields[0] = fieldCreate.createScalar("secondsSinceEpoch",ScalarType.pvLong);
+		        fields[1] = fieldCreate.createScalar("nanoSeconds",ScalarType.pvInt);
+		        Structure structure = fieldCreate.createStructure("timeStamp",fields);
+
+		        StructureScalar structureScalar = fieldCreate.createStructureScalar("timeStampScalar",structure);
+				scalar = factory.createPVStructureScalar(null, structureScalar);
+			}
+			else
+			{
+				scalar = factory.createPVScalar(null, types[i].name(), types[i]);
+			}
 			serializatioTest(scalar);
 		}
 	}
@@ -239,7 +272,23 @@ public class SerializationTest extends TestCase {
 		ScalarType[] types = ScalarType.values();
 		for (int i = 0; i < types.length; i++)
 		{
-			PVArray array = factory.createPVArray(null, types[i].name() + "Array", types[i]);
+			ScalarType scalarType = types[i];
+			PVArray array;
+			if(scalarType==ScalarType.pvStructure)
+			{
+		        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+		        Field[] fields = new Field[2];
+		        fields[0] = fieldCreate.createScalar("secondsSinceEpoch",ScalarType.pvLong);
+		        fields[1] = fieldCreate.createScalar("nanoSeconds",ScalarType.pvInt);
+		        Structure structure = fieldCreate.createStructure("timeStamp",fields);
+
+		        StructureArray structureArray = fieldCreate.createStructureArray("timeStampArray",structure);
+				array = factory.createPVStructureArray(null, structureArray);
+			}
+			else
+			{
+				array = factory.createPVArray(null, types[i].name() + "Array", types[i]);
+			}
 			serializatioTest(array);
 		}
 	}
