@@ -172,7 +172,25 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         pvFields = newPVFields;
         updateInternal();
     }
-    /* (non-Javadoc)
+    @Override
+	public void appendPVFields(PVField[] pvFields) {
+		if(this.pvFields.length==0) {
+			this.pvFields = pvFields;
+		} else {
+			int original = this.pvFields.length;
+			int additional = pvFields.length;
+			int length = original + additional;
+			PVField[] newPVFields = new PVField[length];
+	        for(int i=0; i<original; i++) {
+	            newPVFields[i] = this.pvFields[i];
+	        }
+	        for(int i=0; i<additional; i++) {
+	        	newPVFields[original +i] = pvFields[i];
+	        }
+		}
+		updateInternal();
+	}
+	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#removePVField(java.lang.String)
      */
     @Override
