@@ -42,7 +42,8 @@ public class ClientFactory {
     public static synchronized void stop() {
     	if (context != null)
     		context.dispose();
-    	// TODO ChannelAccessFactory.unregisterChannelProvider(..); isRegistered = false;
+    	ChannelAccessFactory.unregisterChannelProvider(context.getProvider());
+    	isRegistered = false;
     	// allows GC to cleanup
     	context = null;
     }

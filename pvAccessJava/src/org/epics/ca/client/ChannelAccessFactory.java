@@ -6,7 +6,6 @@
 package org.epics.ca.client;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -15,7 +14,7 @@ import java.util.TreeMap;
  */
 public class ChannelAccessFactory {
     private static final Map<String,ChannelProvider> channelProviderMap = new TreeMap<String,ChannelProvider>();
-    private static ChannelAccessImpl channelAccess = new ChannelAccessImpl();
+    private static final ChannelAccessImpl channelAccess = new ChannelAccessImpl();
     
     /**
      * Get the ChannelAccess interface.
@@ -31,9 +30,15 @@ public class ChannelAccessFactory {
         }
     }
     
+    public static void unregisterChannelProvider(ChannelProvider channelProvider) {
+        synchronized(channelProviderMap) {
+        	ChannelProvider registered = channelProviderMap.get(channelProvider.getProviderName());
+        	if (registered == channelProvider)
+        		channelProviderMap.remove(channelProvider.getProviderName());
+        }
+    }
+
     private static class ChannelAccessImpl implements ChannelAccess{
-        ChannelProvider[] channelProviders = null;
-        Set<String> keySet = null;
 
         /* (non-Javadoc)
          * @see org.epics.ca.client.ChannelAccess#getProvider(java.lang.String)
@@ -41,13 +46,8 @@ public class ChannelAccessFactory {
         @Override
         public ChannelProvider getProvider(String providerName) {
             synchronized(channelProviderMap) {
-                init();
-                for(int i=0; i<channelProviders.length; i++) {
-                    ChannelProvider channelProvider =  channelProviders[i];
-                    if(channelProvider.getProviderName().equals(providerName)) return channelProvider;
-                }
+            	return channelProviderMap.get(providerName);
             }
-            return null;
         }
         /* (non-Javadoc)
          * @see org.epics.ca.client.ChannelAccess#getProviderNames()
@@ -55,24 +55,10 @@ public class ChannelAccessFactory {
         @Override
         public String[] getProviderNames() {
             synchronized(channelProviderMap) {
-                init();
-                String[] names = new String[keySet.size()];
-                for(int i=0; i<channelProviders.length; i++) {
-                    ChannelProvider channelProvider =  channelProviders[i];
-                    names[i] = channelProvider.getProviderName();
-                }
+                String[] names = new String[channelProviderMap.size()];
+                channelProviderMap.keySet().toArray(names);
                 return names;
             }
         } 
-        private void init() {
-            if(channelProviders==null || channelProviders.length!=channelProviderMap.size()) {
-                channelProviders = new ChannelProvider[channelProviderMap.size()];
-                keySet = channelProviderMap.keySet();
-                int index = 0;
-                for(String key : keySet) {
-                    channelProviders[index++] = channelProviderMap.get(key);
-                }
-            }
-        }
     }
 }
