@@ -104,6 +104,17 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		}
 
 		/* (non-Javadoc)
+		 * @see org.epics.ca.client.ChannelArrayRequester#setLengthDone(org.epics.pvData.pv.Status)
+		 */
+		@Override
+		public void setLengthDone(Status status) {
+			synchronized (this) {
+				this.status = status;
+			}
+			transport.enqueueSendRequest(this);
+		}
+
+		/* (non-Javadoc)
 		 * @see org.epics.pvData.misc.Destroyable#destroy()
 		 */
 		@Override
@@ -214,6 +225,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		{
 			final boolean lastRequest = QoS.DESTROY.isSet(qosCode);
 			final boolean get = QoS.GET.isSet(qosCode);
+			final boolean setLength = QoS.GET_PUT.isSet(qosCode);
 			
 			ChannelArrayRequesterImpl request = (ChannelArrayRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
@@ -232,6 +244,12 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				final int offset = SerializeHelper.readSize(payloadBuffer, transport);
 				final int count = SerializeHelper.readSize(payloadBuffer, transport);
 				request.getChannelArray().getArray(lastRequest, offset, count);
+			}
+			else if (setLength)
+			{
+				final int length = SerializeHelper.readSize(payloadBuffer, transport);
+				final int capacity = SerializeHelper.readSize(payloadBuffer, transport);
+				request.getChannelArray().setLength(lastRequest, length, capacity);
 			}
 			else
 			{
