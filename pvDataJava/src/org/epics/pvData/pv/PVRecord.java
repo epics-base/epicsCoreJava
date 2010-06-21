@@ -84,4 +84,25 @@ public interface PVRecord {
      * Remove every PVListener.
      */
     void removeEveryListener();
+    /**
+     * Register a client of the record.
+     * This must be called by any code that connects to the record.
+     * @param pvRecordClient The record client.
+     */
+    void registerClient(PVRecordClient pvRecordClient);
+    /**
+     * Unregister a client of the record.
+     * This must be called by any code that disconnects from the record.
+     * @param pvRecordClient The record client.
+     */
+    void unregisterClient(PVRecordClient pvRecordClient);
+    /**
+     * Detach all registered clients.
+     */
+    void detachClients();
+    /**
+     * Get the number of registerd clients.
+     * @return The number.
+     */
+    int getNumberClients();
 }
