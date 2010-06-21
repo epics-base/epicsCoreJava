@@ -26,4 +26,11 @@ public interface ChannelArray extends ChannelRequest{
      * @param count The number of elements to get.
      */
     void getArray(boolean lastRequest, int offset, int count);
+    /**
+     * Set the length and/or the capacity.
+     * @param lastRequest Is this the last request.
+     * @param length The new length. -1 means do not change.
+     * @param capacity The new capacity. -1 means do not change.
+     */
+    void setLength(boolean lastRequest, int length, int capacity);
 }

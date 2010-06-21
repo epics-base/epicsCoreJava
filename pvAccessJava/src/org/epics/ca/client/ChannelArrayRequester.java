@@ -32,4 +32,9 @@ public interface ChannelArrayRequester extends Requester {
      * @param status Completion status.
      */
     void getArrayDone(Status status);
+    /**
+     * The request is done. This is always called with no locks held.
+     * @param status Completion status.
+     */
+    void setLengthDone(Status status);
 }

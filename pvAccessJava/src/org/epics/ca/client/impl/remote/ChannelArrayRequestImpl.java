@@ -48,6 +48,9 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	protected volatile int offset = 0;
 	protected volatile int count = 0;
 	
+	protected volatile int length = -1;
+	protected volatile int capacity = -1;
+
 	public ChannelArrayRequestImpl(ChannelImpl channel,
 			ChannelArrayRequester callback,
 			PVStructure pvRequest)
@@ -99,6 +102,11 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		{
 			SerializeHelper.writeSize(offset, buffer, control);
 			SerializeHelper.writeSize(count, buffer, control);
+		}
+		else if (QoS.GET_PUT.isSet(pendingRequest))
+		{
+			SerializeHelper.writeSize(length, buffer, control);
+			SerializeHelper.writeSize(capacity, buffer, control);
 		}
 		// put
 		else
@@ -155,6 +163,10 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			data.deserialize(payloadBuffer, transport);
 			callback.getArrayDone(okStatus);
 		}
+		else if (QoS.GET_PUT.isSet(qos))
+		{
+			callback.setLengthDone(status);
+		}
 		else
 		{
 			callback.putArrayDone(status);
@@ -210,6 +222,30 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.ca.client.ChannelArray#setLength(boolean, int, int)
+	 */
+	@Override
+	public void setLength(boolean lastRequest, int length, int capacity) {
+		if (destroyed) {
+			callback.putArrayDone(destroyedStatus);
+			return;
+		}
+
+		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET_PUT.getMaskValue() : QoS.GET_PUT.getMaskValue())) {
+			callback.setLengthDone(otherRequestPendingStatus);
+			return;
+		}
+		
+		try {
+			this.length = length;
+			this.capacity = capacity;
+			channel.checkAndGetTransport().enqueueSendRequest(this);
+		} catch (IllegalStateException ise) {
+			callback.setLengthDone(channelNotConnected);
+		}
+	}
+
 	/* Called on server restart...
 	 * @see org.epics.ca.core.SubscriptionRequest#resubscribeSubscription(org.epics.ca.core.Transport)
 	 */
