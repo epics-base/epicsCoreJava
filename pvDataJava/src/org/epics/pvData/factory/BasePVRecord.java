@@ -13,6 +13,7 @@ import org.epics.pvData.misc.LinkedListNode;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVRecordClient;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 
@@ -26,10 +27,12 @@ import org.epics.pvData.pv.Requester;
 public class BasePVRecord implements PVRecord {
 	private static LinkedListCreate<Requester> requesterListCreate = new LinkedListCreate<Requester>();
 	private static LinkedListCreate<PVListener> listenerListCreate = new LinkedListCreate<PVListener>();
+	private static LinkedListCreate<PVRecordClient> clientListCreate = new LinkedListCreate<PVRecordClient>();
     private BasePVStructure pvStructure = null;
     private String recordName;
     private LinkedList<Requester> requesterList = requesterListCreate.create();
     private LinkedList<PVListener> pvAllListenerList = listenerListCreate.create();
+    private LinkedList<PVRecordClient> clientList = clientListCreate.create();
     private ReentrantLock lock = new ReentrantLock();
     private static volatile int numberRecords = 0;
     private int id = numberRecords++;
@@ -182,7 +185,6 @@ public class BasePVRecord implements PVRecord {
      * @see org.epics.pvData.pv.PVRecord#removeEveryListener()
      */
     public void removeEveryListener() {
-    	
     	while(true) {
     		LinkedListNode<PVListener> listNode = pvAllListenerList.removeHead();
     		if(listNode==null) break;
@@ -190,7 +192,47 @@ public class BasePVRecord implements PVRecord {
     		pvListener.unlisten(this);
     	}
     }
-    /* (non-Javadoc)
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.PVRecord#registerClient(org.epics.pvData.pv.PVRecordClient)
+	 */
+	@Override
+	public void registerClient(PVRecordClient pvRecordClient) {
+		 if(clientList.contains(pvRecordClient)) {
+	            message(
+	                "PVRecord.registerClient called but Client " + pvRecordClient.toString() + " already registered",
+	                MessageType.warning);
+	            return;
+	        }
+	        LinkedListNode<PVRecordClient> listNode = clientListCreate.createNode(pvRecordClient);
+	        clientList.addTail(listNode);
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.PVRecord#unregisterClient(org.epics.pvData.pv.PVRecordClient)
+	 */ 
+	@Override
+	public void unregisterClient(PVRecordClient pvRecordClient) {
+		clientList.remove(pvRecordClient);
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.PVRecord#detachClients()
+	 */
+	@Override
+	public void detachClients() {
+		while(true) {
+			LinkedListNode<PVRecordClient> listNode = clientList.removeHead();
+			if(listNode==null) break;
+			PVRecordClient pvRecordClient = listNode.getObject();
+			pvRecordClient.detach(this);
+		}
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.PVRecord#getNumberClients()
+	 */
+	@Override
+	public int getNumberClients() {
+		return clientList.getLength();
+	}
+	/* (non-Javadoc)
      * @see org.epics.pvData.factory.BasePVStructure#toString()
      */
     public String toString() { return toString(0);}
