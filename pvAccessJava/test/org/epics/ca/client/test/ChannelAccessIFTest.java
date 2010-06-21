@@ -1387,6 +1387,46 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
+		public void syncSetLength(boolean lastRequest, int length, int capacity)
+		{
+			syncSetLength(lastRequest, length, capacity, true);
+		}
+		
+		public void syncSetLength(boolean lastRequest, int length, int capacity, boolean expectedSuccess)
+		{
+			synchronized (this) {
+				if (connected == null)
+					assertNotNull("channel array not connected", connected);
+					
+				success = null;
+				channelArray.setLength(lastRequest, length, capacity);
+				
+				try {
+					if (success == null)
+						this.wait(getTimeoutMs());
+				} catch (InterruptedException e) {
+					// noop
+				}
+				
+				assertNotNull("channel array setLength timeout", success);
+				if (expectedSuccess)
+					assertTrue("channel array setLength failed", success.booleanValue());
+				else
+					assertFalse("channel array setLength has not failed", success.booleanValue());
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see org.epics.ca.client.ChannelArrayRequester#setLengthDone(org.epics.pvData.pv.Status)
+		 */
+		@Override
+		public void setLengthDone(Status status) {
+			synchronized (this) {
+				this.success = new Boolean(status.isOK());
+				this.notify();
+			}
+		}
+
 		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
@@ -2152,7 +2192,22 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    final double[] EXPECTED_VAL = new double[] { 4.4, 1.1, 2.2 };
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(EXPECTED_VAL[i], doubleData.data[i]);
+	    
+	    channelArrayRequester.syncSetLength(false, 3, -1);
+	    channelArrayRequester.syncGet(false, 0, -1);
+	    count = doubleArray.get(0, 1000, doubleData);
+	    assertEquals(3, count);
+	    for (int i = 0; i < count; i++)
+	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
+	    
+	    channelArrayRequester.syncSetLength(false, -1, 2);
+	    channelArrayRequester.syncGet(false, 0, -1);
+	    count = doubleArray.get(0, 1000, doubleData);
+	    assertEquals(2, count);
+	    for (int i = 0; i < count; i++)
+	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 
+	    
 		channelArrayTestNoConnection(ch, true);
 		channelArrayTestNoConnection(ch, false);
 		/*
@@ -2176,6 +2231,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			ch.destroy();
 			channelArrayRequester.syncGet(false, 1, 2, false);
 			channelArrayRequester.syncPut(false, 1, 2, false);
+			channelArrayRequester.syncSetLength(false, 1, 2, false);
 		}
 	}
 
