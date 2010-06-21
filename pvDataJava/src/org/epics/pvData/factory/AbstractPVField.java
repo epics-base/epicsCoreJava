@@ -27,13 +27,13 @@ import org.epics.pvData.pv.Type;
  *
  */
 public abstract class AbstractPVField implements PVField{
-    private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private int fieldOffset = 0;;
-    private int nextFieldOffset = 0;;
+    private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private int fieldOffset = 0;
+    private int nextFieldOffset = 0;
     private PVAuxInfo pvAuxInfo = null;
     private boolean isImmutable = false;
-    private String fullFieldName = "";
-    private String fullName = "";
+    private String fullFieldName = null;
+    private String fullName = null;
     private Field field;
     private PVStructure pvParent;
     private PVRecordField pvRecordField = null;
@@ -57,18 +57,26 @@ public abstract class AbstractPVField implements PVField{
             fullFieldName = fullName = field.getFieldName();
             return;
         }
-        createFullNameANDFullFieldName();
     }
     /**
-     * Called by derived classes to replace a field.
-     * @param field The new field.
+     * Called by derived classes to replace a Structure.
      */
-    protected void replaceField(Field field) {
-        this.field = field;
-        createFullNameANDFullFieldName();
+    protected void replaceStructure() {
+    	PVStructure pvStructure = (PVStructure)this;
+    	PVField[] pvFields = pvStructure.getPVFields();
+        int length = pvFields.length;
+        Field[] newFields = new Field[length];
+        for(int i=0; i<length; i++) {
+            newFields[i] = pvFields[i].getField();
+        }
+        Structure newStructure = fieldCreate.createStructure(field.getFieldName(), newFields);
+        field = newStructure;
+        if(pvParent!=null) {
+            ((AbstractPVField)pvParent).replaceStructure();
+        }
     }
     /**
-     * Initial call is by implementation of PVRecord..
+     * Initial call is by implementation of PVRecord.
      * @param pvRecord The PVRecord interface.
      */
     protected void setRecord(PVRecord record) {
@@ -84,16 +92,6 @@ public abstract class AbstractPVField implements PVField{
                 pvField.setRecord(record);
             }
         }
-        createFullNameANDFullFieldName();
-    }
-    /**
-     * Called by BasePVStructure
-     * @param fieldOffset The fieldOffset for this field.
-     * @param nextFieldOffset The nextFieldOffset for this field.
-     */
-    protected void setOffsets(int offset,int nextOffset) {
-        this.fieldOffset = offset;
-        this.nextFieldOffset = nextOffset;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#postPut()
@@ -107,6 +105,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public int getFieldOffset() {
+    	if(nextFieldOffset==0) computeOffset();
         return fieldOffset;
     }
     /* (non-Javadoc)
@@ -114,6 +113,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public int getNextFieldOffset() {
+    	if(nextFieldOffset==0) computeOffset();
         return nextFieldOffset;
     }
     /* (non-Javadoc)
@@ -121,6 +121,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public int getNumberFields() {
+    	if(nextFieldOffset==0) computeOffset();
         return (nextFieldOffset - fieldOffset);
     }
     /* (non-Javadoc)
@@ -144,9 +145,9 @@ public abstract class AbstractPVField implements PVField{
     @Override
     public void message(String message, MessageType messageType) {
         if(pvRecordField==null) {
-            System.out.println(messageType.toString() + " " + fullFieldName + " " + message);
+            System.out.println(messageType.toString() + " " + getFullFieldName() + " " + message);
         } else {
-            pvRecordField.getPVRecord().message(fullName + " " + message, messageType);
+            pvRecordField.getPVRecord().message(getFullName() + " " + message, messageType);
         }
     }
     /* (non-Javadoc)
@@ -171,6 +172,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public String getFullFieldName() {
+    	if(fullFieldName==null) createNames();
         return fullFieldName;
     } 
     /* (non-Javadoc)
@@ -178,6 +180,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public String getFullName() {
+    	if(fullName==null) createNames();
         return fullName;
     }
     /* (non-Javadoc)
@@ -205,46 +208,61 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public void replacePVField(PVField newPVField) {
+    	boolean createNames = false;
+    	if(fullName!=null) createNames = true;
+    	if(pvRecordField!=null) {
+    		AbstractPVField pv = (AbstractPVField)newPVField;
+    		pv.setRecord(pvRecordField.getPVRecord());
+    	}
         PVStructure parent = getParent();
-        if(parent==null) throw new IllegalArgumentException("no pvParent");
-        parent.replacePVField(field.getFieldName(), newPVField);
+        if(parent==null) throw new IllegalStateException("no pvParent");
+        PVField[] pvFields = parent.getPVFields();
+        int index = -1;
+        String fieldName = field.getFieldName();
+        for(int i=0; i<pvFields.length; i++) {
+        	PVField pvField = pvFields[i];
+        	if(pvField.getField().getFieldName()==fieldName) {
+        		index = i;
+        		break;
+        	}
+        }
+        if(index==-1) {
+        	throw new IllegalStateException("Did not find field in parent");
+        }
+        pvFields[index] = newPVField;
+        ((AbstractPVField)parent).replaceStructure();
+        if(createNames) createNames();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#renameField(java.lang.String)
      */
     @Override
     public void renameField(String newName) {
+    	boolean createNames = false;
+    	if(fullName!=null) createNames = true;
         switch(field.getType()) {
         case scalar: {
             Scalar scalar = (Scalar)field;
             scalar = fieldCreate.createScalar(newName, scalar.getScalarType());
             this.field = scalar;
-            createFullNameANDFullFieldName();
-            return;
+            break;
         }
         case scalarArray: {
             Array array = (Array)field;
             array = fieldCreate.createArray(newName, array.getElementType());
             this.field = array;
-            createFullNameANDFullFieldName();
-            return;
+            break;
         }
         case structure: {
             Structure structure = (Structure)field;
             Field[] origFields = structure.getFields();
             structure = fieldCreate.createStructure(newName, origFields);
             this.field = structure;
-            createFullNameANDFullFieldName();
-            PVStructure pvStructure = (PVStructure)this;
-            // must make all subfields call createFullNameANDFullFieldName()
-            for(PVField pvField: pvStructure.getPVFields()) {
-                pvField.renameField(pvField.getField().getFieldName());
-            }
-            return;
+            break;
         }
         }
+        if(createNames) createNames();
     }
-   
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -260,41 +278,124 @@ public abstract class AbstractPVField implements PVField{
         if(pvAuxInfo==null) return "";
         return pvAuxInfo.toString(indentLevel);
     }
+     
+    private void computeOffset() {
+    	PVStructure pvTop = this.pvParent;
+    	if(pvTop==null) {
+    		pvTop = (PVStructure)this;
+    	} else {
+    		while(pvTop.getParent()!=null) pvTop = pvTop.getParent();
+    	}
+        int offset = 0;
+        int nextOffset = 1;
+        PVField[] pvFields = pvTop.getPVFields();
+        for(int i=0; i < pvFields.length; i++) {
+            offset = nextOffset;
+            PVField pvField = (AbstractPVField)pvFields[i];
+            Field field = pvField.getField();
+            switch(field.getType()) {
+            case scalar:
+            case scalarArray: {
+                AbstractPVField pv = (AbstractPVField)pvField;
+                nextOffset++;
+                pv.fieldOffset = offset;
+                pv.nextFieldOffset = nextOffset;
+                break;
+            }
+            case structure: {
+                AbstractPVField pv = (AbstractPVField)pvField;
+                pv.computeOffset(offset);
+                nextOffset = pv.getNextFieldOffset();
+            }
+            }
+        }
+        AbstractPVField top = (AbstractPVField)pvTop;
+        top.fieldOffset = 0;
+        top.nextFieldOffset = nextOffset;
+    }
     
-    private void createFullNameANDFullFieldName() {
+    private void computeOffset(int offset) {
+        int beginOffset = offset;
+        int nextOffset = offset + 1;
+        PVStructure pvStructure = (PVStructure)this;
+        PVField[] pvFields = pvStructure.getPVFields();
+        for(int i=0; i < pvFields.length; i++) {
+            offset = nextOffset;
+            PVField pvField = (AbstractPVField)pvFields[i];
+            Field field = pvField.getField();
+            switch(field.getType()) {
+            case scalar:
+            case scalarArray: {
+                AbstractPVField pv = (AbstractPVField)pvField;
+                nextOffset++;
+                pv.fieldOffset = offset;
+                pv.nextFieldOffset = nextOffset;
+                break;
+            }
+            case structure: {
+            	AbstractPVField pv = (AbstractPVField)pvField;
+                pv.computeOffset(offset);
+                nextOffset = pv.getNextFieldOffset();
+            }
+            }
+        }
+        this.fieldOffset = beginOffset;
+        this.nextFieldOffset = nextOffset;
+    }
+    
+    private void createNames() {
+    	PVStructure pvTop = pvParent;
+    	if(pvTop==null) {
+    		pvTop = (PVStructure)this;
+    	} else {
+    		while(pvTop.getParent()!=null) pvTop = pvTop.getParent();
+    	}
+    	AbstractPVField pv = (AbstractPVField)pvTop;
+    	pv.createTopNames();
+    }
+    
+    private void createTopNames() {
         PVRecord pvRecord = null;
         if(pvRecordField!=null) {
         	pvRecord = pvRecordField.getPVRecord();
-        	if(this==pvRecord.getPVStructure()) {
-        		fullName = pvRecord.getRecordName();
-        		fullFieldName = "";
-        		return;
-        	}
         }
-        if(pvParent==null) {
-            fullFieldName = fullName = field.getFieldName();
-            return;
-        }
-        StringBuilder fieldName = new StringBuilder();
-        Field field = getField();
-        String name = field.getFieldName();
-        if(name!=null && name.length()>0) {
-            fieldName.append(name);
-        }
-        PVField parent = getParent();
-        while(parent!=null && parent!=pvRecord) {
-            field = parent.getField();
-            name = field.getFieldName();
-            if(name!=null && name.length()>0) {
-                fieldName.insert(0,parent.getField().getFieldName()+ ".");
-            }
-            parent = parent.getParent();
-        }
-        fullFieldName = fieldName.toString();
-        if(pvRecord!=null) {
-            fullName = pvRecord.getRecordName() + "." + fullFieldName;
+        String fullName = null;
+        if(pvRecord==null) {
+        	fullName = "";
         } else {
-            fullName = fullFieldName;
+        	fullName = pvRecord.getRecordName();
         }
-    }    
+        this.fullName = fullName;
+        this.fullFieldName = "";
+        PVStructure pvStruct = (PVStructure)this;
+        PVField[] pvFields = pvStruct.getPVFields();
+        for(PVField pvField : pvFields) {
+        	AbstractPVField pv = (AbstractPVField) pvField;
+        	pv.createSubFieldNames();
+        }
+    }
+    
+    private void createSubFieldNames() {
+    	String fieldName = field.getFieldName();
+    	String parentFullFieldName = pvParent.getFullFieldName();
+    	String parentFullName = pvParent.getFullName();
+    	if(parentFullFieldName==null || parentFullFieldName.length()<1) {
+    		fullFieldName = fieldName;
+    	} else {
+    		fullFieldName = parentFullFieldName + '.' + fieldName;
+    	}
+    	if(parentFullName==null || parentFullName.length()<1) {
+    		fullName = fieldName;
+    	} else {
+    		fullName = parentFullName + '.' + fieldName;
+    	}
+    	if(field.getType()==Type.structure) {
+    		PVStructure pvStruct = (PVStructure)this;
+            PVField[] pvFields = pvStruct.getPVFields();
+            for(PVField pvField : pvFields) {
+            	AbstractPVField pv = (AbstractPVField) pvField;
+            	pv.createSubFieldNames();
+            }
+    	}
+    }
 }
