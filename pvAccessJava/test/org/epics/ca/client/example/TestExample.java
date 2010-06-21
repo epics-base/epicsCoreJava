@@ -512,6 +512,11 @@ public class TestExample {
 					}
 
 					@Override
+					public void setLengthDone(Status status) {
+						System.out.println("setLengthDone: " + status);
+					}
+
+					@Override
 					public String getRequesterName() {
 						return this.getClass().getName();
 					}
