@@ -37,13 +37,6 @@ public interface PVStructure extends PVField, BitSetSerializable {
      */
     PVField getSubField(int fieldOffset);
     /**
-     * Replace a field of a structure..
-     * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
-     * @param fieldName The field name.
-     * @param newPVField The new field.
-     */
-    void replacePVField(String fieldName,PVField newPVField);
-    /**
      * Append a new PVField to this structure.
      * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
      * @param pvField The field to append.
@@ -63,11 +56,6 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The name of the field to remove.
      */
     void removePVField(String fieldName);
-    /**
-     * One or more of the PVField[] of the PVStructure has been replaced.
-     * Update the implementation.
-     */
-    void updateInternal();
     /**
      * Find a boolean subfield with the specified fieldName.
      * The fieldName is of the form name.name...
