@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pv<br />
 package: org.epics.pvData.pv<br />
-2010.05.13</h1>
+2010.06.15</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Process">Process Variable Reflection</a> 
+  <li><a href="#Process">Process Variable Reflection</a>
     <ul>
       <li><a href="#Type">Type</a></li>
       <li><a href="#Serializab">Serializable</a></li>
@@ -24,18 +24,19 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Status">Status</a></li>
-  <li><a href="#PVField">PVField - Data Interfaces</a> 
+  <li><a href="#PVField">PVField - Data Interfaces</a>
     <ul>
       <li><a href="#PVField1">PVField</a></li>
       <li><a href="#PVRecordFi">PVRecordField</a></li>
       <li><a href="#Requester">Requester</a></li>
       <li><a href="#PVAuxInfo">PVAuxInfo</a></li>
       <li><a href="#PVListener">PVListener</a></li>
+      <li><a href="#PVRecordCl">PVRecordClient</a></li>
       <li><a href="#PVScalar">PVScalar and extensions</a></li>
       <li><a href="#Primitive">Primitive PVField types</a></li>
       <li><a href="#PVString">PVString</a></li>
       <li><a href="#PVStructur">PVStructureScalar</a></li>
-      <li><a href="#PVArray">PVArray and Extensions</a> 
+      <li><a href="#PVArray">PVArray and Extensions</a>
         <ul>
           <li><a href="#PVArray1">PVArray</a></li>
           <li><a href="#PVArray2">PVArray Extensions</a></li>
@@ -43,7 +44,7 @@ CONTENTS
         </ul>
       </li>
       <li><a href="#PVStructur1">PVStructure</a></li>
-      <li><a href="#PVRecord">PVRecord</a> 
+      <li><a href="#PVRecord">PVRecord</a>
         <ul>
           <li><a href="#Record">Record Locking</a></li>
         </ul>
@@ -53,7 +54,7 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Convert">Convert</a></li>
-  <li><a href="#Examples">Examples</a> 
+  <li><a href="#Examples">Examples</a>
     <ul>
       <li><a href="#Accessing">Accessing PVData</a></li>
       <li><a href="#Creating">Creating PVData</a></li>
@@ -522,6 +523,15 @@ that the underlying fields can not have attached listeners.</p>
       data values) is being changed.</dd>
 </dl>
 
+<h3 id="PVRecordCl">PVRecordClient</h3>
+
+<p>Any client that accesses a PVRecord must call registerClient so that the
+client can be notified when the record is being removed from the master
+database. The client must imnplement the following interface:</p>
+<pre>    public interface PVRecordClient {
+        void detach(PVRecord pvRecord);
+    }</pre>
+
 <h3 id="PVScalar">PVScalar and extensions</h3>
 <pre>    interface PVScalar extends PVField {
         Scalar getScalar();
@@ -933,6 +943,10 @@ methods:</p>
         void unregisterListener(PVListener pvListener);
         boolean isRegisteredListener(PVListener pvListener);
         void removeEveryListener();
+        void registerClient(PVRecordClient pvRecordClient);
+        void unregisterClient(PVRecordClient pvRecordClient);
+        void detachClients();
+        int getNumberClients();
     }</pre>
 
 <p>where</p>
@@ -976,6 +990,15 @@ methods:</p>
   <dt>removeEveryListener</dt>
     <dd>This must be called by any code that is deleting or changing the
       structure of a record.</dd>
+  <dt>registerClient</dt>
+    <dd>Every client that accesses the record must call this so that the
+      client can be notified when the record is deleted.</dd>
+  <dt>unregisterClient</dt>
+    <dd>Client is no longer accessing the record.</dd>
+  <dt>detachClients</dt>
+    <dd>All client are asked to detach from the record.</dd>
+  <dt>getNumberClients</dt>
+    <dd>Get the number of registered clients.</dd>
 </dl>
 
 <h4 id="Record">Record Locking</h4>
