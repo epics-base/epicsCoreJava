@@ -469,7 +469,6 @@ public class XMLToPVDatabaseFactory {
             		} else {
             			pvStructure = pvDataCreate.createPVStructure(null, "", pvStructure);
             			pvStructure.putExtendsStructureName(extendsName);
-            			pvRecord = pvDataCreate.createPVRecord(recordName, pvStructure);
             		}
             	}
             	if(pvStructure==null) {
@@ -490,7 +489,6 @@ public class XMLToPVDatabaseFactory {
         
         private void endRecord(String name)
         {
-            
             PVRecord pvRecord = structureState.pvRecord;
             PVStructure pvStructure = structureState.pvStructure;
             if(pvRecord==null) {
