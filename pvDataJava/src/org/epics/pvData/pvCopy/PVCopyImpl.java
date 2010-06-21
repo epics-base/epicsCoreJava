@@ -276,7 +276,7 @@ class PVCopyImpl {
             		if(pvString.getField().getFieldName().equals("fieldList")) {
             			String[] fieldNames = commaPattern.split(pvString.get());
             			for(int j=0; j<fieldNames.length; j++) {
-            				PVField pvRecordField = pvRecord.getSubField(fieldNames[j]);;
+            				PVField pvRecordField = pvRecord.getSubField(fieldNames[j]);
             				if(pvRecordField!=null) {
             					fieldList.add(pvRecordField.getField());
             				}
