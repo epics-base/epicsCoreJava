@@ -46,7 +46,7 @@ import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorFactory;
 import org.epics.pvData.monitor.MonitorRequester;
-import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.*;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVBoolean;
@@ -97,6 +97,7 @@ public class ChannelServerFactory  {
     private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
     private static final Status okStatus = statusCreate.getStatusOK();
     private static final Status notFoundStatus = statusCreate.createStatus(StatusType.ERROR, "channel not found", null);
+    private static final Status capacityImmutableStatus = statusCreate.createStatus(StatusType.ERROR, "capacity is immutable", null);
     private static final Status subFieldDoesNotExistStatus = statusCreate.createStatus(StatusType.ERROR, "subField does not exist", null);
     private static final Status subFieldNotDefinedStatus = statusCreate.createStatus(StatusType.ERROR, "subField not defined", null);
     private static final Status cannotProcessErrorStatus = statusCreate.createStatus(StatusType.ERROR, "can not process", null);
@@ -214,7 +215,7 @@ public class ChannelServerFactory  {
         }
     }
     
-    private static class ChannelImpl implements Channel{
+    private static class ChannelImpl implements Channel,PVRecordClient{
     	private final ChannelProvider provider;
         private final PVRecord pvRecord;
         private final ChannelRequester channelRequester;
@@ -233,6 +234,7 @@ public class ChannelServerFactory  {
         	this.provider = provider;
             this.pvRecord = pvRecord;
             this.channelRequester = channelRequester;
+            pvRecord.registerClient(this);
         }       
         
         private ChannelProcessor requestChannelProcessor(ChannelProcessorRequester channelProcessorRequester)  {
@@ -350,6 +352,13 @@ public class ChannelServerFactory  {
             channelRequester.channelStateChange(this, ConnectionState.DESTROYED);
         }
         /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVRecordClient#detach(org.epics.pvData.pv.PVRecord)
+         */
+        @Override
+		public void detach(PVRecord pvRecord) {
+			destroy();
+		}
+		/* (non-Javadoc)
          * @see org.epics.ca.client.Channel#getConnectionState()
          */
         @Override
@@ -1416,6 +1425,33 @@ public class ChannelServerFactory  {
                 channelArrayRequester.putArrayDone(okStatus);
                 if(lastRequest) destroy();
             }
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelArray#setLength(boolean, int, int)
+			 */
+			@Override
+			public void setLength(boolean lastRequest, int length, int capacity) {
+				if(isDestroyed.get()) {
+                	channelArrayRequester.setLengthDone(requestDestroyedStatus);
+                	return;
+                }
+				if(capacity>=0 && !pvArray.isCapacityMutable()) {
+					channelArrayRequester.setLengthDone(capacityImmutableStatus);
+					return;
+				}
+				pvRecord.lock();
+                try {
+                    if(length>=0) {
+                    	if(pvArray.getLength()!=length) pvArray.setLength(length);
+                    }
+                    if(capacity>=0) {
+                    	if(pvArray.getCapacity()!=capacity) pvArray.setCapacity(capacity);
+                    }
+                } finally  {
+                    pvRecord.unlock();
+                }
+                channelArrayRequester.setLengthDone(okStatus);
+                if(lastRequest) destroy();
+			}
         }
     }
 }
