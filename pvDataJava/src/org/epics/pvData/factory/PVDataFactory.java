@@ -5,6 +5,7 @@
  */
 package org.epics.pvData.factory;
 
+import java.util.Formatter;
 import java.util.Map;
 import java.util.Set;
 
@@ -296,6 +297,14 @@ public class PVDataFactory {
             }
             PVField[] fromFields = from.getPVFields();
             PVField[] toFields = to.getPVFields();
+            if(fromFields.length!=toFields.length) {
+            	Formatter formatter = new Formatter();
+            	formatter.format("PVDataFactory.copyStructure number of fields differ %nfrom %s%n%s%nto %s%n%s",
+            			from.getFullName(),from.toString(),to.getFullName(),to.toString());
+            	String message = formatter.toString();
+            	from.message(message, MessageType.fatalError);
+            	throw new IllegalStateException("PVDataFactory.copyStructure number of fields differ");
+            }
             for(int i=0; i<fromFields.length; i++) {
             	PVField fromPV = fromFields[i];
             	PVField toPV = toFields[i];
