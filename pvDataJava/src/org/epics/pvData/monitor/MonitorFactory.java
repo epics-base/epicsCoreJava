@@ -260,7 +260,7 @@ public class MonitorFactory {
 				}
 			}
 			if(queueSize<1) {
-				monitorRequester.message("queueSize must be >-1", MessageType.error);
+				monitorRequester.message("queueSize must be >= 1", MessageType.error);
 				return false;
 			}
 			pvField = pvRequest.getSubField("record.periodicRate");
