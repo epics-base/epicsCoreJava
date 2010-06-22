@@ -62,37 +62,15 @@ public abstract class AbstractPVField implements PVField{
      * Called by derived classes to replace a Structure.
      */
     protected void replaceStructure() {
-    	PVStructure pvStructure = (PVStructure)this;
-    	PVField[] pvFields = pvStructure.getPVFields();
-        int length = pvFields.length;
-        Field[] newFields = new Field[length];
-        for(int i=0; i<length; i++) {
-            newFields[i] = pvFields[i].getField();
-        }
-        Structure newStructure = fieldCreate.createStructure(field.getFieldName(), newFields);
-        field = newStructure;
-        if(pvParent!=null) {
-            ((AbstractPVField)pvParent).replaceStructure();
-        } else if(pvRecordField!=null) {
-        	PVRecord pvRecord = pvRecordField.getPVRecord();
-        	pvRecordField = null;
-        	setRecord(pvRecord);
-        }
+    	replaceStructure(true);
     }
+    
     /**
      * Initial call is by implementation of PVRecord.
      * @param pvRecord The PVRecord interface.
      */
     protected void setRecord(PVRecord record) {
-        pvRecordField = new BasePVRecordField(this,record);
-        // call setRecord for all subfields.
-        if(field.getType()==Type.structure) {
-            PVField[] pvFields = ((PVStructure)this).getPVFields();
-            for(int i=0; i<pvFields.length; i++) {
-                AbstractPVField pvField = (AbstractPVField)pvFields[i];
-                pvField.setRecord(record);
-            }
-        }
+    	createPVRecordField(record);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#postPut()
@@ -211,10 +189,6 @@ public abstract class AbstractPVField implements PVField{
     public void replacePVField(PVField newPVField) {
     	boolean createNames = false;
     	if(fullName!=null) createNames = true;
-    	if(pvRecordField!=null) {
-    		AbstractPVField pv = (AbstractPVField)newPVField;
-    		pv.setRecord(pvRecordField.getPVRecord());
-    	}
         PVStructure parent = getParent();
         if(parent==null) throw new IllegalStateException("no pvParent");
         PVField[] pvFields = parent.getPVFields();
@@ -279,7 +253,39 @@ public abstract class AbstractPVField implements PVField{
         if(pvAuxInfo==null) return "";
         return pvAuxInfo.toString(indentLevel);
     }
-     
+    
+    private void replaceStructure(boolean initial) {
+    	PVStructure pvStructure = (PVStructure)this;
+    	PVField[] pvFields = pvStructure.getPVFields();
+        int length = pvFields.length;
+        Field[] newFields = new Field[length];
+        for(int i=0; i<length; i++) {
+            newFields[i] = pvFields[i].getField();
+        }
+        Structure newStructure = fieldCreate.createStructure(field.getFieldName(), newFields);
+        field = newStructure;
+        if(pvParent!=null) {
+            ((AbstractPVField)pvParent).replaceStructure(false);
+        }
+        if(pvRecordField!=null) {
+        	PVRecord pvRecord = pvRecordField.getPVRecord();
+        	pvRecordField = null;
+        	createPVRecordField(pvRecord);
+        }
+    }
+    
+    private void createPVRecordField(PVRecord record) {
+    	pvRecordField = new BasePVRecordField(this,record);
+    	// call setRecord for all subfields.
+        if(field.getType()==Type.structure) {
+            PVField[] pvFields = ((PVStructure)this).getPVFields();
+            for(int i=0; i<pvFields.length; i++) {
+                AbstractPVField pvField = (AbstractPVField)pvFields[i];
+                pvField.createPVRecordField(record);
+            }
+        }
+    }
+    
     private void computeOffset() {
     	PVStructure pvTop = this.pvParent;
     	if(pvTop==null) {
