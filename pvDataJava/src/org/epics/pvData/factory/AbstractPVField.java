@@ -73,6 +73,10 @@ public abstract class AbstractPVField implements PVField{
         field = newStructure;
         if(pvParent!=null) {
             ((AbstractPVField)pvParent).replaceStructure();
+        } else if(pvRecordField!=null) {
+        	PVRecord pvRecord = pvRecordField.getPVRecord();
+        	pvRecordField = null;
+        	setRecord(pvRecord);
         }
     }
     /**
@@ -80,9 +84,6 @@ public abstract class AbstractPVField implements PVField{
      * @param pvRecord The PVRecord interface.
      */
     protected void setRecord(PVRecord record) {
-    	if(pvRecordField!=null) {
-    		if(pvRecordField.getPVRecord()==record) return;
-    	}
         pvRecordField = new BasePVRecordField(this,record);
         // call setRecord for all subfields.
         if(field.getType()==Type.structure) {
