@@ -376,6 +376,9 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 
 		public MonitorStrategyQueue(int queueSize)
 		{
+			if (queueSize <= 1)
+				throw new IllegalArgumentException("queueSize <= 1");
+			
 			this.queueSize = queueSize;
 		}
 		
@@ -424,7 +427,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			
 			if (notify)
 				callback.monitorEvent(this);
-			
+
 	        synchronized (monitorSync)
 			{
 
@@ -436,8 +439,12 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	            // special treatment if in overrun state
 	            if (overrunInProgress)
 	            {
+	            	// lazy init
+	            	if (bitSet1 == null) bitSet1 = new BitSet(changedBitSet.size());
+	            	if (bitSet2 == null) bitSet2 = new BitSet(overrunBitSet.size());
+	            	
 	            	bitSet1.deserialize(payloadBuffer, transport);
-					pvStructure.deserialize(payloadBuffer, transport, changedBitSet);
+					pvStructure.deserialize(payloadBuffer, transport, bitSet1);
 					bitSet2.deserialize(payloadBuffer, transport);
 
 					// OR local overrun
@@ -487,7 +494,35 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		public MonitorElement poll()
 		{
             synchronized(monitorSync) {
-                return monitorQueue.getUsed();
+            	final MonitorElement retVal = monitorQueue.getUsed();
+            	if (retVal != null)
+            		return retVal;
+            	
+	            // if in overrun mode and we have free, make it as last element
+	            if (overrunInProgress)
+	            {
+	            	MonitorElement newElement = monitorQueue.getFree();
+	            	if (newElement != null)
+	            	{
+	            		// take new, put current in use
+	    				final PVStructure pvStructure = monitorElement.getPVStructure();
+			            convert.copy(pvStructure, newElement.getPVStructure());
+
+			            bitSetUtil.compress(monitorElement.getChangedBitSet(), pvStructure);
+			            bitSetUtil.compress(monitorElement.getOverrunBitSet(), pvStructure);
+	            		monitorQueue.setUsed(monitorElement);
+
+	            		monitorElement = newElement;
+
+	            		overrunInProgress = false;
+	            		
+	            		return monitorQueue.getUsed();
+	            	}
+	            	else
+	            		return null;		// should never happen since queueSize >= 2, but (too) smart client can do this
+	            }
+	            else
+	            	return null;
             }
 		}
 
