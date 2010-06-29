@@ -37,15 +37,16 @@ public class LinkedListTest extends TestCase {
     	LinkedList<Basic> basicList = basicListCreate.create();
     	Basic[] basics = new Basic[numNodes];
     	for(int i=0; i<numNodes; i++) {
-    		Basic basic = new Basic(i);
-    		basicList.addTail(basicListCreate.createNode(basic));
-    		assert (basicList.getLength()==i+1);
+    		basics[i] = new Basic(i);
+    		basicList.addTail(basicListCreate.createNode(basics[i]));
+    		assertTrue(basicList.getLength()==i+1);
     	}
     	for(int i=0; i<numNodes; i++) {
     		Basic basic = basicList.getHead().getObject();
     		assert(basic.index==i);
     		basicList.remove(basics[i]);
-    		assert(basicList.getLength()==(4-i));
+    		int length = basicList.getLength();
+    		assertTrue(length==(4-i));
     	}
     }
     
