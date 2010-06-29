@@ -13,6 +13,7 @@ import org.epics.pvData.misc.LinkedList;
 import org.epics.pvData.misc.LinkedListArray;
 import org.epics.pvData.misc.LinkedListCreate;
 import org.epics.pvData.misc.LinkedListNode;
+import org.epics.pvData.pv.Requester;
 
 /**
  * JUnit test for LinkedList.
@@ -21,22 +22,58 @@ import org.epics.pvData.misc.LinkedListNode;
  */
 public class LinkedListTest extends TestCase {
     private static int numNodes = 5;
-    private static LinkedListCreate<Node> linkedListCreate = new LinkedListCreate<Node>();
-    private static LinkedList<Node> linkedList = linkedListCreate.create();
+    private static LinkedListCreate<Basic> basicListCreate = new LinkedListCreate<Basic>();
+    private static LinkedListCreate<UserListElement> linkedListCreate = new LinkedListCreate<UserListElement>();
+    //private static private static LinkedList<Node> linkedList = linkedListCreate.create();
     
+    private static class Basic {
+    	Basic(int i) {
+    		index = i;
+    	}
+    	int index;
+    }
+    
+    public static void testBasic() {
+    	LinkedList<Basic> basicList = basicListCreate.create();
+    	Basic[] basics = new Basic[numNodes];
+    	for(int i=0; i<numNodes; i++) {
+    		Basic basic = new Basic(i);
+    		basicList.addTail(basicListCreate.createNode(basic));
+    		assert (basicList.getLength()==i+1);
+    	}
+    	for(int i=0; i<numNodes; i++) {
+    		Basic basic = basicList.getHead().getObject();
+    		assert(basic.index==i);
+    		basicList.remove(basics[i]);
+    		assert(basicList.getLength()==(4-i));
+    	}
+    }
+    
+    private static class UserListElement {
+        private LinkedListNode<UserListElement> listNode = null;
+        private int number = 0;
+        
+        
+        private UserListElement(int number) {
+            this.number = number;
+            listNode = linkedListCreate.createNode(this);
+        }
+        
+    }
     
     public static void testQueue() {
-        LinkedListArray<Node> linkedListArray = linkedListCreate.createArray();
-        Node[] nodes = new Node[numNodes];
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
+        LinkedListArray<UserListElement> linkedListArray = linkedListCreate.createArray();
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         System.out.printf("%nQueue test%n");
-        for(Node node: nodes) linkedList.addTail(node.listNode);
-        LinkedListNode<Node> listNode = linkedList.removeHead();
+        for(UserListElement element: elements) linkedList.addTail(element.listNode);
+        LinkedListNode<UserListElement> listNode = linkedList.removeHead();
         while(listNode!=null) listNode = linkedList.removeHead();
-        for(Node node: nodes) linkedList.addTail(node.listNode);
-        LinkedListNode<Node>[] linkedListNodes = null;
+        for(UserListElement element: elements) linkedList.addTail(element.listNode);
+        LinkedListNode<UserListElement>[] linkedListNodes = null;
         int length = 0;
         synchronized(linkedList) {
             linkedListArray.setNodes(linkedList);
@@ -51,8 +88,8 @@ public class LinkedListTest extends TestCase {
         System.out.printf("    removeHead ");
         listNode = linkedList.removeHead();
         while(listNode!=null) {
-            Node node = listNode.getObject();
-            System.out.printf(" " + node.number);
+            UserListElement element = listNode.getObject();
+            System.out.printf(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
@@ -60,19 +97,20 @@ public class LinkedListTest extends TestCase {
     }
     
     public static void testStack() {
-        Node[] nodes = new Node[numNodes];
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         System.out.printf("%nStack test ");
-        for(Node node: nodes) linkedList.addHead(node.listNode);
-        LinkedListNode<Node> listNode = linkedList.removeHead();
+        for(UserListElement element: elements) linkedList.addHead(element.listNode);
+        LinkedListNode<UserListElement> listNode = linkedList.removeHead();
         while(listNode!=null) listNode = linkedList.removeHead();
-        for(Node node: nodes) linkedList.addHead(node.listNode);
+        for(UserListElement element: elements) linkedList.addHead(element.listNode);
         listNode = linkedList.removeHead();
         while(listNode!=null) {
-            Node node = listNode.getObject();
-            System.out.printf(" " + node.number);
+            UserListElement element = listNode.getObject();
+            System.out.printf(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
@@ -80,20 +118,21 @@ public class LinkedListTest extends TestCase {
     }
     
     public static void testRandomInsertRemove() {
-        Node[] nodes = new Node[numNodes];
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         System.out.printf("%nRandom insert/remove test ");
-        linkedList.addHead(nodes[4].listNode);
-        linkedList.insertAfter(nodes[4].listNode, nodes[3].listNode);
-        linkedList.insertAfter(nodes[3].listNode, nodes[2].listNode);
-        linkedList.addTail(nodes[1].listNode);
-        linkedList.addTail(nodes[0].listNode);
-        LinkedListNode<Node> listNode = linkedList.removeHead();
+        linkedList.addHead(elements[4].listNode);
+        linkedList.insertAfter(elements[4].listNode, elements[3].listNode);
+        linkedList.insertAfter(elements[3].listNode, elements[2].listNode);
+        linkedList.addTail(elements[1].listNode);
+        linkedList.addTail(elements[0].listNode);
+        LinkedListNode<UserListElement> listNode = linkedList.removeHead();
         while(listNode!=null) {
-            Node node = listNode.getObject();
-            System.out.printf(" " + node.number);
+            UserListElement element = listNode.getObject();
+            System.out.printf(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
@@ -101,52 +140,54 @@ public class LinkedListTest extends TestCase {
     }
     
     public static void testList() {
-        Node[] nodes = new Node[numNodes];
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
-        for(Node node: nodes) linkedList.addTail(node.listNode);
+        for(UserListElement element: elements) linkedList.addTail(element.listNode);
         System.out.printf("%nList test ");
-        LinkedListNode<Node> listNode = linkedList.getHead();
+        LinkedListNode<UserListElement> listNode = linkedList.getHead();
         while(listNode!=null) {
-            Node node = (Node)listNode.getObject();
-            System.out.printf(" " + node.number);
+            UserListElement element = (UserListElement)listNode.getObject();
+            System.out.printf(" " + element.number);
             listNode = linkedList.getNext(listNode);
         }
         System.out.println();
-        for(Node node: nodes) {
-            if(linkedList.contains(node)) {
-                linkedList.remove(node);
+        for(UserListElement element: elements) {
+            if(linkedList.contains(element)) {
+                linkedList.remove(element);
             }
         }
         assertTrue(linkedList.isEmpty());
     }
     
     public static void testOrderedQueue() {
-        Node[] nodes = new Node[numNodes];
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         System.out.printf("%nOrdered Queue test ");
-        linkedList.addHead(nodes[2].listNode);
-        for(Node node: nodes) {
-            if(linkedList.contains(node)) continue;
-            LinkedListNode<Node> listNode = linkedList.getHead();
+        linkedList.addHead(elements[2].listNode);
+        for(UserListElement element: elements) {
+            if(linkedList.contains(element)) continue;
+            LinkedListNode<UserListElement> listNode = linkedList.getHead();
             while(listNode!=null) {
-                Node nodeOnList = listNode.getObject();
-                if(nodeOnList.number>=node.number) {
-                    linkedList.insertBefore(listNode, node.listNode);
+                UserListElement elementOnList = listNode.getObject();
+                if(elementOnList.number>=element.number) {
+                    linkedList.insertBefore(listNode, element.listNode);
                     break;
                 }
                 listNode = linkedList.getNext(listNode);
             }
-            if(linkedList.contains(node)) continue;
-            linkedList.addTail(node.listNode);
+            if(linkedList.contains(element)) continue;
+            linkedList.addTail(element.listNode);
         }
-        LinkedListNode<Node> listNode = linkedList.removeHead();
+        LinkedListNode<UserListElement> listNode = linkedList.removeHead();
         while(listNode!=null) {
-            Node node = (Node)listNode.getObject();
-            System.out.printf(" " + node.number);
+            UserListElement element = (UserListElement)listNode.getObject();
+            System.out.printf(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
@@ -154,17 +195,18 @@ public class LinkedListTest extends TestCase {
     }
     
     public static void testTime() {
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
         numNodes = 1000;
-        Node[] nodes = new Node[numNodes];
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         int ntimes = 1000;
         System.out.printf("%nTime test%n");
         long beginTime = System.currentTimeMillis();
         for(int i=0; i<ntimes; i++) {
-            for(Node node : nodes) linkedList.addTail(node.listNode);
-            LinkedListNode<Node> listNode = linkedList.removeHead();
+            for(UserListElement element : elements) linkedList.addTail(element.listNode);
+            LinkedListNode<UserListElement> listNode = linkedList.removeHead();
             while(listNode!=null) listNode = linkedList.removeHead();
         }
         long endTime = System.currentTimeMillis();
@@ -180,20 +222,21 @@ public class LinkedListTest extends TestCase {
     }
     
     public static void testTimeLocked() {
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
         numNodes = 1000;
-        Node[] nodes = new Node[numNodes];
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         int ntimes = 1000;
         System.out.printf("%nTime test locked%n");
         long beginTime = System.currentTimeMillis();
         for(int i=0; i<ntimes; i++) {
-            for(Node node: nodes) {
-                synchronized(linkedList) {linkedList.addTail(node.listNode);}
+            for(UserListElement element: elements) {
+                synchronized(linkedList) {linkedList.addTail(element.listNode);}
             }
             while(true) {
-                LinkedListNode<Node> listNode = null;
+                LinkedListNode<UserListElement> listNode = null;
                 synchronized(linkedList) {listNode = linkedList.removeHead();}
                 if(listNode==null) break;
             }
@@ -211,17 +254,18 @@ public class LinkedListTest extends TestCase {
     }
     
     public static void testArrayListTime() {
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
         numNodes = 1000;
-        ArrayList<Node> arrayList = new ArrayList<Node>();
-        Node[] nodes = new Node[numNodes];
+        ArrayList<UserListElement> arrayList = new ArrayList<UserListElement>();
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         int ntimes = 1000;
         System.out.printf("%nTime ArrayList test%n");
         long beginTime = System.currentTimeMillis();
         for(int i=0; i<ntimes; i++) {
-            for(Node node: nodes) arrayList.add(node);
+            for(UserListElement element: elements) arrayList.add(element);
             while(true) {
                 arrayList.remove(0);
                 if(arrayList.isEmpty()) break;
@@ -240,18 +284,19 @@ public class LinkedListTest extends TestCase {
     }
     
     public static void testArrayListTimeLocked() {
+    	LinkedList<UserListElement> linkedList = linkedListCreate.create();
         numNodes = 1000;
-        ArrayList<Node> arrayList = new ArrayList<Node>();
-        Node[] nodes = new Node[numNodes];
+        ArrayList<UserListElement> arrayList = new ArrayList<UserListElement>();
+        UserListElement[] elements = new UserListElement[numNodes];
         for(int i=0; i<numNodes; i++) {
-            nodes[i] = new Node(i);
+            elements[i] = new UserListElement(i);
         }
         int ntimes = 1000;
         System.out.printf("%nTime ArrayList test locked%n");
         long beginTime = System.currentTimeMillis();
         for(int i=0; i<ntimes; i++) {
-            for(Node node: nodes) {
-                synchronized(arrayList) {arrayList.add(node);}
+            for(UserListElement element: elements) {
+                synchronized(arrayList) {arrayList.add(element);}
             }
             while(true) {
                 synchronized(arrayList) {
@@ -270,17 +315,5 @@ public class LinkedListTest extends TestCase {
         diff = diff/(numNodes*2); // convert to per addTail/removeHead
         System.out.println("time per addTail/removeHead " + diff + " microseconds");
         assertTrue(arrayList.isEmpty());
-    }
-    
-    private static class Node {
-        private LinkedListNode<Node> listNode = null;
-        private int number = 0;
-        
-        
-        private Node(int number) {
-            this.number = number;
-            listNode = linkedListCreate.createNode(this);
-        }
-        
     }
 }
