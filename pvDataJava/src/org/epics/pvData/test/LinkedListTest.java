@@ -43,7 +43,7 @@ public class LinkedListTest extends TestCase {
     	}
     	for(int i=0; i<numNodes; i++) {
     		Basic basic = basicList.getHead().getObject();
-    		assert(basic.index==i);
+    		assertTrue(basic.index==i);
     		basicList.remove(basics[i]);
     		int length = basicList.getLength();
     		assertTrue(length==(4-i));
