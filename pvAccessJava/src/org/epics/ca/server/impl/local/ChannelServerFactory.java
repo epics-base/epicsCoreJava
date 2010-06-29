@@ -269,6 +269,7 @@ public class ChannelServerFactory  {
         @Override
         public void destroy() {
             if(!isDestroyed.compareAndSet(false, true)) return;
+            pvRecord.unregisterClient(this);
             while(true) {
                 ChannelProcess channelProcess = null;
                 synchronized(channelProcessList) {
