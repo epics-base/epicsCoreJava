@@ -181,7 +181,6 @@ public class LinkedListCreate<T> {
             while(node!=null) {
                 if(node.getObject()==object) {
                     remove(node);
-                    length--;
                     return;
                 }
                 node = getNext(node);
