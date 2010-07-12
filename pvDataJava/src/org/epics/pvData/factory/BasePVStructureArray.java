@@ -174,8 +174,8 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
 				} else {
 					if(value[i]==null) {
 						value[i] = pvDataCreate.createPVStructure(null,structureArray.getStructure());
-						value[i].deserialize(buffer, control);
 					}
+					value[i].deserialize(buffer, control);
 				}
 			}
 			length = size;
