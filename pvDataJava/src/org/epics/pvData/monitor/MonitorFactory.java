@@ -438,7 +438,7 @@ public class MonitorFactory {
 			private MonitorElement monitorElement = null;
 			private volatile boolean gotMonitor = false;
 			private volatile boolean wasReleased = true;
-	        private BitSet noQueueChangeBitSet = null;
+	        private BitSet noQueueChangedBitSet = null;
 	        private BitSet noQueueOverrunBitSet = null;
 			
 			@Override
@@ -447,7 +447,7 @@ public class MonitorFactory {
 				pvCopyStructure = monitorElement.getPVStructure();
 	        	changedBitSet = monitorElement.getChangedBitSet();
 	        	overrunBitSet = monitorElement.getOverrunBitSet();
-	        	noQueueChangeBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
+	        	noQueueChangedBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
 	        	noQueueOverrunBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
 	        	return monitorElement;
 			}
@@ -456,7 +456,7 @@ public class MonitorFactory {
 				synchronized(monitorElement) {
 		    		gotMonitor = true;
 		    		wasReleased = true;
-		    		noQueueChangeBitSet.clear();
+		    		noQueueChangedBitSet.clear();
 		    		noQueueOverrunBitSet.clear();
 	        	}
 	            return okStatus;
@@ -465,10 +465,9 @@ public class MonitorFactory {
 			public void stop() {}
 			@Override
 			public boolean dataChanged() {
-				pvCopy.updateCopyFromBitSet(pvCopyStructure, changedBitSet, false);
-				bitSetUtil.compress(changedBitSet, pvCopyStructure);
-	            bitSetUtil.compress(overrunBitSet, pvCopyStructure);
 				synchronized(monitorElement) {
+					noQueueChangedBitSet.or(changedBitSet);
+					noQueueOverrunBitSet.or(overrunBitSet);
 					gotMonitor = true;
 					return wasReleased ? true : false;
 				}
@@ -477,7 +476,12 @@ public class MonitorFactory {
 			public MonitorElement poll() {
 				synchronized(monitorElement) {
 					if(!gotMonitor) return null;
-					noQueueChangeBitSet.clear();
+					changedBitSet.or(noQueueChangedBitSet);
+					overrunBitSet.or(noQueueOverrunBitSet);
+					pvCopy.updateCopyFromBitSet(pvCopyStructure, changedBitSet, true);
+					bitSetUtil.compress(changedBitSet, pvCopyStructure);
+		            bitSetUtil.compress(overrunBitSet, pvCopyStructure);
+					noQueueChangedBitSet.clear();
 					noQueueOverrunBitSet.clear();
 					return monitorElement;
 				}
@@ -485,10 +489,10 @@ public class MonitorFactory {
 			@Override
 			public void release(MonitorElement monitorElement) {
 				synchronized(monitorElement) {
-	        		changedBitSet.xor(noQueueChangeBitSet);
-	                overrunBitSet.xor(noQueueOverrunBitSet);
 	                gotMonitor = false;
 	                wasReleased = true;
+	                changedBitSet.clear();
+	                overrunBitSet.clear();
 	            }
 			}
 		}
@@ -577,7 +581,7 @@ public class MonitorFactory {
 			private volatile boolean gotMonitor = false;
 			private volatile boolean wasReleased = true;
 			private volatile boolean timerExpired = false;
-	        private BitSet noQueueChangeBitSet = null;
+	        private BitSet noQueueChangedBitSet = null;
 	        private BitSet noQueueOverrunBitSet = null;
 	        private Timer.TimerNode timerNode = TimerFactory.createNode(this);
 			
@@ -588,7 +592,7 @@ public class MonitorFactory {
 				pvCopyStructure = monitorElement.getPVStructure();
 	        	changedBitSet = monitorElement.getChangedBitSet();
 	        	overrunBitSet = monitorElement.getOverrunBitSet();
-	        	noQueueChangeBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
+	        	noQueueChangedBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
 	        	noQueueOverrunBitSet = (BitSet)monitorElement.getChangedBitSet().clone();
 	        	return monitorElement;
 			}
@@ -597,7 +601,7 @@ public class MonitorFactory {
 				synchronized(monitorElement) {
 		    		gotMonitor = true;
 		    		wasReleased = true;
-		    		noQueueChangeBitSet.clear();
+		    		noQueueChangedBitSet.clear();
 		    		noQueueOverrunBitSet.clear();
 	        	}
 				timer.schedulePeriodic(timerNode, periodicRate, periodicRate);
@@ -605,17 +609,17 @@ public class MonitorFactory {
 			}
 			@Override
 			public void stop() {
-				timer.stop();
+				timerNode.cancel();
 			}
 			@Override
 			public boolean dataChanged() {
-				if(!timerExpired) return false;
-				timerExpired = false;
-				if(changedBitSet.isEmpty()) return false;
-				pvCopy.updateCopyFromBitSet(pvCopyStructure, changedBitSet, false);
-				bitSetUtil.compress(changedBitSet, pvCopyStructure);
-	            bitSetUtil.compress(overrunBitSet, pvCopyStructure);
 				synchronized(monitorElement) {
+					if(!timerExpired) return false;
+					timerExpired = false;
+					if(changedBitSet.isEmpty()) return false;
+
+					noQueueChangedBitSet.or(changedBitSet);
+					noQueueOverrunBitSet.or(overrunBitSet);
 					gotMonitor = true;
 					return wasReleased ? true : false;
 				}
@@ -624,7 +628,12 @@ public class MonitorFactory {
 			public MonitorElement poll() {
 				synchronized(monitorElement) {
 					if(!gotMonitor) return null;
-					noQueueChangeBitSet.clear();
+					changedBitSet.or(noQueueChangedBitSet);
+					overrunBitSet.or(noQueueOverrunBitSet);
+					pvCopy.updateCopyFromBitSet(pvCopyStructure, changedBitSet, true);
+					bitSetUtil.compress(changedBitSet, pvCopyStructure);
+		            bitSetUtil.compress(overrunBitSet, pvCopyStructure);
+					noQueueChangedBitSet.clear();
 					noQueueOverrunBitSet.clear();
 					return monitorElement;
 				}
@@ -632,10 +641,10 @@ public class MonitorFactory {
 			@Override
 			public void release(MonitorElement monitorElement) {
 				synchronized(monitorElement) {
-	        		changedBitSet.xor(noQueueChangeBitSet);
-	                overrunBitSet.xor(noQueueOverrunBitSet);
 	                gotMonitor = false;
 	                wasReleased = true;
+	                changedBitSet.clear();
+	                overrunBitSet.clear();
 	            }
 			}
 			/* (non-Javadoc)
@@ -643,7 +652,9 @@ public class MonitorFactory {
 			 */
 			@Override
 			public void callback() {
-				timerExpired = true;
+				synchronized(monitorElement) {
+					timerExpired = true;
+				}
 				monitorImpl.dataChanged();
 			}
 			/* (non-Javadoc)

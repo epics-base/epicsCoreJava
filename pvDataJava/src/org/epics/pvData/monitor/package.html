@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS pvData: monitor<br />
 package: org.epics.pvData.monitor<br />
-2010.04.29</h1>
+2010.07.14</h1>
 CONTENTS 
 
 <div class="toc">
@@ -109,9 +109,8 @@ links to a version 3 EPICS IOC.</p>
       percentage value of the field changes by more than a deadband a monitor
       is issued. The record instance can also define deadbands.</dd>
   <dt>periodic</dt>
-    <dd>The request structure must define a field named value and that field
-      must be a numeric scalar. Whenever the absolute value of the field
-      changes by more than a percentage deadband a monitor is issued.</dd>
+    <dd>A monitor is issued at a periodic rate if a put was issued to any
+      field being monitored.</dd>
 </dl>
 
 <p>The monitor queue implementation provided by AbstractMonitor provides
