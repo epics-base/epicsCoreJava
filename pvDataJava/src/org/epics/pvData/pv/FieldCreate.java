@@ -27,19 +27,12 @@ public interface FieldCreate {
      */
     Scalar createScalar(String fieldName,ScalarType scalarType);
     /**
-     * Create a <i>Scalar</i> with scalarType pvStructure;
-     * @param fieldName The field name.
-     * @param structure The introspection interface that describes the subfields.
-     * @return a <i>Scalar</i> interface for the newly created object.
-     */
-    StructureScalar createStructureScalar(String fieldName,Structure structure);
-    /**
      * Create an <i>Array</i> field.
      * @param fieldName The field name
      * @param elementType The <i>scalarType</i> for array elements
      * @return An <i>Array</i> Interface for the newly created object.
      */
-    Array createArray(String fieldName,ScalarType elementType);
+    ScalarArray createScalarArray(String fieldName,ScalarType elementType);
     /**
      * Create an <i>Array</i> field that is has element type <i>Structure</i>
      * @param fieldName The field name
