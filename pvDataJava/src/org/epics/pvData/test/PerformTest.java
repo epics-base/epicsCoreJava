@@ -24,12 +24,12 @@ import org.epics.pvData.misc.TimeFunctionRequester;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVLongArray;
 import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVScalarArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 
@@ -62,9 +62,9 @@ public class PerformTest extends TestCase {
      * test copy array of double.
      */
     public static void testDoubleArrayCopy() {
-        Field fieldFrom = fieldCreate.createArray("from",ScalarType.pvDouble);
-        Field fieldTo = fieldCreate.createArray("to",ScalarType.pvDouble);
-        Field fieldLong = fieldCreate.createArray("long",ScalarType.pvLong);
+        Field fieldFrom = fieldCreate.createScalarArray("from",ScalarType.pvDouble);
+        Field fieldTo = fieldCreate.createScalarArray("to",ScalarType.pvDouble);
+        Field fieldLong = fieldCreate.createScalarArray("long",ScalarType.pvLong);
         Field[] fields = new Field[]{fieldFrom,fieldTo,fieldLong};
         PVStructure pvStruct = dataCreate.createPVStructure(null, "", fields);
         PVRecord pvRecord = dataCreate.createPVRecord("test", pvStruct);
@@ -77,8 +77,8 @@ public class PerformTest extends TestCase {
         for(int i=0; i<arraySize; i++) data[i] = i;
         int nput = from.put(0,data.length,data,0);
         assertEquals(nput,arraySize);
-        convert.copyArray(from, 0, to, 0, from.getLength());
-        convert.copyArray(from, 0, toLong, 0, from.getLength());
+        convert.copyScalarArray(from, 0, to, 0, from.getLength());
+        convert.copyScalarArray(from, 0, toLong, 0, from.getLength());
         System.out.printf("%narray copy%n");
         ArrayCopy dataToData = new ArrayCopy(data,toData);
         TimeFunction timeFunction = TimeFunctionFactory.create(dataToData);
@@ -119,7 +119,7 @@ public class PerformTest extends TestCase {
     
     private static class ConvertCopy implements TimeFunctionRequester {
         
-        private ConvertCopy(PVArray from ,PVArray to) {
+        private ConvertCopy(PVScalarArray from ,PVScalarArray to) {
             this.from = from;
             this.to = to;
         }
@@ -128,11 +128,11 @@ public class PerformTest extends TestCase {
          * @see org.epics.pvData.misc.TimeFunctionRequester#function()
          */
         public void function() {
-            convert.copyArray(from,0,to,0,from.getLength());
+            convert.copyScalarArray(from,0,to,0,from.getLength());
         }
         
-        private PVArray from;
-        private PVArray to;;
+        private PVScalarArray from;
+        private PVScalarArray to;;
         
     }
     

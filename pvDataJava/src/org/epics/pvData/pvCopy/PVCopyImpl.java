@@ -12,7 +12,6 @@ import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
@@ -24,7 +23,6 @@ import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 
@@ -444,12 +442,9 @@ class PVCopyImpl {
             if(type!=Type.structure) {
             	boolean isEqual = pvCopy.equals(pvRecord);
             	if(isEqual) {
-            		if(type==Type.scalarArray) {
-            			Array array = (Array)field;
-            			if(array.getElementType()==ScalarType.pvStructure) {
-            				// always act as though a change occurred. Note that array elements are shared.
-            				bitSet.set(pvCopy.getFieldOffset());
-            			}
+            		if(type==Type.structureArray) {
+            			// always act as though a change occurred. Note that array elements are shared.
+        				bitSet.set(pvCopy.getFieldOffset());
             		}
             	}
                 if(isEqual) return;

@@ -6,7 +6,6 @@
 package org.epics.pvData.pvCopy;
 import java.nio.ByteBuffer;
 
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.ByteArrayData;
 import org.epics.pvData.pv.DoubleArrayData;
@@ -28,20 +27,21 @@ import org.epics.pvData.pv.PVLong;
 import org.epics.pvData.pv.PVLongArray;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
+import org.epics.pvData.pv.PVScalarArray;
 import org.epics.pvData.pv.PVShort;
 import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVStructureArray;
-import org.epics.pvData.pv.PVStructureScalar;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.ShortArrayData;
 import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.StructureArray;
 import org.epics.pvData.pv.StructureArrayData;
-import org.epics.pvData.pv.StructureScalar;
+import org.epics.pvData.pv.Type;
 
 /**
  * Create a PVField that shares the data from another PVField.
@@ -98,14 +98,16 @@ public class PVShareFactory {
             return new SharePVDoubleImpl(pvParent,(PVDouble)pvShare);
         case pvString:
             return new SharePVStringImpl(pvParent,(PVString)pvShare);
-        case pvStructure:
-        	return new SharePVStructureScalarImpl(pvParent,(PVStructureScalar)pvShare);
         }
         return null;
     }
     
     private static PVArray createArray(PVStructure pvParent,PVArray pvShare) {
-        Array array = pvShare.getArray();
+    	if(pvShare.getField().getType()==Type.structureArray) {
+    		return new SharePVStructureArrayImpl(pvParent,(PVStructureArray)pvShare);
+    	}
+    	PVScalarArray pvScalarArray = (PVScalarArray)pvShare;
+        ScalarArray array = pvScalarArray.getScalarArray();
         switch(array.getElementType()) {
         case pvBoolean:
             return new SharePVBooleanArrayImpl(pvParent,(PVBooleanArray)pvShare);
@@ -123,8 +125,6 @@ public class PVShareFactory {
             return new SharePVDoubleArrayImpl(pvParent,(PVDoubleArray)pvShare);
         case pvString:
             return new SharePVStringArrayImpl(pvParent,(PVStringArray)pvShare);
-        case pvStructure:
-        	return new SharePVStructureArrayImpl(pvParent,(PVStructureArray)pvShare);
         }
         return null;
     }
@@ -612,44 +612,9 @@ public class PVShareFactory {
         }
     }
     
-    private static class SharePVStructureScalarImpl extends AbstractSharePVScalar implements PVStructureScalar
-    {
-        private PVStructureScalar pvShare;
-        
-        private SharePVStructureScalarImpl(PVStructure parent,PVStructureScalar pvShare) {
-            super(parent,pvShare);
-            this.pvShare = pvShare;;
-        }
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.PVStructureScalar#getPVStructure()
-		 */
-		@Override
-		public PVStructure getPVStructure() {
-			return pvShare.getPVStructure();
-		}
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.PVStructureScalar#getStructureScalar()
-		 */
-		@Override
-		public StructureScalar getStructureScalar() {
-			return pvShare.getStructureScalar();
-		}
-		/* (non-Javadoc)
-		 * @see org.epics.pvData.pv.PVStructureScalar#put()
-		 */
-		@Override
-		public void put() {
-			super.lockShare();
-			try {
-				pvShare.put();
-			} finally {
-				super.unlockShare();
-			}
-			super.postPut();
-		}        
-    }
     
-    private static class SharePVBooleanArrayImpl extends AbstractSharePVArray implements PVBooleanArray
+    
+    private static class SharePVBooleanArrayImpl extends AbstractSharePVScalarArray implements PVBooleanArray
     {
         private PVBooleanArray pvShare;
         
@@ -721,7 +686,7 @@ public class PVShareFactory {
 		}
     }
     
-    private static class SharePVByteArrayImpl extends AbstractSharePVArray implements PVByteArray
+    private static class SharePVByteArrayImpl extends AbstractSharePVScalarArray implements PVByteArray
     {
         private PVByteArray pvShare;
         
@@ -793,7 +758,7 @@ public class PVShareFactory {
 		}
     }
     
-    private static class SharePVShortArrayImpl extends AbstractSharePVArray implements PVShortArray
+    private static class SharePVShortArrayImpl extends AbstractSharePVScalarArray implements PVShortArray
     {
         private PVShortArray pvShare;
         
@@ -865,7 +830,7 @@ public class PVShareFactory {
 		}
     }
     
-    private static class SharePVIntArrayImpl extends AbstractSharePVArray implements PVIntArray
+    private static class SharePVIntArrayImpl extends AbstractSharePVScalarArray implements PVIntArray
     {
         private PVIntArray pvShare;
         
@@ -937,7 +902,7 @@ public class PVShareFactory {
 		}
     }
     
-    private static class SharePVLongArrayImpl extends AbstractSharePVArray implements PVLongArray
+    private static class SharePVLongArrayImpl extends AbstractSharePVScalarArray implements PVLongArray
     {
         private PVLongArray pvShare;
         
@@ -1009,7 +974,7 @@ public class PVShareFactory {
 		}
     }
     
-    private static class SharePVFloatArrayImpl extends AbstractSharePVArray implements PVFloatArray
+    private static class SharePVFloatArrayImpl extends AbstractSharePVScalarArray implements PVFloatArray
     {
         private PVFloatArray pvShare;
         
@@ -1081,7 +1046,7 @@ public class PVShareFactory {
 		}
     }
     
-    private static class SharePVDoubleArrayImpl extends AbstractSharePVArray implements PVDoubleArray
+    private static class SharePVDoubleArrayImpl extends AbstractSharePVScalarArray implements PVDoubleArray
     {
         private PVDoubleArray pvShare;
         
@@ -1153,7 +1118,7 @@ public class PVShareFactory {
 		}
     }
     
-    private static class SharePVStringArrayImpl extends AbstractSharePVArray implements PVStringArray
+    private static class SharePVStringArrayImpl extends AbstractSharePVScalarArray implements PVStringArray
     {
         private PVStringArray pvShare;
         

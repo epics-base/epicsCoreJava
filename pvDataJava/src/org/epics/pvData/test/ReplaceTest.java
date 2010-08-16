@@ -21,7 +21,6 @@ import org.epics.pvData.factory.BasePVString;
 import org.epics.pvData.factory.BasePVStringArray;
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDatabaseFactory;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.BooleanArrayData;
 import org.epics.pvData.pv.ByteArrayData;
 import org.epics.pvData.pv.Convert;
@@ -31,7 +30,6 @@ import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FloatArrayData;
 import org.epics.pvData.pv.IntArrayData;
 import org.epics.pvData.pv.LongArrayData;
-import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVBoolean;
 import org.epics.pvData.pv.PVByte;
 import org.epics.pvData.pv.PVDatabase;
@@ -42,11 +40,13 @@ import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVLong;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
+import org.epics.pvData.pv.PVScalarArray;
 import org.epics.pvData.pv.PVShort;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.ShortArrayData;
@@ -301,8 +301,8 @@ public class ReplaceTest extends TestCase {
                     fieldName,recordName);
                 return;
         }
-        PVArray dataArray = (PVArray)pvField;
-        ScalarType elementType = dataArray.getArray().getElementType();
+        PVScalarArray dataArray = (PVScalarArray)pvField;
+        ScalarType elementType = dataArray.getScalarArray().getElementType();
         if(elementType.isNumeric()) {
             System.out.printf("%ntestPut recordName %s fieldName %s values %f %f %f",
                 recordName,fieldName,value1,value2,value3);
@@ -414,8 +414,8 @@ public class ReplaceTest extends TestCase {
                 break;
             }
         } else if(type==Type.scalarArray) {
-            PVArray pvArray = (PVArray)oldField;
-            Array array = pvArray.getArray();
+            PVScalarArray pvArray = (PVScalarArray)oldField;
+            ScalarArray array = pvArray.getScalarArray();
             ScalarType elementType = array.getElementType();
             switch(elementType) {
              case pvBoolean:
@@ -967,7 +967,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
         
-        private BooleanArray(PVStructure parent,Array array,
+        private BooleanArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
@@ -1039,7 +1039,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
 
-        private ByteArray(PVStructure parent,Array array,
+        private ByteArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
@@ -1108,7 +1108,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
 
-        private ShortArray(PVStructure parent,Array array,
+        private ShortArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
@@ -1178,7 +1178,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
 
-        private IntArray(PVStructure parent,Array array,
+        private IntArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
@@ -1247,7 +1247,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
 
-        private LongArray(PVStructure parent,Array array,
+        private LongArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
@@ -1317,7 +1317,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
 
-        private FloatArray(PVStructure parent,Array array,
+        private FloatArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
@@ -1388,7 +1388,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
 
-        private DoubleArray(PVStructure parent,Array array,
+        private DoubleArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
@@ -1457,7 +1457,7 @@ public class ReplaceTest extends TestCase {
             capacity = len;
         }
 
-        private StringArray(PVStructure parent,Array array,
+        private StringArray(PVStructure parent,ScalarArray array,
             int capacity,boolean capacityMutable)
         {
             super(parent,array);
