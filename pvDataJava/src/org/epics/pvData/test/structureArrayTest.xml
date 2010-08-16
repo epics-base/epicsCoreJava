@@ -12,7 +12,7 @@
 </structure>
 
 <record recordName = "structureArrayTest">
-    <array name = "value" scalarType = "structure" extends = "test.testStructure" capacity = "2">
+    <structureArray name = "value" scalarType = "structure" extends = "test.testStructure" capacity = "2">
        <structure>
           <scalar name = "value">100.0</scalar>
           <structure name = "location">
@@ -28,7 +28,7 @@
           </structure>
        </structure>
        
-    </array>
+    </structureArray>
 </record>
 
 </database>
