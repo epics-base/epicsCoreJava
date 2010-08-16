@@ -14,12 +14,10 @@ import java.util.regex.Pattern;
 import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVAuxInfo;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVDatabase;
@@ -27,12 +25,13 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
+import org.epics.pvData.pv.PVScalarArray;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVStructureArray;
-import org.epics.pvData.pv.PVStructureScalar;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.StructureArray;
@@ -118,7 +117,6 @@ public class XMLToPVDatabaseFactory {
             record,
             structure,
             scalar,
-            structureScalar,
             scalarArray,
             structureArray,
             structureArrayElement,
@@ -147,7 +145,7 @@ public class XMLToPVDatabaseFactory {
         private String scalarString = null;
         private State scalarPrevState = null;
         
-        private PVArray pvArray = null;
+        private PVScalarArray pvArray = null;
         private String arrayString = null;
         private State arrayPrevState = null;
         private boolean immutable = false;
@@ -214,13 +212,14 @@ public class XMLToPVDatabaseFactory {
                 return;
             case record:
             case structure:
-            case structureScalar:
             	if(name.equals("structure")) {
             		startStructure(name,attributes);
             	} else if(name.equals("scalar")) {
             		startScalar(name,attributes);
             	} else if(name.equals("array")) {
             		startScalarArray(name,attributes);
+            	} else if(name.equals("structureArray")) {
+            		startStructureArray(name,attributes);
                 } else if(name.equals("auxInfo")) {
                     startAuxInfo(name,attributes);
                 } else {
@@ -318,15 +317,6 @@ public class XMLToPVDatabaseFactory {
                             MessageType.error);
                 }
                 return;
-            case structureScalar:
-            	if(name.equals("scalar")) {
-                    endStructureScalar(name);
-                } else {
-                    iocxmlReader.message(
-                            "endElement " + name + " not understood",
-                            MessageType.error);
-                }
-                return;
             case scalarArray:
                 if(name.equals("array")) {
                     endScalarArray(name);
@@ -337,7 +327,7 @@ public class XMLToPVDatabaseFactory {
                 }
                 return;
             case structureArray:
-            	if(name.equals("array")) {
+            	if(name.equals("structureArray")) {
                     endStructureArray(name);
                 } else {
                     iocxmlReader.message(
@@ -604,7 +594,7 @@ public class XMLToPVDatabaseFactory {
                         pvField = pvFields[1];
                         field = pvField.getField();
                         if(field.getFieldName().equals("choices") && field.getType()==Type.scalarArray) {
-                            Array array = (Array)field;
+                            ScalarArray array = (ScalarArray)field;
                             if(array.getElementType()==ScalarType.pvString) {
                                 structureState.isEnumerated = true;
                                 structureState.pvChoices = (PVStringArray)pvField;
@@ -660,10 +650,7 @@ public class XMLToPVDatabaseFactory {
         			}
         			scalarType = ScalarType.getScalarType(temp);
         		}
-        		if(scalarType==ScalarType.pvStructure) {
-        			startStructureScalar(fieldName,attributes);
-        			return;
-        		}
+        		
         		String immutableString = attributes.get("immutable");
         		if(immutableString!=null && immutableString.equals("true")) {
         			immutable = true;
@@ -720,46 +707,7 @@ public class XMLToPVDatabaseFactory {
             scalarPrevState = null;
         }
         
-        private void startStructureScalar(String fieldName,Map<String,String> attributes)
-        {
-            
-            PVStructure pvParent = structureState.pvStructure;
-            PVStructureScalar pvStructureScalar = null;
-            PVStructure pvStructure = null;
-            PVField pvField = null;
-        	pvField = pvParent.getSubField(fieldName);
-        	if(pvField!=null){
-        		pvStructureScalar = (PVStructureScalar)pvField;
-        	} else {
-        		String extendsName = attributes.get("extends");
-        		if(extendsName==null) {
-        			iocxmlReader.message("must define extends",MessageType.error);
-        			return;
-        		}
-        		extendsName = findExtendedStructureName(extendsName);
-        		pvStructure = pvDatabase.findStructure(extendsName);
-        		if(pvStructure==null) {
-        			iocxmlReader.message(
-        					"type " + extendsName + " not a known structure",
-        					MessageType.error);
-        		}
-        		pvStructureScalar = pvDataCreate.createPVStructureScalar(pvParent,fieldName,pvStructure);
-        		pvParent.appendPVField(pvStructureScalar);
-        	}
-        	pvStructure = pvStructureScalar.getPVStructure();
-        	if(pvListener!=null) pvListener.newStructureField(pvStructure);
-        	structureStack.push(structureState);
-        	structureState = new StructureState();
-        	structureState.prevState = state;
-        	structureState.pvStructure = pvStructure;
-            state = State.structureScalar;
-        }
-        private void endStructureScalar(String name)
-        {
-            if(pvListener!=null) pvListener.endStructure();
-            state = structureState.prevState;
-            structureState = structureStack.pop();
-        }
+       
         
         
         private void startScalarArray(String name,Map<String,String> attributes)
@@ -778,7 +726,7 @@ public class XMLToPVDatabaseFactory {
         			iocxmlReader.message("field is not a scalarArray",MessageType.error);
                     return;
         		}
-        		scalarType = ((Array)field).getElementType();
+        		scalarType = ((ScalarArray)field).getElementType();
         	} else {
         		String temp = attributes.get("scalarType");
         		if(temp==null) {
@@ -786,10 +734,6 @@ public class XMLToPVDatabaseFactory {
                     return;
         		}
         		scalarType = ScalarType.getScalarType(temp);
-        	}
-        	if(scalarType==ScalarType.pvStructure) {
-        		startStructureArray(fieldName,attributes);
-        		return;
         	}
             String immutableString = attributes.get("immutable");
             if(immutableString!=null && immutableString.equals("true")) {
@@ -802,11 +746,11 @@ public class XMLToPVDatabaseFactory {
             String typeName = attributes.get("scalarType");
             if(typeName!=null && typeName.length() <= 0) typeName = null;
             PVStructure pvStructure = structureState.pvStructure;
-            PVArray pvArray = null;
+            PVScalarArray pvArray = null;
             if(pvField!=null) {
-                pvArray = (PVArray)pvField;
+                pvArray = (PVScalarArray)pvField;
             } else {
-                pvArray= pvDataCreate.createPVArray(pvStructure, fieldName, scalarType);
+                pvArray= pvDataCreate.createPVScalarArray(pvStructure, fieldName, scalarType);
                 pvStructure.appendPVField(pvArray);
             }
             this.pvArray = pvArray;
@@ -868,7 +812,7 @@ public class XMLToPVDatabaseFactory {
             if(value!=null && value.length()>0) {
                 String[] values = null;
                 values = commaPattern.split(value);
-                ScalarType type = pvArray.getArray().getElementType();
+                ScalarType type = pvArray.getScalarArray().getElementType();
                 if(type==ScalarType.pvString) {
                     for(int i=0; i<values.length; i++) {
                         String item = values[i];
@@ -896,9 +840,13 @@ public class XMLToPVDatabaseFactory {
             arrayPrevState = null;
         }
         
-        private void startStructureArray(String fieldName,Map<String,String> attributes)
+        private void startStructureArray(String name,Map<String,String> attributes)
         {
-            
+        	String fieldName = attributes.get("name");
+        	if(fieldName==null || fieldName.length() == 0) {
+                iocxmlReader.message("name not defined",MessageType.error);
+                return;
+            }
             PVStructure pvParent = structureState.pvStructure;
             PVStructureArray pvStructureArray = null;
             PVStructure pvStructure = null;

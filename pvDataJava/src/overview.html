@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS pvData<br />
 Overview<br />
-2010.04.28</h1>
+2010.07.27</h1>
 CONTENTS 
 
 <div class="toc">
@@ -140,21 +140,37 @@ Access clients and servers. </p>
 <pre>enum Type {
     scalar,
     scalarArray,
-    structure;
-}
+    structure,
+    structureArray;
+}</pre>
 
-enum ScalarType {
+<p>where</p>
+<dl>
+  <dt>scalar</dt>
+    <dd>A field that has data with one of the scalarTypes.</dd>
+  <dt>scalarArray</dt>
+    <dd>A field that is an array where each element is the same
+    scalarType.</dd>
+  <dt>structure</dt>
+    <dd>A field which has named subfields.</dd>
+  <dt>structureArray</dt>
+    <dd>A field that is an array of structures where each element has the
+      same introspection interface, i.e. each element has the same
+    structure.</dd>
+</dl>
+<pre>enum ScalarType {
     pvBoolean,
     pvByte,pvShort,pvInt,pvLong,
     pvFloat,pvDouble,
-    pvString,
-    pvStructure;
+    pvString;
     // The following are convenience methods
     public boolean isInteger();
     public boolean isNumeric()
     public boolean isPrimitive() 
     public static ScalarType getScalarType(String type);
 }</pre>
+
+<p>where</p>
 <dl>
   <dt>boolean</dt>
     <dd>true or false</dd>
@@ -173,14 +189,7 @@ enum ScalarType {
   <dt>string</dt>
     <dd>An immutable string. The Java implementation is String. For other
       implementations the network representation must be the same as for
-    Java.</dd>
-  <dt>array</dt>
-    <dd>A one dimensional array. The element type is any scalar type.</dd>
-  <dt>structure</dt>
-    <dd>A structure field. This will appear as a leaf field within the
-      structure that holds the field, i.e. it will appear as a top level
-      structure. For a scalarArray field that has scalarType pvStructure,
-      even element of the array must have the same structure definition.</dd>
+      Java. Note that a string is treated like it is a scaler.</dd>
 </dl>
 
 <h3 id="Introspect">Introspection Interfaces</h3>
@@ -197,9 +206,8 @@ interface Scalar extends Field{
     ScalarType getScalarType();
 }
 
-interface Array extends Field{
+interface ScalarArray extends Field{
     ScalarType getElementType();
-
 }
 
 interface Structure extends Field{
@@ -207,13 +215,16 @@ interface Structure extends Field{
     Field getField(String fieldName);
     int getFieldIndex(String fieldName);
     Field[] getFields();
+}
 
+interface StructureArray extends Field{
+    Structure getStructure();
 }</pre>
 
 <p>The introspection interfaces provide access to immutable objects. This
 allows introspection interfaces to be freely shared between data objects. For
 example the introspection interface for a timeStamp, which is a structure
-containing two fields, can be stared by every record that has a time
+containing two fields, can be shared by every record that has a time
 stamp.</p>
 
 <h3 id="Data">Data Interfaces</h3>
@@ -285,8 +296,8 @@ interface PVRecord {
 }</pre>
 
 <p>Each scalar type has an associated data interface: PVBoolean, PVByte,
-PVShort, PVInt, PVLong, PVFloat, PVDouble, PVString, and PVStructureScalar.
-Each has a get and a put method. For example:</p>
+PVShort, PVInt, PVLong, PVFloat, PVDouble, and PVString. Each has a get and a
+put method. For example:</p>
 <pre>public interface PVDouble extends PVScalar{
     double get();
     void put(double value);
@@ -298,13 +309,17 @@ Each has a get and a put method. For example:</p>
 }
 
 interface PVArray extends PVField, SerializableArray{
-    Array getArray();
     int getLength();
     void setLength(int len);
     int getCapacity();
     void setCapacity(int len);
     boolean isCapacityMutable();
     void setCapacityMutable(boolean isMutable);
+}</pre>
+
+<p>PVScalarArray is the base class for scalar arrays.</p>
+<pre>interface PVScalarArray extends PVArray {
+    ScalarArray getScalarArray();
 }</pre>
 
 <p>For each scalar type an associated array data interface is defined. Each
@@ -317,12 +332,20 @@ has a get and put method. For example: </p>
 interface PVDoubleArray extends PVArray {
     int get(int offset, int len, DoubleArrayData data);
     int put(int offset,int len, double[] from, int fromOffset);
+    void shareData(double[] from);
+}</pre>
 
+<p>PVScalarArray is the interface for an array of structures where each
+element has the same iontrospection interface.</p>
+<pre>interface PVStructureArray extends PVArray{
+    StructureArray getStructureArray();
+    int get(int offset, int length, StructureArrayData data);
+    int put(int offset,int length, PVStructure[] from, int fromOffset);
+    void shareData(PVStructure[] from);
 }</pre>
 
 <p>PVStructure is the data interface for a structure.</p>
-<pre>
-interface BitSetSerializable {
+<pre>interface BitSetSerializable {
     void serialize(ByteBuffer buffer, SerializableControl flusher, BitSet bitSet);
     void deserialize(ByteBuffer buffer, DeserializableControl control, BitSet bitSet);
 }
@@ -359,8 +382,7 @@ interface PVStructure extends PVField , BitSetSerializable{
 <pre>public interface FieldCreate {
     Field create(String fieldName,Field field);
     Scalar createScalar(String fieldName,ScalarType scalarType);
-    StructureScalar createStructureScalar(String fieldName,Structure structure);
-    Array createArray(String fieldName,ScalarType elementType);
+    ScalarArray createScalarArray(String fieldName,ScalarType elementType);
     StructureArray createStructureArray(String fieldName,Structure elementStructure);
     Structure createStructure(String fieldName, Field[] field);
 }</pre>
