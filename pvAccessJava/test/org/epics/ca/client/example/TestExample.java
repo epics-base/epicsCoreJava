@@ -490,7 +490,7 @@ public class TestExample {
 						this.channelArray = channelArray;
 						this.pvArray = pvArray;
 						System.out.println("channelArrayConnect");
-						System.out.println("\tpvArray" + pvArray.getArray());
+						System.out.println("\tpvArray" + pvArray.getField());
 						
 						//pvArray.setCapacity(2);
 						//((PVStringArray)pvArray).put(0, 1, new String[] { "test" }, 0);

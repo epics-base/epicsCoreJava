@@ -14,9 +14,9 @@
 
 package org.epics.ca.util.test;
 
-import org.epics.ca.util.HexDump;
-
 import junit.framework.TestCase;
+
+import org.epics.ca.util.HexDump;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>

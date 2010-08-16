@@ -5,10 +5,11 @@
  */
 package org.epics.ca.client;
 
+import org.epics.pvData.monitor.Monitor;
+import org.epics.pvData.monitor.MonitorRequester;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
-import org.epics.pvData.monitor.*;
 
 
 /**

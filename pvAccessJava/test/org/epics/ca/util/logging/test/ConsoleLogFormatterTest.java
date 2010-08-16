@@ -18,10 +18,9 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import org.epics.ca.util.logging.ConsoleLogFormatter;
-
-
 import junit.framework.TestCase;
+
+import org.epics.ca.util.logging.ConsoleLogFormatter;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>

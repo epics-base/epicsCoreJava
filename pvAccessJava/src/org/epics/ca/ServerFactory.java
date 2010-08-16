@@ -14,7 +14,6 @@
 
 package org.epics.ca;
 
-import org.epics.ca.CAException;
 import org.epics.ca.client.ChannelAccessFactory;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.ca.server.impl.remote.plugins.DefaultBeaconServerDataProvider;

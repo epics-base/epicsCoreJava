@@ -46,14 +46,15 @@ import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorFactory;
 import org.epics.pvData.monitor.MonitorRequester;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVBoolean;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVRecord;
+import org.epics.pvData.pv.PVRecordClient;
+import org.epics.pvData.pv.PVScalarArray;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVStructureArray;
@@ -566,19 +567,18 @@ public class ChannelServerFactory  {
             	channelArrayRequester.channelArrayConnect(subFieldDoesNotExistStatus, null, null);
                 return null;
             }
+            if(pvField.getField().getType()==Type.structureArray) {
+            	PVStructureArray pvArray = (PVStructureArray)pvField;
+            	PVStructureArray pvCopy = pvDataCreate.createPVStructureArray(null, pvArray.getStructureArray());
+            	return new ChannelStructureArrayImpl(this,channelArrayRequester,pvArray,pvCopy);
+            }
             if(pvField.getField().getType()!=Type.scalarArray) {
                 channelArrayRequester.channelArrayConnect(subFieldNotArrayStatus, null, null);
                 return null;
             }
-            PVArray pvArray = (PVArray)pvField;
-            PVArray pvCopy = null;
-            if(pvArray.getArray().getElementType()==ScalarType.pvStructure) {
-            	PVStructureArray pvStructureArray = (PVStructureArray)pvArray;
-            	pvCopy = pvDataCreate.createPVStructureArray(null, pvStructureArray.getStructureArray());
-            } else {
-                pvCopy = pvDataCreate.createPVArray(null, "", pvArray.getArray().getElementType());
-            }
-            return new ChannelArrayImpl(this,channelArrayRequester,pvArray,pvCopy);
+            PVScalarArray pvArray = (PVScalarArray)pvField;
+            PVScalarArray pvCopy = pvDataCreate.createPVScalarArray(null, "", pvArray.getScalarArray().getElementType());
+            return new ChannelScalarArrayImpl(this,channelArrayRequester,pvArray,pvCopy);
         }
         /* (non-Javadoc)
          * @see org.epics.ca.client.Channel#getAccessRights(org.epics.pvData.pv.PVField)
@@ -1354,10 +1354,10 @@ public class ChannelServerFactory  {
 			}
         }
         
-        private static class ChannelArrayImpl implements ChannelArray {
-            private ChannelArrayImpl(ChannelImpl channelImpl,
+        private static class ChannelScalarArrayImpl implements ChannelArray {
+            private ChannelScalarArrayImpl(ChannelImpl channelImpl,
                     ChannelArrayRequester channelArrayRequester,
-                    PVArray pvArray,PVArray pvCopy)
+                    PVScalarArray pvArray,PVScalarArray pvCopy)
             {
                 this.channelImpl = channelImpl;
                 this.channelArrayRequester = channelArrayRequester;
@@ -1373,8 +1373,8 @@ public class ChannelServerFactory  {
 
             private ChannelImpl channelImpl;
             private ChannelArrayRequester channelArrayRequester;
-            private PVArray pvArray;
-            private PVArray pvCopy;
+            private PVScalarArray pvArray;
+            private PVScalarArray pvCopy;
             private PVRecord pvRecord;
             private final AtomicBoolean isDestroyed = new AtomicBoolean(false);
             /* (non-Javadoc)
@@ -1399,7 +1399,7 @@ public class ChannelServerFactory  {
                 if(count<=0) count = pvArray.getLength();
                 pvRecord.lock();
                 try {
-                    int len = convert.copyArray(pvArray, offset, pvCopy, 0, count);
+                    int len = convert.copyScalarArray(pvArray, offset, pvCopy, 0, count);
                     if(!pvCopy.isImmutable()) pvCopy.setLength(len);
                 } finally  {
                     pvRecord.unlock();
@@ -1419,7 +1419,107 @@ public class ChannelServerFactory  {
                 if(count<=0) count = pvCopy.getLength();
                 pvRecord.lock();
                 try {
-                    convert.copyArray(pvCopy, 0, pvArray, offset, count);
+                    convert.copyScalarArray(pvCopy, 0, pvArray, offset, count);
+                } finally  {
+                    pvRecord.unlock();
+                }
+                channelArrayRequester.putArrayDone(okStatus);
+                if(lastRequest) destroy();
+            }
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelArray#setLength(boolean, int, int)
+			 */
+			@Override
+			public void setLength(boolean lastRequest, int length, int capacity) {
+				if(isDestroyed.get()) {
+                	channelArrayRequester.setLengthDone(requestDestroyedStatus);
+                	return;
+                }
+				if(capacity>=0 && !pvArray.isCapacityMutable()) {
+					channelArrayRequester.setLengthDone(capacityImmutableStatus);
+					return;
+				}
+				pvRecord.lock();
+                try {
+                    if(length>=0) {
+                    	if(pvArray.getLength()!=length) pvArray.setLength(length);
+                    }
+                    if(capacity>=0) {
+                    	if(pvArray.getCapacity()!=capacity) pvArray.setCapacity(capacity);
+                    }
+                } finally  {
+                    pvRecord.unlock();
+                }
+                channelArrayRequester.setLengthDone(okStatus);
+                if(lastRequest) destroy();
+			}
+        }
+        
+        private static class ChannelStructureArrayImpl implements ChannelArray {
+            private ChannelStructureArrayImpl(ChannelImpl channelImpl,
+                    ChannelArrayRequester channelArrayRequester,
+                    PVStructureArray pvArray,PVStructureArray pvCopy)
+            {
+                this.channelImpl = channelImpl;
+                this.channelArrayRequester = channelArrayRequester;
+                this.pvArray = pvArray;
+                this.pvCopy = pvCopy;
+                pvRecord = channelImpl.pvRecord;
+
+                synchronized(channelImpl.channelArrayList) {
+                    channelImpl.channelArrayList.add(this);
+                }
+                channelArrayRequester.channelArrayConnect(okStatus, this, pvCopy);
+            }
+
+            private ChannelImpl channelImpl;
+            private ChannelArrayRequester channelArrayRequester;
+            private PVStructureArray pvArray;
+            private PVStructureArray pvCopy;
+            private PVRecord pvRecord;
+            private final AtomicBoolean isDestroyed = new AtomicBoolean(false);
+            /* (non-Javadoc)
+             * @see org.epics.pvData.misc.Destroyable#destroy()
+             */
+            @Override
+            public void destroy() {
+                if(!isDestroyed.compareAndSet(false, true)) return;
+                synchronized(channelImpl.channelArrayList) {
+                    channelImpl.channelArrayList.remove(this);
+                }
+            }
+            /* (non-Javadoc)
+             * @see org.epics.ca.client.ChannelArray#getArray(boolean, int, int)
+             */
+            @Override
+            public void getArray(boolean lastRequest, int offset, int count) {
+                if(isDestroyed.get()) {
+                	channelArrayRequester.getArrayDone(requestDestroyedStatus);
+                	return;
+                }
+                if(count<=0) count = pvArray.getLength();
+                pvRecord.lock();
+                try {
+                    convert.copyStructureArray(pvArray, pvCopy);
+                } finally  {
+                    pvRecord.unlock();
+                }
+                channelArrayRequester.getArrayDone(okStatus);
+                if(lastRequest) destroy();
+            }
+            /* (non-Javadoc)
+             * @see org.epics.ca.client.ChannelArray#putArray(boolean, int, int)
+             */
+            @Override
+            public void putArray(boolean lastRequest, int offset, int count) {
+                if(isDestroyed.get()) {
+                	channelArrayRequester.getArrayDone(requestDestroyedStatus);
+                	return;
+                }
+                if(count<=0) count = pvCopy.getLength();
+                pvRecord.lock();
+                try {
+                	convert.copyStructureArray(pvCopy, pvArray);
                 } finally  {
                     pvRecord.unlock();
                 }

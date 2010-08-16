@@ -21,23 +21,21 @@ import org.epics.pvData.factory.BaseArray;
 import org.epics.pvData.factory.BaseScalar;
 import org.epics.pvData.factory.BaseStructure;
 import org.epics.pvData.factory.BaseStructureArray;
-import org.epics.pvData.factory.BaseStructureScalar;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.SerializeHelper;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
-import org.epics.pvData.pv.StructureScalar;
 import org.epics.pvData.pv.Type;
 import org.omg.CORBA.BooleanHolder;
 import org.omg.CORBA.ShortHolder;
@@ -188,7 +186,7 @@ public final class IntrospectionRegistry {
 		{ 
 			// use registry check
 			// only top IFs and structures
-			if (registry != null && (parent == null || field.getType() == Type.structure || (field.getType() == Type.scalar && ((Scalar)field).getScalarType() == ScalarType.pvStructure)))
+			if (registry != null && (parent == null || field.getType() == Type.structure || field.getType() == Type.structureArray))
 			{
 				BooleanHolder existing = new BooleanHolder();
 				final short key = registry.registerIntrospectionInterface(field, existing);
@@ -213,25 +211,13 @@ public final class IntrospectionRegistry {
 					control.ensureBuffer(1);
 					buffer.put((byte)(Type.scalar.ordinal() << 4 | scalar.getScalarType().ordinal()));
 					SerializeHelper.serializeString(field.getFieldName(), buffer, control);
-					// do we also need to serialize structure field...
-					if (scalar.getScalarType() == ScalarType.pvStructure)
-					{
-						final Structure structure = ((StructureScalar)field).getStructure();
-						serializeStructureField(buffer, control, registry, structure);
-					}
 					break;
 					
 				case scalarArray:
-					final Array array = (Array)field;
+					final ScalarArray array = (ScalarArray)field;
 					control.ensureBuffer(1);
 					buffer.put((byte)(Type.scalarArray.ordinal() << 4 | array.getElementType().ordinal()));
 					SerializeHelper.serializeString(field.getFieldName(), buffer, control);
-					// do we also need to serialize structure field...
-					if (array.getElementType() == ScalarType.pvStructure)
-					{
-						final Structure structure = ((StructureArray)field).getStructure();
-						serializeStructureField(buffer, control, registry, structure);
-					}
 					break;
 		
 				case structure:
@@ -241,8 +227,15 @@ public final class IntrospectionRegistry {
 					serializeStructureField(buffer, control, registry, structure);
 					break;
 		
-				default:
-					throw new UnsupportedOperationException("unsupported type: " + field.getType());
+				case structureArray:
+					final StructureArray structureArray = (StructureArray)field;
+					control.ensureBuffer(1);
+					buffer.put((byte)(Type.structureArray.ordinal() << 4));
+					SerializeHelper.serializeString(field.getFieldName(), buffer, control);
+					// we also need to serialize structure field...
+					final Structure structureElement = structureArray.getStructure();
+					serializeStructureField(buffer, control, registry, structureElement);
+					break;
 			}
 		}
 	}
@@ -295,31 +288,20 @@ public final class IntrospectionRegistry {
 			case scalar:
 				final ScalarType scalar = ScalarType.values()[typeCode & 0x0F];
 				final String scalarFieldName = SerializeHelper.deserializeString(buffer, control);
-				if (scalar != ScalarType.pvStructure)
-				{
-					return new BaseScalar(scalarFieldName, scalar);
-				}
-				else
-				{
-					final Structure scalarStructure = deserializeStructureField(buffer, control, registry);
-					return new BaseStructureScalar(scalarFieldName, scalarStructure);
-				}
+				return new BaseScalar(scalarFieldName, scalar);
 				
 			case scalarArray:
 				final ScalarType element = ScalarType.values()[typeCode & 0x0F];
 				final String arrayFieldName = SerializeHelper.deserializeString(buffer, control);
-				if (element != ScalarType.pvStructure)
-				{
-					return new BaseArray(arrayFieldName, element);
-				}
-				else
-				{
-					final Structure arrayElement = deserializeStructureField(buffer, control, registry);
-					return new BaseStructureArray(arrayFieldName, arrayElement);
-				}
+				return new BaseArray(arrayFieldName, element);
 				
 			case structure:
 				return deserializeStructureField(buffer, control, registry);
+
+			case structureArray:
+				final String structureArrayFieldName = SerializeHelper.deserializeString(buffer, control);
+				final Structure arrayElement = deserializeStructureField(buffer, control, registry);
+				return new BaseStructureArray(structureArrayFieldName, arrayElement);
 
 			default:
 				throw new UnsupportedOperationException("unsupported type: " + type);
