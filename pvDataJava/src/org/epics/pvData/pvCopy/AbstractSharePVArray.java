@@ -15,6 +15,7 @@ import org.epics.pvData.pv.PVListener;
 import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
 
@@ -86,6 +87,14 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
         pvRecordField.getPVRecord().unlock();
     }
     /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVArray#getScalarArray()
+     */
+    @Override
+	public ScalarArray getScalarArray() {
+		return (ScalarArray)super.getField();
+	}
+
+	/* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override

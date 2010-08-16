@@ -11,6 +11,7 @@ import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
 /**
@@ -40,7 +41,11 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     protected AbstractPVArray(PVStructure parent,Field field) {
         super(parent,field);
     }
-    /* (non-Javadoc)
+    @Override
+	public ScalarArray getScalarArray() {
+		return (ScalarArray)super.getField();
+	}
+	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVArray#setCapacity(int)
      */
     abstract public void setCapacity(int capacity);
