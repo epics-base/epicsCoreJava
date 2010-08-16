@@ -5,7 +5,6 @@
  */
 package org.epics.pvData.factory;
 
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
@@ -16,6 +15,7 @@ import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 
@@ -223,8 +223,8 @@ public abstract class AbstractPVField implements PVField{
             break;
         }
         case scalarArray: {
-            Array array = (Array)field;
-            array = fieldCreate.createArray(newName, array.getElementType());
+            ScalarArray array = (ScalarArray)field;
+            array = fieldCreate.createScalarArray(newName, array.getElementType());
             this.field = array;
             break;
         }
@@ -302,7 +302,8 @@ public abstract class AbstractPVField implements PVField{
             Field field = pvField.getField();
             switch(field.getType()) {
             case scalar:
-            case scalarArray: {
+            case scalarArray:
+            case structureArray:{
                 AbstractPVField pv = (AbstractPVField)pvField;
                 nextOffset++;
                 pv.fieldOffset = offset;

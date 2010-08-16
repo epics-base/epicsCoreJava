@@ -5,7 +5,7 @@
  */
 package org.epics.pvData.factory;
 
-import org.epics.pvData.pv.Array;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Type;
 
@@ -15,7 +15,7 @@ import org.epics.pvData.pv.Type;
  * @author mrk
  *
  */
-public class BaseArray extends BaseField implements Array {
+public class BaseArray extends BaseField implements ScalarArray {
     
     private ScalarType elementType;
     
