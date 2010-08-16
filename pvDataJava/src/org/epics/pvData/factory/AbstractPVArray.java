@@ -7,7 +7,7 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
-import org.epics.pvData.pv.Array;
+import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVStructure;
@@ -32,14 +32,13 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
      * For use by derived classes.
      */
     protected boolean capacityMutable = true;
-    
     /**
      * Constructor that derived classes must call.
      * @param parent The parent interface.
-     * @param array The reflection interface for the PVArray data.
+     * @param field The reflection interface.
      */
-    protected AbstractPVArray(PVStructure parent,Array array) {
-        super(parent,array);
+    protected AbstractPVArray(PVStructure parent,Field field) {
+        super(parent,field);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVArray#setCapacity(int)
@@ -52,13 +51,6 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     public void setImmutable() {
         capacityMutable = false;
         super.setImmutable();
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVArray#getArray()
-     */
-    @Override
-    public Array getArray() {
-        return (Array)getField();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVArray#isCapacityMutable()
