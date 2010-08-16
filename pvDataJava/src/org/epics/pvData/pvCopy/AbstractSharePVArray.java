@@ -8,7 +8,6 @@ package org.epics.pvData.pvCopy;
 import java.nio.ByteBuffer;
 
 import org.epics.pvData.factory.AbstractPVField;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVField;
@@ -34,7 +33,7 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
      */
     protected AbstractSharePVArray(PVStructure parent,PVArray pvShare)
     {
-        super(parent,pvShare.getArray());
+        super(parent,pvShare.getField());
         this.pvShare = pvShare;
     }        
     
@@ -86,14 +85,6 @@ public abstract class AbstractSharePVArray extends AbstractPVField implements PV
         if(pvRecordField==null) return;
         pvRecordField.getPVRecord().unlock();
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVArray#getArray()
-     */
-    @Override
-    public Array getArray() {
-        return (Array)super.getField();
-    }
-
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
