@@ -9,12 +9,12 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvData.misc.SerializeHelper;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.ByteArrayData;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVByteArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
 
@@ -23,7 +23,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVByteArray extends AbstractPVArray implements PVByteArray
+public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArray
 {
     protected byte[] value;
     private ByteArrayData byteArrayData = new ByteArrayData();
@@ -33,7 +33,7 @@ public class BasePVByteArray extends AbstractPVArray implements PVByteArray
      * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVByteArray(PVStructure parent,Array array)
+    public BasePVByteArray(PVStructure parent,ScalarArray array)
     {
         super(parent,array);
         value = new byte[capacity];

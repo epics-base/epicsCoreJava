@@ -9,11 +9,11 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvData.misc.SerializeHelper;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.StringArrayData;
 
@@ -23,7 +23,7 @@ import org.epics.pvData.pv.StringArrayData;
  * @author mrk
  *
  */
-public class BasePVStringArray extends AbstractPVArray implements PVStringArray
+public class BasePVStringArray extends AbstractPVScalarArray implements PVStringArray
 {
 
     protected String[] value;
@@ -34,7 +34,7 @@ public class BasePVStringArray extends AbstractPVArray implements PVStringArray
      * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVStringArray(PVStructure parent,Array array)
+    public BasePVStringArray(PVStructure parent,ScalarArray array)
     {
         super(parent,array);
         value = new String[capacity];

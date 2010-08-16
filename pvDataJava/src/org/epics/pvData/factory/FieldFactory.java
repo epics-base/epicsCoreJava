@@ -5,14 +5,13 @@
  */
 package org.epics.pvData.factory;
 
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
-import org.epics.pvData.pv.StructureScalar;
 
 /**
  * FieldFactory creates Field instances.
@@ -26,46 +25,51 @@ import org.epics.pvData.pv.StructureScalar;
  */
 public final class FieldFactory {   
     private FieldFactory(){} // don't create
-    private static FieldCreateImpl fieldCreate = new FieldCreateImpl(); 
     /**
      * Get the FieldCreate interface.
      * @return The interface for creating introspection objects.
      */
     public static FieldCreate getFieldCreate() {
-        return fieldCreate;
+        return FieldCreateImpl.getFieldCreate();
     }
     
     private static final class FieldCreateImpl implements FieldCreate{
+    	private static FieldCreateImpl singleImplementation = null;
+        private static synchronized FieldCreateImpl getFieldCreate() {
+                if (singleImplementation==null) {
+                    singleImplementation = new FieldCreateImpl();
+                }
+                return singleImplementation;
+        }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#create(java.lang.String, org.epics.pvData.pv.Field)
          */
         @Override
         public Field create(String fieldName, Field field) {
-            switch(field.getType()) {
-            case scalar: {
-            	Scalar scalar = (Scalar)field;
-            	if(scalar.getScalarType()!=ScalarType.pvStructure) {
-            		return createScalar(fieldName,scalar.getScalarType());
-            	}
-            	StructureScalar structureScalar = (StructureScalar)scalar;
-            	return createStructureScalar(fieldName,structureScalar.getStructure());
-            }
-            case scalarArray:{
-            	Array array = (Array)field;
-            	if(array.getElementType()!=ScalarType.pvStructure) {
-            	    return createArray(fieldName,array.getElementType());
-            	}
-            	StructureArray structureArray = (StructureArray) array;
-            	return createStructureArray(fieldName,structureArray.getStructure());
-            }
-            case structure: return createStructure(fieldName,((Structure)field).getFields());
-            }
-            throw new IllegalStateException("Logic error. Should never get here");
+        	switch(field.getType()) {
+        	case scalar: {
+        		Scalar scalar = (Scalar)field;
+        		return createScalar(fieldName,scalar.getScalarType());
+        	}
+        	case scalarArray:{
+        		ScalarArray array = (ScalarArray)field;
+        		return createScalarArray(fieldName,array.getElementType());
+        	}
+        	case structure: {
+        		Structure structure = (Structure)field;
+        		return createStructure(fieldName,structure.getFields());
+        	}
+        	case structureArray: {
+        		StructureArray structureArray = (StructureArray)field;
+        		return createStructureArray(fieldName,structureArray.getStructure());
+        	}
+        	}
+        	throw new IllegalStateException("Logic error. Should never get here");
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createArray(java.lang.String, org.epics.pvData.pv.ScalarType)
          */
-        public Array createArray(String fieldName, ScalarType elementType)
+        public ScalarArray createScalarArray(String fieldName, ScalarType elementType)
         {
             return new BaseArray(fieldName,elementType);
         }
@@ -84,13 +88,6 @@ public final class FieldFactory {
         {
             return new BaseScalar(fieldName,type);
         }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.FieldCreate#createStructureScalar(java.lang.String, org.epics.pvData.pv.Structure)
-         */
-        @Override
-		public StructureScalar createStructureScalar(String fieldName, Structure structure) {
-			return new BaseStructureScalar(fieldName,structure);
-		}
 		/* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createStructure(java.lang.String, org.epics.pvData.pv.Field[])
          */

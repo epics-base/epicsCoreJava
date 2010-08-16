@@ -7,9 +7,9 @@ package org.epics.pvData.factory;
 
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.Type;
 
 /**
  * Base class for implementing a Array.
@@ -17,7 +17,7 @@ import org.epics.pvData.pv.StructureArray;
  * @author mrk
  *
  */
-public class BaseStructureArray extends BaseArray implements StructureArray {
+public class BaseStructureArray extends BaseField implements StructureArray {
 	private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 	private Structure structure;
 
@@ -27,11 +27,11 @@ public class BaseStructureArray extends BaseArray implements StructureArray {
 	 * @param fields The introspection interfaces for the subfields of structure.
 	 */
 	public BaseStructureArray(String fieldName,Field[] fields) {
-		super(fieldName, ScalarType.pvStructure);
+		super(fieldName, Type.structureArray);
 		structure = fieldCreate.createStructure("", fields);
 	}
 	public BaseStructureArray(String fieldName,Structure elementStructure) {
-		super(fieldName, ScalarType.pvStructure);
+		super(fieldName, Type.structureArray);
 		this.structure = elementStructure;
 	}
 	/* (non-Javadoc)

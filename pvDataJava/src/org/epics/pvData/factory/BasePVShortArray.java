@@ -9,11 +9,11 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvData.misc.SerializeHelper;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.ShortArrayData;
 
@@ -23,7 +23,7 @@ import org.epics.pvData.pv.ShortArrayData;
  * @author mrk
  *
  */
-public class BasePVShortArray extends AbstractPVArray implements PVShortArray
+public class BasePVShortArray extends AbstractPVScalarArray implements PVShortArray
 {
     protected short[] value;
     
@@ -32,7 +32,7 @@ public class BasePVShortArray extends AbstractPVArray implements PVShortArray
      * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVShortArray(PVStructure parent,Array array)
+    public BasePVShortArray(PVStructure parent,ScalarArray array)
     {
         super(parent,array);
         value = new short[capacity];

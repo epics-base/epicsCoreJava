@@ -198,7 +198,7 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
 				if(data[i]!=null) {
 					//just check object NOT contents
 					if(value[i]==null) return false;
-					if(data[i]!=(value[i])) return false;
+					if(!data[i].equals(value[i])) return false;
 				} else {
 					if(value[i]!=null) return false; 
 				}
