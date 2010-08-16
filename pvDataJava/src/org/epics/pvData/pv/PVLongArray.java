@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVLongArray extends PVArray{
+public interface PVLongArray extends PVScalarArray{
     /**
      * Get values from a <i>PVLongArray</i> and put them into <i>long[]to</i>.
      * @param offset The offset to the first element to get.

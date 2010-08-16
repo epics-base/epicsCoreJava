@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVByteArray extends PVArray{
+public interface PVByteArray extends PVScalarArray{
     /**
      * Get values from a <i>PVByteArray</i> and put them into <i>byte[]from</i>.
      * @param offset The offset to the first element to get.

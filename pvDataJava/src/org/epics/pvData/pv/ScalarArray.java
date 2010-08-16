@@ -10,10 +10,10 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface StructureArray extends Field{
+public interface ScalarArray extends Field{
     /**
-     * Get the structure interface for an array element.
-     * @return The interface.
+     * Get the element type for the array.
+     * @return The element ScalarType.
      */
-    Structure getStructure();
+    ScalarType getElementType();
 }

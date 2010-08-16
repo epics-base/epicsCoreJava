@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVFloatArray extends PVArray{
+public interface PVFloatArray extends PVScalarArray{
     /**
      * Get values from a <i>PVFloatArray</i>
      * and put them into <i>float[]to</i>.

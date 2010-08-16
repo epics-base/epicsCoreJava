@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVBooleanArray extends PVArray{
+public interface PVBooleanArray extends PVScalarArray{
     /**
      * Get values from a <i>PVBooleanArray</i>
      * and put them into <i>boolean[]to</i>.

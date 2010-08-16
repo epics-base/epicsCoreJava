@@ -113,13 +113,6 @@ public interface PVStructure extends PVField, BitSetSerializable {
      */
     PVString getStringField(String fieldName);
     /**
-     * Find a structureScalar subfield with the specified fieldName.
-     * The fieldName is of the form name.name...
-     * @param fieldName The field name to find.
-     * @return The interface if the field of the correct type is found or null if not found.
-     */
-    PVStructureScalar getStructureScalarField(String fieldName);
-    /**
      * Find a structure subfield with the specified fieldName
      * The fieldName is of the form name.name...
      * @param fieldName The field name to find.
@@ -132,7 +125,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
-    PVArray getArrayField(String fieldName,ScalarType elementType);
+    PVScalarArray getScalarArrayField(String fieldName,ScalarType elementType);
     /**
      * Find a structureArray subfield with the specified fieldName.
      * The fieldName is of the form name.name...

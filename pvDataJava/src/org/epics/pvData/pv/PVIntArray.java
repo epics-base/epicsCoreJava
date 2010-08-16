@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVIntArray extends PVArray{
+public interface PVIntArray extends PVScalarArray{
     /**
      * Get values from a <i>PVIntArray</i> and put them into <i>int[]to</i>.
      * @param offset The offset to the first element to get.

@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: pv<br />
 package: org.epics.pvData.pv<br />
-2010.06.16</h1>
+2010.07.27</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Process">Process Variable Reflection</a> 
+  <li><a href="#Process">Process Variable Reflection</a>
     <ul>
       <li><a href="#Type">Type</a></li>
       <li><a href="#Serializab">Serializable</a></li>
@@ -24,7 +24,7 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Status">Status</a></li>
-  <li><a href="#PVField">PVField - Data Interfaces</a> 
+  <li><a href="#PVField">PVField - Data Interfaces</a>
     <ul>
       <li><a href="#PVField1">PVField</a></li>
       <li><a href="#PVRecordFi">PVRecordField</a></li>
@@ -32,19 +32,20 @@ CONTENTS
       <li><a href="#PVAuxInfo">PVAuxInfo</a></li>
       <li><a href="#PVListener">PVListener</a></li>
       <li><a href="#PVRecordCl">PVRecordClient</a></li>
-      <li><a href="#PVScalar">PVScalar and extensions</a></li>
-      <li><a href="#Primitive">Primitive PVField types</a></li>
-      <li><a href="#PVString">PVString</a></li>
-      <li><a href="#PVStructur">PVStructureScalar</a></li>
-      <li><a href="#PVArray">PVArray and Extensions</a> 
+      <li><a href="#PVScalar">PVScalar and extensions</a>
         <ul>
-          <li><a href="#PVArray1">PVArray</a></li>
-          <li><a href="#PVArray2">PVArray Extensions</a></li>
+          <li><a href="#Primitive">Primitive PVField types</a></li>
+          <li><a href="#PVString">PVString</a></li>
+        </ul>
+      </li>
+      <li><a href="#PVArray">PVArray and Extensions</a>
+        <ul>
+          <li><a href="#PVArray1">PVArray Extensions</a></li>
           <li><a href="#Complete">Complete set of PVArray Extensions</a></li>
         </ul>
       </li>
-      <li><a href="#PVStructur1">PVStructure</a></li>
-      <li><a href="#PVRecord">PVRecord</a> 
+      <li><a href="#PVStructur">PVStructure</a></li>
+      <li><a href="#PVRecord">PVRecord</a>
         <ul>
           <li><a href="#Record">Record Locking</a></li>
         </ul>
@@ -54,7 +55,7 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Convert">Convert</a></li>
-  <li><a href="#Examples">Examples</a> 
+  <li><a href="#Examples">Examples</a>
     <ul>
       <li><a href="#Accessing">Accessing PVData</a></li>
       <li><a href="#Creating">Creating PVData</a></li>
@@ -147,15 +148,15 @@ over the network.</p>
 <pre>    enum Type {
         scalar,
         scalarArray,
-        structure
+        structure,
+        structureArray;
     }
 
     enum ScalarType {
         pvBoolean,
         pvByte, pvShort, pvInt, pvLong,
         pvFloat,pvDouble,
-        pvString,
-        pvStructure;
+        pvString;
 
         //Convenience methods
         public boolean isInteger();   // pvByte,...,pvLong
@@ -170,13 +171,17 @@ over the network.</p>
 the network. The abstract and base classes ensure that these methods are
 properly implemented. </p>
 <pre>    interface Serializable {
-        void serialize(ByteBuffer buffer);
-        void deserialize(ByteBuffer buffer);
+        void serialize(ByteBuffer buffer,SerializableControl flusher);
+        void deserialize(ByteBuffer buffer,DeserializableControl control);
     }
 
     interface SerializableControl {
         void flushSerializeBuffer();
         void ensureBuffer(int size);
+    }
+
+    interface DeserializableControl {
+        void ensureData(int size);
     }
 
     interface SerializableArray extends Serializable {
@@ -202,17 +207,9 @@ properly implemented. </p>
     interface Scalar extends Field {
         ScalarType getScalarType();
     }
- 
-    interface StructureScalar extends Scalar{
-        Structure getStructure();
-    }
 
-    interface Array extends Field{
+    interface ScalarArray extends Field{
         ScalarType getElementType();
-    }
-
-    interface StructureArray extends Array{
-        Structure getStructure();
     }
 
     interface Structure extends Field{
@@ -222,13 +219,16 @@ properly implemented. </p>
         Field[] getFields();
     }
 
+    interface StructureArray extends Field{
+        Structure getStructure();
+    }
+
     interface FieldCreate {
         Field create(String fieldName,Field field);
         Scalar createScalar(String fieldName,ScalarType scalarType);
-        StructureScalar createStructureScalar(String fieldName,Structure structure);
-        Array createArray(String fieldName,ScalarType elementType);
+        ScalarArray createScalarArray(String fieldName,ScalarType elementType);
         StructureArray createStructureArray(String fieldName,Structure elementStructure);
-        Structure createStructure(String fieldName, Field[] field);
+        Structure createStructure(String fieldName, Field[] fields);
     }</pre>
 
 <p>The above definitions support the following:</p>
@@ -243,10 +243,7 @@ properly implemented. </p>
     </dd>
   <dt>Scalar</dt>
     <dd>A scalar has a scalarType</dd>
-  <dt>StructureScalar</dt>
-    <dd>The field holds a top level structure. A client can only get/put the
-      entire structure NOT subfields of the structure. </dd>
-  <dt>Array</dt>
+  <dt>ScalarArray</dt>
     <dd>The element type is a scalarType</dd>
   <dt>StructureArray</dt>
     <dd>The field holds PVStructure[]. Each element has the same Structure
@@ -537,7 +534,7 @@ database. The client must imnplement the following interface:</p>
         Scalar getScalar();
     }</pre>
 
-<h3 id="Primitive">Primitive PVField types</h3>
+<h4 id="Primitive">Primitive PVField types</h4>
 
 <p>The interfaces for primitive data types are:</p>
 <pre>    interface PVBoolean extends PVScalar {
@@ -575,44 +572,20 @@ database. The client must imnplement the following interface:</p>
         void put(double value);
     }</pre>
 
-<h3 id="PVString">PVString</h3>
+<h4 id="PVString">PVString</h4>
 
 <p>The interface for string is:</p>
-<pre>    interface PVString extends PVScalar {
+<pre>    interface PVString extends PVScalar, SerializableArray {
         String get();
         void put(String value);
     }</pre>
 
-<h3 id="PVStructur">PVStructureScalar</h3>
-
-<p>The interface for a structure scalars:</p>
-<pre>    interface PVStructureScalar extends PVScalar{
-        StructureScalar getStructureScalar();
-        PVStructure getPVStructure();
-        void put();
-    }</pre>
-
-<p>A<span style="font-family: courier">PVStructureScalar</span> is treated as
-a single field. The method PVStructureScalar.getNumberFields() returns 1, i.
-e. the field is a leaf. The methods are:</p>
-<dl>
-  <dt>getStructureScalar</dt>
-    <dd>A client can only access the the underlying PVStructure via the
-      structure returned by getPVStructure. It is not possible to attach
-      listeners to the underlying PVStructure.</dd>
-  <dt>put</dt>
-    <dd>If a client modifies the structure than this must be called. </dd>
-</dl>
-
 <h3 id="PVArray">PVArray and Extensions</h3>
-
-<h4 id="PVArray1">PVArray</h4>
 
 <p><span style="font-family: courier">PVArray</span> is the base interface
 for all the other PV Array interfaces. It extends PVField and provides the
 additional methods:</p>
 <pre>    interface PVArray extends PVField, SerializableArray {
-        Array getArray();
         int getLength();
         void setLength(int len);
         int getCapacity();
@@ -621,8 +594,6 @@ additional methods:</p>
         void setCapacityMutable(boolean isMutable);
     }</pre>
 <dl>
-  <dt>getArray</dt>
-    <dd>Return the Array introspection interface.</dd>
   <dt>getLength</dt>
     <dd>Get the current length. This is less that or equal to the
     capacity.</dd>
@@ -643,7 +614,7 @@ additional methods:</p>
     <dd>Specify if the capacity can be changed.</dd>
 </dl>
 
-<h4 id="PVArray2">PVArray Extensions</h4>
+<h4 id="PVArray1">PVArray Extensions</h4>
 
 <p>The interface for each array type has get and put methods which have the
 same arguments except for the data type. For example PVDoubleArray is:</p>
@@ -651,7 +622,7 @@ same arguments except for the data type. For example PVDoubleArray is:</p>
         public double[] data;
         public int offset;
     }
-    interface PVDoubleArray extends PVArray {
+    interface PVDoubleArray extends PVScalarArray {
         int get(int offset, int len, DoubleArrayData data);
         int put(int offset, int len, double[]from, int fromOffset);
         void shareData(double[] from);
@@ -720,11 +691,15 @@ minimizing CPU overhead. In this case it is the applications responsibility
 to coordinate access to the array.</p>
 
 <h4 id="Complete">Complete set of PVArray Extensions</h4>
-<pre>    public class BooleanArrayData {
+<pre>    interface PVScalarArray extends PVArray {
+        ScalarArray getScalarArray();
+    }
+
+    public class BooleanArrayData {
         public boolean[] data;
         public int offset;
     }
-    interface PVBooleanArray extends PVArray {
+    interface PVBooleanArray extends PVScalarArray {
         int get(int offset, int len, BooleanArrayData data);
         int put(int offset, int len, boolean[]from, int fromOffset);
         void shareData(boolean[] from);
@@ -734,7 +709,7 @@ to coordinate access to the array.</p>
         public byte[] data;
         public int offset;
     }
-    interface PVByteArray extends PVArray {
+    interface PVByteArray extends PVScalarArray {
         int get(int offset, int len, ByteArrayData data);
         int put(int offset, int len, byte[]from, int fromOffset);
         void shareData(byte[] from);
@@ -744,7 +719,7 @@ to coordinate access to the array.</p>
         public short[] data;
         public int offset;
     }
-    interface PVShortArray extends PVArray {
+    interface PVShortArray extends PVScalarArray {
         int get(int offset, int len, ShortArrayData data);
         int put(int offset, int len, short[]from, int fromOffset);
         void shareData(short[] from);
@@ -754,7 +729,7 @@ to coordinate access to the array.</p>
         public int[] data;
         public int offset;
     }
-    interface PVIntArray extends PVArray {
+    interface PVIntArray extends PVScalarArray {
         int get(int offset, int len, IntArrayData data);
         int put(int offset, int len, int[]from, int fromOffset);
         void shareData(int[] from);
@@ -764,7 +739,7 @@ to coordinate access to the array.</p>
         public long[] data;
         public int offset;
     }
-    interface PVLongArray extends PVArray {
+    interface PVLongArray extends PVScalarArray {
         int get(int offset, int len, LongArrayData data);
         int put(int offset, int len, long[]from, int fromOffset);
         void shareData(long[] from);
@@ -774,7 +749,7 @@ to coordinate access to the array.</p>
         public float[] data;
         public int offset;
     }
-    interface PVFloatArray extends PVArray {
+    interface PVFloatArray extends PVScalarArray {
         int get(int offset, int len, FloatArrayData data);
         int put(int offset, int len, float[]from, int fromOffset);
         void shareData(float[] from);
@@ -784,7 +759,7 @@ to coordinate access to the array.</p>
         public double[] data;
         public int offset;
     }
-    interface PVDoubleArray extends PVArray {
+    interface PVDoubleArray extends PVScalarArray {
         int get(int offset, int len, DoubleArrayData data);
         int put(int offset, int len, double[]from, int fromOffset);
         void shareData(double[] from);
@@ -794,7 +769,7 @@ to coordinate access to the array.</p>
         public String[] data;
         public int offset;
     }
-    interface PVStringArray extends PVArray {
+    interface PVStringArray extends PVScalarArray {
         int get(int offset, int len, StringArrayData data);
         int put(int offset, int len, String[]from, int fromOffset);
         void shareData(String[] from);
@@ -817,7 +792,7 @@ elements of the array via the get and put methods, i.e. it is not possible to
 access subfields indirectly. PVStructureArray.getNumberFields() returns 1,
 i.e. the field looks like a leaf field.</p>
 
-<h3 id="PVStructur1">PVStructure</h3>
+<h3 id="PVStructur">PVStructure</h3>
 
 <p>The interface for a structure is:</p>
 <pre>    interface PVStructure extends PVField, BitSetSerializable {
@@ -837,10 +812,9 @@ i.e. the field looks like a leaf field.</p>
         PVFloat getFloatField(String fieldName);
         PVDouble getDoubleField(String fieldName);
         PVString getStringField(String fieldName);
-        PVStructureScalar getStructureScalarField(String fieldName);
-        PVArray getArrayField(String fieldName,Type elementType);
+        PVStructure getStructureField(String fieldName);
+        PVScalarArray getScalarArrayField(String fieldName,ScalarType elementType);
         PVStructureArray getStructureArrayField(String fieldName);
-        PVStructure getStructureField(String fieldName,String structureName);
         String getExtendsStructureName();
         boolean putExtendsStructureName(String extendsStructureName);
     }</pre>
@@ -900,18 +874,16 @@ i.e. the field looks like a leaf field.</p>
   <dt>getStringField</dt>
     <dd>Look for fieldName. If found and it has the correct type return the
       interface.</dd>
-  <dt>getStructureScalarField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getArrayField</dt>
+  <dt>getScalarArrayField</dt>
     <dd>Look for fieldName. If found and it has the correct type return the
       interface.</dd>
   <dt>getStructureArrayField</dt>
     <dd>Look for fieldName. If found and it has the correct type return the
       interface.</dd>
-  <dt>getStructureField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
+  <dt>getExtendsStructureName</dt>
+    <dd>Get the name of structure that this structure extends.</dd>
+  <dt>putExtendsStructureName</dt>
+    <dd>Specify the structure that this structure extends.</dd>
 </dl>
 
 <h3 id="PVRecord">PVRecord</h3>
@@ -1015,11 +987,9 @@ interfaces. A factory is provided that creates PVDataCreate.</p>
     PVScalar createPVScalar(PVStructure parent,Scalar scalar);
     PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType fieldType);
     PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
-    PVStructureScalar createPVStructureScalar(PVStructure parent,StructureScalar structureScalar);
-    PVStructureScalar createPVStructureScalar(PVStructure parent,String fieldName,PVStructure structureToClone);
-    PVArray createPVArray(PVStructure parent,Array array);
-    PVArray createPVArray(PVStructure parent,String fieldName,ScalarType elementType);
-    PVArray createPVArray(PVStructure parent,String fieldName,PVArray arrayToClone);
+    PVScalarArray createPVScalarArray(PVStructure parent,ScalarArray array);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,ScalarType elementType);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,PVScalarArray arrayToClone);
     PVStructureArray createPVStructureArray(PVStructure parent,StructureArray structureArray);
     PVStructure createPVStructure(PVStructure parent,
         Structure structure);
@@ -1044,13 +1014,7 @@ where
       field name and the scalarType. The last provides a field name and a
       PVScalar to clone. The newly created PVScalar will have the same
       auxInfos as the original.</dd>
-  <dt style="font-family: courier;">createPVStructureScalar</dt>
-    <dd>Creates an instance of a PVStructureScalar. Two versions are
-      provided. The first is passed a structureScalar interface. The other
-      provides a PVStructure from which a structureScalar is created. This
-      second form also copies the data after the internal PVStructure is
-      created.</dd>
-  <dt style="font-family: courier;">createPVArray</dt>
+  <dt style="font-family: courier;">createPVScalarArray</dt>
     <dd>Create an instance of a PVArray. Three versions are supplied. The
       first is passed an introspection interface. The second provides the
       field name and the elementType. The last provides a field name and a
@@ -1215,19 +1179,22 @@ Thus the source and target share the same primitive array.</p>
         String getString(PVField pv, int indentLevel);
         String getString(PVField pv);
         void fromString(PVScalar pv,String from);
-        void fromString(PVArray pv,String from);
-        int fromStringArray(PVField pv,
+        void fromString(PVScalarArray pv,String from);
+        int fromStringArray(PVScalarArray pv,
              int offset, int len, String[]from, int fromOffset);
-        int toStringArray(PVArray pv,
+        int toStringArray(PVScalarArray pv,
              int offset, int len, String[]to, int toOffset);
         boolean isCopyCompatible(Field from, Field to);
         void copy(PVField from,PVField to);
         boolean isCopyScalarCompatible(Field from, Field to);
         void copyScalar(PVField from, PVField to);
-        boolean isCopyArrayCompatible(Array from, Array to);
-        int copyArray(PVArray from, int offset, int len, PVArray to, int toOffset);
+        boolean isCopyScalarArrayCompatible(ScalarArray from, ScalarArray to);
+        int copyScalarArray(PVScalarArray from, int offset,
+             PVScalarArray to, int toOffset, int len);
         boolean isCopyStructureCompatible(Structure from, Structure to);
         void copyStructure(PVStructure from, PVStructure to);
+        boolean isCopyStructureArrayCompatible(StructureArray from, StructureArray to);
+        void copyStructureArray(PVStructureArray from, PVStructureArray to);
         // For the following the pv Type must be PVByte, ...., PVDouble
         byte toByte(PVField pv);
         short toShort(PVField pv);
@@ -1242,29 +1209,29 @@ Thus the source and target share the same primitive array.</p>
         void  fromFloat(PVField pv, float from);
         void  fromDouble(PVField pv, double from);
 // For the following the element type must be pvByte, ...., pvDouble
-        int toByteArray(PVArray pv,
+        int toByteArray(PVScalarArray pv,
             int offset, int len, byte[]to, int toOffset);
-        int toShortArray(PVArray pv,
+        int toShortArray(PVScalarArray pv,
             int offset, int len, short[]to, int toOffset);
-        int toIntArray(PVArray pv,
+        int toIntArray(PVScalarArray pv,
             int offset, int len, int[]to, int toOffset);
-        int toLongArray(PVArray pv,
+        int toLongArray(PVScalarArray pv,
             int offset, int len, long[]to, int toOffset);
-        int toFloatArray(PVArray pv,
+        int toFloatArray(PVScalarArray pv,
             int offset, int len, float[]to, int toOffset);
-        int toDoubleArray(PVArray pv,
+        int toDoubleArray(PVScalarArray pv,
             int offset, int len, double[]to, int toOffset);
-        int fromByteArray(PVArray pv,
+        int fromByteArray(PVScalarArray pv,
             int offset, int len, byte[]from, fromOffset);
-        int fromShortArray(PVArray pv,
+        int fromShortArray(PVScalarArray pv,
             int offset, int len, short[]from, fromOffset);
-        int fromIntArray(PVArray pv,
+        int fromIntArray(PVScalarArray pv,
             int offset, int len, int[]from, fromOffset);
-        int fromLongArray(PVArray pv,
+        int fromLongArray(PVScalarArray pv,
             int offset, int len, long[]from, fromOffset);
-        int fromFloatArray(PVArray pv,
+        int fromFloatArray(PVScalarArray pv,
             int offset, int len, float[]from, fromOffset);
-        int fromDoubleArray(PVArray pv,
+        int fromDoubleArray(PVScalarArray pv,
             int offset, int len, double[]from, fromOffset);
         void newLine(StringBuilder builder, int indentLevel);
     }</pre>

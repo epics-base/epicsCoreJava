@@ -6,14 +6,15 @@
 package org.epics.pvData.pv;
 
 /**
- * Base interface for array field reflection.
+ * Base interface for array data.
+ * Each PVType has an array interface that extends PVArray.
  * @author mrk
  *
  */
-public interface StructureArray extends Field{
+public interface PVScalarArray extends PVArray {
     /**
-     * Get the structure interface for an array element.
-     * @return The interface.
+     * Get the Array introspection interface.
+     * @return The introspection interface.
      */
-    Structure getStructure();
+    ScalarArray getScalarArray();
 }

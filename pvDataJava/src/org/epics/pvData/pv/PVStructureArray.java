@@ -6,7 +6,7 @@
 package org.epics.pvData.pv;
 
 /**
- * Get/put a double array.
+ * Get/put a structure array.
  * The caller must be prepared to get/put the array in chunks.
  * The return argument is always the number of elements that were transfered.
  * It may be less than the number requested.

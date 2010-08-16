@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVDoubleArray extends PVArray{
+public interface PVDoubleArray extends PVScalarArray{
     /**
      * Get values from a <i>PVDoubleArray</i>
      * and put them into <i>double[]to</i>

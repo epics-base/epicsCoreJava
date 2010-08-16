@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVStringArray extends PVArray{
+public interface PVStringArray extends PVScalarArray{
     /**
      * Get values from a <i>PVStringArray</i>
      * and put them into <i>String[]to</i>.

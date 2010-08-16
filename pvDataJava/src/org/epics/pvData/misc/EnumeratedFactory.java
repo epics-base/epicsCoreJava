@@ -9,10 +9,9 @@ package org.epics.pvData.misc;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.epics.pvData.factory.AbstractPVArray;
 import org.epics.pvData.factory.AbstractPVScalar;
+import org.epics.pvData.factory.AbstractPVScalarArray;
 import org.epics.pvData.factory.BasePVStructure;
-import org.epics.pvData.pv.Array;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
@@ -21,6 +20,7 @@ import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
+import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.StringArrayData;
@@ -58,11 +58,11 @@ public class EnumeratedFactory {
             return;
         }
         field = fields[1];
-        if(!field.getFieldName().equals("choices") || field.getType()!=Type.scalarArray || ((Array)field).getElementType()!=ScalarType.pvString) {
+        if(!field.getFieldName().equals("choices") || field.getType()!=Type.scalarArray || ((ScalarArray)field).getElementType()!=ScalarType.pvString) {
             pvStructure.message("structure does not have field choices of type array", MessageType.error);
             return;
         }
-        Array array = (Array)fields[1];
+        ScalarArray array = (ScalarArray)fields[1];
         if(array.getElementType()!=ScalarType.pvString) {
             pvStructure.message("elementType for choices is not string", MessageType.error);
             return;
@@ -97,7 +97,7 @@ public class EnumeratedFactory {
             super(pvField.getParent(),pvField.getStructure());
             index = pvOldIndex.get();
             pvIndex = new Index(this,pvOldIndex.getScalar());    
-            pvChoices = new Choices(this,pvOldChoices.getArray());
+            pvChoices = new Choices(this,pvOldChoices.getScalarArray());
             if(pvOldChoices.getLength()>0) {
                 int len = pvOldChoices.getLength();
                 len = pvOldChoices.get(0,len, stringArrayData);
@@ -248,9 +248,9 @@ public class EnumeratedFactory {
         	}
         }
 
-        private class Choices extends AbstractPVArray implements PVStringArray
+        private class Choices extends AbstractPVScalarArray implements PVStringArray
         {
-            private Choices(PVStructure parent,Array array)
+            private Choices(PVStructure parent,ScalarArray array)
             {
                 super(parent,array);
                 choices = new String[capacity];           

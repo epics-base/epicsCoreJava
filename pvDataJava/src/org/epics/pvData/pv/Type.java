@@ -22,5 +22,9 @@ public enum Type {
     /**
      * The type is a structure.
      */
-    structure;
+    structure,
+    /**
+     * The type is an array of structures.
+     */
+    structureArray;
 }
