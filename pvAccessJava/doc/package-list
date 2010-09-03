@@ -10,7 +10,6 @@ org.epics.ca.impl.remote.tcp
 org.epics.ca.impl.remote.udp
 org.epics.ca.impl.remote.utils
 org.epics.ca.server
-org.epics.ca.server.impl.local
 org.epics.ca.server.impl.remote
 org.epics.ca.server.impl.remote.handlers
 org.epics.ca.server.impl.remote.plugins
