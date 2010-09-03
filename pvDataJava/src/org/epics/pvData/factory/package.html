@@ -10,39 +10,35 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2010.04.28</h1>
-CONTENTS 
+2010.08.26</h1>
+CONTENTS
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Factory">Factory</a> 
+  <li><a href="#Factory">Factory</a>
     <ul>
-      <li><a href="#PVDatabase">PVDatabaseFactory</a></li>
       <li><a href="#FieldFacto">FieldFactory</a></li>
       <li><a href="#PVDataFact">PVDataFactory</a></li>
       <li><a href="#ConvertFac">ConvertFactory</a></li>
-      <li><a href="#PVReplaceF">PVReplaceFactory</a></li>
       <li><a href="#StatusFact">StatusFactory</a></li>
     </ul>
   </li>
   <li><a href="#Base">Base Introspection Classes</a></li>
-  <li><a href="#Abstract">Abstract and Base Classes for PVField</a> 
+  <li><a href="#Abstract">Abstract and Base Classes for PVField</a>
     <ul>
       <li><a href="#BasePVAuxI">BasePVAuxInfo</a></li>
       <li><a href="#AbstractPV">AbstractPVField</a></li>
     </ul>
   </li>
-  <li><a href="#Classes">Classes for PVScalar, PVStructure, and PVRecord</a> 
+  <li><a href="#Classes">Classes For PVStructure</a>
     <ul>
-      <li><a href="#AbstractPV1">AbstractPVScalar</a></li>
       <li><a href="#BasePVStru">BasePVStructure</a></li>
-      <li><a href="#BasePVReco">BasePVRecord</a></li>
-      <li><a href="#BasePVReco1">BasePVRecordField</a></li>
     </ul>
   </li>
-  <li><a href="#Classes1">Classes For PVScalar</a> 
+  <li><a href="#Classes1">Classes For PVScalar</a>
     <ul>
+      <li><a href="#AbstractPV1">AbstractPVScalar</a></li>
       <li><a href="#BasePVBool">BasePVBoolean</a></li>
       <li><a href="#BasePVByte">BasePVByte</a></li>
       <li><a href="#BasePVShor">BasePVShort</a></li>
@@ -51,10 +47,9 @@ CONTENTS
       <li><a href="#BasePVFloa">BasePVFloat</a></li>
       <li><a href="#BasePVDoub">BasePVDouble</a></li>
       <li><a href="#BasePVStri">BasePVString</a></li>
-      <li><a href="#BasePVStru1">BasePVStructureScalar</a></li>
     </ul>
   </li>
-  <li><a href="#Classes2">Classes for PVArray</a> 
+  <li><a href="#Classes2">Classes for PVArray</a>
     <ul>
       <li><a href="#AbstractPV2">AbstractPVArray</a></li>
       <li><a href="#BasePVBool1">BasePVBooleanArray</a></li>
@@ -65,11 +60,13 @@ CONTENTS
       <li><a href="#BasePVFloa1">BasePVFloatArray</a></li>
       <li><a href="#BasePVDoub1">BasePVDoubleArray</a></li>
       <li><a href="#BasePVStri1">BasePVStringArray</a></li>
-      <li><a href="#BasePVStru2">BasePVStructureArray</a></li>
+      <li><a href="#BasePVStru1">BasePVStructureArray</a></li>
     </ul>
   </li>
 </ul>
 </div>
+
+<p> </p>
 <hr />
 
 <h2 style="text-align: center" id="Overview">Overview</h2>
@@ -81,20 +78,6 @@ defined in package org.epics.pvData.pv</p>
 
 <h2 style="text-align: center" id="Factory">Factory</h2>
 <hr />
-
-<h3 id="PVDatabase">PVDatabaseFactory</h3>
-<pre>    class PVDatabaseFactory {
-        public static PVDatabase create(String name);
-        public static PVDatabase getMaster();
-        public static PVDatabase getBeingInstalled();
-    }</pre>
-
-<p>PVDatabaseFactory automatically creates the master database and also
-creates other databases. The reason for multiple databases is to support
-on-line add of new records. This feature is used by the javaIOC. The new
-records can be added to a temporary database named beiongInstalled. If this
-database can be created, initialized and started it is merged into the master
-database.</p>
 
 <h3 id="FieldFacto">FieldFactory</h3>
 <pre>    public final class FieldFactory {
@@ -119,30 +102,6 @@ provides a method to get the interface.</p>
 
 <p>ConvertFactory automatically creates a single instance of Convert and
 provides a method to get the interface.</p>
-
-<h3 id="PVReplaceF">PVReplaceFactory</h3>
-<pre>    public class PVReplaceFactory {
-        public static void replace(PVDatabase pvDatabase);
-        public static void replace(PVDatabase pvDatabase,PVStructure pvStructure);
-        public static void replace(PVDatabase pvDatabase,PVField pvField);
-    }</pre>
-
-<p>where</p>
-<dl>
-  <dt>replace(PVDatabase pvDatabase);</dt>
-    <dd>For each record in the database the next method is called for the top
-      level PVStructure.</dd>
-  <dt>replace(PVDatabase pvDatabase,PVStructure pvStructure)</dt>
-    <dd>For each subfield of pvStructure the next method is called.</dd>
-  <dt>replace(PVDatabase pvDatabase,PVField pvField)</dt>
-    <dd>Looks for PVAuxInfo with key = "pvReplaceFactory". The value provided
-      by PVAuxInfo is the name of a factory that provides a replacement for
-      the PVField implementation. The factory must provide a method: 
-      <pre>    public static void replacePVField(PVField pvField);</pre>
-      <p>This method is called. If the field is a pvStructure then it
-      recursively calls the previous method..</p>
-    </dd>
-</dl>
 
 <h3 id="StatusFact">StatusFactory</h3>
 <pre>    public final class StatusFactory {
@@ -209,9 +168,7 @@ MUST be the base class for any class that extends PVField. </p>
 <pre>public abstract class AbstractPVField implements PVField{
     protected static Convert convert = ConvertFactory.getConvert();
     protected AbstractPVField(PVField parent, Field field);
-    protected void replaceField(Field field);
-    protected void setRecord(PVRecord record);
-    protected void setOffsets(int offset,int nextOffset);
+    protected void replaceStructure();
     // All public methods of PVField
 }</pre>
 
@@ -223,31 +180,14 @@ protected methods are: </p>
       access to the conversion facility.</dd>
   <dt>AbstractPVField</dt>
     <dd>The constructor which must be called by any derived class.</dd>
-  <dt>replaceField</dt>
+  <dt>replaceStructure</dt>
     <dd>This is called by a derived PVStructure implementation when it wants
-      to change the introspection interface for one of it's fields. This is
-      necessary because an IOC database allows the definition of a structure
-      field to be defined during record initialization and also modified
-      after initialization..</dd>
-  <dt>setRecord</dt>
-    <dd>Called by BasePVRecord.</dd>
-  <dt>setOffsets</dt>
-    <dd>Called by BasePVStructure</dd>
+      to change the introspection interface for one of it's fields.</dd>
 </dl>
 <hr />
 
-<h2 style="text-align: center" id="Classes">Classes for PVScalar,
-PVStructure, and PVRecord</h2>
+<h2 style="text-align: center" id="Classes">Classes For PVStructure</h2>
 <hr />
-
-<h3 id="AbstractPV1">AbstractPVScalar</h3>
-
-<p>The following is an abstract base class for implementing PVScalar. It MUST
-be the base class for any code that implements an extension of PVScalar.</p>
-<pre>public class AbstractPVScalar extends AbstractPVField implements PVScalar {
-    protected AbstractPVScalar(PVStructure parent, Scalar scalar);
-    public Scalar getScalar();
-}</pre>
 
 <h3 id="BasePVStru">BasePVStructure</h3>
 
@@ -259,33 +199,21 @@ Any code that implements PVStructure MUST extend this class.</p>
     protected String toString(String prefix,int indentLevel);
     // all public methods of PVStructure
 }</pre>
-
-<h3 id="BasePVReco">BasePVRecord</h3>
-
-<p>The following is the base class for any code that implements PVRcord. Any
-code that implements PVRecord MUST extend this class.</p>
-<pre>public class BasePVRecord extends BasePVStructure implements PVRecord {    
-    public BasePVRecord(String recordName,PVStructure pvStructure)
-    // all public methods of PVRecord
-}</pre>
-
-<h3 id="BasePVReco1">BasePVRecordField</h3>
-<pre>public class BasePVRecordField implements PVRecordField{
-    BasePVRecordField(PVField pvField,PVRecord pvRecord);
-    // all public methods
-}
 <hr />
-
-
-
 
 <h2 style="text-align: center" id="Classes1">Classes For PVScalar</h2>
 <hr />
 
+<h3 id="AbstractPV1">AbstractPVScalar</h3>
 
+<p>The following is an abstract base class for implementing PVScalar. It MUST
+be the base class for any code that implements an extension of PVScalar.</p>
+<pre>public class AbstractPVScalar extends AbstractPVField implements PVScalar {
+    protected AbstractPVScalar(PVStructure parent, Scalar scalar);
+    public Scalar getScalar();
+}</pre>
 
-
-<h3 id="BasePVBool">BasePVBoolean</h3></pre>
+<h3 id="BasePVBool">BasePVBoolean</h3>
 <pre>public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
 {
     protected boolean value = false;
@@ -347,13 +275,6 @@ code that implements PVRecord MUST extend this class.</p>
     protected String value;
     public BasePVString(PVStructure parent,Scalar scalar);
     // public methods of PVString
-}</pre>
-
-<h3 id="BasePVStru1">BasePVStructureScalar</h3>
-<pre>{
-    protected PVStructure pvStructure;
-    public BasePVStructureScalar(PVStructure parent,StructureScalar structureScalar);
-    // public methods of PVStructureScalar
 }</pre>
 <hr />
 
@@ -434,11 +355,9 @@ classes.</p>
     // implements all PVStringArray methods
 }</pre>
 
-<h3 id="BasePVStru2">BasePVStructureArray</h3>
+<h3 id="BasePVStru1">BasePVStructureArray</h3>
 <pre>public class BasePVStructureArray  extends AbstractPVArray implements PVStructureArray
 {
-   protected StructureArray structureArray;
-   protected PVStructure[] value;
    // implements all PVStructureArray methods
 }</pre>
 </body>

@@ -17,6 +17,11 @@ public interface TimeStamp {
      */
     public long getSecondsPastEpoch();
     /**
+     * Get the number of seconds since the January 1, 1990, 00:00:00 UTC
+     * @return The number of seconds.
+     */
+    public long getEpicsSecondsPastEpoch();
+    /**
      * Get the number of nanoseconds within the second.
      * @return The number.
      */

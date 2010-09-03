@@ -3,9 +3,8 @@
  * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
-package org.epics.pvData.pvCopy;
+package org.epics.pvData.misc;
 
-import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVStructure;
 
 /**

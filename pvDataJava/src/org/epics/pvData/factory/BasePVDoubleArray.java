@@ -77,6 +77,7 @@ public class BasePVDoubleArray  extends AbstractPVScalarArray implements PVDoubl
             super.message("field is immutable", MessageType.error);
             return 0;
         }
+        if(from==value) return len;
         if(len<1) return 0;
         if(offset+len > length) {
             int newlength = offset + len;

@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS pvData<br />
 Overview<br />
-2010.07.27</h1>
+2010.08.28</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Introducti">Introduction</a></li>
-  <li><a href="#Interface">Interface Definitions</a> 
+  <li><a href="#Interface">Interface Definitions</a>
     <ul>
       <li><a href="#Types">Types</a></li>
       <li><a href="#Introspect">Introspection Interfaces</a></li>
@@ -25,16 +25,12 @@ CONTENTS
       <li><a href="#pvData">pvData Conversion</a></li>
     </ul>
   </li>
-  <li><a href="#Package">Package Summary</a> 
+  <li><a href="#Package">Package Summary</a>
     <ul>
-      <li><a href="#L236">{@link org.epics.pvData.pv}</a></li>
-      <li><a href="#L240">{@link org.epics.pvData.factory}</a></li>
-      <li><a href="#L272">{@link org.epics.pvData.property}</a></li>
-      <li><a href="#L280">{@link org.epics.pvData.xml}</a></li>
-      <li><a href="#L284">{@link org.epics.pvData.misc}</a></li>
-      <li><a href="#L288">{@link org.epics.pvData.test}</a></li>
-      <li><a href="#L292">{@link org.epics.pvData.pvCopy}</a></li>
-      <li><a href="#L296">{@link org.epics.pvData.monitor}</a></li>
+      <li><a href="#L264">{@link org.epics.pvData.pv}</a></li>
+      <li><a href="#L268">{@link org.epics.pvData.factory}</a></li>
+      <li><a href="#L290">{@link org.epics.pvData.property}</a></li>
+      <li><a href="#L298">{@link org.epics.pvData.misc}</a></li>
     </ul>
   </li>
   <li><a href="#License">License Agreement</a></li>
@@ -99,13 +95,15 @@ store, access, and transmit memory resident structured data.</p>
       can be defined that simulate types.</dd>
 </dl>
 
-<p>A Process Variable (PV) Database, which is a memory resident database
-holding pvData, has the following features:</p>
+<p>The javaIOC implements a Process Variable (PV) Database, which is a memory
+resident database holding pvData, has the following features:</p>
 <ul>
   <li>A database has records.</li>
   <li>Each record has a unique record name.</li>
-  <li>A record is a structure.</li>
-  <li>A field contains data of one of the following types: 
+  <li>A record has a top level PVStructure, which is a structured set of data
+    as defined by this project.</li>
+  <li>A PVStructure has an array of PVFields.</li>
+  <li>A PVField contains data of one of the following types: 
     <ul>
       <li>scalar : boolean, byte, short, int, long, float, double, string,
         structure</li>
@@ -258,7 +256,6 @@ interface PVField extends Requester, Serializable {
     int getNumberFields();
     Field getField();
     PVStructure getParent();
-    PVRecordField getPVRecordField(); // Is null is part of a record
     String getFullFieldName(); 
     String getFullName();
     PVAuxInfo getPVAuxInfo(); //auxillary information
@@ -269,30 +266,6 @@ interface PVField extends Requester, Serializable {
     void postPut(); // calls PVRecordField.postPut if this is a field of a record
     String toString();
     String toString(int indentLevel);
-}
-
-interface PVRecordField{
-    PVRecord getPVRecord();
-    boolean addListener(PVListener pvListener);
-    void removeListener(PVListener pvListener);
-    void postPut();
-}
-
-interface PVRecord {
-    PVStructure getPVStructure();
-    String getRecordName();
-    void message(String message, MessageType messageType);
-    void addRequester(Requester requester);
-    void removeRequester(Requester requester);
-    void lock();
-    void unlock();
-    void lockOtherRecord(PVRecord otherRecord);
-    void beginGroupPut();
-    void endGroupPut();
-    void registerListener(PVListener pvListener);
-    void unregisterListener(PVListener pvListener);
-    boolean isRegisteredListener(PVListener pvListener);
-    void removeEveryListener();
 }</pre>
 
 <p>Each scalar type has an associated data interface: PVBoolean, PVByte,
@@ -402,9 +375,6 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVStructureArray createPVStructureArray(PVStructure parent,StructureArray structureArray);
     PVStructure createPVStructure(PVStructure parent,String fieldName,Field[] fields);
     PVStructure createPVStructure(PVStructure parent,String fieldName,PVStructure structToClone);
-    PVStructure createPVStructure(PVStructure parent,String fieldName,
-         pvDatabase pvDatabase,String structureName);
-    PVRecord createPVRecord(String recordName,PVStructure pvStructure);
     PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
 
@@ -424,13 +394,13 @@ other languages such as C++.</p>
 <p>pvData is distributed as a eclipse Java Project named pvData. This project
 consists of the following java packages:</p>
 
-<h3 id="L236">{@link org.epics.pvData.pv}</h3>
+<h3 id="L264">{@link org.epics.pvData.pv}</h3>
 
 <p>The Java enum, interface, and class definitions that define pvData. This
 section provides a complete definition of what pvData is. This package
 completely describes how pvData is accessed.</p>
 
-<h3 id="L240">{@link org.epics.pvData.factory}</h3>
+<h3 id="L268">{@link org.epics.pvData.factory}</h3>
 
 <p>Java Facilities for creating a PV Database and pvData. It provides
 everything required for creating pvData. It provides the following
@@ -440,16 +410,8 @@ factories:</p>
     <dd>Creates introspection interfaces.</dd>
   <dt>PVDataFactory</dt>
     <dd>Creates data interfaces for all of the supported data types.</dd>
-  <dt>PVDatabaseFactory</dt>
-    <dd>Creates and manages pvData databases. A database contains memory
-      resident structures and records. Structures make it easy to create
-      structure fields with pre-defined fields. </dd>
   <dt>ConvertFactory</dt>
     <dd>Converts between support data types.</dd>
-  <dt>PVReplaceFactory</dt>
-    <dd>Finds all fields within each record of a database that have an
-      associated factory that implements a replacement for the default
-      implementation for the field.</dd>
 </dl>
 
 <p>Although pvDataFactory can provide the implementation for all supported
@@ -457,7 +419,7 @@ data types, often it is desirable to provide other implementations. To make
 it easy to create alternate implementations a set of abstract and base
 classes are supplied.</p>
 
-<h3 id="L272">{@link org.epics.pvData.property}</h3>
+<h3 id="L290">{@link org.epics.pvData.property}</h3>
 
 <p>Provides a way to associated properties with a field. </p>
 
@@ -470,31 +432,10 @@ package overview for details.</p>
 timeStamp, alarm, display,etc. Code that uses pvData can be simplified by
 using this support.</p>
 
-<h3 id="L280">{@link org.epics.pvData.xml}</h3>
-
-<p>One way to create a PV database is via an xml parser. This package defines
-the syntax and provides a parser.</p>
-
-<h3 id="L284">{@link org.epics.pvData.misc}</h3>
+<h3 id="L298">{@link org.epics.pvData.misc}</h3>
 
 <p>This package provides support that is used by pvData factories and might
 also be useful to software that uses pvData.</p>
-
-<h3 id="L288">{@link org.epics.pvData.test}</h3>
-
-<p>Test code.</p>
-
-<h3 id="L292">{@link org.epics.pvData.pvCopy}</h3>
-
-<p>This package provides support implementing a structure that hold data from
-an arbitrary subset of the fields in a record. It is designed for use by
-channel access.</p>
-
-<h3 id="L296">{@link org.epics.pvData.monitor}</h3>
-
-<p>This defines interfaces for monitors and a complete implementation of
-monitors for a pvData database. The implementation is used by CAJv4 to
-implement the server side of monitor support.</p>
 
 <h2 style="text-align: center" id="License">License Agreement</h2>
 <pre>Copyright (c) 2008 Martin R. Kraimer

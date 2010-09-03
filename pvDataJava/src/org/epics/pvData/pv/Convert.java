@@ -28,6 +28,12 @@ package org.epics.pvData.pv;
  *
  */
 public interface Convert {
+	/**
+	 * Get the full fieldName for the pvField.
+	 * @param pvField The pvField.
+	 * @return The full field name.
+	 */
+	String getFullFieldName(PVField pvField);
     /**
      * Convert a PVField to a string.
      * @param pv a PVField to convert to a string.

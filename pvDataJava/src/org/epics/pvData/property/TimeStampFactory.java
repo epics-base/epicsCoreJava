@@ -11,8 +11,6 @@ import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVLong;
-import org.epics.pvData.pv.PVRecord;
-import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
@@ -77,6 +75,12 @@ public class TimeStampFactory{
     
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    /**
+     * Constant to convert epics seconds to UNIX seconds. It counts the number
+     * of seconds for 20 years, 5 of which leap years. It does _not_ count the
+     * number of leap seconds (which should have been 15).
+     */
+    private static final long TS_EPOCH_SEC_PAST_1970=7305*86400;
     
     private static class TimeStampImpl implements TimeStamp {
         private PVLong pvSecond;
@@ -89,44 +93,46 @@ public class TimeStampFactory{
         /* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#getMilliSeconds()
          */
+        @Override
         public long getMilliSeconds() {
             return pvSecond.get()*1000 + pvNano.get()/1000000;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#getNanoSeconds()
          */
+        @Override
         public int getNanoSeconds() {
             return pvNano.get();
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#getSecondsPastEpoch()
          */
+        @Override
         public long getSecondsPastEpoch() {
             return pvSecond.get();
         }
         /* (non-Javadoc)
+         * @see org.epics.pvData.property.TimeStamp#getEpicsSecondsPastEpoch()
+         */
+        @Override
+		public long getEpicsSecondsPastEpoch() {
+			return pvSecond.get() - TS_EPOCH_SEC_PAST_1970;
+		}
+		/* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#put(long, int)
          */
+        @Override
         public void put(long secondsPastEpoch, int nanoSeconds) {
-            PVRecord pvRecord = null;
-            PVRecordField pvRecordField = pvSecond.getPVRecordField();
-            if(pvRecordField!=null) pvRecord = pvRecordField.getPVRecord();
-            if(pvRecord!=null) pvRecord.beginGroupPut();
             pvSecond.put(secondsPastEpoch);
             pvNano.put(nanoSeconds);
-            if(pvRecord!=null) pvRecord.endGroupPut();
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.TimeStamp#put(long)
          */
+        @Override
         public void put(long milliSeconds) {
-            PVRecord pvRecord = null;
-            PVRecordField pvRecordField = pvSecond.getPVRecordField();
-            if(pvRecordField!=null) pvRecord = pvRecordField.getPVRecord();
-            if(pvRecord!=null) pvRecord.beginGroupPut();
             pvSecond.put(milliSeconds/1000);
             pvNano.put(((int)(milliSeconds%1000))*1000000);
-            if(pvRecord!=null) pvRecord.endGroupPut();
         }
 
 		/* (non-Javadoc)

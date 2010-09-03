@@ -80,6 +80,7 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
             super.message("field is immutable", MessageType.error);
             return 0;
         }
+        if(from==value) return len;
         if(offset+len > length) {
             int newlength = offset + len;
             if(newlength>capacity) {

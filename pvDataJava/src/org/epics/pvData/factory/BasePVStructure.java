@@ -21,7 +21,6 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVFloat;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVLong;
-import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalarArray;
 import org.epics.pvData.pv.PVShort;
 import org.epics.pvData.pv.PVString;
@@ -42,8 +41,8 @@ import org.epics.pvData.pv.Type;
  */
 public class BasePVStructure extends AbstractPVField implements PVStructure
 {
-    private static Convert convert = ConvertFactory.getConvert();
-    private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final Convert convert = ConvertFactory.getConvert();
+    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private PVField[] pvFields;
     private String extendsStructureName = null;
     
@@ -54,21 +53,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      */
     public BasePVStructure(PVStructure parent, Structure structure) {
         super(parent,structure);
-        constructorCommon(parent,structure);
-    }
-    /**
-     * Embed this PVStructure in a PVRecord.
-     * @param pvRecord
-     */
-    public void embedInRecord(PVRecord pvRecord) {
-    	if(super.getParent()!=null) {
-    		throw new IllegalStateException("can only embed a top level strucure");
-    	}
-    	setRecord(pvRecord);
-    }
-    
-    private void constructorCommon(PVStructure parent,Structure structure)
-    {
     	Field[] fields = structure.getFields();
     	pvFields = new PVField[fields.length];
     	for(int i=0; i < pvFields.length; i++) {

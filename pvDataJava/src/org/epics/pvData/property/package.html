@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: property<br />
 package: org.epics.pvData.property<br />
-2010.04.28</h1>
+2010.09.01</h1>
 CONTENTS 
 
 <div class="toc">
@@ -63,7 +63,6 @@ has propertys alarm, timeStamp, and display.</p>
     &lt;structure name = "display" extends = "display" &gt;
         &lt;scalar name = "description"&gt;Sample Description&lt;/scalar&gt;
         &lt;scalar name = "format"&gt;%f&lt;/scalar&gt;
-        &lt;scalar name = "resolution"&gt;1&lt;/scalar&gt;
         &lt;scalar name = "units"&gt;volts&lt;/scalar&gt;
         &lt;structure name = "limit"&gt;
             &lt;scalar name ="low"&gt;0.0&lt;/scalar&gt;
@@ -198,8 +197,8 @@ data model. </p>
 <h2 style="text-align: center" id="Standard1">Standard Properties</h2>
 <hr />
 
-<p>This section has structure definitions that support standard
-properties.</p>
+<p>This section has structure definitions that support standard properties.
+These definitions are defined in project javaIOC.</p>
 
 <h3 id="TimeStamp">TimeStamp</h3>
 <pre>&lt;structure name = "timeStamp"&gt;
@@ -253,7 +252,6 @@ properties.</p>
     &lt;scalar name = "description" scalarType = "string" /&gt;
     &lt;scalar name = "format" scalarType = "string" /&gt;
     &lt;scalar name = "units" scalarType = "string" /&gt;
-    &lt;scalar name = "resolution" scalarType = "int" /&gt;
     &lt;structure name = "limit" extends = "doubleLimit" /&gt;
 &lt;/structure&gt;</pre>
 
@@ -273,6 +271,7 @@ Properties</h2>
 <p>The following priovides convient access to a timeStamp structure.</p>
 <pre>interface TimeStamp {
     long getSecondsPastEpoch();
+    long getEpicsSecondsPastEpoch();
     int getNanoSeconds();
     void put(long secondsPastEpoch,int nanoSeconds);
     long getMilliSeconds();
@@ -288,15 +287,17 @@ class TimeStampFactory{
 
 <p>The following provides convient access to the fields of an alarm
 structure.</p>
-<pre>interface Alarm {
-    PVString getAlarmMessage();
-    PVInt getAlarmSeverityIndex();
-    String getAlarmSeverityChoice();
-    PVStringArray getAlarmSeverityChoices();
-    PVBoolean getAckTransient();
-    PVInt getAckAlarmSeverityIndex();
-    String getAckAlarmSeverityChoice();
-    PVStringArray getAckAlarmSeverityChoices();
+<pre>enum AlarmSeverity {
+    none,minor,major,invalid,undefined;
+    public static AlarmSeverity getSeverity(int value);
+    public static String[] getSeverityNames();
+}
+
+interface Alarm {
+    PVString getMessage();
+    void setMessage(String message)
+    int getSeverity();
+    void setSeverity(AlarmSeverity alarmSeverity);
 }
 
 class AlarmFactory {

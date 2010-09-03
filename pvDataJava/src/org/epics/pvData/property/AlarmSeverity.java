@@ -5,12 +5,6 @@
  */
 package org.epics.pvData.property;
 
-import org.epics.pvData.misc.Enumerated;
-import org.epics.pvData.misc.EnumeratedFactory;
-import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVStringArray;
-import org.epics.pvData.pv.StringArrayData;
 
 /**
  * AlarmSeverity definitions.
@@ -51,36 +45,8 @@ public enum AlarmSeverity {
             + ((Integer)value).toString() + ") is not a valid AlarmSeverity");
     }
     
-    private static final String[] alarmSeverityChoices = {
+    private static final String[] alarmSeverityNames = {
         "none","minor","major","invalid"
     };
-    /**
-     * Convenience method for code the raises alarms.
-     * @param pvField A field which is potentially an alarmSeverity structure.
-     * @return The Enumerated interface only if dbField has an Enumerated interface and defines
-     * the alarmSeverity choices.
-     */
-    public static Enumerated getAlarmSeverity(PVField pvField) {
-        Enumerated enumerated = EnumeratedFactory.getEnumerated(pvField);
-        if(enumerated==null) {
-            pvField.message("interface Enumerated not found", MessageType.error);
-            return null;
-        }
-        PVStringArray pvChoices = enumerated.getChoices();
-        int len = pvChoices.getLength();
-        if(len!=alarmSeverityChoices.length) {
-            pvField.message("not an alarmSeverity structure", MessageType.error);
-            return null;
-        }
-        StringArrayData data = new StringArrayData();
-        pvChoices.get(0, len, data);
-        String[] choices = data.data;
-        for (int i=0; i<len; i++) {
-            if(!choices[i].equals(alarmSeverityChoices[i])) {
-                pvField.message("not an alarmSeverity structure", MessageType.error);
-                return null;
-            }
-        }
-        return enumerated;
-    }
+    public static String[] getSeverityNames() { return alarmSeverityNames;}
 }

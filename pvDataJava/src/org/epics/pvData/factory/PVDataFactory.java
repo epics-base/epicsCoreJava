@@ -12,12 +12,9 @@ import java.util.Set;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVAuxInfo;
 import org.epics.pvData.pv.PVDataCreate;
-import org.epics.pvData.pv.PVDatabase;
 import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVRecord;
 import org.epics.pvData.pv.PVScalar;
 import org.epics.pvData.pv.PVScalarArray;
 import org.epics.pvData.pv.PVStructure;
@@ -28,8 +25,6 @@ import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
 import org.epics.pvData.pv.Type;
-
-
 
 /**
  * Factory to create default implementations for PVField objects.
@@ -218,27 +213,6 @@ public class PVDataFactory {
         	return pvStructure;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.PVDatabase, java.lang.String)
-         */
-        @Override
-        public PVStructure createPVStructure(PVStructure parent,String fieldName,PVDatabase pvDatabase,String structureName)
-        {
-        	PVStructure pvSource = pvDatabase.findStructure(structureName);
-        	if(pvSource==null) {
-        		pvDatabase.message("clonePVStructure structureName " + structureName + " not found",
-        				MessageType.error);
-        		return null;
-        	}
-        	return createPVStructure(parent,fieldName,pvSource);
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.pv.PVDataCreate#createPVRecord(java.lang.String, org.epics.pvData.pv.PVStructure)
-         */
-        @Override
-        public PVRecord createPVRecord(String recordName,PVStructure pvStructure) {
-        	return new BasePVRecord(recordName,pvStructure);
-        }
-        /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#flattenPVStructure(org.epics.pvData.pv.PVStructure)
          */
         @Override
@@ -283,10 +257,10 @@ public class PVDataFactory {
             PVField[] toFields = to.getPVFields();
             if(fromFields.length!=toFields.length) {
             	Formatter formatter = new Formatter();
-            	formatter.format("PVDataFactory.copyStructure number of fields differ %nfrom %s%n%s%nto %s%n%s",
-            			from.getFullName(),from.toString(),to.getFullName(),to.toString());
+            	formatter.format("PVDataFactory.copyStructure number of fields differ %nfrom %s%nto %s",
+            			from.toString(),to.toString());
             	String message = formatter.toString();
-            	from.message(message, MessageType.fatalError);
+            	System.out.println(message);
             	throw new IllegalStateException("PVDataFactory.copyStructure number of fields differ");
             }
             for(int i=0; i<fromFields.length; i++) {

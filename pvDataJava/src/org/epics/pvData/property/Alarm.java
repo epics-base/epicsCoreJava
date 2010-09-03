@@ -5,9 +5,6 @@
  */
 package org.epics.pvData.property;
 
-import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStringArray;
 
 /**
  * Convenience interface for an alarm structure.
@@ -16,23 +13,24 @@ import org.epics.pvData.pv.PVStringArray;
  */
 public interface Alarm {
     /**
-     * Get the interface for the alarm message..
-     * @return The interface.
+     * Get the alarm message.
+     * @return The value.
      */
-    PVString getAlarmMessage();
+    String getMessage();
     /**
-     * Get the interface for the severity index.
-     * @return The interface.
+     * Set the alarm message.
+     * @param message The message.
      */
-    PVInt getAlarmSeverityIndex();
+    void setMessage(String message);
     /**
-     * Get the value of the alarm severity.
-     * @return The string value for the severity.
+     * Get the alarm severity.
+     * @return The value.
      */
-    String getAlarmSeverityChoice();
+    int getSeverity();
     /**
-     * Get the interface for the alarm severity choices.
-     * @return The interface.
+     * Set the alarm severity.
+     * If an invalid value is given than an exception is thrown.
+     * @param alarmSeverity The severity.
      */
-    PVStringArray getAlarmSeverityChoices();
+    void setSeverity(AlarmSeverity alarmSeverity);
 }

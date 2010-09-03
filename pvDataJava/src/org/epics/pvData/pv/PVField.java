@@ -11,7 +11,13 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface PVField extends Requester, Serializable {
+public interface PVField extends Requester,Serializable {
+	/**
+	 * Register the message requester.
+	 * At most one requester can be registered.
+	 * @param requester The requester.
+	 */
+	void setRequester(Requester requester);
     /**
      * Get offset of the PVField field within top level structure.
      * Every field within the PVStructure has a unique offset.
@@ -50,16 +56,6 @@ public interface PVField extends Requester, Serializable {
      */
     void setImmutable();
     /**
-     * Get the fullFieldName, i.e. the complete hierarchy.
-     * @return The name.
-     */
-    String getFullFieldName();
-    /**
-     * Get the full name, which is the recordName plus the fullFieldName
-     * @return The name.
-     */
-    String getFullName();
-    /**
      * Get the <i>Field</i> that describes the field.
      * @return Field, which is the reflection interface.
      */
@@ -69,11 +65,6 @@ public interface PVField extends Requester, Serializable {
      * @return The parent interface or null if this is PVRecord
      */
     PVStructure getParent();
-    /**
-     * Get the PVRecordField for this PVField.
-     * @return The interface or null if this field is not in a PVRecord.
-     */
-    PVRecordField getPVRecordField();
     /**
      * Replace the data implementation for a field.
      * @param newPVField The new implementation for this field.
@@ -85,9 +76,15 @@ public interface PVField extends Requester, Serializable {
      */
     void renameField(String newName);
     /**
-     * postPut. Called when the data for a field is updated by the implementation.
+     * postPut. Called when the field is updated by the implementation.
      */
     void postPut();
+    /**
+     * Set the handler for postPut.
+     * At most one handler can be set.
+     * @param postHandler The handler.
+     */
+    void setPostHandler(PostHandler postHandler);
     /**
      * Convert the PVField to a string.
      * @return The string.

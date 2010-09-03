@@ -88,6 +88,22 @@ public final class ConvertFactory {
         // Guarantee that ImplementConvert can only be created via getConvert
         private ImplementConvert() {}
         /* (non-Javadoc)
+         * @see org.epics.pvData.pv.Convert#getFullFieldName(org.epics.pvData.pv.PVField)
+         */
+        @Override
+        public String getFullFieldName(PVField pvField) {
+        	StringBuilder stringBuilder = new StringBuilder(pvField.getField().getFieldName());
+        	while(pvField.getParent()!=null) {
+        		pvField = pvField.getParent();
+        		String name = pvField.getField().getFieldName();
+        		if(name!=null && name.length()>0) {
+        			stringBuilder.insert(0, '.');
+        			stringBuilder.insert(0, pvField.getField().getFieldName());
+        		}
+        	}
+        	return stringBuilder.toString();
+		}
+		/* (non-Javadoc)
          * @see org.epics.pvData.pv.Convert#getString(org.epics.pvData.pv.PVField)
          */
         @Override

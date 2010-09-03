@@ -5,19 +5,19 @@
  */
 package org.epics.pvData.factory;
 
+
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVAuxInfo;
 import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVRecord;
-import org.epics.pvData.pv.PVRecordField;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PostHandler;
+import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.Structure;
-import org.epics.pvData.pv.Type;
 
 
 /**
@@ -32,11 +32,10 @@ public abstract class AbstractPVField implements PVField{
     private int nextFieldOffset = 0;
     private PVAuxInfo pvAuxInfo = null;
     private boolean isImmutable = false;
-    private String fullFieldName = null;
-    private String fullName = null;
     private Field field;
     private PVStructure pvParent;
-    private PVRecordField pvRecordField = null;
+    private Requester requester = null;
+	private PostHandler postHandler = null;
     /**
      * Convenience for derived classes that perform conversions.
      */
@@ -53,10 +52,6 @@ public abstract class AbstractPVField implements PVField{
         }
         this.field = field;
         this.pvParent = parent;
-        if(parent==null) {
-            fullFieldName = fullName = field.getFieldName();
-            return;
-        }
     }
     /**
      * Called by derived classes to replace a Structure.
@@ -64,22 +59,58 @@ public abstract class AbstractPVField implements PVField{
     protected void replaceStructure() {
     	replaceStructure(true);
     }
-    
-    /**
-     * Initial call is by implementation of PVRecord.
-     * @param pvRecord The PVRecord interface.
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.Requester#getRequesterName()
      */
-    protected void setRecord(PVRecord record) {
-    	createPVRecordField(record);
-    }
+    @Override
+	public String getRequesterName() {
+		if(requester!=null) {
+			return requester.getRequesterName();
+		} else {
+			return "none";
+		}
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Requester#message(java.lang.String, org.epics.pvData.pv.MessageType)
+	 */
+	@Override
+	public void message(String message, MessageType messageType) {
+		if(requester!=null) {
+			requester.message(message, messageType);
+		} else {
+			System.out.println(messageType.toString() + " " + field.getFieldName() + " " + message);
+		}
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.PVField#registerRequester(org.epics.pvData.pv.Requester)
+	 */
+	@Override
+	public void setRequester(Requester requester) {
+		if(this.requester!=null) {
+			if(requester==this.requester) return;
+			throw new IllegalStateException("A requester is already registered");
+		}
+		this.requester = requester;
+	}
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#postPut()
      */
     @Override
     public void postPut() {
-        if(pvRecordField!=null) pvRecordField.postPut();
+        if(postHandler!=null) postHandler.postPut();
     }
     /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVField#registerPostHandler(org.epics.pvData.pv.PostHandler)
+     */
+    @Override
+	public void setPostHandler(PostHandler postHandler) {
+		if(this.postHandler!=null) {
+			if(postHandler==this.postHandler) return;
+			throw new IllegalStateException("A postHandler is already registered");
+		}
+		this.postHandler = postHandler;
+	}
+	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#getOffset()
      */
     @Override
@@ -111,24 +142,7 @@ public abstract class AbstractPVField implements PVField{
         if(pvAuxInfo==null) pvAuxInfo = new BasePVAuxInfo(this);
         return pvAuxInfo;
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Requester#getRequesterName()
-     */
-    @Override
-    public String getRequesterName() {
-        return getFullName();
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Requester#message(java.lang.String, org.epics.pvData.pv.MessageType)
-     */
-    @Override
-    public void message(String message, MessageType messageType) {
-        if(pvRecordField==null) {
-            System.out.println(messageType.toString() + " " + getFullFieldName() + " " + message);
-        } else {
-            pvRecordField.getPVRecord().message(getFullName() + " " + message, messageType);
-        }
-    }
+    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#isImmutable()
      */
@@ -141,27 +155,9 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public void setImmutable() {
-        if(!isImmutable && pvRecordField!=null) {
-            pvRecordField.getPVRecord().removeEveryListener();
-        }
         isImmutable = true;
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVField#getFullFieldName()
-     */
-    @Override
-    public String getFullFieldName() {
-    	if(fullFieldName==null) createNames();
-        return fullFieldName;
-    } 
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVField#getFullName()
-     */
-    @Override
-    public String getFullName() {
-    	if(fullName==null) createNames();
-        return fullName;
-    }
+    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#getField()
      */
@@ -176,19 +172,10 @@ public abstract class AbstractPVField implements PVField{
         return pvParent;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVField#getPVRecordField()
-     */
-    @Override
-    public PVRecordField getPVRecordField() {
-        return pvRecordField;
-    }
-    /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#replacePVField(org.epics.pvData.pv.PVField)
      */
     @Override
     public void replacePVField(PVField newPVField) {
-    	boolean createNames = false;
-    	if(fullName!=null) createNames = true;
         PVStructure parent = getParent();
         if(parent==null) throw new IllegalStateException("no pvParent");
         PVField[] pvFields = parent.getPVFields();
@@ -206,15 +193,12 @@ public abstract class AbstractPVField implements PVField{
         }
         pvFields[index] = newPVField;
         ((AbstractPVField)parent).replaceStructure();
-        if(createNames) createNames();
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#renameField(java.lang.String)
      */
     @Override
     public void renameField(String newName) {
-    	boolean createNames = false;
-    	if(fullName!=null) createNames = true;
         switch(field.getType()) {
         case scalar: {
             Scalar scalar = (Scalar)field;
@@ -236,7 +220,6 @@ public abstract class AbstractPVField implements PVField{
             break;
         }
         }
-        if(createNames) createNames();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -267,25 +250,8 @@ public abstract class AbstractPVField implements PVField{
         if(pvParent!=null) {
             ((AbstractPVField)pvParent).replaceStructure(false);
         }
-        if(pvRecordField!=null) {
-        	PVRecord pvRecord = pvRecordField.getPVRecord();
-        	pvRecordField = null;
-        	createPVRecordField(pvRecord);
-        }
     }
-    
-    private void createPVRecordField(PVRecord record) {
-    	pvRecordField = new BasePVRecordField(this,record);
-    	// call setRecord for all subfields.
-        if(field.getType()==Type.structure) {
-            PVField[] pvFields = ((PVStructure)this).getPVFields();
-            for(int i=0; i<pvFields.length; i++) {
-                AbstractPVField pvField = (AbstractPVField)pvFields[i];
-                pvField.createPVRecordField(record);
-            }
-        }
-    }
-    
+ 
     private void computeOffset() {
     	PVStructure pvTop = this.pvParent;
     	if(pvTop==null) {
@@ -349,61 +315,5 @@ public abstract class AbstractPVField implements PVField{
         }
         this.fieldOffset = beginOffset;
         this.nextFieldOffset = nextOffset;
-    }
-    
-    private void createNames() {
-    	PVStructure pvTop = pvParent;
-    	if(pvTop==null) {
-    		pvTop = (PVStructure)this;
-    	} else {
-    		while(pvTop.getParent()!=null) pvTop = pvTop.getParent();
-    	}
-    	AbstractPVField pv = (AbstractPVField)pvTop;
-    	pv.createTopNames();
-    }
-    
-    private void createTopNames() {
-        PVRecord pvRecord = null;
-        if(pvRecordField!=null) {
-        	pvRecord = pvRecordField.getPVRecord();
-        }
-        String fullName = null;
-        if(pvRecord==null) {
-        	fullName = "";
-        } else {
-        	fullName = pvRecord.getRecordName();
-        }
-        this.fullName = fullName;
-        this.fullFieldName = "";
-        PVStructure pvStruct = (PVStructure)this;
-        PVField[] pvFields = pvStruct.getPVFields();
-        for(PVField pvField : pvFields) {
-        	AbstractPVField pv = (AbstractPVField) pvField;
-        	pv.createSubFieldNames();
-        }
-    }
-    
-    private void createSubFieldNames() {
-    	String fieldName = field.getFieldName();
-    	String parentFullFieldName = pvParent.getFullFieldName();
-    	String parentFullName = pvParent.getFullName();
-    	if(parentFullFieldName==null || parentFullFieldName.length()<1) {
-    		fullFieldName = fieldName;
-    	} else {
-    		fullFieldName = parentFullFieldName + '.' + fieldName;
-    	}
-    	if(parentFullName==null || parentFullName.length()<1) {
-    		fullName = fieldName;
-    	} else {
-    		fullName = parentFullName + '.' + fieldName;
-    	}
-    	if(field.getType()==Type.structure) {
-    		PVStructure pvStruct = (PVStructure)this;
-            PVField[] pvFields = pvStruct.getPVFields();
-            for(PVField pvField : pvFields) {
-            	AbstractPVField pv = (AbstractPVField) pvField;
-            	pv.createSubFieldNames();
-            }
-    	}
     }
 }
