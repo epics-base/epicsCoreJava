@@ -37,6 +37,7 @@ import org.epics.ca.client.ChannelPutGet;
 import org.epics.ca.client.ChannelPutGetRequester;
 import org.epics.ca.client.ChannelPutRequester;
 import org.epics.ca.client.ChannelRequester;
+import org.epics.ca.client.CreateRequestFactory;
 import org.epics.ca.client.GetFieldRequester;
 import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.pvData.factory.ConvertFactory;
@@ -66,7 +67,6 @@ import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 import org.epics.pvData.pv.Status.StatusType;
-import org.epics.pvData.pvCopy.PVCopyFactory;
 
 /**
  * Channel Access IF test.
@@ -1545,7 +1545,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelGetTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("field(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
 
     	try 
         {
@@ -1572,7 +1572,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelGetTestNoConnection(Channel ch, boolean disconnect) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("field(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
 
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
@@ -1587,7 +1587,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelGetTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("field(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
 
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
@@ -1615,7 +1615,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelGetTestIntProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("record[process=true]field(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[process=true]field(timeStamp,value)",ch);
 
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
@@ -1677,7 +1677,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelPutTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("field(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
 
         try 
         {
@@ -1704,7 +1704,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutTestNoConnection(Channel ch, boolean disconnect) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("field(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
 
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
@@ -1719,7 +1719,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelPutTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("field(value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
 
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
@@ -1769,7 +1769,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutTestIntProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("record[process=true]field(value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[process=true]field(value)",ch);
 
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
@@ -1848,7 +1848,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    Channel ch = syncCreateChannel("simpleCounter");
 
 		// create get to check processing
-    	PVStructure pvRequest = PVCopyFactory.createRequest("field(value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
 
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
@@ -1935,7 +1935,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		Channel ch = syncCreateChannel("simpleCounter");
 
 		// create gets to check processing
-    	PVStructure pvRequest = PVCopyFactory.createRequest("record[process=true]field(value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[process=true]field(value)",ch);
 
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest, "get-process-test", true, true, null);
@@ -1992,7 +1992,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelPutGetTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
 		
         try 
         {
@@ -2018,7 +2018,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutGetTestNoConnection(Channel ch, boolean disconnect) throws Throwable
 	{
-    	PVStructure pvRequest = PVCopyFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
 
 		ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
@@ -2036,7 +2036,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	private void channelPutGetTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
 		// TODO share
-    	PVStructure pvRequest = PVCopyFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
 
         ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
@@ -2082,7 +2082,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	private void channelPutGetTestIntProcess(Channel ch, boolean share) throws Throwable
 	{
 		// TODO share
-    	PVStructure pvRequest = PVCopyFactory.createRequest("record[process=true]putField(value)getField(timeStamp,value)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[process=true]putField(value)getField(timeStamp,value)",ch);
 
         ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
@@ -2143,7 +2143,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
 
-//    	PVStructure pvRequest = PVCopyFactory.createRequest("field(value)",ch);
+//    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
     	PVStructure pvRequest = pvDataCreate.createPVStructure(null, "", new Field[0]);
     	PVString pvFieldName = (PVString)pvDataCreate.createPVScalar(pvRequest, "field", ScalarType.pvString);
     	pvFieldName.put("alarm.severity.choices");
@@ -2241,7 +2241,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	{
         Channel ch = syncCreateChannel("counter");
 
-    	PVStructure pvRequest = PVCopyFactory.createRequest("record[queueSize=3]field(timeStamp)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=3]field(timeStamp)",ch);
 
         // null requester test
         try 
@@ -2278,7 +2278,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	{
         Channel ch = syncCreateChannel("counter");
 		
-    	PVStructure pvRequest = PVCopyFactory.createRequest("record[queueSize=" + queueSize + "]field(timeStamp,value,alarm.severity.choices)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=" + queueSize + "]field(timeStamp,value,alarm.severity.choices)",ch);
     	// TODO algorithm
 
     	ChannelMonitorRequesterImpl channelMonitorRequester = new ChannelMonitorRequesterImpl();
@@ -2350,7 +2350,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     {
         Channel ch = syncCreateChannel("simpleCounter");
 		
-    	PVStructure pvRequest = PVCopyFactory.createRequest("record[queueSize=3]field(timeStamp,value,alarm.severity.choices)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=3]field(timeStamp,value,alarm.severity.choices)",ch);
     	// TODO algorithm onPut
 
     	ChannelMonitorRequesterImpl channelMonitorRequester = new ChannelMonitorRequesterImpl();

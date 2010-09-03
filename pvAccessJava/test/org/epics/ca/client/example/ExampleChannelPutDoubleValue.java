@@ -13,6 +13,7 @@ import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.ChannelPut;
 import org.epics.ca.client.ChannelPutRequester;
 import org.epics.ca.client.ChannelRequester;
+import org.epics.ca.client.CreateRequestFactory;
 import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
@@ -22,7 +23,6 @@ import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVDouble;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pvCopy.PVCopyFactory;
 
 /**
  * ChannelGet example
@@ -71,7 +71,7 @@ public class ExampleChannelPutDoubleValue {
             if(request==null) {
                 pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
             } else {
-                pvRequest = PVCopyFactory.createRequest(request, this);
+                pvRequest = CreateRequestFactory.createRequest(request, this);
             }
             channelProvider = channelAccess.getProvider(providerName);
             channel = channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);

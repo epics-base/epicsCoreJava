@@ -19,8 +19,6 @@ import java.net.InetSocketAddress;
 import org.epics.pvData.property.TimeStamp;
 import org.epics.pvData.pv.PVField;
 
-
-
 /**
  * CA beacon handler interface.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>

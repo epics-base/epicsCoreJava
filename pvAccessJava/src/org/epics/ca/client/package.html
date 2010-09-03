@@ -11,7 +11,7 @@
 <h1 style="text-align: center">EPICS Java Channel Access Version 4: client<br
 />
 package: org/epics/ca/client<br />
-2010.04.29</h1>
+2010.08.26</h1>
 CONTENTS 
 
 <div class="toc">
@@ -49,7 +49,7 @@ CONTENTS
   <li><a href="#ChannelReq1">ChannelRequest</a>
     <ul>
       <li><a href="#PVStructur">PVStructure pvRequest</a></li>
-      <li><a href="#PVCopyFact">PVCopyFactory.createRequest</a></li>
+      <li><a href="#CreateRequ">CreateRequestFactory.createRequest</a></li>
       <li><a href="#Examples">Examples</a>
         <ul>
           <li><a href="#Simple">Simple example</a></li>
@@ -203,7 +203,7 @@ Client has obtained data.</p>
             if(request==null) {
                 pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
             } else {
-                pvRequest = PVCopyFactory.createRequest(request);
+                pvRequest = CreateRequestFactory.createRequest(request);
             }
             channelProvider = channelAccess.getProvider(providerName);
             channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
@@ -379,7 +379,6 @@ methods:</p>
 <pre>interface ChannelAccess {
     ChannelProvider getProvider(String providerName);
     String[] getProviderNames();
-    PVStructure createRequest(String request);
 }</pre>
 
 <p>where</p>
@@ -389,8 +388,6 @@ methods:</p>
       provider with that name has been registered.</dd>
   <dt><span style="font-family: Courier">getProviderNames</span></dt>
     <dd>Get the names of all the registered providers.</dd>
-  <dt><span style="font-family: Courier">createRequest</span></dt>
-    <dd>See channelRequest below for description.</dd>
 </dl>
 
 <h3 id="ChannelPro">ChannelProvider</h3>
@@ -633,8 +630,8 @@ interface.</p>
 create call that has as one of it's arguments:</p>
 <pre>       PVStructure pvRequest</pre>
 
-<p>A request structure is defined in package org.epics.pvData.pvCopy but, for
-convenience is repeated here.</p>
+<p>A request structure is defined in package org.epics.ioc.pvCopy but, for
+convenience part is repeated here.</p>
 
 <h3 id="PVStructur">PVStructure pvRequest</h3>
 
@@ -642,13 +639,16 @@ convenience is repeated here.</p>
 that are to be accessed. The format is defined by org.epics.pvData.pvCopy.
 See the package overview for details.</p>
 
-<h3 id="PVCopyFact">PVCopyFactory.createRequest</h3>
+<h3 id="CreateRequ">CreateRequestFactory.createRequest</h3>
 
-<p>org.epics.pvData.pvCopy.PVCopyFactory provides the method:</p>
-<pre>    PVStructure createRequest(String request);</pre>
+<p>This package provides the following factory:</p>
+<pre>class CreateRequestFactory {
+    public static PVStructure createRequest(String request,Requester requester);
+}</pre>
 
 <p>This creates a request structure. See the package documentation for
-org.epics.pvData.pvCopy/pacjage.html for documentation.</p>
+org.epics.iov.pvCopy/package.html for a detailed description.A few examples
+are repeaed here. </p>
 
 <h3 id="Examples">Examples</h3>
 
@@ -683,7 +683,7 @@ powerSupply
 
 <p>The following creates a request for three fields: alarm, timeStamp, and
 power.value</p>
-<pre>    PVStructure pvRequest = channelAccess.createRequest("alarm,timeStamp,power.value");</pre>
+<pre>    PVStructure pvRequest = CreateRequestFactory.createRequest("alarm,timeStamp,power.value");</pre>
 
 <p>The PVStructure holding data for the requester will have the structure:</p>
 <pre> pvData
@@ -699,7 +699,7 @@ field will not be present in the structure returned to the client.</p>
 <p>The following creates a request for alarm, timeStamp, power, current, and
 voltage. Power, current, and voltage will each be a structure with two
 fields: value and alarm.</p>
-<pre>    PVStructure pvRequest = PVCopyFactory.createRequest(
+<pre>    PVStructure pvRequest = CreateRequestFactory.createRequest(
        "alarm,timeStamp"
        + ",power{power.value,power.alarm}"
        + ",current{current.value,current.alarm}"
@@ -775,7 +775,7 @@ processed.</p>
     <dd>Described next.</dd>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>This was described in a previous section. BUT for channelGet the
-      request string for PVCopyFactory.createRequest has the form:
+      request string for CreateRequestFactory.createRequest has the form:
       "record[options]field(fieldOptions)". An example of a record options is
       "process=true". The fieldOptions are as defined by pvCopy.</dd>
 </dl>
@@ -833,7 +833,7 @@ processed.</p>
     <dd>Described next.</dd>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>This was described in a previous section. BUT for channelPut the
-      request string for PVCopyFactory.createRequest has the form:
+      request string for CreateRequestFactory.createRequest has the form:
       "record[options]field(fieldOptions)". An example of a record options is
       "process=true". The fieldOptions are as defined by pvCopy.</dd>
 </dl>
@@ -902,7 +902,7 @@ record, and gets data from the record.</p>
     <dd>Described next.</dd>
   <dt><span style="font-family: Courier">pvPutRequest</span></dt>
     <dd>This was described in a previous section. BUT for channelPutGet the
-      request string for PVCopyFactory.createRequest has the form:
+      request string for CreateRequestFactory.createRequest has the form:
       "record[process=true]putField(fieldOptions)getField(fieldOptions)". An
       example of a record options is "process=true". The fieldOptions are as
       defined by pvCopy.</dd>
@@ -977,7 +977,7 @@ PVStructure can be returned for each request. It is created via a call to:</p>
     <dd>Described next.</dd>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>This was described in a previous section. BUT for channelRPC the
-      request string for PVCopyFactory.createRequest has the form:
+      request string for CreateRequest.createRequest has the form:
       "record[options]field(fieldOptions)". Normally no record options are
       entered. The fieldOptions are as defined by pvCopy.</dd>
 </dl>
@@ -1109,7 +1109,7 @@ and onPercentChange.</p>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>This is defined by pvCopy and pvMonitor. See their package overviews
       for details (org.epics.pvData.pvCopy and org.epics.pvData.pvMonitor).
-      The format of the request for PVCopyFactory.createRequest has the form
+      The format of the request for CreateRequest.createRequest has the form
       "record[options]field(fieldOptions)". Note that you can specify monitor
       options for individual fields. See the package overview for pvMonitor
       for details.</dd>

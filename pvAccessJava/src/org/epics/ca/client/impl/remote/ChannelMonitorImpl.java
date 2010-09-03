@@ -25,6 +25,8 @@ import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.BitSet;
+import org.epics.pvData.misc.BitSetUtil;
+import org.epics.pvData.misc.BitSetUtilFactory;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorElement;
 import org.epics.pvData.monitor.MonitorQueue;
@@ -38,8 +40,6 @@ import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Status.StatusType;
-import org.epics.pvData.pvCopy.BitSetUtil;
-import org.epics.pvData.pvCopy.BitSetUtilFactory;
 
 /**
  * CA monitor request.
