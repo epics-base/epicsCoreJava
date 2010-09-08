@@ -27,7 +27,7 @@ public class AlarmFactory {
         if(!pvField.getField().getFieldName().equals("alarm")) return null;
         if(pvField.getField().getType()!=Type.structure) return null;
         PVStructure pvStructure = (PVStructure)pvField;
-        PVField pvf = pvStructure.getSubField("alarmSeverity");
+        PVField pvf = pvStructure.getSubField("severity");
         if(pvf==null) return null;
         if(pvf.getField().getType()!=Type.scalar) return null;
         PVScalar pvs = (PVScalar)pvf;
