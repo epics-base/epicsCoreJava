@@ -87,18 +87,18 @@ public final class SerializeHelper {
 	/**
 	 * String serialization helper method.
 	 */
-	public final static void serializeSubstring(final String value, int offset, int length, ByteBuffer buffer, SerializableControl flusher) {
+	public final static void serializeSubstring(final String value, int offset,
+			int count, ByteBuffer buffer, SerializableControl flusher) {
 		if (value == null)
 			writeSize(-1, buffer, flusher);
 		else {
-			final int len = length - offset;
-			writeSize(len, buffer, flusher);
+			writeSize(count, buffer, flusher);
 			int i = 0;
 			while (true) {
-				final int maxToWrite = Math.min(len-i, buffer.remaining());
-				buffer.put(value.getBytes(), i, maxToWrite);	// UTF-8
+				final int maxToWrite = Math.min(count - i, buffer.remaining());
+				buffer.put(value.getBytes(), i + offset, maxToWrite); // UTF-8
 				i += maxToWrite;
-				if (i < len)
+				if (i < count)
 					flusher.flushSerializeBuffer();
 				else
 					break;
