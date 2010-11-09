@@ -149,7 +149,7 @@ public class WildcharMatcher
 			case 1:
 
 				if (nextToken == TOKEN_END) {
-					return true;
+					return found^negate;
 				}
 
 			case 3:
