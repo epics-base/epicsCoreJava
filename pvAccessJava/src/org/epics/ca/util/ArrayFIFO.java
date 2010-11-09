@@ -140,7 +140,7 @@ public class ArrayFIFO<T>
         return elements[head]; // elements[head] is null if deque empty
     }
 
-    public synchronized Object peekLast() {
+    public synchronized T peekLast() {
         return elements[(tail - 1) & (elements.length - 1)];
     }
 
