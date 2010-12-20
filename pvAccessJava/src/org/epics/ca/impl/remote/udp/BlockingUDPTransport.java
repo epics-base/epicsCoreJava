@@ -184,9 +184,10 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 					break;
 
 				// check if received from ignore address list
-				boolean ignore = false;
 				if (ignoredAddresses != null)
 				{
+					boolean ignore = false;
+
 					// we do not care about the port
 					final InetAddress fromAddressOnly = fromAddress.getAddress();
 					for (int i = 0; i < ignoredAddresses.length; i++)
@@ -195,11 +196,11 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 							ignore = true;
 							break;
 						}
+
+					if (ignore)
+						continue;
 				}
 
-				if (ignore)
-					continue;
-				
 				//context.getLogger().finest("Received " + receiveBuffer.position() + " bytes from " + fromAddress + ".");
 
 				// prepare buffer for reading
