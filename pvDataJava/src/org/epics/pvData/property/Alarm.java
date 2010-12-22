@@ -7,30 +7,36 @@ package org.epics.pvData.property;
 
 
 /**
- * Convenience interface for an alarm structure.
+ * Convenience class for an alarm.
  * @author mrk
  *
  */
-public interface Alarm {
+public final class Alarm {
+    /**
+     * Constructor
+     */
+    public Alarm() {}
     /**
      * Get the alarm message.
      * @return The value.
      */
-    String getMessage();
+    public String getMessage() {return message;}
     /**
      * Set the alarm message.
      * @param message The message.
      */
-    void setMessage(String message);
+    public void setMessage(String message) {this.message = message;}
     /**
      * Get the alarm severity.
      * @return The value.
      */
-    int getSeverity();
+    public AlarmSeverity getSeverity() {return severity;}
     /**
      * Set the alarm severity.
      * If an invalid value is given than an exception is thrown.
      * @param alarmSeverity The severity.
      */
-    void setSeverity(AlarmSeverity alarmSeverity);
+    public void setSeverity(AlarmSeverity alarmSeverity) {this.severity = alarmSeverity;}
+    private String message = "";
+    private AlarmSeverity severity = AlarmSeverity.none;
 }

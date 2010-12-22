@@ -38,18 +38,12 @@ public class BasePVStringArray extends AbstractPVScalarArray implements PVString
     {
         super(parent,array);
         value = new String[capacity];
-    }       
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#toString(int)
-     */
-    public String toString(int indentLevel) {
-        return convert.getString(this, indentLevel)
-        + super.toString(indentLevel);
-    }
+    } 
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVArray#setCapacity(int)
      */
     public void setCapacity(int len) {
+    	if(capacity==len) return;
         if(!capacityMutable) {
             super.message("not capacityMutable", MessageType.error);
             return;

@@ -40,14 +40,14 @@ public interface PVAuxInfo {
     PVScalar getInfo(String key);
     /**
      * Generate a string describing the auxiliary information.
-     * @return The string describing the auxiliary information..
+     * @param buf buffer for the result
      */
-    String toString();
+    void toString(StringBuilder buf);
     /**
      * Generate a string describing the auxiliary information.
+     * @param buf buffer for the result
      * @param indentLevel Indent level. Each level is four spaces.
-     * @return The string describing the attributes.
      */
-    String toString(int indentLevel);
+    void toString(StringBuilder buf,int indentLevel);
 
 }

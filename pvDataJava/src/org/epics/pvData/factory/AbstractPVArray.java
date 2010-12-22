@@ -11,7 +11,6 @@ import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
 /**
@@ -41,10 +40,6 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     protected AbstractPVArray(PVStructure parent,Field field) {
         super(parent,field);
     }
-    @Override
-	public ScalarArray getScalarArray() {
-		return (ScalarArray)super.getField();
-	}
 	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVArray#setCapacity(int)
      */
@@ -94,11 +89,13 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
      */
     @Override
     public void setLength(int len) {
+    	if(len==length) return;
         if(super.isImmutable()) {
             super.message("field is immutable", MessageType.error);
             return;
         }
         if(len>capacity) setCapacity(len);
+        if(len>capacity) len = capacity;
         length = len;
     }
     /* (non-Javadoc)

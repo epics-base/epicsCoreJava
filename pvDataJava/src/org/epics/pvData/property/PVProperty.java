@@ -1,3 +1,8 @@
+/**
+ * Copyright - See the COPYRIGHT that is included with this distribution.
+ * EPICS pvData is distributed subject to a Software License Agreement found
+ * in file LICENSE that is included with this distribution.
+ */
 package org.epics.pvData.property;
 
 import org.epics.pvData.pv.PVField;
@@ -31,8 +36,4 @@ public interface PVProperty {
      * @return The String array for the names of the properties.
      */
     String[] getPropertyNames(PVField pvField);
-    /**
-     * Replace the data implementation for a field.
-     * @param newPVField The new implementation for this field.
-     */
 }

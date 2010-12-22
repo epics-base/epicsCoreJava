@@ -21,11 +21,10 @@ import org.epics.pvData.pv.SerializableControl;
  */
 public class BasePVString extends AbstractPVScalar implements PVString
 {
-    protected String value;
+    protected String value = "";
     
     public BasePVString(PVStructure parent,Scalar scalar) {
         super(parent,scalar);
-        value = null;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVString#get()
@@ -46,21 +45,6 @@ public class BasePVString extends AbstractPVScalar implements PVString
         this.value = value;
         super.postPut();
         
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return toString(0);
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#toString(int)
-     */
-    @Override
-    public String toString(int indentLevel) {
-        return convert.getString(this, indentLevel)
-        + super.toString(indentLevel);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)

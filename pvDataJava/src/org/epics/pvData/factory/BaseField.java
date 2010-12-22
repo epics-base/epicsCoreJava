@@ -47,20 +47,30 @@ public abstract class BaseField implements Field
         return type;
     }
     /* (non-Javadoc)
-     * @see java.lang.Object#toString()
+     * @see org.epics.pvData.pv.Field#toString(java.lang.StringBuilder, int)
      */
-    public String toString() { return toString(0);}
+    @Override
+    public void toString(StringBuilder buf, int indentLevel) {
+        buf.append(" ");
+        buf.append(fieldName);
+    }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Field#toString(int)
+     * @see org.epics.pvData.pv.Field#toString(java.lang.StringBuilder)
      */
-    public String toString(int indentLevel) {
-        StringBuilder builder = new StringBuilder();
-        convert.newLine(builder,indentLevel);
-        builder.append(String.format("field %s type %s",
-                fieldName,type.toString()));
-        return builder.toString();
+    @Override
+    public void toString(StringBuilder buf) {
+        toString(buf,0);
     }
 	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        toString(builder);
+        return builder.toString();
+    }
+    /* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override

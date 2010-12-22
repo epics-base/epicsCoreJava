@@ -15,6 +15,7 @@ import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVStructureArray;
 import org.epics.pvData.pv.SerializableControl;
+import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
 import org.epics.pvData.pv.StructureArrayData;
 
@@ -45,20 +46,13 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
     @Override
 	public StructureArray getStructureArray() {
 		return structureArray;
-	}
-	/* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#toString(int)
-     */
-    @Override
-    public String toString(int indentLevel) {
-        return convert.getString(this, indentLevel)
-        + super.toString(indentLevel);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVArray#setCapacity(int)
      */
     @Override
     public void setCapacity(int len) {
+    	if(capacity==len) return;
         if(!capacityMutable) {
             super.message("not capacityMutable", MessageType.error);
             return;
@@ -104,13 +98,14 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
             }
             length = newlength;
         }
+        Structure structure = structureArray.getStructure();
         for(int i=0; i<len; i++) {
         	PVStructure frompv = from[i+fromOffset];
         	if(frompv==null) {
         		value[i+offset] = null;
         		continue;
         	}
-        	if(frompv.getStructure()!=structureArray.getStructure()) {
+        	if(frompv.getStructure()!=structure) {
         		throw new IllegalStateException("Element is not a compatible structure");
         	}
         	value[i+offset] = frompv;

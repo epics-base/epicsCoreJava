@@ -12,11 +12,6 @@ package org.epics.pvData.pv;
  *
  */
 public interface PVArray extends PVField, SerializableArray {
-	/**
-	 * Get the introspection interface.
-	 * @return The interface.
-	 */
-	ScalarArray getScalarArray();
     /**
      * Get the current length of the array.
      * @return The current length of the array.

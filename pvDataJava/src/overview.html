@@ -10,12 +10,18 @@
 <body>
 <h1 style="text-align: center">EPICS pvData<br />
 Overview<br />
-2010.08.28</h1>
+2010.12.21</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Introducti">Introduction</a></li>
+  <li><a href="#PVData">PVData Meta Language</a>
+    <ul>
+      <li><a href="#Definition">Definition</a></li>
+      <li><a href="#Example">Example</a></li>
+    </ul>
+  </li>
   <li><a href="#Interface">Interface Definitions</a>
     <ul>
       <li><a href="#Types">Types</a></li>
@@ -27,10 +33,11 @@ CONTENTS
   </li>
   <li><a href="#Package">Package Summary</a>
     <ul>
-      <li><a href="#L264">{@link org.epics.pvData.pv}</a></li>
-      <li><a href="#L268">{@link org.epics.pvData.factory}</a></li>
-      <li><a href="#L290">{@link org.epics.pvData.property}</a></li>
-      <li><a href="#L298">{@link org.epics.pvData.misc}</a></li>
+      <li><a href="#L461">{@link org.epics.pvData.pv}</a></li>
+      <li><a href="#L465">{@link org.epics.pvData.factory}</a></li>
+      <li><a href="#L487">{@link org.epics.pvData.property}</a></li>
+      <li><a href="#L495">{@link org.epics.pvData.misc}</a></li>
+      <li><a href="#L499">{@link org.epics.pvData.monitor}</a></li>
     </ul>
   </li>
   <li><a href="#License">License Agreement</a></li>
@@ -102,17 +109,6 @@ resident database holding pvData, has the following features:</p>
   <li>Each record has a unique record name.</li>
   <li>A record has a top level PVStructure, which is a structured set of data
     as defined by this project.</li>
-  <li>A PVStructure has an array of PVFields.</li>
-  <li>A PVField contains data of one of the following types: 
-    <ul>
-      <li>scalar : boolean, byte, short, int, long, float, double, string,
-        structure</li>
-      <li>array: a 1-dim array with the elementType being any scalar
-      type.</li>
-      <li>structure: a subStructure with each field being any of the
-        supported types.</li>
-    </ul>
-  </li>
 </ul>
 
 <p>pvData was initially created to support the javaIOC and was part of the
@@ -127,6 +123,160 @@ available to network clients.</p>
 
 <p>pvData contains everything required to support Channel Access and Channel
 Access clients and servers. </p>
+<hr />
+
+<h2 style="text-align: center" id="PVData">PVData Meta Language</h2>
+<hr />
+
+<p>This section describes a meta language for describing pvData. Currently
+there are no plans for a parser for the meta language. It is used for
+documentation. Also the toString introspection and data methods described
+below do present data in this format.</p>
+
+<h3 id="Definition">Definition</h3>
+
+<p>PVData supports structured data. All data appears as a top level
+structure. A structure has an ordered set of fields where each field has a
+<span style="font-family: courier;">fieldDef</span> defined as follows:</p>
+<pre>type fieldName = value // comment</pre>
+
+<p>where <span style="font-family: courier;">= value</span> is optional and
+<span style="font-family: courier;">//</span> indicates the the rest of the
+line is a comment. </p>
+
+<p>type is one of the following:</p>
+<dl>
+  <dt>scalar</dt>
+    <dd>A scalar field can be any of the following: 
+      <dl>
+        <dt style="font-family: courier;">boolean</dt>
+          <dd>Has the value<span style="font-family: courier;">true</span> or
+            <span style="font-family: courier;">false</span></dd>
+        <dt style="font-family: courier;">byte</dt>
+          <dd>An 8 bit signed integer.</dd>
+        <dt style="font-family: courier;">short</dt>
+          <dd>An 16 bit signed integer.</dd>
+        <dt style="font-family: courier;">int</dt>
+          <dd>An 32 bit signed integer.</dd>
+        <dt style="font-family: courier;">long</dt>
+          <dd>An 64 bit signed integer.</dd>
+        <dt style="font-family: courier;">float</dt>
+          <dd>A IEEE float.</dd>
+        <dt style="font-family: courier;">double</dt>
+          <dd>A IEEE double.</dd>
+        <dt style="font-family: courier;">string</dt>
+          <dd>An immutable string.</dd>
+      </dl>
+    </dd>
+  <dt>scalarArray</dt>
+    <dd>A scalarArray field is an array of any of the scalar types. 
+      <dl>
+        <dt style="font-family: courier;">boolean[]</dt>
+        <dt style="font-family: courier;">byte[]</dt>
+        <dt style="font-family: courier;">short[]</dt>
+        <dt style="font-family: courier;">int[]</dt>
+        <dt style="font-family: courier;">long[]</dt>
+        <dt style="font-family: courier;">float[]</dt>
+        <dt style="font-family: courier;">double[]</dt>
+        <dt style="font-family: courier;">string[]</dt>
+      </dl>
+    </dd>
+  <dt>structure</dt>
+    <dd>A structure field has the definition: 
+      <pre>     structure fieldName
+         fieldDef
+         ...
+      </pre>
+      or 
+      <pre>     structureName fieldName
+         fieldDef
+         ...
+      </pre>
+      For <span style="font-family: courier;">structure fieldName</span> each
+      <span style="font-family: courier;">fieldDef</span> must have a unique
+      <span style="font-family: courier;">fieldName</span> within the <span
+      style="font-family: courier;">structure</span> For <span
+      style="font-family: courier;">structureName fieldName</span> the <span
+      style="font-family: courier;">structureName</span> must be the <span
+      style="font-family: courier;">fieldName</span> of a previously defined
+      top level <span style="font-family: courier;">structure</span> </dd>
+  <dt>structureArray</dt>
+    <dd>A structureArray field has the definition: 
+      <pre>     structure[] fieldName
+          structureDef
+          ...
+          
+      </pre>
+      Thus a structure array is an array where each element is a structure
+      but all elements have the same introspection interface. For
+      introspection the structureDef appears once without and data
+    valuies.</dd>
+</dl>
+
+<p>Each field can optionally have data values assigned to it. The definition
+of the data values depends on the type. For scalars the data value is
+whatever is valid for the type. </p>
+<dl>
+  <dt style="font-family: courier;">boolean</dt>
+    <dd>The value must be <span style="font-family: courier;">true</span> or
+      <span style="font-family: courier;">false</span> </dd>
+  <dt style="font-family: courier;">byte,...long</dt>
+    <dd>Any valid integer or hex value, e.g. <span
+      style="font-family: courier;">3 0xff</span> are valid values</dd>
+  <dt style="font-family: courier;">float,double</dt>
+    <dd>Any valid integer or real e.g. <span style="font-family: courier;">3
+      3.0 3e0</span> are valid values</dd>
+  <dt style="font-family: courier;">string</dt>
+    <dd>The value can be an alphanumeric value or any set of characters
+      enclosed in <span style="font-family: courier;">""</span> Within quotes
+      a quote is expressed as <span style="font-family: courier;">\"</span>
+      Examples are <span style="font-family: courier;">aValue "a value" "a\"
+      xxx"</span> are valid values. </dd>
+</dl>
+
+<p>For scalar arrays the syntax is:</p>
+<pre>      = [value,...,value]</pre>
+
+<p>where each <span style="font-family: courier;">value</span> is a valid
+scalar data value depending on the type. Thus it is a comma separated set of
+values enclosed in <span style="font-family: courier;">[]</span> White space
+is permitted surrounding each comma.</p>
+
+<h3 id="Example">Example</h3>
+
+<p>Define the following top level structure:</p>
+<pre>structure timeStamp
+    long secondsPastEpoch
+    int nanoSeconds </pre>
+
+<p>Then the following can be defined</p>
+<pre>structure scalarDoubleExample
+    double value = 1.0
+    timeStamp timeStamp
+
+scalar arrayDoubleExample
+    double[] value = [1.0,2.0]
+    timeStamp timeStamp
+
+structure point
+    double x
+    double y
+
+structure lineExample
+    point begin
+        x 0
+        y 0
+    point end
+        x 10
+        y 10
+
+structure[] structureArrayExample
+    structure point
+        double x 0.0
+        double y 0.0
+    structure point
+        double x 10.0
+        double y 10.0</pre>
 <hr />
 
 <h2 style="text-align: center" id="Interface">Interface Definitions</h2>
@@ -163,9 +313,10 @@ Access clients and servers. </p>
     pvString;
     // The following are convenience methods
     public boolean isInteger();
-    public boolean isNumeric()
-    public boolean isPrimitive() 
+    public boolean isNumeric();
+    public boolean isPrimitive();
     public static ScalarType getScalarType(String type);
+    public String toString();
 }</pre>
 
 <p>where</p>
@@ -196,8 +347,9 @@ Access clients and servers. </p>
 <pre>interface Field {
     String getFieldName();
     Type getType();
+    void toString(StringBuilder buf);
+    void toString(StringBuilder buf,int indentLevel);
     String toString();
-    String toString(int indentLevel);
 }
 
 interface Scalar extends Field{
@@ -209,7 +361,6 @@ interface ScalarArray extends Field{
 }
 
 interface Structure extends Field{
-    String[] getFieldNames();
     Field getField(String fieldName);
     int getFieldIndex(String fieldName);
     Field[] getFields();
@@ -235,10 +386,18 @@ interface Requester {
     void message(String message, MessageType messageType);
 }
 
+interface SerializableControl {
+    void flushSerializeBuffer();
+    void ensureBuffer(int size);
+}
 
 interface Serializable {
     void serialize(ByteBuffer buffer, SerializableControl flusher);
     void deserialize(ByteBuffer buffer, DeserializableControl control);
+}
+
+interface SerializableArray extends Serializable {
+    void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count);
 }
 
 interface PVAuxInfo {
@@ -246,49 +405,48 @@ interface PVAuxInfo {
     PVScalar createInfo(String key,ScalarType scalarType);
     Map&lt;String,PVScalar&gt; getInfos();
     PVScalar getInfo(String key);
-    String toString();
-    String toString(int indentLevel);
+    void toString()StringBuilder buf;
+    void toString(StringBuilder buf,int indentLevel);
 }
 
 interface PVField extends Requester, Serializable {
     int getFieldOffset();
     int getNextFieldOffset();
     int getNumberFields();
+    PVAuxInfo getPVAuxInfo(); //auxillary information
     Field getField();
     PVStructure getParent();
-    String getFullFieldName(); 
-    String getFullName();
-    PVAuxInfo getPVAuxInfo(); //auxillary information
     boolean isMutable();
     void setImmutable();
     void replacePVField(PVField newPVField);
     void renameField(String newName);
     void postPut(); // calls PVRecordField.postPut if this is a field of a record
+    void setPostHandler(PostHandler postHandler);
+    void toString(StringBuilder buf);
+    void toString(StringBuilder buf,int indentLevel);
     String toString();
-    String toString(int indentLevel);
 }</pre>
 
 <p>Each scalar type has an associated data interface: PVBoolean, PVByte,
 PVShort, PVInt, PVLong, PVFloat, PVDouble, and PVString. Each has a get and a
 put method. For example:</p>
-<pre>public interface PVDouble extends PVScalar{
+<pre>interface PVDouble extends PVScalar{
     double get();
     void put(double value);
 }</pre>
 
 <p>PVArray is the base class for arrays.</p>
-<pre>interface SerializableArray extends Serializable {
-    void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count);
-}
-
-interface PVArray extends PVField, SerializableArray{
+<pre>interface PVArray extends PVField, SerializableArray {
     int getLength();
-    void setLength(int len);
+    void setLength(int length);
     int getCapacity();
-    void setCapacity(int len);
-    boolean isCapacityMutable();
+    void setCapacity(int length);
+    boolean isCapacityMutable();q!
     void setCapacityMutable(boolean isMutable);
-}</pre>
+}
+nterface PVAuxInfo {
+    PVField getPVField();
+    PVScalar c</pre>
 
 <p>PVScalarArray is the base class for scalar arrays.</p>
 <pre>interface PVScalarArray extends PVArray {
@@ -310,7 +468,12 @@ interface PVDoubleArray extends PVArray {
 
 <p>PVScalarArray is the interface for an array of structures where each
 element has the same iontrospection interface.</p>
-<pre>interface PVStructureArray extends PVArray{
+<pre>public class StructureArrayData {
+    public PVStructure[] data;
+    public int offset;
+}
+
+interface PVStructureArray extends PVArray{
     StructureArray getStructureArray();
     int get(int offset, int length, StructureArrayData data);
     int put(int offset,int length, PVStructure[] from, int fromOffset);
@@ -328,10 +491,9 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVField[] getPVFields();
     PVField getSubField(String fieldName);
     PVField getSubField(int fieldOffset);
-    void replacePVField(String fieldName,PVField newPVField);
     void appendPVField(PVField pvField);
+    void appendPVFields(PVField[] pvFields);
     void removePVField(String fieldName);
-    void updateInternal();
     // The following are convenience methods
     PVBoolean getBooleanField(String fieldName);
     PVByte getByteField(String fieldName);
@@ -341,10 +503,10 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVFloat getFloatField(String fieldName);
     PVDouble getDoubleField(String fieldName);
     PVString getStringField(String fieldName);
-    PVStructureScalar getStructureScalarField(String fieldName);
+    PVScalarArray getScalarArrayField(String fieldName);
+    PVStructureArray getStructureArrayField(String fieldName);
     PVStructure getStructureField(String fieldName);
     PVArray getArrayField(String fieldName,ScalarType elementType);
-    PVStructureArray getStructureArrayField(String fieldName);
     String getExtendsStructureName();
     boolean putExtendsStructureName(String extendsStructureName);
 }</pre>
@@ -367,12 +529,11 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVScalar createPVScalar(PVStructure parent,Scalar scalar);
     PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType fieldType);
     PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
-    PVStructureScalar createPVStructureScalar(PVStructure parent,StructureScalar structureScalar);
-    PVStructureScalar createPVStructureScalar(PVStructure parent,String fieldName,PVStructure structureToClone);
-    PVArray createPVArray(PVStructure parent,Array array);
-    PVArray createPVArray(PVStructure parent,String fieldName,ScalarType elementType);
-    PVArray createPVArray(PVStructure parent,String fieldName,PVArray arrayToClone);
+    PVScalarArray createPVScalarArray(PVStructure parent,ScalarArray array);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,ScalarType elementType);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,PVScalarArray arrayToClone;
     PVStructureArray createPVStructureArray(PVStructure parent,StructureArray structureArray);
+    PVStructure createPVStructure(PVStructure parent,Structure structure);
     PVStructure createPVStructure(PVStructure parent,String fieldName,Field[] fields);
     PVStructure createPVStructure(PVStructure parent,String fieldName,PVStructure structToClone);
     PVField[] flattenPVStructure(PVStructure pvStructure);
@@ -394,13 +555,13 @@ other languages such as C++.</p>
 <p>pvData is distributed as a eclipse Java Project named pvData. This project
 consists of the following java packages:</p>
 
-<h3 id="L264">{@link org.epics.pvData.pv}</h3>
+<h3 id="L461">{@link org.epics.pvData.pv}</h3>
 
 <p>The Java enum, interface, and class definitions that define pvData. This
 section provides a complete definition of what pvData is. This package
 completely describes how pvData is accessed.</p>
 
-<h3 id="L268">{@link org.epics.pvData.factory}</h3>
+<h3 id="L465">{@link org.epics.pvData.factory}</h3>
 
 <p>Java Facilities for creating a PV Database and pvData. It provides
 everything required for creating pvData. It provides the following
@@ -419,7 +580,7 @@ data types, often it is desirable to provide other implementations. To make
 it easy to create alternate implementations a set of abstract and base
 classes are supplied.</p>
 
-<h3 id="L290">{@link org.epics.pvData.property}</h3>
+<h3 id="L487">{@link org.epics.pvData.property}</h3>
 
 <p>Provides a way to associated properties with a field. </p>
 
@@ -432,10 +593,15 @@ package overview for details.</p>
 timeStamp, alarm, display,etc. Code that uses pvData can be simplified by
 using this support.</p>
 
-<h3 id="L298">{@link org.epics.pvData.misc}</h3>
+<h3 id="L495">{@link org.epics.pvData.misc}</h3>
 
 <p>This package provides support that is used by pvData factories and might
 also be useful to software that uses pvData.</p>
+
+<h3 id="L499">{@link org.epics.pvData.monitor}</h3>
+
+<p>Provides the ability to monitor changes to an arbitrary subset of the
+fields in a record.</p>
 
 <h2 style="text-align: center" id="License">License Agreement</h2>
 <pre>Copyright (c) 2008 Martin R. Kraimer

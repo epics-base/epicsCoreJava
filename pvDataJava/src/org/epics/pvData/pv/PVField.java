@@ -87,14 +87,19 @@ public interface PVField extends Requester,Serializable {
     void setPostHandler(PostHandler postHandler);
     /**
      * Convert the PVField to a string.
-     * @return The string.
+     *  @param buf buffer for the result
      */
-    String toString();
+    void toString(StringBuilder buf);
     /**
      * Convert the PVField to a string.
      * Each line is indented.
+     * @param buf buffer for the result
      * @param indentLevel The indentation level.
-     * @return The string.
      */
-    String toString(int indentLevel);
+    void toString(StringBuilder buf,int indentLevel);
+    /**
+     * Implement standard toString().
+     * @return The field as a String.
+     */
+    String toString();
 }

@@ -10,14 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData : misc<br />
 package: org.epics.pvData.misc<br />
-2010.09.01</h1>
-CONTENTS
+2010.11.24</h1>
+CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Enumeratio">Enumeration</a></li>
-  <li><a href="#MultiSet">MultiSet</a></li>
+  <li><a href="#MultiChoic">MultiChoice</a></li>
   <li><a href="#BitSet">BitSet</a></li>
   <li><a href="#Message">Message Queue</a>
     <ul>
@@ -49,8 +48,6 @@ CONTENTS
   <li><a href="#Serialize">Serialize</a></li>
 </ul>
 </div>
-
-<p> </p>
 <hr />
 
 <h2 style="text-align: center" id="Overview">Overview</h2>
@@ -58,13 +55,10 @@ CONTENTS
 
 <p>This package provides utility code:</p>
 <dl>
-  <dt>Enumerated</dt>
-    <dd>Support for an enumerated structure, which is a structure containing
-      two fields: index and choices.</dd>
   <dt>multiChoice</dt>
-    <dd>Support for a multiChoice structire, which is a structure containing
-      two fields: index and bitMask. The bitMask selects a sunset of the
-      choices.</dd>
+    <dd>Support for a multiChoice structre, which is a structure containing
+      two fields: choices and bitMask. choices is an array of strings and
+      bitMask selects a subset of the choices.</dd>
   <dt>Message Queue</dt>
     <dd>Support for queuing messages to give to requesters.</dd>
   <dt>Thread</dt>
@@ -81,8 +75,7 @@ CONTENTS
   <dt>BitSet</dt>
     <dd>An implementation of BitSet that can be serialized.</dd>
   <dt>Queue</dt>
-    <dd>A queue implementation that allows the latest queue element to
-      continue to be used when no free element is available.</dd>
+    <dd>A queue implementation.</dd>
   <dt>Destroyable</dt>
     <dd>A base interface for destroy.</dd>
   <dt>Serialize</dt>
@@ -90,55 +83,13 @@ CONTENTS
 </dl>
 <hr />
 
-<h2 style="text-align: center;" id="Enumeratio">Enumeration</h2>
+<h2 style="text-align: center;" id="MultiChoic">MultiChoice</h2>
 <hr />
 
-<p>Enumerated is a convenience interface for a structure that happens to be
-an enumerated structure, which is a structure that has fields index and
-choices. Index is an integer and choices is an array of strings. Both index
-selects one of the choices.</p>
-<pre>    public interface Enumerated {
-        PVInt getIndex();
-        String getChoice();
-        PVStringArray getChoices();
-        PVStructure getPV();
-    }
+<p>NOTE: This is not currently used by anything.</p>
 
-    public class EnumeratedFactory {
-        public static void replacePVField(PVField pvField);
-        public static Enumerated getEnumerated(PVField pvField);
-    }</pre>
-
-<p>where</p>
-<dl>
-  <dt style="font-family: courier;">getIndex</dt>
-    <dd>Returns the interface for field index.</dd>
-  <dt style="font-family: courier;">getChoice</dt>
-    <dd>Returns the choice for the current index.</dd>
-  <dt style="font-family: courier;">getChoices</dt>
-    <dd>Returns the interface for field choices.</dd>
-  <dt style="font-family: courier;">getPV</dt>
-    <dd>Returns the interface for the PVStructure for the enumerated
-      structure.</dd>
-  <dt style="font-family: courier;">replacePVField</dt>
-    <dd>Replace the PVField implementation. The new implementation implements
-      interface Enumerated and also replaces the implementations of fields
-      index, choice, and choices. The new implementation updates index when
-      choice is changed and choice when index is changed. If choices is
-      changed the index is set to 0.</dd>
-  <dt style="font-family: courier;">getEnumerated</dt>
-    <dd>If the field is an enumerated structure and replacePVField was called
-      for the field then interface Enumerated is returned.</dd>
-</dl>
-<hr />
-
-<h2 style="text-align: center;" id="MultiSet">MultiSet</h2>
-<hr />
-
-<p>Enumerated is a convenience interface for a structure that happens to be
-an enumerated structure, which is a structure that has fields index and
-choices. Index is an integer and choices is an array of strings. Both index
-selects one of the choices.</p>
+<p>A MultiChoice consists of an array of strings and a bot set that selects
+an arbitrary set of the choices.</p>
 <pre>    public interface MultiChoice {
         interface Choices {
             String[] getChoices();
@@ -224,8 +175,6 @@ currently has only one method:</p>
         boolean put(String message,MessageType messageType);
         boolean isEmpty();
         boolean isFull();
-        void replaceFirst(String message,MessageType messageType);
-        void replaceLast(String message,MessageType messageType);
         int getClearOverrun();
     }
     
@@ -255,10 +204,6 @@ higher priority threads.</p>
     <dd>Is the queue empty?</dd>
   <dt style="font-family: courier;">isFull</dt>
     <dd>Is the queue full?</dd>
-  <dt style="font-family: courier;">replaceFirst</dt>
-    <dd>Replace the oldest member in the queue.</dd>
-  <dt style="font-family: courier;">replaceLast</dt>
-    <dd>Replace the newest member in the queue.</dd>
   <dt style="font-family: courier;">getClearOverrun</dt>
     <dd>Get the number of times replaceFirst or replaceLast have been called
       since the last call to getClearOverrun. The internal counter is reset
@@ -270,46 +215,6 @@ higher priority threads.</p>
   <dt style="font-family: courier;">create</dt>
     <dd>Create a MessageQueue and return the interface.</dd>
 </dl>
-
-<p>An example is:</p>
-<pre>    private ExecutorNode executorNode;
-    ...
-      executorNode = executor.createNode(this);
-    ...
-
-    public void message(final String message, MessageType messageType) {
-        boolean execute = false;
-        synchronized(messageQueue) {
-            if(messageQueue.isEmpty()) execute = true;
-            if(messageQueue.isFull()) {
-                messageQueue.replaceLast(message, messageType);
-            } else {
-                messageQueue.put(message, messageType);
-            }
-        }
-        if(syncExec) {
-            iocExecutor.execute(executorNode);
-        }
-    }
-    ...
-    public run() { // handle messages
-        while(true) {
-            String message = null;
-            int numOverrun = 0;
-            synchronized(messageQueue) {
-                MessageNode messageNode = messageQueue.get();
-                numOverrun = messageQueue.getClearOverrun();
-                if(messageNode==null &amp;&amp; numOverrun==0) break;
-                message = messageNode.message;
-            }
-            if(numOverrun&gt;0) {
-                System.out.printf(String.format("%n%d missed messages&amp;n", numOverrun));
-            }
-            if(message!=null) {
-               System.out.printf(String.format("%s%n",message));
-            }
-        }
-    }</pre>
 <hr />
 
 <h2 style="text-align: center;" id="Thread">Thread</h2>
@@ -528,6 +433,7 @@ not provided by java.util.Timer and java.util.TimerTask:</p>
     }
     interface TimerNode {
         void cancel();
+        boolean isScheduled();
     }
     void scheduleAfterDelay(TimerNode timerNode,double delay);
     void schedulePeriodic(TimerNode timerNode,double delay,double period);
@@ -566,6 +472,8 @@ a callback. It has the single method:</p>
       dequeued but the callback not called when cancel is called then a
       callback may still happen. New schedule requests can be made after a
       cancel request has been made.</dd>
+  <dt style="font-family: courier;">isScheduled</dt>
+    <dd>Is this node in the timerQueue.</dd>
 </dl>
 
 <h3 id="Timer1">Timer</h3>

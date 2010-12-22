@@ -38,21 +38,12 @@ public class BaseScalar extends BaseField implements Scalar {
         return scalarType;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.factory.BaseField#toString()
+     * @see org.epics.pvData.factory.BaseField#toString(java.lang.StringBuilder, int)
      */
-    public String toString() { return getString(0);}
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.BaseField#toString(int)
-     */
-    public String toString(int indentLevel) {
-        return getString(indentLevel);
-    }
-    
-    private String getString(int indentLevel) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(super.toString(indentLevel));
-        builder.append(" scalarType " + scalarType.toString());
-        return builder.toString();
+    @Override
+    public void toString(StringBuilder buf, int indentLevel) {
+        buf.append(scalarType.toString());
+        super.toString(buf,indentLevel);
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

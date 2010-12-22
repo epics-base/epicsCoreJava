@@ -16,7 +16,7 @@ public interface LinkedListNode<T> {
      * Get the object passed to LinkedListCreate.createNode();
      * @return the object.
      */
-    public T getObject();
+    T getObject();
     /**
      * Is this node on a list?
      * @return (false,true) if node (is not,is) on a list.

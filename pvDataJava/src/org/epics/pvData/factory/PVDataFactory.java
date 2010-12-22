@@ -78,6 +78,8 @@ public class PVDataFactory {
                 return createPVScalarArray(parent,fieldName,(PVScalarArray)fieldToClone);
             case structure:
                 return createPVStructure(parent,fieldName,(PVStructure)fieldToClone);
+            case structureArray:
+            	throw new IllegalArgumentException("structureArray not valid fieldToClone");
             }
             throw new IllegalArgumentException(
             "Logic error in PVDataFactory");

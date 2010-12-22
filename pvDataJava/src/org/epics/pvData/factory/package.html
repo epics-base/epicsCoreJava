@@ -10,13 +10,13 @@
 <body>
 <h1 style="text-align: center">EPICS PVData: factory<br />
 package: org.epics.pvData.factory<br />
-2010.08.26</h1>
-CONTENTS
+2010.12.21</h1>
+CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Factory">Factory</a>
+  <li><a href="#Factory">Factory</a> 
     <ul>
       <li><a href="#FieldFacto">FieldFactory</a></li>
       <li><a href="#PVDataFact">PVDataFactory</a></li>
@@ -25,18 +25,18 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Base">Base Introspection Classes</a></li>
-  <li><a href="#Abstract">Abstract and Base Classes for PVField</a>
+  <li><a href="#Abstract">Abstract and Base Classes for PVField</a> 
     <ul>
       <li><a href="#BasePVAuxI">BasePVAuxInfo</a></li>
       <li><a href="#AbstractPV">AbstractPVField</a></li>
     </ul>
   </li>
-  <li><a href="#Classes">Classes For PVStructure</a>
+  <li><a href="#Classes">Classes For PVStructure</a> 
     <ul>
       <li><a href="#BasePVStru">BasePVStructure</a></li>
     </ul>
   </li>
-  <li><a href="#Classes1">Classes For PVScalar</a>
+  <li><a href="#Classes1">Classes For PVScalar</a> 
     <ul>
       <li><a href="#AbstractPV1">AbstractPVScalar</a></li>
       <li><a href="#BasePVBool">BasePVBoolean</a></li>
@@ -49,7 +49,7 @@ CONTENTS
       <li><a href="#BasePVStri">BasePVString</a></li>
     </ul>
   </li>
-  <li><a href="#Classes2">Classes for PVArray</a>
+  <li><a href="#Classes2">Classes for PVArray</a> 
     <ul>
       <li><a href="#AbstractPV2">AbstractPVArray</a></li>
       <li><a href="#BasePVBool1">BasePVBooleanArray</a></li>
@@ -66,7 +66,7 @@ CONTENTS
 </ul>
 </div>
 
-<p> </p>
+<p></p>
 <hr />
 
 <h2 style="text-align: center" id="Overview">Overview</h2>
@@ -138,9 +138,9 @@ introspection implementation but they could be extended if necessary. </p>
         // all StructureScalar methods.
     }
 
-    public class BaseArray extends BaseField implements Array {
-        public BaseArray(String fieldName,ScalarType elementType);
-        // all Array methods  
+    public class BaseScalarArray extends BaseField implements ScalarArray {
+        public BaseScalarArray(String fieldName,ScalarType elementType);
+        // all ScalarArray methods  
     }
 
     public class BaseStructureArray extends BaseArray implements StructureArray {
@@ -195,8 +195,6 @@ protected methods are: </p>
 Any code that implements PVStructure MUST extend this class.</p>
 <pre>public class BasePVStructure extends AbstractPVField implements PVStructure
     public BasePVStructure(PVField parent, Structure structure);
-    public void embedInRecord(PVRecord pvRecord);
-    protected String toString(String prefix,int indentLevel);
     // all public methods of PVStructure
 }</pre>
 <hr />

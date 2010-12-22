@@ -23,13 +23,18 @@ public interface Field {
     Type getType();
     /**
      * Convert to a string
-     * @return The field as a string
+     * @param buf buffer for the result
      */
-    String toString();
+    void toString(StringBuilder buf);
     /**
      * Convert to a string
+     * @param buf buffer for the result
      * @param indentLevel Indentation level
-     * @return The field as a string
      */
-    String toString(int indentLevel);   
+    void toString(StringBuilder buf,int indentLevel);
+    /**
+     * Implement standard toString().
+     * @return The field as a String.
+     */
+    String toString();
 }

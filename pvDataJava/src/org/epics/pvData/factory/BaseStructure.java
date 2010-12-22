@@ -5,10 +5,7 @@
  */
 package org.epics.pvData.factory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
@@ -24,20 +21,17 @@ import org.epics.pvData.pv.Type;
 public class BaseStructure extends BaseField implements Structure {
     private static Convert convert = ConvertFactory.getConvert();
     private Field[] fields;
-    private String[] fieldNames;
-    private List<String> sortedFieldNameList;
-    private int[] fieldIndex;
     
     /**
      * Constructor for a structure field.
      * @param fieldName The field name.
-     * @param field The array of nodes definitions for the nodes of the structure.
+     * @param fields The array of nodes definitions for the nodes of the structure.
      * @throws IllegalArgumentException if structureName is null;
      */
-    public BaseStructure(String fieldName,Field[] field)
+    public BaseStructure(String fieldName,Field[] fields)
     {
         super(fieldName, Type.structure);  
-        initializeFields(field);
+        initializeFields(fields);
     }
 	/**
 	 * Initialize nodes.
@@ -47,84 +41,60 @@ public class BaseStructure extends BaseField implements Structure {
 	private void initializeFields(Field[] field) throws IllegalArgumentException {
 		if(field==null) field = new Field[0];
         this.fields = field;
-        fieldNames = new String[field.length];
-        sortedFieldNameList = new ArrayList<String>(field.length);
-        sortedFieldNameList.clear();
-        for(int i = 0; i <field.length; i++) {
-            fieldNames[i] = field[i].getFieldName();
-            sortedFieldNameList.add(fieldNames[i]);
-        }
-        Collections.sort(sortedFieldNameList);
-        // look for duplicates
-        for(int i=0; i<field.length-1; i++) {
-            if(sortedFieldNameList.get(i).equals(sortedFieldNameList.get(i+1))) {
-                throw new IllegalArgumentException(
-                        "fieldNames " + sortedFieldNameList.get(i)
-                        + " appears more than once");
-            }
-        }
-        fieldIndex = new int[field.length];
-        for(int i=0; i<field.length; i++) {
-            String value = sortedFieldNameList.get(i);
-            for(int j=0; j<field.length; j++) {
-                if(value.equals(this.fieldNames[j])) {
-                    fieldIndex[i] = j;
-                }
-            }
+        for(int i=0; i<fields.length; i++) {
+        	String fieldName = fields[i].getFieldName();
+        	for(int j=i+1; j<fields.length; j++) {
+        		if(fieldName.equals(fields[j].getFieldName())) {
+        			throw new IllegalArgumentException(
+                            "fieldName " + fieldName
+                            + " appears more than once");
+        		}
+        	}
         }
 	}    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Structure#getField(java.lang.String)
      */
+	@Override
     public Field getField(String name) {
-        int i = Collections.binarySearch(sortedFieldNameList,name);
-        if(i>=0) {
-            return fields[fieldIndex[i]];
-        }
+		for(int i=0; i<fields.length; i++) {
+			if(name.equals(fields[i].getFieldName())) {
+				return fields[i];
+			}
+		}
         return null;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Structure#getFieldIndex(java.lang.String)
      */
+	@Override
     public int getFieldIndex(String name) {
-        int i = Collections.binarySearch(sortedFieldNameList,name);
-        if(i>=0) return fieldIndex[i];
+		for(int i=0; i<fields.length; i++) {
+			if(name.equals(fields[i].getFieldName())) {
+				return i;
+			}
+		}
         return -1;
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Structure#getFieldNames()
-     */
-    public String[] getFieldNames() {
-        return fieldNames;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Structure#getFields()
      */
+    @Override
     public Field[] getFields() {
         return fields;
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.BaseField#toString()
-     */
-    public String toString() { return getString(0);}
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.BaseField#toString(int)
-     */
-    public String toString(int indentLevel) {
-        return getString(indentLevel);
-    }
+    
+    @Override
+    public void toString(StringBuilder buf, int indentLevel) {
+        buf.append("structure ");
+        super.toString(buf, indentLevel);
+        convert.newLine(buf,indentLevel+1);
+        int length = fields.length;
+        for(int i=0; i<length; i++) {
+            fields[i].toString(buf, indentLevel+1);
+            if(i<length-1) convert.newLine(buf,indentLevel+1);
 
-    private String getString(int indentLevel) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(super.toString(indentLevel));
-        convert.newLine(builder,indentLevel);
-        builder.append(String.format("structure  {"));
-        for(int i=0, n= fields.length; i < n; i++) {
-            builder.append(fields[i].toString(indentLevel + 1));
         }
-        convert.newLine(builder,indentLevel);
-        builder.append("}");
-        return builder.toString();
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

@@ -10,12 +10,12 @@ import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Type;
 
 /**
- * Base class for implementing a Array.
+ * Base class for implementing a ScalarArray.
  * It is also a complete implementation.
  * @author mrk
  *
  */
-public class BaseArray extends BaseField implements ScalarArray {
+public class BaseScalarArray extends BaseField implements ScalarArray {
     
     private ScalarType elementType;
     
@@ -24,7 +24,7 @@ public class BaseArray extends BaseField implements ScalarArray {
      * @param fieldName The field name.
      * @param elementType The element Type.
      */
-    public BaseArray(String fieldName,ScalarType elementType) {
+    public BaseScalarArray(String fieldName,ScalarType elementType) {
         super(fieldName, Type.scalarArray);
         this.elementType = elementType;
     }
@@ -35,21 +35,13 @@ public class BaseArray extends BaseField implements ScalarArray {
         return elementType;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.factory.BaseField#toString()
+     * @see org.epics.pvData.factory.BaseField#toString(java.lang.StringBuilder, int)
      */
-    public String toString() { return getString(0);}
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.BaseField#toString(int)
-     */
-    public String toString(int indentLevel) {
-        return getString(indentLevel);
-    }
-    
-    private String getString(int indentLevel) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(super.toString(indentLevel));
-        builder.append(" elementType " + elementType.toString());
-        return builder.toString();
+    @Override
+    public void toString(StringBuilder buf, int indentLevel) {
+        buf.append(elementType.toString());
+        buf.append("[]");
+        super.toString(buf, indentLevel);
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -72,7 +64,7 @@ public class BaseArray extends BaseField implements ScalarArray {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final BaseArray other = (BaseArray) obj;
+		final BaseScalarArray other = (BaseScalarArray) obj;
 		if (elementType == null) {
 			if (other.elementType != null)
 				return false;

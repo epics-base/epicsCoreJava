@@ -46,21 +46,6 @@ public class BasePVInt extends AbstractPVScalar implements PVInt
         super.postPut();
     }
     /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return toString(0);
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#toString(int)
-     */
-    @Override
-    public String toString(int indentLevel) {
-        return convert.getString(this, indentLevel)
-        + super.toString(indentLevel);
-    }
-    /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override

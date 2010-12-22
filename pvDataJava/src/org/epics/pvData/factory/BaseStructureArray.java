@@ -5,31 +5,26 @@
  */
 package org.epics.pvData.factory;
 
-import org.epics.pvData.pv.Field;
-import org.epics.pvData.pv.FieldCreate;
+import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
 import org.epics.pvData.pv.Type;
 
 /**
- * Base class for implementing a Array.
+ * Base class for implementing a StructureArray.
  * It is also a complete implementation.
  * @author mrk
  *
  */
 public class BaseStructureArray extends BaseField implements StructureArray {
-	private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private static final Convert convert = ConvertFactory.getConvert();
 	private Structure structure;
 
 	/**
-	 * Constructor for BaseArray.
-	 * @param fieldName The field name.
-	 * @param fields The introspection interfaces for the subfields of structure.
+	 * Constructor for BaseStructureArray
+	 * @param fieldName The fieldName.
+	 * @param elementStructure The structure introspection interface for each element
 	 */
-	public BaseStructureArray(String fieldName,Field[] fields) {
-		super(fieldName, Type.structureArray);
-		structure = fieldCreate.createStructure("", fields);
-	}
 	public BaseStructureArray(String fieldName,Structure elementStructure) {
 		super(fieldName, Type.structureArray);
 		this.structure = elementStructure;
@@ -41,22 +36,12 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	public Structure getStructure() {
 		return structure;
 	}
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.factory.BaseField#toString()
-	 */
-	public String toString() { return getString(0);}
-	/* (non-Javadoc)
-	 * @see org.epics.pvData.factory.BaseField#toString(int)
-	 */
-	public String toString(int indentLevel) {
-		return getString(indentLevel);
-	}
-
-	private String getString(int indentLevel) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(super.toString(indentLevel));
-		builder.append(" structure " + structure.toString());
-		return builder.toString();
+	@Override
+    public void toString(StringBuilder buf, int indentLevel) {
+        buf.append("structure[]");
+        super.toString(buf, indentLevel +1);
+		convert.newLine(buf, indentLevel+1);
+		structure.toString(buf, indentLevel+1);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

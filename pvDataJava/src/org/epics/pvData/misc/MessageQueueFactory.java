@@ -49,20 +49,25 @@ public class MessageQueueFactory {
             return value;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.misc.MessageQueue#put(java.lang.String, org.epics.pvData.pv.MessageType)
+         * @see org.epics.pvData.misc.MessageQueue#put(java.lang.String, org.epics.pvData.pv.MessageType, boolean)
          */
-        public boolean put(String message, MessageType messageType) {
+        public boolean put(String message, MessageType messageType,boolean replaceLast) {
+            MessageNode messageNode = null;
+            boolean ok = true;
             if(numFree==0) {
+                int index = ((nextFree==0) ? size-1 : nextFree--) ;
+                messageNode = messageNodes[index];
                 numOverrun++;
-                return false;
+                ok = false;
+            } else {
+                messageNode = messageNodes[nextFree];
+                nextFree++;
+                if(nextFree==size) nextFree = 0;
+                numFree--;
             }
-            MessageNode messageNode = messageNodes[nextFree];
-            nextFree++;
-            if(nextFree==size) nextFree = 0;
-            numFree--;
             messageNode.message = message;
             messageNode.messageType = messageType;
-            return true;
+            return ok;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.MessageQueue#isEmpty()
@@ -75,31 +80,6 @@ public class MessageQueueFactory {
          */
         public boolean isFull() {
             return ((numFree==0) ? true : false);
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.misc.MessageQueue#replaceFirst(java.lang.String, org.epics.pvData.pv.MessageType)
-         */
-        public void replaceFirst(String message, MessageType messageType) {
-            if(numFree!=0) {
-                throw new IllegalStateException("Logic error. Must be called only if full");
-            }
-            MessageNode messageNode = messageNodes[nextMessage];
-            numOverrun++;
-            messageNode.message = message;
-            messageNode.messageType = messageType;
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvData.misc.MessageQueue#replaceLast(java.lang.String, org.epics.pvData.pv.MessageType)
-         */
-        public void replaceLast(String message, MessageType messageType) {
-            if(numFree!=0) {
-                throw new IllegalStateException("Logic error. Must be called only if full");
-            }
-            int index = ((nextFree==0) ? size-1 : nextFree--) ;
-            MessageNode messageNode = messageNodes[index];
-            numOverrun++;
-            messageNode.message = message;
-            messageNode.messageType = messageType;
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.misc.MessageQueue#getClearOverrun()

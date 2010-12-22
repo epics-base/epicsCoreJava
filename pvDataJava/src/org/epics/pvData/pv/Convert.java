@@ -30,25 +30,25 @@ package org.epics.pvData.pv;
 public interface Convert {
 	/**
 	 * Get the full fieldName for the pvField.
+	 * @param builder The builder that will have the result.
 	 * @param pvField The pvField.
-	 * @return The full field name.
 	 */
-	String getFullFieldName(PVField pvField);
+	void getFullFieldName(StringBuilder builder,PVField pvField);
     /**
      * Convert a PVField to a string.
+     * param buf buffer for the result
      * @param pv a PVField to convert to a string.
      * If a PVField is a structure or array be prepared for a very long string.
      * @param indentLevel indentation level
-     * @return value converted to string
      */
-    String getString(PVField pv, int indentLevel);
+    void getString(StringBuilder buf,PVField pv, int indentLevel);
     /**
      * Convert a PVField to a string.
+     * param buf buffer for the result
      * @param pv The PVField to convert to a string.
      * If the PVField is a structure or array be prepared for a very long string.
-     * @return value converted to string
      */
-    String getString(PVField pv);
+    void getString(StringBuilder buf,PVField pv);
     /**
      * Convert from a String to a PVScalar
      * @param pv The PV.
@@ -224,6 +224,12 @@ public interface Convert {
      * @throws IllegalArgumentException if the Type is not a numeric scalar
      */
     double toDouble(PVScalar pv);
+    /**
+     * Convert a PV to a String
+     * @param pv a PV
+     * @return converted value
+     */
+    String toString(PVScalar pv);
     /**
      * Convert a PV from a byte
      * @param pv a PV

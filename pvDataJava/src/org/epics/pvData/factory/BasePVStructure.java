@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
@@ -41,7 +40,6 @@ import org.epics.pvData.pv.Type;
  */
 public class BasePVStructure extends AbstractPVField implements PVStructure
 {
-    private static final Convert convert = ConvertFactory.getConvert();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private PVField[] pvFields;
     private String extendsStructureName = null;
@@ -95,11 +93,11 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      */
     @Override
     public PVField getSubField(int fieldOffset) {
-        if(fieldOffset<=super.getFieldOffset()) {
-            if(fieldOffset==super.getFieldOffset()) return this;
+        if(fieldOffset<=getFieldOffset()) {
+            if(fieldOffset==getFieldOffset()) return this;
             return null;
         }
-        if(fieldOffset>super.getNextFieldOffset()) return null;
+        if(fieldOffset>getNextFieldOffset()) return null;
         for(PVField pvField: pvFields) {
             if(pvField.getFieldOffset()==fieldOffset) return pvField;
             if(pvField.getNextFieldOffset()<=fieldOffset) continue;
@@ -128,7 +126,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         newPVFields[newPVFields.length-1] = pvField;
         pvFields = newPVFields;
-        super.replaceStructure();
+        super.replaceStructure(this);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#appendPVFields(org.epics.pvData.pv.PVField[], boolean)
@@ -149,7 +147,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 	        	newPVFields[original +i] = pvFields[i];
 	        }
 		}
-		super.replaceStructure();
+		super.replaceStructure(this);
 	}
 	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#removePVField(java.lang.String)
@@ -169,8 +167,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             newPVFields[newIndex++] = pvFields[i];
         }
         pvFields = newPVFields;
-        replaceStructure();
-        //updateInternal();
+        replaceStructure(this);
     }
 	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getPVFields()
@@ -424,30 +421,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         this.extendsStructureName = extendsStructureName;
         return true;
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        String prefix = "structure " + super.getField().getFieldName();
-        return toString(prefix,0);
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#toString(int)
-     */
-    @Override
-    public String toString(int indentLevel) {
-        return toString("structure",indentLevel);
-    }       
-    /**
-     * Called by BasePVRecord.
-     * @param prefix A prefix for the generated string.
-     * @param indentLevel The indentation level.
-     * @return String showing the PVStructure.
-     */
-    protected String toString(String prefix,int indentLevel) {
-        return getString(prefix,indentLevel);
-    }
     
     private PVField findSubField(String fieldName,PVStructure pvStructure) {
         if(fieldName==null || fieldName.length()<1) return null;
@@ -472,26 +445,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         if(restOfName==null) return pvField;
         if(pvField.getField().getType()!=Type.structure) return null;
         return findSubField(restOfName,(PVStructure)pvField);
-    }
-    private String getString(String prefix,int indentLevel) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(prefix);
-        builder.append(super.toString(indentLevel));
-        if(extendsStructureName!=null) {
-            builder.append(" extends ");
-            builder.append(extendsStructureName);
-        }
-        convert.newLine(builder,indentLevel);
-        builder.append("{");
-        for(int i=0, n= pvFields.length; i < n; i++) {
-            convert.newLine(builder,indentLevel + 1);
-            Field field = pvFields[i].getField();
-            builder.append(field.getFieldName() + " = ");
-            builder.append(pvFields[i].toString(indentLevel + 1));            
-        }
-        convert.newLine(builder,indentLevel);
-        builder.append("}");
-        return builder.toString();
     }
     
 	/* (non-Javadoc)

@@ -71,7 +71,7 @@ public final class FieldFactory {
          */
         public ScalarArray createScalarArray(String fieldName, ScalarType elementType)
         {
-            return new BaseArray(fieldName,elementType);
+            return new BaseScalarArray(fieldName,elementType);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createArray(java.lang.String, org.epics.pvData.pv.Structure)

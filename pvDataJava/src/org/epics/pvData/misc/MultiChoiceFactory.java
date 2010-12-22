@@ -6,11 +6,15 @@
 package org.epics.pvData.misc;
 
 
-import java.util.Arrays;
-
-import org.epics.pvData.factory.*;
-import org.epics.pvData.misc.MultiChoice.Choices;
-import org.epics.pvData.pv.*;
+import org.epics.pvData.pv.ByteArrayData;
+import org.epics.pvData.pv.PVByteArray;
+import org.epics.pvData.pv.PVField;
+import org.epics.pvData.pv.PVScalarArray;
+import org.epics.pvData.pv.PVStringArray;
+import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.StringArrayData;
+import org.epics.pvData.pv.Type;
 
 /**
  * Factory for an enumerated structure.

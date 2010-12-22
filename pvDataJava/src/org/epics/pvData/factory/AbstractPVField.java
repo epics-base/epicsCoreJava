@@ -18,6 +18,8 @@ import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.Type;
 
 
 /**
@@ -39,7 +41,7 @@ public abstract class AbstractPVField implements PVField{
     /**
      * Convenience for derived classes that perform conversions.
      */
-    protected static Convert convert = ConvertFactory.getConvert();
+    protected static final Convert convert = ConvertFactory.getConvert();
     /**
      * Constructor that must be called by derived classes.
      * @param pvParent The pvParent PVStructure.
@@ -56,8 +58,18 @@ public abstract class AbstractPVField implements PVField{
     /**
      * Called by derived classes to replace a Structure.
      */
-    protected void replaceStructure() {
-    	replaceStructure(true);
+    protected void replaceStructure(PVStructure pvStructure) {
+        PVField[] pvFields = pvStructure.getPVFields();
+        int length = pvFields.length;
+        Field[] newFields = new Field[length];
+        for(int i=0; i<length; i++) {
+            newFields[i] = pvFields[i].getField();
+        }
+        Structure newStructure = fieldCreate.createStructure(field.getFieldName(), newFields);
+        field = newStructure;
+        if(pvParent!=null) {
+            ((AbstractPVField)pvParent).replaceStructure(pvParent);
+        }
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Requester#getRequesterName()
@@ -192,7 +204,7 @@ public abstract class AbstractPVField implements PVField{
         	throw new IllegalStateException("Did not find field in parent");
         }
         pvFields[index] = newPVField;
-        ((AbstractPVField)parent).replaceStructure();
+        ((AbstractPVField)parent).replaceStructure(parent);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#renameField(java.lang.String)
@@ -219,44 +231,48 @@ public abstract class AbstractPVField implements PVField{
             this.field = structure;
             break;
         }
+        case structureArray: {
+            StructureArray structureArray = (StructureArray)field;
+            structureArray = fieldCreate.createStructureArray(newName, structureArray.getStructure());
+            this.field = structureArray;
         }
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVField#toString(java.lang.StringBuilder)
+     */
+    @Override
+    public void toString(StringBuilder buf) {
+        toString(buf,0);
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVField#toString(java.lang.StringBuilder, int)
+     */
+    @Override
+    public void toString(StringBuilder buf,int indentLevel) {
+        convert.getString(buf,this,indentLevel);
+        if(pvAuxInfo==null) return;
+        pvAuxInfo.toString(buf,indentLevel);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
-        return toString(0);
+        StringBuilder builder = new StringBuilder();
+        toString(builder);
+        return builder.toString();
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVField#toString(int)
-     */
-    @Override
-    public String toString(int indentLevel) {
-        if(pvAuxInfo==null) return "";
-        return pvAuxInfo.toString(indentLevel);
-    }
-    
-    private void replaceStructure(boolean initial) {
-    	PVStructure pvStructure = (PVStructure)this;
-    	PVField[] pvFields = pvStructure.getPVFields();
-        int length = pvFields.length;
-        Field[] newFields = new Field[length];
-        for(int i=0; i<length; i++) {
-            newFields[i] = pvFields[i].getField();
-        }
-        Structure newStructure = fieldCreate.createStructure(field.getFieldName(), newFields);
-        field = newStructure;
-        if(pvParent!=null) {
-            ((AbstractPVField)pvParent).replaceStructure(false);
-        }
-    }
- 
     private void computeOffset() {
-    	PVStructure pvTop = this.pvParent;
-    	if(pvTop==null) {
-    		pvTop = (PVStructure)this;
-    	} else {
+        PVStructure pvTop = this.pvParent;
+        if(pvTop==null) {
+            if(getField().getType()!=Type.structure) {
+                fieldOffset = 0;
+                nextFieldOffset = 1;
+                return;
+            }
+            pvTop = (PVStructure)this;
+        } else {
     		while(pvTop.getParent()!=null) pvTop = pvTop.getParent();
     	}
         int offset = 0;

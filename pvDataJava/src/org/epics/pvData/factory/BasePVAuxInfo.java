@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVAuxInfo;
 import org.epics.pvData.pv.PVDataCreate;
@@ -18,6 +19,7 @@ import org.epics.pvData.pv.ScalarType;
  */
 public class BasePVAuxInfo implements PVAuxInfo {
     private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static Convert convert = ConvertFactory.getConvert();
     private TreeMap<String,PVScalar> attributeMap = new TreeMap<String,PVScalar>();
     
     private PVField pvField;
@@ -62,25 +64,26 @@ public class BasePVAuxInfo implements PVAuxInfo {
         return pvScalar;
     }
     /* (non-Javadoc)
-     * @see java.lang.Object#toString()
+     * @see org.epics.pvData.pv.PVAuxInfo#toString(java.lang.StringBuilder, int)
      */
-    public String toString() {
-        return toString(0);
-    }
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVAuxInfo#toString(int)
-     */
-    public synchronized String toString(int indentLevel) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("");
+    @Override
+    public void toString(StringBuilder buf, int indentLevel) {
+        if(attributeMap.isEmpty()) return;
+        convert.newLine(buf,indentLevel);
+        buf.append("auxinfo");
         Set<Map.Entry<String, PVScalar>> set = attributeMap.entrySet();
         for(Map.Entry<String,PVScalar> entry : set) {
-            String key = entry.getKey();
-            builder.append(' ');
-            builder.append(key);
-            builder.append('=');
-            builder.append(attributeMap.get(key));
+             convert.newLine(buf,indentLevel+1);
+             String key = entry.getKey();
+             PVScalar value = attributeMap.get(key);
+             value.toString(buf,indentLevel+1);
         }
-        return builder.toString();
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVAuxInfo#toString(java.lang.StringBuilder)
+     */
+    @Override
+    public void toString(StringBuilder buf) {
+        toString(buf,0);
     }
 }

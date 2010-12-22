@@ -46,14 +46,6 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
         super.postPut();
     }        
     /* (non-Javadoc)
-     * @see org.epics.pvData.factory.AbstractPVField#toString(int)
-     */
-    @Override
-    public String toString(int indentLevel) {
-        return convert.getString(this, indentLevel)
-        + super.toString(indentLevel);
-    }
-    /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
      */
     @Override

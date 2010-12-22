@@ -90,5 +90,18 @@ public enum ScalarType {
         if(type.equals("string")) return ScalarType.pvString;
         return null;
     }
+    public String toString() {
+        switch(this) {
+        case pvBoolean: return "boolean";
+        case pvByte: return "byte";
+        case pvShort: return "short";
+        case pvInt:   return "int";
+        case pvLong:  return "long";
+        case pvFloat: return "float";
+        case pvDouble: return "double";
+        case pvString: return "string";
+        }
+        throw new IllegalArgumentException("Unknown scalarType");
+    }
 }
 
