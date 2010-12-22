@@ -46,6 +46,8 @@ import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorElement;
 import org.epics.pvData.monitor.MonitorRequester;
+import org.epics.pvData.property.PVTimeStamp;
+import org.epics.pvData.property.PVTimeStampFactory;
 import org.epics.pvData.property.TimeStamp;
 import org.epics.pvData.property.TimeStampFactory;
 import org.epics.pvData.pv.Convert;
@@ -1623,8 +1625,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		//assertEquals("get-test", channelGetRequester.pvStructure.getFullName());
 		PVInt value = channelGetRequester.pvStructure.getIntField("value");
-		TimeStamp timestamp = TimeStampFactory.getTimeStamp(channelGetRequester.pvStructure.getStructureField("timeStamp"));
-		
+		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
+		assert(pvTimeStamp.attach(channelGetRequester.pvStructure.getStructureField("timeStamp")));
+		TimeStamp timestamp = TimeStampFactory.create();
+		pvTimeStamp.get(timestamp);
 		channelGetRequester.syncGet(false);
 		// only first bit must be set
 		assertEquals(1, channelGetRequester.bitSet.cardinality());
@@ -2099,9 +2103,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		PVInt getValue = channelPutGetRequester.pvGetStructure.getIntField("value");
 		assertNotNull(getValue);
-		TimeStamp timestamp = TimeStampFactory.getTimeStamp(channelPutGetRequester.pvGetStructure.getStructureField("timeStamp"));
-		assertNotNull(timestamp);
-
+		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
+        assertTrue(pvTimeStamp.attach(channelPutGetRequester.pvGetStructure.getStructureField("timeStamp")));
+        TimeStamp timestamp = TimeStampFactory.create();
+        pvTimeStamp.get(timestamp);
 		// get all
 		channelPutGetRequester.syncGetGet();
 		

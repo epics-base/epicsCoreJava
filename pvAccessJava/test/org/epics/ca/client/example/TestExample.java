@@ -38,9 +38,6 @@ import org.epics.ca.client.impl.remote.ClientContextImpl;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.misc.Executor;
-import org.epics.pvData.misc.ExecutorFactory;
-import org.epics.pvData.misc.ThreadPriority;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorElement;
 import org.epics.pvData.monitor.MonitorRequester;
@@ -69,10 +66,6 @@ public class TestExample {
 	static {
 		ClientFactory.start();
 	}
-
-	// TODO temp
-	private static final Executor executor = ExecutorFactory.create("MonitorHandler", ThreadPriority.lowest);
-
     /**
      * CA context.
      */

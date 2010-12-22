@@ -61,11 +61,12 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 		
-		transport.ensureData((2*Short.SIZE+2*Integer.SIZE+128)/Byte.SIZE);
+		transport.ensureData((Short.SIZE +Long.SIZE + Integer.SIZE+128+Short.SIZE)/Byte.SIZE);
 		final int sequentalID = payloadBuffer.getShort() & 0x0000FFFF;
-		final TimeStamp startupTimestamp = TimeStampFactory.create(
-														 payloadBuffer.getInt() & 0x00000000FFFFFFFFL,
-														 (int)(payloadBuffer.getInt() & 0x00000000FFFFFFFFL));
+		final TimeStamp startupTimestamp = TimeStampFactory.create();
+		long secs = payloadBuffer.getLong();
+		int nano = payloadBuffer.getInt();
+		startupTimestamp.put(secs,nano);
 		
 		// 128-bit IPv6 address
 		byte[] byteAddress = new byte[16]; 

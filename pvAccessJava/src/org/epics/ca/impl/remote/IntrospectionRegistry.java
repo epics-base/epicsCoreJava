@@ -17,8 +17,8 @@ package org.epics.ca.impl.remote;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.util.ShortHashMap;
-import org.epics.pvData.factory.BaseArray;
 import org.epics.pvData.factory.BaseScalar;
+import org.epics.pvData.factory.BaseScalarArray;
 import org.epics.pvData.factory.BaseStructure;
 import org.epics.pvData.factory.BaseStructureArray;
 import org.epics.pvData.factory.PVDataFactory;
@@ -293,7 +293,7 @@ public final class IntrospectionRegistry {
 			case scalarArray:
 				final ScalarType element = ScalarType.values()[typeCode & 0x0F];
 				final String arrayFieldName = SerializeHelper.deserializeString(buffer, control);
-				return new BaseArray(arrayFieldName, element);
+				return new BaseScalarArray(arrayFieldName, element);
 				
 			case structure:
 				return deserializeStructureField(buffer, control, registry);

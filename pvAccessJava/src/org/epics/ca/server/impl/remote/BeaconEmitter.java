@@ -128,7 +128,8 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 		this.fastBeaconPeriod = Math.max(context.getBeaconPeriod(), EPICS_CA_MIN_BEACON_PERIOD);
 		this.slowBeaconPeriod = Math.max(180.0, fastBeaconPeriod);	// TODO configurable
 		this.beaconCountLimit = (short)Math.max(10, EPICS_CA_MIN_BEACON_COUNT_LIMIT);	// TODO configurable
-		this.startupTime = TimeStampFactory.create(System.currentTimeMillis());
+		this.startupTime = TimeStampFactory.create();
+		startupTime.getCurrentTime();
 		this.timerNode = TimerFactory.createNode(this);
 
 	}
@@ -187,10 +188,10 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 		}
 		
 		// send beacon
-		control.startMessage((byte)0, (Short.SIZE+2*Integer.SIZE+128+Short.SIZE)/Byte.SIZE);
+		control.startMessage((byte)0, (Short.SIZE +Long.SIZE + Integer.SIZE+128+Short.SIZE)/Byte.SIZE);
 		
 		buffer.putShort(beaconSequenceID);
-		buffer.putInt((int)startupTime.getSecondsPastEpoch());
+		buffer.putLong(startupTime.getSecondsPastEpoch());
 		buffer.putInt((int)startupTime.getNanoSeconds());
 			
 		// NOTE: is it possible (very likely) that address is any local address ::ffff:0.0.0.0
