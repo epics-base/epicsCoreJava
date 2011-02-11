@@ -32,6 +32,7 @@ import org.epics.pvData.monitor.MonitorRequester;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.Status.StatusType;
 
 /**
  * Monitor request handler.
@@ -60,8 +61,15 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			channelMonitor = channel.getChannel().createMonitor(this, pvRequest);
-			// TODO what if last call fails... registration is still present
+			
+			try {
+				channelMonitor = channel.getChannel().createMonitor(this, pvRequest);
+			} catch (Throwable th) {
+				// simply cannot trust code above
+				BaseChannelRequester.sendFailureMessage((byte)13, transport, ioid, (byte)QoS.INIT.getMaskValue(),
+						statusCreate.createStatus(StatusType.FATAL, "Unexpected exception caught: " + th.getMessage(), th));
+				destroy();
+			}
 		}
 
 		@Override

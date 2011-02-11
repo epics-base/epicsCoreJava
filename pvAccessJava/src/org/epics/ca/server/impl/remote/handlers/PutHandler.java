@@ -30,6 +30,7 @@ import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
+import org.epics.pvData.pv.Status.StatusType;
 
 /**
  * Put request handler.
@@ -58,8 +59,15 @@ public class PutHandler extends AbstractServerResponseHandler {
 			
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			channelPut = channel.getChannel().createChannelPut(this, pvRequest);
-			// TODO what if last call fails... registration is still present
+			
+			try {
+				channelPut = channel.getChannel().createChannelPut(this, pvRequest);
+			} catch (Throwable th) {
+				// simply cannot trust code above
+				BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, (byte)QoS.INIT.getMaskValue(),
+						statusCreate.createStatus(StatusType.FATAL, "Unexpected exception caught: " + th.getMessage(), th));
+				destroy();
+			}
 		}
 
 		@Override

@@ -30,6 +30,7 @@ import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
+import org.epics.pvData.pv.Status.StatusType;
 
 /**
  * RPC handler.
@@ -60,8 +61,15 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			channelRPC = channel.getChannel().createChannelRPC(this, pvRequest);
-			// TODO what if last call fails... registration is still present
+			
+			try {
+				channelRPC = channel.getChannel().createChannelRPC(this, pvRequest);
+			} catch (Throwable th) {
+				// simply cannot trust code above
+				BaseChannelRequester.sendFailureMessage((byte)20, transport, ioid, (byte)QoS.INIT.getMaskValue(),
+						statusCreate.createStatus(StatusType.FATAL, "Unexpected exception caught: " + th.getMessage(), th));
+				destroy();
+			}
 		}
 
 		/* (non-Javadoc)

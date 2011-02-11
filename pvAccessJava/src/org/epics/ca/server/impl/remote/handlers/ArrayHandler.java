@@ -31,6 +31,7 @@ import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
+import org.epics.pvData.pv.Status.StatusType;
 
 /**
  * Array request handler.
@@ -59,8 +60,15 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			channelArray = channel.getChannel().createChannelArray(this, pvRequest);			
-			// TODO what if last call fails... registration is still present
+			
+			try {
+				channelArray = channel.getChannel().createChannelArray(this, pvRequest);			
+			} catch (Throwable th) {
+				// simply cannot trust code above
+				BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, (byte)QoS.INIT.getMaskValue(),
+						statusCreate.createStatus(StatusType.FATAL, "Unexpected exception caught: " + th.getMessage(), th));
+				destroy();
+			}
 		}
 		
 		/* (non-Javadoc)
