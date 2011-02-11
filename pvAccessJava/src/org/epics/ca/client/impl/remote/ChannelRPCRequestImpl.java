@@ -136,7 +136,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		argumentBitSet = new BitSet(argumentData.getNumberFields());
 
 		// notify
-		callback.channelRPCConnect(okStatus, this, argumentData, argumentBitSet);
+		callback.channelRPCConnect(status, this, argumentData, argumentBitSet);
 	}
 
 	/* (non-Javadoc)
@@ -173,6 +173,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.requestDone(channelNotConnected, null);
 		}
 	}

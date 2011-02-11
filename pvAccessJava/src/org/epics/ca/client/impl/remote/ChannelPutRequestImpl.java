@@ -129,7 +129,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		bitSet = new BitSet(data.getNumberFields());
 		
 		// notify
-		callback.channelPutConnect(okStatus, this, data, bitSet);
+		callback.channelPutConnect(status, this, data, bitSet);
 	}
 
 	/* (non-Javadoc)
@@ -172,6 +172,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.getDone(channelNotConnected);
 		}
 	}
@@ -194,6 +195,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.putDone(channelNotConnected);
 		}
 	}

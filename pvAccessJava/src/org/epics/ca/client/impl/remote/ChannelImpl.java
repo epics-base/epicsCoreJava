@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.epics.ca.CAConstants;
 import org.epics.ca.CAException;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.ChannelArray;
@@ -85,6 +86,11 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	protected final short priority;
 
 	/**
+	 * List of fixed addresses, if <code<null</code> name resolution will be used.
+	 */
+	protected final InetSocketAddress[] addresses;
+	
+	/**
 	 * Last reported connection status.
 	 */
 	//protected boolean lastReportedConnectionState = false;
@@ -139,12 +145,13 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	 * @throws CAException
 	 */
 	protected ChannelImpl(ClientContextImpl context, int channelID, String name,
-			ChannelRequester requester, short priority) throws CAException
+			ChannelRequester requester, short priority, InetSocketAddress[] addresses) throws CAException
 	{
 		this.context = context;
 		this.channelID = channelID;
 		this.name = name;
 		this.priority = priority;
+		this.addresses = addresses;
 		this.requester = requester;
 		
 		// register before issuing search request
@@ -362,7 +369,14 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	public synchronized void initiateSearch()
 	{
 		allowCreation = true;
-		context.getChannelSearchManager().registerChannel(this);
+		
+		if (addresses == null)
+			context.getChannelSearchManager().registerChannel(this);
+		else
+			// TODO not only first
+			// TODO minor version
+			// TODO what to do if there is no channel, do not search in a loop!!! do this in other thread...!
+			searchResponse(CAConstants.CA_MINOR_PROTOCOL_REVISION, addresses[0]);
 	}
 
 	/* (non-Javadoc)
@@ -579,7 +593,7 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	private boolean needSubscriptionUpdate = false;
 	
     private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
-	public static final Status channelDestroyed = statusCreate.createStatus(StatusType.WARNING, "channel destoryed", null);
+	public static final Status channelDestroyed = statusCreate.createStatus(StatusType.WARNING, "channel destroyed", null);
 	public static final Status channelDisconnected = statusCreate.createStatus(StatusType.WARNING, "channel disconnected", null);
 	
 	/**

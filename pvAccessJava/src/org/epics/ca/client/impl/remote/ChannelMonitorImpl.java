@@ -643,6 +643,9 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			{
 				final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
 				initResponse(transport, version, payloadBuffer, qos, status);
+
+				if (started.get())
+					start();
 			}
 			else if (QoS.DESTROY.isSet(qos))
 			{
@@ -683,6 +686,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			started.set(true);
 			return okStatus;
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			return channelNotConnected;
 		}
 	}
@@ -704,6 +708,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			started.set(false);
 			return okStatus;
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			return channelNotConnected;
 		}
 	}
@@ -731,8 +736,6 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	public final void resubscribeSubscription(Transport transport) throws CAException {
 		startRequest(QoS.INIT.getMaskValue());
 		transport.enqueueSendRequest(this);
-		if (started.get())
-			start();
 	}
 
 	/* (non-Javadoc)

@@ -194,6 +194,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			this.count = count;
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.getArrayDone(channelNotConnected);
 		}
 	}
@@ -218,6 +219,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			this.count = count;
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.putArrayDone(channelNotConnected);
 		}
 	}
@@ -242,6 +244,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			this.capacity = capacity;
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.setLengthDone(channelNotConnected);
 		}
 	}

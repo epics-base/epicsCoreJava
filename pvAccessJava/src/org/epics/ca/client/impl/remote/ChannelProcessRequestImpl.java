@@ -38,11 +38,6 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	 */
 	protected final ChannelProcessRequester callback;
 
-	/**
-	 * Initialization status.
-	 */
-	protected volatile boolean initialized = false;
-
 	protected final PVStructure pvRequest;
 
 	public ChannelProcessRequestImpl(ChannelImpl channel, ChannelProcessRequester callback, PVStructure pvRequest) {
@@ -140,6 +135,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.processDone(channelNotConnected);
 		}
 	}

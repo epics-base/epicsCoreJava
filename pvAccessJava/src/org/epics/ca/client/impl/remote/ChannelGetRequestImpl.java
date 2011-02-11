@@ -124,7 +124,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		bitSet = new BitSet(data.getNumberFields());
 
 		// notify
-		callback.channelGetConnect(okStatus, this, data, bitSet);
+		callback.channelGetConnect(status, this, data, bitSet);
 	}
 
 	/* (non-Javadoc)
@@ -142,7 +142,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		bitSet.deserialize(payloadBuffer, transport);
 		data.deserialize(payloadBuffer, transport, bitSet);
 		
-		callback.getDone(okStatus);
+		callback.getDone(status);
 	}
 
 	/* (non-Javadoc)
@@ -163,6 +163,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.getDone(channelNotConnected);
 		}
 	}

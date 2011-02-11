@@ -136,7 +136,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		getData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
 
 		// notify
-		callback.channelPutGetConnect(okStatus, this, putData, getData);
+		callback.channelPutGetConnect(status, this, putData, getData);
 	}
 
 	/* (non-Javadoc)
@@ -201,6 +201,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.putGetDone(channelNotConnected);
 		}
 	}
@@ -223,6 +224,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.getGetDone(channelNotConnected);
 		}
 	}
@@ -245,6 +247,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
+			stopRequest();
 			callback.getPutDone(channelNotConnected);
 		}
 	}

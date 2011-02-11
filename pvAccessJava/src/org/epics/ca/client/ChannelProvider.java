@@ -59,4 +59,13 @@ public interface ChannelProvider {
      * @return <code>Channel</code> instance. If channel does not exist <code>null</code> is returned and <code>channelRequester</code> notified.
      */
     Channel createChannel(String channelName,ChannelRequester channelRequester,short priority);
+    /**
+     * Create a channel.
+     * @param channelName The name of the channel.
+     * @param channelRequester The requester.
+     * @param priority channel priority, must be <code>PRIORITY_MIN</code> <= priority <= <code>PRIORITY_MAX</code>.
+     * @param address address (or list of addresses) where to look for a channel. Implementation independed string.
+     * @return <code>Channel</code> instance. If channel does not exist <code>null</code> is returned and <code>channelRequester</code> notified.
+     */
+    Channel createChannel(String channelName,ChannelRequester channelRequester,short priority,String address);
 }

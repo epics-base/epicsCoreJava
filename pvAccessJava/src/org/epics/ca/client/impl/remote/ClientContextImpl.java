@@ -575,7 +575,10 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 	/**
 	 * Internal create channel.
 	 */
-	public Channel createChannelInternal(String name, ChannelRequester requester, short priority) throws CAException {
+	// TODO no minor version with the addresses
+	// TODO what if there is an channel with the same name, but on different host!
+	public Channel createChannelInternal(String name, ChannelRequester requester, short priority,
+			InetSocketAddress[] addresses) throws CAException {
 		checkState();
 		checkChannelName(name);
 
@@ -612,7 +615,7 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 				}
 				*/					
 				int cid = generateCID();
-				return new ChannelImpl(this, cid, name, requester, priority);
+				return new ChannelImpl(this, cid, name, requester, priority, addresses);
 			}
 			finally
 			{
@@ -1140,10 +1143,22 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 		@Override
 		public Channel createChannel(String channelName,
 				ChannelRequester channelRequester, short priority) {
-			
+        	return createChannel(channelName, channelRequester, priority, null);
+		}
+	
+        /* (non-Javadoc)
+         * @see org.epics.ca.client.ChannelProvider#createChannel(java.lang.String, org.epics.ca.client.ChannelRequester, short, java.lang.String[])
+         */
+        @Override
+		public Channel createChannel(String channelName,
+				ChannelRequester channelRequester, short priority,
+				String address) {
 		    Channel channel;
 			try {
-				channel = createChannelInternal(channelName, channelRequester, priority);
+				// TODO configurable
+				short defaultPort = CAConstants.CA_SERVER_PORT;
+				InetSocketAddress[] addressList = (address == null) ? null : InetAddressUtil.getSocketAddressList(address, defaultPort);
+				channel = createChannelInternal(channelName, channelRequester, priority, addressList);
 			} catch (IllegalArgumentException iae) {
 				throw iae;
 			} catch (Throwable th) {
@@ -1153,8 +1168,8 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 		    channelRequester.channelCreated(okStatus, channel);
 		    return channel;
 		}
-	
-		/* (non-Javadoc)
+
+        /* (non-Javadoc)
 		 * @see org.epics.ca.client.ChannelProvider#getProviderName()
 		 */
 		@Override
