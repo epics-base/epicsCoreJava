@@ -235,7 +235,8 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 		{
 			unresponsiveTransport();
 		}
-		else if (diff > connectionTimeout)
+		// use some k (3/4) to handle "jitter"
+		else if (diff >= ((3*connectionTimeout)/4))
 		{
 			// send echo
 			enqueueSendRequest(this);
