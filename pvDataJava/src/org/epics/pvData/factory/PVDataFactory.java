@@ -198,6 +198,19 @@ public class PVDataFactory {
             return new BasePVStructure(parent,structure);
         }
         /* (non-Javadoc)
+         * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.PVField[])
+         */
+        @Override
+        public PVStructure createPVStructure(PVStructure parent,
+                String fieldName, PVField[] pvFields)
+        {
+            int length = pvFields.length;
+            Field[] fields = new Field[length];
+            for(int i=0; i<length; i++) fields[i] = pvFields[i].getField();
+            Structure structure = fieldCreate.createStructure(fieldName, fields);
+            return new BasePVStructure(parent,structure,pvFields);
+        }
+        /* (non-Javadoc)
          * @see org.epics.pvData.pv.PVDataCreate#createPVStructure(org.epics.pvData.pv.PVStructure, java.lang.String, org.epics.pvData.pv.PVStructure)
          */
         @Override

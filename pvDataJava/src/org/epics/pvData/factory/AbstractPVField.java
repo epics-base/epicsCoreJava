@@ -71,6 +71,10 @@ public abstract class AbstractPVField implements PVField{
             ((AbstractPVField)pvParent).replaceStructure(pvParent);
         }
     }
+    protected void setParent(PVStructure parent)
+    {
+        pvParent = parent;
+    }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Requester#getRequesterName()
      */
@@ -82,22 +86,41 @@ public abstract class AbstractPVField implements PVField{
 			return "none";
 		}
 	}
+    
+    
+    private void message(String fieldName,String message,MessageType messageType)
+    {
+         if(pvParent!=null) {
+             String parentName = pvParent.getField().getFieldName();
+             if(parentName.length()>0)  fieldName = parentName + "." + fieldName;
+             AbstractPVField xxx = (AbstractPVField)pvParent;
+             xxx.message(fieldName,message,messageType);
+             return;
+         }
+         if(requester!=null) {
+             String mess = fieldName + " " + message;
+             requester.message(mess,messageType);
+
+         } else {
+             System.out.println(messageType.toString() + " " + fieldName  + " " + message);
+         }
+    }
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Requester#message(java.lang.String, org.epics.pvData.pv.MessageType)
 	 */
 	@Override
 	public void message(String message, MessageType messageType) {
-		if(requester!=null) {
-			requester.message(message, messageType);
-		} else {
-			System.out.println(messageType.toString() + " " + field.getFieldName() + " " + message);
-		}
+	    message(field.getFieldName(),message,messageType);
+		
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.PVField#registerRequester(org.epics.pvData.pv.Requester)
 	 */
 	@Override
 	public void setRequester(Requester requester) {
+	    if(pvParent!=null) {
+	        throw new IllegalStateException("PVField::setRequester only legal for top level structure");
+	    }
 		if(this.requester!=null) {
 			if(requester==this.requester) return;
 			throw new IllegalStateException("A requester is already registered");
@@ -263,6 +286,7 @@ public abstract class AbstractPVField implements PVField{
         toString(builder);
         return builder.toString();
     }
+    
     private void computeOffset() {
         PVStructure pvTop = this.pvParent;
         if(pvTop==null) {

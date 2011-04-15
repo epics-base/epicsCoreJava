@@ -102,6 +102,15 @@ public interface PVDataCreate {
      * Create implementation for PVStructure.
      * @param parent The parent interface.
      * @param fieldName The field name.
+     * @param pvFields Array of PVFields
+     * @return The PVStructure implementation
+     */
+    PVStructure createPVStructure(PVStructure parent,String fieldName,PVField[] pvFields);
+
+    /**
+     * Create implementation for PVStructure.
+     * @param parent The parent interface.
+     * @param fieldName The field name.
      * @param structToClone A structure. Each subfield and any auxInfo is cloned and added to the newly created structure.
      * @return The PVStructure implementation.
      */

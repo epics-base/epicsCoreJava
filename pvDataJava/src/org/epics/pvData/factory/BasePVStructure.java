@@ -80,7 +80,34 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     		}
     	}
     }
+    /**
+     * Constructor.
+     * @param parent The parent interface.
+     * @param structure the reflection interface for the PVStructure data.
+     * @param pvFields The PVField array for the subfields.
+     */
+    public BasePVStructure(PVStructure parent, Structure structure,PVField[] pvFields)
+    {
+        super(parent,structure);
+        this.pvFields = pvFields;
+        for(int i=0; i<pvFields.length; i++) {
+            AbstractPVField pvField = (AbstractPVField)(pvFields[i]);
+            setParent(pvField,this);
+        }
+    }
     
+    static private void setParent(AbstractPVField pvField,PVStructure parent)
+    {
+        pvField.setParent(parent);
+        if(pvField.getField().getType()==Type.structure) {
+            PVStructure subStructure = (PVStructure)pvField;
+            PVField[] subFields = subStructure.getPVFields();
+            for(int i=0; i<subFields.length; i++) {
+                AbstractPVField subField = (AbstractPVField)(subFields[i]);
+                setParent(subField,subStructure);
+            }
+        }
+    }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getSubField(java.lang.String)
      */

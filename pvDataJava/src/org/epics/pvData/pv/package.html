@@ -783,6 +783,8 @@ interfaces. A factory is provided that creates PVDataCreate.</p>
     PVStructure createPVStructure(PVStructure parent,String fieldName,
         Field[] fields);
     PVStructure createPVStructure(PVStructure parent,String fieldName,
+        PVField[] pvFields);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,
         PVStructure structToClone);
     PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
@@ -812,7 +814,10 @@ where
     <dd>Create an instance of a PVStructure. Four methods are provided. The
       first method uses a previously created structure introspection
       interface. The second uses a Field array to initialize the sub-fields.
-      The third initializes the subfields by cloning the fields contained in
+      The third uses a PVField[]. On this case the parent of each PVField
+      will be set to the PVStructure that is being created.
+      This is the fastest method.
+      The fourth initializes the subfields by cloning the fields contained in
       structToClone. The newly created sub-fields will have the same values
       and auxInfos as the original. If structToClone is null then the new
       structure is initialized to have 0 sub-fields.</dd>
