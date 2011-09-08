@@ -333,7 +333,7 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	public synchronized void disconnect(boolean initiateSearch, boolean remoteDestroy) {
 //System.err.println("CHANNEL disconnect");
 		
-		if (connectionState != ConnectionState.CONNECTED && transport == null)
+		if (connectionState != ConnectionState.CONNECTED)
 			return;
 			
 		if (!initiateSearch) {
