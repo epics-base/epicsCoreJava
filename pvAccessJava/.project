@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>CAJv4</name>
+	<name>pvAccessJava</name>
 	<comment></comment>
 	<projects>
-		<project>JCA</project>
+		<project>pvDataJava</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
