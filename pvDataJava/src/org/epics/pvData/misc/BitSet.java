@@ -1125,12 +1125,12 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * Attempts to reduce internal storage used for the bits in this bit set.
      * Calling this method may, but is not required to, affect the value
      * returned by a subsequent call to the {@link #size()} method.
-     */
+     *
     private void trimToSize() {
         if (wordsInUse != words.length) {
             words = Arrays.copyOf(words, wordsInUse);
         }
-    }
+    }*/
 
     /**
      * Save the state of the {@code BitSet} instance to a stream (i.e.,

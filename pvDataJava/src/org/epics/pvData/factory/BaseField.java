@@ -5,7 +5,6 @@
  */
 package org.epics.pvData.factory;
 
-import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.Type;
 
@@ -19,7 +18,6 @@ public abstract class BaseField implements Field
 {
     private String fieldName;
     private Type type;
-    private static Convert convert = ConvertFactory.getConvert();
 
     /**
      * Constructor for BaseField.

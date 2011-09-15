@@ -57,7 +57,7 @@ public final class PVAlarmFactory implements PVAlarm{
             return false;
         }
         PVString pvString = pvStructure.getStringField("message");
-        if(pvInt==null) {
+        if(pvString==null) {
             pvField.message(noAlarmFound,MessageType.error);
             return false;
         }

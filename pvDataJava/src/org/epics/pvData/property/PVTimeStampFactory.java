@@ -68,7 +68,7 @@ public class PVTimeStampFactory implements PVTimeStamp {
             return false;
         }
         PVInt pvInt = pvStructure.getIntField("nanoSeconds");
-        if(pvLong==null) {
+        if(pvInt==null) {
             pvField.message(noTimeStampFound,MessageType.error);
             return false;
         }
