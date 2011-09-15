@@ -29,7 +29,7 @@ import org.epics.pvData.pv.Status;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class ConnectedDisconnectTest extends TestCase {
+public class ConnectedDisconnectIT extends TestCase {
 
 	/**
      * CA context.
