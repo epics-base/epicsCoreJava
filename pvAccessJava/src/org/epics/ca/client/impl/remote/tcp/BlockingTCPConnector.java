@@ -71,10 +71,10 @@ public class BlockingTCPConnector implements Connector {
 	
 	
 	/**
-	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.ResponseHandler, java.net.InetSocketAddress, short, short)
+	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.ResponseHandler, java.net.InetSocketAddress, byte, short)
 	 */
 	public Transport connect(TransportClient client, ResponseHandler responseHandler,
-							 InetSocketAddress address, short transportRevision, short priority)
+							 InetSocketAddress address, byte transportRevision, short priority)
 		throws ConnectionException
 	{
 

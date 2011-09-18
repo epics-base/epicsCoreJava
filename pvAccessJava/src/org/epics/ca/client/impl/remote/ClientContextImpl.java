@@ -925,7 +925,7 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 	 * @param priority process priority.
 	 * @return transport for given address
 	 */
-	Transport getTransport(TransportClient client, InetSocketAddress serverAddress, short minorRevision, short priority)
+	Transport getTransport(TransportClient client, InetSocketAddress serverAddress, byte minorRevision, short priority)
 	{
 		try
 		{

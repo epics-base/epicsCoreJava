@@ -34,6 +34,6 @@ public interface Connector {
 	 * @throws ConnectionException
 	 */
 	public Transport connect(TransportClient client, ResponseHandler responseHandler, 
-							 InetSocketAddress address, short transportRevision, short priority) throws ConnectionException;
+							 InetSocketAddress address, byte transportRevision, short priority) throws ConnectionException;
 	
 }

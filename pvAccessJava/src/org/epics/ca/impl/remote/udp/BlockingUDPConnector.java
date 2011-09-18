@@ -66,9 +66,9 @@ public class BlockingUDPConnector implements Connector {
 	
 	/**
 	 * NOTE: transport client is ignored for broadcast (UDP). 
-	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.ResponseHandler, java.net.InetSocketAddress, short, short)
+	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.ResponseHandler, java.net.InetSocketAddress, byte, short)
 	 */
-	public Transport connect(TransportClient client, ResponseHandler responseHandler, InetSocketAddress bindAddress, short transportRevision, short priority)
+	public Transport connect(TransportClient client, ResponseHandler responseHandler, InetSocketAddress bindAddress, byte transportRevision, short priority)
 		throws ConnectionException
 	{
 		context.getLogger().finer("Creating datagram socket to: " + bindAddress);
