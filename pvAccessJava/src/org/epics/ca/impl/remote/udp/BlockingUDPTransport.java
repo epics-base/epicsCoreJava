@@ -111,10 +111,10 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 		socketAddress = bindAddress;
 
 		// allocate receive buffer
-		receiveBuffer = ByteBuffer.allocateDirect(CAConstants.MAX_UDP_RECV);
+		receiveBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_RECV);
 		
 		// allocate send buffer and non-reentrant lock
-		sendBuffer = ByteBuffer.allocateDirect(CAConstants.MAX_UDP_SEND);
+		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_SEND);
 	}
 	
 	/**
@@ -248,8 +248,17 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 				return false;
 			
 			// only data for UDP
-			receiveBuffer.get();
-
+			final byte flags = receiveBuffer.get();
+			if (flags < 0)
+			{
+				// 7-bit is set
+				receiveBuffer.order(ByteOrder.BIG_ENDIAN);
+			}
+			else
+			{
+				receiveBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			}
+			
 			// command ID and paylaod
 			final byte command = receiveBuffer.get();
 			final int payloadSize = receiveBuffer.getInt();
@@ -563,7 +572,7 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 		lastMessageStartPosition = sendBuffer.position();
 		sendBuffer.put(CAConstants.CA_MAGIC);
 		sendBuffer.put(CAConstants.CA_VERSION);
-		sendBuffer.put((byte)0);	// data
+		sendBuffer.put((byte)0x80);	// data + big endian
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
 	}

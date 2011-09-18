@@ -242,6 +242,19 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	 */
 	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {
+
+		//
+		// set byte order control message 
+		//
+		
+		ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE);
+		sendBuffer.put(CAConstants.CA_MAGIC);
+		sendBuffer.put(CAConstants.CA_VERSION);
+		sendBuffer.put((byte)0x81);		// control + big endian
+		sendBuffer.put((byte)2);		// set byte order
+		sendBuffer.putInt(0);		
+
+		
 		//
 		// send verification message
 		//

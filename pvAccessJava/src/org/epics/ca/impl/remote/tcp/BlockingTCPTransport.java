@@ -185,12 +185,12 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 
 		//socketBuffer = ByteBuffer.allocate(Math.max(CAConstants.MAX_TCP_RECV + MAX_ENSURE_DATA_BUFFER_SIZE, receiveBufferSize));
 		/// TODO
-		socketBuffer = ByteBuffer.allocateDirect(Math.max(CAConstants.MAX_TCP_RECV + MAX_ENSURE_DATA_BUFFER_SIZE, receiveBufferSize));
+		socketBuffer = ByteBuffer.allocate(Math.max(CAConstants.MAX_TCP_RECV + MAX_ENSURE_DATA_BUFFER_SIZE, receiveBufferSize));
 		socketBuffer.position(socketBuffer.limit());
 		startPosition = socketBuffer.position();
 		
 		// allocate buffer
-		sendBuffer = ByteBuffer.allocateDirect(socketBuffer.capacity());
+		sendBuffer = ByteBuffer.allocate(socketBuffer.capacity());
 		maxPayloadSize = sendBuffer.capacity() - 2*CAConstants.CA_MESSAGE_HEADER_SIZE; // one for header, one for flow control
 		
 		// get send buffer size
@@ -363,7 +363,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 	private ReceiveStage stage = ReceiveStage.READ_FROM_SOCKET;
 
 	private short magicAndVersion;
-	private byte packetType;
+	private byte flags;
 	private byte command;
 	private int payloadSize;
 	
@@ -458,8 +458,8 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 						return; 
 					}
 					
-					// data vs. control packet
-					packetType = socketBuffer.get();
+					// flags
+					flags = socketBuffer.get();
 					
 					// command
 					command = socketBuffer.get();
@@ -467,20 +467,24 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 					// read payload size
 					payloadSize = socketBuffer.getInt();
 
-					// data
-					final byte type = (byte)(packetType & 0x0F);
+					final byte type = (byte)(flags & 0x0F);
 					if (type == 0)
 					{
+						// data
 						stage = ReceiveStage.PROCESS_PAYLOAD;
 					}
 					else if (type == 1)
 					{
+						// control
+						
+						// marker request sent
 						if (command == 0)
 						{
 							if (markerToSend.getAndSet(payloadSize) == 0)
 								; // TODO send back response
 						}
-						else //if (command == 1)
+						// marker received back
+						else if (command == 1)
 						{
 							int difference = (int)totalBytesSent - payloadSize + CAConstants.CA_MESSAGE_HEADER_SIZE;
 							// overrun check
@@ -488,6 +492,12 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 								difference += Integer.MAX_VALUE;
 							remoteBufferFreeSpace = remoteTransportReceiveBufferSize + remoteTransportSocketReceiveBufferSize - difference; 
 							// TODO if this is calculated wrong, this can be critical !!!
+						}
+						// set byte order
+						else if (command == 2)
+						{
+							// check 7-th bit
+							setByteOrder(flags < 0 ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 						}
 						
 						// no payload
@@ -507,7 +517,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 					// read header
 					final byte version = (byte)(magicAndVersion & 0xFF);
 					// last segment bit set (means in-between segment or last segment)
-					final boolean notFirstSegment = (packetType & 0x20) != 0;
+					final boolean notFirstSegment = (flags & 0x20) != 0;
 
 					storedPayloadSize = payloadSize;
 
@@ -1085,7 +1095,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 		lastMessageStartPosition = sendBuffer.position();
 		sendBuffer.put(CAConstants.CA_MAGIC);
 		sendBuffer.put(CAConstants.CA_VERSION);
-		sendBuffer.put(lastSegmentedMessageType);	// data
+		sendBuffer.put((byte)(lastSegmentedMessageType | 0x80));	// data + big endian
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
 	}
@@ -1108,6 +1118,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 	private final void endMessage(boolean hasMoreSegments) {
 		if (lastMessageStartPosition >= 0)
 		{
+			// set paylaod size
 			sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2), sendBuffer.position() - lastMessageStartPosition - CAConstants.CA_MESSAGE_HEADER_SIZE); 
 			
 			// set segmented bit

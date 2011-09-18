@@ -570,7 +570,7 @@ public class ChannelSearchManager {
 		this.context = context;
 
 		// create and initialize send buffer
-		sendBuffer = ByteBuffer.allocateDirect(CAConstants.MAX_UDP_SEND);
+		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_SEND);
 		initializeSendBuffer();
 
 		// TODO should be configurable
@@ -619,8 +619,8 @@ public class ChannelSearchManager {
 		sendBuffer.clear();
 		sendBuffer.put(CAConstants.CA_MAGIC);
 		sendBuffer.put(CAConstants.CA_VERSION);
-		sendBuffer.put((byte)0);	// data
-		sendBuffer.put((byte)3);	// beacon
+		sendBuffer.put((byte)0x80);	// data + big endian
+		sendBuffer.put((byte)3);	// search
 		sendBuffer.putInt(Integer.SIZE/Byte.SIZE + 1);		// "zero" payload
 		sendBuffer.putInt(sequenceNumber);
 
