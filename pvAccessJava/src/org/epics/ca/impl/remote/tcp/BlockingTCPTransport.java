@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -445,9 +446,12 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 
 					// first byte is CA_MAGIC
 					// second byte version - major/minor nibble 
-					// check magic and version at once
-					magicAndVersion = socketBuffer.getShort(); 
-					if ((short)(magicAndVersion & 0xFFF0) != CAConstants.CA_MAGIC_AND_MAJOR_VERSION) {
+					// check only major version for compatibility
+					final byte magic = socketBuffer.get();
+					final byte version = socketBuffer.get(); 
+					if ((magic != CAConstants.CA_MAGIC) ||
+						((version >> 4) != CAConstants.CA_MAJOR_PROTOCOL_REVISION))
+					{
 						// error... disconnect
 						context.getLogger().warning("Invalid header received from client " + socketAddress + ", disconnecting...");
 						close (true);
@@ -794,7 +798,8 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
     	sendPending = false;
 		
 		// prepare ACK marker
-		sendBuffer.putShort(CAConstants.CA_MAGIC_AND_VERSION);
+		sendBuffer.put(CAConstants.CA_MAGIC);
+		sendBuffer.put(CAConstants.CA_VERSION);
 		sendBuffer.put((byte)1);	// control data
 		sendBuffer.put((byte)1);	// marker ACK
 		sendBuffer.putInt(0);
@@ -1078,7 +1083,8 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 		lastMessageStartPosition = -1;
 		ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE + ensureCapacity);
 		lastMessageStartPosition = sendBuffer.position();
-		sendBuffer.putShort(CAConstants.CA_MAGIC_AND_VERSION);
+		sendBuffer.put(CAConstants.CA_MAGIC);
+		sendBuffer.put(CAConstants.CA_VERSION);
 		sendBuffer.put(lastSegmentedMessageType);	// data
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
@@ -1135,7 +1141,8 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 			final int bytesLeft = sendBuffer.remaining();
 			if (position >= nextMarkerPosition && bytesLeft >= CAConstants.CA_MESSAGE_HEADER_SIZE)
 			{
-				sendBuffer.putShort(CAConstants.CA_MAGIC_AND_VERSION);
+				sendBuffer.put(CAConstants.CA_MAGIC);
+				sendBuffer.put(CAConstants.CA_VERSION);
 				sendBuffer.put((byte)1);	// control data
 				sendBuffer.put((byte)0);	// marker
 				sendBuffer.putInt((int)(totalBytesSent + position + CAConstants.CA_MESSAGE_HEADER_SIZE));
@@ -1181,7 +1188,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 				
 				if (sender == null) {
 					control.ensureBuffer(Integer.SIZE/Byte.SIZE);
-					buffer.putInt(CAConstants.CAJ_INVALID_IOID);
+					buffer.putInt(CAConstants.CA_INVALID_IOID);
 					break;
 				}
 				
@@ -1211,6 +1218,33 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 			sendQueue.notify();
 		}
 		*/
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#setByteOrder(java.nio.ByteOrder)
+	 */
+	@Override
+	public void setByteOrder(final ByteOrder byteOrder) {
+		// called from receive thread... or before processing
+		socketBuffer.order(byteOrder);
+		
+		// that's how we sneak into the send thread and avoid sync problems
+		enqueueSendRequest(new TransportSender() {
+			
+			@Override
+			public void unlock() {
+			}
+			
+			@Override
+			public void send(ByteBuffer buffer, TransportSendControl control) {
+				lastMessageStartPosition = -1;	// no send
+				sendBuffer.order(byteOrder);
+			}
+			
+			@Override
+			public void lock() {
+			}
+		});
 	}
 
 

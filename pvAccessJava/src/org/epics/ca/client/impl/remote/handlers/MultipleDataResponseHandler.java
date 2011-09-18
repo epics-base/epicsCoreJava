@@ -46,7 +46,7 @@ public class MultipleDataResponseHandler extends AbstractClientResponseHandler {
 		{
 			transport.ensureData(Integer.SIZE/Byte.SIZE);
 			final int ioid = payloadBuffer.getInt();
-			if (ioid == CAConstants.CAJ_INVALID_IOID)
+			if (ioid == CAConstants.CA_INVALID_IOID)
 				return;
 			final DataResponse nrr = (DataResponse)context.getResponseRequest(ioid);
 			if (nrr == null) {

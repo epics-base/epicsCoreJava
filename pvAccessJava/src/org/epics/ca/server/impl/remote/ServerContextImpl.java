@@ -215,7 +215,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Channel provider name.
 	 */
-	protected String channelProviderName = CAConstants.CAJ_DEFAULT_PROVIDER;
+	protected String channelProviderName = CAConstants.CA_DEFAULT_PROVIDER;
 	
 	/**
 	 * Channel provider.
@@ -250,7 +250,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected void initializeLogger()
 	{
 		logger = Logger.getLogger(this.getClass().getName());
-		if (System.getProperties().containsKey(CAConstants.CAJ_DEBUG))
+		if (System.getProperties().containsKey(CAConstants.PVACCESS_DEBUG))
 		{
 			logger.setLevel(Level.ALL);
 			logger.addHandler(new ConsoleLogHandler());

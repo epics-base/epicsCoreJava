@@ -617,7 +617,8 @@ public class ChannelSearchManager {
 
 		// new buffer
 		sendBuffer.clear();
-		sendBuffer.putShort(CAConstants.CA_MAGIC_AND_VERSION);
+		sendBuffer.put(CAConstants.CA_MAGIC);
+		sendBuffer.put(CAConstants.CA_VERSION);
 		sendBuffer.put((byte)0);	// data
 		sendBuffer.put((byte)3);	// beacon
 		sendBuffer.putInt(Integer.SIZE/Byte.SIZE + 1);		// "zero" payload

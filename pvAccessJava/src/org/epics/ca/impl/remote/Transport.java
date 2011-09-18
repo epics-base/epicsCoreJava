@@ -15,6 +15,7 @@
 package org.epics.ca.impl.remote;
 
 import java.net.InetSocketAddress;
+import java.nio.ByteOrder;
 
 import org.epics.pvData.pv.DeserializableControl;
 
@@ -93,6 +94,12 @@ public interface Transport extends DeserializableControl {
 	 */
 	public void setRemoteTransportSocketReceiveBufferSize(int socketReceiveBufferSize);
 
+	/**
+	 * Set byte order.
+	 * @param byteOrder byte order to set.
+	 */
+	public void setByteOrder(ByteOrder byteOrder);
+	
 	/**
 	 * Notification transport that is still alive.
 	 */

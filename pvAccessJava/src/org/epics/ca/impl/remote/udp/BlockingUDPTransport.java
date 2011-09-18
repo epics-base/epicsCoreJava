@@ -19,6 +19,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
@@ -236,10 +237,14 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 			//
 	
 			// first byte is CA_MAGIC
+			final byte magic = receiveBuffer.get();
+			if (magic != CAConstants.CA_MAGIC)
+				return false;
+			
 			// second byte version - major/minor nibble 
-			// check magic and version at once
-			final short magicAndVersion = receiveBuffer.getShort(); 
-			if ((short)(magicAndVersion & 0xFFF0) != CAConstants.CA_MAGIC_AND_MAJOR_VERSION)
+			// check only major version for compatibility
+			final byte version = receiveBuffer.get(); 
+			if ((version >> 4) != CAConstants.CA_MAJOR_PROTOCOL_REVISION)
 				return false;
 			
 			// only data for UDP
@@ -255,7 +260,7 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 				return false;
 			
 			// handle
-			responseHandler.handleResponse(fromAddress, this, (byte)(magicAndVersion & 0xFF), command, payloadSize, receiveBuffer);
+			responseHandler.handleResponse(fromAddress, this, version, command, payloadSize, receiveBuffer);
 
 			// set position (e.g. in case handler did not read all)
 			receiveBuffer.position(nextRequestPosition);
@@ -556,7 +561,8 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	public final void startMessage(byte command, int ensureCapacity) {
 		//ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE + ensureCapacity);
 		lastMessageStartPosition = sendBuffer.position();
-		sendBuffer.putShort(CAConstants.CA_MAGIC_AND_VERSION);
+		sendBuffer.put(CAConstants.CA_MAGIC);
+		sendBuffer.put(CAConstants.CA_VERSION);
 		sendBuffer.put((byte)0);	// data
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
@@ -583,8 +589,20 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	 */
 	@Override
 	public void ensureData(int size) {
-		// TODO Auto-generated method stub
+		// noop for UDP (packet based)
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#setByteOrder(java.nio.ByteOrder)
+	 */
+	@Override
+	public void setByteOrder(ByteOrder byteOrder) {
+		// called from receive thread... or before processing
+		receiveBuffer.order(byteOrder);
+
+		synchronized (this) {
+			sendBuffer.order(byteOrder);
+		}
+	}
 	
 }

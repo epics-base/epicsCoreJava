@@ -42,7 +42,7 @@ public abstract class AbstractResponseHandler implements ResponseHandler {
 	 */
 	public AbstractResponseHandler(String description) {
 		this.description = description;
-		debug = System.getProperties().containsKey(CAConstants.CAJ_DEBUG);
+		debug = System.getProperties().containsKey(CAConstants.PVACCESS_DEBUG);
 	}
 
 	/* (non-Javadoc)

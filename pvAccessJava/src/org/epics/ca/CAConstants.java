@@ -42,14 +42,9 @@ public interface CAConstants {
 	public static final byte CA_UNKNOWN_MINOR_PROTOCOL_REVISION = 0;
 
 	/**
-	 * CA magic/major version signature (e.g. 0xCA50).
+	 * CA version signature (e.g. 0x50).
 	 */
-	public static final short CA_MAGIC_AND_MAJOR_VERSION = CAConstants.CA_MAGIC << 8 | CAConstants.CA_MAJOR_PROTOCOL_REVISION << 4;
-
-	/**
-	 * CA magic/version signature (e.g. 0xCA51).
-	 */
-	public static final short CA_MAGIC_AND_VERSION = CAConstants.CA_MAGIC << 8 |
+	public static final byte CA_VERSION = 
 	  CAConstants.CA_MAJOR_PROTOCOL_REVISION << 4 |
 	  CAConstants.CA_MINOR_PROTOCOL_REVISION;
 
@@ -108,25 +103,20 @@ public interface CAConstants {
 	/**
 	 * Invalid data type.
 	 */
-	public static final short INVALID_DATA_TYPE = (short)0xFFFF;
+	public static final short CA_INVALID_DATA_TYPE = (short)0xFFFF;
 
-    /**
-     * String value of the JVM property key to turn on debugging. 
-     */
-    public static final String CAJ_DEBUG = "CAJ_DEBUG";
-
-    /**
-     * String value of the JVM property key to strip hostname returned by InetAddress.getLocalHost().getHostName(). 
-     */
-    public static final String CAJ_STRIP_HOSTNAME = "CAJ_STRIP_HOSTNAME";
-    
     /**
      * Invalid IOID.
      */
-    public static final int CAJ_INVALID_IOID = 0;
+    public static final int CA_INVALID_IOID = 0;
     
     /**
      * Default CA provider name.
      */
-    public static final String CAJ_DEFAULT_PROVIDER = "local";
+    public static final String CA_DEFAULT_PROVIDER = "local";
+
+    /**
+     * String value of the JVM property key to turn on debugging. 
+     */
+    public static final String PVACCESS_DEBUG = "PVACCESS_DEBUG";
 }

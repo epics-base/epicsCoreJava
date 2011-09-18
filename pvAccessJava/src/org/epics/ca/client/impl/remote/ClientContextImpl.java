@@ -282,7 +282,7 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 		String loggerName = thisClassName;
 		logger = Logger.getLogger(loggerName);
 		
-		if (System.getProperties().containsKey(CAConstants.CAJ_DEBUG))
+		if (System.getProperties().containsKey(CAConstants.PVACCESS_DEBUG))
 		{
 			logger.setLevel(Level.ALL);
 			logger.addHandler(new ConsoleLogHandler());
@@ -1016,7 +1016,7 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 		synchronized (pendingResponseRequests)
 		{
 			// search first free (theoretically possible loop of death)
-			while (pendingResponseRequests.get(++lastIOID) != null || lastIOID == CAConstants.CAJ_INVALID_IOID);
+			while (pendingResponseRequests.get(++lastIOID) != null || lastIOID == CAConstants.CA_INVALID_IOID);
 			// reserve IOID
 			pendingResponseRequests.put(lastIOID, null);
 			return lastIOID;
