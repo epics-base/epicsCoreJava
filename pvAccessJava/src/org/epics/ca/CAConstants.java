@@ -111,6 +111,11 @@ public interface CAConstants {
     public static final int CA_INVALID_IOID = 0;
     
     /**
+     * All messages must be aligned to 8-bytes (64-bit).
+     */
+    public static final int CA_ALIGNMENT = 8;
+
+    /**
      * Default CA provider name.
      */
     public static final String CA_DEFAULT_PROVIDER = "local";

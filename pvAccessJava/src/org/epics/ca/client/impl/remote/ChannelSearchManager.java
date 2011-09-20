@@ -676,6 +676,11 @@ public class ChannelSearchManager {
 		}
 
 		@Override
+		public void alignBuffer(int alignment) {
+			throw new UnsupportedOperationException("alignBuffer not supported");
+		}
+
+		@Override
 		public void flushSerializeBuffer() {
 			// TODO Auto-generated method stub
 			

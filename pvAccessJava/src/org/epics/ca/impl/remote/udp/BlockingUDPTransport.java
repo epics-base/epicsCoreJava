@@ -544,6 +544,17 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	@Override
 	public void ensureBuffer(int size) {
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.SerializableControl#alignBuffer(int)
+	 */
+	@Override
+	public void alignBuffer(int alignment) {
+		final int k = (alignment - 1);
+		final int pos = sendBuffer.position();
+		int newpos = (pos + k) & (~k);
+		sendBuffer.position(newpos);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.SerializableControl#flushSerializeBuffer()
@@ -582,6 +593,8 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	 */
 	@Override
 	public final void endMessage() {
+		//we always (for now) send by packet, so no need for this here...
+		//alignBuffer(CAConstants.CA_ALIGNMENT);
 		sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2), sendBuffer.position() - lastMessageStartPosition - CAConstants.CA_MESSAGE_HEADER_SIZE); 
 	}
 
@@ -599,6 +612,17 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	@Override
 	public void ensureData(int size) {
 		// noop for UDP (packet based)
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.DeserializableControl#alignData(int)
+	 */
+	@Override
+	public void alignData(int alignment) {
+		final int k = (alignment - 1);
+		final int pos = receiveBuffer.position();
+		int newpos = (pos + k) & (~k);
+		receiveBuffer.position(newpos);
 	}
 
 	/* (non-Javadoc)

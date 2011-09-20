@@ -161,9 +161,16 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
      */
     private int lastMessageStartPosition = 0;
 	
-	
+    /**
+     * Receive buffer.
+     */
 	private final ByteBuffer socketBuffer;
 
+	/**
+	 * Cached byte-order flag. To be used only in send thread.
+	 */
+	private int byteOrderFlag = 0x80;
+	
 	/**
 	 * TCP transport constructor.
 	 * @param context context where transport lives in.
@@ -183,8 +190,6 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 		this.remoteTransportRevision = 0;
 		this.priority = priority;
 
-		//socketBuffer = ByteBuffer.allocate(Math.max(CAConstants.MAX_TCP_RECV + MAX_ENSURE_DATA_BUFFER_SIZE, receiveBufferSize));
-		/// TODO
 		socketBuffer = ByteBuffer.allocate(Math.max(CAConstants.MAX_TCP_RECV + MAX_ENSURE_DATA_BUFFER_SIZE, receiveBufferSize));
 		socketBuffer.position(socketBuffer.limit());
 		startPosition = socketBuffer.position();
@@ -203,6 +208,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 		
 		socketAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
 		
+        // TODO this will create marker with invalid endian flag
 		// prepare buffer
 		clearAndReleaseBuffer();
 		
@@ -218,7 +224,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 			
 			@Override
 			public void run() {
-				while (!closed) processReadCached(false, null, CAConstants.CA_MESSAGE_HEADER_SIZE, false);
+				while (!closed) processReadCached(false, null, CAConstants.CA_MESSAGE_HEADER_SIZE);
 			}
 		}, "TCP-receive " + socketAddress);
 		//rcvThread.setPriority(Thread.MIN_PRIORITY);
@@ -362,7 +368,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 	enum ReceiveStage { READ_FROM_SOCKET, PROCESS_HEADER, PROCESS_PAYLOAD };
 	private ReceiveStage stage = ReceiveStage.READ_FROM_SOCKET;
 
-	private short magicAndVersion;
+	private byte version;
 	private byte flags;
 	private byte command;
 	private int payloadSize;
@@ -376,35 +382,29 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 	/**
 	 * Process input (read) IO event.
 	 */
-	protected void processReadCached(boolean nestedCall, ReceiveStage inStage, int requiredBytes, boolean addToBuffer) {
+	protected void processReadCached(boolean nestedCall, ReceiveStage inStage, int requiredBytes) {
 		try
 		{ 
 			while (!closed)
 			{
 				if (stage == ReceiveStage.READ_FROM_SOCKET || inStage != null)
 				{
-					final int currentStartPosition;
-					if (addToBuffer)
-					{
-						currentStartPosition = socketBuffer.position();
-						socketBuffer.position(socketBuffer.limit());
-						socketBuffer.limit(socketBuffer.capacity());
-					}
-					else
-					{
-						// add to bytes read
-						totalBytesReceived += (socketBuffer.position() - startPosition);
+					// add to bytes read
+					int currentPosition = socketBuffer.position();
+					totalBytesReceived += (currentPosition - startPosition);
 
-						// copy remaining bytes, if any
-						final int remainingBytes = socketBuffer.remaining();
-						final int endPosition = MAX_ENSURE_DATA_BUFFER_SIZE + remainingBytes;
-						for (int i = MAX_ENSURE_DATA_BUFFER_SIZE; i < endPosition; i++)
-							socketBuffer.put(i, socketBuffer.get());
-						
-						currentStartPosition = startPosition = MAX_ENSURE_DATA_BUFFER_SIZE;
-						socketBuffer.position(MAX_ENSURE_DATA_BUFFER_SIZE + remainingBytes);
-						socketBuffer.limit(socketBuffer.capacity());
-					}
+					// preserve alignment
+					final int currentStartPosition = startPosition = 
+						MAX_ENSURE_DATA_BUFFER_SIZE; // "TODO uncomment align" + currentPosition % CAConstants.CA_ALIGNMENT;
+					
+					// copy remaining bytes, if any
+					final int remainingBytes = socketBuffer.remaining();
+					final int endPosition = startPosition + remainingBytes;
+					for (int i = startPosition; i < endPosition; i++)
+						socketBuffer.put(i, socketBuffer.get());
+					
+					socketBuffer.position(endPosition);
+					socketBuffer.limit(socketBuffer.capacity());
 					
 					// read at least requiredBytes bytes
 					
@@ -442,13 +442,13 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 				{
 					// ensure CAConstants.CA_MESSAGE_HEADER_SIZE bytes of data
 					if (socketBuffer.remaining() < CAConstants.CA_MESSAGE_HEADER_SIZE)
-						processReadCached(true, ReceiveStage.PROCESS_HEADER, CAConstants.CA_MESSAGE_HEADER_SIZE, false);
+						processReadCached(true, ReceiveStage.PROCESS_HEADER, CAConstants.CA_MESSAGE_HEADER_SIZE);
 
 					// first byte is CA_MAGIC
 					// second byte version - major/minor nibble 
 					// check only major version for compatibility
 					final byte magic = socketBuffer.get();
-					final byte version = socketBuffer.get(); 
+					version = socketBuffer.get(); 
 					if ((magic != CAConstants.CA_MAGIC) ||
 						((version >> 4) != CAConstants.CA_MAJOR_PROTOCOL_REVISION))
 					{
@@ -514,8 +514,6 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 				
 				if (stage == ReceiveStage.PROCESS_PAYLOAD)
 				{
-					// read header
-					final byte version = (byte)(magicAndVersion & 0xFF);
 					// last segment bit set (means in-between segment or last segment)
 					final boolean notFirstSegment = (flags & 0x20) != 0;
 
@@ -538,15 +536,17 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 					{
 						socketBuffer.limit(storedLimit);
 						int newPosition = storedPosition + storedPayloadSize;
+						// discard the rest of the packet
 						if (newPosition > storedLimit)
 						{
 							newPosition -= storedLimit;
 							socketBuffer.position(storedLimit);
-							processReadCached(true, ReceiveStage.PROCESS_PAYLOAD, newPosition, false);
+							processReadCached(true, ReceiveStage.PROCESS_PAYLOAD, newPosition);
 							newPosition += startPosition;
 						}
 						socketBuffer.position(newPosition);
 						// TODO discard all possible segments?!!!
+						// if flags indicade notLastSegment we are in trouble!
 					}
 					
 					stage = ReceiveStage.PROCESS_HEADER;
@@ -590,8 +590,8 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 			return;
 		
 		// to large for buffer...
-		if (maxPayloadSize < size)
-			throw new RuntimeException("requested for buffer size " + size + ", but only " + maxPayloadSize + " available.");
+		if (size > MAX_ENSURE_DATA_BUFFER_SIZE)
+			throw new RuntimeException("requested for buffer size " + size + ", but only " + MAX_ENSURE_DATA_BUFFER_SIZE + " available.");
 
 		// subtract what was already processed
 		storedPayloadSize -= socketBuffer.position() - storedPosition;
@@ -601,27 +601,31 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 		{
 			//System.out.println("storedPayloadSize >= size, remaining:" + socketBuffer.remaining());
 
-			// just read up remaining payload
-			// since there is no data on the buffer, read to the beginning of it, at least size bytes
-			processReadCached(true, ReceiveStage.PROCESS_PAYLOAD, size, false);
+			// just read up remaining payload, move current (<size) part of the buffer
+			// to the beginning of the buffer
+			processReadCached(true, ReceiveStage.PROCESS_PAYLOAD, size);
 			storedPosition = socketBuffer.position();
 			storedLimit = socketBuffer.limit();
 			socketBuffer.limit(Math.min(storedPosition + storedPayloadSize, storedLimit));
 		}
+		// we expect segmented message, TODO check flags!!!
 		else
 		{
-			// copy remaining bytes, if any
+			// copy remaining bytes to safe area [0 to MAX_ENSURE_DATA_BUFFER_SIZE), if any
 			final int remainingBytes = socketBuffer.remaining();
 			for (int i = 0; i < remainingBytes; i++)
 				socketBuffer.put(i, socketBuffer.get());
 			
-			// read what is left
+			// read what is left (make it as read)
 			socketBuffer.limit(storedLimit);
 			
+			// we expect segmented message, we expect header
+			// that (and maybe some control packets) needs to be "removed"
+			// so that we get combined payload
 			stage = ReceiveStage.PROCESS_HEADER;
-			processReadCached(true, null, size, false);
+			processReadCached(true, null, size - remainingBytes);
 
-			// copy before position
+			// copy before position (i.e. start of the payload)
 			for (int i = remainingBytes - 1, j = socketBuffer.position() - 1; i >= 0; i--, j--)
 				socketBuffer.put(j, socketBuffer.get(i));
 			startPosition = socketBuffer.position() - remainingBytes;
@@ -641,6 +645,32 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 	}
 
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.DeserializableControl#alignData(int)
+	 */
+	@Override
+	public void alignData(int alignment) {
+		
+		final int k = (alignment - 1);
+		final int pos = socketBuffer.position();
+		int newpos = (pos + k) & (~k);
+		if (pos == newpos)
+			return;
+		
+		int diff = socketBuffer.limit() - newpos;
+		if (diff > 0)
+		{
+			socketBuffer.position(newpos);
+			return;
+		}
+		
+		ensureData(diff);
+		
+		// position has changed, recalculate
+		newpos = (socketBuffer.position() + k) & (~k);
+		socketBuffer.position(newpos);
+	}
+
 	protected volatile long remoteBufferFreeSpace = Long.MAX_VALUE;	
 
 	/**
@@ -679,7 +709,11 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 
 	        while (buffer.hasRemaining())
 	        {
+	        	
+//int p = buffer.position();
 				final int bytesSent = channel.write(buffer);
+//HexDump.hexDump("WRITE", buffer.array(), p, bytesSent);
+				
 	        	if (bytesSent < 0)
 	        	{
 	        		// connection lost
@@ -810,7 +844,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 		// prepare ACK marker
 		sendBuffer.put(CAConstants.CA_MAGIC);
 		sendBuffer.put(CAConstants.CA_VERSION);
-		sendBuffer.put((byte)1);	// control data
+		sendBuffer.put((byte)(0x01 | byteOrderFlag));	// control data
 		sendBuffer.put((byte)1);	// marker ACK
 		sendBuffer.putInt(0);
 		
@@ -1045,6 +1079,32 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 	}
 
 	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.SerializableControl#alignBuffer(int)
+	 */
+	@Override
+	public void alignBuffer(int alignment) {
+		
+		final int k = (alignment - 1);
+		final int pos = sendBuffer.position();
+		int newpos = (pos + k) & (~k);
+		if (pos == newpos)
+			return;
+		
+		int diff = sendBuffer.limit() - newpos;
+		if (diff > 0)
+		{
+			sendBuffer.position(newpos);
+			return;
+		}
+		
+		ensureBuffer(diff);
+		
+		// position has changed, recalculate
+		newpos = (sendBuffer.position() + k) & (~k);
+		sendBuffer.position(newpos);
+	}
+
+	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.SerializableControl#flushSerializeBuffer()
 	 */
 	@Override
@@ -1095,7 +1155,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 		lastMessageStartPosition = sendBuffer.position();
 		sendBuffer.put(CAConstants.CA_MAGIC);
 		sendBuffer.put(CAConstants.CA_VERSION);
-		sendBuffer.put((byte)(lastSegmentedMessageType | 0x80));	// data + big endian
+		sendBuffer.put((byte)(lastSegmentedMessageType | byteOrderFlag));	// data + endian
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
 	}
@@ -1118,6 +1178,9 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 	private final void endMessage(boolean hasMoreSegments) {
 		if (lastMessageStartPosition >= 0)
 		{
+			// align
+		//	alignBuffer(CAConstants.CA_ALIGNMENT);
+			
 			// set paylaod size
 			sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2), sendBuffer.position() - lastMessageStartPosition - CAConstants.CA_MESSAGE_HEADER_SIZE); 
 			
@@ -1154,7 +1217,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 			{
 				sendBuffer.put(CAConstants.CA_MAGIC);
 				sendBuffer.put(CAConstants.CA_VERSION);
-				sendBuffer.put((byte)1);	// control data
+				sendBuffer.put((byte)(0x01 | byteOrderFlag));	// control data
 				sendBuffer.put((byte)0);	// marker
 				sendBuffer.putInt((int)(totalBytesSent + position + CAConstants.CA_MESSAGE_HEADER_SIZE));
 				nextMarkerPosition = position + markerPeriodBytes;
@@ -1250,6 +1313,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				lastMessageStartPosition = -1;	// no send
 				sendBuffer.order(byteOrder);
+				byteOrderFlag = (byteOrder == ByteOrder.BIG_ENDIAN) ? 0x80 : 0x00;
 			}
 			
 			@Override
