@@ -17,4 +17,12 @@ public interface DeserializableControl {
 	 * @param size
 	 */
 	void ensureData(int size);
+	
+	/**
+	 * Align buffer.
+	 * Note that this takes care only current buffer alignment. If streaming protocol is used,
+	 * care must be taken that entire stream is aligned.
+	 * @param alignment size in bytes, must be power of two. 
+	 */
+	void alignData(int alignment);
 }
