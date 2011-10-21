@@ -10,19 +10,35 @@ package org.epics.pvData.property;
  *
  */
 public class TimeStampFactory implements TimeStamp{
-    static final long milliSecPerSec = TimeStamp.milliSecPerSec;
+    
+	static final long milliSecPerSec = TimeStamp.milliSecPerSec;
     static final long microSecPerSec = TimeStamp.microSecPerSec;
     static final long nanoSecPerSec = TimeStamp.nanoSecPerSec;
     static final long  posixEpochAtEpicsEpoch = TimeStamp.posixEpochAtEpicsEpoch;
 
     private long secondsPastEpoch = 0;
     private int nanoSeconds = 0;
+    private int userTag = 0;
     
     /**
      * Create an instance of a timeStamp.
      * @return The interface.
      */
     public static TimeStamp create() { return new TimeStampFactory();}  
+    /* (non-Javadoc)
+     * @see org.epics.pvData.property.TimeStamp#getUserTag()
+     */
+    @Override
+	public int getUserTag() {
+		return userTag;
+	}
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.property.TimeStamp#setUserTag(int)
+	 */
+	@Override
+	public void setUserTag(int userTag) {
+		this.userTag = userTag;
+	}
     /* (non-Javadoc)
      * @see org.epics.pvData.property.TimeStamp#add(double)
      */

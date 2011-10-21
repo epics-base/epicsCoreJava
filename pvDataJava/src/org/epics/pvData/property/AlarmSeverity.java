@@ -15,19 +15,23 @@ public enum AlarmSeverity {
     /**
      * Not in alarm.
      */
-    none,
+    NONE,
     /**
      * Minor alarm.
      */
-    minor,
+    MINOR,
     /**
      * Major Alarm.
      */
-    major,
+    MAJOR,
     /**
      * The value is invalid.
      */
-    invalid;
+    INVALID,
+    /**
+     * The value is undefined.
+     */
+    UNDEFINED;
     
     /**
      * get the alarm severity.
@@ -36,17 +40,18 @@ public enum AlarmSeverity {
      */
     public static AlarmSeverity getSeverity(int value) {
         switch(value) {
-        case 0: return AlarmSeverity.none;
-        case 1: return AlarmSeverity.minor;
-        case 2: return AlarmSeverity.major;
-        case 3: return AlarmSeverity.invalid;
+        case 0: return AlarmSeverity.NONE;
+        case 1: return AlarmSeverity.MINOR;
+        case 2: return AlarmSeverity.MAJOR;
+        case 3: return AlarmSeverity.INVALID;
+        case 4: return AlarmSeverity.UNDEFINED;
         }
         throw new IllegalArgumentException("AlarmSeverity.getSeverity("
             + ((Integer)value).toString() + ") is not a valid AlarmSeverity");
     }
     
     private static final String[] alarmSeverityNames = {
-        "none","minor","major","invalid"
+        "NONE","MINOR","MAJOR","INVALID","UNDEFINED"
     };
     public static String[] getSeverityNames() { return alarmSeverityNames;}
 }

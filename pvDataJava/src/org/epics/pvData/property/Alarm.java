@@ -37,6 +37,19 @@ public final class Alarm {
      * @param alarmSeverity The severity.
      */
     public void setSeverity(AlarmSeverity alarmSeverity) {this.severity = alarmSeverity;}
+    /**
+     * Get the alarm status.
+     * @return The value.
+     */
+    public AlarmStatus getStatus() {return status;}
+    /**
+     * Set the alarm status.
+     * If an invalid value is given than an exception is thrown.
+     * @param alarmStatus The status.
+     */
+    public void setStatus(AlarmStatus alarmStatus) {this.status = alarmStatus;}
+    
     private String message = "";
-    private AlarmSeverity severity = AlarmSeverity.none;
+    private AlarmSeverity severity = AlarmSeverity.NONE;
+    private AlarmStatus status = AlarmStatus.NONE;
 }

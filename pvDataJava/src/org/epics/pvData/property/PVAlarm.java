@@ -12,6 +12,7 @@ import org.epics.pvData.pv.PVField;
  * <pre>
  *    structure alarm
  *        int severity
+ *        int status
  *        string message
  * </pre>
  * This interface converts betweeen the integer severity and the enum alarmSeverity.

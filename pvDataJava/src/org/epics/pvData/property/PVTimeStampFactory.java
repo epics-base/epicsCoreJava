@@ -18,6 +18,7 @@ import org.epics.pvData.pv.Type;
 public class PVTimeStampFactory implements PVTimeStamp {
     private PVLong pvSecs = null;
     private PVInt pvNano = null;
+    private PVInt pvUserTag = null;
     private static final String noTimeStampFound = "No timeStamp structure was located";
     private static final String notAttached = "Not attached to an timeStamp structure";
 
@@ -67,13 +68,19 @@ public class PVTimeStampFactory implements PVTimeStamp {
             pvField.message(noTimeStampFound,MessageType.error);
             return false;
         }
+        pvSecs = pvLong;
         PVInt pvInt = pvStructure.getIntField("nanoSeconds");
         if(pvInt==null) {
             pvField.message(noTimeStampFound,MessageType.error);
             return false;
         }
-        pvSecs = pvLong;
         pvNano = pvInt;
+        pvInt = pvStructure.getIntField("userTag");
+        if(pvInt==null) {
+            pvField.message(noTimeStampFound,MessageType.error);
+            return false;
+        }
+        pvUserTag = pvInt;
         return true;
     }
     /* (non-Javadoc)
@@ -82,6 +89,7 @@ public class PVTimeStampFactory implements PVTimeStamp {
     @Override
     public void detach() {
         pvSecs = null;
+        pvUserTag = null;
         pvNano = null;
     }
     /* (non-Javadoc)
@@ -101,17 +109,19 @@ public class PVTimeStampFactory implements PVTimeStamp {
             throw new IllegalStateException(notAttached);
         }
         timeStamp.put(pvSecs.get(), pvNano.get());
+        timeStamp.setUserTag(pvUserTag.get());
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.property.PVTimeStamp#set(org.epics.pvData.property.TimeStamp)
      */
     @Override
     public boolean set(TimeStamp timeStamp) {
-        if(pvSecs==null || pvNano==null) {
+        if(pvSecs==null || pvNano==null || pvUserTag==null) {
             throw new IllegalStateException(notAttached);
         }
         if(pvSecs.isImmutable() || pvNano.isImmutable()) return false;
         pvSecs.put(timeStamp.getSecondsPastEpoch());
+        pvUserTag.put(timeStamp.getUserTag());
         pvNano.put(timeStamp.getNanoSeconds());
         return true;
     }

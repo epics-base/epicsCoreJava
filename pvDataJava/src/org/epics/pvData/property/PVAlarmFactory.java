@@ -14,6 +14,7 @@ import org.epics.pvData.pv.Type;
 
 public final class PVAlarmFactory implements PVAlarm{
     private PVInt pvSeverity = null;
+    private PVInt pvStatus = null;
     private PVString pvMessage = null;
     private static final String noAlarmFound = "No alarm structure was located";
     private static final String notAttached = "Not attached to an alarm structure";
@@ -56,12 +57,18 @@ public final class PVAlarmFactory implements PVAlarm{
             pvField.message(noAlarmFound,MessageType.error);
             return false;
         }
+        pvSeverity = pvInt;
+        pvInt = pvStructure.getIntField("status");
+        if(pvInt==null) {
+            pvField.message(noAlarmFound,MessageType.error);
+            return false;
+        }
+        pvStatus = pvInt;
         PVString pvString = pvStructure.getStringField("message");
         if(pvString==null) {
             pvField.message(noAlarmFound,MessageType.error);
             return false;
         }
-        pvSeverity = pvInt;
         pvMessage = pvString;
         return true;
 
@@ -91,6 +98,7 @@ public final class PVAlarmFactory implements PVAlarm{
             throw new IllegalStateException(notAttached);
         }
         alarm.setSeverity(AlarmSeverity.getSeverity(pvSeverity.get()));
+        alarm.setStatus(AlarmStatus.getStatus(pvStatus.get()));
         alarm.setMessage(pvMessage.get());
     }
     /* (non-Javadoc)
@@ -103,6 +111,7 @@ public final class PVAlarmFactory implements PVAlarm{
         }
         if(pvSeverity.isImmutable() || pvMessage.isImmutable()) return false;
         pvSeverity.put(alarm.getSeverity().ordinal());
+        pvStatus.put(alarm.getStatus().ordinal());
         pvMessage.put(alarm.getMessage());
         return true;
     }

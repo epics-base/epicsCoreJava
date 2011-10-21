@@ -11,8 +11,8 @@ import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.StatusCreate;
 
 /**
  * StatusFactory creates Status instances.

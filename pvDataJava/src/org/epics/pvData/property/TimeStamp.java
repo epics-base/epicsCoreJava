@@ -35,6 +35,16 @@ public interface TimeStamp {
      */
     int getNanoSeconds();
     /**
+     * Get the userTag.
+     * @return The userTag.
+     */
+    int getUserTag();
+    /**
+     * set the userTag.
+     * @param userTag The value for the userTag.
+     */
+    void setUserTag(int userTag);
+    /**
      * Put the time.
      * @param secondsPastEpoch The number of seconds since January 1, 1970, 00:00:00 UTC
      * @param nanoSeconds The number of nanoseconds within the second.
