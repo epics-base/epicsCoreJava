@@ -16,12 +16,14 @@ package org.epics.ca.impl.remote;
 
 import java.nio.ByteBuffer;
 
+import org.epics.ca.client.Lockable;
+
 /**
  * Interface defining transport sender (instance sending data over transport).
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public interface TransportSender {
+public interface TransportSender extends Lockable {
 
 	/**
 	 * Called by transport.
@@ -32,8 +34,4 @@ public interface TransportSender {
 	 * NOTE: these limitations allows efficient implementation.
 	 */
 	void send(ByteBuffer buffer, TransportSendControl control);
-	
-	void lock();
-	void unlock();
-
 }

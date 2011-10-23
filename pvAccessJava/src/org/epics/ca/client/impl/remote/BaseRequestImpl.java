@@ -15,6 +15,7 @@
 package org.epics.ca.client.impl.remote;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.epics.ca.CAException;
 import org.epics.ca.impl.remote.DataResponse;
@@ -79,6 +80,8 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	/* negative... */
 	protected static final int NULL_REQUEST = -1;
 	protected static final int PURE_DESTROY_REQUEST = -2;
+	
+	protected final ReentrantLock lock = new ReentrantLock();
 	
 	public BaseRequestImpl(ChannelImpl channel, Requester requester)
 	{
@@ -240,7 +243,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	 */
 	@Override
 	public void lock() {
-		// noop
+		lock.lock();
 	}
 	
 	/* (non-Javadoc)
@@ -265,7 +268,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	 */
 	@Override
 	public void unlock() {
-		// noop
+		lock.unlock();
 	}
 
 }

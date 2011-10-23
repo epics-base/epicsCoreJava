@@ -5,11 +5,11 @@
  */
 package org.epics.ca.client;
 
-import org.epics.pvData.misc.Destroyable;
-
 /**
- * Base interface for all channel requests.
+ * Instance allowing lock/unlock.
  * @author mse
  */
-public interface ChannelRequest extends Lockable, Destroyable {
+public interface Lockable {
+	void lock();
+	void unlock();
 }

@@ -14,6 +14,9 @@
 
 package org.epics.ca.client.impl.remote;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.CAException;
@@ -24,6 +27,7 @@ import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
@@ -43,13 +47,13 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 
 	protected final PVStructure pvRequest;
 
-	protected volatile PVArray data;
+	protected PVArray data;
 	
-	protected volatile int offset = 0;
-	protected volatile int count = 0;
+	protected int offset = 0;
+	protected int count = 0;
 	
-	protected volatile int length = -1;
-	protected volatile int capacity = -1;
+	protected int length = -1;
+	protected int capacity = -1;
 
 	public ChannelArrayRequestImpl(ChannelImpl channel,
 			ChannelArrayRequester callback,
@@ -100,19 +104,34 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		}
 		else if (QoS.GET.isSet(pendingRequest))
 		{
-			SerializeHelper.writeSize(offset, buffer, control);
-			SerializeHelper.writeSize(count, buffer, control);
+			lock();
+			try {
+				SerializeHelper.writeSize(offset, buffer, control);
+				SerializeHelper.writeSize(count, buffer, control);
+			} finally {
+				unlock();
+			}
 		}
 		else if (QoS.GET_PUT.isSet(pendingRequest))
 		{
-			SerializeHelper.writeSize(length, buffer, control);
-			SerializeHelper.writeSize(capacity, buffer, control);
+			lock();
+			try {
+				SerializeHelper.writeSize(length, buffer, control);
+				SerializeHelper.writeSize(capacity, buffer, control);
+			} finally {
+				unlock();
+			}
 		}
 		// put
 		else
 		{
-			SerializeHelper.writeSize(offset, buffer, control);
-			data.serialize(buffer, control, 0, count);	// put from 0 offset; TODO count out-of-bounds check?!
+			lock();
+			try {
+				SerializeHelper.writeSize(offset, buffer, control);
+				data.serialize(buffer, control, 0, count);	// put from 0 offset; TODO count out-of-bounds check?!
+			} finally {
+				unlock();
+			}
 		}
 		
 		stopRequest();
@@ -133,18 +152,36 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	@Override
 	void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		if (!status.isSuccess())
+		try
 		{
-			callback.channelArrayConnect(status, null, null);
-			return;
-		}
-		
-		// deserialize Field and create PVArray
-		final Field field = transport.getIntrospectionRegistry().deserialize(payloadBuffer, transport);
-		data = (PVArray)pvDataCreate.createPVField(null, field);
+			if (!status.isSuccess())
+			{
+				callback.channelArrayConnect(status, null, null);
+				return;
+			}
+			
+			final Field field = transport.getIntrospectionRegistry().deserialize(payloadBuffer, transport);
 
-		// notify
-		callback.channelArrayConnect(status, this, data);
+			lock();
+			try {
+				// deserialize Field and create PVArray
+				data = (PVArray)pvDataCreate.createPVField(null, field);
+			} finally {
+				unlock();
+			}
+		
+			// notify
+			callback.channelArrayConnect(status, this, data);
+			
+		}
+		catch (Throwable th)
+		{
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -152,26 +189,42 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	@Override
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		if (QoS.GET.isSet(qos))
+		try
 		{
-			if (!status.isSuccess())
+			if (QoS.GET.isSet(qos))
 			{
-				callback.getArrayDone(status);
-				return;
+				if (!status.isSuccess())
+				{
+					callback.getArrayDone(status);
+					return;
+				}
+					
+				lock();
+				try {
+					data.deserialize(payloadBuffer, transport);
+				} finally {
+					unlock();
+				}
+	
+				callback.getArrayDone(okStatus);
 			}
-			
-			data.deserialize(payloadBuffer, transport);
-			callback.getArrayDone(okStatus);
-		}
-		else if (QoS.GET_PUT.isSet(qos))
+			else if (QoS.GET_PUT.isSet(qos))
+			{
+				callback.setLengthDone(status);
+			}
+			else
+			{
+				callback.putArrayDone(status);
+			}
+		} 
+		catch (Throwable th)
 		{
-			callback.setLengthDone(status);
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
 		}
-		else
-		{
-			callback.putArrayDone(status);
-		}
-		
 	}
 
 	/* (non-Javadoc)
@@ -190,8 +243,11 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		}
 		
 		try {
+			lock();
 			this.offset = offset;
 			this.count = count;
+			unlock();
+
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
@@ -215,8 +271,11 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		}
 		
 		try {
+			lock();
 			this.offset = offset;
 			this.count = count;
+			unlock();
+			
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
@@ -240,8 +299,10 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		}
 		
 		try {
+			lock();
 			this.length = length;
 			this.capacity = capacity;
+			unlock();
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();

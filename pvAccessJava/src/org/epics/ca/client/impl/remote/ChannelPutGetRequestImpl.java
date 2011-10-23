@@ -14,6 +14,9 @@
 
 package org.epics.ca.client.impl.remote;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.CAException;
@@ -23,6 +26,7 @@ import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.QoS;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
+import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
@@ -41,8 +45,8 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 
 	protected final PVStructure pvRequest;
 	
-	protected volatile PVStructure putData = null;
-	protected volatile PVStructure getData = null;
+	protected PVStructure putData = null;
+	protected PVStructure getData = null;
 	
 	public ChannelPutGetRequestImpl(ChannelImpl channel,
 			ChannelPutGetRequester callback,
@@ -91,8 +95,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// qos
-			final int qos = QoS.INIT.getMaskValue();
-			buffer.put((byte)qos);
+			buffer.put((byte)QoS.INIT.getMaskValue());
 
 			// pvRequest
 			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
@@ -102,7 +105,12 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		}
 		else
 		{
-			putData.serialize(buffer, control);
+			lock();
+			try {
+				putData.serialize(buffer, control);
+			} finally {
+				unlock();
+			}
 		}
 		
 		stopRequest();
@@ -125,18 +133,32 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	 */
 	@Override
 	void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		if (!status.isSuccess())
+		try
 		{
-			callback.channelPutGetConnect(status, this, null, null);
-			return;
+			if (!status.isSuccess())
+			{
+				callback.channelPutGetConnect(status, this, null, null);
+				return;
+			}
+			
+			final IntrospectionRegistry registry = transport.getIntrospectionRegistry();
+			lock();
+			try {
+				putData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+				getData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+			} finally {
+				unlock();
+			}
+	
+			// notify
+			callback.channelPutGetConnect(status, this, putData, getData);
+		} catch (Throwable th) {
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
 		}
-		
-		final IntrospectionRegistry registry = transport.getIntrospectionRegistry();
-		putData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-		getData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-
-		// notify
-		callback.channelPutGetConnect(status, this, putData, getData);
 	}
 
 	/* (non-Javadoc)
@@ -144,42 +166,69 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	 */
 	@Override
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		
-		if (QoS.GET.isSet(qos))
+		try
 		{
-			if (!status.isSuccess())
+			
+			if (QoS.GET.isSet(qos))
 			{
+				if (!status.isSuccess())
+				{
+					callback.getGetDone(status);
+					return;
+				}
+				
+				lock();
+				try {
+					// deserialize get data
+					getData.deserialize(payloadBuffer, transport);
+				} finally {
+					unlock();
+				}
+				
 				callback.getGetDone(status);
-				return;
 			}
-			
-			// deserialize get data
-			getData.deserialize(payloadBuffer, transport);
-			callback.getGetDone(status);
-		}
-		else if (QoS.GET_PUT.isSet(qos))
-		{
-			if (!status.isSuccess())
+			else if (QoS.GET_PUT.isSet(qos))
 			{
+				if (!status.isSuccess())
+				{
+					callback.getPutDone(status);
+					return;
+				}
+				
+				lock();
+				try {
+					// deserialize put data
+					putData.deserialize(payloadBuffer, transport);
+				} finally {
+					unlock();
+				}
+				
 				callback.getPutDone(status);
-				return;
 			}
-			
-			// deserialize put data
-			putData.deserialize(payloadBuffer, transport);
-			callback.getPutDone(status);
-		}
-		else 
-		{
-			if (!status.isSuccess())
+			else 
 			{
+				if (!status.isSuccess())
+				{
+					callback.putGetDone(status);
+					return;
+				}
+				
+				lock();
+				try {
+					// deserialize data
+					getData.deserialize(payloadBuffer, transport);
+				} finally {
+					unlock();
+				}
+				
 				callback.putGetDone(status);
-				return;
 			}
-			
-			// deserialize data
-			getData.deserialize(payloadBuffer, transport);
-			callback.putGetDone(status);
+		} catch (Throwable th) {
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
 		}
 	}
 

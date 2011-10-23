@@ -14,6 +14,9 @@
 
 package org.epics.ca.client.impl.remote;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.CAException;
@@ -24,6 +27,7 @@ import org.epics.ca.impl.remote.QoS;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.misc.BitSet;
+import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
@@ -42,8 +46,8 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 
 	protected final PVStructure pvRequest;
 	
-	protected volatile PVStructure argumentData = null;
-	protected volatile BitSet argumentBitSet = null;
+	protected PVStructure argumentData = null;
+	protected BitSet argumentBitSet = null;
 	
 	public ChannelRPCRequestImpl(ChannelImpl channel,
 			ChannelRPCRequester callback,
@@ -92,8 +96,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// qos
-			final int qos = QoS.INIT.getMaskValue();
-			buffer.put((byte)qos);
+			buffer.put((byte)QoS.INIT.getMaskValue());
 
 			// pvRequest
 			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
@@ -101,8 +104,14 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		}
 		else
 		{
-			argumentBitSet.serialize(buffer, control);
-			argumentData.serialize(buffer, control, argumentBitSet);
+			lock();
+			try {
+				argumentBitSet.serialize(buffer, control);
+				argumentData.serialize(buffer, control, argumentBitSet);
+			} finally {
+				unlock();
+			}
+			
 		}
 		
 		stopRequest();
@@ -115,9 +124,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
 		// data available
 		// TODO we need a flag here...
-		{
-			normalResponse(transport, version, payloadBuffer, qos, status);
-		}
+		normalResponse(transport, version, payloadBuffer, qos, status);
 	}
 
 	/* (non-Javadoc)
@@ -125,18 +132,34 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	 */
 	@Override
 	void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		if (!status.isSuccess())
+		try
 		{
-			callback.channelRPCConnect(status, this, null, null);
-			return;
+			if (!status.isSuccess())
+			{
+				callback.channelRPCConnect(status, this, null, null);
+				return;
+			}
+			
+			final IntrospectionRegistry registry = transport.getIntrospectionRegistry();
+			lock();
+			try {
+				argumentData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+				argumentBitSet = new BitSet(argumentData.getNumberFields());
+			} finally {
+				unlock();
+			}
+			
+			// notify
+			callback.channelRPCConnect(status, this, argumentData, argumentBitSet);
 		}
-		
-		final IntrospectionRegistry registry = transport.getIntrospectionRegistry();
-		argumentData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-		argumentBitSet = new BitSet(argumentData.getNumberFields());
-
-		// notify
-		callback.channelRPCConnect(status, this, argumentData, argumentBitSet);
+		catch (Throwable th)
+		{
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -144,15 +167,26 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	 */
 	@Override
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		if (!status.isSuccess())
+		try
 		{
-			callback.requestDone(status, null);
-			return;
+			if (!status.isSuccess())
+			{
+				callback.requestDone(status, null);
+				return;
+			}
+			
+			// deserialize data
+			final PVStructure retVal = transport.getIntrospectionRegistry().deserializeStructure(payloadBuffer, transport);
+			callback.requestDone(status, retVal);
 		}
-		
-		// deserialize data
-		final PVStructure retVal = transport.getIntrospectionRegistry().deserializeStructure(payloadBuffer, transport);
-		callback.requestDone(status, retVal);
+		catch (Throwable th)
+		{
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)

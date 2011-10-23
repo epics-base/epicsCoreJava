@@ -5,8 +5,11 @@
  */
 package org.epics.ca.client.example;
 
+import java.util.Arrays;
+
 import org.epics.ca.CAException;
 import org.epics.ca.client.Channel;
+import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.ChannelAccess;
 import org.epics.ca.client.ChannelAccessFactory;
 import org.epics.ca.client.ChannelGet;
@@ -14,13 +17,13 @@ import org.epics.ca.client.ChannelGetRequester;
 import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.CreateRequestFactory;
-import org.epics.ca.client.Channel.ConnectionState;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.DoubleArrayData;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVDataCreate;
+import org.epics.pvData.pv.PVArray;
+import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
 
 
@@ -48,14 +51,14 @@ public class ExampleChannelGet {
         }
         
         Client client = new Client(channelName,request);
-        client.waitUntilDone(10000);
+        client.waitUntilDone(1000000);
         org.epics.ca.ClientFactory.stop();
         System.exit(0);
     }
     
     private static final String providerName = "pvAccess";
     private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    //private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     
     private static class Client implements ChannelRequester, ChannelGetRequester {
         
@@ -68,11 +71,11 @@ public class ExampleChannelGet {
         private BitSet bitSet = null;
 
         Client(String channelName,String request) {
-            if(request==null) {
-                pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
-            } else {
-                pvRequest = CreateRequestFactory.createRequest(request, this);
-            }
+            //if(request==null) {
+            //    pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
+            //} else {
+                pvRequest = CreateRequestFactory.createRequest("field(value)", this);
+            //}
             channelProvider = channelAccess.getProvider(providerName);
             channel = channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
         }
@@ -138,7 +141,7 @@ public class ExampleChannelGet {
                 this.pvStructure = pvStructure;
                 this.bitSet = bitSet;
             }
-            this.channelGet.get(true);
+            this.channelGet.get(false);
         }
         /* (non-Javadoc)
          * @see org.epics.ca.client.ChannelGetRequester#getDone(org.epics.pvData.pv.Status)
@@ -150,9 +153,19 @@ public class ExampleChannelGet {
                 done();
                 return;
             }
-            message("bitSet" + bitSet.toString() + pvStructure.toString(),MessageType.info);
-            done();
+            //
+            //message("bitSet" + bitSet.toString() + pvStructure.toString(),MessageType.info);
+            
+            PVDoubleArray arr = (PVDoubleArray)pvStructure.getScalarArrayField("value", ScalarType.pvDouble);
+            System.out.println("got array with n elements: " +arr.getLength());
+            DoubleArrayData dad = new DoubleArrayData();
+            arr.get(arr.getLength() - 10, 10, dad);
+            System.out.println("lst values: " +dad.data[arr.getLength()-1]);
+            
+            //done();
+            channelGet.get(false);
         }
+        
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.Requester#getRequesterName()
          */

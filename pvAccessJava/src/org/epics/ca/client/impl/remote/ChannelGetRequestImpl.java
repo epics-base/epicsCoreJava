@@ -14,6 +14,9 @@
 
 package org.epics.ca.client.impl.remote;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.CAException;
@@ -23,6 +26,7 @@ import org.epics.ca.impl.remote.QoS;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.misc.BitSet;
+import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
@@ -41,8 +45,8 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 
 	protected final PVStructure pvRequest;
 
-	protected volatile PVStructure data = null;
-	protected volatile BitSet bitSet = null;
+	protected PVStructure data = null;
+	protected BitSet bitSet = null;
 	
 	public ChannelGetRequestImpl(ChannelImpl channel, ChannelGetRequester callback,
             PVStructure pvRequest)
@@ -113,18 +117,34 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 	 */
 	@Override
 	void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		if (!status.isSuccess())
+		try
 		{
-			callback.channelGetConnect(status, this, null, null);
-			return;
-		}
+			if (!status.isSuccess())
+			{
+				callback.channelGetConnect(status, this, null, null);
+				return;
+			}
 		
-		// create data and its bitSet
-		data = transport.getIntrospectionRegistry().deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-		bitSet = new BitSet(data.getNumberFields());
-
-		// notify
-		callback.channelGetConnect(status, this, data, bitSet);
+			lock();
+			try {
+				// create data and its bitSet
+				data = transport.getIntrospectionRegistry().deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+				bitSet = new BitSet(data.getNumberFields());
+			} finally {
+				unlock();
+			}
+		
+			// notify
+			callback.channelGetConnect(status, this, data, bitSet);
+		}
+		catch (Throwable th)
+		{
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -132,17 +152,33 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 	 */
 	@Override
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		if (!status.isSuccess())
+		try
 		{
+			if (!status.isSuccess())
+			{
+				callback.getDone(status);
+				return;
+			}
+
+			lock();
+			try {
+				// deserialize bitSet and data
+				bitSet.deserialize(payloadBuffer, transport);
+				data.deserialize(payloadBuffer, transport, bitSet);
+			} finally {
+				unlock();
+			}
+			
 			callback.getDone(status);
-			return;
 		}
-		
-		// deserialize bitSet and data
-		bitSet.deserialize(payloadBuffer, transport);
-		data.deserialize(payloadBuffer, transport, bitSet);
-		
-		callback.getDone(status);
+		catch (Throwable th)
+		{
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -173,8 +209,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 	 */
 	@Override
 	public final void resubscribeSubscription(Transport transport) throws CAException {
-		int qos = QoS.INIT.getMaskValue();
-		startRequest(qos);
+		startRequest(QoS.INIT.getMaskValue());
 		transport.enqueueSendRequest(this);
 	}
 	

@@ -14,6 +14,9 @@
 
 package org.epics.ca.client.impl.remote;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.CAException;
@@ -22,6 +25,7 @@ import org.epics.ca.client.ChannelProcessRequester;
 import org.epics.ca.impl.remote.QoS;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
+import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
@@ -89,7 +93,15 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	 */
 	@Override
 	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		callback.processDone(status);
+		try {
+			callback.processDone(status);
+		} catch (Throwable th) {
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught while calling a callback: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -97,7 +109,15 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	 */
 	@Override
 	void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		callback.channelProcessConnect(status, this);
+		try {
+			callback.channelProcessConnect(status, this);
+		} catch (Throwable th) {
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught while calling a callback: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -105,7 +125,15 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	 */
 	@Override
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		callback.processDone(status);
+		try {
+			callback.processDone(status);
+		} catch (Throwable th) {
+			// guard CA code from exceptions
+			Writer writer = new StringWriter();
+			PrintWriter printWriter = new PrintWriter(writer);
+			th.printStackTrace(printWriter);
+			requester.message("Unexpected exception caught while calling a callback: " + printWriter, MessageType.fatalError);
+		}
 	}
 
 	/* (non-Javadoc)
