@@ -10,96 +10,97 @@
 <body>
 <h1 style="text-align: center">EPICS pvData<br />
 Overview<br />
-2010.12.21</h1>
-CONTENTS 
+2011.10.26</h1>
+CONTENTS
 
 <div class="toc">
 <ul>
-  <li><a href="#Introducti">Introduction</a></li>
-  <li><a href="#PVData">PVData Meta Language</a>
+  <li><a href="#L36">Introduction</a></li>
+  <li><a href="#L108">PVData Meta Language</a>
     <ul>
-      <li><a href="#Definition">Definition</a></li>
-      <li><a href="#Example">Example</a></li>
+      <li><a href="#L114">Definition</a></li>
+      <li><a href="#L308">Examples</a></li>
     </ul>
   </li>
-  <li><a href="#Interface">Interface Definitions</a>
+  <li><a href="#L352">Interface Definitions</a>
     <ul>
-      <li><a href="#Types">Types</a></li>
-      <li><a href="#Introspect">Introspection Interfaces</a></li>
-      <li><a href="#Data">Data Interfaces</a></li>
-      <li><a href="#Introspect1">Introspection and Data creation</a></li>
-      <li><a href="#pvData">pvData Conversion</a></li>
+      <li><a href="#L356">Types</a></li>
+      <li><a href="#L430">Introspection Interfaces</a></li>
+      <li><a href="#L438">Data Interfaces</a></li>
+      <li><a href="#L468">Introspection and Data creation</a></li>
+      <li><a href="#L478">pvData Conversion</a></li>
     </ul>
   </li>
-  <li><a href="#Package">Package Summary</a>
+  <li><a href="#L484">Package Summary</a>
     <ul>
-      <li><a href="#L461">{@link org.epics.pvData.pv}</a></li>
-      <li><a href="#L465">{@link org.epics.pvData.factory}</a></li>
-      <li><a href="#L487">{@link org.epics.pvData.property}</a></li>
-      <li><a href="#L495">{@link org.epics.pvData.misc}</a></li>
-      <li><a href="#L499">{@link org.epics.pvData.monitor}</a></li>
+      <li><a href="#L492">{@link org.epics.pvData.pv}</a></li>
+      <li><a href="#L496">{@link org.epics.pvData.factory}</a></li>
+      <li><a href="#L518">{@link org.epics.pvData.property}</a></li>
+      <li><a href="#L526">{@link org.epics.pvData.misc}</a></li>
+      <li><a href="#L530">{@link org.epics.pvData.monitor}</a></li>
     </ul>
   </li>
-  <li><a href="#License">License Agreement</a></li>
+  <li><a href="#L534">License Agreement</a></li>
 </ul>
 </div>
+
+<p> </p>
 <hr />
 
-<h2 style="text-align: center" id="Introducti">Introduction</h2>
+<h2 style="text-align: center" id="L36">Introduction</h2>
 <hr />
 
 <p>This product is available via the <a href="#LicenseAgreement">open source
 license</a> described at the end of this document.</p>
 
-<p>pvData is one of a set of related projects. It describes and implements
-the data that the other projects support. Thus it is not useful by itself but
-understanding pvData is required in order to understand the other projects.
-The reader should also become familar with projects pvAccess and javaIOC,
-which are located via the same sourceforge site as this project.</p>
+<p>pvData is one of a set of related projects. It describes and implements the
+data that the other projects support. Thus it is not useful by itself but
+understanding pvData is required in order to understand the other projects. The
+reader should also become familar with projects pvAccess and javaIOC, which are
+located via the same sourceforge site as this project.</p>
 
 <p>pvData (Process Variable Data) defines and implements an efficent way to
 store, access, and transmit memory resident structured data.</p>
 <dl>
   <dt>definition</dt>
-    <dd>Package org.epics.pvData.pv has Java interface definitions that
-      define pvData. Although defined with Java syntax they also document
-      what is required for implementation in other languages such as C++.</dd>
+    <dd>Package org.epics.pvData.pv has Java interface definitions that define
+      pvData. Although defined with Java syntax they also document what is
+      required for implementation in other languages such as C++.</dd>
   <dt>implementation</dt>
     <dd>The set of packages provides by this project provide a complete Java
       implementation of pvData. Project pvAccess is the network support for
       pvData, i.e. it provides a channel access client and server that fully
-      support pvData. Project javaIOC provides an IOC (Input Output
-      Controller) that supports pvData and provides record processing..</dd>
+      support pvData. Project javaIOC provides an IOC (Input Output Controller)
+      that supports pvData and provides record processing..</dd>
   <dt>efficient</dt>
     <dd>Small memory footprint, low cpu overhead, and concise code base.</dd>
   <dt>data storage</dt>
     <dd>pvData defines separate introspection and data interfaces. The
       introspection interfaces provide access to immutable objects, which
       allows introspection instances to be freely shared. The introspection
-      interface for a process variable can be accessed without requiring
-      access to the data.</dd>
+      interface for a process variable can be accessed without requiring access
+      to the data.</dd>
   <dt>data access</dt>
     <dd>Client code can access pvData via the introspection and data
-      interfaces. For "well known" data, e.g. timeStamp, specialized
-      interfaces can be provided without requiring any changes to the core
-      software.</dd>
+      interfaces. For "well known" data, e.g. timeStamp, specialized interfaces
+      can be provided without requiring any changes to the core software.</dd>
   <dt>data transfer</dt>
     <dd>The separation of introspection and data interfaces allows for
       efficient network data transfer. At connection time introspection
       information can be passed from server to client. Each side can create a
-      data instance. The data is transferred between these instances. The
-      data in the network buffers does not have to be self describing since
-      each side has the introspection information.</dd>
+      data instance. The data is transferred between these instances. The data
+      in the network buffers does not have to be self describing since each
+      side has the introspection information.</dd>
   <dt>memory resident</dt>
     <dd>pvData only defines memory resident data.</dd>
   <dt>structured data</dt>
     <dd>pvData has three types: scalar, array, and structure. A scalar can be
       one of the following: boolean, byte, short, int, long, float, double,
-      string. An array is a one dimensional array with the element type being
-      a scalar. A structure is an ordered set of fields where each field has
-      a name and type. Since a field can have type structure complex
-      structures are supported. No other types are needed since structures
-      can be defined that simulate types.</dd>
+      string. An array is a one dimensional array with the element type being a
+      scalar. A structure is an ordered set of fields where each field has a
+      name and type. Since a field can have type structure complex structures
+      are supported. No other types are needed since structures can be defined
+      that simulate types.</dd>
 </dl>
 
 <p>The javaIOC implements a Process Variable (PV) Database, which is a memory
@@ -114,35 +115,36 @@ resident database holding pvData, has the following features:</p>
 <p>pvData was initially created to support the javaIOC and was part of the
 javaIOC project. It is now a separate project that is used by the javaIOC. In
 addition to the javaIOC, pvData is intended for use by 1) channel access
-clients, 2) Interface between client and network, 3) Interface between
-network and channel access server, 4) Interface between server and IOC
-database. Since it is an interface to data, it could also be used by other
-systems, e.g. TANGO, TINE, etc. A high level Physics application can hold
-data as pvData. By starting a channel access server, the data can made
-available to network clients.</p>
+clients, 2) Interface between client and network, 3) Interface between network
+and channel access server, 4) Interface between server and IOC database. Since
+it is an interface to data, it could also be used by other systems, e.g. TANGO,
+TINE, etc. A high level Physics application can hold data as pvData. By
+starting a channel access server, the data can made available to network
+clients.</p>
 
 <p>pvData contains everything required to support Channel Access and Channel
 Access clients and servers. </p>
 <hr />
 
-<h2 style="text-align: center" id="PVData">PVData Meta Language</h2>
+<h2 style="text-align: center" id="L108">PVData Meta Language</h2>
 <hr />
 
 <p>This section describes a meta language for describing pvData. Currently
 there are no plans for a parser for the meta language. It is used for
-documentation. Also the toString introspection and data methods described
-below do present data in this format.</p>
+documentation. The toString introspection and data methods described below do
+present data in a format similar to the metadata syntax. The meta language is
+used to describe both introspection interfaces and data interfaces.</p>
 
-<h3 id="Definition">Definition</h3>
+<h3 id="L114">Definition</h3>
 
-<p>PVData supports structured data. All data appears as a top level
-structure. A structure has an ordered set of fields where each field has a
-<span style="font-family: courier;">fieldDef</span> defined as follows:</p>
-<pre>type fieldName = value // comment</pre>
+<p>PVData supports structured data. All data appears as a top level structure.
+A structure has an ordered set of fields where each field has a <span
+style="font-family: courier;">fieldDef</span> defined as follows:</p>
+<pre>type fieldName value // comment</pre>
 
-<p>where <span style="font-family: courier;">= value</span> is optional and
-<span style="font-family: courier;">//</span> indicates the the rest of the
-line is a comment. </p>
+<p>where <span style="font-family: courier;">value</span> is present for data
+objects and <span style="font-family: courier;">//</span> indicates the the
+rest of the line is a comment. </p>
 
 <p>type is one of the following:</p>
 <dl>
@@ -188,7 +190,8 @@ line is a comment. </p>
          ...
       </pre>
       or 
-      <pre>     structureName fieldName
+      <pre>     xxx_t fieldName
+         // if data object then following appear
          fieldDef
          ...
       </pre>
@@ -196,26 +199,30 @@ line is a comment. </p>
       <span style="font-family: courier;">fieldDef</span> must have a unique
       <span style="font-family: courier;">fieldName</span> within the <span
       style="font-family: courier;">structure</span> For <span
-      style="font-family: courier;">structureName fieldName</span> the <span
-      style="font-family: courier;">structureName</span> must be the <span
-      style="font-family: courier;">fieldName</span> of a previously defined
-      top level <span style="font-family: courier;">structure</span> </dd>
+      style="font-family: courier;">"xxx_t fieldName"</span> xxx_t must be a
+      previously structure definition of the form: 
+      <pre>    structure xxx_t
+        ...</pre>
+    </dd>
   <dt>structureArray</dt>
     <dd>A structureArray field has the definition: 
       <pre>     structure[] fieldName
           structureDef
           ...
-          
-      </pre>
-      Thus a structure array is an array where each element is a structure
-      but all elements have the same introspection interface. For
-      introspection the structureDef appears once without and data
-    valuies.</dd>
+          </pre>
+      <p>or</p>
+      <pre>    xxx_t[] fieldName</pre>
+      <pre>      </pre>
+      <p>Thus a structure array is an array where each element is a structure
+      but all elements have the same introspection interface. For introspection
+      the structureDef appears once without any data valuies.</p>
+    </dd>
 </dl>
 
-<p>Each field can optionally have data values assigned to it. The definition
-of the data values depends on the type. For scalars the data value is
-whatever is valid for the type. </p>
+<p>The above is used to describe introspection objects. Data objects are
+describe in a similar way but each scalar field and each array field has data
+values. The definition of the data values depends on the type. For scalars the
+data value is whatever is valid for the type. </p>
 <dl>
   <dt style="font-family: courier;">boolean</dt>
     <dd>The value must be <span style="font-family: courier;">true</span> or
@@ -228,8 +235,8 @@ whatever is valid for the type. </p>
       3.0 3e0</span> are valid values</dd>
   <dt style="font-family: courier;">string</dt>
     <dd>The value can be an alphanumeric value or any set of characters
-      enclosed in <span style="font-family: courier;">""</span> Within quotes
-      a quote is expressed as <span style="font-family: courier;">\"</span>
+      enclosed in <span style="font-family: courier;">""</span> Within quotes a
+      quote is expressed as <span style="font-family: courier;">\"</span>
       Examples are <span style="font-family: courier;">aValue "a value" "a\"
       xxx"</span> are valid values. </dd>
 </dl>
@@ -239,50 +246,109 @@ whatever is valid for the type. </p>
 
 <p>where each <span style="font-family: courier;">value</span> is a valid
 scalar data value depending on the type. Thus it is a comma separated set of
-values enclosed in <span style="font-family: courier;">[]</span> White space
-is permitted surrounding each comma.</p>
+values enclosed in <span style="font-family: courier;">[]</span> White space is
+permitted surrounding each comma.</p>
 
-<h3 id="Example">Example</h3>
+<h3 id="L308">Examples</h3>
 
 <p>Define the following top level structure:</p>
-<pre>structure timeStamp
+<pre>structure timeStamp_t
     long secondsPastEpoch
     int nanoSeconds </pre>
 
-<p>Then the following can be defined</p>
-<pre>structure scalarDoubleExample
-    double value = 1.0
-    timeStamp timeStamp
+<p>Then the following introspection objects can be defined:</p>
+<pre>structure scalarDoubleExample // introspection object
+    double value
+    timeStamp_t timeStamp</pre>
+or 
+<pre>structure scalarDoubleExample // introspection object
+    double value
+    structure timeStamp
+        long secondsPastEpoch
+        int  nanoSeconds</pre>
 
-scalar arrayDoubleExample
-    double[] value = [1.0,2.0]
-    timeStamp timeStamp
+<p>The following data objects can be defined:</p>
+<pre>structure scalarDoubleExample // data object
+    double value 1.0
+    timeStamp_t timeStamp
+         long secondsPastEpoch 0
+         int  nanoSeconds 0</pre>
+or 
+<pre>scalar arrayDoubleExample
+    double[] value  [1.0,2.0]
+    structure timeStamp
+         long secondsPastEpoch 0
+         int  nanoSeconds 0</pre>
 
-structure point
+<p>If the following interface is defined:</p>
+<pre>structure point_t
     double x
-    double y
+    double y</pre>
 
-structure lineExample
-    point begin
-        x 0
-        y 0
-    point end
-        x 10
-        y 10
+<p>Then the following introspection objects can be defined: </p>
+<pre>structure lineExample
+    point_t begin
+    point_t end
 
-structure[] structureArrayExample
-    structure point
+structure pointArrayExample
+    point_t[] points
+    </pre>
+or 
+<pre>structure lineExample
+    structure begin
+        double x
+        double y
+    structure end
+        double x
+        double y
+
+structure pointArrayExample
+    structure[] points
+        structure point
+            double x
+            double y</pre>
+
+<p>And the following data objects can be defined:</p>
+<pre>structure lineExample
+    point_t begin
         double x 0.0
         double y 0.0
-    structure point
-        double x 10.0
-        double y 10.0</pre>
+    point_t end
+        double x 10
+        double y 10
+
+structure pointArrayExample
+    point_t[] value
+        structure point
+            double x 0.0
+            double y 0.0
+        structure point
+            double x 10.0
+            double y 10.0</pre>
+
+<p>or</p>
+<pre>structure lineExample
+    structure begin
+        double x 0
+        double y 0
+    structure end
+        double x 10
+        double y 10
+
+structure pointArrayExample
+    structure[] value
+        structure point
+            double x 0.0
+            double y 0.0
+        structure point
+            double x 10.0
+            double y 10.0</pre>
 <hr />
 
-<h2 style="text-align: center" id="Interface">Interface Definitions</h2>
+<h2 style="text-align: center" id="L352">Interface Definitions</h2>
 <hr />
 
-<h3 id="Types">Types</h3>
+<h3 id="L356">Types</h3>
 
 <p>The following are the type definitions:</p>
 <pre>enum Type {
@@ -297,14 +363,12 @@ structure[] structureArrayExample
   <dt>scalar</dt>
     <dd>A field that has data with one of the scalarTypes.</dd>
   <dt>scalarArray</dt>
-    <dd>A field that is an array where each element is the same
-    scalarType.</dd>
+    <dd>A field that is an array where each element is the same scalarType.</dd>
   <dt>structure</dt>
     <dd>A field which has named subfields.</dd>
   <dt>structureArray</dt>
-    <dd>A field that is an array of structures where each element has the
-      same introspection interface, i.e. each element has the same
-    structure.</dd>
+    <dd>A field that is an array of structures where each element has the same
+      introspection interface, i.e. each element has the same structure.</dd>
 </dl>
 <pre>enum ScalarType {
     pvBoolean,
@@ -337,11 +401,11 @@ structure[] structureArrayExample
     <dd>64 bit IEEE float</dd>
   <dt>string</dt>
     <dd>An immutable string. The Java implementation is String. For other
-      implementations the network representation must be the same as for
-      Java. Note that a string is treated like it is a scaler.</dd>
+      implementations the network representation must be the same as for Java.
+      Note that a string is treated like it is a scaler.</dd>
 </dl>
 
-<h3 id="Introspect">Introspection Interfaces</h3>
+<h3 id="L430">Introspection Interfaces</h3>
 
 <p>The complete set of introspection interfaces are:</p>
 <pre>interface Field {
@@ -373,10 +437,9 @@ interface StructureArray extends Field{
 <p>The introspection interfaces provide access to immutable objects. This
 allows introspection interfaces to be freely shared between data objects. For
 example the introspection interface for a timeStamp, which is a structure
-containing two fields, can be shared by every record that has a time
-stamp.</p>
+containing two fields, can be shared by every record that has a time stamp.</p>
 
-<h3 id="Data">Data Interfaces</h3>
+<h3 id="L438">Data Interfaces</h3>
 
 <p>PVField is the base interface for a data field:</p>
 <pre>enum MessageType {info,warning,error,fatalError}
@@ -453,8 +516,8 @@ nterface PVAuxInfo {
     ScalarArray getScalarArray();
 }</pre>
 
-<p>For each scalar type an associated array data interface is defined. Each
-has a get and put method. For example: </p>
+<p>For each scalar type an associated array data interface is defined. Each has
+a get and put method. For example: </p>
 <pre>public class DoubleArrayData {
     public double[] data;
     public int offset;
@@ -466,8 +529,8 @@ interface PVDoubleArray extends PVArray {
     void shareData(double[] from);
 }</pre>
 
-<p>PVScalarArray is the interface for an array of structures where each
-element has the same iontrospection interface.</p>
+<p>PVScalarArray is the interface for an array of structures where each element
+has the same iontrospection interface.</p>
 <pre>public class StructureArrayData {
     public PVStructure[] data;
     public int offset;
@@ -511,7 +574,7 @@ interface PVStructure extends PVField , BitSetSerializable{
     boolean putExtendsStructureName(String extendsStructureName);
 }</pre>
 
-<h3 id="Introspect1">Introspection and Data creation</h3>
+<h3 id="L468">Introspection and Data creation</h3>
 
 <p>The following interface creates introspection instances:</p>
 <pre>public interface FieldCreate {
@@ -539,13 +602,13 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
 
-<h3 id="pvData">pvData Conversion</h3>
+<h3 id="L478">pvData Conversion</h3>
 
 <p>An interface named Convert provides all reasonable conversions to/from
 pvData. See org.epics.pvData.pv.Convert for details.</p>
 <hr />
 
-<h2 style="text-align: center" id="Package">Package Summary</h2>
+<h2 style="text-align: center" id="L484">Package Summary</h2>
 <hr />
 
 <p>This document describes everything via Java definitions. The initial
@@ -555,13 +618,13 @@ other languages such as C++.</p>
 <p>pvData is distributed as a eclipse Java Project named pvData. This project
 consists of the following java packages:</p>
 
-<h3 id="L461">{@link org.epics.pvData.pv}</h3>
+<h3 id="L492">{@link org.epics.pvData.pv}</h3>
 
 <p>The Java enum, interface, and class definitions that define pvData. This
 section provides a complete definition of what pvData is. This package
 completely describes how pvData is accessed.</p>
 
-<h3 id="L465">{@link org.epics.pvData.factory}</h3>
+<h3 id="L496">{@link org.epics.pvData.factory}</h3>
 
 <p>Java Facilities for creating a PV Database and pvData. It provides
 everything required for creating pvData. It provides the following
@@ -575,35 +638,35 @@ factories:</p>
     <dd>Converts between support data types.</dd>
 </dl>
 
-<p>Although pvDataFactory can provide the implementation for all supported
-data types, often it is desirable to provide other implementations. To make
-it easy to create alternate implementations a set of abstract and base
-classes are supplied.</p>
+<p>Although pvDataFactory can provide the implementation for all supported data
+types, often it is desirable to provide other implementations. To make it easy
+to create alternate implementations a set of abstract and base classes are
+supplied.</p>
 
-<h3 id="L487">{@link org.epics.pvData.property}</h3>
+<h3 id="L518">{@link org.epics.pvData.property}</h3>
 
 <p>Provides a way to associated properties with a field. </p>
 
-<p>The basic idea is to associate properties with any field named "value".
-All the fields in the structure that contains the value field are considered
+<p>The basic idea is to associate properties with any field named "value". All
+the fields in the structure that contains the value field are considered
 properties of value with the field name being the property name. See that
 package overview for details.</p>
 
 <p>This package also provides support for "well known" field definitions like
-timeStamp, alarm, display,etc. Code that uses pvData can be simplified by
-using this support.</p>
+timeStamp, alarm, display,etc. Code that uses pvData can be simplified by using
+this support.</p>
 
-<h3 id="L495">{@link org.epics.pvData.misc}</h3>
+<h3 id="L526">{@link org.epics.pvData.misc}</h3>
 
 <p>This package provides support that is used by pvData factories and might
 also be useful to software that uses pvData.</p>
 
-<h3 id="L499">{@link org.epics.pvData.monitor}</h3>
+<h3 id="L530">{@link org.epics.pvData.monitor}</h3>
 
-<p>Provides the ability to monitor changes to an arbitrary subset of the
-fields in a record.</p>
+<p>Provides the ability to monitor changes to an arbitrary subset of the fields
+in a record.</p>
 
-<h2 style="text-align: center" id="License">License Agreement</h2>
+<h2 style="text-align: center" id="L534">License Agreement</h2>
 <pre>Copyright (c) 2008 Martin R. Kraimer
 Copyright (c) 2006 The University of Chicago, as Operator of Argonne
      National Laboratory.
