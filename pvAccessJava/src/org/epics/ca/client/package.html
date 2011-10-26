@@ -8,19 +8,18 @@
 </head>
 
 <body>
-<h1 style="text-align: center">EPICS Java Channel Access Version 4: client<br
-/>
+<h1 style="text-align: center">EPICS Java Channel Access Version 4: client<br />
 package: org/epics/ca/client<br />
-2010.08.26</h1>
+2011.10.26</h1>
 CONTENTS 
 
 <div class="toc">
 <ul>
   <li><a href="#Overview">Overview</a></li>
-  <li><a href="#Example">Example</a>
+  <li><a href="#Example">Example</a> 
     <ul>
       <li><a href="#What">What the example does</a></li>
-      <li><a href="#Example1">Example Source</a>
+      <li><a href="#Example1">Example Source</a> 
         <ul>
           <li><a href="#main">main</a></li>
           <li><a href="#Implementa">Implementation of channel get
@@ -33,7 +32,7 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#Starting">Starting Channel Access</a></li>
-  <li><a href="#ChannelAcc">ChannelAccess, and ChannelProvider</a>
+  <li><a href="#ChannelAcc">ChannelAccess, and ChannelProvider</a> 
     <ul>
       <li><a href="#ChannelAcc1">ChannelAccessFactory</a></li>
       <li><a href="#ChannelAcc2">ChannelAccess</a></li>
@@ -46,11 +45,11 @@ CONTENTS
   <li><a href="#AccessRigh">AccessRights</a></li>
   <li><a href="#Query1">Query</a></li>
   <li><a href="#GetField">GetField</a></li>
-  <li><a href="#ChannelReq1">ChannelRequest</a>
+  <li><a href="#ChannelReq1">ChannelRequest</a> 
     <ul>
       <li><a href="#PVStructur">PVStructure pvRequest</a></li>
       <li><a href="#CreateRequ">CreateRequestFactory.createRequest</a></li>
-      <li><a href="#Examples">Examples</a>
+      <li><a href="#Examples">Examples</a> 
         <ul>
           <li><a href="#Simple">Simple example</a></li>
           <li><a href="#Power">Power Supply Example</a></li>
@@ -72,10 +71,10 @@ CONTENTS
 <h2 style="text-align: center" id="Overview">Overview</h2>
 <hr />
 
-<p>This package defines the client interfaces for pvAccess, which is a
-version of channel access that fully supports structured data as defined by
-PVData. It is assumed that the reader understands PVData, which is
-implemented by the eclipse project "org.epics.pvData". </p>
+<p>This package defines the client interfaces for pvAccess, which is a version
+of channel access that fully supports structured data as defined by PVData. It
+is assumed that the reader understands PVData, which is implemented by the
+eclipse project "org.epics.pvData". </p>
 
 <p>A Channel provides a communication path beween a client and a PVRecord. A
 channel access server, which must reside in the same process as the PVRecord,
@@ -115,8 +114,8 @@ When a failure occurs, other arguments may be null.</p>
 
 <h3 id="What">What the example does</h3>
 
-<p>This section shows an example of issuing a channel get request. the
-example is a java main program that can be executed as follows:</p>
+<p>This section shows an example of issuing a channel get request. the example
+is a java main program that can be executed as follows:</p>
 <pre>java org.epics.ca.client.example.ExampleChannelGet  channelName request</pre>
 
 <p>For example if the arguments are:</p>
@@ -193,8 +192,8 @@ example is a java main program that can be executed as follows:</p>
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();</pre>
 
 <p>The main routine first checks for valid arguments, creates an instance of
-Client, which is shown below, and then waits for up to ten seconds until
-Client has obtained data.</p>
+Client, which is shown below, and then waits for up to ten seconds until Client
+has obtained data.</p>
 
 <h4 id="Implementa">Implementation of channel get client</h4>
 <pre>    private static class Client implements ChannelRequester, ChannelGetRequester {
@@ -220,8 +219,8 @@ Client has obtained data.</p>
         boolean isDone() {return done;}</pre>
 
 <p>The above is the constructor and private data. The constructor creates a
-channel. This will result in a call to channelCreated and, if succesful, a
-call to channelStateChange.</p>
+channel. This will result in a call to channelCreated and, if succesful, a call
+to channelStateChange.</p>
 
 <h4 id="ChannelReq">ChannelRequester methods.</h4>
 <pre>        public void channelCreated(Status status, Channel channel) {
@@ -243,11 +242,11 @@ call to channelStateChange.</p>
             }
         }</pre>
 
-<p><span style="font-family: Courier">channelCreated</span> just checks
-status and saves the reference to the channel. <span
+<p><span style="font-family: Courier">channelCreated</span> just checks status
+and saves the reference to the channel. <span
 style="font-family: Courier">channelStateChange</span> calls <span
-style="font-family: Courier">createChannelGet</span> when the channel
-connects. This will result in a call to <span
+style="font-family: Courier">createChannelGet</span> when the channel connects.
+This will result in a call to <span
 style="font-family: Courier">channelGetConnect</span> . </p>
 
 <h4 id="ChannelGet">ChannelGetRequester methods:</h4>
@@ -277,7 +276,7 @@ style="font-family: Courier">channelGetConnect</span> . </p>
 
 <p><span style="font-family: Courier">channelGetConnect</span> issues a get
 request, specifying that it is the last request. A client can issue multiple
-get requsts for each ChannelGet but for a particular channelGet a new get
+get requests for each ChannelGet but for a particular channelGet a new get
 request must not be issued until <span
 style="font-family: Courier">getDone</span> is called. <span
 style="font-family: Courier">getDone</span> is called as a result of a get
@@ -307,21 +306,21 @@ request.</p>
 
 <p>Before using channel access, the appropriate support must be started. Each
 support is started by calling the start method of a factory that starts the
-support. For example the client side of network based channel access is
-started by calling:</p>
+support. For example the client side of network based channel access is started
+by calling:</p>
 <pre>    org.epics.ca.ClientFactory.start();</pre>
 
 <p>Package org.epics.ca provides the following factories:</p>
 <dl>
   <dt><span style="font-family: Courier">ClientFactory</span></dt>
     <dd>This starts the client side of the network support for pvAccess. This
-      is the only support that needs to be started by a stand-alone client.
-      The example shown in the previous section calls this.</dd>
+      is the only support that needs to be started by a stand-alone client. The
+      example shown in the previous section calls this.</dd>
   <dt><span style="font-family: Courier">LocalFactory</span></dt>
-    <dd>This is called for accessing a local PVDatabase. It is also required
-      by the ServerFactory and must be started before the server factory. An
-      application that wants to use channel access to access the local
-      database must start this. For example the JavaIOC starts this.</dd>
+    <dd>This is called for accessing a local PVDatabase. It is also required by
+      the ServerFactory and must be started before the server factory. An
+      application that wants to use channel access to access the local database
+      must start this. For example the JavaIOC starts this.</dd>
   <dt><span style="font-family: Courier">ServerFactory</span></dt>
     <dd>This must be started in order to allow pvAccess clients to access the
       local PVDatabase. For example the javaIOC can start this.</dd>
@@ -371,8 +370,8 @@ methods:</p>
   <dt><span style="font-family: Courier">getChannelAccess</span></dt>
     <dd>Gets the ChannelAccess interface described next.</dd>
   <dt><span style="font-family: Courier">registerChannelProvider</span></dt>
-    <dd>Registers a channel provider. Typical providers are local, pvAccess
-      and caV3. This is called by channel providers not by user code.</dd>
+    <dd>Registers a channel provider. Typical providers are local, pvAccess and
+      caV3. This is called by channel providers not by user code.</dd>
 </dl>
 
 <h3 id="ChannelAcc2">ChannelAccess</h3>
@@ -409,7 +408,7 @@ methods:</p>
 <dl>
   <dt><span style="font-family: Courier">destroy</span></dt>
     <dd>The channel provider will shutdown and remove all resources it is
-      using.</dd>
+    using.</dd>
   <dt><span style="font-family: Courier">getProviderName</span></dt>
     <dd>Get the name of the provider.</dd>
   <dt><span style="font-family: Courier">channelFind</span></dt>
@@ -422,8 +421,7 @@ methods:</p>
 
 <p>A client can determine if a channel exists without creating a channel. The
 client must implement a requester interface and the implentation provides an
-interface that the client can use to cancel the request. The interfaces
-are:</p>
+interface that the client can use to cancel the request. The interfaces are:</p>
 <pre>interface ChannelFindRequester {
     void channelFindResult(Status status,ChannelFind channelFind,boolean wasFound);
 }
@@ -436,11 +434,11 @@ interface ChannelFind {
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">channelFindResult</span></dt>
-    <dd>This is called by the implementation. It may or may not get called.
-      For a remote call it is normally called only if the channel is found. A
-      local provider will usually call it immediately and report if it has
-      the requested channel. Thus this can be called before the channelFind
-      method returns.</dd>
+    <dd>This is called by the implementation. It may or may not get called. For
+      a remote call it is normally called only if the channel is found. A local
+      provider will usually call it immediately and report if it has the
+      requested channel. Thus this can be called before the channelFind method
+      returns.</dd>
   <dt><span style="font-family: Courier">getChannelProvider</span></dt>
     <dd>Get the channel provider.</dd>
   <dt><span style="font-family: Courier">cancelChannelFind</span></dt>
@@ -460,8 +458,8 @@ provider implements for a channel. The principal services are: process, get,
 put, putGet,array, and monitor. Each of these and some other services are
 described in later sections of this package overview.</p>
 
-<p>As described in the previous section a Channel is created via a call to
-the method:</p>
+<p>As described in the previous section a Channel is created via a call to the
+method:</p>
 <pre>    ChannelProvider.createChannel(String channelName,ChannelRequester channelRequester)</pre>
 
 <p>The caller must implement the interface:</p>
@@ -483,9 +481,8 @@ the method:</p>
     <dd>A channel connection state change has occured. This called the first
       time when a channel has been created and connected to a server.</dd>
   <dt><span style="font-family: Courier">destroy</span></dt>
-    <dd>This is called if the channel is being terminated for some reason.
-      The requester will no longer be able to make requests of the
-    channel.</dd>
+    <dd>This is called if the channel is being terminated for some reason. The
+      requester will no longer be able to make requests of the channel.</dd>
 </dl>
 
 <p>The Channel interface is:</p>
@@ -535,8 +532,7 @@ the method:</p>
   <dt><span style="font-family: Courier">destroy</span></dt>
     <dd>Destroy the channel and all resources used by the channel.</dd>
   <dt><span style="font-family: Courier">getChannelName</span></dt>
-    <dd>The name of the channel. For cav4 this is the name if the
-    PVRecord.</dd>
+    <dd>The name of the channel. For cav4 this is the name if the PVRecord.</dd>
   <dt><span style="font-family: Courier">getChannelRequester</span></dt>
     <dd>Get the channel requester. This is normally called by the
       implementation rather than the client.</dd>
@@ -564,8 +560,8 @@ overview.</p>
 <h2 style="text-align: center" id="Query1">Query</h2>
 <hr />
 
-<p>A query is a request that spans IOCs. For example a query might be "get
-the names of all the BPMs". The interfaces are:</p>
+<p>A query is a request that spans IOCs. For example a query might be "get the
+names of all the BPMs". The interfaces are:</p>
 <pre>interface Query {
      ChannelProvider getChannelProvider();
      void cancelQuery();
@@ -607,8 +603,7 @@ requester must implement the interface:</p>
 <dl>
   <dt><span style="font-family: Courier">getDone</span></dt>
     <dd>A getField request has finished. A null is returned if the request
-      fails. If the request succeeds Field is the introspection
-    interface.</dd>
+      fails. If the request succeeds Field is the introspection interface. </dd>
 </dl>
 <hr />
 
@@ -635,9 +630,9 @@ convenience part is repeated here.</p>
 
 <h3 id="PVStructur">PVStructure pvRequest</h3>
 
-<p>This is a PVStructure that describes the fields and options in PVRecord
-that are to be accessed. The format is defined by org.epics.pvData.pvCopy.
-See the package overview for details.</p>
+<p>This is a PVStructure that describes the fields and options in PVRecord that
+are to be accessed. The format is defined by org.epics.pvData.pvCopy. See the
+package overview for details.</p>
 
 <h3 id="CreateRequ">CreateRequestFactory.createRequest</h3>
 
@@ -647,14 +642,13 @@ See the package overview for details.</p>
 }</pre>
 
 <p>This creates a request structure. See the package documentation for
-org.epics.iov.pvCopy/package.html for a detailed description.A few examples
-are repeaed here. </p>
+org.epics.iov.pvCopy/package.html for a detailed description.A few examples are
+repeaed here. </p>
 
 <h3 id="Examples">Examples</h3>
 
-<p>The following examples are for either a simple record or for a power
-supply record. These are records that have one of the following
-structures:</p>
+<p>The following examples are for either a simple record or for a power supply
+record. These are records that have one of the following structures:</p>
 <pre>simpleRecord
     value
     alarm
@@ -697,8 +691,8 @@ field will not be present in the structure returned to the client.</p>
 <h4 id="Power">Power Supply Example</h4>
 
 <p>The following creates a request for alarm, timeStamp, power, current, and
-voltage. Power, current, and voltage will each be a structure with two
-fields: value and alarm.</p>
+voltage. Power, current, and voltage will each be a structure with two fields:
+value and alarm.</p>
 <pre>    PVStructure pvRequest = CreateRequestFactory.createRequest(
        "alarm,timeStamp"
        + ",power{power.value,power.alarm}"
@@ -742,12 +736,11 @@ fields: value and alarm.</p>
       Status is the result for the create request. channelProcess is null if
       status is not success.</dd>
   <dt><span style="font-family: Courier">processDone</span></dt>
-    <dd>This is called when a process request is done. Status is the result
-      for the process request. </dd>
+    <dd>This is called when a process request is done. Status is the result for
+      the process request. </dd>
 </dl>
 
-<p>The following is the interface for requesting that a record be
-processed.</p>
+<p>The following is the interface for requesting that a record be processed.</p>
 <pre>interface ChannelProcess extends ChannelRequest {
     void process(boolean lastRequest);
 }</pre>
@@ -757,7 +750,8 @@ processed.</p>
   <dt><span style="font-family: Courier">process</span></dt>
     <dd>Process the record. If lastRequest is true than it is a one time
       request, i.e. it is the same as calling destroy after the process is
-      complete.</dd>
+      complete. Another process request must not be issued until processDone is
+      called.</dd>
 </dl>
 <hr />
 
@@ -789,21 +783,21 @@ processed.</p>
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">channelGetConnect</span></dt>
-    <dd>This is called if the createProcess fails or when the client request
-      is connected to the server. Status provides the result of the
-      createChannel request. If status is not success than the other
-      arguments are null. channelGet is the interface for requesting gets.
-      All data will be returned in pvStructure. bitSet shows which fields
-      have new data. If a bit of bitSet is set for a structure field that
-      means that all fields of the structure have new values. For example of
-      bit 0 of bitSet is set then all fields of pvStructure have new data.
-      Note that each PVField implements a method getFieldOffset(). this can
-      be used with bitSet to determine which fields have new data values. See
-      BitSet and PVField in org.epics.pvData for details.</dd>
+    <dd>This is called if the createProcess fails or when the client request is
+      connected to the server. Status provides the result of the createChannel
+      request. If status is not success than the other arguments are null.
+      channelGet is the interface for requesting gets. All data will be
+      returned in pvStructure. bitSet shows which fields have new data. If a
+      bit of bitSet is set for a structure field that means that all fields of
+      the structure have new values. For example of bit 0 of bitSet is set then
+      all fields of pvStructure have new data. Note that each PVField
+      implements a method getFieldOffset(). this can be used with bitSet to
+      determine which fields have new data values. See BitSet and PVField in
+      org.epics.pvData for details.</dd>
   <dt><span style="font-family: Courier">getDone</span></dt>
-    <dd>The get request is done. status provides the result of the get
-      request. If successful the pvStructure and bitSet returned by the call
-      to channelGetConnect contain the data.</dd>
+    <dd>The get request is done. status provides the result of the get request.
+      If successful the pvStructure and bitSet returned by the call to
+      channelGetConnect contain the data.</dd>
 </dl>
 
 <p>The following is the interface for requesting data from a record.</p>
@@ -814,8 +808,9 @@ processed.</p>
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">get</span></dt>
-    <dd>Get data. If lastRequest is true than it is a one time request, i.e.
-      it is the same as calling destroy after the get is complete.</dd>
+    <dd>Get data. If lastRequest is true than it is a one time request, i.e. it
+      is the same as calling destroy after the get is complete. Another get
+      request must not be issued until getDone is called.</dd>
 </dl>
 <hr />
 
@@ -848,24 +843,24 @@ processed.</p>
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">channelPutConnect</span></dt>
-    <dd>This is called if the createChannelPut fails or when the client
-      request is connected to the server. Status provides the result of the
+    <dd>This is called if the createChannelPut fails or when the client request
+      is connected to the server. Status provides the result of the
       createChannelPut request. If status is not success than the other
       arguments are null. channelPut is the interface for requesting puts and
-      gets. The caller puts data into pvStructure pvStructure and sets bits
-      in bitSet to shows which fields have new data before making a put
-      request. If a bit of bitSet is set for a structure field that means
-      that all fields of the structure have new values. For example of bit 0
-      of bitSet is set then all fields of pvStructure have new data. Note
-      that each PVField implements a method getFieldOffset(). this can be
-      used with bitSet to determine which fields have new data values. See
-      BitSet and PVField in org.epics.pvData for details.</dd>
+      gets. The caller puts data into pvStructure pvStructure and sets bits in
+      bitSet to shows which fields have new data before making a put request.
+      If a bit of bitSet is set for a structure field that means that all
+      fields of the structure have new values. For example of bit 0 of bitSet
+      is set then all fields of pvStructure have new data. Note that each
+      PVField implements a method getFieldOffset(). this can be used with
+      bitSet to determine which fields have new data values. See BitSet and
+      PVField in org.epics.pvData for details.</dd>
   <dt><span style="font-family: Courier">putDone</span></dt>
-    <dd>The put request is done. status provides the result of the put
-      request. </dd>
+    <dd>The put request is done. status provides the result of the put request.
+    </dd>
   <dt><span style="font-family: Courier">getDone</span></dt>
-    <dd>The get request is done. status provides the result of the put
-      request. </dd>
+    <dd>The get request is done. status provides the result of the put request.
+    </dd>
 </dl>
 
 <p>The following is the interface for requesting data from a record.</p>
@@ -877,12 +872,14 @@ processed.</p>
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">put</span></dt>
-    <dd>Put data. If lastRequest is true than it is a one time request, i.e.
-      it is the same as calling destroy after the put is complete.</dd>
+    <dd>Put data. If lastRequest is true than it is a one time request, i.e. it
+      is the same as calling destroy after the put is complete.</dd>
   <dt><span style="font-family: Courier">get</span></dt>
     <dd>Get the current data from the record. The record is never processed.
       The request just gets the current values which is put into the
       pvStructure returned in the call to channelPutConnect.</dd>
+  <dt>NOTE: Only one of put and get can be outstanding at the same time.
+  Another get or put must not be issued until getDone or putDone is called.</dt>
 </dl>
 <hr />
 
@@ -923,9 +920,9 @@ record, and gets data from the record.</p>
     <dd>This is called if the createChannelPutGet fails or when the client
       request is connected to the server. Status provides the result of the
       createChannelPutGet request. If status is not success than the other
-      arguments are null. channelPutGet is the interface for requesting
-      putGet, getPut and getGet. pvPutStructure holds the put data and
-      pvGetStructure holds the get data. </dd>
+      arguments are null. channelPutGet is the interface for requesting putGet,
+      getPut and getGet. pvPutStructure holds the put data and pvGetStructure
+      holds the get data. </dd>
   <dt><span style="font-family: Courier">putGetDone</span></dt>
     <dd>The putGet request is done.</dd>
   <dt><span style="font-family: Courier">getPutDone</span></dt>
@@ -945,21 +942,24 @@ record, and gets data from the record.</p>
 <dl>
   <dt><span style="font-family: Courier">putGet</span></dt>
     <dd>First put the pvPutStructure data into the record. Then if process is
-      true process the record. Finally get data from the record and put it
-      into pvGetStructure. If lastRequest is true than it is a one time
-      request, i.e. it is the same as calling destroy after the putGet is
-      complete.</dd>
+      true process the record. Finally get data from the record and put it into
+      pvGetStructure. If lastRequest is true than it is a one time request,
+      i.e. it is the same as calling destroy after the putGet is complete.</dd>
   <dt><span style="font-family: Courier">getPut</span></dt>
     <dd>Get current data from the record and put it into pvPutStructure. The
-      record is never processed. The request just gets the current values
-      which is put into the pvPutStructure returned in the call to
+      record is never processed. The request just gets the current values which
+      is put into the pvPutStructure returned in the call to
       channelPutGetConnect.</dd>
   <dt><span style="font-family: Courier">getGet</span></dt>
     <dd>Get current data from the record and put it into pvGetStructure. The
-      record is never processed. The request just gets the current values
-      which is put into the pvGetStructure returned in the call to
+      record is never processed. The request just gets the current values which
+      is put into the pvGetStructure returned in the call to
       channelPutGetConnect.</dd>
 </dl>
+
+<p>NOTE: Only one of putGet, getPut, or getGet can be outstanding at the same
+time. Another request must not be issued until the appropriate xxxDone is
+called.</p>
 <hr />
 
 <h2 style="text-align: center" id="ChannelRPC">ChannelRPC</h2>
@@ -993,14 +993,14 @@ PVStructure can be returned for each request. It is created via a call to:</p>
   <dt><span style="font-family: Courier">channelRPCConnect</span></dt>
     <dd>Status provides the result of the createChannelRPC request. If status
       is not success than the other arguments are null. channelGet is the
-      interface for requesting gets. All data will be returned in
-      pvStructure. bitSet shows which fields have new data. If a bit of
-      bitSet is set for a structure field that means that all fields of the
-      structure have new values. For example of bit 0 of bitSet is set then
-      all fields of pvStructure have new data. Note that each PVField
-      implements a method getFieldOffset(). this can be used with bitSet to
-      determine which fields have new data values. See BitSet and PVField in
-      org.epics.pvData for details.</dd>
+      interface for requesting gets. All data will be returned in pvStructure.
+      bitSet shows which fields have new data. If a bit of bitSet is set for a
+      structure field that means that all fields of the structure have new
+      values. For example of bit 0 of bitSet is set then all fields of
+      pvStructure have new data. Note that each PVField implements a method
+      getFieldOffset(). this can be used with bitSet to determine which fields
+      have new data values. See BitSet and PVField in org.epics.pvData for
+      details.</dd>
   <dt><span style="font-family: Courier">requestDone</span></dt>
     <dd>The request is done. status provides the result of the request. If
       successful a pvStructure is returned. </dd>
@@ -1017,6 +1017,8 @@ PVStructure can be returned for each request. It is created via a call to:</p>
     <dd>If lastRequest is true than it is a one time request, i.e. Send it is
       the same as calling destroy after the request is complete.</dd>
 </dl>
+
+<p>Only one request at a time can outstanding.</p>
 <hr />
 
 <h2 style="text-align: center" id="ChannelArr">ChannelArray</h2>
@@ -1058,8 +1060,8 @@ pvRequest.appendPVField(pvFieldName);</pre>
     <dd>This is called if the createChannelArray fails or when the client
       request is connected to the server. Status provides the result of the
       createChannelArray request. If status is not success than the other
-      arguments are null. channelArray is the interface for requesting puts
-      and gets. pvArray holds the data to put or get.</dd>
+      arguments are null. channelArray is the interface for requesting puts and
+      gets. pvArray holds the data to put or get.</dd>
   <dt><span style="font-family: Courier">putArrayDone</span></dt>
     <dd>The put request is done.</dd>
   <dt><span style="font-family: Courier">getArrayDone</span></dt>
@@ -1076,15 +1078,15 @@ record.</p>
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">putArray</span></dt>
-    <dd>Put array data. The offset is the offset in the server and the count
-      is the total number of elements to write. If lastRequest is true than
-      it is a one time request, i.e. it is the same as calling destroy after
-      the put is complete.</dd>
+    <dd>Put array data. The offset is the offset in the server and the count is
+      the total number of elements to write. If lastRequest is true than it is
+      a one time request, i.e. it is the same as calling destroy after the put
+      is complete.</dd>
   <dt><span style="font-family: Courier">getArray</span></dt>
-    <dd>Get array data. The offset is the offset in the server and the count
-      is the total number of elements to read. If lastRequest is true than it
-      is a one time request, i.e. it is the same as calling destroy after the
-      get is complete.</dd>
+    <dd>Get array data. The offset is the offset in the server and the count is
+      the total number of elements to read. If lastRequest is true than it is a
+      one time request, i.e. it is the same as calling destroy after the get is
+      complete.</dd>
 </dl>
 <hr />
 
@@ -1108,11 +1110,11 @@ and onPercentChange.</p>
     <dd>Described next.</dd>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>This is defined by pvCopy and pvMonitor. See their package overviews
-      for details (org.epics.pvData.pvCopy and org.epics.pvData.pvMonitor).
-      The format of the request for CreateRequest.createRequest has the form
+      for details (org.epics.pvData.pvCopy and org.epics.pvData.pvMonitor). The
+      format of the request for CreateRequest.createRequest has the form
       "record[options]field(fieldOptions)". Note that you can specify monitor
-      options for individual fields. See the package overview for pvMonitor
-      for details.</dd>
+      options for individual fields. See the package overview for pvMonitor for
+      details.</dd>
 </dl>
 
 <p>The requester must implement the interface.</p>
@@ -1125,10 +1127,10 @@ and onPercentChange.</p>
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">monitorConnect</span></dt>
-    <dd>This is called if the createMonitor fails or when the client request
-      is connected to the server. Status provides the result of the
-      createMonitor request. If status is not success than the other
-      arguments are null. monitor is the interface for the Monitor</dd>
+    <dd>This is called if the createMonitor fails or when the client request is
+      connected to the server. Status provides the result of the createMonitor
+      request. If status is not success than the other arguments are null.
+      monitor is the interface for the Monitor</dd>
   <dt><span style="font-family: Courier">monitorEvent</span></dt>
     <dd>monitorEvent is called when a monitor occurs. The client must call
       monitor.poll to get data for the monitor. See below. </dd>
@@ -1136,8 +1138,7 @@ and onPercentChange.</p>
     <dd>The server has issued an unlisten request.</dd>
 </dl>
 
-<p>The following is the Monitor interface which is defined in project
-pvData</p>
+<p>The following is the Monitor interface which is defined in project pvData</p>
 <pre>interface Monitor extends Destroyable {
     void start();
     void stop();
@@ -1154,7 +1155,7 @@ pvData</p>
   <dt><span style="font-family: Courier">poll</span></dt>
     <dd>Poll for monitor event. Null is returned when no more events are
       available. The client must call this method in order to get monitor
-      data.</dd>
+    data.</dd>
   <dt><span style="font-family: Courier">release</span></dt>
     <dd>When the client has processed the monitor event returned by poll the
       client must call release before again calling poll.</dd>
@@ -1172,11 +1173,11 @@ pvData</p>
   <dt><span style="font-family: Courier">getPVStructure</span></dt>
     <dd>The data structure.</dd>
   <dt><span style="font-family: Courier">getChangedBitSet</span></dt>
-    <dd>A bitset which has a bit set for each field of the data structure
-      which has changed since the last monitor.</dd>
+    <dd>A bitset which has a bit set for each field of the data structure which
+      has changed since the last monitor.</dd>
   <dt><span style="font-family: Courier">getOverrunBitSet</span></dt>
-    <dd>A bitset which has a bit set for each field of the data structure
-      which has changed more than once since the last monitor.</dd>
+    <dd>A bitset which has a bit set for each field of the data structure which
+      has changed more than once since the last monitor.</dd>
 </dl>
 </body>
 </html>
