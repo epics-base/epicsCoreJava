@@ -30,7 +30,6 @@ import org.epics.ca.client.ChannelFind;
 import org.epics.ca.client.ChannelFindRequester;
 import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.ChannelRequester;
-import org.epics.ca.client.ClientContext;
 import org.epics.ca.client.Query;
 import org.epics.ca.client.QueryRequester;
 import org.epics.ca.client.impl.remote.ChannelSearchManager.BaseSearchInstance;
@@ -64,7 +63,7 @@ import org.epics.pvData.pv.Status.StatusType;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class ClientContextImpl implements ClientContext, Context/*, Configurable*/ {
+public class ClientContextImpl implements Context/*, Configurable*/ {
 
 	/**
 	 * Name if the provider this context provides.
@@ -1041,11 +1040,6 @@ public class ClientContextImpl implements ClientContext, Context/*, Configurable
 		}
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.epics.ca.client.ClientContext#getProvider()
-	 */
-	@Override
 	public ChannelProvider getProvider() {
 		return channelProvider;
 	}

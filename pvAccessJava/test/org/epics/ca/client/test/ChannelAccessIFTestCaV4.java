@@ -14,7 +14,6 @@
 package org.epics.ca.client.test;
 
 import org.epics.ca.client.ChannelProvider;
-import org.epics.ca.client.ClientContext;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
 
 /**
@@ -27,7 +26,7 @@ public class ChannelAccessIFTestCaV4 extends ChannelAccessIFTest {
     /**
      * CA context.
      */
-    protected ClientContext context = null;
+    protected ClientContextImpl context = null;
     
     /* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()

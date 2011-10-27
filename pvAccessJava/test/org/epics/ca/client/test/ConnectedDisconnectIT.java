@@ -19,7 +19,6 @@ import junit.framework.TestCase;
 import org.epics.ca.CAConstants;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.ChannelRequester;
-import org.epics.ca.client.ClientContext;
 import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
 import org.epics.pvData.pv.MessageType;
@@ -34,7 +33,7 @@ public class ConnectedDisconnectIT extends TestCase {
 	/**
      * CA context.
      */
-    protected ClientContext context = null;
+    protected ClientContextImpl context = null;
     
     /* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()

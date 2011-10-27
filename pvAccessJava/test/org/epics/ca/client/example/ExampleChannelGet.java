@@ -5,8 +5,6 @@
  */
 package org.epics.ca.client.example;
 
-import java.util.Arrays;
-
 import org.epics.ca.CAException;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.Channel.ConnectionState;
@@ -20,7 +18,6 @@ import org.epics.ca.client.CreateRequestFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.DoubleArrayData;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
@@ -68,7 +65,7 @@ public class ExampleChannelGet {
         private boolean done = false;
         private ChannelGet channelGet = null;
         private PVStructure pvStructure = null;
-        private BitSet bitSet = null;
+        //private BitSet bitSet = null;
 
         Client(String channelName,String request) {
             //if(request==null) {
@@ -139,7 +136,7 @@ public class ExampleChannelGet {
             synchronized(this) {
                 this.channelGet = channelGet;
                 this.pvStructure = pvStructure;
-                this.bitSet = bitSet;
+                //this.bitSet = bitSet;
             }
             this.channelGet.get(false);
         }

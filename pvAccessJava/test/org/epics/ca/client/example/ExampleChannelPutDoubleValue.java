@@ -141,8 +141,13 @@ public class ExampleChannelPutDoubleValue {
             }
             
             PVDouble val = this.pvStructure.getDoubleField("value");
-            this.bitSet.set(val.getFieldOffset());
-            val.put(Math.random()*10);
+            channelPut.lock();
+            try {
+	            this.bitSet.set(val.getFieldOffset());
+	            val.put(Math.random()*10);
+            } finally {
+            	channelPut.unlock();
+            }
             this.channelPut.put(true);
 		}
 

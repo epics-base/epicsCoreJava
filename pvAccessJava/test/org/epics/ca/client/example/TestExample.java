@@ -31,7 +31,6 @@ import org.epics.ca.client.ChannelPutGet;
 import org.epics.ca.client.ChannelPutGetRequester;
 import org.epics.ca.client.ChannelPutRequester;
 import org.epics.ca.client.ChannelRequester;
-import org.epics.ca.client.ClientContext;
 import org.epics.ca.client.GetFieldRequester;
 import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
@@ -69,7 +68,7 @@ public class TestExample {
     /**
      * CA context.
      */
-    private ClientContext context = null;
+    private ClientContextImpl context = null;
     
     /**
      * Initialize JCA context.
@@ -243,11 +242,16 @@ public class TestExample {
 
 						System.out.println("channelPutConnect done: " + pvStructure.getStructure());
 
-//						val = pvStructure.getIntField("value");
-						val = pvStructure.getDoubleField("value");
-						
-						val.put(123);
-						bitSet.set(val.getFieldOffset());
+						channelPut.lock();
+						try {
+	//						val = pvStructure.getIntField("value");
+							val = pvStructure.getDoubleField("value");
+							
+							val.put(123);
+							bitSet.set(val.getFieldOffset());
+						} finally {
+							channelPut.unlock();
+						}
 						
 						channelPut.put(false);
 					}
@@ -338,9 +342,14 @@ public class TestExample {
 						System.out.println("\tput: " + pvPutStructure.getStructure());
 						System.out.println("\tget: " + pvGetStructure.getStructure());
 						
-//						val = this.pvPutStructure.getIntField("value");
-						val = this.pvPutStructure.getDoubleField("value");
-						val.put(123);
+						channelPutGet.lock();
+						try {
+	//						val = this.pvPutStructure.getIntField("value");
+							val = this.pvPutStructure.getDoubleField("value");
+							val.put(123);
+						} finally {
+							channelPutGet.unlock();
+						}
 
 						channelPutGet.putGet(false);
 					}
@@ -384,8 +393,13 @@ public class TestExample {
 									e.printStackTrace();
 								}
 								
-								val.put(321 + count.get());
-
+								channelPutGet.lock();
+								try {
+									val.put(321 + count.get());
+								} finally {
+									channelPutGet.unlock();
+								}
+								
 								channelPutGet.putGet(count.getAndIncrement() >= COUNT);
 							}
 						}).start();

@@ -37,7 +37,6 @@ import org.epics.ca.client.ChannelPutRequester;
 import org.epics.ca.client.ChannelRPC;
 import org.epics.ca.client.ChannelRPCRequester;
 import org.epics.ca.client.ChannelRequester;
-import org.epics.ca.client.ClientContext;
 import org.epics.ca.client.GetFieldRequester;
 import org.epics.ca.client.impl.remote.ChannelSearchManager.BaseSearchInstance;
 import org.epics.ca.impl.remote.ReferenceCountingTransport;
@@ -502,7 +501,7 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	/**
 	 * Get context.
 	 */
-	public ClientContext getContext() {
+	public ClientContextImpl getContext() {
 		return context;
 	}
 

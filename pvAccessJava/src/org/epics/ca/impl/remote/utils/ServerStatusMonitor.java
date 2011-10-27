@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.epics.ca.CAException;
-import org.epics.ca.client.ClientContext;
 import org.epics.ca.client.impl.remote.BeaconHandler;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
 import org.epics.pvData.property.TimeStamp;
@@ -87,7 +86,7 @@ public class ServerStatusMonitor implements BeaconHandler {
     /**
      * CA context.
      */
-    private ClientContext context = null;
+    private BeaconMonitorContextImpl context = null;
     
     /**
      * Initialize JCA context.
