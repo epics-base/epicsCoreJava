@@ -157,7 +157,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+			requester.message("Unexpected exception caught: " + writer, MessageType.fatalError);
 		}
 	}
 
@@ -228,7 +228,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+			requester.message("Unexpected exception caught: " + writer, MessageType.fatalError);
 		}
 	}
 

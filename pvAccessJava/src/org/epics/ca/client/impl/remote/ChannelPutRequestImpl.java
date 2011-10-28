@@ -126,7 +126,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught while calling a callback: " + printWriter, MessageType.fatalError);
+			requester.message("Unexpected exception caught while calling a callback: " + writer, MessageType.fatalError);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught: " + printWriter, MessageType.fatalError);
+			requester.message("Unexpected exception caught: " + writer, MessageType.fatalError);
 		} 
 	}
 
@@ -200,7 +200,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught while calling a callback: " + printWriter, MessageType.fatalError);
+			requester.message("Unexpected exception caught while calling a callback: " + writer, MessageType.fatalError);
 		}
 	}
 
