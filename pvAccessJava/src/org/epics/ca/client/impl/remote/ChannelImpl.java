@@ -19,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.ca.CAConstants;
 import org.epics.ca.CAException;
@@ -38,7 +39,7 @@ import org.epics.ca.client.ChannelRPC;
 import org.epics.ca.client.ChannelRPCRequester;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.GetFieldRequester;
-import org.epics.ca.client.impl.remote.ChannelSearchManager.BaseSearchInstance;
+import org.epics.ca.client.impl.remote.search.SearchInstance;
 import org.epics.ca.impl.remote.ReferenceCountingTransport;
 import org.epics.ca.impl.remote.ResponseRequest;
 import org.epics.ca.impl.remote.SubscriptionRequest;
@@ -54,15 +55,15 @@ import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.StatusCreate;
 
 /**
  * Implementation of CAJ JCA <code>Channel</code>.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class ChannelImpl extends BaseSearchInstance implements Channel, TransportClient, TransportSender {
+public class ChannelImpl implements Channel, SearchInstance, TransportClient, TransportSender {
 	
 	/**
 	 * Client channel ID.
@@ -134,8 +135,13 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	 */
 	protected int serverChannelID = 0xFFFFFFFF;
 
+	/**
+	 * User value used by SearchInstance.
+	 */
+	private final AtomicInteger userValue = new AtomicInteger();
+
 	/* ****************** */
-	 
+
 	/**
 	 * Constructor.
 	 * @param context
@@ -286,7 +292,7 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 			return;
 		
 		// stop searching...
-		context.getChannelSearchManager().unregisterChannel(this);
+		context.getChannelSearchManager().unregister(this);
 		cancel();
 
 		disconnectPendingIO(true);
@@ -337,7 +343,7 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 			
 		if (!initiateSearch) {
 			// stop searching...
-			context.getChannelSearchManager().unregisterChannel(this);
+			context.getChannelSearchManager().unregister(this);
 			cancel();
 		}
 		setConnectionState(ConnectionState.DISCONNECTED);
@@ -370,7 +376,7 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 		allowCreation = true;
 		
 		if (addresses == null)
-			context.getChannelSearchManager().registerChannel(this);
+			context.getChannelSearchManager().register(this);
 		else
 			// TODO not only first
 			// TODO minor version
@@ -379,10 +385,20 @@ public class ChannelImpl extends BaseSearchInstance implements Channel, Transpor
 	}
 
 	/* (non-Javadoc)
+	 * @see org.epics.ca.client.impl.remote.search.SearchInstance#getUserValue()
+	 */
+	@Override
+	public AtomicInteger getUserValue() {
+		return userValue;
+	}
+
+	/* (non-Javadoc)
 	 * @see org.epics.ca.client.impl.remote.ChannelSearchManager.SearchInstance#searchResponse(byte, java.net.InetSocketAddress)
 	 */
 	@Override
 	public synchronized void searchResponse(byte minorRevision, InetSocketAddress serverAddress) {
+		// channel is already automatically unregistered
+		
 		Transport transport = getTransport();
 		if (transport != null)
 		{

@@ -16,11 +16,8 @@ import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.CreateRequestFactory;
 import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.DoubleArrayData;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
 
 
@@ -65,7 +62,7 @@ public class ExampleChannelGet {
         private boolean done = false;
         private ChannelGet channelGet = null;
         private PVStructure pvStructure = null;
-        //private BitSet bitSet = null;
+        private BitSet bitSet = null;
 
         Client(String channelName,String request) {
             //if(request==null) {
@@ -136,7 +133,7 @@ public class ExampleChannelGet {
             synchronized(this) {
                 this.channelGet = channelGet;
                 this.pvStructure = pvStructure;
-                //this.bitSet = bitSet;
+                this.bitSet = bitSet;
             }
             this.channelGet.get(false);
         }
@@ -150,17 +147,20 @@ public class ExampleChannelGet {
                 done();
                 return;
             }
-            //
-            //message("bitSet" + bitSet.toString() + pvStructure.toString(),MessageType.info);
             
+            message("bitSet" + bitSet.toString() + pvStructure.toString(),MessageType.info);
+            done();
+
+            /*
+             * cyclic array get test
             PVDoubleArray arr = (PVDoubleArray)pvStructure.getScalarArrayField("value", ScalarType.pvDouble);
             System.out.println("got array with n elements: " +arr.getLength());
             DoubleArrayData dad = new DoubleArrayData();
             arr.get(arr.getLength() - 10, 10, dad);
             System.out.println("lst values: " +dad.data[arr.getLength()-1]);
             
-            //done();
             channelGet.get(false);
+            */
         }
         
         /* (non-Javadoc)

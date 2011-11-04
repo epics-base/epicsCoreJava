@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +33,9 @@ import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.Query;
 import org.epics.ca.client.QueryRequester;
-import org.epics.ca.client.impl.remote.ChannelSearchManager.BaseSearchInstance;
+import org.epics.ca.client.impl.remote.search.ChannelSearchManager;
+import org.epics.ca.client.impl.remote.search.SearchInstance;
+import org.epics.ca.client.impl.remote.search.SimpleChannelSearchManagerImpl;
 import org.epics.ca.client.impl.remote.tcp.BlockingTCPConnector;
 import org.epics.ca.impl.remote.ConnectionException;
 import org.epics.ca.impl.remote.Context;
@@ -55,8 +58,8 @@ import org.epics.pvData.misc.Timer;
 import org.epics.pvData.misc.TimerFactory;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.StatusCreate;
 
 /**
  * Implementation of CAJ JCA <code>Context</code>. 
@@ -412,7 +415,9 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		initializeUDPTransport();
 
 		// setup search manager
-		channelSearchManager = new ChannelSearchManager(this);
+		// TODO
+//		channelSearchManager = new ChannelSearchManagerImpl(this);
+		channelSearchManager = new SimpleChannelSearchManagerImpl(this);
 	}
 
 	/**
@@ -1049,19 +1054,20 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 
     private class ChannelProviderImpl implements ChannelProvider
 	{
-    	private class ChannelFindImpl extends BaseSearchInstance implements ChannelFind
+    	private class ChannelFindImpl implements ChannelFind, SearchInstance
     	{
     		final String channelName;
     		final ChannelFindRequester requester;
     		final int channelID;
-		
+    		final AtomicInteger userValue = new AtomicInteger();
+
     		public ChannelFindImpl(String channelName, ChannelFindRequester requester) {
 				this.channelName = channelName;
 				this.requester = requester;
 				
 				channelID = generateCID();
 				
-				getChannelSearchManager().registerChannel(this);
+				getChannelSearchManager().register(this);
 			}
 
 			/* (non-Javadoc)
@@ -1090,12 +1096,20 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			}
 
 			/* (non-Javadoc)
+			 * @see org.epics.ca.client.impl.remote.search.SearchInstance#getUserValue()
+			 */
+			@Override
+			public AtomicInteger getUserValue() {
+				return userValue;
+			}
+
+			/* (non-Javadoc)
 			 * @see org.epics.ca.client.ChannelFind#cancelChannelFind()
 			 */
 			@Override
 			public void cancelChannelFind() {
 				freeCID(channelID);
-				getChannelSearchManager().unregisterChannel(this);
+				getChannelSearchManager().unregister(this);
 			}
 
 			/* (non-Javadoc)

@@ -20,8 +20,8 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import org.epics.ca.client.impl.remote.ChannelSearchManager;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
+import org.epics.ca.client.impl.remote.search.ChannelSearchManager;
 import org.epics.ca.impl.remote.Transport;
 
 
