@@ -27,7 +27,6 @@ import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
 import org.epics.ca.server.impl.remote.ServerChannelImpl;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
-import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
@@ -50,9 +49,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 	private static class ChannelRPCRequesterImpl extends BaseChannelRequester implements ChannelRPCRequester, TransportSender {
 		
 		private volatile ChannelRPC channelRPC;
-		private volatile PVStructure pvArguments;
 		private PVStructure pvResponse;
-		private volatile BitSet agrumentsBitSet;
 		private Status status;
 		
 		public ChannelRPCRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
@@ -76,10 +73,8 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		 * @see org.epics.ca.client.ChannelRPCRequester#channelRPCConnect(org.epics.pvData.pv.Status, org.epics.ca.client.ChannelRPC, org.epics.pvData.pv.PVStructure, org.epics.pvData.misc.BitSet)
 		 */
 		@Override
-		public void channelRPCConnect(Status status, ChannelRPC channelRPC, PVStructure arguments, BitSet bitSet) {
+		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
 			synchronized (this) {
-				this.pvArguments = arguments;
-				this.agrumentsBitSet = bitSet;
 				this.status = status;
 			}
 			transport.enqueueSendRequest(this);
@@ -121,20 +116,6 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			return channelRPC;
 		}
 
-		/**
-		 * @return the pvArguments
-		 */
-		public PVStructure getPvArguments() {
-			return pvArguments;
-		}
-
-		/**
-		 * @return the agrumentsBitSet
-		 */
-		public BitSet getAgrumentsBitSet() {
-			return agrumentsBitSet;
-		}
-
 		/* (non-Javadoc)
 		 * @see org.epics.ca.impl.remote.TransportSender#lock()
 		 */
@@ -170,7 +151,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			{
 				if (QoS.INIT.isSet(request))
 				{
-					introspectionRegistry.serialize(pvArguments != null ? pvArguments.getField() : null, buffer, control);
+					// no data
 				}
 				else
 				{
@@ -265,10 +246,8 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			*/
 
 			// deserialize put data
-			final BitSet changedBitSet = request.getAgrumentsBitSet();
-			changedBitSet.deserialize(payloadBuffer, transport);
-			request.getPvArguments().deserialize(payloadBuffer, transport, changedBitSet);
-			request.getChannelRPC().request(lastRequest);
+			final PVStructure pvArgument = transport.getIntrospectionRegistry().deserializeStructure(payloadBuffer, transport);
+			request.getChannelRPC().request(pvArgument, lastRequest);
 		}
 	}
 }

@@ -5,6 +5,8 @@
  */
 package org.epics.ca.client;
 
+import org.epics.pvData.pv.PVStructure;
+
 
 /**
  * Requester for channelGet.
@@ -15,7 +17,8 @@ public interface ChannelRPC extends ChannelRequest {
     /**
      * Issue an RPC request to the channel.
      * This fails if the request can not be satisfied.
+     * @param pvArgument The argument structure for an RPC request.
      * @param lastRequest Is this the last request?
      */
-    void request(boolean lastRequest);
+    void request(PVStructure pvArgument,boolean lastRequest);
 }

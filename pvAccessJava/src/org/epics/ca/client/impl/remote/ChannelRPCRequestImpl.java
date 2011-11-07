@@ -22,11 +22,9 @@ import java.nio.ByteBuffer;
 import org.epics.ca.CAException;
 import org.epics.ca.client.ChannelRPC;
 import org.epics.ca.client.ChannelRPCRequester;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.QoS;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
-import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
@@ -46,8 +44,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 
 	protected final PVStructure pvRequest;
 	
-	protected PVStructure argumentData = null;
-	protected BitSet argumentBitSet = null;
+	protected PVStructure argumentData;
 	
 	public ChannelRPCRequestImpl(ChannelImpl channel,
 			ChannelRPCRequester callback,
@@ -69,9 +66,9 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		try {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelRPCConnect(channelNotConnected, null, null, null);
+			callback.channelRPCConnect(channelNotConnected, null);
 		} catch (CAException e) {		
-			callback.channelRPCConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null, null, null);
+			callback.channelRPCConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null);
 		}
 	}
 
@@ -106,8 +103,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		{
 			lock();
 			try {
-				argumentBitSet.serialize(buffer, control);
-				argumentData.serialize(buffer, control, argumentBitSet);
+				channel.getTransport().getIntrospectionRegistry().serializeStructure(buffer, control, argumentData);
 			} finally {
 				unlock();
 			}
@@ -136,21 +132,12 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		{
 			if (!status.isSuccess())
 			{
-				callback.channelRPCConnect(status, this, null, null);
+				callback.channelRPCConnect(status, this);
 				return;
 			}
 			
-			final IntrospectionRegistry registry = transport.getIntrospectionRegistry();
-			lock();
-			try {
-				argumentData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-				argumentBitSet = new BitSet(argumentData.getNumberFields());
-			} finally {
-				unlock();
-			}
-			
 			// notify
-			callback.channelRPCConnect(status, this, argumentData, argumentBitSet);
+			callback.channelRPCConnect(status, this);
 		}
 		catch (Throwable th)
 		{
@@ -190,10 +177,10 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.ca.client.ChannelRPC#request(boolean)
+	 * @see org.epics.ca.client.ChannelRPC#request(org.epics.pvData.pv.PVStructure, boolean)
 	 */
 	@Override
-	public void request(boolean lastRequest) {
+	public void request(PVStructure pvArgument,boolean lastRequest) {
 		if (destroyed) {
 			callback.requestDone(destroyedStatus, null);
 			return;
@@ -205,6 +192,9 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		}
 		
 		try {
+			lock();
+			this.argumentData = pvArgument;
+			unlock();
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
