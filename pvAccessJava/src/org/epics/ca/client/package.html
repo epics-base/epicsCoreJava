@@ -10,7 +10,7 @@
 <body>
 <h1 style="text-align: center">EPICS Java Channel Access Version 4: client<br />
 package: org/epics/ca/client<br />
-2011.10.26</h1>
+2011.11.08</h1>
 CONTENTS 
 
 <div class="toc">
@@ -984,7 +984,7 @@ PVStructure can be returned for each request. It is created via a call to:</p>
 
 <p>The requester must implement the interface.</p>
 <pre>interface ChannelRPCRequester extends Requester {
-    void channelRPCConnect(Status status,ChannelRPC channelGet,PVStructure pvStructure,BitSet bitSet);
+    void channelRPCConnect(Status status,ChannelRPC channelRPC);
     void requestDone(Status status,PVStructure pvResponse);
 }</pre>
 
@@ -992,30 +992,23 @@ PVStructure can be returned for each request. It is created via a call to:</p>
 <dl>
   <dt><span style="font-family: Courier">channelRPCConnect</span></dt>
     <dd>Status provides the result of the createChannelRPC request. If status
-      is not success than the other arguments are null. channelGet is the
-      interface for requesting gets. All data will be returned in pvStructure.
-      bitSet shows which fields have new data. If a bit of bitSet is set for a
-      structure field that means that all fields of the structure have new
-      values. For example of bit 0 of bitSet is set then all fields of
-      pvStructure have new data. Note that each PVField implements a method
-      getFieldOffset(). this can be used with bitSet to determine which fields
-      have new data values. See BitSet and PVField in org.epics.pvData for
-      details.</dd>
+      is not success than the other argument is null.</dd>
   <dt><span style="font-family: Courier">requestDone</span></dt>
     <dd>The request is done. status provides the result of the request. If
-      successful a pvStructure is returned. </dd>
+      successful a pvResponse is returned. </dd>
 </dl>
 
 <p>The following is the interface for requesting data from a record.</p>
-<pre>interface ChannelGet extends ChannelRequest {
-    void request(boolean lastRequest);
+<pre>interface ChannelRPC extends ChannelRequest {
+    void request(PVStructure pvArgument,boolean lastRequest);
 }</pre>
 
 <p>where</p>
 <dl>
   <dt><span style="font-family: Courier">request</span></dt>
-    <dd>If lastRequest is true than it is a one time request, i.e. Send it is
-      the same as calling destroy after the request is complete.</dd>
+    <dd>pvArgument is the structure that is sent to the server. If lastRequest
+      is true than it is a one time request, i.e. Send it is the same as
+      calling destroy after the request is complete.</dd>
 </dl>
 
 <p>Only one request at a time can outstanding.</p>
