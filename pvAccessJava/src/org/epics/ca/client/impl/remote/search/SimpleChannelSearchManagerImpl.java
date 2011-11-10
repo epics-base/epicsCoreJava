@@ -101,6 +101,10 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 						// wait if empty
 						if (immediateSearch.size() == 0)
 							immediateSearch.wait();
+						
+						if (canceled)
+							return;
+						
 						// coalescence...
 						Thread.sleep(10);
 					} catch (InterruptedException e) {
@@ -135,6 +139,11 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		if (canceled)
 			return;
 		canceled = true;
+		
+		// wake-up
+		synchronized (immediateSearch) {
+			immediateSearch.notifyAll();
+		}		
 		
 		timerNode.cancel();
 	}
