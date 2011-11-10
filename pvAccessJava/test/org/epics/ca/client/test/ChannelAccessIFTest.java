@@ -1622,7 +1622,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		//assertEquals("get-test", channelGetRequester.pvStructure.getFullName());
 		PVInt value = channelGetRequester.pvStructure.getIntField("value");
 		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
-		assert(pvTimeStamp.attach(channelGetRequester.pvStructure.getStructureField("timeStamp")));
+		assertTrue(pvTimeStamp.attach(channelGetRequester.pvStructure.getStructureField("timeStamp")));
 		TimeStamp timestamp = TimeStampFactory.create();
 		pvTimeStamp.get(timestamp);
 		channelGetRequester.syncGet(false);

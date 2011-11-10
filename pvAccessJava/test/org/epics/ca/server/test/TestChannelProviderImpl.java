@@ -14,9 +14,10 @@
 
 package org.epics.ca.server.test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 
 import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.Channel;
@@ -37,21 +38,26 @@ import org.epics.ca.client.ChannelRPC;
 import org.epics.ca.client.ChannelRPCRequester;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.GetFieldRequester;
+import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorRequester;
+import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVField;
+import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.Type;
 
 /**
  * Implementation of a channel provider for tests.
@@ -68,35 +74,197 @@ public class TestChannelProviderImpl implements ChannelProvider
 	private static final Status destroyedStatus =
 		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "channel destroyed", null);
 
+	static class Mapper
+	{
+		final static Convert convert = ConvertFactory.getConvert();
+		
+		final PVStructure originStructure;
+		final PVStructure copyStructure;
+        final int[] toOriginStructure;
+        final int[] toCopyStructure;
+
+        public Mapper(PVStructure originStructure, PVStructure pvRequest)
+		{
+        	this.originStructure = originStructure;
+        	
+			ArrayList<Integer> indexMapping = new ArrayList<Integer>(originStructure.getNumberFields());
+			indexMapping.add(-1);	// top
+			
+            if(pvRequest.getPVFields().length==0)
+            {
+            	copyStructure = pvDataCreate.createPVStructure(null, originStructure.getStructure());
+				// 1-1 mapping
+				int fieldCount = copyStructure.getNumberFields();
+				for (int i = 0; i < fieldCount; i++)
+					indexMapping.add(i);
+            }
+            else
+            {
+	            if(pvRequest.getSubField("field")!=null) {
+					pvRequest = pvRequest.getStructureField("field");
+				}
+				Structure structure = createStructure(originStructure, indexMapping, pvRequest, "");
+				this.copyStructure = pvDataCreate.createPVStructure(null, structure);
+            }
+        	
+        	
+        	
+            toOriginStructure = new int[copyStructure.getNumberFields()];
+            toCopyStructure = new int[originStructure.getNumberFields()];
+            Arrays.fill(toCopyStructure, -1);
+
+            int ix = 0;
+            for (Integer i : indexMapping)
+            {
+            	int iv = i.intValue();
+            	toOriginStructure[ix] = iv;
+            	if (iv != -1)
+            		toCopyStructure[iv] = ix;
+            	ix++;
+            }
+		}
+       
+        public PVStructure getCopyStructure()
+        {
+        	return copyStructure;
+        }
+        
+        public int getCopyStructureIndex(int ix)
+        {
+        	return toCopyStructure[ix];
+        }
+
+        public int getOriginStructureIndex(int ix)
+        {
+        	return toOriginStructure[ix];
+        }
+        
+		void updateCopyStructure(BitSet copyStructureBitSet)
+		{
+			boolean doAll = copyStructureBitSet.get(0);
+			if (doAll)
+			{
+				for (int i = 1; i < toOriginStructure.length;)
+				{
+					final PVField copyField = copyStructure.getSubField(i);
+					final PVField originField = originStructure.getSubField(toOriginStructure[i]);
+					convert.copy(originField, copyField);
+					i = copyField.getNextFieldOffset();
+				}
+			}
+			else
+			{
+				int i = copyStructureBitSet.nextSetBit(1);
+				while (i != -1)
+				{
+					final PVField copyField = copyStructure.getSubField(i);
+					final PVField originField = originStructure.getSubField(toOriginStructure[i]);
+					convert.copy(originField, copyField);
+					i = copyStructureBitSet.nextSetBit(copyField.getNextFieldOffset());
+				}
+			}
+		}
+
+		private static final Pattern commaPattern = Pattern.compile("[,]");
+
+		private static void addMapping(PVField pvRecordField, ArrayList<Integer> indexMapping) {
+			if (pvRecordField.getField().getType() == Type.structure)
+			{
+				indexMapping.add(pvRecordField.getFieldOffset());
+				PVStructure struct = (PVStructure)pvRecordField;
+				for (PVField pvField : struct.getPVFields())
+					addMapping(pvField, indexMapping);
+			}
+			else
+			{
+				indexMapping.add(pvRecordField.getFieldOffset());
+			}
+		}
+
+        private static Structure createStructure(PVStructure pvRecord, ArrayList<Integer> indexMapping, PVStructure pvFromRequest,String fieldName) {
+            PVField[] pvFromFields = pvFromRequest.getPVFields();
+            int length = pvFromFields.length;
+            ArrayList<Field> fieldList = new ArrayList<Field>(length);
+            for(int i=0; i<length; i++) {
+            	PVField pvField = pvFromFields[i];
+            	if(pvField.getField().getType()==Type.structure) {
+            		PVStructure pvStruct = (PVStructure)pvField;
+            		PVField pvLeaf = pvStruct.getSubField("leaf.source");
+            		if(pvLeaf!=null && (pvLeaf instanceof PVString)){
+            			PVString pvString = (PVString)pvLeaf;
+            			PVField pvRecordField = pvRecord.getSubField(pvString.get());
+            			if(pvRecordField!=null) {
+            				Field field = fieldCreate.create(pvField.getField().getFieldName(),pvRecordField.getField());
+            				addMapping(pvRecordField, indexMapping);
+            				fieldList.add(field);
+            			}
+            		} else {
+        				indexMapping.add(-1);		// fake structure, will not be mapped
+            			fieldList.add(createStructure(pvRecord,indexMapping,pvStruct,pvField.getField().getFieldName()));
+            		}
+            	} else {
+            		PVString pvString = (PVString)pvFromFields[i];
+            		if(pvString.getField().getFieldName().equals("fieldList")) {
+            			String[] fieldNames = commaPattern.split(pvString.get());
+            			for(int j=0; j<fieldNames.length; j++) {
+            				PVField pvRecordField = pvRecord.getSubField(fieldNames[j].trim());
+            				if(pvRecordField!=null) {
+                				addMapping(pvRecordField, indexMapping);
+            					fieldList.add(pvRecordField.getField());
+            				}
+            			}
+            		} else {
+            			PVField pvRecordField = pvRecord.getSubField(pvString.get().trim());
+            			if(pvRecordField!=null) {
+            				Field field = fieldCreate.create(pvField.getField().getFieldName(),pvRecordField.getField());
+            				addMapping(pvRecordField, indexMapping);
+            				fieldList.add(field);
+            			}
+            		}
+            	}
+            }
+            Field[] fields = new Field[fieldList.size()];
+            fields = fieldList.toArray(fields);
+            return fieldCreate.createStructure(fieldName, fields);
+        }
+        
+	}
+
+	
 	class TestChannelImpl implements Channel
 	{
 		
 		class TestChannelGetImpl implements ChannelGet
 		{
 			private final ChannelGetRequester channelGetRequester;
-			private final Lock mutex = new ReentrantLock();
 			private final AtomicBoolean destroyed = new AtomicBoolean();
 			private final PVStructure pvGetStructure;
-			private final BitSet bitSet;
+			private final Mapper mapper;
+			private final BitSet bitSet;		// for user
+			private final BitSet activeBitSet;		// changed monitoring
 			
 			public TestChannelGetImpl(ChannelGetRequester channelGetRequester, PVStructure pvRequest)
 			{
 				this.channelGetRequester = channelGetRequester;
 				
-				pvGetStructure = pvStructure;
+				mapper = new Mapper(pvStructure, pvRequest);
+				
+				pvGetStructure = mapper.getCopyStructure();
+				activeBitSet = new BitSet(pvGetStructure.getNumberFields());
+	            activeBitSet.set(0);	// initial get gets all
+
 				bitSet = new BitSet(pvGetStructure.getNumberFields());
-					
 				channelGetRequester.channelGetConnect(okStatus, this, pvGetStructure, bitSet);
 			}
-
+			
 			@Override
 			public void lock() {
-				mutex.lock();
+				// lock parent record
 			}
 
 			@Override
 			public void unlock() {
-				mutex.unlock();
+				// lock parent record
 			}
 
 			@Override
@@ -107,6 +275,9 @@ public class TestChannelProviderImpl implements ChannelProvider
 					return;
 				}
 				
+				// TODO locking
+				bitSet.set(activeBitSet); activeBitSet.clear();
+				mapper.updateCopyStructure(bitSet);
 				channelGetRequester.getDone(okStatus);
 
 				if (lastRequest)
