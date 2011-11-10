@@ -17,11 +17,11 @@ import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
 
 /**
- * Channel Access caV4 IF test.
+ * Channel Access remote IF test.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class ChannelAccessIFTestCaV4 extends ChannelAccessIFTest {
+public class ChannelAccessIFTestRemote extends ChannelAccessIFTest {
 	
     /**
      * CA context.

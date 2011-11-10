@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.epics.ca.CAConstants;
@@ -72,6 +73,7 @@ import org.epics.pvData.pv.Status.StatusType;
 
 /**
  * Channel Access IF test.
+ * Requires "counter" (int, increases with 1Hz), "simpleCounter" (int), and "valueOnly" (double) standard channels.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -204,6 +206,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			provider.createChannel("someName", null, ChannelProvider.PRIORITY_DEFAULT);
 			fail("null ChannelRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -220,6 +224,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			provider.createChannel(null, crcti, ChannelProvider.PRIORITY_DEFAULT);
 			fail("null channel name accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 			synchronized (crcti) {
@@ -237,6 +243,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			provider.createChannel("counter", crcti, (short)(ChannelProvider.PRIORITY_MIN - 1));
 			fail("invalid priority accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 			synchronized (crcti) {
@@ -304,6 +312,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			provider.channelFind("someName", null);
 			fail("null ChannelFindRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -319,6 +329,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		try {
 			channelFind = provider.channelFind(null, cfrti);
 			fail("null channel name accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 			synchronized (cfrti) {
@@ -433,7 +445,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			provider.query(nullQuery, null);
 			fail("null ChannelQueryRequester accepted");
 		} catch (Throwable th) {
-			// OK
+			// OK, not implemented... not tested
 		}
 		
 		// TODO other functionality not yet tested (since not implemented)
@@ -1553,6 +1565,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelGet(null, pvRequest);
 			fail("null ChannelGetRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -1564,6 +1578,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelGet(channelGetRequester, null);
 			fail("null pvRequest accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -1687,6 +1703,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelPut(null, pvRequest);
 			fail("null ChannelPutRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -1698,6 +1716,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelPut(channelPutRequester, null);
 			fail("null pvRequest accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -1866,6 +1886,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelProcess(null, null);
 			fail("null ChannelProcessRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -2002,6 +2024,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelPutGet(null, pvRequest);
 			fail("null ChannelProcessRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -2013,6 +2037,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelPutGet(channelPutGetRequester, null);
 			fail("null pvRequest accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -2142,6 +2168,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createChannelArray(null, null);
 			fail("null ChannelArrayRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -2253,6 +2281,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createMonitor(null, pvRequest);
 			fail("null MonitorRequester accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
@@ -2265,6 +2295,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
         {
         	ch.createMonitor(channelMonitorRequester, null);
 			fail("null pvRequest accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
 		} catch (IllegalArgumentException th) {
 			// OK
 		} catch (Throwable th) {
