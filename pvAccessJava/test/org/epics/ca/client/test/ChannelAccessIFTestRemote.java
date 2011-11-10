@@ -13,8 +13,12 @@
  */
 package org.epics.ca.client.test;
 
+import org.epics.ca.client.ChannelAccessFactory;
 import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
+import org.epics.ca.server.impl.remote.ServerContextImpl;
+import org.epics.ca.server.impl.remote.plugins.DefaultBeaconServerDataProvider;
+import org.epics.ca.server.test.TestChannelProviderImpl;
 
 /**
  * Channel Access remote IF test.
@@ -23,7 +27,43 @@ import org.epics.ca.client.impl.remote.ClientContextImpl;
  */
 public class ChannelAccessIFTestRemote extends ChannelAccessIFTest {
 	
-    /**
+	static {
+		ChannelProvider channelProviderImpl = new TestChannelProviderImpl();
+		ChannelAccessFactory.registerChannelProvider(channelProviderImpl);
+		
+		System.setProperty("EPICS4_CAS_PROVIDER_NAME", channelProviderImpl.getProviderName());
+		
+		// Create a context with default configuration values.
+		final ServerContextImpl context = new ServerContextImpl();
+		context.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(context));
+		
+		try {
+			context.initialize(ChannelAccessFactory.getChannelAccess());
+		} catch (Throwable th) {
+			th.printStackTrace();
+		}
+
+		// Display basic information about the context.
+        System.out.println(context.getVersion().getVersionString());
+        context.printInfo(); System.out.println();
+
+        new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+		        try {
+	                System.out.println("Running server...");
+					context.run(0);
+	                System.out.println("Done.");
+				} catch (Throwable th) {
+	                System.out.println("Failure:");
+					th.printStackTrace();
+				}
+			}
+		}, "pvAccess server").start();
+	}
+
+	/**
      * CA context.
      */
     protected ClientContextImpl context = null;

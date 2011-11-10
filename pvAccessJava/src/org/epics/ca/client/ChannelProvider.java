@@ -5,7 +5,6 @@
  */
 package org.epics.ca.client;
 
-import org.epics.pvData.pv.PVField;
 
 /**
  * Interface implemented by code that can provide access to the record
@@ -44,13 +43,6 @@ public interface ChannelProvider {
      * @return An interface for the find.
      */
     ChannelFind channelFind(String channelName,ChannelFindRequester channelFindRequester);
-    /**
-     * Query channel provider.
-     * @param query The query.
-     * @param queryRequester The requester.
-     * @return An interface for the query, <code>null</code> if not supported.
-     */
-    Query query(PVField query, QueryRequester queryRequester);
     /**
      * Create a channel.
      * @param channelName The name of the channel.

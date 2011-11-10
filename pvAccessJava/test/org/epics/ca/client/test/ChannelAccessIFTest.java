@@ -431,26 +431,6 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 	}
 
-
-	public void testQuery() throws Throwable
-	{
-		final ChannelProvider provider = getChannelProvider();
-
-		//
-		// null requester test, exception expected
-		//
-		try
-		{
-			PVField nullQuery = pvDataCreate.createPVScalar(null, "value", ScalarType.pvDouble);
-			provider.query(nullQuery, null);
-			fail("null ChannelQueryRequester accepted");
-		} catch (Throwable th) {
-			// OK, not implemented... not tested
-		}
-		
-		// TODO other functionality not yet tested (since not implemented)
-	}
-	
 	public void testChannel() throws Throwable
 	{
 		final ChannelProvider provider = getChannelProvider();

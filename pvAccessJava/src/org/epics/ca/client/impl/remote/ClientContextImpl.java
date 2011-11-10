@@ -31,8 +31,6 @@ import org.epics.ca.client.ChannelFind;
 import org.epics.ca.client.ChannelFindRequester;
 import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.ChannelRequester;
-import org.epics.ca.client.Query;
-import org.epics.ca.client.QueryRequester;
 import org.epics.ca.client.impl.remote.search.ChannelSearchManager;
 import org.epics.ca.client.impl.remote.search.SearchInstance;
 import org.epics.ca.client.impl.remote.search.SimpleChannelSearchManagerImpl;
@@ -56,7 +54,6 @@ import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.ThreadPriority;
 import org.epics.pvData.misc.Timer;
 import org.epics.pvData.misc.TimerFactory;
-import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
 import org.epics.pvData.pv.StatusCreate;
@@ -1183,15 +1180,6 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		@Override
 		public String getProviderName() {
 			return PROVIDER_NAME;
-		}
-	
-		/* (non-Javadoc)
-		 * @see org.epics.ca.client.ChannelProvider#query(org.epics.pvData.pv.PVField, org.epics.ca.client.QueryRequester)
-		 */
-		@Override
-		public Query query(PVField query, QueryRequester queryRequester) {
-			// TODO Auto-generated method stub
-			return null;
 		}
 	
 		/* (non-Javadoc)

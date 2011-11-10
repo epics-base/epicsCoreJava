@@ -38,12 +38,10 @@ CONTENTS
       <li><a href="#ChannelAcc2">ChannelAccess</a></li>
       <li><a href="#ChannelPro">ChannelProvider</a></li>
       <li><a href="#ChannelFin">ChannelFind</a></li>
-      <li><a href="#Query">Query</a></li>
     </ul>
   </li>
   <li><a href="#Channel">Channel</a></li>
   <li><a href="#AccessRigh">AccessRights</a></li>
-  <li><a href="#Query1">Query</a></li>
   <li><a href="#GetField">GetField</a></li>
   <li><a href="#ChannelReq1">ChannelRequest</a> 
     <ul>
@@ -400,7 +398,6 @@ methods:</p>
     void destroy();
     String getProviderName();
     ChannelFind channelFind(String channelName,ChannelFindRequester channelFindRequester);
-    Query query(PVField query, QueryRequester queryRequester);
     void createChannel(String channelName, channelRequester,short priority);
 }</pre>
 
@@ -444,11 +441,6 @@ interface ChannelFind {
   <dt><span style="font-family: Courier">cancelChannelFind</span></dt>
     <dd>Cancel the find request.</dd>
 </dl>
-
-<h3 id="Query">Query</h3>
-
-<p>This is described in a later section.</p>
-<hr />
 
 <h2 style="text-align: center" id="Channel">Channel</h2>
 <hr />
@@ -555,31 +547,6 @@ overview.</p>
     read,
     readWrite
 }</pre>
-<hr />
-
-<h2 style="text-align: center" id="Query1">Query</h2>
-<hr />
-
-<p>A query is a request that spans IOCs. For example a query might be "get the
-names of all the BPMs". The interfaces are:</p>
-<pre>interface Query {
-     ChannelProvider getChannelProvider();
-     void cancelQuery();
-}
-
-interface QueryRequester {
-    void queryResult(Status status, Query query, PVField result);
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt><span style="font-family: Courier">getChannelProvider</span></dt>
-    <dd>Get the channel provider.</dd>
-  <dt><span style="font-family: Courier">cancelQuery</span></dt>
-    <dd>Cancel the request.</dd>
-  <dt><span style="font-family: Courier">queryResult</span></dt>
-    <dd>The result of the queue request,</dd>
-</dl>
 <hr />
 
 <h2 style="text-align: center" id="GetField">GetField</h2>
