@@ -410,7 +410,8 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	{
 		if (sis.length == 0)
 			return;
-			
+
+		int count = 0;
 		int frameSent = 0;
 		for (SearchInstance si : sis)
 		{
@@ -428,6 +429,8 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 			if (skip)
 				continue;
 
+			count++;
+			
 			if (generateSearchRequestMessage(si, true, false))
 				frameSent++;
 			if (frameSent == MAX_FRAMES_AT_ONCE) 
@@ -436,7 +439,9 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 				frameSent = 0; 
 			}
 		}
-		flushSendBuffer();
+		
+		if (count > 0)
+			flushSendBuffer();
 	}
 	
 	@Override
