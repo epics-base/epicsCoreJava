@@ -1624,8 +1624,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
 		assertTrue(pvTimeStamp.attach(channelGetRequester.pvStructure.getStructureField("timeStamp")));
 		TimeStamp timestamp = TimeStampFactory.create();
-		pvTimeStamp.get(timestamp);
 		channelGetRequester.syncGet(false);
+		pvTimeStamp.get(timestamp);
 		// only first bit must be set
 		assertEquals(1, channelGetRequester.bitSet.cardinality());
 		assertTrue(channelGetRequester.bitSet.get(0));
@@ -1641,6 +1641,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			Thread.sleep(1000);
 			
 			channelGetRequester.syncGet(i == TIMES);
+			pvTimeStamp.get(timestamp);
 			// changes of value and timeStamp
 			assertEquals((previousValue + 1)%11, value.get());
 			assertTrue(timestamp.getSecondsPastEpoch() > previousTimestampSec);
@@ -2112,9 +2113,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
         assertTrue(pvTimeStamp.attach(channelPutGetRequester.pvGetStructure.getStructureField("timeStamp")));
         TimeStamp timestamp = TimeStampFactory.create();
-        pvTimeStamp.get(timestamp);
 		// get all
 		channelPutGetRequester.syncGetGet();
+        pvTimeStamp.get(timestamp);
 		
 		// multiple tests 
 		final int TIMES = 3;
@@ -2129,7 +2130,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			Thread.sleep(1500);
 			
 			channelPutGetRequester.syncPutGet(i == TIMES);
-			// changes of value and timeStamp; something is not right here...
+	        pvTimeStamp.get(timestamp);
+
+	        // changes of value and timeStamp; something is not right here...
 			assertEquals((previousValue + 1 + 1)%11, getValue.get());	// +1 (new value) +1 (process)
 			assertTrue(timestamp.getSecondsPastEpoch() > previousTimestampSec);
 		}
