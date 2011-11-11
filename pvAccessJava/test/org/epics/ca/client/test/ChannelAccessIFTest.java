@@ -1848,7 +1848,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelGetField.syncGetField(ch, "value", false);
 	}
 	
-	public void _testChannelProcess() throws Throwable
+	public void testChannelProcess() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("simpleCounter");
 

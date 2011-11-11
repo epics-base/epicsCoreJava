@@ -88,7 +88,11 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			public TestBasicChannelRequest(PVTopStructure pvTopStructure, PVStructure pvRequest) {
 				this.pvTopStructure = pvTopStructure;
-				mapper = new Mapper(pvTopStructure.getPVStructure(), pvRequest);
+				
+				if (pvRequest != null)
+					mapper = new Mapper(pvTopStructure.getPVStructure(), pvRequest);
+				else
+					mapper = null;
 				
 				registerRequest(this);
 			}
@@ -191,6 +195,45 @@ public class TestChannelProviderImpl implements ChannelProvider
 		}
 		
 		
+		class TestChannelProcessImpl extends TestBasicChannelRequest implements ChannelProcess
+		{
+			private final ChannelProcessRequester channelProcessRequester;
+			
+			public TestChannelProcessImpl(PVTopStructure pvTopStructure, ChannelProcessRequester channelProcessRequester, PVStructure pvRequest)
+			{
+				super(pvTopStructure, pvRequest);
+				
+				this.channelProcessRequester = channelProcessRequester;
+			
+				channelProcessRequester.channelProcessConnect(okStatus, this);
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelProcess#process(boolean)
+			 */
+			@Override
+			public void process(boolean lastRequest) {
+				if (destroyed.get())
+				{
+					channelProcessRequester.processDone(destroyedStatus);
+					return;
+				}
+
+				pvTopStructure.lock();
+				try
+				{
+					pvTopStructure.process();
+				}
+				finally {
+					pvTopStructure.unlock();
+				}
+
+				channelProcessRequester.processDone(okStatus);
+				
+				if (lastRequest)
+					destroy();
+			}
+		}
 
 		
 		class TestChannelPutImpl extends TestBasicChannelRequest implements ChannelPut
@@ -400,8 +443,17 @@ public class TestChannelProviderImpl implements ChannelProvider
 		public ChannelProcess createChannelProcess(
 				ChannelProcessRequester channelProcessRequester,
 				PVStructure pvRequest) {
-			// TODO Auto-generated method stub
-			return null;
+			
+			if (channelProcessRequester == null)
+				throw new IllegalArgumentException("channelProcessRequester");
+			
+			if (destroyed.get())
+			{
+				channelProcessRequester.channelProcessConnect(destroyedStatus, null);
+				return null;
+			}
+
+			return new TestChannelProcessImpl(pvTopStructure, channelProcessRequester, pvRequest); 
 		}
 
 		@Override
@@ -428,7 +480,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				ChannelPutRequester channelPutRequester, PVStructure pvRequest) {
 			
 			if (channelPutRequester == null)
-				throw new IllegalArgumentException("channelGetRequester");
+				throw new IllegalArgumentException("channelPutRequester");
 			
 			if (pvRequest == null)
 				throw new IllegalArgumentException("pvRequest");

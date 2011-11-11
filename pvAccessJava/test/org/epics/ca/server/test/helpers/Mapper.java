@@ -160,11 +160,19 @@ public class Mapper
 			while (i != -1)
 			{
 				int toCopyIndex = toCopyStructure[i];
-				copyBitSet.set(toCopyIndex);
-				final PVField copyField = copyStructure.getSubField(toCopyIndex);
-				final PVField originField = originStructure.getSubField(i);
-				convert.copy(originField, copyField);
-				i = originStructureBitSet.nextSetBit(originField.getNextFieldOffset());
+				if (toCopyIndex != -1)
+				{
+					copyBitSet.set(toCopyIndex);
+					final PVField copyField = copyStructure.getSubField(toCopyIndex);
+					final PVField originField = originStructure.getSubField(i);
+					convert.copy(originField, copyField);
+					i = originStructureBitSet.nextSetBit(originField.getNextFieldOffset());
+				}
+				else
+				{
+					final PVField originField = originStructure.getSubField(i);
+					i = originStructureBitSet.nextSetBit(originField.getNextFieldOffset());
+				}
 			}
 		}
 	}
