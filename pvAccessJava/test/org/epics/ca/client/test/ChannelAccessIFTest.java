@@ -1520,14 +1520,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    channelGetTestParameters(ch);
 	    
 		channelGetTestNoProcess(ch, false);
-		channelGetTestNoProcess(ch, true);
+		//channelGetTestNoProcess(ch, true);
 		
 		ch.destroy();
 		
 	    ch = syncCreateChannel("simpleCounter");
 		
 		channelGetTestIntProcess(ch, false);
-		channelGetTestIntProcess(ch, true);
+		//channelGetTestIntProcess(ch, true);
 		
 		channelGetTestNoConnection(ch, true);
 		channelGetTestNoConnection(ch, false);
@@ -1659,14 +1659,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    channelPutTestParameters(ch);
 	    
 		channelPutTestNoProcess(ch, false);
-		channelPutTestNoProcess(ch, true);
+		//channelPutTestNoProcess(ch, true);
 		
 		ch.destroy();
 		
 	    ch = syncCreateChannel("simpleCounter");
 		
 		channelPutTestIntProcess(ch, false);
-		channelPutTestIntProcess(ch, true);
+		//channelPutTestIntProcess(ch, true);
 
 		channelPutTestNoConnection(ch, true);
 		channelPutTestNoConnection(ch, false);
