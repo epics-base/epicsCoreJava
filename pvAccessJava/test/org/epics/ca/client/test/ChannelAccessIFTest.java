@@ -1848,7 +1848,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelGetField.syncGetField(ch, "value", false);
 	}
 	
-	public void testChannelProcess() throws Throwable
+	public void _testChannelProcess() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("simpleCounter");
 
@@ -1972,7 +1972,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	}
 	*/
 	
-	public void testChannelPutGet() throws Throwable
+	public void _testChannelPutGet() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("valueOnly");
 
@@ -2142,7 +2142,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelPutGetRequester.syncPutGet(true, false);
 	}
 	
-	public void testChannelArray() throws Throwable
+	public void _testChannelRPC() throws Throwable
+	{
+		// TODO
+	}
+	
+	public void _testChannelArray() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("simpleCounter");
 	    
@@ -2253,7 +2258,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private static final Convert convert = ConvertFactory.getConvert();
 
-	public void testChannelMonitors() throws Throwable
+	public void _testChannelMonitors() throws Throwable
 	{
         Channel ch = syncCreateChannel("counter");
 
@@ -2366,7 +2371,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     	}
     }
 	
-    public void testStressMonitorAndProcess() throws Throwable
+    public void _testStressMonitorAndProcess() throws Throwable
     {
         Channel ch = syncCreateChannel("simpleCounter");
 		

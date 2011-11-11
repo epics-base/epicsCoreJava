@@ -22,7 +22,7 @@ import org.epics.ca.server.test.TestChannelProviderImpl;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class ChannelAccessIFTestLocal extends ChannelAccessIFTest {
+public class ChannelAccessIFLocalTest extends ChannelAccessIFTest {
 	
 	static {
 		ChannelProvider channelProviderImpl = new TestChannelProviderImpl();

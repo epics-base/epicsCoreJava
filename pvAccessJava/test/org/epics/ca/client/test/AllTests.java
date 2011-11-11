@@ -28,8 +28,8 @@ public class AllTests {
         TestSuite suite = new TestSuite(
                 "Test for" + AllTests.class.getPackage().getName());
         //$JUnit-BEGIN$
-        suite.addTestSuite(ChannelAccessIFTestLocal.class);
-        suite.addTestSuite(ChannelAccessIFTestRemote.class);
+        suite.addTestSuite(ChannelAccessIFLocalTest.class);
+        suite.addTestSuite(ChannelAccessIFRemoteTest.class);
         //$JUnit-END$
         return suite;
     }
