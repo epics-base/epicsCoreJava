@@ -56,7 +56,7 @@ public class CounterTopStructure extends PVTopStructure implements TimerCallback
 	public void process() {
 		changedBitSet.clear();
 		
-		valueField.put(valueField.get() + 1);
+		valueField.put((valueField.get() + 1) % 11);
 		changedBitSet.set(valueField.getFieldOffset());
 		
 		timeStamp.getCurrentTime();

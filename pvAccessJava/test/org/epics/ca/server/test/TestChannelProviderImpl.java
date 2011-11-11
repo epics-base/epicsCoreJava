@@ -59,6 +59,7 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
+import org.epics.pvData.pv.Type;
 import org.epics.pvData.pv.Status.StatusType;
 
 /**
@@ -74,6 +75,8 @@ public class TestChannelProviderImpl implements ChannelProvider
 		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "field does not exist", null);
 	private static final Status destroyedStatus =
 		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "channel destroyed", null);
+    private static final Status illegalRequestStatus =
+    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "illegal pvRequest", null);
 
 
     class TestChannelImpl implements Channel
@@ -311,7 +314,131 @@ public class TestChannelProviderImpl implements ChannelProvider
 		}
 
 		
-		
+		class TestChannelPutGetImpl extends TestBasicChannelRequest implements ChannelPutGet
+		{
+			private final ChannelPutGetRequester channelPutGetRequester;
+			private PVStructure pvGetStructure;
+			private PVStructure pvPutStructure;
+			private Mapper putMapper;
+			private Mapper getMapper;
+			private boolean process;
+			
+			public TestChannelPutGetImpl(PVTopStructure pvTopStructure, ChannelPutGetRequester channelPutGetRequester, PVStructure pvRequest)
+			{
+				super(pvTopStructure, null);
+				
+				this.channelPutGetRequester = channelPutGetRequester;
+			
+	            PVField pvField = pvRequest.getSubField("putField");
+	            if(pvField==null || pvField.getField().getType()!=Type.structure) {
+	            	channelPutGetRequester.message("pvRequest does not have a putField request structure", MessageType.error);
+	            	channelPutGetRequester.message(pvRequest.toString(),MessageType.warning);
+	            	channelPutGetRequester.channelPutGetConnect(illegalRequestStatus, null, null, null);
+	            	return;
+	            }
+				putMapper = new Mapper(pvTopStructure.getPVStructure(), pvRequest, "putField");
+				
+	        	
+	        	pvField = pvRequest.getSubField("getField");
+	            if(pvField==null || pvField.getField().getType()!=Type.structure) {
+	            	channelPutGetRequester.message("pvRequest does not have a getField request structure", MessageType.error);
+	            	channelPutGetRequester.message(pvRequest.toString(),MessageType.warning);
+	            	channelPutGetRequester.channelPutGetConnect(illegalRequestStatus, null, null, null);
+	            	return;
+	            }
+				getMapper = new Mapper(pvTopStructure.getPVStructure(), pvRequest, "getField");
+	            
+	            process = PVRequestUtils.getProcess(pvRequest);
+				
+				pvPutStructure = putMapper.getCopyStructure();
+				pvGetStructure = getMapper.getCopyStructure();
+				
+				channelPutGetRequester.channelPutGetConnect(okStatus, this, pvPutStructure, pvGetStructure);
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelPutGet#putGet(boolean)
+			 */
+			@Override
+			public void putGet(boolean lastRequest) {
+				if (destroyed.get())
+				{
+					channelPutGetRequester.getPutDone(destroyedStatus);
+					return;
+				}
+
+				lock();
+				pvTopStructure.lock();
+				try
+				{
+					putMapper.updateOriginStructure(null);
+					if (process)
+						pvTopStructure.process();
+					getMapper.updateCopyStructure(null);
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+				
+				channelPutGetRequester.getPutDone(okStatus);
+				
+				if (lastRequest)
+					destroy();
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelPutGet#getPut()
+			 */
+			@Override
+			public void getPut() {
+				if (destroyed.get())
+				{
+					channelPutGetRequester.getPutDone(destroyedStatus);
+					return;
+				}
+
+				lock();
+				pvTopStructure.lock();
+				try
+				{
+					putMapper.updateCopyStructure(null);
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+				
+				channelPutGetRequester.getPutDone(okStatus);
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelPutGet#getGet()
+			 */
+			@Override
+			public void getGet() {
+				if (destroyed.get())
+				{
+					channelPutGetRequester.getGetDone(destroyedStatus);
+					return;
+				}
+
+				lock();
+				pvTopStructure.lock();
+				try
+				{
+					getMapper.updateCopyStructure(null);
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+				
+				channelPutGetRequester.getGetDone(okStatus);
+			}
+
+		}
+
 		private final String channelName;
 		private final ChannelRequester channelRequester;
 		private final PVTopStructure pvTopStructure;
@@ -498,8 +625,20 @@ public class TestChannelProviderImpl implements ChannelProvider
 		public ChannelPutGet createChannelPutGet(
 				ChannelPutGetRequester channelPutGetRequester,
 				PVStructure pvRequest) {
-			// TODO Auto-generated method stub
-			return null;
+			
+			if (channelPutGetRequester == null)
+				throw new IllegalArgumentException("channelPutGetRequester");
+			
+			if (pvRequest == null)
+				throw new IllegalArgumentException("pvRequest");
+			
+			if (destroyed.get())
+			{
+				channelPutGetRequester.channelPutGetConnect(destroyedStatus, null, null, null);
+				return null;
+			}
+
+			return new TestChannelPutGetImpl(pvTopStructure, channelPutGetRequester, pvRequest); 
 		}
 
 		@Override

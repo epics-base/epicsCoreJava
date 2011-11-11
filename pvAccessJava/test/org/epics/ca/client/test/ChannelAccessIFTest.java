@@ -1972,7 +1972,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	}
 	*/
 	
-	public void _testChannelPutGet() throws Throwable
+	public void testChannelPutGet() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("valueOnly");
 

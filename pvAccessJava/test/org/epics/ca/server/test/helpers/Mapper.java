@@ -31,8 +31,21 @@ public class Mapper
     final int[] toCopyStructure;
 
     public Mapper(PVStructure originStructure, PVStructure pvRequest)
+    {
+    	this(originStructure, pvRequest, null);
+    }
+    
+    public Mapper(PVStructure originStructure, PVStructure pvRequest, String structureName)
 	{
-    	this.originStructure = originStructure;
+		if(structureName!=null && structureName.length()>0) {
+			if(pvRequest.getPVFields().length>0) {
+				pvRequest = pvRequest.getStructureField(structureName);
+				if(pvRequest==null)
+					throw new IllegalArgumentException("pvRequest does not contain " + structureName + " subfield");
+			}
+		}
+
+		this.originStructure = originStructure;
     	
 		ArrayList<Integer> indexMapping = new ArrayList<Integer>(originStructure.getNumberFields());
 		
