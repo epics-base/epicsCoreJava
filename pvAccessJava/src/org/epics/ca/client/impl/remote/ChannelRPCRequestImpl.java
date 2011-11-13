@@ -55,9 +55,6 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		if (callback == null)
 			throw new IllegalArgumentException("null requester");
 
-		if (pvRequest == null)
-			throw new IllegalArgumentException("null pvRequest");
-
 		this.callback = callback;
 		
 		this.pvRequest = pvRequest;

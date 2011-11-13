@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 
 import org.epics.ca.CAConstants;
 import org.epics.ca.client.Channel;
+import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.ChannelArray;
 import org.epics.ca.client.ChannelArrayRequester;
 import org.epics.ca.client.ChannelFind;
@@ -37,11 +38,13 @@ import org.epics.ca.client.ChannelPut;
 import org.epics.ca.client.ChannelPutGet;
 import org.epics.ca.client.ChannelPutGetRequester;
 import org.epics.ca.client.ChannelPutRequester;
+import org.epics.ca.client.ChannelRPC;
+import org.epics.ca.client.ChannelRPCRequester;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.CreateRequestFactory;
 import org.epics.ca.client.GetFieldRequester;
-import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.pvData.factory.ConvertFactory;
+import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.monitor.Monitor;
@@ -54,6 +57,7 @@ import org.epics.pvData.property.TimeStampFactory;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.DoubleArrayData;
 import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVArray;
 import org.epics.pvData.pv.PVDataCreate;
@@ -66,10 +70,10 @@ import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
+import org.epics.pvData.pv.Status.StatusType;
 import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
-import org.epics.pvData.pv.Status.StatusType;
 
 /**
  * Channel Access IF test.
@@ -1082,6 +1086,104 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 	};
 	
+	private class ChannelRPCRequesterImpl implements ChannelRPCRequester
+	{
+		ChannelRPC channelRPC;
+		PVStructure result;
+
+		private Boolean connected = null;
+		private Boolean success = null;
+
+		@Override
+		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
+			synchronized (this)
+			{
+				this.channelRPC = channelRPC;
+
+				connected = new Boolean(status.isOK());
+				this.notify();
+			}
+		}
+
+
+		@Override
+		public void requestDone(Status status, PVStructure pvResponse) {
+			synchronized (this) {
+				this.success = new Boolean(status.isOK());
+				this.result = pvResponse;
+				this.notify();
+			}
+		}
+		
+		public void waitAndCheckConnect()
+		{
+			waitAndCheckConnect(true);
+		}
+		
+		public void waitAndCheckConnect(boolean expectedSuccess)
+		{
+			synchronized (this) {
+				if (connected == null)
+				{
+					try {
+						this.wait(getTimeoutMs());
+					} catch (InterruptedException e) {
+						// noop
+					}
+				}
+				
+				assertNotNull("channel rpc connect timeout", connected);
+				if (expectedSuccess) {
+					assertTrue("channel rpc failed to connect", connected.booleanValue());
+				} else {
+					assertFalse("channel rpc has not failed to connect", connected.booleanValue());
+				}
+			}
+		}
+
+		public PVStructure syncRPC(PVStructure arguments, boolean lastRequest)
+		{
+			return syncRPC(arguments, lastRequest, true);
+		}
+		
+		public PVStructure syncRPC(PVStructure arguments, boolean lastRequest, boolean expectedSuccess)
+		{
+			synchronized (this) {
+				if (connected == null)
+					assertNotNull("channel rpc not connected", connected);
+					
+				success = null;
+				result = null;
+				channelRPC.request(arguments, lastRequest);
+				
+				try {
+					if (success == null)
+						this.wait(getTimeoutMs());
+				} catch (InterruptedException e) {
+					// noop
+				}
+				
+				assertNotNull("channel rpc timeout", success);
+				if (expectedSuccess)
+					assertTrue("channel rpc failed", success.booleanValue());
+				else
+					assertFalse("channel rpc has not failed", success.booleanValue());
+				
+				return result;
+			}
+		}
+
+		@Override
+		public String getRequesterName() {
+			return this.getClass().getName();
+		}
+
+		@Override
+		public void message(String message, MessageType messageType) {
+			System.err.println("[" + messageType + "] " + message);
+		}
+	};
+
 	ChannelProcessRequester channelProcessRequester = new ChannelProcessRequester() {
 		
 		volatile ChannelProcess channelProcess;
@@ -1979,14 +2081,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    channelPutGetTestParameters(ch);
 	
 		channelPutGetTestNoProcess(ch, false);
-		channelPutGetTestNoProcess(ch, true);
+		//channelPutGetTestNoProcess(ch, true);
 		
 		ch.destroy();
 		
 	    ch = syncCreateChannel("simpleCounter");
 		
 		channelPutGetTestIntProcess(ch, false);
-		channelPutGetTestIntProcess(ch, true);
+		//channelPutGetTestIntProcess(ch, true);
 
 		channelPutGetTestNoConnection(ch, true);
 		channelPutGetTestNoConnection(ch, false);
@@ -2142,11 +2244,104 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelPutGetRequester.syncPutGet(true, false);
 	}
 	
-	public void _testChannelRPC() throws Throwable
+	public void testChannelRPC() throws Throwable
 	{
-		// TODO
+	    Channel ch = syncCreateChannel("sum");
+
+	    channelRPCTestParameters(ch);
+	
+		channelRPCTest(ch);
+		
+		channelRPCTestNoConnection(ch, true);
+		channelRPCTestNoConnection(ch, false);
 	}
 	
+	private void channelRPCTestParameters(Channel ch) throws Throwable
+	{
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("",ch);
+		
+        try 
+        {
+        	ch.createChannelRPC(null, pvRequest);
+			fail("null ChannelRPCRequesterImpl accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
+		} catch (IllegalArgumentException th) {
+			// OK
+		} catch (Throwable th) {
+			fail("other than IllegalArgumentException exception was thrown");
+		}
+		
+		/*
+		ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl();
+		try 
+        {
+        	ch.createRPC(channelRPCRequester, null);
+			fail("null pvRequest accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
+		} catch (IllegalArgumentException th) {
+			// OK
+		} catch (Throwable th) {
+			fail("other than IllegalArgumentException exception was thrown");
+		}
+		*/
+	}
+
+    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+
+    private static PVStructure createRPCArguments()
+	{
+		PVStructure args;
+		{
+	        Field[] fields = new Field[2];
+	        fields[0] = fieldCreate.createScalar("a", ScalarType.pvDouble);
+	        fields[1] = fieldCreate.createScalar("b", ScalarType.pvDouble);
+	        args = pvDataCreate.createPVStructure(null, "args", fields);
+		}
+		
+		args.getDoubleField("a").put(12.3);
+		args.getDoubleField("b").put(45.6);
+		
+		return args;
+	}
+	
+    private void channelRPCTest(Channel ch)
+    {
+    	PVStructure pvRequest = null; //CreateRequestFactory.createRequest("",ch);
+    	PVStructure arguments = createRPCArguments();
+    	
+		ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl();
+		ch.createChannelRPC(channelRPCRequester, pvRequest);
+		channelRPCRequester.waitAndCheckConnect();
+		
+		PVStructure result = channelRPCRequester.syncRPC(arguments, false);
+		assertNotNull(result);
+		PVDouble c = result.getDoubleField("c");
+		assertNotNull(c);
+		assertEquals(12.3+45.6, c.get());
+		
+		channelRPCRequester.channelRPC.destroy();
+		
+		channelRPCRequester.syncRPC(arguments, false, false);
+    }
+
+    private void channelRPCTestNoConnection(Channel ch, boolean disconnect) throws Throwable
+	{
+    	PVStructure pvRequest = null; //CreateRequestFactory.createRequest("",ch);
+    	PVStructure arguments = createRPCArguments();
+    	
+		ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl();
+		ch.createChannelRPC(channelRPCRequester, pvRequest);
+		channelRPCRequester.waitAndCheckConnect(disconnect);
+		if (disconnect) 
+		{
+			//ch.disconnect();
+			ch.destroy();
+			channelRPCRequester.syncRPC(arguments, false, false);
+		}
+	}
+
 	public void _testChannelArray() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("simpleCounter");

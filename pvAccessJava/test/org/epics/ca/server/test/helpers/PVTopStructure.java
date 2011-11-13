@@ -33,32 +33,39 @@ public class PVTopStructure implements Lockable
 	
 	public PVTopStructure(Field valueType)
 	{
-		// TODO use PVStandard when available
-		
-		PVStructure timeStampStructure;
+		if (valueType == null)
 		{
-	        Field[] fields = new Field[3];
-	        fields[0] = fieldCreate.createScalar("secondsPastEpoch", ScalarType.pvLong);
-	        fields[1] = fieldCreate.createScalar("nanoSeconds", ScalarType.pvInt);
-	        fields[2] = fieldCreate.createScalar("userTag", ScalarType.pvInt);
-	        timeStampStructure = pvDataCreate.createPVStructure(null, "timeStamp", fields);
+			pvStructure = null;
 		}
-	
-		PVStructure alarmStructure;
+		else
 		{
-	        Field[] fields = new Field[3];
-	        fields[0] = fieldCreate.createScalar("severity", ScalarType.pvInt);
-	        fields[1] = fieldCreate.createScalar("status", ScalarType.pvInt);
-	        fields[2] = fieldCreate.createScalar("message", ScalarType.pvString);
-	        alarmStructure = pvDataCreate.createPVStructure(null, "alarm", fields);
-		}
+			// TODO use PVStandard when available
+			
+			PVStructure timeStampStructure;
+			{
+		        Field[] fields = new Field[3];
+		        fields[0] = fieldCreate.createScalar("secondsPastEpoch", ScalarType.pvLong);
+		        fields[1] = fieldCreate.createScalar("nanoSeconds", ScalarType.pvInt);
+		        fields[2] = fieldCreate.createScalar("userTag", ScalarType.pvInt);
+		        timeStampStructure = pvDataCreate.createPVStructure(null, "timeStamp", fields);
+			}
 		
-        Field[] fields = new Field[3];
-        fields[0] = fieldCreate.create("value", valueType);
-        fields[1] = timeStampStructure.getField();
-        fields[2] = alarmStructure.getField();
-        
-        pvStructure = pvDataCreate.createPVStructure(null, "", fields);
+			PVStructure alarmStructure;
+			{
+		        Field[] fields = new Field[3];
+		        fields[0] = fieldCreate.createScalar("severity", ScalarType.pvInt);
+		        fields[1] = fieldCreate.createScalar("status", ScalarType.pvInt);
+		        fields[2] = fieldCreate.createScalar("message", ScalarType.pvString);
+		        alarmStructure = pvDataCreate.createPVStructure(null, "alarm", fields);
+			}
+			
+	        Field[] fields = new Field[3];
+	        fields[0] = fieldCreate.create("value", valueType);
+	        fields[1] = timeStampStructure.getField();
+	        fields[2] = alarmStructure.getField();
+	        
+	        pvStructure = pvDataCreate.createPVStructure(null, "", fields);
+		}
 	}
 	
 	public PVStructure getPVStructure()
@@ -70,6 +77,13 @@ public class PVTopStructure implements Lockable
 	{
 		// default is noop
 	}
+	
+	// TODO async
+	public PVStructure request(PVStructure pvArgument)
+	{
+		throw new UnsupportedOperationException("not implemented");
+	}
+	
 	
 	public void lock()
 	{

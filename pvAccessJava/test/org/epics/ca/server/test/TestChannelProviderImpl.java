@@ -44,6 +44,7 @@ import org.epics.ca.server.test.helpers.Mapper;
 import org.epics.ca.server.test.helpers.PVRequestUtils;
 import org.epics.ca.server.test.helpers.PVTopStructure;
 import org.epics.ca.server.test.helpers.PVTopStructure.PVTopStructureListener;
+import org.epics.ca.server.test.helpers.RPCTopStructure;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.BitSet;
@@ -59,8 +60,8 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.Type;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.Type;
 
 /**
  * Implementation of a channel provider for tests.
@@ -77,7 +78,6 @@ public class TestChannelProviderImpl implements ChannelProvider
 		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "channel destroyed", null);
     private static final Status illegalRequestStatus =
     	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "illegal pvRequest", null);
-
 
     class TestChannelImpl implements Channel
 	{
@@ -232,6 +232,54 @@ public class TestChannelProviderImpl implements ChannelProvider
 				}
 
 				channelProcessRequester.processDone(okStatus);
+				
+				if (lastRequest)
+					destroy();
+			}
+		}
+
+		
+		class TestChannelRPCImpl extends TestBasicChannelRequest implements ChannelRPC
+		{
+			private final ChannelRPCRequester channelRPCRequester;
+			
+			public TestChannelRPCImpl(PVTopStructure pvTopStructure, ChannelRPCRequester channelRPCRequester, PVStructure pvRequest)
+			{
+				super(pvTopStructure, pvRequest);
+				
+				this.channelRPCRequester = channelRPCRequester;
+			
+				channelRPCRequester.channelRPCConnect(okStatus, this);
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelRPC#request(org.epics.pvData.pv.PVStructure, boolean)
+			 */
+			@Override
+			public void request(PVStructure pvArgument, boolean lastRequest) {
+				if (destroyed.get())
+				{
+					channelRPCRequester.requestDone(destroyedStatus, null);
+					return;
+				}
+
+				// TODO async support
+				PVStructure result = null;
+				Status status = okStatus;
+				pvTopStructure.lock();
+				try
+				{
+					result = pvTopStructure.request(pvArgument);
+				}
+				catch (Throwable th)
+				{
+					status = StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "exceptuon caught: " + th.getMessage(), th);
+				}
+				finally {
+					pvTopStructure.unlock();
+				}
+
+				channelRPCRequester.requestDone(status, result);
 				
 				if (lastRequest)
 					destroy();
@@ -644,8 +692,22 @@ public class TestChannelProviderImpl implements ChannelProvider
 		@Override
 		public ChannelRPC createChannelRPC(
 				ChannelRPCRequester channelRPCRequester, PVStructure pvRequest) {
-			// TODO Auto-generated method stub
-			return null;
+			
+			if (channelRPCRequester == null)
+				throw new IllegalArgumentException("channelRPCRequester");
+			
+			/*
+			if (pvRequest == null)
+				throw new IllegalArgumentException("pvRequest");
+			*/
+			
+			if (destroyed.get())
+			{
+				channelRPCRequester.channelRPCConnect(destroyedStatus, null);
+				return null;
+			}
+
+			return new TestChannelRPCImpl(pvTopStructure, channelRPCRequester, pvRequest); 
 		}
 
 		@Override
@@ -697,7 +759,8 @@ public class TestChannelProviderImpl implements ChannelProvider
 		return
 			channelName.equals("counter") ||
 			channelName.equals("simpleCounter") ||
-			channelName.equals("valueOnly");
+			channelName.equals("valueOnly") ||
+			channelName.equals("sum");
 	}
 
 	private static final Timer timer = TimerFactory.create("counter timer", ThreadPriority.middle);
@@ -726,6 +789,10 @@ public class TestChannelProviderImpl implements ChannelProvider
 		else if (channelName.equals("valueOnly"))
 		{
 			retVal =  new PVTopStructure(fieldCreate.createScalar("value", ScalarType.pvDouble));
+		}
+		else if (channelName.equals("sum"))
+		{
+			retVal =  new RPCTopStructure();
 		}
 		else
 		{
