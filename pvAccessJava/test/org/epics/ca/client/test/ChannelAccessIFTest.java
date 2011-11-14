@@ -14,7 +14,6 @@
 
 package org.epics.ca.client.test;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,12 +65,10 @@ import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
-import org.epics.pvData.pv.StringArrayData;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 
@@ -1372,7 +1369,6 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			{
 				this.channelArray = channelArray;
 				this.pvArray = pvArray;
-
 				connected = new Boolean(status.isOK());
 				this.notify();
 			}
@@ -2342,15 +2338,28 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 	}
 
-	public void _testChannelArray() throws Throwable
+	private void channelArrayTestParameters(Channel ch) throws Throwable
 	{
-	    Channel ch = syncCreateChannel("simpleCounter");
-	    
-		// null requester test
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
+		
         try 
         {
-        	ch.createChannelArray(null, null);
-			fail("null ChannelArrayRequester accepted");
+        	ch.createChannelArray(null, pvRequest);
+			fail("null ChannelArrayRequesterImpl accepted");
+		} catch (AssertionFailedError afe) {
+			throw afe;
+		} catch (IllegalArgumentException th) {
+			// OK
+		} catch (Throwable th) {
+			fail("other than IllegalArgumentException exception was thrown");
+		}
+		
+		
+		ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
+		try 
+        {
+        	ch.createChannelArray(channelArrayRequester, null);
+			fail("null pvRequest accepted");
 		} catch (AssertionFailedError afe) {
 			throw afe;
 		} catch (IllegalArgumentException th) {
@@ -2359,10 +2368,18 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
 
-//    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
+	}
+
+	public void testChannelArray() throws Throwable
+	{
+	    Channel ch = syncCreateChannel("arrayDouble");
+	    
+	    channelArrayTestParameters(ch);
+
+    	//PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
     	PVStructure pvRequest = pvDataCreate.createPVStructure(null, "", new Field[0]);
     	PVString pvFieldName = (PVString)pvDataCreate.createPVScalar(pvRequest, "field", ScalarType.pvString);
-    	pvFieldName.put("alarm.severity.choices");
+    	pvFieldName.put("value");
     	pvRequest.appendPVField(pvFieldName);
 
 		ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
@@ -2370,12 +2387,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    channelArrayRequester.waitAndCheckConnect();
 	    
 	    // test get
-	    PVStringArray array = (PVStringArray)channelArrayRequester.pvArray;
-	    StringArrayData data = new StringArrayData();
+	    PVDoubleArray array = (PVDoubleArray)channelArrayRequester.pvArray;
+	    DoubleArrayData data = new DoubleArrayData();
 	    channelArrayRequester.syncGet(true, 1, 2);
 	    int count = array.get(0, 100, data);
 	    assertEquals(2, count);
-	    assertTrue(Arrays.equals(new String[] { "minor", "major" }, data.data));
+	    assertEquals(2.2, data.data[0]);
+	    assertEquals(3.3, data.data[1]);
 	 
 	    ch.destroy();
 
@@ -2383,8 +2401,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// this must fail (callback with unsuccessful completion status)
 		channelArrayRequester.syncGet(true, 1, 2, false);
 	    
-    	pvFieldName.put("value");
-	    ch = syncCreateChannel("arrayValueOnly");
+    	//pvFieldName.put("value");
+	    ch = syncCreateChannel("arrayDouble");
 	    channelArrayRequester = new ChannelArrayRequesterImpl();
 	    ch.createChannelArray(channelArrayRequester, pvRequest);
 	    channelArrayRequester.waitAndCheckConnect();
@@ -2401,7 +2419,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 	    
-	    channelArrayRequester.syncPut(false, 4, -1);
+	    channelArrayRequester.syncPut(false, 4, -1);	// result: 1.1, 2.2, 3.3, 4.4, 1.1, 2.2, 3.3, 4.4, 5.5
 	    channelArrayRequester.syncGet(false, 3, 3);
 	    count = doubleArray.get(0, 3, doubleData);
 	    assertEquals(3, count);
@@ -2409,21 +2427,32 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(EXPECTED_VAL[i], doubleData.data[i]);
 	    
-	    channelArrayRequester.syncSetLength(false, 3, -1);
+	    channelArrayRequester.syncSetLength(false, 3, -1);  // result: 1.1, 2.2, 3.3
 	    channelArrayRequester.syncGet(false, 0, -1);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(3, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 	    
-	    channelArrayRequester.syncSetLength(false, -1, 2);
+	    final int NEW_CAP = 2;
+	    channelArrayRequester.syncSetLength(false, -1, NEW_CAP);	// result: 1.1, 2.2
 	    channelArrayRequester.syncGet(false, 0, -1);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(2, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 
-	    
+	    // big array test
+	    final int BIG_CAPACITY = 10000;
+	    channelArrayRequester.syncSetLength(false, BIG_CAPACITY, BIG_CAPACITY);
+	    channelArrayRequester.syncGet(false, 0, -1);
+	    count = doubleArray.get(0, 10000, doubleData);
+	    assertEquals(10000, count);
+	    for (int i = 0; i < NEW_CAP; i++)
+	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
+	    for (int i = NEW_CAP; i < count; i++)
+	    	assertEquals(0.0, doubleData.data[i]);
+
 		channelArrayTestNoConnection(ch, true);
 		channelArrayTestNoConnection(ch, false);
 		/*

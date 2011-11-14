@@ -45,7 +45,9 @@ import org.epics.ca.server.test.helpers.PVRequestUtils;
 import org.epics.ca.server.test.helpers.PVTopStructure;
 import org.epics.ca.server.test.helpers.PVTopStructure.PVTopStructureListener;
 import org.epics.ca.server.test.helpers.RPCTopStructure;
+import org.epics.pvData.factory.ConvertFactory;
 import org.epics.pvData.factory.FieldFactory;
+import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.misc.ThreadPriority;
@@ -53,11 +55,17 @@ import org.epics.pvData.misc.Timer;
 import org.epics.pvData.misc.TimerFactory;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorRequester;
+import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
+import org.epics.pvData.pv.PVDataCreate;
+import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVField;
+import org.epics.pvData.pv.PVScalarArray;
+import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
@@ -70,6 +78,8 @@ import org.epics.pvData.pv.Type;
 public class TestChannelProviderImpl implements ChannelProvider
 {
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final Convert convert = ConvertFactory.getConvert();
 
     private static final Status okStatus = StatusFactory.getStatusCreate().getStatusOK();
 	private static final Status fieldDoesNotExistStatus =
@@ -78,6 +88,14 @@ public class TestChannelProviderImpl implements ChannelProvider
 		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "channel destroyed", null);
     private static final Status illegalRequestStatus =
     	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "illegal pvRequest", null);
+    private static final Status capacityImmutableStatus =
+    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "capacity is immutable", null);
+    private static final Status subFieldDoesNotExistStatus =
+    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "subField does not exist", null);
+    private static final Status subFieldNotDefinedStatus =
+    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "subField not defined", null);
+    private static final Status subFieldNotArrayStatus =
+    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "subField is not an array", null);
 
     class TestChannelImpl implements Channel
 	{
@@ -362,6 +380,134 @@ public class TestChannelProviderImpl implements ChannelProvider
 		}
 
 		
+		class TestChannelScalarArrayImpl extends TestBasicChannelRequest implements ChannelArray
+		{
+			private final ChannelArrayRequester channelArrayRequester;
+			private final PVScalarArray pvArray;
+			private final PVScalarArray pvCopy;
+			private final boolean process;
+			
+			public TestChannelScalarArrayImpl(PVTopStructure pvTopStructure, ChannelArrayRequester channelArrayRequester, PVScalarArray array, PVStructure pvRequest)
+			{
+				super(pvTopStructure, null);
+				
+				this.channelArrayRequester = channelArrayRequester;
+				this.pvArray = array;
+				this.pvCopy = pvDataCreate.createPVScalarArray(null, "", pvArray.getScalarArray().getElementType());
+			
+				process = false; // TODO PVRequestUtils.getProcess(pvRequest);
+				
+				channelArrayRequester.channelArrayConnect(okStatus, this, pvCopy);
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelArray#putArray(boolean, int, int)
+			 */
+			@Override
+			public void putArray(boolean lastRequest, int offset, int count) {
+				if (destroyed.get())
+				{
+					channelArrayRequester.putArrayDone(destroyedStatus);
+					return;
+				}
+
+                lock();
+				pvTopStructure.lock();
+				try
+				{
+	                if(count<=0) count = pvCopy.getLength();
+                    convert.copyScalarArray(pvCopy, 0, pvArray, offset, count);
+
+					if (process)
+						pvTopStructure.process();
+
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+				
+				channelArrayRequester.putArrayDone(okStatus);
+
+				if (lastRequest)
+					destroy();
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelArray#getArray(boolean, int, int)
+			 */
+			@Override
+			public void getArray(boolean lastRequest, int offset, int count) {
+				if (destroyed.get())
+				{
+					channelArrayRequester.getArrayDone(destroyedStatus);
+					return;
+				}
+				
+                lock();
+				pvTopStructure.lock();
+				try
+				{
+					//if (process)
+					//	pvTopStructure.process();
+
+	                if(count<=0) count = pvArray.getLength() - offset;
+                    int len = convert.copyScalarArray(pvArray, offset, pvCopy, 0, count);
+                    if(!pvCopy.isImmutable()) pvCopy.setLength(len);
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+				
+				channelArrayRequester.getArrayDone(okStatus);
+
+				if (lastRequest)
+					destroy();
+			}
+
+			/* (non-Javadoc)
+			 * @see org.epics.ca.client.ChannelArray#setLength(boolean, int, int)
+			 */
+			@Override
+			public void setLength(boolean lastRequest, int length, int capacity) {
+				if (destroyed.get())
+				{
+					channelArrayRequester.putArrayDone(destroyedStatus);
+					return;
+				}
+
+				// TODO process???
+                
+                lock();
+				pvTopStructure.lock();
+				try
+				{
+					if(capacity>=0 && !pvArray.isCapacityMutable()) {
+						channelArrayRequester.setLengthDone(capacityImmutableStatus);
+						return;
+					}
+
+					if(length>=0) {
+                    	if(pvArray.getLength()!=length) pvArray.setLength(length);
+                    }
+                    if(capacity>=0) {
+                    	if(pvArray.getCapacity()!=capacity) pvArray.setCapacity(capacity);
+                    }
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+				
+				channelArrayRequester.setLengthDone(okStatus);
+
+				if (lastRequest)
+					destroy();
+			}
+
+		}
+
 		class TestChannelPutGetImpl extends TestBasicChannelRequest implements ChannelPutGet
 		{
 			private final ChannelPutGetRequester channelPutGetRequester;
@@ -717,12 +863,50 @@ public class TestChannelProviderImpl implements ChannelProvider
 			return null;
 		}
 
-		@Override
+	    @Override
 		public ChannelArray createChannelArray(
 				ChannelArrayRequester channelArrayRequester,
 				PVStructure pvRequest) {
-			// TODO Auto-generated method stub
-			return null;
+
+			if (channelArrayRequester == null)
+				throw new IllegalArgumentException("channelArrayRequester");
+			
+			if (pvRequest == null)
+				throw new IllegalArgumentException("pvRequest");
+			
+			if (destroyed.get())
+			{
+				channelArrayRequester.channelArrayConnect(destroyedStatus, null, null);
+				return null;
+			}
+
+            PVField pvField = pvRequest.getSubField("field");
+            if(pvField==null || pvField.getField().getType()!=Type.scalar) {
+            	channelArrayRequester.channelArrayConnect(subFieldNotDefinedStatus, null, null);
+                return null;
+            }
+            Scalar scalar = (Scalar)pvField.getField();
+            if(scalar.getScalarType()!=ScalarType.pvString) {
+            	channelArrayRequester.channelArrayConnect(subFieldNotDefinedStatus, null, null);
+                return null;
+            }
+            PVString pvString = (PVString)pvField;
+    		pvField = pvTopStructure.getPVStructure().getSubField(pvString.get());
+            if(pvField==null) {
+            	channelArrayRequester.channelArrayConnect(subFieldDoesNotExistStatus, null, null);
+                return null;
+            }
+            if(pvField.getField().getType()==Type.structureArray) {
+            	//PVStructureArray pvArray = (PVStructureArray)pvField;
+            	throw new RuntimeException("todo todo");
+            	//return new TestChannelStructureArrayImpl(pvTopStructure,channelArrayRequester,pvArray,pvRequest);
+            }
+            if(pvField.getField().getType()!=Type.scalarArray) {
+                channelArrayRequester.channelArrayConnect(subFieldNotArrayStatus, null, null);
+                return null;
+            }
+            PVScalarArray pvArray = (PVScalarArray)pvField;
+            return new TestChannelScalarArrayImpl(pvTopStructure,channelArrayRequester,pvArray,pvRequest);
 		}
 	}
 
@@ -760,6 +944,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			channelName.equals("counter") ||
 			channelName.equals("simpleCounter") ||
 			channelName.equals("valueOnly") ||
+			channelName.equals("arrayDouble") ||
 			channelName.equals("sum");
 	}
 
@@ -784,15 +969,24 @@ public class TestChannelProviderImpl implements ChannelProvider
 		// inc on process only
 		else if (channelName.equals("simpleCounter"))
 		{
-			retVal =  new CounterTopStructure(0.0, timer);
+			retVal = new CounterTopStructure(0.0, timer);
 		}
 		else if (channelName.equals("valueOnly"))
 		{
-			retVal =  new PVTopStructure(fieldCreate.createScalar("value", ScalarType.pvDouble));
+			retVal = new PVTopStructure(fieldCreate.createScalar("value", ScalarType.pvDouble));
 		}
 		else if (channelName.equals("sum"))
 		{
-			retVal =  new RPCTopStructure();
+			retVal = new RPCTopStructure();
+		}
+		else if (channelName.equals("arrayDouble"))
+		{
+			retVal = new PVTopStructure(fieldCreate.createScalarArray("value", ScalarType.pvDouble));
+			PVDoubleArray pvArray = (PVDoubleArray)retVal.getPVStructure().getSubField("value");
+		    final double[] ARRAY_VALUE = new double[] { 1.1, 2.2, 3.3, 4.4, 5.5 }; 
+			pvArray.setCapacity(ARRAY_VALUE.length);
+			pvArray.setLength(ARRAY_VALUE.length);
+			pvArray.put(0, ARRAY_VALUE.length, ARRAY_VALUE, 0);
 		}
 		else
 		{
