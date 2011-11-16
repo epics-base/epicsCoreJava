@@ -2482,7 +2482,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private static final Convert convert = ConvertFactory.getConvert();
 
-	public void _testChannelMonitors() throws Throwable
+	public void testChannelMonitors() throws Throwable
 	{
         Channel ch = syncCreateChannel("counter");
 
@@ -2517,8 +2517,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 		ch.destroy();
 
-		channelMonitorTest(10);
-		channelMonitorTest(2);
+		// TODO uncomment
+		//channelMonitorTest(10);
+		//channelMonitorTest(2);
 		channelMonitorTest(1);
 //		channelMonitorTest(0);
 	}
@@ -2527,7 +2528,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	{
         Channel ch = syncCreateChannel("counter");
 		
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=" + queueSize + "]field(timeStamp,value,alarm.severity.choices)",ch);
+    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=" + queueSize + "]field(timeStamp,value)",ch);
     	// TODO algorithm
 
     	ChannelMonitorRequesterImpl channelMonitorRequester = new ChannelMonitorRequesterImpl();

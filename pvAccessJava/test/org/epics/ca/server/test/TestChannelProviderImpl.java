@@ -54,6 +54,7 @@ import org.epics.pvData.misc.ThreadPriority;
 import org.epics.pvData.misc.Timer;
 import org.epics.pvData.misc.TimerFactory;
 import org.epics.pvData.monitor.Monitor;
+import org.epics.pvData.monitor.MonitorElement;
 import org.epics.pvData.monitor.MonitorRequester;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
@@ -215,6 +216,134 @@ public class TestChannelProviderImpl implements ChannelProvider
 
 		}
 		
+		// TODO only queueSize==1 impl.
+		class TestChannelMonitorImpl extends TestBasicChannelRequest implements Monitor, PVTopStructureListener, MonitorElement
+		{
+			private final MonitorRequester monitorRequester;
+			private final PVStructure pvGetStructure;
+			private final BitSet bitSet;		// for user
+			private final BitSet activeBitSet;		// changed monitoring
+			private final AtomicBoolean started = new AtomicBoolean(false);
+			
+			
+			// TODO tmp
+			private final BitSet allChanged;
+			private final BitSet noOverrun;
+
+			
+			public TestChannelMonitorImpl(PVTopStructure pvTopStructure, MonitorRequester monitorRequester, PVStructure pvRequest)
+			{
+				super(pvTopStructure, pvRequest);
+				
+				this.monitorRequester = monitorRequester;
+			
+				pvGetStructure = mapper.getCopyStructure();
+				activeBitSet = new BitSet(pvGetStructure.getNumberFields());
+	            activeBitSet.set(0);	// initial get gets all
+
+				bitSet = new BitSet(pvGetStructure.getNumberFields());
+				
+				
+				allChanged = new BitSet(pvGetStructure.getNumberFields());
+				allChanged.set(0);
+				noOverrun = new BitSet(pvGetStructure.getNumberFields());
+				
+				monitorRequester.monitorConnect(okStatus, this, pvGetStructure.getStructure());
+			}
+
+			@Override
+			public void internalDestroy() {
+				pvTopStructure.unregisterListener(this);
+			}
+
+			@Override
+			public void topStructureChanged(BitSet changedBitSet) {
+				lock();
+				activeBitSet.or(changedBitSet);
+
+				// add to queue, trigger
+				lock();
+				pvTopStructure.lock();
+				try
+				{
+					mapper.updateCopyStructureOriginBitSet(activeBitSet, bitSet);
+					activeBitSet.clear();
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+				unlock();
+				// TODO not a safe copy...
+				monitorRequester.monitorEvent(this);
+			}
+
+			@Override
+			public Status start() {
+				if (started.getAndSet(true))
+					return okStatus;
+
+				// force monitor immediately
+				monitorRequester.monitorEvent(this);
+				
+				pvTopStructure.registerListener(this);
+				
+				return okStatus;
+			}
+
+			@Override
+			public Status stop() {
+				if (!started.getAndSet(false))
+					return okStatus;
+
+				// TODO clear queue
+				
+				pvTopStructure.unregisterListener(this);
+
+				return okStatus;
+			}
+			
+			
+			private final AtomicBoolean pooled = new AtomicBoolean(false);
+			@Override
+			public MonitorElement poll() {
+				if (pooled.getAndSet(true))
+					return null;
+				
+				return this;
+			}
+
+			@Override
+			public void release(MonitorElement monitorElement) {
+				pooled.set(false);
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.monitor.MonitorElement#getPVStructure()
+			 */
+			@Override
+			public PVStructure getPVStructure() {
+				return pvGetStructure;
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.monitor.MonitorElement#getChangedBitSet()
+			 */
+			@Override
+			public BitSet getChangedBitSet() {
+				return allChanged;
+			}
+			/* (non-Javadoc)
+			 * @see org.epics.pvData.monitor.MonitorElement#getOverrunBitSet()
+			 */
+			@Override
+			public BitSet getOverrunBitSet() {
+				return noOverrun;
+			}
+
+			
+			
+			
+		}
+
 		
 		class TestChannelProcessImpl extends TestBasicChannelRequest implements ChannelProcess
 		{
@@ -859,8 +988,20 @@ public class TestChannelProviderImpl implements ChannelProvider
 		@Override
 		public Monitor createMonitor(MonitorRequester monitorRequester,
 				PVStructure pvRequest) {
-			// TODO Auto-generated method stub
-			return null;
+			
+			if (monitorRequester == null)
+				throw new IllegalArgumentException("monitorRequester");
+			
+			if (pvRequest == null)
+				throw new IllegalArgumentException("pvRequest");
+			
+			if (destroyed.get())
+			{
+				monitorRequester.monitorConnect(destroyedStatus, null, null);
+				return null;
+			}
+
+			return new TestChannelMonitorImpl(pvTopStructure, monitorRequester, pvRequest); 
 		}
 
 	    @Override
