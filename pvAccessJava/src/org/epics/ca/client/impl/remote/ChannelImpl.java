@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.ca.CAConstants;
 import org.epics.ca.CAException;
+import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.ChannelArray;
 import org.epics.ca.client.ChannelArrayRequester;
@@ -812,8 +813,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	 */
 	@Override
 	public org.epics.ca.client.AccessRights getAccessRights(PVField pvField) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO not implemented
+		return AccessRights.readWrite;
 	}
 
 	/* (non-Javadoc)

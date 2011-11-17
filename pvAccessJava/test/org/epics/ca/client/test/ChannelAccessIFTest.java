@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.epics.ca.CAConstants;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.Channel.ConnectionState;
+import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.ChannelArray;
 import org.epics.ca.client.ChannelArrayRequester;
 import org.epics.ca.client.ChannelFind;
@@ -590,9 +591,16 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channel.message("testing 1, 2, 3...", MessageType.info);
 	}
 
-	public void testChannelAccessRights() {
-		// TODO null or not implemented exception
-		//channel.getAccessRights(pvField);
+	public void testChannelAccessRights() throws Throwable {
+		if (isLocal())
+		{
+		    Channel ch = syncCreateChannel("valueOnly");
+
+		    // TODO for now just call with null (meaning all?)
+		    assertEquals(AccessRights.readWrite, ch.getAccessRights(null));
+		    
+		    ch.destroy();
+		}
 	}
 	
 	
@@ -664,7 +672,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
     };
 
-	private Channel syncCreateChannel(String name) throws Throwable
+	protected Channel syncCreateChannel(String name) throws Throwable
 	{
 		ConnectionListener cl = new ConnectionListener();
 	    Channel ch = getChannelProvider().createChannel(name, cl, CAConstants.CA_DEFAULT_PRIORITY);

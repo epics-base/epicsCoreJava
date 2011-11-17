@@ -885,8 +885,8 @@ public class TestChannelProviderImpl implements ChannelProvider
 
 		@Override
 		public AccessRights getAccessRights(PVField pvField) {
-			// TODO Auto-generated method stub
-			return null;
+			// TODO implement
+			return AccessRights.readWrite;
 		}
 
 		@Override

@@ -13,6 +13,8 @@
  */
 package org.epics.ca.client.test;
 
+import org.epics.ca.client.Channel;
+import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.ChannelAccessFactory;
 import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
@@ -113,5 +115,31 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 	public boolean isLocal() {
 		return false;
 	}
+	
+	
+	// *************************************************************************** //
+	
+	// addition tests for the remote part
+	
+	// this can take a while, e.g. 1min
+	public void testNoTraffic() throws Throwable {
+		// echo request is issued
+		
+		Channel ch = syncCreateChannel("valueOnly");
+		assertEquals(ConnectionState.CONNECTED, ch.getConnectionState());
+
+		Thread.sleep((long)((context.getConnectionTimeout()+1.0)*1000));
+		
+		// still connected
+		assertEquals(ConnectionState.CONNECTED, ch.getConnectionState());
+		
+		Thread.sleep((long)((context.getConnectionTimeout()+1.0)*1000));
+		
+		// still connected
+		assertEquals(ConnectionState.CONNECTED, ch.getConnectionState());
+
+		ch.destroy();
+	}
+	
 	
 }
