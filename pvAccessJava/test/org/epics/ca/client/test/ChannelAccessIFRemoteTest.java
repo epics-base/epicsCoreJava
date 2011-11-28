@@ -27,25 +27,32 @@ import org.epics.ca.server.test.TestChannelProviderImpl;
  */
 public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 	
-	static {
+	private static ServerContextImpl serverContext;
+
+	public synchronized void initializeServerContext()
+	{
+		// already initialized
+		if (serverContext != null)
+			return;
+		
 		ChannelProvider channelProviderImpl = new TestChannelProviderImpl();
 		ChannelAccessFactory.registerChannelProvider(channelProviderImpl);
 		
 		System.setProperty("EPICS4_CAS_PROVIDER_NAME", channelProviderImpl.getProviderName());
 		
 		// Create a context with default configuration values.
-		final ServerContextImpl context = new ServerContextImpl();
-		context.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(context));
+		/*final ServerContextImpl*/ serverContext = new ServerContextImpl();
+		serverContext.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(serverContext));
 		
 		try {
-			context.initialize(ChannelAccessFactory.getChannelAccess());
+			serverContext.initialize(ChannelAccessFactory.getChannelAccess());
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}
 
 		// Display basic information about the context.
-        System.out.println(context.getVersion().getVersionString());
-        context.printInfo(); System.out.println();
+        System.out.println(serverContext.getVersion().getVersionString());
+        serverContext.printInfo(); System.out.println();
 
         new Thread(new Runnable() {
 			
@@ -53,7 +60,7 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 			public void run() {
 		        try {
 	                System.out.println("Running server...");
-					context.run(0);
+	                serverContext.run(0);
 	                System.out.println("Done.");
 				} catch (Throwable th) {
 	                System.out.println("Failure:");
@@ -61,6 +68,17 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 				}
 			}
 		}, "pvAccess server").start();
+	}
+
+	public synchronized void destroyServerContext()
+	{
+		// not yet initialized
+		if (serverContext == null)
+			return;
+		
+		serverContext.dispose();
+		
+		serverContext = null;
 	}
 
 	/**
@@ -113,8 +131,7 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 	public boolean isLocal() {
 		return false;
 	}
-	
-	
+
 	// *************************************************************************** //
 	
 	// addition tests for the remote part
@@ -142,5 +159,17 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 	}
 	*/
 	
-	
+	protected void internalFinalize() throws Throwable
+	{
+		destroyServerContext();
+	}
+
+	/* (non-Javadoc)
+	 * @see junit.framework.TestCase#runTest()
+	 */
+	@Override
+	protected void runTest() throws Throwable {
+		initializeServerContext();
+		super.runTest();
+	}
 }

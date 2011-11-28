@@ -654,12 +654,15 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		public void waitAndCheck() {
 			synchronized (this) {
-				if (notification == null)
+				final long timeOutMs = getTimeoutMs();
+				final long t1 = System.currentTimeMillis();
+				while (notification == null)
 				{
 					try {
-						//final long t1 = System.currentTimeMillis();
-						this.wait(getTimeoutMs());
-						//final long t2 = System.currentTimeMillis();
+						this.wait(timeOutMs);
+						final long t2 = System.currentTimeMillis();
+						if (timeOutMs != 0 && (t2-t1) >= timeOutMs)
+							break;
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 						// noop
@@ -2659,4 +2662,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		provider.destroy();
 	}
 
+	// last here, always pefromed last
+	public void testFinalize() throws Throwable
+	{
+		internalFinalize();
+	}
+	
+	protected void internalFinalize() throws Throwable
+	{
+		// noop
+	}
 }
