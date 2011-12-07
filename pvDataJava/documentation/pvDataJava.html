@@ -1,0 +1,4445 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>EPICS pvDataJava</title>
+  <link rel="stylesheet" type="text/css"
+  href="http://epics-pvdata.sourceforge.net/base.css" />
+  <link rel="stylesheet" type="text/css"
+  href="http://epics-pvdata.sourceforge.net/epicsv4.css" />
+  <style type="text/css">
+/*<![CDATA[*/
+     .about { margin-left: 3em; margin-right: 3em; font-size: .83em}
+     table { margin-left: auto; margin-right: auto }
+     .diagram { text-align: center; margin: 2.5em 0 }
+     body { margin-right: 10% }
+/*]]>*/</style>
+</head>
+
+<body>
+<h1 style="text-align: center">EPICS pvDataJava<br />
+2011.12.06</h1>
+CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#L56">Introduction</a></li>
+  <li><a href="#L128">PVData Meta Language</a>
+    <ul>
+      <li><a href="#L134">Definition</a></li>
+      <li><a href="#L328">Examples</a></li>
+    </ul>
+  </li>
+  <li><a href="#L372">Interface Definitions</a>
+    <ul>
+      <li><a href="#L376">Types</a></li>
+      <li><a href="#L450">Introspection Interfaces</a></li>
+      <li><a href="#L458">Data Interfaces</a></li>
+      <li><a href="#L488">Introspection and Data creation</a></li>
+      <li><a href="#L498">pvData Conversion</a></li>
+    </ul>
+  </li>
+  <li><a href="#L504">Package Summary</a>
+    <ul>
+      <li><a href="#L512">org.epics.pvData.pv</a></li>
+      <li><a href="#L516">org.epics.pvData.factory</a></li>
+      <li><a href="#L538">org.epics.pvData.property</a></li>
+      <li><a href="#L546">org.epics.pvData.misc</a></li>
+      <li><a href="#L550">org.epics.pvData.monitor</a></li>
+      <li><a href="#L554">org.epics.pvData.accessSecurity</a></li>
+    </ul>
+  </li>
+  <li><a href="#L560">Package org.epics.pvData.pv</a>
+    <ul>
+      <li><a href="#L564">Overview</a></li>
+      <li><a href="#L576">Process Variable Reflection</a>
+        <ul>
+          <li><a href="#L580">Type</a></li>
+          <li><a href="#L586">Serializable</a></li>
+          <li><a href="#L592">Reflection</a></li>
+        </ul>
+      </li>
+      <li><a href="#L638">Status</a></li>
+      <li><a href="#L685">PVField - Data Interfaces</a>
+        <ul>
+          <li><a href="#L689">PVField</a></li>
+          <li><a href="#L768">Requester</a></li>
+          <li><a href="#L802">PVAuxInfo</a></li>
+          <li><a href="#L836">PVScalar and extensions</a>
+            <ul>
+              <li><a href="#L840">Primitive PVField types</a></li>
+              <li><a href="#L846">PVString</a></li>
+            </ul>
+          </li>
+          <li><a href="#L852">PVArray and Extensions</a>
+            <ul>
+              <li><a href="#L891">PVArray Extensions</a></li>
+              <li><a href="#L935">Complete set of PVArray Extensions</a></li>
+            </ul>
+          </li>
+          <li><a href="#L941">PVStructure</a></li>
+          <li><a href="#L1045">PVDataCreate</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1084">Convert</a></li>
+      <li><a href="#L1154">Examples</a>
+        <ul>
+          <li><a href="#L1156">Accessing PVData</a></li>
+          <li><a href="#L1175">Creating PVData</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L1191">Package org.epics.pvData.factory</a>
+    <ul>
+      <li><a href="#L1195">Overview</a></li>
+      <li><a href="#L1199">Factory</a>
+        <ul>
+          <li><a href="#L1201">FieldFactory</a></li>
+          <li><a href="#L1207">PVDataFactory</a></li>
+          <li><a href="#L1213">ConvertFactory</a></li>
+          <li><a href="#L1219">StatusFactory</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1225">Base Introspection Classes</a></li>
+      <li><a href="#L1231">Abstract and Base Classes for PVField</a>
+        <ul>
+          <li><a href="#L1233">BasePVAuxInfo</a></li>
+          <li><a href="#L1239">AbstractPVField</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1263">Classes For PVStructure</a>
+        <ul>
+          <li><a href="#L1265">BasePVStructure</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1271">Classes For PVScalar</a>
+        <ul>
+          <li><a href="#L1273">AbstractPVScalar</a></li>
+          <li><a href="#L1279">BasePVBoolean</a></li>
+          <li><a href="#L1283">BasePVByte</a></li>
+          <li><a href="#L1287">BasePVShort</a></li>
+          <li><a href="#L1291">BasePVInt</a></li>
+          <li><a href="#L1295">BasePVLong</a></li>
+          <li><a href="#L1299">BasePVFloat</a></li>
+          <li><a href="#L1303">BasePVDouble</a></li>
+          <li><a href="#L1307">BasePVString</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1311">Classes for PVArray</a>
+        <ul>
+          <li><a href="#L1313">AbstractPVArray</a></li>
+          <li><a href="#L1321">BasePVBooleanArray</a></li>
+          <li><a href="#L1325">BasePVByteArray</a></li>
+          <li><a href="#L1329">BasePVShortArray</a></li>
+          <li><a href="#L1333">BasePVIntArray</a></li>
+          <li><a href="#L1337">BasePVLongArray</a></li>
+          <li><a href="#L1341">BasePVFloatArray</a></li>
+          <li><a href="#L1345">BasePVDoubleArray</a></li>
+          <li><a href="#L1349">BasePVStringArray</a></li>
+          <li><a href="#L1353">BasePVStructureArray</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L1359">Package org.epics.pvData.property</a>
+    <ul>
+      <li><a href="#L1363">Definition of Property</a></li>
+      <li><a href="#L1375">Standard Properties</a></li>
+      <li><a href="#L1456">PVProperty</a></li>
+      <li><a href="#L1487">Standard Properties</a>
+        <ul>
+          <li><a href="#L1491">TimeStamp</a>
+            <ul>
+              <li><a href="#L1499">TimeStamp.java</a></li>
+              <li><a href="#L1594">PVTimeStamp.java</a></li>
+            </ul>
+          </li>
+          <li><a href="#L1629">Alarm</a>
+            <ul>
+              <li><a href="#L1714">PVAlarm</a></li>
+            </ul>
+          </li>
+          <li><a href="#L1756">Control</a></li>
+          <li><a href="#L1834">Display</a></li>
+          <li><a href="#L1942">Enumerated</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L2015">Package org.epics.pvData.misc</a>
+    <ul>
+      <li><a href="#L2019">Overview</a></li>
+      <li><a href="#L2074">MultiChoice</a></li>
+      <li><a href="#L2115">BitSet</a></li>
+      <li><a href="#L2147">Message Queue</a>
+        <ul>
+          <li><a href="#L2149">Definitions</a></li>
+          <li><a href="#L2153">MessageQueue</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2201">Thread</a>
+        <ul>
+          <li><a href="#L2203">ThreadPriority</a></li>
+          <li><a href="#L2207">ThreadCreate</a></li>
+          <li><a href="#L2220">Executor</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2244">Time Function Call</a></li>
+      <li><a href="#L2250">Linked List</a></li>
+      <li><a href="#L2280">Timer</a>
+        <ul>
+          <li><a href="#L2297">Java Definitions</a></li>
+          <li><a href="#L2301">TimerCallback</a></li>
+          <li><a href="#L2316">TimerNode</a></li>
+          <li><a href="#L2331">Timer</a></li>
+          <li><a href="#L2351">TimerFactory</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2366">BitSet</a></li>
+      <li><a href="#L2392">Queue</a></li>
+      <li><a href="#L2455">Destroyable</a></li>
+      <li><a href="#L2469">Serialize</a></li>
+    </ul>
+  </li>
+  <li><a href="#L2505">Package org.epics.pvData.monitor</a>
+    <ul>
+      <li><a href="#L2509">Overview</a></li>
+      <li><a href="#L2563">Standard Monitor Requests</a>
+        <ul>
+          <li><a href="#L2567">Record Options</a></li>
+          <li><a href="#L2584">Field Options</a></li>
+          <li><a href="#L2616">Monitor Request Options</a></li>
+          <li><a href="#L2709">Record Deadband</a></li>
+          <li><a href="#L2723">Examples</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2753">Monitor Interfaces</a>
+        <ul>
+          <li><a href="#L2755">Monitor</a></li>
+          <li><a href="#L2794">MonitorElement</a></li>
+          <li><a href="#L2821">MonitorRequester</a></li>
+          <li><a href="#L2848">MonitorAlgorithm</a></li>
+          <li><a href="#L2875">MonitorQueue</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L2928">Package org.epics.pvData.accessSecurity</a>
+    <ul>
+      <li><a href="#L2934">Outstanding Issues</a>
+        <ul>
+          <li><a href="#L2938">access security level</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2954">Overview</a></li>
+      <li><a href="#L3012">Quick Start</a></li>
+      <li><a href="#L3020">Features and Limitations</a>
+        <ul>
+          <li><a href="#L3024">Features</a></li>
+          <li><a href="#L3059">Limitations</a></li>
+        </ul>
+      </li>
+      <li><a href="#L3069">Access Security Configuration File</a>
+        <ul>
+          <li><a href="#L3075">Simple Example</a></li>
+          <li><a href="#L3081">Syntax Definition</a>
+            <ul>
+              <li><a href="#L3093">credentials</a></li>
+              <li><a href="#L3099">groups</a></li>
+              <li><a href="#L3105">states</a></li>
+              <li><a href="#L3122">access and access group</a></li>
+              <li><a href="#L3174">log and log group</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li><a href="#L3194">Examples</a>
+        <ul>
+          <li><a href="#L3198">Credentials</a></li>
+          <li><a href="#L3206">Groups</a></li>
+          <li><a href="#L3210">States</a></li>
+          <li><a href="#L3218">Access Rules</a></li>
+          <li><a href="#L3236">Logging Rules</a></li>
+        </ul>
+      </li>
+      <li><a href="#L3253">Linac Example</a></li>
+      <li><a href="#L3298">Design Summary</a>
+        <ul>
+          <li><a href="#L3302">Summary of Design Requirements</a></li>
+          <li><a href="#L3335">Additional Requirements</a></li>
+        </ul>
+      </li>
+      <li><a href="#L3370">Implementation Overview</a></li>
+      <li><a href="#L3378">Java IOC Support</a></li>
+      <li><a href="#L3386">PVAccess Support</a></li>
+      <li><a href="#L3394">Logging PVAccess Puts</a></li>
+    </ul>
+  </li>
+  <li><a href="#L3400">License Agreement</a></li>
+</ul>
+</div>
+<hr />
+
+<h2 style="text-align: center" id="L56">Introduction</h2>
+<hr />
+
+<p>This product is available via the <a href="#LicenseAgreement">open source
+license</a> described at the end of this document.</p>
+
+<p>pvData is one of a set of related projects. It describes and implements the
+data that the other projects support. Thus it is not useful by itself but
+understanding pvData is required in order to understand the other projects. The
+reader should also become familar with projects pvAccess and javaIOC, which are
+located via the same sourceforge site as this project.</p>
+
+<p>pvData (Process Variable Data) defines and implements an efficent way to
+store, access, and transmit memory resident structured data.</p>
+<dl>
+  <dt>definition</dt>
+    <dd>Package org.epics.pvData.pv has Java interface definitions that define
+      pvData. Although defined with Java syntax they also document what is
+      required for implementation in other languages such as C++.</dd>
+  <dt>implementation</dt>
+    <dd>The set of packages provides by this project provide a complete Java
+      implementation of pvData. Project pvAccess is the network support for
+      pvData, i.e. it provides a channel access client and server that fully
+      support pvData. Project javaIOC provides an IOC (Input Output Controller)
+      that supports pvData and provides record processing..</dd>
+  <dt>efficient</dt>
+    <dd>Small memory footprint, low cpu overhead, and concise code base.</dd>
+  <dt>data storage</dt>
+    <dd>pvData defines separate introspection and data interfaces. The
+      introspection interfaces provide access to immutable objects, which
+      allows introspection instances to be freely shared. The introspection
+      interface for a process variable can be accessed without requiring access
+      to the data.</dd>
+  <dt>data access</dt>
+    <dd>Client code can access pvData via the introspection and data
+      interfaces. For "well known" data, e.g. timeStamp, specialized interfaces
+      can be provided without requiring any changes to the core software.</dd>
+  <dt>data transfer</dt>
+    <dd>The separation of introspection and data interfaces allows for
+      efficient network data transfer. At connection time introspection
+      information can be passed from server to client. Each side can create a
+      data instance. The data is transferred between these instances. The data
+      in the network buffers does not have to be self describing since each
+      side has the introspection information.</dd>
+  <dt>memory resident</dt>
+    <dd>pvData only defines memory resident data.</dd>
+  <dt>structured data</dt>
+    <dd>pvData has three types: scalar, array, and structure. A scalar can be
+      one of the following: boolean, byte, short, int, long, float, double,
+      string. An array is a one dimensional array with the element type being a
+      scalar. A structure is an ordered set of fields where each field has a
+      name and type. Since a field can have type structure complex structures
+      are supported. No other types are needed since structures can be defined
+      that simulate types.</dd>
+</dl>
+
+<p>The javaIOC implements a Process Variable (PV) Database, which is a memory
+resident database holding pvData, has the following features:</p>
+<ul>
+  <li>A database has records.</li>
+  <li>Each record has a unique record name.</li>
+  <li>A record has a top level PVStructure, which is a structured set of data
+    as defined by this project.</li>
+</ul>
+
+<p>pvData was initially created to support the javaIOC and was part of the
+javaIOC project. It is now a separate project that is used by the javaIOC. In
+addition to the javaIOC, pvData is intended for use by 1) channel access
+clients, 2) Interface between client and network, 3) Interface between network
+and channel access server, 4) Interface between server and IOC database. Since
+it is an interface to data, it could also be used by other systems, e.g. TANGO,
+TINE, etc. A high level Physics application can hold data as pvData. By
+starting a channel access server, the data can made available to network
+clients.</p>
+
+<p>pvData contains everything required to support Channel Access and Channel
+Access clients and servers. </p>
+<hr />
+
+<h2 style="text-align: center" id="L128">PVData Meta Language</h2>
+<hr />
+
+<p>This section describes a meta language for describing pvData. Currently
+there are no plans for a parser for the meta language. It is used for
+documentation. The toString introspection and data methods described below do
+present data in a format similar to the metadata syntax. The meta language is
+used to describe both introspection interfaces and data interfaces.</p>
+
+<h3 id="L134">Definition</h3>
+
+<p>PVData supports structured data. All data appears as a top level structure.
+A structure has an ordered set of fields where each field has a <span
+style="font-family: courier;">fieldDef</span> defined as follows:</p>
+<pre>type fieldName value // comment</pre>
+
+<p>where <span style="font-family: courier;">value</span> is present for data
+objects and <span style="font-family: courier;">//</span> indicates the the
+rest of the line is a comment. </p>
+
+<p>type is one of the following:</p>
+<dl>
+  <dt>scalar</dt>
+    <dd>A scalar field can be any of the following: 
+      <dl>
+        <dt style="font-family: courier;">boolean</dt>
+          <dd>Has the value<span style="font-family: courier;">true</span> or
+            <span style="font-family: courier;">false</span></dd>
+        <dt style="font-family: courier;">byte</dt>
+          <dd>An 8 bit signed integer.</dd>
+        <dt style="font-family: courier;">short</dt>
+          <dd>An 16 bit signed integer.</dd>
+        <dt style="font-family: courier;">int</dt>
+          <dd>An 32 bit signed integer.</dd>
+        <dt style="font-family: courier;">long</dt>
+          <dd>An 64 bit signed integer.</dd>
+        <dt style="font-family: courier;">float</dt>
+          <dd>A IEEE float.</dd>
+        <dt style="font-family: courier;">double</dt>
+          <dd>A IEEE double.</dd>
+        <dt style="font-family: courier;">string</dt>
+          <dd>An immutable string.</dd>
+      </dl>
+    </dd>
+  <dt>scalarArray</dt>
+    <dd>A scalarArray field is an array of any of the scalar types. 
+      <dl>
+        <dt style="font-family: courier;">boolean[]</dt>
+        <dt style="font-family: courier;">byte[]</dt>
+        <dt style="font-family: courier;">short[]</dt>
+        <dt style="font-family: courier;">int[]</dt>
+        <dt style="font-family: courier;">long[]</dt>
+        <dt style="font-family: courier;">float[]</dt>
+        <dt style="font-family: courier;">double[]</dt>
+        <dt style="font-family: courier;">string[]</dt>
+      </dl>
+    </dd>
+  <dt>structure</dt>
+    <dd>A structure field has the definition: 
+      <pre>     structure fieldName
+         fieldDef
+         ...
+      </pre>
+      or 
+      <pre>     xxx_t fieldName
+         // if data object then following appear
+         fieldDef
+         ...
+      </pre>
+      For <span style="font-family: courier;">structure fieldName</span> each
+      <span style="font-family: courier;">fieldDef</span> must have a unique
+      <span style="font-family: courier;">fieldName</span> within the <span
+      style="font-family: courier;">structure</span> For <span
+      style="font-family: courier;">"xxx_t fieldName"</span> xxx_t must be a
+      previously structure definition of the form: 
+      <pre>    structure xxx_t
+        ...</pre>
+    </dd>
+  <dt>structureArray</dt>
+    <dd>A structureArray field has the definition: 
+      <pre>     structure[] fieldName
+          structureDef
+          ...
+          </pre>
+      <p>or</p>
+      <pre>    xxx_t[] fieldName</pre>
+      <pre>      </pre>
+      <p>Thus a structure array is an array where each element is a structure
+      but all elements have the same introspection interface. For introspection
+      the structureDef appears once without any data valuies.</p>
+    </dd>
+</dl>
+
+<p>The above is used to describe introspection objects. Data objects are
+describe in a similar way but each scalar field and each array field has data
+values. The definition of the data values depends on the type. For scalars the
+data value is whatever is valid for the type. </p>
+<dl>
+  <dt style="font-family: courier;">boolean</dt>
+    <dd>The value must be <span style="font-family: courier;">true</span> or
+      <span style="font-family: courier;">false</span> </dd>
+  <dt style="font-family: courier;">byte,...long</dt>
+    <dd>Any valid integer or hex value, e.g. <span
+      style="font-family: courier;">3 0xff</span> are valid values</dd>
+  <dt style="font-family: courier;">float,double</dt>
+    <dd>Any valid integer or real e.g. <span style="font-family: courier;">3
+      3.0 3e0</span> are valid values</dd>
+  <dt style="font-family: courier;">string</dt>
+    <dd>The value can be an alphanumeric value or any set of characters
+      enclosed in <span style="font-family: courier;">""</span> Within quotes a
+      quote is expressed as <span style="font-family: courier;">\"</span>
+      Examples are <span style="font-family: courier;">aValue "a value" "a\"
+      xxx"</span> are valid values. </dd>
+</dl>
+
+<p>For scalar arrays the syntax is:</p>
+<pre>      = [value,...,value]</pre>
+
+<p>where each <span style="font-family: courier;">value</span> is a valid
+scalar data value depending on the type. Thus it is a comma separated set of
+values enclosed in <span style="font-family: courier;">[]</span> White space is
+permitted surrounding each comma.</p>
+
+<h3 id="L328">Examples</h3>
+
+<p>Define the following top level structure:</p>
+<pre>structure timeStamp_t
+    long secondsPastEpoch
+    int nanoSeconds </pre>
+
+<p>Then the following introspection objects can be defined:</p>
+<pre>structure scalarDoubleExample // introspection object
+    double value
+    timeStamp_t timeStamp</pre>
+or 
+<pre>structure scalarDoubleExample // introspection object
+    double value
+    structure timeStamp
+        long secondsPastEpoch
+        int  nanoSeconds</pre>
+
+<p>The following data objects can be defined:</p>
+<pre>structure scalarDoubleExample // data object
+    double value 1.0
+    timeStamp_t timeStamp
+         long secondsPastEpoch 0
+         int  nanoSeconds 0</pre>
+or 
+<pre>scalar arrayDoubleExample
+    double[] value  [1.0,2.0]
+    structure timeStamp
+         long secondsPastEpoch 0
+         int  nanoSeconds 0</pre>
+
+<p>If the following interface is defined:</p>
+<pre>structure point_t
+    double x
+    double y</pre>
+
+<p>Then the following introspection objects can be defined: </p>
+<pre>structure lineExample
+    point_t begin
+    point_t end
+
+structure pointArrayExample
+    point_t[] points
+    </pre>
+or 
+<pre>structure lineExample
+    structure begin
+        double x
+        double y
+    structure end
+        double x
+        double y
+
+structure pointArrayExample
+    structure[] points
+        structure point
+            double x
+            double y</pre>
+
+<p>And the following data objects can be defined:</p>
+<pre>structure lineExample
+    point_t begin
+        double x 0.0
+        double y 0.0
+    point_t end
+        double x 10
+        double y 10
+
+structure pointArrayExample
+    point_t[] value
+        structure point
+            double x 0.0
+            double y 0.0
+        structure point
+            double x 10.0
+            double y 10.0</pre>
+
+<p>or</p>
+<pre>structure lineExample
+    structure begin
+        double x 0
+        double y 0
+    structure end
+        double x 10
+        double y 10
+
+structure pointArrayExample
+    structure[] value
+        structure point
+            double x 0.0
+            double y 0.0
+        structure point
+            double x 10.0
+            double y 10.0</pre>
+<hr />
+
+<h2 style="text-align: center" id="L372">Interface Definitions</h2>
+<hr />
+
+<h3 id="L376">Types</h3>
+
+<p>The following are the type definitions:</p>
+<pre>enum Type {
+    scalar,
+    scalarArray,
+    structure,
+    structureArray;
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>scalar</dt>
+    <dd>A field that has data with one of the scalarTypes.</dd>
+  <dt>scalarArray</dt>
+    <dd>A field that is an array where each element is the same scalarType.</dd>
+  <dt>structure</dt>
+    <dd>A field which has named subfields.</dd>
+  <dt>structureArray</dt>
+    <dd>A field that is an array of structures where each element has the same
+      introspection interface, i.e. each element has the same structure.</dd>
+</dl>
+<pre>enum ScalarType {
+    pvBoolean,
+    pvByte,pvShort,pvInt,pvLong,
+    pvFloat,pvDouble,
+    pvString;
+    // The following are convenience methods
+    public boolean isInteger();
+    public boolean isNumeric();
+    public boolean isPrimitive();
+    public static ScalarType getScalarType(String type);
+    public String toString();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>boolean</dt>
+    <dd>true or false</dd>
+  <dt>byte</dt>
+    <dd>An 8 bit signed byte</dd>
+  <dt>short</dt>
+    <dd>16 bit signed integer</dd>
+  <dt>int</dt>
+    <dd>32 bit signed integer</dd>
+  <dt>long</dt>
+    <dd>64 bit signed integer</dd>
+  <dt>float</dt>
+    <dd>32 bit IEEE float</dd>
+  <dt>double</dt>
+    <dd>64 bit IEEE float</dd>
+  <dt>string</dt>
+    <dd>An immutable string. The Java implementation is String. For other
+      implementations the network representation must be the same as for Java.
+      Note that a string is treated like it is a scaler.</dd>
+</dl>
+
+<h3 id="L450">Introspection Interfaces</h3>
+
+<p>The complete set of introspection interfaces are:</p>
+<pre>interface Field {
+    String getFieldName();
+    Type getType();
+    void toString(StringBuilder buf);
+    void toString(StringBuilder buf,int indentLevel);
+    String toString();
+}
+
+interface Scalar extends Field{
+    ScalarType getScalarType();
+}
+
+interface ScalarArray extends Field{
+    ScalarType getElementType();
+}
+
+interface Structure extends Field{
+    Field getField(String fieldName);
+    int getFieldIndex(String fieldName);
+    Field[] getFields();
+}
+
+interface StructureArray extends Field{
+    Structure getStructure();
+}</pre>
+
+<p>The introspection interfaces provide access to immutable objects. This
+allows introspection interfaces to be freely shared between data objects. For
+example the introspection interface for a timeStamp, which is a structure
+containing two fields, can be shared by every record that has a time stamp.</p>
+
+<h3 id="L458">Data Interfaces</h3>
+
+<p>PVField is the base interface for a data field:</p>
+<pre>enum MessageType {info,warning,error,fatalError}
+
+interface Requester {
+    String getRequesterName();
+    void message(String message, MessageType messageType);
+}
+
+interface SerializableControl {
+    void flushSerializeBuffer();
+    void ensureBuffer(int size);
+}
+
+interface Serializable {
+    void serialize(ByteBuffer buffer, SerializableControl flusher);
+    void deserialize(ByteBuffer buffer, DeserializableControl control);
+}
+
+interface SerializableArray extends Serializable {
+    void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count);
+}
+
+interface PVAuxInfo {
+    PVField getPVField();
+    PVScalar createInfo(String key,ScalarType scalarType);
+    Map&lt;String,PVScalar&gt; getInfos();
+    PVScalar getInfo(String key);
+    void toString()StringBuilder buf;
+    void toString(StringBuilder buf,int indentLevel);
+}
+
+interface PVField extends Requester, Serializable {
+    int getFieldOffset();
+    int getNextFieldOffset();
+    int getNumberFields();
+    PVAuxInfo getPVAuxInfo(); //auxillary information
+    Field getField();
+    PVStructure getParent();
+    boolean isMutable();
+    void setImmutable();
+    void replacePVField(PVField newPVField);
+    void renameField(String newName);
+    void postPut(); // calls PVRecordField.postPut if this is a field of a record
+    void setPostHandler(PostHandler postHandler);
+    void toString(StringBuilder buf);
+    void toString(StringBuilder buf,int indentLevel);
+    String toString();
+}</pre>
+
+<p>Each scalar type has an associated data interface: PVBoolean, PVByte,
+PVShort, PVInt, PVLong, PVFloat, PVDouble, and PVString. Each has a get and a
+put method. For example:</p>
+<pre>interface PVDouble extends PVScalar{
+    double get();
+    void put(double value);
+}</pre>
+
+<p>PVArray is the base class for arrays.</p>
+<pre>interface PVArray extends PVField, SerializableArray {
+    int getLength();
+    void setLength(int length);
+    int getCapacity();
+    void setCapacity(int length);
+    boolean isCapacityMutable();q!
+    void setCapacityMutable(boolean isMutable);
+}
+nterface PVAuxInfo {
+    PVField getPVField();
+    PVScalar c</pre>
+
+<p>PVScalarArray is the base class for scalar arrays.</p>
+<pre>interface PVScalarArray extends PVArray {
+    ScalarArray getScalarArray();
+}</pre>
+
+<p>For each scalar type an associated array data interface is defined. Each has
+a get and put method. For example: </p>
+<pre>public class DoubleArrayData {
+    public double[] data;
+    public int offset;
+}
+
+interface PVDoubleArray extends PVArray {
+    int get(int offset, int len, DoubleArrayData data);
+    int put(int offset,int len, double[] from, int fromOffset);
+    void shareData(double[] from);
+}</pre>
+
+<p>PVScalarArray is the interface for an array of structures where each element
+has the same iontrospection interface.</p>
+<pre>public class StructureArrayData {
+    public PVStructure[] data;
+    public int offset;
+}
+
+interface PVStructureArray extends PVArray{
+    StructureArray getStructureArray();
+    int get(int offset, int length, StructureArrayData data);
+    int put(int offset,int length, PVStructure[] from, int fromOffset);
+    void shareData(PVStructure[] from);
+}</pre>
+
+<p>PVStructure is the data interface for a structure.</p>
+<pre>interface BitSetSerializable {
+    void serialize(ByteBuffer buffer, SerializableControl flusher, BitSet bitSet);
+    void deserialize(ByteBuffer buffer, DeserializableControl control, BitSet bitSet);
+}
+
+interface PVStructure extends PVField , BitSetSerializable{
+    Structure getStructure();
+    PVField[] getPVFields();
+    PVField getSubField(String fieldName);
+    PVField getSubField(int fieldOffset);
+    void appendPVField(PVField pvField);
+    void appendPVFields(PVField[] pvFields);
+    void removePVField(String fieldName);
+    // The following are convenience methods
+    PVBoolean getBooleanField(String fieldName);
+    PVByte getByteField(String fieldName);
+    PVShort getShortField(String fieldName);
+    PVInt getIntField(String fieldName);
+    PVLong getLongField(String fieldName);
+    PVFloat getFloatField(String fieldName);
+    PVDouble getDoubleField(String fieldName);
+    PVString getStringField(String fieldName);
+    PVScalarArray getScalarArrayField(String fieldName);
+    PVStructureArray getStructureArrayField(String fieldName);
+    PVStructure getStructureField(String fieldName);
+    PVArray getArrayField(String fieldName,ScalarType elementType);
+    String getExtendsStructureName();
+    boolean putExtendsStructureName(String extendsStructureName);
+}</pre>
+
+<h3 id="L488">Introspection and Data creation</h3>
+
+<p>The following interface creates introspection instances:</p>
+<pre>public interface FieldCreate {
+    Field create(String fieldName,Field field);
+    Scalar createScalar(String fieldName,ScalarType scalarType);
+    ScalarArray createScalarArray(String fieldName,ScalarType elementType);
+    StructureArray createStructureArray(String fieldName,Structure elementStructure);
+    Structure createStructure(String fieldName, Field[] field);
+}</pre>
+
+<p>The following interface creates data instances:</p>
+<pre>public interface PVDataCreate {
+    PVField createPVField(PVStructure parent, Field field);
+    PVField createPVField(PVStructure parent,String fieldName,PVField fieldToClone);
+    PVScalar createPVScalar(PVStructure parent,Scalar scalar);
+    PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType fieldType);
+    PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
+    PVScalarArray createPVScalarArray(PVStructure parent,ScalarArray array);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,ScalarType elementType);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,PVScalarArray arrayToClone;
+    PVStructureArray createPVStructureArray(PVStructure parent,StructureArray structureArray);
+    PVStructure createPVStructure(PVStructure parent,Structure structure);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,Field[] fields);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,PVStructure structToClone);
+    PVField[] flattenPVStructure(PVStructure pvStructure);
+}</pre>
+
+<h3 id="L498">pvData Conversion</h3>
+
+<p>An interface named Convert provides all reasonable conversions to/from
+pvData. See org.epics.pvData.pv.Convert for details.</p>
+<hr />
+
+<h2 style="text-align: center" id="L504">Package Summary</h2>
+<hr />
+
+<p>This document describes everything via Java definitions. The initial
+implementation is in Java but the functionality could also be implemented in
+other languages such as C++.</p>
+
+<p>pvData is distributed as a eclipse Java Project named pvData. This project
+consists of the following java packages:</p>
+
+<h3 id="L512">org.epics.pvData.pv</h3>
+
+<p>The Java enum, interface, and class definitions that define pvData. This
+section provides a complete definition of what pvData is. This package
+completely describes how pvData is accessed.</p>
+
+<h3 id="L516">org.epics.pvData.factory</h3>
+
+<p>Java Facilities for creating a PV Database and pvData. It provides
+everything required for creating pvData. It provides the following
+factories:</p>
+<dl>
+  <dt>FieldFactory</dt>
+    <dd>Creates introspection interfaces.</dd>
+  <dt>PVDataFactory</dt>
+    <dd>Creates data interfaces for all of the supported data types.</dd>
+  <dt>ConvertFactory</dt>
+    <dd>Converts between support data types.</dd>
+</dl>
+
+<p>Although pvDataFactory can provide the implementation for all supported data
+types, often it is desirable to provide other implementations. To make it easy
+to create alternate implementations a set of abstract and base classes are
+supplied.</p>
+
+<h3 id="L538">org.epics.pvData.property</h3>
+
+<p>Provides a way to associated properties with a field. </p>
+
+<p>The basic idea is to associate properties with any field named "value". All
+the fields in the structure that contains the value field are considered
+properties of value with the field name being the property name. See that
+package overview for details.</p>
+
+<p>This package also provides support for "well known" field definitions like
+timeStamp, alarm, display,etc. Code that uses pvData can be simplified by using
+this support.</p>
+
+<h3 id="L546">org.epics.pvData.misc</h3>
+
+<p>This package provides support that is used by pvData factories and might
+also be useful to software that uses pvData.</p>
+
+<h3 id="L550">org.epics.pvData.monitor</h3>
+
+<p>Provides the ability to monitor changes to an arbitrary subset of the fields
+in a record.</p>
+
+<h3 id="L554">org.epics.pvData.accessSecurity</h3>
+
+<p>Access security is no implement but a discusssion of what it should be is
+provided.</p>
+<hr />
+
+<h2 style="text-align: center" id="L560">Package org.epics.pvData.pv</h2>
+<hr />
+
+<h3 id="L564">Overview</h3>
+
+<p>This package has the complete set of enum, interface, and class definitions
+that describe PVData. The implementation is provided in package
+org.epics.pvData.factory.</p>
+
+<p>A PVStructure is a field that contains an array of subfields. Each field has
+code for accessing the field. The interface for each field is PVField or an
+interface that extends PVField. Each field also has an introspection interface,
+which is Field or an extension of Field. This package overview describes the
+complete set of data and introspection interfaces for pvData.</p>
+
+<p>This package also describes an interface Convert, which provides a rich set
+of methods for converting and copying data between field.</p>
+
+<p>The interface FieldCreate creates the introspection interfaces. The
+interface PVDataCreate creates the PVField interfaces. Between them they
+provide the ability to create every type of Field and PVField, i.e. they
+provide a complete implemenation of pvData. It is also possible for other code
+to provide implementations.</p>
+
+<p>The javaIOC provides a database of PVRecords where each PVRecord has a top
+level PVStructure. PVAccess provides network access to PVData.</p>
+
+<h3 id="L576">Process Variable Reflection</h3>
+
+<p>Given a pvname, which consists of a record name and field name, it is
+possible to introspect the field without requiring access to data. The
+reflection and data interfaces are separate because the data may not be
+available. For example when a PVaccess client connects to a PV, the client
+library can obtain the reflection information without obtaining any data. Only
+when a client issues an I/O request will data be available. This separation is
+especially important for arrays and structures so that a client can discover
+the type without requiring that a large array or structure be transported over
+the network.</p>
+
+<h4 id="L580">Type</h4>
+
+<p>The types are defined by the Java definitions:</p>
+<pre>    enum Type {
+        scalar,
+        scalarArray,
+        structure,
+        structureArray;
+    }
+
+    enum ScalarType {
+        pvBoolean,
+        pvByte, pvShort, pvInt, pvLong,
+        pvFloat,pvDouble,
+        pvString;
+
+        //Convenience methods
+        public boolean isInteger();   // pvByte,...,pvLong
+        public boolean isNumeric();    // pvByte,...pvDouble
+        public boolean isPrimitive();  // pvBoolean,...pvDouble
+        public static ScalarType getScalarType(String type);
+        public String toString();
+    }</pre>
+
+<h4 id="L586">Serializable</h4>
+
+<p>The following interfaces are called by pvAccess for transporting data over
+the network. The abstract and base classes ensure that these methods are
+properly implemented. </p>
+<pre>    interface Serializable {
+        void serialize(ByteBuffer buffer,SerializableControl flusher);
+        void deserialize(ByteBuffer buffer,DeserializableControl control);
+    }
+
+    interface SerializableControl {
+        void flushSerializeBuffer();
+        void ensureBuffer(int size);
+    }
+
+    interface DeserializableControl {
+        void ensureData(int size);
+    }
+
+    interface SerializableArray extends Serializable {
+        void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count);
+    }       
+
+    interface BitSetSerializable {
+       void serialize(ByteBuffer buffer, SerializableControl flusher, BitSet bitSet);
+       void deserialize(ByteBuffer buffer, DeserializableControl control, BitSet bitSet);
+    }</pre>
+
+<h4 id="L592">Reflection</h4>
+
+<p>This section defines the complete set of Java PV reflection interfaces.</p>
+<pre>    
+    interface Field {
+        String getFieldName();
+        Type getType();
+        void toString(StringBuilder buf));
+        void toString(StringBuilder buf,int indentLevel);
+        String toString();
+    } 
+
+    interface Scalar extends Field {
+        ScalarType getScalarType();
+    }
+
+    interface ScalarArray extends Field{
+        ScalarType getElementType();
+    }
+
+    interface Structure extends Field{
+        Field getField(String fieldName);
+        int getFieldIndex(String fieldName);
+        Field[] getFields();
+    }
+
+    interface StructureArray extends Field{
+        Structure getStructure();
+    }
+
+    interface FieldCreate {
+        Field create(String fieldName,Field field);
+        Scalar createScalar(String fieldName,ScalarType scalarType);
+        ScalarArray createScalarArray(String fieldName,ScalarType elementType);
+        StructureArray createStructureArray(String fieldName,Structure elementStructure);
+        Structure createStructure(String fieldName, Field[] fields);
+    }</pre>
+
+<p>The above definitions support the following:</p>
+<dl>
+  <dt>Field</dt>
+    <dd>A field: 
+      <dl>
+        <dt>Has a name.</dt>
+        <dt>Has a Type.</dt>
+        <dt>Can be converted to a string. The format is the metadata format
+        described in the pvData project overview.</dt>
+      </dl>
+    </dd>
+  <dt>Scalar</dt>
+    <dd>A scalar has a scalarType</dd>
+  <dt>ScalarArray</dt>
+    <dd>The element type is a scalarType</dd>
+  <dt>StructureArray</dt>
+    <dd>The field holds PVStructure[]. Each element has the same Structure
+      interspection interface. A client can only get/put entire PVStructure
+      elements NOT subfields of array elements.</dd>
+  <dt>Structure</dt>
+    <dd>Has fields that can be any of the supported types.</dd>
+  <dt>FieldCreate</dt>
+    <dd>This is an interface that provides methods to create introspection
+      interfaces. A factory is provides to create FieldCreate.</dd>
+</dl>
+
+<h3 id="L638">Status</h3>
+
+<p>Status provides a way to pass status back to client code. It is new and not
+currently used by pvData but may be in the future. It is used by code that uses
+pvData.</p>
+<pre>    interface Status extends Serializable  {
+        public enum StatusType {OK,WARNING,ERROR,FATAL};
+        StatusType getType();
+        String getMessage();
+        String getStackDump();
+        boolean isOK();
+        boolean isSuccess();
+    }
+    
+    interface StatusCreate {
+        Status getStatusOK(); 
+        Status createStatus(StatusType type, String message, Throwable cause);
+        Status deserializeStatus(ByteBuffer buffer, DeserializableControl control);
+    }</pre>
+
+<p>The Status methods are:</p>
+<dl>
+  <dt>StatusType</dt>
+    <dd>An enum for the status type.</dd>
+  <dt>getType</dt>
+    <dd>Get the statusType.</dd>
+  <dt>getMessage</dt>
+    <dd>Get a message explaining the error.</dd>
+  <dt>getStackDump</dt>
+    <dd>Get a stack dump.</dd>
+</dl>
+
+<p>The StatusCreate methods are:</p>
+<dl>
+  <dt>getStatusOK</dt>
+    <dd>Get a singleton that returns StatusType.OK and a null message and
+      stackDump.</dd>
+  <dt>createStatus</dt>
+    <dd>Create a new Status.</dd>
+  <dt>deserializeStatus</dt>
+    <dd>Use this method instead of Status.deserialize(), since this allows OK
+      status optimization.</dd>
+</dl>
+
+<h3 id="L685">PVField - Data Interfaces</h3>
+
+<p>This section defines the Java Interfaces for accessing the data within a PV
+record.</p>
+
+<h4 id="L689">PVField</h4>
+
+<p>PVField is the base interface for accessing data. Every field of every
+structure of every record instance has a PVField associated with it. A
+structure and a record also has an associated PVField.</p>
+<pre>    interface PVField extends Serializable, Requester {
+        int getFieldOffset();
+        int getNextFieldOffset();
+        int getNumberFields();
+        PVAuxInfo getPVAuxInfo();
+        boolean isImmutable();
+        void setImmutable();
+        Field getField();
+        PVStructure getParent();
+        void replacePVField(PVField newPVField);
+        void renameField(String newName);
+        void postPut();
+        void setRequester(Requester requester);
+        void setPostHandler(PostHandler postHandler);
+        String toString();
+        void toString(StringBuilder buf);
+        void toString(StringBuilder buf,int indentLevel);
+    }</pre>
+
+<p>where</p>
+<dl>
+  <dt>Requester</dt>
+    <dd>PVField extends Requester which is described in the next
+    sub-section.</dd>
+  <dt>getFieldOffset</dt>
+    <dd>Get offset of the PVField field within top level structure. Every field
+      within the PVStructure has a unique offset. The top level structure has
+      an offset of 0. The first field within the structure has offset equal to
+      1. The other offsets are determined by recursively traversing each
+      structure of the tree. </dd>
+  <dt>getNextFieldOffset</dt>
+    <dd>Get the next offset. If the field is a scalar or array field then this
+      is just offset + 1. If the field is a structure it is the offset of the
+      next field after this structure. Thus (nextOffset - offset) is always
+      equal to the total number of fields within the field. </dd>
+  <dt>getNumberFields</dt>
+    <dd>Get the total number of fields in this field. This is nextFieldOffset -
+      fieldOffset. </dd>
+  <dt>getPVAuxInfo</dt>
+    <dd>Get the PVAuxInfo for this field. PVAuxInfo is described below.</dd>
+  <dt>isImmutable</dt>
+    <dd>Is the field immutable?</dd>
+  <dt>setImmutable</dt>
+    <dd>Make the field immutable. Once a field is immutable it can never be
+      changed since there is no method to again make it mutable. This is an
+      important design decision because it allows immutable array fields to
+      share the internal primitive data array.</dd>
+  <dt>getField</dt>
+    <dd>Get the reflection interface.</dd>
+  <dt>getParent</dt>
+    <dd>Get the interface for the parent or null if this is the top level
+      PVStructure.</dd>
+  <dt>replacePVField</dt>
+    <dd>Replace this PVField. This is called by support code that wants to
+      replace the default implementation of a data field with it's own
+      implementation.</dd>
+  <dt>renameField</dt>
+    <dd>Rename the field name.</dd>
+  <dt>postPut</dt>
+    <dd>If this field is a field of a record pvRecordField.postPut() is called.
+      If not a field of a record nothing happens.</dd>
+  <dt>setRequester</dt>
+    <dd>Set a requester to receive messages sent to this field. A field can
+      only have a single requester. An IllegalStateException is thrown if a
+      requester is already attached.</dd>
+  <dt>toString</dt>
+    <dd>Converts the field data to a string. This is mostly for debugging
+      purposes. The format is the meta data format described in the pvData
+      project overview.</dd>
+</dl>
+
+<h4 id="L768">Requester</h4>
+
+<p>A PVField extends Requester. Requester is present so that when database
+errors are found there is someplace to send a message. As will be seen below,
+PVRecord provides methods to register message requesters. Also a PVDatabase
+provides an identical method. Thus when a message is generated for a field it
+is propagated up to the record with the full field name attached and then
+propagated to the PVDatabase which sends the messages to the registered
+requesters.</p>
+<pre>    enum MessageType {info,warning,error,fatalError}
+
+    interface Requester {
+        String getRequesterName();
+        void message(String message, MessageType messageType);
+    }</pre>
+
+<p>where</p>
+<dl>
+  <dt></dt>
+  <dt>MessageType</dt>
+    <dd>Type of message.</dd>
+  <dt>Requester</dt>
+    <dd>The default implementation is: 
+      <ul>
+        <li>getRequesterName<br />
+          This is the full field name concatenated to the record name.</li>
+        <li>message<br />
+          For the default implementation, PVField prepends the full field name
+          to the message and calls PVRecord.message. The default implementation
+          for PVRecord either displays the message on stdout or stderr or gives
+          the message to message requsters.</li>
+      </ul>
+    </dd>
+</dl>
+
+<h4 id="L802">PVAuxInfo</h4>
+
+<p>AuxInfo (Auxillary Information) is information about a field that is
+application specific. It will not be available outside the application that
+implements the database. In particular it will not be made available to Channel
+Access. It is used by the database itself to override the default
+implementation of fields. The JavaIOC uses it for attaching support code.
+Database Configuration and other tools can use it for configuration
+information. Each Field and each PVField can have have an arbitrary number of
+auxInfos. An auxInfo is a (key,PVScalar) pair where key is a string.</p>
+<pre>    public interface PVAuxInfo {
+        PVField getPVField();
+        PVScalar createInfo(String key,ScalarType scalarType);
+        Map&lt;String,PVScalar&gt; getInfos();
+        PVScalar getInfo(String key);
+        void toString(StringBuilder buf);
+        void toString(StringBuilder buf,int indentLevel);
+    }</pre>
+
+<p>where</p>
+<dl>
+  <dt>getPVField</dt>
+    <dd>Get the PVField to which this PVAuxInfo is attached.</dd>
+  <dt>createInfo</dt>
+    <dd>Create a new PVScalar of type scalarType.</dd>
+  <dt>getInfos</dt>
+    <dd>Get a map of all the auxInfos.</dd>
+  <dt>getInfo</dt>
+    <dd>Get the PVScalar with the specified key.</dd>
+  <dt>toString</dt>
+    <dd>Print all the auxInfo data in metadata format.</dd>
+</dl>
+
+<h4 id="L836">PVScalar and extensions</h4>
+<pre>    interface PVScalar extends PVField {
+        Scalar getScalar();
+    }</pre>
+
+<h5 id="L840">Primitive PVField types</h5>
+
+<p>The interfaces for primitive data types are:</p>
+<pre>    interface PVBoolean extends PVScalar {
+        boolean get();
+        void put(boolean value);
+    }
+
+    interface PVByte extends PVScalar {
+        byte get();
+        void put(byte value);
+    }
+
+    interface PVShort extends PVScalar {
+        short get();
+        void put(short value);
+    }
+
+    interface PVInt extends PVScalar {
+        int get();
+        void put(int value);
+    }
+
+    interface PVLong extends PVScalar {
+        long get();
+        void put(long value);
+    }
+
+    interface PVFloat extends PVScalar {
+        float get();
+        void put(float value);
+    }
+
+    interface PVDouble extends PVScalar {
+        double get();
+        void put(double value);
+    }</pre>
+
+<h5 id="L846">PVString</h5>
+
+<p>The interface for string is:</p>
+<pre>    interface PVString extends PVScalar, SerializableArray {
+        String get();
+        void put(String value);
+    }</pre>
+
+<h4 id="L852">PVArray and Extensions</h4>
+
+<p><span style="font-family: courier">PVArray</span> is the base interface for
+all the other PV Array interfaces. It extends PVField and provides the
+additional methods:</p>
+<pre>    interface PVArray extends PVField, SerializableArray {
+        int getLength();
+        void setLength(int len);
+        int getCapacity();
+        void setCapacity(int len);
+        boolean isCapacityMutable();
+        void setCapacityMutable(boolean isMutable);
+    }</pre>
+<dl>
+  <dt>getLength</dt>
+    <dd>Get the current length. This is less that or equal to the capacity.</dd>
+  <dt>setLength</dt>
+    <dd>Set the length. If the PVField is not mutable then an exception is
+      thrown. If this is greater than the capacity setCapacity is called.</dd>
+  <dt>getCapacity</dt>
+    <dd>Get the capacity, i.e. this is the sized of the underlying data
+    array.</dd>
+  <dt>setCapacity</dt>
+    <dd>Set the capacity. The semantics are implementation dependent but
+      typical semantics are as follows: If the capacity is not mutable an
+      exception is thrown. A new data array is created and data is copied from
+      the old array to the new array. </dd>
+  <dt>isCapacityMutable</dt>
+    <dd>Is the capacity mutable</dd>
+  <dt>setCapacityMutable</dt>
+    <dd>Specify if the capacity can be changed.</dd>
+</dl>
+
+<h5 id="L891">PVArray Extensions</h5>
+
+<p>The interface for each array type has get and put methods which have the
+same arguments except for the data type. For example PVDoubleArray is:</p>
+<pre>    public class DoubleArrayData {
+        public double[] data;
+        public int offset;
+    }
+    interface PVDoubleArray extends PVScalarArray {
+        int get(int offset, int len, DoubleArrayData data);
+        int put(int offset, int len, double[]from, int fromOffset);
+        void shareData(double[] from);
+    }</pre>
+
+<p>Get "exposes" it's internal array by setting data.data and data.offset. The
+caller is responsible for copying the array elements. This violates the
+principle that objects should not expose their internal data but is done for
+efficency. For example it makes it possible to copy between arrays with
+identical element types via a call to System.arraycopy without requiring an
+intermediate array.</p>
+
+<p>Both get and put return the number of elements actually transfered. The
+arguments are:</p>
+<dl>
+  <dt>offset</dt>
+    <dd>The offset in the PV array.</dd>
+  <dt>len</dt>
+    <dd>The maximum number of elements to transfer. The number actually
+      transfered will be less than or equal to this value.</dd>
+  <dt>data</dt>
+    <dd>Get sets data.data to it's internal array and data.offset to the offset
+      into the array. The caller is responsible for the actual data
+    transfer.</dd>
+  <dt>from</dt>
+    <dd>The array from which the data is taken. This array is supplied by the
+      caller</dd>
+  <dt>fromOffset</dt>
+    <dd>The offset in <span style="font-family: courier;">from</span></dd>
+</dl>
+
+<p>The caller must be prepared to make multiple calls to retrieve or put an
+entire array. A caller should accept or put partial arrays. For example the
+following reads an entire array:</p>
+<pre>    double[] getArray(PVDoubleArray pv)
+    {
+        int len = pv.getLength();
+        double[] storage = new double[len];
+        DoubleArrayData data = new DoubleArrayData();
+        int offset = 0;
+        while(offset &lt; len) {
+            int num = pv.get(offset,(len-offset),data);
+            System.arraycopy(data.data,data.offset,storage,offset,num);
+            offset += num;
+        }
+        return storage;
+    } </pre>
+
+<p>shareData results in the PVArray using the primitive array that is passed to
+this method. This is most useful for immutable arrays. In this case the caller
+must set the PVArray to be immutable. In the PVArray is not immutable then it
+is the applications responsibility to coordinate access to the array. This
+violates the principle that objects should not expose their internal data but
+is important for immutable arrays. For example pvData and the javaIOC define
+many enumerated structures where an enumerated structure has twofields: index
+and choices. Choices is a PVStringArray that holds the enumerated choices.
+Index is a PVInt that is the index of the currently selected choice. The
+choices can be immutable. Allowing the choices internal String[] to be shared
+between all the instances of an enumerated structure saves on storage. Another
+reason for allowing shared data is so that an application which processes an
+array can be separated into multiple modules that directly access the internal
+data array of a PVArray. This can be required for minimizing CPU overhead. In
+this case it is the applications responsibility to coordinate access to the
+array.</p>
+
+<h5 id="L935">Complete set of PVArray Extensions</h5>
+<pre>    interface PVScalarArray extends PVArray {
+        ScalarArray getScalarArray();
+    }
+
+    public class BooleanArrayData {
+        public boolean[] data;
+        public int offset;
+    }
+    interface PVBooleanArray extends PVScalarArray {
+        int get(int offset, int len, BooleanArrayData data);
+        int put(int offset, int len, boolean[]from, int fromOffset);
+        void shareData(boolean[] from);
+    }
+
+    public class ByteArrayData {
+        public byte[] data;
+        public int offset;
+    }
+    interface PVByteArray extends PVScalarArray {
+        int get(int offset, int len, ByteArrayData data);
+        int put(int offset, int len, byte[]from, int fromOffset);
+        void shareData(byte[] from);
+    }
+
+    public class ShortArrayData {
+        public short[] data;
+        public int offset;
+    }
+    interface PVShortArray extends PVScalarArray {
+        int get(int offset, int len, ShortArrayData data);
+        int put(int offset, int len, short[]from, int fromOffset);
+        void shareData(short[] from);
+    }
+
+    public class IntArrayData {
+        public int[] data;
+        public int offset;
+    }
+    interface PVIntArray extends PVScalarArray {
+        int get(int offset, int len, IntArrayData data);
+        int put(int offset, int len, int[]from, int fromOffset);
+        void shareData(int[] from);
+    }
+
+    public class LongArrayData {
+        public long[] data;
+        public int offset;
+    }
+    interface PVLongArray extends PVScalarArray {
+        int get(int offset, int len, LongArrayData data);
+        int put(int offset, int len, long[]from, int fromOffset);
+        void shareData(long[] from);
+    }
+
+    public class FloatArrayData {
+        public float[] data;
+        public int offset;
+    }
+    interface PVFloatArray extends PVScalarArray {
+        int get(int offset, int len, FloatArrayData data);
+        int put(int offset, int len, float[]from, int fromOffset);
+        void shareData(float[] from);
+    }
+
+    public class DoubleArrayData {
+        public double[] data;
+        public int offset;
+    }
+    interface PVDoubleArray extends PVScalarArray {
+        int get(int offset, int len, DoubleArrayData data);
+        int put(int offset, int len, double[]from, int fromOffset);
+        void shareData(double[] from);
+    }
+
+    public class StringArrayData {
+        public String[] data;
+        public int offset;
+    }
+    interface PVStringArray extends PVScalarArray {
+        int get(int offset, int len, StringArrayData data);
+        int put(int offset, int len, String[]from, int fromOffset);
+        void shareData(String[] from);
+    }
+
+    public class StructureArrayData {
+        public PVStructure[] data;
+        public int offset;
+    }
+
+    interface PVStructureArray extends PVArray {
+        StructureArray getStructureArray();
+        int get(int offset, int length, StructureArrayData data);
+        int put(int offset,int length, PVStructure[] from, int fromOffset);
+        void shareData(PVStructure[] from);
+    }</pre>
+
+<p>Notes about PVStructureArray: A client can only access the data in the
+elements of the array via the get and put methods, i.e. it is not possible to
+access subfields indirectly. PVStructureArray.getNumberFields() returns 1, i.e.
+the field looks like a leaf field.</p>
+
+<h4 id="L941">PVStructure</h4>
+
+<p>The interface for a structure is:</p>
+<pre>    interface PVStructure extends PVField, BitSetSerializable {
+        Structure getStructure();
+        PVField[] getPVFields();
+        PVField getSubField(String fieldName);
+        PVField getSubField(int fieldOffset);
+        void appendPVField(PVField pvField);
+        void appendPVFields(PVField[] pvFields);
+        void removePVField(String fieldName);
+        // the following are convenience methods
+        PVBoolean getBooleanField(String fieldName);
+        PVByte getByteField(String fieldName);
+        PVShort getShortField(String fieldName);
+        PVInt getIntField(String fieldName);
+        PVLong getLongField(String fieldName);
+        PVFloat getFloatField(String fieldName);
+        PVDouble getDoubleField(String fieldName);
+        PVString getStringField(String fieldName);
+        PVStructure getStructureField(String fieldName);
+        PVScalarArray getScalarArrayField(String fieldName,ScalarType elementType);
+        PVStructureArray getStructureArrayField(String fieldName);
+        String getExtendsStructureName();
+        boolean putExtendsStructureName(String extendsStructureName);
+    }</pre>
+
+<p>where</p>
+<dl>
+  <dt>getStructure</dt>
+    <dd>Get the introspection interface for the structure.</dd>
+  <dt>getPVFields</dt>
+    <dd>Returns the array of subfields. The set of subfields must all have
+      different field names.</dd>
+  <dt>getSubField(String fieldName)</dt>
+    <dd>Get a subField of a field. For a PVStructure a non-null result is
+      returned if fieldName is a field of the PVStructure. The fieldName can be
+      of the form name.name...</dd>
+  <dt>getSubField(int fieldOffset)</dt>
+    <dd>Get the field located a fieldOffset, where fieldOffset is relative to
+      the top level structure. This returns null if the specified field is not
+      located within this PVStructure.</dd>
+  <dt>appendPVField</dt>
+    <dd>Append pvField to the end of this PVStructure. This should NOT be
+      called if any code is attached to any of the fields in the top level
+      structure.</dd>
+  <dt>appendPVFields</dt>
+    <dd>Append an array of pvFields to the end of this structure. Note that if
+      the original number of fields is 0 than pvFields replaces the original.
+      Thus the caller must NOT reuse pvFields after calling this method. This
+      should NOT be called if any code is attached to any of the fields in the
+      top level structure</dd>
+  <dt>removePVField</dt>
+    <dd>Remove the specified field from this structure. This should NOT be
+      called if any code is attached to any of the fields in the top level
+      structure.</dd>
+  <dt>getBooleanField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface. This and the following methods are convenience methods that
+      allow a user to get the interface to a subfield without requiring
+      introspection. fieldName can be of the form name.name...</dd>
+  <dt>getByteField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getShortField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getIntField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getLongField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getFloatField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getDoubleField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getStringField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getScalarArrayField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getStructureArrayField</dt>
+    <dd>Look for fieldName. If found and it has the correct type return the
+      interface.</dd>
+  <dt>getExtendsStructureName</dt>
+    <dd>Get the name of structure that this structure extends.</dd>
+  <dt>putExtendsStructureName</dt>
+    <dd>Specify the structure that this structure extends.</dd>
+</dl>
+
+<h4 id="L1045">PVDataCreate</h4>
+
+<p>PVDataCreate is an interface that provides methods that create PVField
+interfaces. A factory is provided that creates PVDataCreate.</p>
+<pre>interface PVDataCreate {
+    PVField createPVField(PVStructure parent, Field field);
+    PVField createPVField(PVStructure parent,String fieldName,PVField fieldToClone);
+    PVScalar createPVScalar(PVStructure parent,Scalar scalar);
+    PVScalar createPVScalar(PVStructure parent,String fieldName,ScalarType fieldType);
+    PVScalar createPVScalar(PVStructure parent,String fieldName,PVScalar scalarToClone);
+    PVScalarArray createPVScalarArray(PVStructure parent,ScalarArray array);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,ScalarType elementType);
+    PVScalarArray createPVScalarArray(PVStructure parent,String fieldName,PVScalarArray arrayToClone);
+    PVStructureArray createPVStructureArray(PVStructure parent,StructureArray structureArray);
+    PVStructure createPVStructure(PVStructure parent,
+        Structure structure);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,
+        Field[] fields);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,
+        PVField[] pvFields);
+    PVStructure createPVStructure(PVStructure parent,String fieldName,
+        PVStructure structToClone);
+    PVField[] flattenPVStructure(PVStructure pvStructure);
+}</pre>
+where 
+<dl>
+  <dt style="font-family: courier;">createPVField</dt>
+    <dd>The PVField is created reusing the Field interface. Two methods are
+      provided. Each calls the corresponding createPVScalar, createPVArray, or
+      createPVStructure depending in the type os the last argument.</dd>
+  <dt style="font-family: courier;">createPVScalar</dt>
+    <dd>Creates an instance of a PVScalar. Three versions are supplied. The
+      first is passed an introspection interface. The second provides the field
+      name and the scalarType. The last provides a field name and a PVScalar to
+      clone. The newly created PVScalar will have the same auxInfos as the
+      original.</dd>
+  <dt style="font-family: courier;">createPVScalarArray</dt>
+    <dd>Create an instance of a PVArray. Three versions are supplied. The first
+      is passed an introspection interface. The second provides the field name
+      and the elementType. The last provides a field name and a PVArray to
+      clone. The newly created PVArray will have the same auxInfos as the
+      original.</dd>
+  <dt style="font-family: courier;">createPVStructureArray</dt>
+    <dd>Create a PVStructureArray. It must be passed a structureToClone. This
+      will become the Structure interface for ALL elements of the
+      PVStructureArray. It MUST be used to create any new array elements.</dd>
+  <dt style="font-family: courier;">createPVStructure</dt>
+    <dd>Create an instance of a PVStructure. Four methods are provided. The
+      first method uses a previously created structure introspection interface.
+      The second uses a Field array to initialize the sub-fields. The third
+      uses a PVField[]. On this case the parent of each PVField will be set to
+      the PVStructure that is being created. This is the fastest method. The
+      fourth initializes the subfields by cloning the fields contained in
+      structToClone. The newly created sub-fields will have the same values and
+      auxInfos as the original. If structToClone is null then the new structure
+      is initialized to have 0 sub-fields.</dd>
+  <dt style="font-family: courier;">flattenPVStructure</dt>
+    <dd>Create an array of PVFields for the fields in the PVStructure. The
+      order is according to fieldOffset.</dd>
+</dl>
+
+<h3 id="L1084">Convert</h3>
+
+<p>NOTE about copying immutable array fields. If an entire immutable array
+field is copied to another array that has the same elementType, both offsets
+are 0, and the length is the length of the source array, then the shareData
+method of the target array is called and the target array is set immutable.
+Thus the source and target share the same primitive array.</p>
+
+<p>This section describes the supported conversions between data types.</p>
+<ul>
+  <li>All supported types can be converted to a string. If you ask for a 100
+    megabyte array to be converted to a string expect a lot of output.</li>
+  <li>Conversion from a string to a scalar type.</li>
+  <li>Conversion from an array of strings to an array of scalar types.</li>
+  <li>Copy between the following types of scalar PVs 
+    <ul>
+      <li>Numeric type to another numeric type</li>
+      <li>Both have the same type.</li>
+      <li>Either is a string</li>
+    </ul>
+  </li>
+  <li>Copy between PVArrays that satisfy one of the following. 
+    <ul>
+      <li>Numeric to numeric</li>
+      <li>Both have the same type.</li>
+      <li>Either is a string.</li>
+    </ul>
+  </li>
+  <li>Conversions between numeric scalar types.</li>
+  <li>Conversions between arrays of numeric type.</li>
+  <li>Conversion between compatible structures.</li>
+  <li>A utility method the returns the full field name of a field.</li>
+</ul>
+<pre>    interface Convert {
+        void getFullFieldName(StringBuilder builder,PVField pvField)
+        void getString(StringBuilder buf,PVField pv, int indentLevel);
+        void getString(StringBuilder buf,PVField pv);
+        void fromString(PVScalar pv,String from);
+        void fromString(PVScalarArray pv,String from);
+        int fromStringArray(PVScalarArray pv,
+             int offset, int len, String[]from, int fromOffset);
+        int toStringArray(PVScalarArray pv,
+             int offset, int len, String[]to, int toOffset);
+        boolean isCopyCompatible(Field from, Field to);
+        void copy(PVField from,PVField to);
+        boolean isCopyScalarCompatible(Field from, Field to);
+        void copyScalar(PVField from, PVField to);
+        boolean isCopyScalarArrayCompatible(ScalarArray from, ScalarArray to);
+        int copyScalarArray(PVScalarArray from, int offset,
+             PVScalarArray to, int toOffset, int len);
+        boolean isCopyStructureCompatible(Structure from, Structure to);
+        void copyStructure(PVStructure from, PVStructure to);
+        boolean isCopyStructureArrayCompatible(StructureArray from, StructureArray to);
+        void copyStructureArray(PVStructureArray from, PVStructureArray to);
+        // For the following the pv Type must be PVByte, ...., PVDouble
+        byte toByte(PVField pv);
+        short toShort(PVField pv);
+        int   toInt(PVField pv);
+        long  toLong(PVField pv);
+        float toFloat(PVField pv);
+        double toDouble(PVField pv);
+        String toString(PVScalar pv);
+        void fromByte(PVField pv, byte from);
+        void  fromShort(PVField pv, short from);
+        void  fromInt(PVField pv, int from);
+        void  fromLong(PVField pv, long from);
+        void  fromFloat(PVField pv, float from);
+        void  fromDouble(PVField pv, double from);
+// For the following the element type must be pvByte, ...., pvDouble
+        int toByteArray(PVScalarArray pv,
+            int offset, int len, byte[]to, int toOffset);
+        int toShortArray(PVScalarArray pv,
+            int offset, int len, short[]to, int toOffset);
+        int toIntArray(PVScalarArray pv,
+            int offset, int len, int[]to, int toOffset);
+        int toLongArray(PVScalarArray pv,
+            int offset, int len, long[]to, int toOffset);
+        int toFloatArray(PVScalarArray pv,
+            int offset, int len, float[]to, int toOffset);
+        int toDoubleArray(PVScalarArray pv,
+            int offset, int len, double[]to, int toOffset);
+        int fromByteArray(PVScalarArray pv,
+            int offset, int len, byte[]from, fromOffset);
+        int fromShortArray(PVScalarArray pv,
+            int offset, int len, short[]from, fromOffset);
+        int fromIntArray(PVScalarArray pv,
+            int offset, int len, int[]from, fromOffset);
+        int fromLongArray(PVScalarArray pv,
+            int offset, int len, long[]from, fromOffset);
+        int fromFloatArray(PVScalarArray pv,
+            int offset, int len, float[]from, fromOffset);
+        int fromDoubleArray(PVScalarArray pv,
+            int offset, int len, double[]from, fromOffset);
+        void newLine(StringBuilder builder, int indentLevel);
+    }</pre>
+
+<p>The array methods all return the number of elements copied or converted.
+This can be less than <span style="font-family: courier;">len</span> if the
+PVField array contains less than len elements.</p>
+
+<p><span style="font-family: courier;">newLine</span> is a convenience method
+for code that implements <span style="font-family: courier;">toString</span> It
+generates a newline and inserts blanks at the beginning of the newline.</p>
+
+<p>The getString methods dump the data in the metadata syntax described in the
+pvData project overview. Note that the toString methods of PVField are
+implemented by calling these convert methods.</p>
+
+<h3 id="L1154">Examples</h3>
+
+<h4 id="L1156">Accessing PVData</h4>
+
+<p>Assume that code wants to access two fields from a PVStructure:</p>
+<dl>
+  <dt>value</dt>
+    <dd>Must be a PVDouble.</dd>
+  <dt>timeStamp</dt>
+    <dd>Just look for field with this name.</dd>
+</dl>
+
+<p>The following code uses introspection to get the desired information.</p>
+<pre>String getValueAndTimeStamp(PVStructure pvStructure) {
+   PVField valuePV = pvStructure.getSubField("value");
+   if(valuePV==null) {
+       return "value field not found";
+   }
+   if(valuePV.getField.getType!=Type.scalar) {
+       return "value field is not a scalar";
+   }
+   Scalar scalar = (Scalar)valuePV.getField();
+   if(scalar.getScalarType!=ScalarType.pvDouble) {
+       return "value field is not a double";
+   }
+   PVDouble pvDouble = (PVDouble)valuePV;
+   PVField timeStampPV = pvStructure.getSubField("timeStamp");
+   if(timeStampPV==null) {
+       return "timeStamp field not found";
+   }
+   double value = valuePV.get();
+   return value + " timeStamp " + timeStampPV.toString();
+}</pre>
+
+<h4 id="L1175">Creating PVData</h4>
+
+<p>Example of creating a scalar field.</p>
+<pre>    PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    PVDouble pvValue = pvDataCreate.createPVScalar(null,"value",ScalarType.pvDouble);</pre>
+
+<p>Create a structure.</p>
+<pre>    
+    FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+
+    PVStructure create() {
+        Field[] fields = new Field[2];
+        fields[0] = fieldCreate.createScalar("secondsSinceEpoch",ScalarType.pvLong);
+        fields[1] = fieldeCreate.createScalar("nanoSeconds",ScalarType.pvInt);
+        PVStructure pvStructure = pvDataCreate.createPVStructure(
+            null,"timeStamp",fields);
+        return(pvStructure);
+    }</pre>
+
+<p>Create a PVStructure that has a value field and a timeStamp. Use the
+structure created in the previous example.</p>
+<pre>    Field[] fields = new Field[2];
+    fields[0] = fieldCreate.createScalar("value",ScalarType.pvDouble);
+    PVStructure pvStructure = create();
+    fields[1] = fieldCreate.createStructure("timeStamp",pvStructure.getStructure.getFields();
+    PVStructure pvStruct = pvDataCreate.createPVStructure(null,"myStructure",fields);</pre>
+<hr />
+
+<h2 style="text-align: center" id="L1191">Package org.epics.pvData.factory</h2>
+<hr />
+
+<h3 id="L1195">Overview</h3>
+
+<p>This package provides factories and classes to implement everything defined
+in package org.epics.pvData.pv</p>
+
+<h3 id="L1199">Factory</h3>
+
+<h4 id="L1201">FieldFactory</h4>
+<pre>    public final class FieldFactory {
+        public static FieldCreate getFieldCreate();
+    }</pre>
+
+<p>FieldFactory automatically creates a single instance of FieldCreate and
+provides a method to get the interface.</p>
+
+<h4 id="L1207">PVDataFactory</h4>
+<pre>    public class PVDataFactory {
+        public static PVDataCreate getPVDataCreate();
+    }</pre>
+
+<p>PVDataFactory automatically creates a single instance of PVDataCreate and
+provides a method to get the interface.</p>
+
+<h4 id="L1213">ConvertFactory</h4>
+<pre>    public final class ConvertFactory {
+        public static Convert getConvert();
+    }</pre>
+
+<p>ConvertFactory automatically creates a single instance of Convert and
+provides a method to get the interface.</p>
+
+<h4 id="L1219">StatusFactory</h4>
+<pre>    public final class StatusFactory {
+        public static StatusCreate getStatusCreate();
+    }</pre>
+
+<p>This provides a singleton that implements StatusCreate.</p>
+
+<h3 id="L1225">Base Introspection Classes</h3>
+
+<p>This section describes base classes for implementing Field instances , i.e.
+introspection instances. For many applications they provide a complete
+introspection implementation but they could be extended if necessary. </p>
+<pre>    
+    public class BaseField implements Field {
+        public BaseField(String fieldName, Type type);
+        // all Field methods
+    }
+
+    public class BaseScalar extends BaseField implements Scalar {
+        public BaseScalar(String fieldName,ScalarType scalarType);
+        // all Scalar methods
+    }
+    
+    public class BaseStructure extends BaseField implements Structure {
+        public BaseStructure(String fieldName,Field[] field);
+        // all Structure methods
+    }
+
+    public class BaseStructureScalar extends BaseScalar implements StructureScalar {
+        public BaseStructureScalar(String fieldName,Field[] fields);
+        // all StructureScalar methods.
+    }
+
+    public class BaseScalarArray extends BaseField implements ScalarArray {
+        public BaseScalarArray(String fieldName,ScalarType elementType);
+        // all ScalarArray methods  
+    }
+
+    public class BaseStructureArray extends BaseArray implements StructureArray {
+        public BaseStructureArray(String fieldName,Field[] fields);
+        // all StructureArray methods
+    }
+}</pre>
+
+<h3 id="L1231">Abstract and Base Classes for PVField</h3>
+
+<h4 id="L1233">BasePVAuxInfo</h4>
+
+<p>This is a complete implementation of PVAuxInfo.</p>
+<pre>public class BasePVAuxInfo implements PVAuxInfo {
+    public BasePVAuxInfo(PVField pvField);
+    // All PVAuxInfo methods
+}</pre>
+
+<h4 id="L1239">AbstractPVField</h4>
+
+<p>This is an abstract base class for implementing PVField interfaces. It MUST
+be the base class for any class that extends PVField. </p>
+<pre>public abstract class AbstractPVField implements PVField{
+    protected static Convert convert = ConvertFactory.getConvert();
+    protected AbstractPVField(PVField parent, Field field);
+    protected void replaceStructure();
+    // All public methods of PVField
+}</pre>
+
+<p>The public methods are described in package org.epics.pvData.pv. The
+protected methods are: </p>
+<dl>
+  <dt>convert</dt>
+    <dd>A convenience for derived classes since implementations often need
+      access to the conversion facility.</dd>
+  <dt>AbstractPVField</dt>
+    <dd>The constructor which must be called by any derived class.</dd>
+  <dt>replaceStructure</dt>
+    <dd>This is called by a derived PVStructure implementation when it wants to
+      change the introspection interface for one of it's fields.</dd>
+</dl>
+
+<h3 id="L1263">Classes For PVStructure</h3>
+
+<h4 id="L1265">BasePVStructure</h4>
+
+<p>The following is a base class for any code that implements PVStructure. Any
+code that implements PVStructure MUST extend this class.</p>
+<pre>public class BasePVStructure extends AbstractPVField implements PVStructure
+    public BasePVStructure(PVField parent, Structure structure);
+    // all public methods of PVStructure
+}</pre>
+
+<h3 id="L1271">Classes For PVScalar</h3>
+
+<h4 id="L1273">AbstractPVScalar</h4>
+
+<p>The following is an abstract base class for implementing PVScalar. It MUST
+be the base class for any code that implements an extension of PVScalar.</p>
+<pre>public class AbstractPVScalar extends AbstractPVField implements PVScalar {
+    protected AbstractPVScalar(PVStructure parent, Scalar scalar);
+    public Scalar getScalar();
+}</pre>
+
+<h4 id="L1279">BasePVBoolean</h4>
+<pre>public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
+{
+    protected boolean value = false;
+    public BasePVBoolean(PVStructure parent,Scalar scalar);
+    // public methods of PVBoolean
+}</pre>
+
+<h4 id="L1283">BasePVByte</h4>
+<pre>public class BasePVByte extends AbstractPVScalar implements PVByte
+{
+    protected byte value;
+    public BasePVByte(PVStructure parent,Scalar scalar);
+    // public methods of PVByte
+}</pre>
+
+<h4 id="L1287">BasePVShort</h4>
+<pre>public class BasePVShort extends AbstractPVScalar implements PVShort
+{
+    protected short value;
+    public BasePVShort(PVStructure parent,Scalar scalar);
+    // public methods of PVShort
+}</pre>
+
+<h4 id="L1291">BasePVInt</h4>
+<pre>public class BasePVInt extends AbstractPVScalar implements PVInt
+{
+    protected int value;
+    public BasePVInt(PVStructure parent,Scalar scalar);
+    // public methods of PVInt
+}</pre>
+
+<h4 id="L1295">BasePVLong</h4>
+<pre>public class BasePVLong extends AbstractPVScalar implements PVLong
+{
+    protected long value;
+    public BasePVLong(PVStructure parent,Scalar scalar);
+    // public methods of PVLong
+}</pre>
+
+<h4 id="L1299">BasePVFloat</h4>
+<pre>public class BasePVFloat extends AbstractPVScalar implements PVFloat
+{
+    protected float value;
+    public BasePVFloat(PVStructure parent,Scalar scalar);
+    // public methods of PVFloat
+}</pre>
+
+<h4 id="L1303">BasePVDouble</h4>
+<pre>public class BasePVDouble extends AbstractPVScalar implements PVDouble
+{
+    protected double value;
+    public BasePVDouble(PVStructure parent,Scalar scalar);
+    // public methods of PVDouble
+}</pre>
+
+<h4 id="L1307">BasePVString</h4>
+<pre>public class BasePVString extends AbstractPVScalar implements PVString
+{
+    protected String value;
+    public BasePVString(PVStructure parent,Scalar scalar);
+    // public methods of PVString
+}</pre>
+
+<h3 id="L1311">Classes for PVArray</h3>
+
+<h4 id="L1313">AbstractPVArray</h4>
+
+<p>The following is a abstract class for creating array fields. Any code that
+implements any extension of PVArray must extend this class.</p>
+<pre>public abstract class AbstractPVArray extends AbstractPVField implements PVArray{
+    protected int length = 0;
+    protected int capacity;
+    protected boolean capacityMutable = true;
+    
+    protected AbstractPVArray(PVField parent,Array array);
+    abstract public void setCapacity(int capacity);
+    // public methods of PVArray
+}</pre>
+
+<p>For each ScalarType there is a base class for implementing the corresponding
+array type. For most uses it is not necessary to extend these classes.</p>
+
+<h4 id="L1321">BasePVBooleanArray</h4>
+<pre>public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArray
+{
+    protected boolean[] value;
+    // implements all PVBooleanArray methods
+}</pre>
+
+<h4 id="L1325">BasePVByteArray</h4>
+<pre>public class BasePVByteArray extends AbstractPVArray implements PVByteArray
+{
+    protected byte[] value;
+    // implements all PVByteArray methods
+}</pre>
+
+<h4 id="L1329">BasePVShortArray</h4>
+<pre>public class BasePVShortArray extends AbstractPVArray implements PVShortArray
+{
+    protected short[] value;
+    // implements all PVShortArray methods
+}</pre>
+
+<h4 id="L1333">BasePVIntArray</h4>
+<pre>public class BasePVIntArray extends AbstractPVArray implements PVIntArray
+{
+    protected int[] value;
+    // implements all PVIntArray methods
+}</pre>
+
+<h4 id="L1337">BasePVLongArray</h4>
+<pre>public class BasePVLongArray extends AbstractPVArray implements PVLongArray
+{
+    protected long[] value;
+    // implements all PVLongArray methods
+}</pre>
+
+<h4 id="L1341">BasePVFloatArray</h4>
+<pre>public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
+{
+    protected float[] value;
+    // implements all PVFloatArray methods
+}</pre>
+
+<h4 id="L1345">BasePVDoubleArray</h4>
+<pre>public class BasePVDoubleArray extends AbstractPVArray implements PVDoubleArray
+{
+    protected double[] value;
+    // implements all PVDoubleArray methods
+}</pre>
+
+<h4 id="L1349">BasePVStringArray</h4>
+<pre>public class BasePVStringArray extends AbstractPVArray implements PVStringArray
+{
+    protected String[] value;
+    // implements all PVStringArray methods
+}</pre>
+
+<h4 id="L1353">BasePVStructureArray</h4>
+<pre>public class BasePVStructureArray  extends AbstractPVArray implements PVStructureArray
+{
+   // implements all PVStructureArray methods
+}</pre>
+<hr />
+
+<h2 style="text-align: center" id="L1359">Package org.epics.pvData.property</h2>
+<hr />
+
+<h3 id="L1363">Definition of Property</h3>
+
+<p>Only fields named "value" have properties. A record can have multiple value
+fields, which can appear in the top level structure of a record or in a
+substructure. All other fields in the structure containing a value field are
+considered properties of the value field. The fieldname is also the property
+name. The value field can have any type, i.e. scalar, scalarArray, or
+structure. Typical property fields are timeStamp, alarm, display, control, and
+history. The timeStamp is a special case. If it appears anywhere in the
+structure hieraracy above a value field it is a property of the value field.</p>
+
+<p>For example the following top level structure has a single value field. The
+value field has properties alarm, timeStamp, and display.</p>
+<pre>structure counterOutput
+    structure alarm
+    double value
+    structure display
+        string description "Sample Description"
+        string format "%f"
+        string units volts
+        structure limit
+            double low 0.0
+            double high 10.0</pre>
+
+<p>The following example has three value fields each with properties alarm and
+timeStamp. Voltage, Current, and Power each have a different alarms but all
+share the timeStamp.</p>
+<pre>structure powerSupplyValueStructure
+    double value
+    structure alarm
+
+structure powerSupplySimple
+    structure alarm
+    structure timeStamp
+    powerSupplyValueStructure voltage
+    powerSupplyValueStructure power
+    powerSupplyValueStructure current</pre>
+
+<h3 id="L1375">Standard Properties</h3>
+
+<p>The following field names have special meaning, i.e. support properties for
+general purpose clients.</p>
+<dl>
+  <dt>value</dt>
+    <dd>This is normally defined since most general purpose clients access this
+      field. All other fields in the structure support or describe the value
+      field. The type can any supported type but is usually one of the
+      following: 
+      <dl>
+        <dt>scalar</dt>
+          <dd>One of boolean, byte, short, int, long, float, double, or
+          string</dd>
+        <dt>scalarArray</dt>
+          <dd>An array with the elementType being a scalar type</dd>
+        <dt>enumerated structure</dt>
+          <dd>A structure that includes fields named index, choice, and
+            choices. index is an int that selects a choice. choice is the
+            currently selected choice. choices is an array of strings that
+            defines the complete set of choices.</dd>
+        <dt>other</dt>
+          <dd>Other structure or array types can also be defined if clients and
+            support code agree on the meaning. Some examples are: 1) A
+            structure defining a 2D matrix, 2) A structure defining an image,
+            3) A structure that simulates a remote method, ...</dd>
+      </dl>
+    </dd>
+  <dt>timeStamp</dt>
+    <dd>The timeStamp. The type MUST be a timeStamp structure. Also if the
+      PVData structure does not have a timeStamp then a search up the parent
+      tree is made to find a timeStamp.</dd>
+  <dt>alarm</dt>
+    <dd>The alarm. The type MUST be an alarm structure. </dd>
+  <dt>display</dt>
+    <dd>A display structure as described below. It provides display
+      characteristics for the value field.</dd>
+  <dt>control</dt>
+    <dd>A control structure as described below. It provides control
+      characteristics for the value field.</dd>
+  <dt>history</dt>
+    <dd>Provides a history buffer for the value field. Note that currently
+      PVData does not define history suppoprt.</dd>
+  <dt>other</dt>
+    <dd>Other standard properties can be defined.</dd>
+</dl>
+
+<p>In addition a structure can have additional fields that support the value
+field but are not recognized by most general purpose client tools. Typical
+examples are:</p>
+<dl>
+  <dt>input</dt>
+    <dd>A field with support that changes the value field. This can be
+      anything. It can be a channel access link. It can obtain a value from
+      hardware. Etc.</dd>
+  <dt>valueAlarm</dt>
+    <dd>A field with support that looks for alarm conditions based on the
+    value.</dd>
+  <dt>output</dt>
+    <dd>A field with support that reads the current value and sends it
+      somewhere else. This can be anything. It can be a channel access link. It
+      can write a value to hardware. Etc.</dd>
+</dl>
+
+<p>The model allows for device records. A device record has structure fields
+that that support the PVData data model. For example a powerSupport record can
+have fields power, voltage, current that each support the PVData data model.
+</p>
+
+<h3 id="L1456">PVProperty</h3>
+
+<p>Interface and factory for finding a field within a structure.</p>
+<pre>    interface PVProperty {
+        PVField findProperty(PVField pvField,String fieldName);
+        PVField findPropertyViaParent(PVField pvField,String propertyName);
+        String[] getPropertyNames(PVField pvField);
+    }
+
+    public class PVPropertyFactory {
+         public static PVProperty getPVProperty();
+    }</pre>
+<ul>
+  <li>findProperty<br />
+    Find a field that is a subfield or property of this PVField. The fieldName
+    is of the form name.name... The pvField must be named value or it does not
+    have properties. </li>
+  <li>findPropertyViaParent<br />
+    Find a property by searching up the parent tree. The property name is
+    expected to match the name of a field. The return value is the interface to
+    the first field found that is not a null structure or null if not found.
+  </li>
+  <li>getPropertyNames<br />
+    Get a String array that holds the names of the properties for this field.
+  </li>
+  <li>getPVProperty<br />
+    Get the single instance of PVProperty. </li>
+</ul>
+
+<h3 id="L1487">Standard Properties</h3>
+
+<p>This section has structure definitions that support standard properties.
+These definitions are defined in project javaIOC.</p>
+
+<h4 id="L1491">TimeStamp</h4>
+
+<p>A timeStamp is represented by the following structure</p>
+<pre>structure timeStamp
+    int64 secondsPartEpoch
+    int32 nanoSeconds
+    int32 userTag</pre>
+
+<p>The Epoch is the posix epoch, i.e. Jan 1, 1970 00:00:00 UTC. Both the
+seconds and nanoSeconds are signed integers and thus can be negative. Since the
+seconds is kept as a 64 bit integer, it allows for a time much greater than the
+present age of the universe. Since the nanoSeconds portion is kept as a 32 bit
+integer it is subject to overflow if a value that corresponds to a value that
+is greater than a little more than 2 seconds of less that about -2 seconds. The
+support code always adjust seconds so that the nanoSecconds part is normalized,
+i. e. it has is 0&lt;=nanoSeconds&lt;nanoSecPerSec..</p>
+
+<h5 id="L1499">TimeStamp.java</h5>
+
+<p>The Java definition of a timeStamp is:</p>
+<pre>interface TimeStamp {
+    static final long milliSecPerSec = 1000;
+    static final long microSecPerSec = milliSecPerSec*milliSecPerSec;
+    static final long nanoSecPerSec = milliSecPerSec*microSecPerSec;
+    static final long  posixEpochAtEpicsEpoch = 631152000;
+    void normalize();
+    long getSecondsPastEpoch();
+    long getEpicsSecondsPastEpoch();
+    int getNanoSeconds();
+    int getUserTag();
+    void setUserTag(int userTag);
+    void put(long secondsPastEpoch,int nanoSeconds);
+    long getMilliSeconds();
+    void put(long milliSeconds);
+    void getCurrentTime();
+    boolean equals(TimeStamp other);
+    boolean lt(TimeStamp other);
+    boolean le(TimeStamp other);
+    void add(long seconds);
+    void add(double seconds);
+    double diff(TimeStamp a,TimeStamp b);
+}</pre>
+
+<p>where:</p>
+<dl>
+  <dt style="font-family: courier;">normalize</dt>
+    <dd>Adjust secondsPastEpoch and nanoSeconds so that 0&lt;=nanoSeconds&lt;
+      nanoSecPerSec.</dd>
+  <dt style="font-family: courier;">getSecondsPastEpoch</dt>
+    <dd>Get the seconds part of timeStamp</dd>
+  <dt style="font-family: courier;">getEpicsSecondsPastEpoch</dt>
+    <dd>Get seconds relative to the EPICS epoch. The epics epoch starts on Jan
+      1 1990 00:00:00 UTC.</dd>
+  <dt style="font-family: courier;">getNanoSeconds</dt>
+    <dd>Get the nanoSeconds part of timeStamp.</dd>
+  <dt><span
+  style="font-family: Courier New,Courier,monospace">getUserTag</span></dt>
+    <dd>Get the userTag</dd>
+  <dt><span
+  style="font-family: Courier New,Courier,monospace">setUserTag</span></dt>
+    <dd>Set the userTag</dd>
+  <dt style="font-family: courier;">put(long secondsPastEpoch,int
+  nanoSeconds)</dt>
+    <dd>Put a value into the timeStamp.</dd>
+  <dt style="font-family: courier;">getMilliSeconds</dt>
+    <dd>Get bthe number of milliseconds since the epoch.</dd>
+  <dt style="font-family: courier;">put(long milliSeconds);</dt>
+    <dd>Put a value into the timeStamp given the number of milliSeconds since
+      the epoch.</dd>
+  <dt style="font-family: courier;">getCurrentTime</dt>
+    <dd>Get the curent time.</dd>
+  <dt style="font-family: courier;">equals</dt>
+    <dd>Is this time equal other?</dd>
+  <dt style="font-family: courier;">lt</dt>
+    <dd>Is this time less than other.</dd>
+  <dt style="font-family: courier;">le</dt>
+    <dd>Is this time less that or equal to other.</dd>
+  <dt style="font-family: courier;">add(long seconds)</dt>
+    <dd>Add the specified number of seconds.</dd>
+  <dt style="font-family: courier;">add(double seconds)</dt>
+    <dd>Add the specified number of seconds.</dd>
+  <dt style="font-family: courier;">diff</dt>
+    <dd>Compute the a-b. The result is in seconds.</dd>
+</dl>
+
+<p>The TimeStamp class provides arithmetic and comparison methods for time
+stamps. The result is always kept in normalized form, which means that the nano
+second portion is 0&le;=nano&lt;nanoSecPerSec. Note that it is OK to have
+timeStamps for times previous to the epoch.</p>
+
+<h5 id="L1594">PVTimeStamp.java</h5>
+<pre>interface PVTimeStamp {
+    boolean attach(PVField pvField);
+    void detach();
+    boolean isAttached();
+    void get(TimeStamp timeStamp);
+    boolean set(TimeStamp timeStamp);
+}
+
+class PVTimeStampFactory implements PVTimeStamp {
+    public static PVTimeStamp create();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">attach</dt>
+    <dd>Attempts to attach to <span
+      style="font-family: courier;">pvField</span> It returns (false,true) if a
+      timeStamp structure is found. It looks first at pvField itself and if is
+      not an appropriate pvData structure but the field name is value it looks
+      up the parent structure tree.</dd>
+  <dt style="font-family: courier;">detach</dt>
+    <dd>Detach from the pvData structure.</dd>
+  <dt style="font-family: courier;">isAttached</dt>
+    <dd>Is there an attachment to a timeStamp structure?</dd>
+  <dt style="font-family: courier;">get</dt>
+    <dd>Copies data from the pvData structure to a TimeStamp. An exception is
+      thrown if not attached to a pvData structure. </dd>
+  <dt style="font-family: courier;">set</dt>
+    <dd>Copies data from TimeStamp to the pvData structure. An exception is
+      thrown if not attached to a pvData structure. </dd>
+</dl>
+
+<h4 id="L1629">Alarm</h4>
+
+<p>An alarm structure is defined as follows:</p>
+<pre>structure alarm
+    int32 severity
+    String message</pre>
+
+<p>Note that severity is NOT defined as an enumerated structure. The reason is
+performance, i. e. prevent passing the array of choice strings everywhere. The
+file <span style="font-family: courier;">alarm.h</span> provides the choice
+strings. Thus all code that needs to know about alarms share the exact same
+choice strings.</p>
+
+<p>The java definitions for alarm are:</p>
+<pre>enum AlarmSeverity {
+ NONE,MINOR,MAJOR,INVALID,UNDEFINED;
+
+    public static AlarmSeverity getSeverity(int value);
+    private static final String[] alarmSeverityNames;
+    public static String[] getSeverityNames() { return alarmSeverityNames;}
+}
+
+enum AlarmStatus {
+    NONE,DEVICE,DRIVER,RECORD,DB,CONF,UNDEFINED,CLIENT;
+
+    public static AlarmStatus getStatus(int value);
+    private static final String[] alarmStatusNames;
+    public static String[] getStatusNames() { return alarmStatusNames;}
+}
+
+class Alarm {
+    public Alarm();
+    public String getMessage();
+    public void setMessage(String message);
+    public AlarmSeverity getSeverity();
+    public void setSeverity(AlarmSeverity alarmSeverity);
+    public AlarmStatus getStatus();
+    public void setStatus(AlarmStatus alarmStatus);
+}</pre>
+
+<p>Alarm Severity defines the possible alarm severities</p>
+
+<p>AlarmSeverity has the methods:</p>
+<dl>
+  <dt style="font-family: courier;">getSeverity</dt>
+    <dd>Get the alarm severity corresponding to the integer value.</dd>
+  <dt style="font-family: courier;">getSeverityNames</dt>
+    <dd>Get the array of severity choices.</dd>
+</dl>
+
+<p>AlarmStatus has the methods:</p>
+<dl>
+  <dt><span
+  style="font-family: Courier New,Courier,monospace">getStatus</span></dt>
+    <dd>Get the alarm status corresponding to the integer value.</dd>
+  <dt><span
+  style="font-family: Courier New,Courier,monospace">getStatusNames</span></dt>
+    <dd>Get the array of status choices.</dd>
+</dl>
+
+<p>Alarm has the methods:</p>
+<dl>
+  <dt style="font-family: courier;">Alarm</dt>
+    <dd>The constructor. It sets the severity to no alarm and the message to
+    "".</dd>
+  <dt style="font-family: courier;">getMessage</dt>
+    <dd>Get the message.</dd>
+  <dt style="font-family: courier;">setMessage</dt>
+    <dd>Set the message.</dd>
+  <dt style="font-family: courier;">getSeverity</dt>
+    <dd>Get the severity.</dd>
+  <dt style="font-family: courier;">setSeverity</dt>
+    <dd>Set the severity.</dd>
+  <dt><span
+  style="font-family: Courier New,Courier,monospace">getStatus</span></dt>
+    <dd>Get the status.</dd>
+  <dt><span
+  style="font-family: Courier New,Courier,monospace">setStatus</span></dt>
+    <dd>Set the status.</dd>
+</dl>
+
+<h5 id="L1714">PVAlarm</h5>
+<pre>interface PVAlarm {
+    boolean attach(PVField pvField);
+    void detach();
+    boolean isAttached();
+    void get(Alarm alarm);
+    boolean set(Alarm alarm);
+}
+
+class PVAlarmFactory implements PVAlarm{
+    public static PVAlarm create();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">PVAlarm</dt>
+    <dd>The default constructor. Attach must be called before get or set can be
+      called.</dd>
+  <dt style="font-family: courier;">attach</dt>
+    <dd>Attempts to attach to <span
+      style="font-family: courier;">pvField</span> It returns (false,true) if
+      it found an appropriate pvData structure. It looks first a pvField itself
+      and if is not an appropriate pvData structure but the field name is value
+      it looks to see if the parent structure has an appropriate sub
+    structure.</dd>
+  <dt style="font-family: courier;">detach</dt>
+    <dd>Just detaches from the pvData structure.</dd>
+  <dt style="font-family: courier;">isAttached</dt>
+    <dd>Is there an attachment to an alarm structure?</dd>
+  <dt style="font-family: courier;">get</dt>
+    <dd>Copies data from the pvData structure to an Alarm. An exception is
+      thrown if not attached to a pvData structure. </dd>
+  <dt style="font-family: courier;">set</dt>
+    <dd>Copies data from Alarm to the pvData structure. An exception is thrown
+      if not attached to a pvData structure. </dd>
+</dl>
+re&gt; 
+
+<h4 id="L1756">Control</h4>
+
+<p>Control information is represented by the following structure</p>
+<pre>structure control
+    structure limit
+        double low
+        double high</pre>
+The java definition for Control is: 
+<pre>class Control {
+    Control();
+    double getLow();
+    double getHigh();
+    void setLow(double value);
+    void setHigh(double value);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">Control</dt>
+    <dd>The default constructure.</dd>
+  <dt style="font-family: courier;">getLow</dt>
+    <dd>Get the low limit.</dd>
+  <dt style="font-family: courier;">getHigh</dt>
+    <dd>Get the high limit.</dd>
+  <dt style="font-family: courier;">setLow</dt>
+    <dd>Set the low limit.</dd>
+  <dt style="font-family: courier;">setHigh</dt>
+    <dd>Set the high limit.</dd>
+</dl>
+
+<p>In addition the following is used to access an alarm structure.</p>
+<pre>interface PVControl {
+    boolean attach(PVField pvField);
+    void detach();
+    boolean isAttached();
+    void get(Control control);
+    boolean set(Control control);
+}
+
+class PVControlFactory{
+    public static PVControl create();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">attach</dt>
+    <dd>Attempts to attach to <span
+      style="font-family: courier;">pvField</span> It returns (false,true) if
+      it found an appropriate pvData structure. It looks first a pvField itself
+      and if is not an appropriate pvData structure but the field name is value
+      it looks to see if the parent structure has an appropriate sub
+    structure.</dd>
+  <dt style="font-family: courier;">detach</dt>
+    <dd>Just detaches from the pvData structure.</dd>
+  <dt style="font-family: courier;">isAttached</dt>
+    <dd>Is there an attachment to a control structure?</dd>
+  <dt style="font-family: courier;">get</dt>
+    <dd>Copies data from the pvData structure to a Control. An exception is
+      thrown if not attached to a pvData structure. </dd>
+  <dt style="font-family: courier;">set</dt>
+    <dd>Copies data from Control to the pvData structure. An exception is
+      thrown if not attached to a pvData structure. </dd>
+  <dt style="font-family: courier;">create</dt>
+    <dd>Create a PVControl instance. Attach must be called before get or set
+      can be called.</dd>
+</dl>
+
+<h4 id="L1834">Display</h4>
+
+<p>Display information is represented by the following structure</p>
+<pre>structure display
+    structure limit
+        double low
+        double high
+    string description
+    string format
+    string units</pre>
+
+<p>The Java definition for display is:</p>
+<pre>class Display {
+    Display();
+    double getLow();
+    double getHigh();
+    void setLow(double value);
+    void setHigh(double value);
+    String getDescription();
+    void setDescription(String value);
+    String getFormat();
+    void setFormat(String value);
+    String getUnits();
+    void setUnits(String value);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">Control</dt>
+    <dd>The default constructure.</dd>
+  <dt style="font-family: courier;">getLow</dt>
+    <dd>Get the low limit.</dd>
+  <dt style="font-family: courier;">getHigh</dt>
+    <dd>Get the high limit.</dd>
+  <dt style="font-family: courier;">setLow</dt>
+    <dd>Set the low limit.</dd>
+  <dt style="font-family: courier;">setHigh</dt>
+    <dd>Set the high limit.</dd>
+  <dt style="font-family: courier;">getDescription</dt>
+    <dd>Get the description.</dd>
+  <dt style="font-family: courier;">setDescription</dt>
+    <dd>Set the description.</dd>
+  <dt style="font-family: courier;">getFormat</dt>
+    <dd>Get the format.</dd>
+  <dt style="font-family: courier;">setFormat</dt>
+    <dd>Set the format.</dd>
+  <dt style="font-family: courier;">getUnits</dt>
+    <dd>Get the units.</dd>
+  <dt style="font-family: courier;">setUnits</dt>
+    <dd>Set the units.</dd>
+</dl>
+
+<p>In addition the following is used to access a control structure.</p>
+<pre>interface PVDisplay {
+    boolean attach(PVField pvField);
+    void detach();
+    boolean isAttached();
+    void get(Display display);
+    boolean set(Display display);
+}
+
+class PVDisplayFactory implements PVDisplay{
+    public static PVDisplay create()
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">attach</dt>
+    <dd>Attempts to attach to <span
+      style="font-family: courier;">pvField</span> It returns (false,true) if
+      it found an appropriate pvData structure. It looks first a pvField itself
+      and if is not an appropriate pvData structure but the field name is value
+      it looks to see if the parent structure has an appropriate sub
+    structure.</dd>
+  <dt style="font-family: courier;">detach</dt>
+    <dd>Just detaches from the pvData structure.</dd>
+  <dt style="font-family: courier;">isAttached</dt>
+    <dd>Is there an attachment to a display structure?</dd>
+  <dt style="font-family: courier;">get</dt>
+    <dd>Copies data from the pvData structure to a Display. An exception is
+      thrown if not attached to a pvData structure.</dd>
+  <dt style="font-family: courier;">set</dt>
+    <dd>Copies data from Display to the pvData structure. An exception is
+      thrown if not attached to a pvData structure. </dd>
+  <dt style="font-family: courier;">create</dt>
+    <dd>Create a PVDisplay instance. Attach must be called before get or set
+      can be called.</dd>
+</dl>
+
+<h4 id="L1942">Enumerated</h4>
+
+<p>An enumerated structure is a structure that has fields:</p>
+<pre>structure
+    int32 index
+    string[] choices</pre>
+
+<p>The following is the Java code for accessing an enumerated structure.</p>
+<pre>interface PVEnumerated {
+    boolean attach(PVField pvField);
+    void detach();
+    boolean isAttached();
+    boolean setIndex(int index);
+    int getIndex();
+    String getChoice();
+    boolean choicesMutable();
+    String[] getChoices();
+    boolean setChoices(String[] choices);
+}
+
+class PVEnumeratedFactory{
+    PVEnumerated create();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">PVEnumerated</dt>
+    <dd>The default constructor. Attach must be called before any get or set
+      method can be called.</dd>
+  <dt style="font-family: courier;">attach</dt>
+    <dd>Attempts to attach to <span
+      style="font-family: courier;">pvField</span> It returns (false,true) if
+      pvField (is not, is) an enumerated structure.</dd>
+  <dt style="font-family: courier;">detach</dt>
+    <dd>Just detaches from the pvData structure.</dd>
+  <dt style="font-family: courier;">isAttached</dt>
+    <dd>Is there an attachment to an enemerated structure?</dd>
+  <dt style="font-family: courier;">setIndex</dt>
+    <dd>Set the index field in the pvData structure. An exception is thrown if
+      not attached to a pvData structure. </dd>
+  <dt style="font-family: courier;">getIndex</dt>
+    <dd>Get the index field in the pvData structure. </dd>
+  <dt style="font-family: courier;">getChoice</dt>
+    <dd>Get the String value corresponding to the current index field in the
+      pvData structure. An exception is thrown if not attached to a pvData
+      structure. </dd>
+  <dt style="font-family: courier;">choicesMutable</dt>
+    <dd>Can the choices be changed? Note that this is often true. An exception
+      is thrown if not attached to a pvData structure. </dd>
+  <dt style="font-family: courier;">getChoices</dt>
+    <dd>Get the array of choices. An exception is thrown if not attached to a
+      pvData structure. </dd>
+  <dt style="font-family: courier;">getNumberChoices</dt>
+    <dd>Get the number of choices. An exception is thrown if not attached to a
+      pvData structure. </dd>
+  <dt style="font-family: courier;">setChoices</dt>
+    <dd>Change the choices. An exception is thrown if not attached to a pvData
+      structure. </dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="L2015">Package org.epics.pvData.misc</h2>
+<hr />
+
+<h3 id="L2019">Overview</h3>
+
+<p>This package provides utility code:</p>
+<dl>
+  <dt>multiChoice</dt>
+    <dd>Support for a multiChoice structre, which is a structure containing two
+      fields: choices and bitMask. choices is an array of strings and bitMask
+      selects a subset of the choices.</dd>
+  <dt>Message Queue</dt>
+    <dd>Support for queuing messages to give to requesters.</dd>
+  <dt>Thread</dt>
+    <dd>ThreadCreate and Executor</dd>
+  <dt>TimeFunction</dt>
+    <dd>Time how long a function call requires.</dd>
+  <dt>LinkedList</dt>
+    <dd>A douuble linked list facility that requires the user to allocate a
+      node. It is more efficient that ArrayList and does not require the
+      implementation to allocate storage for the nodes.</dd>
+  <dt>Timer</dt>
+    <dd>An implementation of Timer that does not require an object to be
+      created for each timer request.</dd>
+  <dt>BitSet</dt>
+    <dd>An implementation of BitSet that can be serialized.</dd>
+  <dt>Queue</dt>
+    <dd>A queue implementation.</dd>
+  <dt>Destroyable</dt>
+    <dd>A base interface for destroy.</dd>
+  <dt>Serialize</dt>
+    <dd>A helper for serialization.</dd>
+</dl>
+
+<h3 style="text-align: center;" id="L2074">MultiChoice</h3>
+
+<p>NOTE: This is not currently used by anything.</p>
+
+<p>A MultiChoice consists of an array of strings and a bot set that selects an
+arbitrary set of the choices.</p>
+<pre>    public interface MultiChoice {
+        interface Choices {
+            String[] getChoices();
+            int getNumberChoices();
+        }
+        byte[] getBitMask();
+        String[] getChoices();
+        Choices getSelectedChoices();
+        void setBit(int index);
+        void clear();
+        int registerChoice(String choice);
+    }
+
+    public class MultiChoiceFactory{
+         public static MultiChoice getMultiChoice(PVField pvField);
+    }</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">getBitMask</dt>
+    <dd>Returns the bitMask.</dd>
+  <dt style="font-family: courier;">getChoices</dt>
+    <dd>Returns the complete set of choices..</dd>
+  <dt style="font-family: courier;">getSelectedChoices</dt>
+    <dd>Returns the interface for getting the selected choices..</dd>
+  <dt style="font-family: courier;">setBit</dt>
+    <dd>Select the choice for specified bit..</dd>
+  <dt style="font-family: courier;">clear</dt>
+    <dd>Clear the bitMask, i.e. no choices are selected..</dd>
+  <dt style="font-family: courier;">registerChoice</dt>
+    <dd>Register a new choice. If thed choice already exists then it''s index
+      is returned. If not it is appended to the choices.</dd>
+</dl>
+
+<h3 style="text-align: center;" id="L2115">BitSet</h3>
+
+<p>This is an implementation of BitSet that supports serialization, which the
+standard Jave implementation does not allow.</p>
+
+<p>The following is also provided:</p>
+<pre>interface BitSetUtil {
+    boolean compress(BitSet bitSet,PVStructure pvStructure);
+}
+
+class BitSetUtilFactory {
+    public static BitSetUtil getCompressBitSet();
+}</pre>
+
+<p>This provides functions that operate of a BitSet for a PVStructure. It
+currently has only one method:</p>
+<dl>
+  <dt><span style="font-family: Courier">compress</span></dt>
+    <dd>Compress the bits in a BitSet related to a structure.<br />
+      For each structure: 
+      <ol>
+        <li>If the bit for the structure is set then the bit for all subfields
+          of the structure are cleared. </li>
+        <li>If the bit for the structure is not set but all immediate subfields
+          have their bit set then the bit for the structure is set and the bits
+          for all subfields are cleared. </li>
+      </ol>
+      Note that this is a recursive algorithm. That is if every immediate
+      subfield has it's offset bit set then the bits for ALL fields that reside
+      in the structure will be cleared.</dd>
+    <dd>Channel Access can call this before sending data. It can then pass
+      entire structures if the structure offset bit is set. </dd>
+</dl>
+
+<h3 style="text-align: center;" id="L2147">Message Queue</h3>
+
+<h4 id="L2149">Definitions</h4>
+<pre>    public class MessageNode {
+        public String message;
+        public MessageType messageType;
+    }
+
+    public interface MessageQueue {
+        MessageNode get();
+        boolean put(String message,MessageType messageType);
+        boolean isEmpty();
+        boolean isFull();
+        int getClearOverrun();
+    }
+    
+    public class MessageQueueFactory {
+        public static MessageQueue create(int size);
+    }</pre>
+
+<h4 id="L2153">MessageQueue</h4>
+
+<p>This is for use by code that wants to handle messages without blocking
+higher priority threads.</p>
+
+<p>A messageNode is a class with two public data members:</p>
+<dl>
+  <dt style="font-family: courier;">message</dt>
+    <dd>The message.</dd>
+  <dt style="font-family: courier;">messageType</dt>
+    <dd>The message type.</dd>
+</dl>
+
+<p>A messageQueue is an interface with methods:</p>
+<dl>
+  <dt style="font-family: courier;">put</dt>
+    <dd>Put a new message into the queue. False is returned if the queue was
+      full and true otherwise.</dd>
+  <dt style="font-family: courier;">isEmpty</dt>
+    <dd>Is the queue empty?</dd>
+  <dt style="font-family: courier;">isFull</dt>
+    <dd>Is the queue full?</dd>
+  <dt style="font-family: courier;">getClearOverrun</dt>
+    <dd>Get the number of times replaceFirst or replaceLast have been called
+      since the last call to getClearOverrun. The internal counter is reset to
+      0.</dd>
+</dl>
+
+<p>MessageQueueFactory provides the public method:</p>
+<dl>
+  <dt style="font-family: courier;">create</dt>
+    <dd>Create a MessageQueue and return the interface.</dd>
+</dl>
+
+<h3 style="text-align: center;" id="L2201">Thread</h3>
+
+<h4 id="L2203">ThreadPriority</h4>
+<pre>    public enum ThreadPriority {
+        lowest,
+        lower,
+        low,
+        middle,
+        high,
+        higher,
+        highest;
+        
+        public static final int[] javaPriority;
+        public int getJavaPriority();
+        public static int getJavaPriority(ThreadPriority threadPriority);
+    }</pre>
+
+<h4 id="L2207">ThreadCreate</h4>
+<pre>    interface ThreadReady {
+        void ready();
+    }
+
+    interface RunnableReady {
+        void run(ThreadReady threadReady);
+    }
+
+    interface ThreadCreate {
+        Thread create(String name, int priority, RunnableReady runnableReady);
+        Thread[] getThreads();
+    }
+    
+    public class ThreadCreateFactory {
+        public static ThreadCreate getThreadCreate();
+    }</pre>
+
+<p>ThreadCreate provides two features:</p>
+<ol>
+  <li>Create does not return until ReadyRunnable.run calls
+  ThreadReady.ready().</li>
+  <li>A list of all active threads is kept. getThreads provides access to the
+    list.</li>
+</ol>
+
+<h4 id="L2220">Executor</h4>
+
+<p>An Executor is a thread that can execute any object that implements the Java
+Runnable interface. The user can request that a single command be executed. If
+the command is already in the list of commands to be executed it is NOT added
+to the list when add is called.</p>
+<pre>    public interface ExecutorNode {}
+
+    public interface Executor {
+        ExecutorNode createNode(Runnable command);
+        void execute(ExecutorNode executorNode);
+        void stop();
+    }
+    public class ExecutorFactory {
+        static public Executor create(String name,ScanPriority priority);
+    }</pre>
+where 
+<dl>
+  <dt style="font-family: courier;">createNode</dt>
+    <dd>Create a ExecutorNode that can be passed to execute.</dd>
+  <dt style="font-family: courier;">execute</dt>
+    <dd>Request that command be executed. If it is already on the run list
+      nothing is done.</dd>
+  <dt style="font-family: courier;">stop</dt>
+    <dd>Stop the thread and refuse additional execute requests.</dd>
+</dl>
+
+<h3 style="text-align: center;" id="L2244">Time Function Call</h3>
+
+<p>TimeFunction is a facility that measures the average number of seconds a
+function call requires. When timeCall is called, it calls function in a loop.
+It starts with a loop of one iteration. If the total elapsed time is less then
+.1 seconds it increases the number of iterrations by a factor of 10. It keeps
+repeating until the elapsed time is greater than .1 seconds. It returns the
+average number of seconds per call.</p>
+<pre>    public interface TimeFunctionRequester {
+        void function();
+    }
+
+    public interface TimeFunction {
+        double timeCall();
+    }
+
+    public class TimeFunctionFactory {
+        public static TimeFunction create(TimeFunctionRequester requester);
+    }</pre>
+
+<h3 style="text-align: center;" id="L2250">Linked List</h3>
+
+<p>LinkedList implements a double linked list that requires a user to allocate
+the nodes. It is more efficent that ArrayList for implementing stacks and
+queues. For lists that are traversed while new elements can be added or
+removed, LinkedListArray provides a way to get an array of the currrent
+elements without allocating a new array each time the array is traversed.</p>
+
+<p>LinkedListArray converts a LinkedList to an LinkNode array. The
+implementation provided by LinkedListFactory only creates a new LinkNode array
+w.en the number of elements in the linkedList passed to setNodes is greater
+than the length of the current LinkNode array.</p>
+<pre>    public interface LinkedListNode&lt;T&gt; {
+        public T getObject();
+        boolean isOnList();
+    }   
+    
+    public interface LinkedList {
+        void addTail(LinkedListNode&lt;T&gt; listNode);
+        void addHead(LinkedListNode&lt;T&gt; listNode);
+        void insertAfter(LinkedListNode&lt;T&gt; listNode,LinkedListNode&lt;T&gt; addNode);
+        void insertBefore(LinkedListNode&lt;T&gt; listNode,LinkedListNode&lt;T&gt; addNode);
+        LinkedListNode&lt;T&gt; removeTail();
+        LinkedListNode&lt;T&gt; removeHead();
+        void remove(LinkedListNode&lt;T&gt; listNode);
+        void remove(T object);
+        LinkedListNode&lt;T&gt; getHead();
+        LinkedListNode&lt;T&gt; getTail();
+        LinkedListNode&lt;T&gt; getNext(LinkedListNode&lt;T&gt; listNode);
+        LinkedListNode&lt;T&gt; getPrev(LinkedListNode&lt;T&gt; listNode);
+        boolean isEmpty();
+        boolean contains(T object);
+    }
+
+    public interface LinkedListArray&lt;T&gt; {
+        void setNodes(LinkedList&lt;T&gt; linkedList);
+        LinkedListNode&lt;T&gt;[] getNodes();
+        int getLength();
+        void clear();
+    }
+    
+    public class LinkedListCreate&lt;T&gt; {
+        public static LinkedList&lt;T&gt; create();
+        public static LinkedListNode&lt;T&gt; createNode(Object object);
+        public static LinkedListArray&lt;T&gt; createArray();
+    }</pre>
+
+<p>LinkedListCreate is created as follows:</p>
+<pre>    LinkedListCreate&lt;SomeObject&gt; linkedListCreate = new LinkedListCreate&lt;SomeObject&gt;();</pre>
+
+<p>Then a linked list can be created as follows:</p>
+<pre>    LinkedList&lt;SomeObject&gt; linkedList = linkedListCreate.create();</pre>
+
+<p>The only way a node can be allocated is by calling
+linkedListCreate.createNode(SomeObject object). The object passed to createNode
+is what is returned by LinkedList.getObject. For example:</p>
+<pre>    private static class SomeObject {
+        private LinkedListNode&lt;SomeObject&gt; listNode = null;
+        // other definitions
+
+
+        private Node(/* arguments*/) {
+            listNode = linkedListCreate.createNode(this);
+        }
+
+        LinkedListNode&lt;SomeObject&gt; getListNode() {return listNode};
+    }
+
+    // then
+
+    SomeObject someObject = new SomeObject(/* args */);
+    linkedList.addTail(someObject);</pre>
+
+<p>A node can only be on one list at a time but can be put, at different times,
+on different lists as long as they all hold the same type of objects.</p>
+
+<p>The class does not provide a lock but the user can synchronized via calls
+like:</p>
+<pre>    synchronized(linkedList) {
+        linkedList.addTail(listNode);
+    }</pre>
+
+<p>The following is an example of how to use LinkedListArray.</p>
+<pre>        LinkedListNode&lt;SomeObject&gt;[] nodes = null;
+        int length = 0;
+        synchronized(linkedList) {
+            linkedListArray.setNodes(linkedList);
+            nodes = linkedListArray.getNodes();
+            length = linkedListArray.getLength();
+        }
+        for(int i=0; i&lt;length; i++) {
+            SomeObject object = nodes[i].getObject();
+            // do something with object
+        }</pre>
+
+<h3 style="text-align: center;" id="L2280">Timer</h3>
+
+<p>This provides a general purpose timer. It provides the following features
+not provided by java.util.Timer and java.util.TimerTask:</p>
+<ol>
+  <li>Priority<br />
+    The java.util implementation does not allow the user to specify the
+    priority of the timer thread. This implementation does.</li>
+  <li>TimerNode<br />
+    A java.util.TimerTask is not reusable. Once a timerTask has been canceled
+    or a delay timerTask has run, the TimerTask can not be reused. Instead a
+    new TimerTask must be created. A TimerNode can be reused.</li>
+</ol>
+
+<h4 id="L2297">Java Definitions</h4>
+<pre>interface Timer {
+    interface TimerCallback {
+        void callback();
+        void timerStopped();
+    }
+    interface TimerNode {
+        void cancel();
+        boolean isScheduled();
+    }
+    void scheduleAfterDelay(TimerNode timerNode,double delay);
+    void schedulePeriodic(TimerNode timerNode,double delay,double period);
+    void stop();
+}
+
+class TimerFactory {
+    static public Timer create(String threadName, ThreadPriority priority);
+    static public TimerNode createNode(TimerCallback timerCallback);
+}</pre>
+
+<h4 id="L2301">TimerCallback</h4>
+
+<p>This is an interface that must be implemented by the user. It has the
+following methods: </p>
+<dl>
+  <dt style="font-family: courier;">callback</dt>
+    <dd>This is called when a timer expires. This is called with no locks held.
+      When called a delay timer is no longer on the queue but a periodioc timer
+      is on a queue. Thus the callback for a delay timer can issue a new
+      schedule request but a periodic timer must not. Note the explaination of
+      TimerNode.cancel below.</dd>
+  <dt style="font-family: courier;">timerStopped</dt>
+    <dd>Timer.stop was called when a timer request was queued. or if the timer
+      is stopped and a schedule request is made.</dd>
+</dl>
+
+<h4 id="L2316">TimerNode</h4>
+
+<p>This is an interface implemented by TimerFactory. It is allocated by calling
+TimerFactory.createNode. It is passed as an argument when scheduling a
+callback. It has the single method:</p>
+<dl>
+  <dt style="font-family: courier;">cancel</dt>
+    <dd>This is called to cancel a timer request. If a callback has been
+      dequeued but the callback not called when cancel is called then a
+      callback may still happen. New schedule requests can be made after a
+      cancel request has been made.</dd>
+  <dt style="font-family: courier;">isScheduled</dt>
+    <dd>Is this node in the timerQueue.</dd>
+</dl>
+
+<h4 id="L2331">Timer</h4>
+
+<p>This is the interface for scheduling a timer callback. A timer is created by
+calling TimerFactory.create. It has the methods:</p>
+<dl>
+  <dt style="font-family: courier;">scheduleAfterDelay</dt>
+    <dd>A request to schedule a callback after a delay specified in seconds. If
+      stop has been called then TimerCallback.timerStopped is called
+      immediately.</dd>
+  <dt style="font-family: courier;">schedulePeriodic</dt>
+    <dd>Schedule a periodic callback. If stop has been called then
+      TimerCallback.timerStopped is called immediately.</dd>
+  <dt style="font-family: courier;">stop</dt>
+    <dd>Stop the timer. The queue is emptied and TimerCallback.timerStopped is
+      called for each element of the queue. Further schedule calls result in a
+      call to TimerCallback.timerStopped. Once stopped a timer is no longer
+      useful. A new timer must be created.</dd>
+</dl>
+
+<h4 id="L2351">TimerFactory</h4>
+
+<p>This is the factory that implements the Timer and TimerNode interfaces. It
+has the methods:</p>
+<dl>
+  <dt style="font-family: courier;">create</dt>
+    <dd>Create a new Timer.</dd>
+  <dt style="font-family: courier;">createNode</dt>
+    <dd>Create a TimerNode. A timerNode can be used to schedule any timer but a
+      timeNode can only be on a single timer queue and only once on a given
+      timer queue.</dd>
+</dl>
+
+<h3 style="text-align: center;" id="L2366">BitSet</h3>
+
+<p>This is adapted from the java.util.BitSet. It adds serializable. See
+java.util.BitSet for a description. This implementation adds the following
+additional methods:</p>
+<pre>    public boolean getAndSet(int bitIndex);
+    public void set(BitSet src);
+    public void or_and(BitSet set1, BitSet set2);</pre>
+
+<p>where</p>
+<dl>
+  <dt>getAndSet</dt>
+    <dd>gets and sets the bit at bitIndex.</dd>
+  <dt>set</dt>
+    <dd>fast copy operation from src to this bitSet</dd>
+  <dt>or_and</dt>
+    <dd>The result is the or of the current bitSet with the value of set1.and
+      set2. The number of bits is the
+    Math.max(set1.bitsInUse,set2.bitsInUse);</dd>
+</dl>
+<pre>    </pre>
+
+<h3 style="text-align: center;" id="L2392">Queue</h3>
+
+<p>This provides a queue which has an immutable capacity, which is specified
+when the queue is created. When the queue is full the user code is expected to
+keep using the current el;ement until a new free element becomes avalable. This
+is used by pvData.monitor.</p>
+<pre>public class QueueCreate&lt;T&gt; {
+    public Queue&lt;T&gt; create(QueueElement&lt;T&gt;[] queueElements) {
+        return new QueueImpl&lt;T&gt;(queueElements);
+    }
+
+    public QueueElement&lt;T&gt; createQueueElement(T object) {
+        return new QueueElementImpl&lt;T&gt;(object);
+    }
+}
+
+public interface QueueElement&lt;T&gt; {
+    public T getObject();
+}
+
+public interface Queue&lt;T&gt; {
+    void clear();
+    int getNumberFree();
+    int capacity();
+    QueueElement&lt;T&gt; getFree();
+    void setUsed(QueueElement&lt;T&gt; queueElement);
+    QueueElement&lt;T&gt; getUsed();
+    void releaseUsed(QueueElement&lt;T&gt; queueElement);
+}</pre>
+
+<p>A queueCreate instance is created via a call like the following:</p>
+<pre> QueueCreate&lt;MyObject&gt; queueCreate = new QueueCreate&lt;MyObject&gt;();</pre>
+
+<p>Once a queueCreate is available a queue instance is created via code like
+the following:</p>
+<pre>Queue&lt;MyObject&gt; queue create(MyObject[] myObjects) {
+    QueueElement&lt;MyObject&gt;[] queueElements = new QueueElement[length];
+    for(int i=0; i&lt;length; i++) {
+        QueueElement&lt;MonitorElement&gt; queueElement =
+                 queueCreate.createQueueElement(myObjects[i);
+        queueElements[i] = queueElement;
+    }
+    return queueCreate.create(queueElements);
+}</pre>
+
+<p>The queue methods are:</p>
+<dl>
+  <dt style="font-family: courier;">clear</dt>
+    <dd>Make the queue empty.</dd>
+  <dt style="font-family: courier;">getNumberFree</dt>
+    <dd>Get the number of fee elements in the queue.</dd>
+  <dt style="font-family: courier;">capacity</dt>
+    <dd>Get the capacity, i.e. the maximun number of elements the queue can
+      hold.</dd>
+  <dt style="font-family: courier;">getFree</dt>
+    <dd>Get the next free element. Null is returned if no free elements are
+      available. If a non null value is returned then the element belongs to
+      the caller until setUsed is called.</dd>
+  <dt style="font-family: courier;">setUsed</dt>
+    <dd>Set a queue element used. This <span
+      style="font-weight:bold;">must</span> be the element returned by the last
+      call to getFree. </dd>
+  <dt style="font-family: courier;">getUsed</dt>
+    <dd>Get the next used element of null if no more used elements are
+      available.</dd>
+  <dt style="font-family: courier;">releaseUsed</dt>
+    <dd>Set a queue element free. This must be the element returned by the last
+      call to getUsed. </dd>
+</dl>
+
+<p>A producer calls getFree and setUsed via code like the following:</p>
+<pre>   MyObject getFree() {
+       QueueElement&lt;MyObject&gt; queueElement = queue.getFree();
+       if(queueElement==null) return null;
+       return queueElement.getObject();
+  }</pre>
+
+<p>A consumer calls getUsed and releaseUsed via code like the following:</p>
+<pre>     while(true) {
+         QueueElement&lt;MyObject&gt; queueElement = queue.getUsed();
+         if(queueElement==null) break;
+         MyObject myObject = queueElement.getObject();
+         // do something with myObject
+         queue.releaseUsed(queueElement);
+     }</pre>
+
+<h3 style="text-align: center;" id="L2455">Destroyable</h3>
+
+<p>This is a base interface used by many other interfaces.</p>
+<pre>interface Destroyable  {
+    void destroy();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">destroy</dt>
+    <dd>Destroy the object.</dd>
+</dl>
+
+<h3 style="text-align: center;" id="L2469">Serialize</h3>
+
+<p>This is a helper class for serialization, which is required for sending and
+receiving pvData over the nerwork.</p>
+<pre>class SerializeHelper {
+    static void writeSize(final int s, ByteBuffer buffer);
+    static int readSize(ByteBuffer buffer);
+    static void serializeString(final String value, ByteBuffer buffer);
+    static void serializeSubstring(final String value,
+         int offset, int length, ByteBuffer buffer);
+    static String deserializeString(ByteBuffer buffer);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt style="font-family: courier;">writeSize</dt>
+    <dd>Serialize the size.</dd>
+  <dt style="font-family: courier;">readSize</dt>
+    <dd>Deserialize the size.</dd>
+  <dt style="font-family: courier;">serializeString</dt>
+    <dd>Serialize a String.</dd>
+  <dt style="font-family: courier;">serializeSubstring</dt>
+    <dd>Serialize a substring.</dd>
+  <dt style="font-family: courier;">deserializeString</dt>
+    <dd>Deserialize a string.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="L2505">Package org.epics.pvData.monitor</h2>
+<hr />
+
+<h3 id="L2509">Overview</h3>
+
+<p>Project javaIOC provides the ability to monitor changes to an arbitrary
+subset of the fields in a record. The next section describes how a client
+specifies monitor options. The rest of this package description is of interest
+to developers. Although this package does not implement monitors it does
+describe what the client and what pvAccess needs to know about monitors. </p>
+
+<p>A client can monitor an arbitrary subset of the fields in a record instance.
+Each field has an associated monitor algorithm which decides if changes to that
+field should cause a monitor. The algorithms defined by this package are:
+onPut, onChange, and deadband. The set of algorithms is extensible.</p>
+
+<p>The basic interface for monitoring is interface Monitor, which has four
+methods: start, stop, poll, and release. Code that implements the client side
+for monitors has code like the following:</p>
+<pre>    //somewhere the following request is issued
+    monitor.start();
+    //somewhere the following is done:
+    while(true) {
+       MonitorElement monitorElement = monitor.poll();
+       if(monitorElement==null) {
+          // no elements in the queue. Do something.
+       } else {
+          // got a monitor. Handle the element and then
+          monitor.release(monitorElement);
+       }
+    }</pre>
+
+<p>This package provides the following support for monitors:</p>
+<ol>
+  <li>How a client specifies monitor options<br />
+  </li>
+  <li>Implementing new monitoring algorithms.</li>
+  <li>Monitor Queues<br />
+    This package provides a complete implementation of montor queues for
+    pvData. </li>
+</ol>
+
+<p>Developers who need to understand or implement monitor algorithms will be
+interested in this package. For example it is used by pvAccess to implement
+monitors. The interfaces can be implemented by other servers, for example the
+javaIOC (org.epics.ioc.caV3) implements a version of interface Monitor that
+links to a version 3 EPICS IOC.</p>
+
+<p>This package defines the following monitor algorithms:</p>
+<dl>
+  <dt>onPut</dt>
+    <dd>A monitor is issued whenever a put is issued to the field. This is the
+      default unless the record defines deadbands for a field. An exception is
+      the top level timeStamp which by default is made onChange and monitor
+      will not be raised.</dd>
+  <dt>onChange</dt>
+    <dd>This provides two options: 1) A monitor is raised whenever a field
+      changes value, and 2) A monitor will never be raised for the field.</dd>
+  <dt>deadband</dt>
+    <dd>The field must be a numeric scalar. Whenever the absolute or percentage
+      value of the field changes by more than a deadband a monitor is issued.
+      The record instance can also define deadbands.</dd>
+  <dt>periodic</dt>
+    <dd>A monitor is issued at a periodic rate if a put was issued to any field
+      being monitored.</dd>
+</dl>
+
+<p>The monitor queue implementation provides support for the following queue
+sizes greater than or equal to two.</p>
+
+<h3 id="L2563">Standard Monitor Requests</h3>
+
+<p>This section describes that monitor support provided by project javaIOC. Two
+issues are discussed: record options and field options.</p>
+
+<h4 id="L2567">Record Options</h4>
+
+<p>The options that apply to an entire record are:</p>
+<dl>
+  <dt><span style="font-family: Courier">periodic</span></dt>
+    <dd>A record can ask to be monitored periodically by specifying a periodic
+      rate. A monitor will be issued no faster that the rate specified. A
+      periodic monitor does not use a monitor queue. </dd>
+  <dt><span style="font-family: Courier">queueSize</span></dt>
+    <dd>Queue size can be specified to be &gt;=1. A size of 1 means no queue
+      but just keep a single copy of the data. A size of 2 is the default.</dd>
+</dl>
+
+<h4 id="L2584">Field Options</h4>
+
+<p>The following options are supported for all fields:</p>
+<dl>
+  <dt><span style="font-family: Courier">shareData</span></dt>
+    <dd>Has a value of true or false and specifies if the server just transfer
+      data from the record keep a copy. This option can save memory for array
+      fields. Note that it is implemented by PVCopy.</dd>
+</dl>
+
+<p>For each field the following monitor algorithms are supported:</p>
+<dl>
+  <dt><span style="font-family: Courier">onPut</span></dt>
+    <dd>A monitor is issued when a put is issued to the field. This is the
+      default if no algorithm is specified and the field is not the top level
+      timeStamp.</dd>
+  <dt><span style="font-family: Courier">onChange</span></dt>
+    <dd>This has two features depending on the value of causeMonitor. If
+      causeMomitor is true (the default) then a monitor is raised only if the
+      value has changed since the last monitor. If causeMonitor is false then
+      this field will never cause a monitor. An example is a top level
+      timeStamp field. If a client monitors the top level timeStamp then unless
+      the client requests causeMonitor to be false, if the only change is to
+      the timeStamp field no monitior will be issued.</dd>
+  <dt><span style="font-family: Courier">deadband</span></dt>
+    <dd>This can only be specified for a numeric scalar field. Details
+    follow:</dd>
+</dl>
+
+<h4 id="L2616">Monitor Request Options</h4>
+
+<p>The examples will use the syntax supported by calling:</p>
+<pre>   PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
+
+<p>The request string has the following:</p>
+<pre>   "record[option=value,...]field(fieldDef,...)"</pre>
+
+<p>The standard record options are:</p>
+<dl>
+  <dt><span style="font-family: Courier">queueSize</span></dt>
+    <dd>The value must be &gt;=1.</dd>
+  <dt><span style="font-family: Courier">periodicRate</span></dt>
+    <dd>The value is the maximum rate in seconds for monitors.</dd>
+</dl>
+
+<p>Each fieldDef is either of the form:</p>
+<pre>    fullRecordName</pre>
+
+<p>Where fullRecordName is the full name of the field in the record. The name
+in the structure the client will get is the field name from the record. Or
+fieldDef has the form:</p>
+<pre>    fieldName{fieldDef,...}
+    </pre>
+
+<p>Each fieldDef is of the form:</p>
+<pre>    fullFieldName[option=value,...]</pre>
+
+<p>where <span style="font-family: Courier">fullFieldName</span> is of the full
+field name of the record field and the options define the monitor options.</p>
+
+<p>Monitor options are identified via the following option.</p>
+<pre>    algorithm=name
+    </pre>
+
+<p>where <span style="font-family: Courier">name</span> is the algorithm name.
+For the algorithms implemented by pvData this is one of: <span
+style="font-family: Courier">onPut, onChange, or deadband.</span> </p>
+
+<p><span style="font-family: Courier">onPut</span> is the default so it does
+not have to be specified.</p>
+
+<p><span style="font-family: Courier">onChange</span> accepts one additional
+option:</p>
+<pre>    causeMonitor=value</pre>
+
+<p>where value must be "true" or "false". The default is true.</p>
+
+<p><span style="font-family: Courier">deadband</span> accepts the following
+additional options:</p>
+<pre>    deadband=deadbandValue
+    type=typeValue
+    isPercent=isPercentValue</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">deadbandValue</span></dt>
+    <dd>The change in value (or percentage change) that causes a monitor. If
+      not specified the deadband is taken from the record if the record defines
+      it. If specified and the record also defines it the minimum value is
+      taken. </dd>
+  <dt><span style="font-family: Courier">typeValue</span></dt>
+    <dd>Must be "display" or "archive". This says if the record deadband is
+      taken from display or from archive. The default is display.</dd>
+  <dt><span style="font-family: Courier">isPercentValue</span></dt>
+    <dd>Must be true or false. The default is false. If true the deadband is a
+      percentage change otherwise it is an absolute change.</dd>
+</dl>
+
+<h4 id="L2709">Record Deadband</h4>
+
+<p>NOTE: This applys to records in a javaIOC.</p>
+
+<p>Any numeric scalar field in a record instance can optionally have an
+associated deadband structure, which is defined as follows:</p>
+<pre>&lt;structure structureName = "deadband"&gt;
+    &lt;structure name = "display"&gt;
+         &lt;scalar name = "isPercent" scalarType = "boolean"/&gt;
+         &lt;!-- if true than percentage change. If false than absolute change --&gt;
+         &lt;scalar name = "value" scalarType = "double"/&gt;
+         &lt;!-- the deadband for display --&gt;
+    &lt;/structure&gt;
+    &lt;structure name = "archive"&gt;
+         &lt;scalar name = "isPercent" scalarType = "boolean"/&gt;
+         &lt;!-- if true than percentage change. If false than absolute change --&gt;
+         &lt;scalar name = "value" scalarType = "double"/&gt;
+         &lt;!-- the deadband for archive --&gt;
+    &lt;/structure&gt;
+&lt;/structure&gt;</pre>
+
+<p>As an example:</p>
+<pre>&lt;record name = "example"&gt;
+    &lt;scalar name = "value" scalarType = "double"&gt;
+    &lt;structure name = "deadband" extends = "deadband"&gt;
+       &lt;structure name = "display"&gt;
+          &lt;deadband&gt;.1&lt;/deadband&gt;
+       &lt;/structure&gt;
+       &lt;structure name = "archive"&gt;
+          &lt;deadband&gt;.3&lt;/deadband&gt;
+       &lt;/structure
+    &lt;/structure&gt;
+    &lt;!-- other stuff --&gt;
+&lt;/record&gt;</pre>
+
+<p>NOTE: If an algorithm is not defined by the user for a field and a deadband
+is defined for the record than the algorithm is made to be deadband and the
+display deadband is used as the deadband.</p>
+
+<h4 id="L2723">Examples</h4>
+
+<p>The following:</p>
+<pre>    String request = "alarm,timeStamp,power.value";
+    PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
+
+<p>Creates a pvRequest that monitors the alarm, timeStamp, and power.value
+fields of a record. The client will receive a structure with the fields named
+alarm,timeStamp, and value. Since the client has not specified any options the
+defaults will be used. This means:</p>
+<ul>
+  <li>Any change in alarm will cause a monitor.</li>
+  <li>A change in time stamp will NOT cause a monitor because a top level
+    timeStamp is a special case.</li>
+  <li>If power.value has an associated deadband structure than the display
+    deadband will be used and the algorithm will be deadband. If power.value
+    does not have an associated deadband than any put to power.value will cause
+    a monitor.</li>
+</ul>
+
+<p>The following:</p>
+<pre>    String request = "timeStamp[algorithm=onChange,causeMonitor=true]";
+    PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
+
+<p>Will cause monitior whenever the timeStamp is changed. This is a way to be
+notified whenever a javaIOC record is processed because this is normally the
+only time the timeStamp is changed.</p>
+
+<p>The following:</p>
+<pre>    String request =
+        "alarm,timeStamp,value{power.value[algortithm=deadband,isPercent=true,deadband=1.0}";
+    PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
+
+<p>This requests a monitor whenever and alarm is raised or when the power.value
+changes by at least 1 percent.</p>
+
+<h3 id="L2753">Monitor Interfaces</h3>
+
+<h4 id="L2755">Monitor</h4>
+
+<p>This is the interface implemented by a factory that implements a monitoring
+algorithm</p>
+<pre>interface Monitor extends Destroyable {
+    void start();
+    void stop();
+    MonitorElement poll();
+    void release(MonitorElement monitorElement);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">destroy</span></dt>
+    <dd>destroy the monitor, i.e. release whatever resources are used by the
+      implementation.</dd>
+  <dt><span style="font-family: Courier">start</span></dt>
+    <dd>Start monitoring. An initial monitor with all data modified must be
+      generated.</dd>
+  <dt><span style="font-family: Courier">stop</span></dt>
+    <dd>Stop monitoring.</dd>
+  <dt><span style="font-family: Courier">poll</span></dt>
+    <dd>Called to get modified data. If no data has been modified since the
+      last poll null is returned. </dd>
+  <dt><span style="font-family: Courier">release</span></dt>
+    <dd>release the element returned by the most recent poll request.</dd>
+</dl>
+
+<h4 id="L2794">MonitorElement</h4>
+
+<p>This is the interface returned by a call to poll.</p>
+<pre>interface MonitorElement  {
+    PVStructure getPVStructure();
+    BitSet getChangedBitSet();
+    BitSet getOverrunBitSet();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">getPVStructure</span></dt>
+    <dd>The data structure.</dd>
+  <dt><span style="font-family: Courier">getChangedBitSet</span></dt>
+    <dd>The bitSet showing which fields of the PVStructure have changed since
+      the previous poll request.</dd>
+  <dt><span style="font-family: Courier">getOverrunBitSet</span></dt>
+    <dd>the bitSey which shows which fields have been modified more than once
+      since the last poll request.</dd>
+</dl>
+
+<h4 id="L2821">MonitorRequester</h4>
+
+<p>This is the interface implemented by the code that request a monitor.</p>
+<pre>interface MonitorRequester extends Requester {
+    void monitorConnect(Monitor monitor, Structure structure);
+    void monitorEvent(Monitor monitor);
+    void unlisten();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">monitorConnect</span></dt>
+    <dd>The monitor has connected to a PVRecord.</dd>
+  <dt><span style="font-family: Courier">monitorEvent</span></dt>
+    <dd>A monitor event has occured. Monitor.poll is called to get the
+    data.</dd>
+  <dt><span style="font-family: Courier">unlisten</span></dt>
+    <dd>The server has been told to disconnect from the record. The
+      MonitorRequster can no longer issue any requests except destroy until
+      monitorConnect is again called.</dd>
+</dl>
+
+<h4 id="L2848">MonitorAlgorithm</h4>
+
+<p>The following are implemented by code that implements a monitor
+algorithm.</p>
+<pre>interface MonitorAlgorithm  {
+    String getAlgorithmName();
+    boolean causeMonitor();
+    void monitorIssued();
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">getAlgorithmName</span></dt>
+    <dd>return the name of the algorithm.</dd>
+  <dt><span style="font-family: Courier">causeMonitor</span></dt>
+    <dd>Called to see if a change to this field should cause a monitor</dd>
+  <dt><span style="font-family: Courier">monitorIssued</span></dt>
+    <dd>Called after a monitor has been issued.</dd>
+</dl>
+
+<h4 id="L2875">MonitorQueue</h4>
+
+<p>This is the interface implemented by MonitorQueueFactory.</p>
+<pre>interface MonitorQueue  {
+    void clear();
+    int getNumberFree();
+    int capacity();
+    MonitorElement getFree();
+    void setUsed(MonitorElement monitorElement);
+    MonitorElement getUsed();
+    void releaseUsed(MonitorElement monitorElement);
+}
+
+class MonitorQueueFactory {
+    static MonitorQueue create(MonitorElement[] monitorElements);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt><span style="font-family: Courier">clear</span></dt>
+    <dd>Set all elements of the queue free.</dd>
+  <dt><span style="font-family: Courier">getNumberFree</span></dt>
+    <dd>Get the number of free queue elements.</dd>
+  <dt><span style="font-family: Courier">capacity</span></dt>
+    <dd>Get the number of queue elements.</dd>
+  <dt><span style="font-family: Courier">getFree</span></dt>
+    <dd>Get a free queue element. If no free elements null is returned.</dd>
+  <dt><span style="font-family: Courier">setUsed</span></dt>
+    <dd>Set the latest element returned by getFree to used.</dd>
+  <dt><span style="font-family: Courier">getUsed</span></dt>
+    <dd>Get the oldest used element. Null is returned when there are no more
+      used elements.</dd>
+  <dt><span style="font-family: Courier">releaseUsed</span></dt>
+    <dd>release the element returned by the latest call to getUsed.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="L2928">Package
+org.epics.pvData.accessSecurity</h2>
+<hr />
+
+<p>This package describes Access Security. Acceses security is not currently
+implemented so this section just discusses ideas of what access security should
+be.</p>
+
+<h3 id="L2934">Outstanding Issues</h3>
+
+<p>This section is temporary. It will be removed after access security is
+implemented.</p>
+
+<h4 id="L2938">access security level</h4>
+
+<p>Epics Access Security had the concept of field level with only two levels
+allowed. For pvData more than two levels are allowed. In addition names can be
+associated with levels via inteface:</p>
+<pre>interface AccessSecurityLevel {
+    String getName(int level) throws IndexOutOfBoundsException;
+    int getLevel(String name) throws NoSuchFieldException;
+    String[] getNames();
+}</pre>
+
+<p>A default implementation provides the following definition for names:</p>
+<pre>   String[] names = {"internal","configuration","calibration","runtime"};</pre>
+
+<p>Another implementations can also be provided but any implementation should
+define levels starting with 0. Level 0 should be acceptable as the default.</p>
+
+<p></p>
+<hr />
+
+<h3 id="L2954">Overview</h3>
+<hr />
+
+<p>Access Security limits access to A PVData database. Access Security for a
+PVData database is similar to the EPICS V3 access security. The requirements
+for access security were generated at ANL/APS in 1992. The requirements
+document is: <a
+href="http://www.aps.anl.gov/epics/EpicsDocumentation/EpicsGeneral/WorkInProgress/casecsp.html">Channel
+Access Security Requirements</a> The V3 implementation is described in the <a
+href="http://aps.anl.gov/epics/base/R3-14/11-docs/AppDevGuide.pdf">V3
+Application Developer's Guide.</a> In that document read chapter "Access
+Security".</p>
+
+<p>This document discusses the following:</p>
+<ul>
+  <li>Quick start <br />
+    A summary of the steps necessary to start access security.</li>
+  <li>Features and Limitations</li>
+  <li>Access Security Configuration File Syntax<br />
+  </li>
+  <li>Design Summary <br />
+    Functional Requirements and Design Overview.</li>
+  <li>Implementation Overview</li>
+  <li>Java IOC Support<br />
+    A description of support provided by the javaIOC for access security.</li>
+  <li>PVAccess Support<br />
+    A description of support provided by PVAccess for access security.</li>
+  <li>Logging PVAccess Puts<br />
+    This allows logging of put and process requests to a PVData database.</li>
+</ul>
+<hr />
+
+<h3 id="L3012">Quick Start</h3>
+<hr />
+
+<p>TBD. This section will describe how to start access security for a
+javaIOC.</p>
+<hr />
+
+<h3 id="L3020">Features and Limitations</h3>
+<hr />
+
+<h4 id="L3024">Features</h4>
+
+<p>Access security protects IOC databases from unauthorized PVAccess Clients.
+Access security is based on the following:</p>
+<ul>
+  <li>Who<br />
+    The PVAccess client. This is implemented via a concept of credentials,
+    which supports both who and where.</li>
+  <li>Where<br />
+    Where the client is located.</li>
+  <li>What<br />
+    The user is given either no access (none) or some combination of the
+    following access rights: read, write, and process Individual fields of
+    records are protected. Each record is assigned to an Access Security Group.
+    Each field is assigned an access security level.</li>
+  <li>When<br />
+    Rules may apply only when particular states are active. States are defined
+    via enumerated records accessable via PVAccess.</li>
+</ul>
+
+<p>Each record is assigned an assess security group or is put by default into a
+group named "default".</p>
+
+<p>Each field of each record is assigned an access security level which is an
+integer that is greater than or equal to 0. Level 0 is the highest security
+level. If a client has access for level n then the client also has access for
+all levels greater than n. In addition names can be associated with the levels,
+which is implemeted via interface AccessSecurityLevel. A default implementation
+is provided which defines the names "internal","configuration","calibration"
+and ,"runtime". Other implementations can also be created but a particular site
+should define and use a common implementation.</p>
+
+<p>NOTE: The definion of access security level is an extension to what V3 epics
+supports. It allows only two levels: 0 and 1 with 1 being the highest security
+level.</p>
+
+<h4 id="L3059">Limitations</h4>
+
+<p>PVAccess can be enhanced to implement authentication for udp and tcp access
+to a PVData database but this is not the responsibility of access security. The
+configuration file, however, provides sytax that allows for authentication. </p>
+
+<p>A PVData database can be accessed only via PVAccess or via a shell. It is
+assumed that access to the shell is protected via physical security and
+standard networking and physical security methods. </p>
+
+<p>No attempt has been made to protect against the sophisticated saboteur.
+Network security methods must be used to limit access to the subnet on which
+the iocs reside. </p>
+<hr />
+
+<h3 id="L3069">Access Security Configuration File</h3>
+<hr />
+
+<p>This section describes the format of a file containing definitions of the
+user access groups, host access groups, and access security groups. Lets first
+give a simple example and then a complete description of the syntax. </p>
+
+<h4 id="L3075">Simple Example</h4>
+<pre>&lt;accessSecurity&gt;
+  &lt;credentials&gt;
+    &lt;credential name="user"&gt;[publickey,sharedkey]&lt;/credential&gt;
+    &lt;credential name="host"&gt;void&lt;/credential&gt;
+    &lt;!-- an arbitrary number of credentials can follow--&gt;
+    &lt;plugin name="publickey"&gt;&lt;/plugin&gt;
+    &lt;plugin name="sharedkey"&gt;&lt;/plugin&gt;
+  &lt;credentials&gt;
+  &lt;groups&gt;
+      &lt;group name = "users" credential = "user"&gt;[user1,user2]&lt;/group&gt;
+      &lt;group name = "hosts" credential = "host"&gt;[host1,host2]&lt;/group&gt;
+  &lt;/group&gt;
+  &lt;access&gt;
+     &lt;group name = "default"&gt;
+        &lt;rule&gt;
+           &lt;right&gt;[read]&lt;/right&gt;
+        &lt;/rule&gt;
+        &lt;rule&gt;
+           &lt;right&gt;[read,write,process]&lt;/right&gt;
+           &lt;group&gt;users.AND.hosts&lt;/group&gt;
+        &lt;/rule&gt;
+      &lt;/group&gt;
+   &lt;/access&gt;
+&lt;/accessSecurity&gt;</pre>
+
+<p>These rules provide read access to anyone located anywhere and read,write,
+and process access to user1 and user2 if they are located at host1 or host2.</p>
+
+<h4 id="L3081">Syntax Definition</h4>
+
+<p>An access security configuration file must start and end as follows:</p>
+<pre>&lt;?xml version="1.0" ?&gt;
+&lt;accesssecurity&gt;
+   &lt;!-- credentials, groups, states, access definitions --&gt;
+&lt;/accesssecurity&gt;</pre>
+
+<p>??? Should accesssecurity tag define xmlns or xsd ??</p>
+
+<p>Between the accessSecurity tags the following definitions appear:</p>
+<pre>  
+  &lt;credentials&gt;
+     &lt;credential name="name"&gt;[method,....method]&gt;&lt;/credential&gt;
+     &lt;!-- will look for plugin that supports method in the order specified,
+       first plugin that grants access means access is allowed --&gt;
+     &lt;!-- an arbitrary number of credentials can follow--&gt;
+     &lt;plugin name="method"&gt;
+         &lt;!-- data for plugin. Syntax TBD --&gt;
+     &lt;/plugin&gt;
+     &lt;!-- an arbitrary number of plugins can follow--&gt;
+  &lt;/credentials&gt;
+  &lt;groups&gt;
+      &lt;group name="name" credential="name"&gt;[name,...,name]&lt;/group&gt;
+      &lt;!-- an arbitrary number of groups can be defined --&gt;
+  &lt;/groups&gt;
+  &lt;states&gt;
+      &lt;state name = "name"&gt;
+         &lt;provider&gt;name&lt;/provider&gt;
+         &lt;!-- The channel provider --&gt;
+         &lt;pvname&gt;name&lt;/pvname&gt;
+         &lt;!-- name must be a record that has a top level enumerated field named value --&gt;   
+      &lt;/state&gt;
+      &lt;!-- an arbitrary number of states may appear --&gt;
+  &lt;/states&gt;
+  &lt;access&gt;
+     &lt;group name = "name"&gt;
+        &lt;rule accessSecurityLevel = "name" &gt;
+            &lt;right&gt;[right,...,right]&lt;/right&gt;
+            &lt;state name = "name"&gt;[state,...,state]&lt;/state&gt;
+            &lt;group&gt;expression&lt;/group&gt;
+            &lt;!-- expression chooses a group from groups above--&gt;
+        &lt;/rule&gt;
+        &lt;!-- an arbitrary number of rules may appear --&gt;
+     &lt;/group&gt;
+     &lt;!-- an arbitrary number of groups can be defined --&gt;
+  &lt;/access&gt;
+  &lt;log&gt;
+     &lt;group name = "name"&gt;
+        &lt;rule accessSecurityLevel = "name" &gt;
+            &lt;right&gt;[right,...,right]&lt;/right&gt;
+            &lt;state name = "name"&gt;[state,...,state]&lt;/state&gt;
+            &lt;group&gt;expression&lt;/group&gt;
+            &lt;!-- expression chooses a group from groups above--&gt;
+        &lt;/rule&gt;
+        &lt;!-- an arbitrary number of rules may appear --&gt;
+     &lt;/group&gt;
+     &lt;!-- an arbitrary number of groups can be defined --&gt;
+  &lt;/log&gt;</pre>
+
+<h5 id="L3093">credentials</h5>
+
+<p>Credentials allow group names to be verified by PVAccess. All credential
+definitions are enclosed in a single credentials xml element. An arbitrary set
+of credential and plugin elements can appear within credentials. A credential
+has an array of methods. The implementation looks for plugins in array order
+and asks the plugin if the client is valid</p>
+
+<p>A credential has a name and holds an array of method names. A method is used
+on the server for authentication For example "void" just uses the response from
+the client, "sharedkey" does some real work, "client-ip" yields the client's IP
+number from PVAccess.</p>
+
+<h5 id="L3099">groups</h5>
+
+<p>groups provide a way to combine a set of names with a single name. For
+example all accelerator physicists can be combined into a single group named
+acceleratorPhysist. Another example is that all workstations in the control
+room can be combined in a group named controlRoom.</p>
+
+<p>A group has a name, selectes a credential, and contains a set of names.</p>
+
+<h5 id="L3105">states</h5>
+
+<p>states alow rules to apply only when something is or is not in a particular
+state. A single xml element "states" holds all possible states.</p>
+
+<p>Each state has a name, which is referenced in access rules, and has two
+sub-elements: provider and pvname:</p>
+<dl>
+  <dt>provider</dt>
+    <dd>This is the name of the PVAccess provider. At least the following are
+      supported: local, PVAccess, and CAV3.</dd>
+  <dt>pvname</dt>
+    <dd>The name of the channel to which the provider will connect. For local
+      and PVAccess this must be a channel that has a top level field named
+      "value" and must be an enumerated structure. For CAV3 the VAL field must
+      be type DBR_ENUM. In either case if the record is in alarm or the channel
+      fails then the result is failure.</dd>
+</dl>
+
+<h5 id="L3122">access and access group</h5>
+
+<p>access contains definitions for an arbitrary number of access groups. Each
+access group defines an arbitrary number of rules. Each record being proctected
+by access security is assigned to an accesss security group. Thus each record
+instance belongs to a single access group. The default group has the name
+"default", which is the group for all records that do not have the accessGroup
+defined. Unlike a V3 access group the access group name will not be available
+via the PVRecord interface but will be assigned and kept within the access
+security system itself.</p>
+
+<p>Each access group has a name, which selects the set of records to which the
+access group applies. The group contains an arbitrary set of rule
+definitions.</p>
+
+<p>A rule optionally has an attribute accessSecurityLevel, which chooses an
+access security level. If the access security level is not specified then level
+0 is assumed. The value for accessSecurityLevel is the name associated with the
+level. Within a rule the following elements can appear:</p>
+<dl>
+  <dt>right</dt>
+    <dd>The access rights which is any combination of read, write, process or
+      else just none. If not specified no access is allowed..</dd>
+  <dt>state</dt>
+    <dd>This refers to a state definition from states. If the current state is
+      one of the states in the array then the rule is valid.</dd>
+  <dt>group</dt>
+    <dd>This selects groups from the groups defined above. An expression that
+      can use the following operators: '(', ')', '.OR.', '.AND.', and '.NOT.'.
+      Each variable is a name of a group defined in groups. The syntax for the
+      expression follows the same precedence rules as Java. Note that all
+      arguments are of the form "Is the client part of the group defined in
+      groups" The result of every operation is of type boolean. The final
+      result is either true or false meaning that the rule (does not, does)
+      apply.</dd>
+</dl>
+
+<p>The access privilege for a client is determined as follows:</p>
+<ol>
+  <li>The access group associated with the record is searched.</li>
+  <li>Each rule for that access group is checked for the following: 
+    <ul>
+      <li>The field of the record being accessed must have an access security
+        level that is greater than or equal to the access security level
+        associated with the rule. If it does not than the rule does not
+      apply.</li>
+      <li>If state is specified, the state must be one of the choices
+        specified. If link to the state record is bad or the alarm severity is
+        invalid than the rule will not apply.</li>
+      <li>If a group is specified and the expression evaluates to false the
+        rule does not apply.</li>
+      <li>If the rule does not apply then access is none.</li>
+      <li>The client will be allowed to request processing only if the rule
+        applies and process is true.</li>
+    </ul>
+  </li>
+  <li>The maximum access right allowed by step 2 is the access right
+  chosen.</li>
+</ol>
+
+<h5 id="L3174">log and log group</h5>
+
+<p>The definitions are similar to those for access and access group. But these
+are differences:</p>
+<ul>
+  <li>access security level 
+    <p>The level is now the maximum level to log rather than the minimum. Thus
+    if the rule specifies level 0 than only level 0 fields are logged.</p>
+  </li>
+  <li>right 
+    <p>none means no logging, read means log reads, etc.</p>
+  </li>
+  <li>The mimum access from the separate rules is chosen rather that the
+  maximum</li>
+</ul>
+<hr />
+
+<h3 id="L3194">Examples</h3>
+<hr />
+
+<h4 id="L3198">Credentials</h4>
+
+<p>The following:</p>
+<pre>&lt;credentials&gt;
+    &lt;credential name="user"&gt;[publickey,sharedkey]&lt;/credential&gt;
+    &lt;credential name="host"&gt;void&lt;/credential&gt;
+    &lt;credential name="ip"&gt;pva-client-ip&lt;/credential&gt;
+    &lt;!-- an arbitrary number of credentials can follow--&gt;
+    &lt;plugin name="publickey"&gt;
+        &lt;!-- data for plugin. Syntax TBD --&gt;
+    &lt;/plugin&gt;
+    &lt;plugin name="sharedkey"&gt;
+        &lt;!-- data for plugin. Syntax TBD --&gt;
+    &lt;/plugin&gt;
+    &lt;plugin name="pva-client-ip"&gt;
+        &lt;!-- data for plugin. Syntax TBD --&gt;
+    &lt;/plugin&gt;
+&lt;/credentials&gt; </pre>
+
+<p>The example defines three credentials that may be used in the rules: user,
+host, and ip address. The publickey and sharedkey plugins are used (tried in
+that order) to authenticate users, the client may just declare its host name
+without further checking, and a PVAccess call is used to determine the
+numerical IP of the client. </p>
+
+<h4 id="L3206">Groups</h4>
+<pre>&lt;groups&gt;
+   &lt;group name = "operator" credential = "user"&gt;[op1,op2,superguy]&lt;/group&gt;
+   &lt;group name = "supervisor" credential = "user"&gt;[superguy]&lt;/group&gt;
+   &lt;group name = "physicist" credential = "user"&gt;[joe,bill,sheng]&lt;/group&gt;
+   &lt;group name = "controlRoom" credential = "host"&gt;[crhosr0,crhost1,crhost2]&lt;/group&gt;
+   &lt;group name = "ioc" credential = "ip"&gt;[192.168.143.0/24,192.168.144.1,192.168.144.2]&lt;/group&gt;
+&lt;/group&gt;</pre>
+
+<h4 id="L3210">States</h4>
+
+<p>The following:</p>
+<pre>&lt;states&gt;
+    &lt;state name = "ringOpState"&gt;
+        &lt;provider&gt;CAV3&lt;/provider&gt;
+        &lt;pvname&gt;OpIOC:ringOpState&lt;/pvname&gt;
+    &lt;/state&gt;
+    &lt;state name = "linacOpState"&gt;
+        &lt;provider&gt;CAV3&lt;/provider&gt;
+        &lt;pvname&gt;OpIOC:linacOpState&lt;/pvname&gt;
+    &lt;/state&gt;
+&lt;/states&gt;</pre>
+
+<p>Defines states for a storage ring and for the linac. The choices for each
+state are determined by the site. As an example they could be something like:
+"offline", "standy", and "operational"</p>
+
+<h4 id="L3218">Access Rules</h4>
+
+<p>The following"</p>
+<pre>&lt;access&gt;
+   &lt;group name = "default"&gt;
+       &lt;rule&gt;
+          &lt;right&gt;[read]&lt;/right&gt;
+       &lt;/rule accessSecurityLevel = "runtime"&gt;
+       &lt;rule&gt;
+          &lt;right&gt;[read,write,process]&lt;/right&gt;
+          &lt;group&gt;(operator|physicist).AND.controlRoom&lt;/group&gt;
+       &lt;/rule&gt;
+       &lt;rule&gt;
+          &lt;right&gt;[read,write]&lt;/right&gt;
+          &lt;state name = "ringOpState"&gt;[offLine]&lt;/state&gt;
+          &lt;group&gt;ringDeveloper.AND.controlRoom&lt;/group&gt;
+       &lt;/rule&gt;
+&lt;/access&gt;</pre>
+
+<p>Allows access to records in the default access security group as follows:</p>
+<ul>
+  <li>Any client can read any field of any record.</li>
+  <li>Operators and Physicists located in the control room have write and read
+    to fields, with accessSecurityLevel runtime, in any record. In addition
+    they can request that a record be processed</li>
+  <li>Ring developers can read and write any field but only when state is
+    offLine.</li>
+</ul>
+
+<h4 id="L3236">Logging Rules</h4>
+
+<p>The following:</p>
+<pre>&lt;log&gt;
+   &lt;group name = "default"&gt;
+       &lt;rule&gt;
+            &lt;right&gt;[write,process]&lt;/right&gt;
+            &lt;group&gt;.NOT.((operators.OR.physicists).AND.controlRoom)&lt;/group&gt;
+       &lt;/rule&gt;
+       &lt;rule&gt;
+            &lt;right&gt;[write,process]&lt;/right&gt;
+            &lt;state name = "ringOpState"&gt;[offLine]&lt;/state&gt;
+            &lt;group&gt;.NOT.ringDevelopers&lt;/group&gt;
+       &lt;/rule&gt;
+&lt;/log&gt;</pre>
+
+<p>This will log all write and process requests to all fields of all records in
+access group default except:</p>
+<ul>
+  <li>operators or physicists located in the control room</li>
+  <li>ringDevelopers if the ringOpState is offline.</li>
+</ul>
+<hr />
+
+<h3 id="L3253">Linac Example</h3>
+<hr />
+
+<p>Lets design a set of rules for a Linac. Assume the following:</p>
+<ol>
+  <li>Anyone can have read access to all fields at anytime.</li>
+  <li>Linac application developers, located in the control room, have read,
+    write, and process access to all fields only if the Linac in
+  development.</li>
+  <li>Operators, located in the control room, can have read, write, and process
+    access to fields that have access security level corresponding to
+  runtime.</li>
+  <li>The operations supervisor, linac supervisor, and the application
+    developers can have read,write, and process access to all fields but must
+    have some way of not changing something inadvertently.</li>
+  <li>Most records use the above rules but a few (high voltage power supplies,
+    etc.) are placed under tighter control. These will follow rules 1 and 4 but
+    not 2 or 3. These records will be in access security group "permit".</li>
+  <li>IOC PVAccess clients always have read, write, and process access to all
+    fields of all records except those in group permit.</li>
+</ol>
+
+<p>Most Linac IOC records will not have the ASG field defined and will thus be
+placed in group default.</p>
+
+<p>The following records will have an ASG defined:</p>
+<ul>
+  <li>LI:OPSTATE<br />
+    and any other records that need tighter control have asg critical. Two of
+    the choices for LI:OPSTATE are "development" and "operational".</li>
+  <li>LI:permit is in accessSecurityGroup permit. Thus has choices [false,true]
+    In order for the opSup, linacSup, or an appDev to have write privilege to
+    everything this record must be set to the value true. Thus rule 4) above is
+    satisfied by making the operations supervisor first set this record true
+    before other changes are allowed. After changes this record should be set
+    back to false.</li>
+</ul>
+
+<p>The following access configuration satisfies the above rules.</p>
+<pre>&lt;credentials&gt;
+    &lt;credential name="user"&gt;[publickey,sharedkey]&lt;/credential&gt;
+    &lt;credential name="host"&gt;void&lt;/credential&gt;
+    &lt;credential name="ip"&gt;pva-client-ip&lt;/credential&gt;
+    &lt;!-- an arbitrary number of credentials can follow--&gt;
+    &lt;plugin name="publickey"&gt;
+        &lt;!-- data for plugin. Syntax TBD --&gt;
+    &lt;/plugin&gt;
+    &lt;plugin name="sharedkey"&gt;
+        &lt;!-- data for plugin. Syntax TBD --&gt;
+    &lt;/plugin&gt;
+    &lt;plugin name="pva-client-ip"&gt;
+        &lt;!-- data for plugin. Syntax TBD --&gt;
+    &lt;/plugin&gt;
+&lt;/credentials&gt; 
+&lt;groups&gt;
+   &lt;group name = "op" credential = "user"&gt;[op1,op2,superguy]&lt;/group&gt;
+   &lt;group name = "opSup" credential = "user"&gt;[superguy]&lt;/group&gt;
+   &lt;group name = "linac" credential = "user"&gt;[waw,nassiri,grelick,berg,fuja,gsm]&lt;/group&gt;
+   &lt;group name = "linacSup" credential = "user"&gt;[gsm]&lt;/group&gt;
+   &lt;group name = "appDev" credential = "user"&gt;[nda,kko]&lt;/group&gt;
+   &lt;group name = "cr" credential = "host"&gt;[mars,hera,gold]&lt;/group&gt;
+   &lt;group name = "ioc" credential = "ip"&gt;
+       [192.168.143.0/24,192.168.144.1,192.168.144.2]
+   &lt;/group&gt;
+&lt;/groups&gt;
+&lt;states/&gt;
+   &lt;state name = "opstate"&gt;
+      &lt;provider&gt;CAV3&lt;/provider&gt;
+      &lt;pvname&gt;LI:OPSTATE&lt;/pvname&gt;
+   &lt;/state&gt;
+   &lt;state name = "permit"&gt;
+      &lt;provider&gt;CAV3&lt;/provider&gt;
+      &lt;pvname&gt;LI:permit&lt;/pvname&gt;
+   &lt;/state&gt;
+&lt;/states&gt;
+&lt;access&gt;
+   &lt;group name = "default"&gt;
+      &lt;rule accessSecurityLevel = "runtime"&gt;
+         &lt;right&gt;[read,write,process]&lt;/right&gt;
+         &lt;state name = "opstate"&gt;[operational]&lt;/state&gt;
+         &lt;group&gt;op.AND.cr&lt;/group&gt;
+         
+      &lt;/rule&gt;
+      &lt;rule&gt;
+          &lt;right&gt;[read,write,process]&lt;/right&gt;
+          &lt;state name = "opstate"&gt;[development]&lt;/state&gt;
+          &lt;!-- during development operators do not have access --&gt;
+          &lt;group&gt;(opSup.OR.linacSup.OR.appdev).AND.cr&lt;/group&gt;
+      &lt;/rule&gt;
+      &lt;rule&gt;
+          &lt;right&gt;[read,write,process]&lt;/right&gt;
+          &lt;state name = "permit"&gt;[true]&lt;/state&gt;
+          &lt;group&gt;(opSup.OR.linacSup.OR.appdev).AND.cr&lt;/group&gt;
+      &lt;/rule&gt;
+      &lt;rule&gt;
+          &lt;right&gt;[read]&lt;/right&gt;
+      &lt;/rule&gt;
+      &lt;rule&gt;
+         &lt;right&gt;[read,write,process]&lt;/right&gt;
+         &lt;group&gt;ioc&lt;/group&gt;
+      &lt;/rule&gt;
+   &lt;/group&gt;
+   &lt;group name = "critical"&gt;
+       &lt;rule&gt;
+         &lt;right&gt;[read,write,process]&lt;/right&gt;
+         &lt;state name = "permit"&gt;[true]&lt;/state&gt;
+         &lt;group&gt;(opSup.OR.linacSup.OR.appDev)&lt;/group&gt;
+      &lt;/rule&gt;
+      &lt;rule&gt;
+         &lt;right&gt;[read]&lt;/right&gt;
+      &lt;/rule&gt;
+      &lt;rule&gt;
+         &lt;right&gt;[read,write,process]&lt;/right&gt;
+         &lt;group&gt;ioc&lt;/group&gt;
+      &lt;/rule&gt;
+   &lt;/group&gt;
+   &lt;group name = "permit"&gt;
+      &lt;rule&gt;
+         &lt;right&gt;[read,write,process]&lt;/right&gt;
+         &lt;group&gt;opSup&lt;/group&gt;
+      &lt;/rule&gt;
+      &lt;rule&gt;
+          &lt;right&gt;[read]&lt;/right&gt;
+      &lt;/rule&gt;
+    &lt;/group&gt;
+&lt;/access&gt;</pre>
+<hr />
+
+<h3 id="L3298">Design Summary</h3>
+<hr />
+
+<h4 id="L3302">Summary of Design Requirements</h4>
+
+<p>A brief summary of the Functional Requirements is:</p>
+<ol>
+  <li>Each field of each record type is assigned an access security level.</li>
+  <li>Each record instance is assigned to a unique access security group.</li>
+  <li>Each user is assigned to one or more user access groups.</li>
+  <li>Each host is assigned to a host access group.</li>
+  <li>For each access security group a set of access rules can be defined. Each
+    rule specifies: 
+    <ul>
+      <li>access security level.</li>
+      <li>read, write, process right.</li>
+      <li>An expression selecting the groups allowed.</li>
+      <li>Allowed states.</li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="L3335">Additional Requirements</h4>
+<dl>
+  <dt>Performance</dt>
+    <dd>Although the functional requirements does not mention it, a fundamental
+      goal is performance. The design provides almost no overhead during normal
+      database access and moderate overhead for the following: PVAccess
+      client/server connection, ioc initialization, a change in value of a
+      process variable referenced by an access calculation, and dynamically
+      changing a records access control group. Dynamically changing the user
+      access groups, host access groups, or the rules, however, can be a time
+      consuming operation. This is done, however, by a low priority thread and
+      thus does not impact normal record processing. </dd>
+  <dt>Generic Implementation</dt>
+    <dd>Access security should be implemented as a stand alone system, i.e. it
+      should not be imbedded tightly in database or PVAccess. For example it
+      should be usable by a gateway as well as by a javaIOC. </dd>
+  <dt>No Access Security within a javaIOC</dt>
+    <dd>Within an IOC no access security is invoked. This means that database
+      links and local PVAccess clients calls are not subject to access control.
+      Also test routines such as dbgf should not be subject to access control.
+    </dd>
+  <dt>Defaults</dt>
+    <dd>It must be possible to easily define default access rules.</dd>
+  <dt>Access Security is Optional</dt>
+    <dd>When a javaIOC is initialized, access security is optional.</dd>
+  <dt>process</dt>
+    <dd>Since PVAccess allows the client to request processing ( For V3 this
+      was determined by record type database definition), the access rights
+      must include process in addition to read and write.</dd>
+</dl>
+<hr />
+
+<h3 id="L3370">Implementation Overview</h3>
+<hr />
+
+<p>TBD.</p>
+<hr />
+
+<h3 id="L3378">Java IOC Support</h3>
+<hr />
+
+<p>TBD. The plan is to start/restart access security via record instances that
+have support that interfaces to access security</p>
+<hr />
+
+<h3 id="L3386">PVAccess Support</h3>
+<hr />
+
+<p>TBD.</p>
+<hr />
+
+<h3 id="L3394">Logging PVAccess Puts</h3>
+<hr />
+
+<p>TBD.</p>
+
+<h2 style="text-align: center" id="L3400">License Agreement</h2>
+<pre>Copyright (c) 2008 Martin R. Kraimer
+Copyright (c) 2006 The University of Chicago, as Operator of Argonne
+     National Laboratory.
+Copyright (c) 2006 Deutsches Elektronen-Synchroton,
+     Member of the Helmholtz Association, (DESY), HAMBURG, GERMANY.
+Copyright (c) 2007 Control System Laboratory,
+    (COSYLAB) Ljubljana Slovenia
+
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+________________________________________________________________________
+
+This software is in part copyrighted by the University of Chicago (UofC)
+
+In no event shall UofC be liable to any party for direct, indirect,
+special, incidental, or consequential damages arising out of the use of
+this software, its documentation, or any derivatives thereof, even if
+UofC has been advised of the possibility of such damage.
+
+UofC specifically disclaims any warranties, including, but not limited
+to, the implied warranties of merchantability, fitness for a particular
+purpose, and non-infringement.  This software is provided on an "as is"
+basis, and UofC has no obligation to provide maintenance, support,
+updates, enhancements, or modifications.
+
+________________________________________________________________________
+
+This software is in part copyrighted by the BERLINER SPEICHERRING
+GESELLSCHAFT FUER SYNCHROTRONSTRAHLUNG M.B.H. (BESSY), BERLIN, GERMANY.
+
+In no event shall BESSY be liable to any party for direct, indirect,
+special, incidental, or consequential damages arising out of the use of
+this software, its documentation, or any derivatives thereof, even if
+BESSY has been advised of the possibility of such damage.
+
+BESSY specifically disclaims any warranties, including, but not limited
+to, the implied warranties of merchantability, fitness for a particular
+purpose, and non-infringement.  This software is provided on an "as is"
+basis, and BESSY has no obligation to provide maintenance, support,
+updates, enhancements, or modifications.
+
+________________________________________________________________________
+
+This software is in part copyrighted by the Deutsches Elektronen-Synchroton,
+    Member of the Helmholtz Association, (DESY), HAMBURG, GERMANY.
+
+In no event shall DESY be liable to any party for direct, indirect,
+special, incidental, or consequential damages arising out of the use of
+this software, its documentation, or any derivatives thereof, even if
+DESY has been advised of the possibility of such damage.
+
+DESY specifically disclaims any warranties, including, but not limited
+to, the implied warranties of merchantability, fitness for a particular
+purpose, and non-infringement.  This software is provided on an "as is"
+basis, and DESY has no obligation to provide maintenance, support,
+updates, enhancements, or modifications.
+________________________________________________________________________</pre>
+</body>
+</html>
