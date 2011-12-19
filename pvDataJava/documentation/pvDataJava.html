@@ -25,11 +25,11 @@
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
 <h2 class="nocount" id="L50">EPICS v4 Working Group, Working Draft,
-14-Dec-2011</h2>
+19-Dec-2011</h2>
 <dl>
   <dt>This version:</dt>
     <dd><a
-      href="http://epics-pvdata.sourceforge.net/pvDataJava_20111214.html">pvDataJava_20111214.html</a></dd>
+      href="http://epics-pvdata.sourceforge.net/pvDataJava_20111219.html">pvDataJava_20111219.html</a></dd>
   <dt>Latest version:</dt>
     <dd><a
       href="http://epics-pvdata.sourceforge.net/pvDataJava.html">pvDataJava.html</a></dd>
@@ -41,7 +41,10 @@
 
 <h2 class="nocount" id="L72">Abstract</h2>
 
-<p>This document describes the Java implementation of EPICS v4 pvData.</p>
+<p>pvData (Process Variable Data) defines and implements an efficent way to
+store, access, and transmit memory resident structured data.</p>
+
+<p>This document describes the Java implementation of EPICS v4 pvData. </p>
 
 <p>For more information about the EPICS, please refer to the home page of the
 <a href="http://www.aps.anl.gov/epics/">Experimental Physics and Industrial
@@ -49,23 +52,23 @@ Control System.</a></p>
 
 <h2 class="nocount" id="L80">Status of this Document</h2>
 
-<p>This is the 14-Dec-2011 version of the Java implementation of pvData. It is
+<p>This is the 19-Dec-2011 version of the Java implementation of pvData. It is
 a complete implementation of pvData as currently defined. </p>
 CONTENTS 
 
 <div class="toc">
 <ul>
-  <li><a href="#L50">EPICS v4 Working Group, Working Draft, 14-Dec-2011</a></li>
+  <li><a href="#L50">EPICS v4 Working Group, Working Draft, 19-Dec-2011</a></li>
   <li><a href="#L72">Abstract</a></li>
   <li><a href="#L80">Status of this Document</a></li>
   <li><a href="#L88">Introduction</a></li>
-  <li><a href="#L163">PVData Meta Language</a>
+  <li><a href="#L163">PVData Meta Language</a> 
     <ul>
       <li><a href="#L169">Definition</a></li>
       <li><a href="#L363">Examples</a></li>
     </ul>
   </li>
-  <li><a href="#L407">Interface Definitions</a>
+  <li><a href="#L407">Interface Definitions</a> 
     <ul>
       <li><a href="#L411">Types</a></li>
       <li><a href="#L485">Introspection Interfaces</a></li>
@@ -74,7 +77,7 @@ CONTENTS
       <li><a href="#L533">pvData Conversion</a></li>
     </ul>
   </li>
-  <li><a href="#L539">Package Summary</a>
+  <li><a href="#L539">Package Summary</a> 
     <ul>
       <li><a href="#L547">org.epics.pvData.pv</a></li>
       <li><a href="#L551">org.epics.pvData.factory</a></li>
@@ -84,10 +87,10 @@ CONTENTS
       <li><a href="#L589">org.epics.pvData.accessSecurity</a></li>
     </ul>
   </li>
-  <li><a href="#L595">Package org.epics.pvData.pv</a>
+  <li><a href="#L595">Package org.epics.pvData.pv</a> 
     <ul>
       <li><a href="#L599">Overview</a></li>
-      <li><a href="#L611">Process Variable Reflection</a>
+      <li><a href="#L611">Process Variable Reflection</a> 
         <ul>
           <li><a href="#L615">Type</a></li>
           <li><a href="#L621">Serializable</a></li>
@@ -95,18 +98,18 @@ CONTENTS
         </ul>
       </li>
       <li><a href="#L673">Status</a></li>
-      <li><a href="#L720">PVField - Data Interfaces</a>
+      <li><a href="#L720">PVField - Data Interfaces</a> 
         <ul>
           <li><a href="#L724">PVField</a></li>
           <li><a href="#L803">Requester</a></li>
           <li><a href="#L837">PVAuxInfo</a></li>
-          <li><a href="#L871">PVScalar and extensions</a>
+          <li><a href="#L871">PVScalar and extensions</a> 
             <ul>
               <li><a href="#L875">Primitive PVField types</a></li>
               <li><a href="#L881">PVString</a></li>
             </ul>
           </li>
-          <li><a href="#L887">PVArray and Extensions</a>
+          <li><a href="#L887">PVArray and Extensions</a> 
             <ul>
               <li><a href="#L926">PVArray Extensions</a></li>
               <li><a href="#L970">Complete set of PVArray Extensions</a></li>
@@ -117,7 +120,7 @@ CONTENTS
         </ul>
       </li>
       <li><a href="#L1119">Convert</a></li>
-      <li><a href="#L1189">Examples</a>
+      <li><a href="#L1189">Examples</a> 
         <ul>
           <li><a href="#L1191">Accessing PVData</a></li>
           <li><a href="#L1210">Creating PVData</a></li>
@@ -125,10 +128,10 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L1226">Package org.epics.pvData.factory</a>
+  <li><a href="#L1226">Package org.epics.pvData.factory</a> 
     <ul>
       <li><a href="#L1230">Overview</a></li>
-      <li><a href="#L1234">Factory</a>
+      <li><a href="#L1234">Factory</a> 
         <ul>
           <li><a href="#L1236">FieldFactory</a></li>
           <li><a href="#L1242">PVDataFactory</a></li>
@@ -137,18 +140,18 @@ CONTENTS
         </ul>
       </li>
       <li><a href="#L1260">Base Introspection Classes</a></li>
-      <li><a href="#L1266">Abstract and Base Classes for PVField</a>
+      <li><a href="#L1266">Abstract and Base Classes for PVField</a> 
         <ul>
           <li><a href="#L1268">BasePVAuxInfo</a></li>
           <li><a href="#L1274">AbstractPVField</a></li>
         </ul>
       </li>
-      <li><a href="#L1298">Classes For PVStructure</a>
+      <li><a href="#L1298">Classes For PVStructure</a> 
         <ul>
           <li><a href="#L1300">BasePVStructure</a></li>
         </ul>
       </li>
-      <li><a href="#L1306">Classes For PVScalar</a>
+      <li><a href="#L1306">Classes For PVScalar</a> 
         <ul>
           <li><a href="#L1308">AbstractPVScalar</a></li>
           <li><a href="#L1314">BasePVBoolean</a></li>
@@ -161,7 +164,7 @@ CONTENTS
           <li><a href="#L1342">BasePVString</a></li>
         </ul>
       </li>
-      <li><a href="#L1346">Classes for PVArray</a>
+      <li><a href="#L1346">Classes for PVArray</a> 
         <ul>
           <li><a href="#L1348">AbstractPVArray</a></li>
           <li><a href="#L1356">BasePVBooleanArray</a></li>
@@ -177,20 +180,20 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L1394">Package org.epics.pvData.property</a>
+  <li><a href="#L1394">Package org.epics.pvData.property</a> 
     <ul>
       <li><a href="#L1398">Definition of Property</a></li>
       <li><a href="#L1410">Standard Properties</a></li>
       <li><a href="#L1491">PVProperty</a></li>
-      <li><a href="#L1522">Standard Properties</a>
+      <li><a href="#L1522">Standard Properties</a> 
         <ul>
-          <li><a href="#L1526">TimeStamp</a>
+          <li><a href="#L1526">TimeStamp</a> 
             <ul>
               <li><a href="#L1534">TimeStamp.java</a></li>
               <li><a href="#L1629">PVTimeStamp.java</a></li>
             </ul>
           </li>
-          <li><a href="#L1664">Alarm</a>
+          <li><a href="#L1664">Alarm</a> 
             <ul>
               <li><a href="#L1749">PVAlarm</a></li>
             </ul>
@@ -202,18 +205,18 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L2050">Package org.epics.pvData.misc</a>
+  <li><a href="#L2050">Package org.epics.pvData.misc</a> 
     <ul>
       <li><a href="#L2054">Overview</a></li>
       <li><a href="#L2109">MultiChoice</a></li>
       <li><a href="#L2150">BitSet</a></li>
-      <li><a href="#L2182">Message Queue</a>
+      <li><a href="#L2182">Message Queue</a> 
         <ul>
           <li><a href="#L2184">Definitions</a></li>
           <li><a href="#L2188">MessageQueue</a></li>
         </ul>
       </li>
-      <li><a href="#L2236">Thread</a>
+      <li><a href="#L2236">Thread</a> 
         <ul>
           <li><a href="#L2238">ThreadPriority</a></li>
           <li><a href="#L2242">ThreadCreate</a></li>
@@ -222,7 +225,7 @@ CONTENTS
       </li>
       <li><a href="#L2279">Time Function Call</a></li>
       <li><a href="#L2285">Linked List</a></li>
-      <li><a href="#L2315">Timer</a>
+      <li><a href="#L2315">Timer</a> 
         <ul>
           <li><a href="#L2332">Java Definitions</a></li>
           <li><a href="#L2336">TimerCallback</a></li>
@@ -237,10 +240,10 @@ CONTENTS
       <li><a href="#L2504">Serialize</a></li>
     </ul>
   </li>
-  <li><a href="#L2540">Package org.epics.pvData.monitor</a>
+  <li><a href="#L2540">Package org.epics.pvData.monitor</a> 
     <ul>
       <li><a href="#L2544">Overview</a></li>
-      <li><a href="#L2598">Standard Monitor Requests</a>
+      <li><a href="#L2598">Standard Monitor Requests</a> 
         <ul>
           <li><a href="#L2602">Record Options</a></li>
           <li><a href="#L2619">Field Options</a></li>
@@ -249,7 +252,7 @@ CONTENTS
           <li><a href="#L2758">Examples</a></li>
         </ul>
       </li>
-      <li><a href="#L2788">Monitor Interfaces</a>
+      <li><a href="#L2788">Monitor Interfaces</a> 
         <ul>
           <li><a href="#L2790">Monitor</a></li>
           <li><a href="#L2829">MonitorElement</a></li>
@@ -260,25 +263,25 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L2963">Package org.epics.pvData.accessSecurity</a>
+  <li><a href="#L2963">Package org.epics.pvData.accessSecurity</a> 
     <ul>
-      <li><a href="#L2969">Outstanding Issues</a>
+      <li><a href="#L2969">Outstanding Issues</a> 
         <ul>
           <li><a href="#L2973">access security level</a></li>
         </ul>
       </li>
       <li><a href="#L2989">Overview</a></li>
       <li><a href="#L3047">Quick Start</a></li>
-      <li><a href="#L3055">Features and Limitations</a>
+      <li><a href="#L3055">Features and Limitations</a> 
         <ul>
           <li><a href="#L3059">Features</a></li>
           <li><a href="#L3094">Limitations</a></li>
         </ul>
       </li>
-      <li><a href="#L3104">Access Security Configuration File</a>
+      <li><a href="#L3104">Access Security Configuration File</a> 
         <ul>
           <li><a href="#L3110">Simple Example</a></li>
-          <li><a href="#L3116">Syntax Definition</a>
+          <li><a href="#L3116">Syntax Definition</a> 
             <ul>
               <li><a href="#L3128">credentials</a></li>
               <li><a href="#L3134">groups</a></li>
@@ -289,7 +292,7 @@ CONTENTS
           </li>
         </ul>
       </li>
-      <li><a href="#L3229">Examples</a>
+      <li><a href="#L3229">Examples</a> 
         <ul>
           <li><a href="#L3233">Credentials</a></li>
           <li><a href="#L3241">Groups</a></li>
@@ -299,7 +302,7 @@ CONTENTS
         </ul>
       </li>
       <li><a href="#L3288">Linac Example</a></li>
-      <li><a href="#L3333">Design Summary</a>
+      <li><a href="#L3333">Design Summary</a> 
         <ul>
           <li><a href="#L3337">Summary of Design Requirements</a></li>
           <li><a href="#L3370">Additional Requirements</a></li>
