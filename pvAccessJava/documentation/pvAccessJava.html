@@ -25,11 +25,11 @@
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
 <h2 class="nocount" id="L50">EPICS v4 Working Group, Working Draft,
-14-Dec-2011</h2>
+19-Dec-2011</h2>
 <dl>
   <dt>This version:</dt>
     <dd><a
-      href="http://epics-pvdata.sourceforge.net/pvAccessJava_20111214.html">pvAccessJava_20111214.html</a></dd>
+      href="http://epics-pvdata.sourceforge.net/pvAccessJava_20111219.html">pvAccessJava_20111219.html</a></dd>
   <dt>Latest version:</dt>
     <dd><a
       href="http://epics-pvdata.sourceforge.net/pvAccessJava.html">pvAccessJava.html</a></dd>
@@ -41,6 +41,12 @@
 
 <h2 class="nocount" id="L72">Abstract</h2>
 
+<p>pvAccess is an implementation of Channel Access, i. e. network support for
+transmitting Process Variable Data, that fully supports pvData.</p>
+
+<p>pvData (Process Variable Data) defines and implements an efficent way to
+store, access, and transmit memory resident structured data.</p>
+
 <p>This document describes the Java implementation of EPICS v4 pvAccess.</p>
 
 <p>For more information about the EPICS, please refer to the home page of the
@@ -49,24 +55,24 @@ Control System.</a></p>
 
 <h2 class="nocount" id="L80">Status of this Document</h2>
 
-<p>This is the 14-Dec-2011 version of the Java implementation of pvAccess. It
+<p>This is the 19-Dec-2011 version of the Java implementation of pvAccess. It
 is a complete implementation of pvAccess as currently defined. </p>
 CONTENTS 
 
 <div class="toc">
 <ul>
-  <li><a href="#L50">EPICS v4 Working Group, Working Draft, 14-Dec-2011</a></li>
+  <li><a href="#L50">EPICS v4 Working Group, Working Draft, 19-Dec-2011</a></li>
   <li><a href="#L72">Abstract</a></li>
   <li><a href="#L80">Status of this Document</a></li>
   <li><a href="#L56">Introduction</a></li>
-  <li><a href="#L93">User Interface Packages</a>
+  <li><a href="#L93">User Interface Packages</a> 
     <ul>
       <li><a href="#L99">org.epics.ca</a></li>
       <li><a href="#L116">org.epics.ca.client</a></li>
       <li><a href="#L171">org.epics.ca.server.plugins</a></li>
     </ul>
   </li>
-  <li><a href="#L177">Problems and Future Plans</a>
+  <li><a href="#L177">Problems and Future Plans</a> 
     <ul>
       <li><a href="#L181">Query Facility</a></li>
       <li><a href="#L185">Access Security</a></li>
@@ -74,7 +80,7 @@ CONTENTS
     </ul>
   </li>
   <li><a href="#L211">Network Protocol</a></li>
-  <li><a href="#L219">Helper Packages</a>
+  <li><a href="#L219">Helper Packages</a> 
     <ul>
       <li><a href="#L225">org.epics.ca</a></li>
       <li><a href="#L255">org.epics.ca.util</a></li>
@@ -82,7 +88,7 @@ CONTENTS
       <li><a href="#L324">org.epics.ca.util.sync</a></li>
     </ul>
   </li>
-  <li><a href="#L330">Implementation Packages</a>
+  <li><a href="#L330">Implementation Packages</a> 
     <ul>
       <li><a href="#L336">org.epics.ca.impl.remote</a></li>
       <li><a href="#L340">org.epics.ca.impl.remote.tcp</a></li>
@@ -90,7 +96,7 @@ CONTENTS
       <li><a href="#L348">org.epics.ca.impl.remote.utils</a></li>
     </ul>
   </li>
-  <li><a href="#L354">Client Implementation Packages</a>
+  <li><a href="#L354">Client Implementation Packages</a> 
     <ul>
       <li><a href="#L360">org.epics.ca.client.impl.remote</a></li>
       <li><a href="#L364">org.epics.ca.client.impl.remote.handlers</a></li>
@@ -98,7 +104,7 @@ CONTENTS
       <li><a href="#L372">org.epics.ca.client.impl.remote.tcp</a></li>
     </ul>
   </li>
-  <li><a href="#L378">Server Implementation Packages</a>
+  <li><a href="#L378">Server Implementation Packages</a> 
     <ul>
       <li><a href="#L384">org.epics.ca.server.impl.remote</a></li>
       <li><a href="#L388">org.epics.ca.server.impl.remote.handlers</a></li>
@@ -107,7 +113,7 @@ CONTENTS
       <li><a href="#L400">org.epics.ca.server.impl.remote.tcp</a></li>
     </ul>
   </li>
-  <li><a href="#L406">Package org.epics.ca</a>
+  <li><a href="#L406">Package org.epics.ca</a> 
     <ul>
       <li><a href="#L410">Overview</a></li>
       <li><a href="#L435">Factories</a></li>
@@ -116,13 +122,13 @@ CONTENTS
       <li><a href="#L474">Version</a></li>
     </ul>
   </li>
-  <li><a href="#L480">Package org.epics.ca.client</a>
+  <li><a href="#L480">Package org.epics.ca.client</a> 
     <ul>
       <li><a href="#L484">Overview</a></li>
-      <li><a href="#L510">Example</a>
+      <li><a href="#L510">Example</a> 
         <ul>
           <li><a href="#L512">What the example does</a></li>
-          <li><a href="#L536">Example Source</a>
+          <li><a href="#L536">Example Source</a> 
             <ul>
               <li><a href="#L538">main</a></li>
               <li><a href="#L544">Implementation of channel get client</a></li>
@@ -134,7 +140,7 @@ CONTENTS
         </ul>
       </li>
       <li><a href="#L587">Starting Channel Access</a></li>
-      <li><a href="#L629">ChannelAccess, and ChannelProvider</a>
+      <li><a href="#L629">ChannelAccess, and ChannelProvider</a> 
         <ul>
           <li><a href="#L645">ChannelAccessFactory</a></li>
           <li><a href="#L666">ChannelAccess</a></li>
@@ -145,11 +151,11 @@ CONTENTS
       <li><a href="#L743">Channel</a></li>
       <li><a href="#L833">AccessRights</a></li>
       <li><a href="#L839">GetField</a></li>
-      <li><a href="#L860">ChannelRequest</a>
+      <li><a href="#L860">ChannelRequest</a> 
         <ul>
           <li><a href="#L881">PVStructure pvRequest</a></li>
           <li><a href="#L885">CreateRequestFactory.createRequest</a></li>
-          <li><a href="#L893">Examples</a>
+          <li><a href="#L893">Examples</a> 
             <ul>
               <li><a href="#L899">Simple example</a></li>
               <li><a href="#L911">Power Supply Example</a></li>
@@ -166,7 +172,7 @@ CONTENTS
       <li><a href="#L1282">Monitor</a></li>
     </ul>
   </li>
-  <li><a href="#L1388">Package org.epics.ca.server</a>
+  <li><a href="#L1388">Package org.epics.ca.server</a> 
     <ul>
       <li><a href="#L1392">Overview</a></li>
       <li><a href="#L1412">Channel Processor</a></li>
