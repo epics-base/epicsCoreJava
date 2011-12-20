@@ -25,14 +25,14 @@
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
 <h2 class="nocount" id="L50">EPICS v4 Working Group, Working Draft,
-19-Dec-2011</h2>
+20-Dec-2011</h2>
 <dl>
   <dt>This version:</dt>
     <dd><a
-      href="http://epics-pvdata.sourceforge.net/pvDataJava_20111219.html">pvDataJava_20111219.html</a></dd>
+      href="http://epics-pvdata.sourceforge.net/pvDataJava_20111220.html">pvDataJava_20111220.html</a></dd>
   <dt>Latest version:</dt>
     <dd><a
-      href="http://epics-pvdata.sourceforge.net/pvDataJava.html">pvDataJava.html</a></dd>
+      href="http://epics-pvdata.sourceforge.net/pvDataJava_20111220.html">pvDataJava_20111220.html</a></dd>
   <dt>Editors:</dt>
     <dd>Marty Kraimer, BNL</dd>
 </dl>
@@ -41,18 +41,314 @@
 
 <h2 class="nocount" id="L72">Abstract</h2>
 
-<p>pvData (Process Variable Data) defines and implements an efficent way to
-store, access, and transmit memory resident structured data.</p>
+<p>pvDataJava is the Java implementation of pvData, which is one of a related
+set of products:</p>
+<dl>
+  <dt><a
+  href="http://epics-pvdata.hg.sourceforge.net/hgweb/epics-pvdata/pvDataJava/raw-file/tip/documentation/pvDataJava.html">pvData</a></dt>
+    <dd>pvData (Process Variable Daata) defines and implements an efficent way
+      to store, access, and transmit memory resident structured data</dd>
+  <dt><a
+  href="http://epics-pvdata.hg.sourceforge.net/hgweb/epics-pvdata/pvAccessJava/raw-file/tip/documentation/pvAccessJava.html">pvAccess</a></dt>
+    <dd>pvAccess is network support for transmitting pvData.</dd>
+  <dt><a
+  href="http://epics-pvdata.hg.sourceforge.net/hgweb/epics-pvdata/pvIOCJava/raw-file/tip/documentation/pvIOCJava.html">pvIOC</a></dt>
+    <dd>A pvIOC is a network accessable smart real time database. The database
+      consists of memory resident records. Each record has a name that is
+      uniquie within the local area network and contains a top level pvData
+      structure. Each field of a record can optionally have support code
+      attached to it. The support is called when a request is made to process
+      the record. The support code is what makes the record "smart". A pvAccess
+      server is provided so that the records can be accesed via the network.
+    </dd>
+</dl>
 
-<p>This document describes the Java implementation of EPICS V4 pvData. </p>
+<p>Each of the products has a Java and a C++ implementation.</p>
 
-<p>For more information about the EPICS, please refer to the home page of the
-<a href="http://www.aps.anl.gov/epics/">Experimental Physics and Industrial
+<p>The products are all part of the <a
+href="http://epics-pvdata.sourceforge.net/">V4</a> implementation of <a
+href="http://www.aps.anl.gov/epics/">Experimental Physics and Industrial
 Control System.</a></p>
+
+<h2 class="nocount" id="L101">Status of this Document</h2>
+
+<p>This is the 20-Dec-2011 version of the Java implementation of pvData. It is
+a complete implementation of pvData as currently defined. </p>
+CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#L50">EPICS v4 Working Group, Working Draft, 20-Dec-2011</a></li>
+  <li><a href="#L72">Abstract</a></li>
+  <li><a href="#L101">Status of this Document</a></li>
+  <li><a href="#L109">Introduction</a></li>
+  <li><a href="#L184">PVData Meta Language</a> 
+    <ul>
+      <li><a href="#L190">Definition</a></li>
+      <li><a href="#L384">Examples</a></li>
+    </ul>
+  </li>
+  <li><a href="#L428">Interface Definitions</a> 
+    <ul>
+      <li><a href="#L432">Types</a></li>
+      <li><a href="#L506">Introspection Interfaces</a></li>
+      <li><a href="#L514">Data Interfaces</a></li>
+      <li><a href="#L544">Introspection and Data creation</a></li>
+      <li><a href="#L554">pvData Conversion</a></li>
+    </ul>
+  </li>
+  <li><a href="#L560">Package Summary</a> 
+    <ul>
+      <li><a href="#L568">org.epics.pvData.pv</a></li>
+      <li><a href="#L572">org.epics.pvData.factory</a></li>
+      <li><a href="#L594">org.epics.pvData.property</a></li>
+      <li><a href="#L602">org.epics.pvData.misc</a></li>
+      <li><a href="#L606">org.epics.pvData.monitor</a></li>
+      <li><a href="#L610">org.epics.pvData.accessSecurity</a></li>
+    </ul>
+  </li>
+  <li><a href="#L616">Package org.epics.pvData.pv</a> 
+    <ul>
+      <li><a href="#L620">Overview</a></li>
+      <li><a href="#L632">Process Variable Reflection</a> 
+        <ul>
+          <li><a href="#L636">Type</a></li>
+          <li><a href="#L642">Serializable</a></li>
+          <li><a href="#L648">Reflection</a></li>
+        </ul>
+      </li>
+      <li><a href="#L694">Status</a></li>
+      <li><a href="#L741">PVField - Data Interfaces</a> 
+        <ul>
+          <li><a href="#L745">PVField</a></li>
+          <li><a href="#L824">Requester</a></li>
+          <li><a href="#L858">PVAuxInfo</a></li>
+          <li><a href="#L892">PVScalar and extensions</a> 
+            <ul>
+              <li><a href="#L896">Primitive PVField types</a></li>
+              <li><a href="#L902">PVString</a></li>
+            </ul>
+          </li>
+          <li><a href="#L908">PVArray and Extensions</a> 
+            <ul>
+              <li><a href="#L947">PVArray Extensions</a></li>
+              <li><a href="#L991">Complete set of PVArray Extensions</a></li>
+            </ul>
+          </li>
+          <li><a href="#L997">PVStructure</a></li>
+          <li><a href="#L1101">PVDataCreate</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1140">Convert</a></li>
+      <li><a href="#L1210">Examples</a> 
+        <ul>
+          <li><a href="#L1212">Accessing PVData</a></li>
+          <li><a href="#L1231">Creating PVData</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L1247">Package org.epics.pvData.factory</a> 
+    <ul>
+      <li><a href="#L1251">Overview</a></li>
+      <li><a href="#L1255">Factory</a> 
+        <ul>
+          <li><a href="#L1257">FieldFactory</a></li>
+          <li><a href="#L1263">PVDataFactory</a></li>
+          <li><a href="#L1269">ConvertFactory</a></li>
+          <li><a href="#L1275">StatusFactory</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1281">Base Introspection Classes</a></li>
+      <li><a href="#L1287">Abstract and Base Classes for PVField</a> 
+        <ul>
+          <li><a href="#L1289">BasePVAuxInfo</a></li>
+          <li><a href="#L1295">AbstractPVField</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1319">Classes For PVStructure</a> 
+        <ul>
+          <li><a href="#L1321">BasePVStructure</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1327">Classes For PVScalar</a> 
+        <ul>
+          <li><a href="#L1329">AbstractPVScalar</a></li>
+          <li><a href="#L1335">BasePVBoolean</a></li>
+          <li><a href="#L1339">BasePVByte</a></li>
+          <li><a href="#L1343">BasePVShort</a></li>
+          <li><a href="#L1347">BasePVInt</a></li>
+          <li><a href="#L1351">BasePVLong</a></li>
+          <li><a href="#L1355">BasePVFloat</a></li>
+          <li><a href="#L1359">BasePVDouble</a></li>
+          <li><a href="#L1363">BasePVString</a></li>
+        </ul>
+      </li>
+      <li><a href="#L1367">Classes for PVArray</a> 
+        <ul>
+          <li><a href="#L1369">AbstractPVArray</a></li>
+          <li><a href="#L1377">BasePVBooleanArray</a></li>
+          <li><a href="#L1381">BasePVByteArray</a></li>
+          <li><a href="#L1385">BasePVShortArray</a></li>
+          <li><a href="#L1389">BasePVIntArray</a></li>
+          <li><a href="#L1393">BasePVLongArray</a></li>
+          <li><a href="#L1397">BasePVFloatArray</a></li>
+          <li><a href="#L1401">BasePVDoubleArray</a></li>
+          <li><a href="#L1405">BasePVStringArray</a></li>
+          <li><a href="#L1409">BasePVStructureArray</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L1415">Package org.epics.pvData.property</a> 
+    <ul>
+      <li><a href="#L1419">Definition of Property</a></li>
+      <li><a href="#L1431">Standard Properties</a></li>
+      <li><a href="#L1512">PVProperty</a></li>
+      <li><a href="#L1543">Standard Properties</a> 
+        <ul>
+          <li><a href="#L1547">TimeStamp</a> 
+            <ul>
+              <li><a href="#L1555">TimeStamp.java</a></li>
+              <li><a href="#L1650">PVTimeStamp.java</a></li>
+            </ul>
+          </li>
+          <li><a href="#L1685">Alarm</a> 
+            <ul>
+              <li><a href="#L1770">PVAlarm</a></li>
+            </ul>
+          </li>
+          <li><a href="#L1812">Control</a></li>
+          <li><a href="#L1890">Display</a></li>
+          <li><a href="#L1998">Enumerated</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L2071">Package org.epics.pvData.misc</a> 
+    <ul>
+      <li><a href="#L2075">Overview</a></li>
+      <li><a href="#L2130">MultiChoice</a></li>
+      <li><a href="#L2171">BitSet</a></li>
+      <li><a href="#L2203">Message Queue</a> 
+        <ul>
+          <li><a href="#L2205">Definitions</a></li>
+          <li><a href="#L2209">MessageQueue</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2257">Thread</a> 
+        <ul>
+          <li><a href="#L2259">ThreadPriority</a></li>
+          <li><a href="#L2263">ThreadCreate</a></li>
+          <li><a href="#L2276">Executor</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2300">Time Function Call</a></li>
+      <li><a href="#L2306">Linked List</a></li>
+      <li><a href="#L2336">Timer</a> 
+        <ul>
+          <li><a href="#L2353">Java Definitions</a></li>
+          <li><a href="#L2357">TimerCallback</a></li>
+          <li><a href="#L2372">TimerNode</a></li>
+          <li><a href="#L2387">Timer</a></li>
+          <li><a href="#L2407">TimerFactory</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2422">BitSet</a></li>
+      <li><a href="#L2448">Queue</a></li>
+      <li><a href="#L2511">Destroyable</a></li>
+      <li><a href="#L2525">Serialize</a></li>
+    </ul>
+  </li>
+  <li><a href="#L2561">Package org.epics.pvData.monitor</a> 
+    <ul>
+      <li><a href="#L2565">Overview</a></li>
+      <li><a href="#L2619">Standard Monitor Requests</a> 
+        <ul>
+          <li><a href="#L2623">Record Options</a></li>
+          <li><a href="#L2640">Field Options</a></li>
+          <li><a href="#L2672">Monitor Request Options</a></li>
+          <li><a href="#L2765">Record Deadband</a></li>
+          <li><a href="#L2779">Examples</a></li>
+        </ul>
+      </li>
+      <li><a href="#L2809">Monitor Interfaces</a> 
+        <ul>
+          <li><a href="#L2811">Monitor</a></li>
+          <li><a href="#L2850">MonitorElement</a></li>
+          <li><a href="#L2877">MonitorRequester</a></li>
+          <li><a href="#L2904">MonitorAlgorithm</a></li>
+          <li><a href="#L2931">MonitorQueue</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#L2984">Package org.epics.pvData.accessSecurity</a> 
+    <ul>
+      <li><a href="#L2990">Outstanding Issues</a> 
+        <ul>
+          <li><a href="#L2994">access security level</a></li>
+        </ul>
+      </li>
+      <li><a href="#L3010">Overview</a></li>
+      <li><a href="#L3068">Quick Start</a></li>
+      <li><a href="#L3076">Features and Limitations</a> 
+        <ul>
+          <li><a href="#L3080">Features</a></li>
+          <li><a href="#L3115">Limitations</a></li>
+        </ul>
+      </li>
+      <li><a href="#L3125">Access Security Configuration File</a> 
+        <ul>
+          <li><a href="#L3131">Simple Example</a></li>
+          <li><a href="#L3137">Syntax Definition</a> 
+            <ul>
+              <li><a href="#L3149">credentials</a></li>
+              <li><a href="#L3155">groups</a></li>
+              <li><a href="#L3161">states</a></li>
+              <li><a href="#L3178">access and access group</a></li>
+              <li><a href="#L3230">log and log group</a></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li><a href="#L3250">Examples</a> 
+        <ul>
+          <li><a href="#L3254">Credentials</a></li>
+          <li><a href="#L3262">Groups</a></li>
+          <li><a href="#L3266">States</a></li>
+          <li><a href="#L3274">Access Rules</a></li>
+          <li><a href="#L3292">Logging Rules</a></li>
+        </ul>
+      </li>
+      <li><a href="#L3309">Linac Example</a></li>
+      <li><a href="#L3354">Design Summary</a> 
+        <ul>
+          <li><a href="#L3358">Summary of Design Requirements</a></li>
+          <li><a href="#L3391">Additional Requirements</a></li>
+        </ul>
+      </li>
+      <li><a href="#L3426">Implementation Overview</a></li>
+      <li><a href="#L3434">Java IOC Support</a></li>
+      <li><a href="#L3442">PVAccess Support</a></li>
+      <li><a href="#L3450">Logging PVAccess Puts</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<p></p>
+<hr />
+
+<h2 style="text-align: center" id="L109">Introduction</h2>
+<hr />
 
 <p>This product is available via an <a
 href="http://epics-pvdata.sourceforge.net/LICENSE.html">open source
 license</a></p>
+
+<p>This document is the project and package overviews for pvDataJava. The
+javaDOC is available at <a href="./html/index.html">JavaDoc</a></p>
 
 <p>pvData is one of a set of related projects. It describes and implements the
 data that the other projects support. Thus it is not useful by itself but
@@ -125,278 +421,9 @@ clients.</p>
 
 <p>pvData contains everything required to support Channel Access and Channel
 Access clients and servers. </p>
-
-<p>This document is the project and package overviews for pvDataJava. The
-javaDOC is available at <a href="./html/index.html">JavaDoc</a></p>
-
-<h2 class="nocount" id="L151">Status of this Document</h2>
-
-<p>This is the 19-Dec-2011 version of the Java implementation of pvData. It is
-a complete implementation of pvData as currently defined. </p>
-CONTENTS 
-
-<div class="toc">
-<ul>
-  <li><a href="#L50">EPICS v4 Working Group, Working Draft, 19-Dec-2011</a></li>
-  <li><a href="#L72">Abstract</a></li>
-  <li><a href="#L151">Status of this Document</a></li>
-  <li><a href="#L159">PVData Meta Language</a>
-    <ul>
-      <li><a href="#L165">Definition</a></li>
-      <li><a href="#L359">Examples</a></li>
-    </ul>
-  </li>
-  <li><a href="#L403">Interface Definitions</a>
-    <ul>
-      <li><a href="#L407">Types</a></li>
-      <li><a href="#L481">Introspection Interfaces</a></li>
-      <li><a href="#L489">Data Interfaces</a></li>
-      <li><a href="#L519">Introspection and Data creation</a></li>
-      <li><a href="#L529">pvData Conversion</a></li>
-    </ul>
-  </li>
-  <li><a href="#L535">Package Summary</a>
-    <ul>
-      <li><a href="#L543">org.epics.pvData.pv</a></li>
-      <li><a href="#L547">org.epics.pvData.factory</a></li>
-      <li><a href="#L569">org.epics.pvData.property</a></li>
-      <li><a href="#L577">org.epics.pvData.misc</a></li>
-      <li><a href="#L581">org.epics.pvData.monitor</a></li>
-      <li><a href="#L585">org.epics.pvData.accessSecurity</a></li>
-    </ul>
-  </li>
-  <li><a href="#L591">Package org.epics.pvData.pv</a>
-    <ul>
-      <li><a href="#L595">Overview</a></li>
-      <li><a href="#L607">Process Variable Reflection</a>
-        <ul>
-          <li><a href="#L611">Type</a></li>
-          <li><a href="#L617">Serializable</a></li>
-          <li><a href="#L623">Reflection</a></li>
-        </ul>
-      </li>
-      <li><a href="#L669">Status</a></li>
-      <li><a href="#L716">PVField - Data Interfaces</a>
-        <ul>
-          <li><a href="#L720">PVField</a></li>
-          <li><a href="#L799">Requester</a></li>
-          <li><a href="#L833">PVAuxInfo</a></li>
-          <li><a href="#L867">PVScalar and extensions</a>
-            <ul>
-              <li><a href="#L871">Primitive PVField types</a></li>
-              <li><a href="#L877">PVString</a></li>
-            </ul>
-          </li>
-          <li><a href="#L883">PVArray and Extensions</a>
-            <ul>
-              <li><a href="#L922">PVArray Extensions</a></li>
-              <li><a href="#L966">Complete set of PVArray Extensions</a></li>
-            </ul>
-          </li>
-          <li><a href="#L972">PVStructure</a></li>
-          <li><a href="#L1076">PVDataCreate</a></li>
-        </ul>
-      </li>
-      <li><a href="#L1115">Convert</a></li>
-      <li><a href="#L1185">Examples</a>
-        <ul>
-          <li><a href="#L1187">Accessing PVData</a></li>
-          <li><a href="#L1206">Creating PVData</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#L1222">Package org.epics.pvData.factory</a>
-    <ul>
-      <li><a href="#L1226">Overview</a></li>
-      <li><a href="#L1230">Factory</a>
-        <ul>
-          <li><a href="#L1232">FieldFactory</a></li>
-          <li><a href="#L1238">PVDataFactory</a></li>
-          <li><a href="#L1244">ConvertFactory</a></li>
-          <li><a href="#L1250">StatusFactory</a></li>
-        </ul>
-      </li>
-      <li><a href="#L1256">Base Introspection Classes</a></li>
-      <li><a href="#L1262">Abstract and Base Classes for PVField</a>
-        <ul>
-          <li><a href="#L1264">BasePVAuxInfo</a></li>
-          <li><a href="#L1270">AbstractPVField</a></li>
-        </ul>
-      </li>
-      <li><a href="#L1294">Classes For PVStructure</a>
-        <ul>
-          <li><a href="#L1296">BasePVStructure</a></li>
-        </ul>
-      </li>
-      <li><a href="#L1302">Classes For PVScalar</a>
-        <ul>
-          <li><a href="#L1304">AbstractPVScalar</a></li>
-          <li><a href="#L1310">BasePVBoolean</a></li>
-          <li><a href="#L1314">BasePVByte</a></li>
-          <li><a href="#L1318">BasePVShort</a></li>
-          <li><a href="#L1322">BasePVInt</a></li>
-          <li><a href="#L1326">BasePVLong</a></li>
-          <li><a href="#L1330">BasePVFloat</a></li>
-          <li><a href="#L1334">BasePVDouble</a></li>
-          <li><a href="#L1338">BasePVString</a></li>
-        </ul>
-      </li>
-      <li><a href="#L1342">Classes for PVArray</a>
-        <ul>
-          <li><a href="#L1344">AbstractPVArray</a></li>
-          <li><a href="#L1352">BasePVBooleanArray</a></li>
-          <li><a href="#L1356">BasePVByteArray</a></li>
-          <li><a href="#L1360">BasePVShortArray</a></li>
-          <li><a href="#L1364">BasePVIntArray</a></li>
-          <li><a href="#L1368">BasePVLongArray</a></li>
-          <li><a href="#L1372">BasePVFloatArray</a></li>
-          <li><a href="#L1376">BasePVDoubleArray</a></li>
-          <li><a href="#L1380">BasePVStringArray</a></li>
-          <li><a href="#L1384">BasePVStructureArray</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#L1390">Package org.epics.pvData.property</a>
-    <ul>
-      <li><a href="#L1394">Definition of Property</a></li>
-      <li><a href="#L1406">Standard Properties</a></li>
-      <li><a href="#L1487">PVProperty</a></li>
-      <li><a href="#L1518">Standard Properties</a>
-        <ul>
-          <li><a href="#L1522">TimeStamp</a>
-            <ul>
-              <li><a href="#L1530">TimeStamp.java</a></li>
-              <li><a href="#L1625">PVTimeStamp.java</a></li>
-            </ul>
-          </li>
-          <li><a href="#L1660">Alarm</a>
-            <ul>
-              <li><a href="#L1745">PVAlarm</a></li>
-            </ul>
-          </li>
-          <li><a href="#L1787">Control</a></li>
-          <li><a href="#L1865">Display</a></li>
-          <li><a href="#L1973">Enumerated</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#L2046">Package org.epics.pvData.misc</a>
-    <ul>
-      <li><a href="#L2050">Overview</a></li>
-      <li><a href="#L2105">MultiChoice</a></li>
-      <li><a href="#L2146">BitSet</a></li>
-      <li><a href="#L2178">Message Queue</a>
-        <ul>
-          <li><a href="#L2180">Definitions</a></li>
-          <li><a href="#L2184">MessageQueue</a></li>
-        </ul>
-      </li>
-      <li><a href="#L2232">Thread</a>
-        <ul>
-          <li><a href="#L2234">ThreadPriority</a></li>
-          <li><a href="#L2238">ThreadCreate</a></li>
-          <li><a href="#L2251">Executor</a></li>
-        </ul>
-      </li>
-      <li><a href="#L2275">Time Function Call</a></li>
-      <li><a href="#L2281">Linked List</a></li>
-      <li><a href="#L2311">Timer</a>
-        <ul>
-          <li><a href="#L2328">Java Definitions</a></li>
-          <li><a href="#L2332">TimerCallback</a></li>
-          <li><a href="#L2347">TimerNode</a></li>
-          <li><a href="#L2362">Timer</a></li>
-          <li><a href="#L2382">TimerFactory</a></li>
-        </ul>
-      </li>
-      <li><a href="#L2397">BitSet</a></li>
-      <li><a href="#L2423">Queue</a></li>
-      <li><a href="#L2486">Destroyable</a></li>
-      <li><a href="#L2500">Serialize</a></li>
-    </ul>
-  </li>
-  <li><a href="#L2536">Package org.epics.pvData.monitor</a>
-    <ul>
-      <li><a href="#L2540">Overview</a></li>
-      <li><a href="#L2594">Standard Monitor Requests</a>
-        <ul>
-          <li><a href="#L2598">Record Options</a></li>
-          <li><a href="#L2615">Field Options</a></li>
-          <li><a href="#L2647">Monitor Request Options</a></li>
-          <li><a href="#L2740">Record Deadband</a></li>
-          <li><a href="#L2754">Examples</a></li>
-        </ul>
-      </li>
-      <li><a href="#L2784">Monitor Interfaces</a>
-        <ul>
-          <li><a href="#L2786">Monitor</a></li>
-          <li><a href="#L2825">MonitorElement</a></li>
-          <li><a href="#L2852">MonitorRequester</a></li>
-          <li><a href="#L2879">MonitorAlgorithm</a></li>
-          <li><a href="#L2906">MonitorQueue</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-  <li><a href="#L2959">Package org.epics.pvData.accessSecurity</a>
-    <ul>
-      <li><a href="#L2965">Outstanding Issues</a>
-        <ul>
-          <li><a href="#L2969">access security level</a></li>
-        </ul>
-      </li>
-      <li><a href="#L2985">Overview</a></li>
-      <li><a href="#L3043">Quick Start</a></li>
-      <li><a href="#L3051">Features and Limitations</a>
-        <ul>
-          <li><a href="#L3055">Features</a></li>
-          <li><a href="#L3090">Limitations</a></li>
-        </ul>
-      </li>
-      <li><a href="#L3100">Access Security Configuration File</a>
-        <ul>
-          <li><a href="#L3106">Simple Example</a></li>
-          <li><a href="#L3112">Syntax Definition</a>
-            <ul>
-              <li><a href="#L3124">credentials</a></li>
-              <li><a href="#L3130">groups</a></li>
-              <li><a href="#L3136">states</a></li>
-              <li><a href="#L3153">access and access group</a></li>
-              <li><a href="#L3205">log and log group</a></li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-      <li><a href="#L3225">Examples</a>
-        <ul>
-          <li><a href="#L3229">Credentials</a></li>
-          <li><a href="#L3237">Groups</a></li>
-          <li><a href="#L3241">States</a></li>
-          <li><a href="#L3249">Access Rules</a></li>
-          <li><a href="#L3267">Logging Rules</a></li>
-        </ul>
-      </li>
-      <li><a href="#L3284">Linac Example</a></li>
-      <li><a href="#L3329">Design Summary</a>
-        <ul>
-          <li><a href="#L3333">Summary of Design Requirements</a></li>
-          <li><a href="#L3366">Additional Requirements</a></li>
-        </ul>
-      </li>
-      <li><a href="#L3401">Implementation Overview</a></li>
-      <li><a href="#L3409">Java IOC Support</a></li>
-      <li><a href="#L3417">PVAccess Support</a></li>
-      <li><a href="#L3425">Logging PVAccess Puts</a></li>
-    </ul>
-  </li>
-</ul>
-</div>
 <hr />
 
-<h2 style="text-align: center" id="L159">PVData Meta Language</h2>
+<h2 style="text-align: center" id="L184">PVData Meta Language</h2>
 <hr />
 
 <p>This section describes a meta language for describing pvData. Currently
@@ -405,7 +432,7 @@ documentation. The toString introspection and data methods described below do
 present data in a format similar to the metadata syntax. The meta language is
 used to describe both introspection interfaces and data interfaces.</p>
 
-<h3 id="L165">Definition</h3>
+<h3 id="L190">Definition</h3>
 
 <p>PVData supports structured data. All data appears as a top level structure.
 A structure has an ordered set of fields where each field has a <span
@@ -519,7 +546,7 @@ scalar data value depending on the type. Thus it is a comma separated set of
 values enclosed in <span style="font-family: courier;">[]</span> White space is
 permitted surrounding each comma.</p>
 
-<h3 id="L359">Examples</h3>
+<h3 id="L384">Examples</h3>
 
 <p>Define the following top level structure:</p>
 <pre>structure timeStamp_t
@@ -615,10 +642,10 @@ structure pointArrayExample
             double y 10.0</pre>
 <hr />
 
-<h2 style="text-align: center" id="L403">Interface Definitions</h2>
+<h2 style="text-align: center" id="L428">Interface Definitions</h2>
 <hr />
 
-<h3 id="L407">Types</h3>
+<h3 id="L432">Types</h3>
 
 <p>The following are the type definitions:</p>
 <pre>enum Type {
@@ -675,7 +702,7 @@ structure pointArrayExample
       Note that a string is treated like it is a scaler.</dd>
 </dl>
 
-<h3 id="L481">Introspection Interfaces</h3>
+<h3 id="L506">Introspection Interfaces</h3>
 
 <p>The complete set of introspection interfaces are:</p>
 <pre>interface Field {
@@ -709,7 +736,7 @@ allows introspection interfaces to be freely shared between data objects. For
 example the introspection interface for a timeStamp, which is a structure
 containing two fields, can be shared by every record that has a time stamp.</p>
 
-<h3 id="L489">Data Interfaces</h3>
+<h3 id="L514">Data Interfaces</h3>
 
 <p>PVField is the base interface for a data field:</p>
 <pre>enum MessageType {info,warning,error,fatalError}
@@ -844,7 +871,7 @@ interface PVStructure extends PVField , BitSetSerializable{
     boolean putExtendsStructureName(String extendsStructureName);
 }</pre>
 
-<h3 id="L519">Introspection and Data creation</h3>
+<h3 id="L544">Introspection and Data creation</h3>
 
 <p>The following interface creates introspection instances:</p>
 <pre>public interface FieldCreate {
@@ -872,13 +899,13 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
 
-<h3 id="L529">pvData Conversion</h3>
+<h3 id="L554">pvData Conversion</h3>
 
 <p>An interface named Convert provides all reasonable conversions to/from
 pvData. See org.epics.pvData.pv.Convert for details.</p>
 <hr />
 
-<h2 style="text-align: center" id="L535">Package Summary</h2>
+<h2 style="text-align: center" id="L560">Package Summary</h2>
 <hr />
 
 <p>This document describes everything via Java definitions. The initial
@@ -888,13 +915,13 @@ other languages such as C++.</p>
 <p>pvData is distributed as a eclipse Java Project named pvData. This project
 consists of the following java packages:</p>
 
-<h3 id="L543">org.epics.pvData.pv</h3>
+<h3 id="L568">org.epics.pvData.pv</h3>
 
 <p>The Java enum, interface, and class definitions that define pvData. This
 section provides a complete definition of what pvData is. This package
 completely describes how pvData is accessed.</p>
 
-<h3 id="L547">org.epics.pvData.factory</h3>
+<h3 id="L572">org.epics.pvData.factory</h3>
 
 <p>Java Facilities for creating a PV Database and pvData. It provides
 everything required for creating pvData. It provides the following
@@ -913,7 +940,7 @@ types, often it is desirable to provide other implementations. To make it easy
 to create alternate implementations a set of abstract and base classes are
 supplied.</p>
 
-<h3 id="L569">org.epics.pvData.property</h3>
+<h3 id="L594">org.epics.pvData.property</h3>
 
 <p>Provides a way to associated properties with a field. </p>
 
@@ -926,26 +953,26 @@ package overview for details.</p>
 timeStamp, alarm, display,etc. Code that uses pvData can be simplified by using
 this support.</p>
 
-<h3 id="L577">org.epics.pvData.misc</h3>
+<h3 id="L602">org.epics.pvData.misc</h3>
 
 <p>This package provides support that is used by pvData factories and might
 also be useful to software that uses pvData.</p>
 
-<h3 id="L581">org.epics.pvData.monitor</h3>
+<h3 id="L606">org.epics.pvData.monitor</h3>
 
 <p>Provides the ability to monitor changes to an arbitrary subset of the fields
 in a record.</p>
 
-<h3 id="L585">org.epics.pvData.accessSecurity</h3>
+<h3 id="L610">org.epics.pvData.accessSecurity</h3>
 
 <p>Access security is no implement but a discusssion of what it should be is
 provided.</p>
 <hr />
 
-<h2 style="text-align: center" id="L591">Package org.epics.pvData.pv</h2>
+<h2 style="text-align: center" id="L616">Package org.epics.pvData.pv</h2>
 <hr />
 
-<h3 id="L595">Overview</h3>
+<h3 id="L620">Overview</h3>
 
 <p>This package has the complete set of enum, interface, and class definitions
 that describe PVData. The implementation is provided in package
@@ -969,7 +996,7 @@ to provide implementations.</p>
 <p>The javaIOC provides a database of PVRecords where each PVRecord has a top
 level PVStructure. PVAccess provides network access to PVData.</p>
 
-<h3 id="L607">Process Variable Reflection</h3>
+<h3 id="L632">Process Variable Reflection</h3>
 
 <p>Given a pvname, which consists of a record name and field name, it is
 possible to introspect the field without requiring access to data. The
@@ -981,7 +1008,7 @@ especially important for arrays and structures so that a client can discover
 the type without requiring that a large array or structure be transported over
 the network.</p>
 
-<h4 id="L611">Type</h4>
+<h4 id="L636">Type</h4>
 
 <p>The types are defined by the Java definitions:</p>
 <pre>    enum Type {
@@ -1005,7 +1032,7 @@ the network.</p>
         public String toString();
     }</pre>
 
-<h4 id="L617">Serializable</h4>
+<h4 id="L642">Serializable</h4>
 
 <p>The following interfaces are called by pvAccess for transporting data over
 the network. The abstract and base classes ensure that these methods are
@@ -1033,7 +1060,7 @@ properly implemented. </p>
        void deserialize(ByteBuffer buffer, DeserializableControl control, BitSet bitSet);
     }</pre>
 
-<h4 id="L623">Reflection</h4>
+<h4 id="L648">Reflection</h4>
 
 <p>This section defines the complete set of Java PV reflection interfaces.</p>
 <pre>    
@@ -1097,7 +1124,7 @@ properly implemented. </p>
       interfaces. A factory is provides to create FieldCreate.</dd>
 </dl>
 
-<h3 id="L669">Status</h3>
+<h3 id="L694">Status</h3>
 
 <p>Status provides a way to pass status back to client code. It is new and not
 currently used by pvData but may be in the future. It is used by code that uses
@@ -1141,12 +1168,12 @@ pvData.</p>
       status optimization.</dd>
 </dl>
 
-<h3 id="L716">PVField - Data Interfaces</h3>
+<h3 id="L741">PVField - Data Interfaces</h3>
 
 <p>This section defines the Java Interfaces for accessing the data within a PV
 record.</p>
 
-<h4 id="L720">PVField</h4>
+<h4 id="L745">PVField</h4>
 
 <p>PVField is the base interface for accessing data. Every field of every
 structure of every record instance has a PVField associated with it. A
@@ -1222,7 +1249,7 @@ structure and a record also has an associated PVField.</p>
       project overview.</dd>
 </dl>
 
-<h4 id="L799">Requester</h4>
+<h4 id="L824">Requester</h4>
 
 <p>A PVField extends Requester. Requester is present so that when database
 errors are found there is someplace to send a message. As will be seen below,
@@ -1257,7 +1284,7 @@ requesters.</p>
     </dd>
 </dl>
 
-<h4 id="L833">PVAuxInfo</h4>
+<h4 id="L858">PVAuxInfo</h4>
 
 <p>AuxInfo (Auxillary Information) is information about a field that is
 application specific. It will not be available outside the application that
@@ -1290,12 +1317,12 @@ auxInfos. An auxInfo is a (key,PVScalar) pair where key is a string.</p>
     <dd>Print all the auxInfo data in metadata format.</dd>
 </dl>
 
-<h4 id="L867">PVScalar and extensions</h4>
+<h4 id="L892">PVScalar and extensions</h4>
 <pre>    interface PVScalar extends PVField {
         Scalar getScalar();
     }</pre>
 
-<h5 id="L871">Primitive PVField types</h5>
+<h5 id="L896">Primitive PVField types</h5>
 
 <p>The interfaces for primitive data types are:</p>
 <pre>    interface PVBoolean extends PVScalar {
@@ -1333,7 +1360,7 @@ auxInfos. An auxInfo is a (key,PVScalar) pair where key is a string.</p>
         void put(double value);
     }</pre>
 
-<h5 id="L877">PVString</h5>
+<h5 id="L902">PVString</h5>
 
 <p>The interface for string is:</p>
 <pre>    interface PVString extends PVScalar, SerializableArray {
@@ -1341,7 +1368,7 @@ auxInfos. An auxInfo is a (key,PVScalar) pair where key is a string.</p>
         void put(String value);
     }</pre>
 
-<h4 id="L883">PVArray and Extensions</h4>
+<h4 id="L908">PVArray and Extensions</h4>
 
 <p><span style="font-family: courier">PVArray</span> is the base interface for
 all the other PV Array interfaces. It extends PVField and provides the
@@ -1374,7 +1401,7 @@ additional methods:</p>
     <dd>Specify if the capacity can be changed.</dd>
 </dl>
 
-<h5 id="L922">PVArray Extensions</h5>
+<h5 id="L947">PVArray Extensions</h5>
 
 <p>The interface for each array type has get and put methods which have the
 same arguments except for the data type. For example PVDoubleArray is:</p>
@@ -1448,7 +1475,7 @@ data array of a PVArray. This can be required for minimizing CPU overhead. In
 this case it is the applications responsibility to coordinate access to the
 array.</p>
 
-<h5 id="L966">Complete set of PVArray Extensions</h5>
+<h5 id="L991">Complete set of PVArray Extensions</h5>
 <pre>    interface PVScalarArray extends PVArray {
         ScalarArray getScalarArray();
     }
@@ -1550,7 +1577,7 @@ elements of the array via the get and put methods, i.e. it is not possible to
 access subfields indirectly. PVStructureArray.getNumberFields() returns 1, i.e.
 the field looks like a leaf field.</p>
 
-<h4 id="L972">PVStructure</h4>
+<h4 id="L997">PVStructure</h4>
 
 <p>The interface for a structure is:</p>
 <pre>    interface PVStructure extends PVField, BitSetSerializable {
@@ -1644,7 +1671,7 @@ the field looks like a leaf field.</p>
     <dd>Specify the structure that this structure extends.</dd>
 </dl>
 
-<h4 id="L1076">PVDataCreate</h4>
+<h4 id="L1101">PVDataCreate</h4>
 
 <p>PVDataCreate is an interface that provides methods that create PVField
 interfaces. A factory is provided that creates PVDataCreate.</p>
@@ -1705,7 +1732,7 @@ where
       order is according to fieldOffset.</dd>
 </dl>
 
-<h3 id="L1115">Convert</h3>
+<h3 id="L1140">Convert</h3>
 
 <p>NOTE about copying immutable array fields. If an entire immutable array
 field is copied to another array that has the same elementType, both offsets
@@ -1813,9 +1840,9 @@ generates a newline and inserts blanks at the beginning of the newline.</p>
 pvData project overview. Note that the toString methods of PVField are
 implemented by calling these convert methods.</p>
 
-<h3 id="L1185">Examples</h3>
+<h3 id="L1210">Examples</h3>
 
-<h4 id="L1187">Accessing PVData</h4>
+<h4 id="L1212">Accessing PVData</h4>
 
 <p>Assume that code wants to access two fields from a PVStructure:</p>
 <dl>
@@ -1847,7 +1874,7 @@ implemented by calling these convert methods.</p>
    return value + " timeStamp " + timeStampPV.toString();
 }</pre>
 
-<h4 id="L1206">Creating PVData</h4>
+<h4 id="L1231">Creating PVData</h4>
 
 <p>Example of creating a scalar field.</p>
 <pre>    PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
@@ -1876,17 +1903,17 @@ structure created in the previous example.</p>
     PVStructure pvStruct = pvDataCreate.createPVStructure(null,"myStructure",fields);</pre>
 <hr />
 
-<h2 style="text-align: center" id="L1222">Package org.epics.pvData.factory</h2>
+<h2 style="text-align: center" id="L1247">Package org.epics.pvData.factory</h2>
 <hr />
 
-<h3 id="L1226">Overview</h3>
+<h3 id="L1251">Overview</h3>
 
 <p>This package provides factories and classes to implement everything defined
 in package org.epics.pvData.pv</p>
 
-<h3 id="L1230">Factory</h3>
+<h3 id="L1255">Factory</h3>
 
-<h4 id="L1232">FieldFactory</h4>
+<h4 id="L1257">FieldFactory</h4>
 <pre>    public final class FieldFactory {
         public static FieldCreate getFieldCreate();
     }</pre>
@@ -1894,7 +1921,7 @@ in package org.epics.pvData.pv</p>
 <p>FieldFactory automatically creates a single instance of FieldCreate and
 provides a method to get the interface.</p>
 
-<h4 id="L1238">PVDataFactory</h4>
+<h4 id="L1263">PVDataFactory</h4>
 <pre>    public class PVDataFactory {
         public static PVDataCreate getPVDataCreate();
     }</pre>
@@ -1902,7 +1929,7 @@ provides a method to get the interface.</p>
 <p>PVDataFactory automatically creates a single instance of PVDataCreate and
 provides a method to get the interface.</p>
 
-<h4 id="L1244">ConvertFactory</h4>
+<h4 id="L1269">ConvertFactory</h4>
 <pre>    public final class ConvertFactory {
         public static Convert getConvert();
     }</pre>
@@ -1910,14 +1937,14 @@ provides a method to get the interface.</p>
 <p>ConvertFactory automatically creates a single instance of Convert and
 provides a method to get the interface.</p>
 
-<h4 id="L1250">StatusFactory</h4>
+<h4 id="L1275">StatusFactory</h4>
 <pre>    public final class StatusFactory {
         public static StatusCreate getStatusCreate();
     }</pre>
 
 <p>This provides a singleton that implements StatusCreate.</p>
 
-<h3 id="L1256">Base Introspection Classes</h3>
+<h3 id="L1281">Base Introspection Classes</h3>
 
 <p>This section describes base classes for implementing Field instances , i.e.
 introspection instances. For many applications they provide a complete
@@ -1954,9 +1981,9 @@ introspection implementation but they could be extended if necessary. </p>
     }
 }</pre>
 
-<h3 id="L1262">Abstract and Base Classes for PVField</h3>
+<h3 id="L1287">Abstract and Base Classes for PVField</h3>
 
-<h4 id="L1264">BasePVAuxInfo</h4>
+<h4 id="L1289">BasePVAuxInfo</h4>
 
 <p>This is a complete implementation of PVAuxInfo.</p>
 <pre>public class BasePVAuxInfo implements PVAuxInfo {
@@ -1964,7 +1991,7 @@ introspection implementation but they could be extended if necessary. </p>
     // All PVAuxInfo methods
 }</pre>
 
-<h4 id="L1270">AbstractPVField</h4>
+<h4 id="L1295">AbstractPVField</h4>
 
 <p>This is an abstract base class for implementing PVField interfaces. It MUST
 be the base class for any class that extends PVField. </p>
@@ -1988,9 +2015,9 @@ protected methods are: </p>
       change the introspection interface for one of it's fields.</dd>
 </dl>
 
-<h3 id="L1294">Classes For PVStructure</h3>
+<h3 id="L1319">Classes For PVStructure</h3>
 
-<h4 id="L1296">BasePVStructure</h4>
+<h4 id="L1321">BasePVStructure</h4>
 
 <p>The following is a base class for any code that implements PVStructure. Any
 code that implements PVStructure MUST extend this class.</p>
@@ -1999,9 +2026,9 @@ code that implements PVStructure MUST extend this class.</p>
     // all public methods of PVStructure
 }</pre>
 
-<h3 id="L1302">Classes For PVScalar</h3>
+<h3 id="L1327">Classes For PVScalar</h3>
 
-<h4 id="L1304">AbstractPVScalar</h4>
+<h4 id="L1329">AbstractPVScalar</h4>
 
 <p>The following is an abstract base class for implementing PVScalar. It MUST
 be the base class for any code that implements an extension of PVScalar.</p>
@@ -2010,7 +2037,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     public Scalar getScalar();
 }</pre>
 
-<h4 id="L1310">BasePVBoolean</h4>
+<h4 id="L1335">BasePVBoolean</h4>
 <pre>public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
 {
     protected boolean value = false;
@@ -2018,7 +2045,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVBoolean
 }</pre>
 
-<h4 id="L1314">BasePVByte</h4>
+<h4 id="L1339">BasePVByte</h4>
 <pre>public class BasePVByte extends AbstractPVScalar implements PVByte
 {
     protected byte value;
@@ -2026,7 +2053,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVByte
 }</pre>
 
-<h4 id="L1318">BasePVShort</h4>
+<h4 id="L1343">BasePVShort</h4>
 <pre>public class BasePVShort extends AbstractPVScalar implements PVShort
 {
     protected short value;
@@ -2034,7 +2061,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVShort
 }</pre>
 
-<h4 id="L1322">BasePVInt</h4>
+<h4 id="L1347">BasePVInt</h4>
 <pre>public class BasePVInt extends AbstractPVScalar implements PVInt
 {
     protected int value;
@@ -2042,7 +2069,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVInt
 }</pre>
 
-<h4 id="L1326">BasePVLong</h4>
+<h4 id="L1351">BasePVLong</h4>
 <pre>public class BasePVLong extends AbstractPVScalar implements PVLong
 {
     protected long value;
@@ -2050,7 +2077,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVLong
 }</pre>
 
-<h4 id="L1330">BasePVFloat</h4>
+<h4 id="L1355">BasePVFloat</h4>
 <pre>public class BasePVFloat extends AbstractPVScalar implements PVFloat
 {
     protected float value;
@@ -2058,7 +2085,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVFloat
 }</pre>
 
-<h4 id="L1334">BasePVDouble</h4>
+<h4 id="L1359">BasePVDouble</h4>
 <pre>public class BasePVDouble extends AbstractPVScalar implements PVDouble
 {
     protected double value;
@@ -2066,7 +2093,7 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVDouble
 }</pre>
 
-<h4 id="L1338">BasePVString</h4>
+<h4 id="L1363">BasePVString</h4>
 <pre>public class BasePVString extends AbstractPVScalar implements PVString
 {
     protected String value;
@@ -2074,9 +2101,9 @@ be the base class for any code that implements an extension of PVScalar.</p>
     // public methods of PVString
 }</pre>
 
-<h3 id="L1342">Classes for PVArray</h3>
+<h3 id="L1367">Classes for PVArray</h3>
 
-<h4 id="L1344">AbstractPVArray</h4>
+<h4 id="L1369">AbstractPVArray</h4>
 
 <p>The following is a abstract class for creating array fields. Any code that
 implements any extension of PVArray must extend this class.</p>
@@ -2093,73 +2120,73 @@ implements any extension of PVArray must extend this class.</p>
 <p>For each ScalarType there is a base class for implementing the corresponding
 array type. For most uses it is not necessary to extend these classes.</p>
 
-<h4 id="L1352">BasePVBooleanArray</h4>
+<h4 id="L1377">BasePVBooleanArray</h4>
 <pre>public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArray
 {
     protected boolean[] value;
     // implements all PVBooleanArray methods
 }</pre>
 
-<h4 id="L1356">BasePVByteArray</h4>
+<h4 id="L1381">BasePVByteArray</h4>
 <pre>public class BasePVByteArray extends AbstractPVArray implements PVByteArray
 {
     protected byte[] value;
     // implements all PVByteArray methods
 }</pre>
 
-<h4 id="L1360">BasePVShortArray</h4>
+<h4 id="L1385">BasePVShortArray</h4>
 <pre>public class BasePVShortArray extends AbstractPVArray implements PVShortArray
 {
     protected short[] value;
     // implements all PVShortArray methods
 }</pre>
 
-<h4 id="L1364">BasePVIntArray</h4>
+<h4 id="L1389">BasePVIntArray</h4>
 <pre>public class BasePVIntArray extends AbstractPVArray implements PVIntArray
 {
     protected int[] value;
     // implements all PVIntArray methods
 }</pre>
 
-<h4 id="L1368">BasePVLongArray</h4>
+<h4 id="L1393">BasePVLongArray</h4>
 <pre>public class BasePVLongArray extends AbstractPVArray implements PVLongArray
 {
     protected long[] value;
     // implements all PVLongArray methods
 }</pre>
 
-<h4 id="L1372">BasePVFloatArray</h4>
+<h4 id="L1397">BasePVFloatArray</h4>
 <pre>public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
 {
     protected float[] value;
     // implements all PVFloatArray methods
 }</pre>
 
-<h4 id="L1376">BasePVDoubleArray</h4>
+<h4 id="L1401">BasePVDoubleArray</h4>
 <pre>public class BasePVDoubleArray extends AbstractPVArray implements PVDoubleArray
 {
     protected double[] value;
     // implements all PVDoubleArray methods
 }</pre>
 
-<h4 id="L1380">BasePVStringArray</h4>
+<h4 id="L1405">BasePVStringArray</h4>
 <pre>public class BasePVStringArray extends AbstractPVArray implements PVStringArray
 {
     protected String[] value;
     // implements all PVStringArray methods
 }</pre>
 
-<h4 id="L1384">BasePVStructureArray</h4>
+<h4 id="L1409">BasePVStructureArray</h4>
 <pre>public class BasePVStructureArray  extends AbstractPVArray implements PVStructureArray
 {
    // implements all PVStructureArray methods
 }</pre>
 <hr />
 
-<h2 style="text-align: center" id="L1390">Package org.epics.pvData.property</h2>
+<h2 style="text-align: center" id="L1415">Package org.epics.pvData.property</h2>
 <hr />
 
-<h3 id="L1394">Definition of Property</h3>
+<h3 id="L1419">Definition of Property</h3>
 
 <p>Only fields named "value" have properties. A record can have multiple value
 fields, which can appear in the top level structure of a record or in a
@@ -2197,7 +2224,7 @@ structure powerSupplySimple
     powerSupplyValueStructure power
     powerSupplyValueStructure current</pre>
 
-<h3 id="L1406">Standard Properties</h3>
+<h3 id="L1431">Standard Properties</h3>
 
 <p>The following field names have special meaning, i.e. support properties for
 general purpose clients.</p>
@@ -2266,7 +2293,7 @@ that that support the PVData data model. For example a powerSupport record can
 have fields power, voltage, current that each support the PVData data model.
 </p>
 
-<h3 id="L1487">PVProperty</h3>
+<h3 id="L1512">PVProperty</h3>
 
 <p>Interface and factory for finding a field within a structure.</p>
 <pre>    interface PVProperty {
@@ -2295,12 +2322,12 @@ have fields power, voltage, current that each support the PVData data model.
     Get the single instance of PVProperty. </li>
 </ul>
 
-<h3 id="L1518">Standard Properties</h3>
+<h3 id="L1543">Standard Properties</h3>
 
 <p>This section has structure definitions that support standard properties.
 These definitions are defined in project javaIOC.</p>
 
-<h4 id="L1522">TimeStamp</h4>
+<h4 id="L1547">TimeStamp</h4>
 
 <p>A timeStamp is represented by the following structure</p>
 <pre>structure timeStamp
@@ -2317,7 +2344,7 @@ is greater than a little more than 2 seconds of less that about -2 seconds. The
 support code always adjust seconds so that the nanoSecconds part is normalized,
 i. e. it has is 0&lt;=nanoSeconds&lt;nanoSecPerSec..</p>
 
-<h5 id="L1530">TimeStamp.java</h5>
+<h5 id="L1555">TimeStamp.java</h5>
 
 <p>The Java definition of a timeStamp is:</p>
 <pre>interface TimeStamp {
@@ -2390,7 +2417,7 @@ stamps. The result is always kept in normalized form, which means that the nano
 second portion is 0&le;=nano&lt;nanoSecPerSec. Note that it is OK to have
 timeStamps for times previous to the epoch.</p>
 
-<h5 id="L1625">PVTimeStamp.java</h5>
+<h5 id="L1650">PVTimeStamp.java</h5>
 <pre>interface PVTimeStamp {
     boolean attach(PVField pvField);
     void detach();
@@ -2423,7 +2450,7 @@ class PVTimeStampFactory implements PVTimeStamp {
       thrown if not attached to a pvData structure. </dd>
 </dl>
 
-<h4 id="L1660">Alarm</h4>
+<h4 id="L1685">Alarm</h4>
 
 <p>An alarm structure is defined as follows:</p>
 <pre>structure alarm
@@ -2504,7 +2531,7 @@ class Alarm {
     <dd>Set the status.</dd>
 </dl>
 
-<h5 id="L1745">PVAlarm</h5>
+<h5 id="L1770">PVAlarm</h5>
 <pre>interface PVAlarm {
     boolean attach(PVField pvField);
     void detach();
@@ -2542,7 +2569,7 @@ class PVAlarmFactory implements PVAlarm{
 </dl>
 re&gt; 
 
-<h4 id="L1787">Control</h4>
+<h4 id="L1812">Control</h4>
 
 <p>Control information is represented by the following structure</p>
 <pre>structure control
@@ -2609,7 +2636,7 @@ class PVControlFactory{
       can be called.</dd>
 </dl>
 
-<h4 id="L1865">Display</h4>
+<h4 id="L1890">Display</h4>
 
 <p>Display information is represented by the following structure</p>
 <pre>structure display
@@ -2698,7 +2725,7 @@ class PVDisplayFactory implements PVDisplay{
       can be called.</dd>
 </dl>
 
-<h4 id="L1973">Enumerated</h4>
+<h4 id="L1998">Enumerated</h4>
 
 <p>An enumerated structure is a structure that has fields:</p>
 <pre>structure
@@ -2759,10 +2786,10 @@ class PVEnumeratedFactory{
 </dl>
 <hr />
 
-<h2 style="text-align: center" id="L2046">Package org.epics.pvData.misc</h2>
+<h2 style="text-align: center" id="L2071">Package org.epics.pvData.misc</h2>
 <hr />
 
-<h3 id="L2050">Overview</h3>
+<h3 id="L2075">Overview</h3>
 
 <p>This package provides utility code:</p>
 <dl>
@@ -2793,7 +2820,7 @@ class PVEnumeratedFactory{
     <dd>A helper for serialization.</dd>
 </dl>
 
-<h3 style="text-align: center;" id="L2105">MultiChoice</h3>
+<h3 style="text-align: center;" id="L2130">MultiChoice</h3>
 
 <p>NOTE: This is not currently used by anything.</p>
 
@@ -2833,7 +2860,7 @@ arbitrary set of the choices.</p>
       is returned. If not it is appended to the choices.</dd>
 </dl>
 
-<h3 style="text-align: center;" id="L2146">BitSet</h3>
+<h3 style="text-align: center;" id="L2171">BitSet</h3>
 
 <p>This is an implementation of BitSet that supports serialization, which the
 standard Jave implementation does not allow.</p>
@@ -2867,9 +2894,9 @@ currently has only one method:</p>
       entire structures if the structure offset bit is set. </dd>
 </dl>
 
-<h3 style="text-align: center;" id="L2178">Message Queue</h3>
+<h3 style="text-align: center;" id="L2203">Message Queue</h3>
 
-<h4 id="L2180">Definitions</h4>
+<h4 id="L2205">Definitions</h4>
 <pre>    public class MessageNode {
         public String message;
         public MessageType messageType;
@@ -2887,7 +2914,7 @@ currently has only one method:</p>
         public static MessageQueue create(int size);
     }</pre>
 
-<h4 id="L2184">MessageQueue</h4>
+<h4 id="L2209">MessageQueue</h4>
 
 <p>This is for use by code that wants to handle messages without blocking
 higher priority threads.</p>
@@ -2921,9 +2948,9 @@ higher priority threads.</p>
     <dd>Create a MessageQueue and return the interface.</dd>
 </dl>
 
-<h3 style="text-align: center;" id="L2232">Thread</h3>
+<h3 style="text-align: center;" id="L2257">Thread</h3>
 
-<h4 id="L2234">ThreadPriority</h4>
+<h4 id="L2259">ThreadPriority</h4>
 <pre>    public enum ThreadPriority {
         lowest,
         lower,
@@ -2938,7 +2965,7 @@ higher priority threads.</p>
         public static int getJavaPriority(ThreadPriority threadPriority);
     }</pre>
 
-<h4 id="L2238">ThreadCreate</h4>
+<h4 id="L2263">ThreadCreate</h4>
 <pre>    interface ThreadReady {
         void ready();
     }
@@ -2964,7 +2991,7 @@ higher priority threads.</p>
     list.</li>
 </ol>
 
-<h4 id="L2251">Executor</h4>
+<h4 id="L2276">Executor</h4>
 
 <p>An Executor is a thread that can execute any object that implements the Java
 Runnable interface. The user can request that a single command be executed. If
@@ -2991,7 +3018,7 @@ where
     <dd>Stop the thread and refuse additional execute requests.</dd>
 </dl>
 
-<h3 style="text-align: center;" id="L2275">Time Function Call</h3>
+<h3 style="text-align: center;" id="L2300">Time Function Call</h3>
 
 <p>TimeFunction is a facility that measures the average number of seconds a
 function call requires. When timeCall is called, it calls function in a loop.
@@ -3011,7 +3038,7 @@ average number of seconds per call.</p>
         public static TimeFunction create(TimeFunctionRequester requester);
     }</pre>
 
-<h3 style="text-align: center;" id="L2281">Linked List</h3>
+<h3 style="text-align: center;" id="L2306">Linked List</h3>
 
 <p>LinkedList implements a double linked list that requires a user to allocate
 the nodes. It is more efficent that ArrayList for implementing stacks and
@@ -3106,7 +3133,7 @@ like:</p>
             // do something with object
         }</pre>
 
-<h3 style="text-align: center;" id="L2311">Timer</h3>
+<h3 style="text-align: center;" id="L2336">Timer</h3>
 
 <p>This provides a general purpose timer. It provides the following features
 not provided by java.util.Timer and java.util.TimerTask:</p>
@@ -3120,7 +3147,7 @@ not provided by java.util.Timer and java.util.TimerTask:</p>
     new TimerTask must be created. A TimerNode can be reused.</li>
 </ol>
 
-<h4 id="L2328">Java Definitions</h4>
+<h4 id="L2353">Java Definitions</h4>
 <pre>interface Timer {
     interface TimerCallback {
         void callback();
@@ -3140,7 +3167,7 @@ class TimerFactory {
     static public TimerNode createNode(TimerCallback timerCallback);
 }</pre>
 
-<h4 id="L2332">TimerCallback</h4>
+<h4 id="L2357">TimerCallback</h4>
 
 <p>This is an interface that must be implemented by the user. It has the
 following methods: </p>
@@ -3156,7 +3183,7 @@ following methods: </p>
       is stopped and a schedule request is made.</dd>
 </dl>
 
-<h4 id="L2347">TimerNode</h4>
+<h4 id="L2372">TimerNode</h4>
 
 <p>This is an interface implemented by TimerFactory. It is allocated by calling
 TimerFactory.createNode. It is passed as an argument when scheduling a
@@ -3171,7 +3198,7 @@ callback. It has the single method:</p>
     <dd>Is this node in the timerQueue.</dd>
 </dl>
 
-<h4 id="L2362">Timer</h4>
+<h4 id="L2387">Timer</h4>
 
 <p>This is the interface for scheduling a timer callback. A timer is created by
 calling TimerFactory.create. It has the methods:</p>
@@ -3190,7 +3217,7 @@ calling TimerFactory.create. It has the methods:</p>
       useful. A new timer must be created.</dd>
 </dl>
 
-<h4 id="L2382">TimerFactory</h4>
+<h4 id="L2407">TimerFactory</h4>
 
 <p>This is the factory that implements the Timer and TimerNode interfaces. It
 has the methods:</p>
@@ -3203,7 +3230,7 @@ has the methods:</p>
       timer queue.</dd>
 </dl>
 
-<h3 style="text-align: center;" id="L2397">BitSet</h3>
+<h3 style="text-align: center;" id="L2422">BitSet</h3>
 
 <p>This is adapted from the java.util.BitSet. It adds serializable. See
 java.util.BitSet for a description. This implementation adds the following
@@ -3225,7 +3252,7 @@ additional methods:</p>
 </dl>
 <pre>    </pre>
 
-<h3 style="text-align: center;" id="L2423">Queue</h3>
+<h3 style="text-align: center;" id="L2448">Queue</h3>
 
 <p>This provides a queue which has an immutable capacity, which is specified
 when the queue is created. When the queue is full the user code is expected to
@@ -3311,7 +3338,7 @@ the following:</p>
          queue.releaseUsed(queueElement);
      }</pre>
 
-<h3 style="text-align: center;" id="L2486">Destroyable</h3>
+<h3 style="text-align: center;" id="L2511">Destroyable</h3>
 
 <p>This is a base interface used by many other interfaces.</p>
 <pre>interface Destroyable  {
@@ -3324,7 +3351,7 @@ the following:</p>
     <dd>Destroy the object.</dd>
 </dl>
 
-<h3 style="text-align: center;" id="L2500">Serialize</h3>
+<h3 style="text-align: center;" id="L2525">Serialize</h3>
 
 <p>This is a helper class for serialization, which is required for sending and
 receiving pvData over the nerwork.</p>
@@ -3352,10 +3379,10 @@ receiving pvData over the nerwork.</p>
 </dl>
 <hr />
 
-<h2 style="text-align: center" id="L2536">Package org.epics.pvData.monitor</h2>
+<h2 style="text-align: center" id="L2561">Package org.epics.pvData.monitor</h2>
 <hr />
 
-<h3 id="L2540">Overview</h3>
+<h3 id="L2565">Overview</h3>
 
 <p>Project javaIOC provides the ability to monitor changes to an arbitrary
 subset of the fields in a record. The next section describes how a client
@@ -3422,12 +3449,12 @@ links to a version 3 EPICS IOC.</p>
 <p>The monitor queue implementation provides support for the following queue
 sizes greater than or equal to two.</p>
 
-<h3 id="L2594">Standard Monitor Requests</h3>
+<h3 id="L2619">Standard Monitor Requests</h3>
 
 <p>This section describes that monitor support provided by project javaIOC. Two
 issues are discussed: record options and field options.</p>
 
-<h4 id="L2598">Record Options</h4>
+<h4 id="L2623">Record Options</h4>
 
 <p>The options that apply to an entire record are:</p>
 <dl>
@@ -3440,7 +3467,7 @@ issues are discussed: record options and field options.</p>
       but just keep a single copy of the data. A size of 2 is the default.</dd>
 </dl>
 
-<h4 id="L2615">Field Options</h4>
+<h4 id="L2640">Field Options</h4>
 
 <p>The following options are supported for all fields:</p>
 <dl>
@@ -3469,7 +3496,7 @@ issues are discussed: record options and field options.</p>
     follow:</dd>
 </dl>
 
-<h4 id="L2647">Monitor Request Options</h4>
+<h4 id="L2672">Monitor Request Options</h4>
 
 <p>The examples will use the syntax supported by calling:</p>
 <pre>   PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
@@ -3538,7 +3565,7 @@ additional options:</p>
       percentage change otherwise it is an absolute change.</dd>
 </dl>
 
-<h4 id="L2740">Record Deadband</h4>
+<h4 id="L2765">Record Deadband</h4>
 
 <p>NOTE: This applys to records in a javaIOC.</p>
 
@@ -3577,7 +3604,7 @@ associated deadband structure, which is defined as follows:</p>
 is defined for the record than the algorithm is made to be deadband and the
 display deadband is used as the deadband.</p>
 
-<h4 id="L2754">Examples</h4>
+<h4 id="L2779">Examples</h4>
 
 <p>The following:</p>
 <pre>    String request = "alarm,timeStamp,power.value";
@@ -3613,9 +3640,9 @@ only time the timeStamp is changed.</p>
 <p>This requests a monitor whenever and alarm is raised or when the power.value
 changes by at least 1 percent.</p>
 
-<h3 id="L2784">Monitor Interfaces</h3>
+<h3 id="L2809">Monitor Interfaces</h3>
 
-<h4 id="L2786">Monitor</h4>
+<h4 id="L2811">Monitor</h4>
 
 <p>This is the interface implemented by a factory that implements a monitoring
 algorithm</p>
@@ -3643,7 +3670,7 @@ algorithm</p>
     <dd>release the element returned by the most recent poll request.</dd>
 </dl>
 
-<h4 id="L2825">MonitorElement</h4>
+<h4 id="L2850">MonitorElement</h4>
 
 <p>This is the interface returned by a call to poll.</p>
 <pre>interface MonitorElement  {
@@ -3664,7 +3691,7 @@ algorithm</p>
       since the last poll request.</dd>
 </dl>
 
-<h4 id="L2852">MonitorRequester</h4>
+<h4 id="L2877">MonitorRequester</h4>
 
 <p>This is the interface implemented by the code that request a monitor.</p>
 <pre>interface MonitorRequester extends Requester {
@@ -3686,7 +3713,7 @@ algorithm</p>
       monitorConnect is again called.</dd>
 </dl>
 
-<h4 id="L2879">MonitorAlgorithm</h4>
+<h4 id="L2904">MonitorAlgorithm</h4>
 
 <p>The following are implemented by code that implements a monitor
 algorithm.</p>
@@ -3706,7 +3733,7 @@ algorithm.</p>
     <dd>Called after a monitor has been issued.</dd>
 </dl>
 
-<h4 id="L2906">MonitorQueue</h4>
+<h4 id="L2931">MonitorQueue</h4>
 
 <p>This is the interface implemented by MonitorQueueFactory.</p>
 <pre>interface MonitorQueue  {
@@ -3743,7 +3770,7 @@ class MonitorQueueFactory {
 </dl>
 <hr />
 
-<h2 style="text-align: center" id="L2959">Package
+<h2 style="text-align: center" id="L2984">Package
 org.epics.pvData.accessSecurity</h2>
 <hr />
 
@@ -3751,12 +3778,12 @@ org.epics.pvData.accessSecurity</h2>
 implemented so this section just discusses ideas of what access security should
 be.</p>
 
-<h3 id="L2965">Outstanding Issues</h3>
+<h3 id="L2990">Outstanding Issues</h3>
 
 <p>This section is temporary. It will be removed after access security is
 implemented.</p>
 
-<h4 id="L2969">access security level</h4>
+<h4 id="L2994">access security level</h4>
 
 <p>Epics Access Security had the concept of field level with only two levels
 allowed. For pvData more than two levels are allowed. In addition names can be
@@ -3776,7 +3803,7 @@ define levels starting with 0. Level 0 should be acceptable as the default.</p>
 <p></p>
 <hr />
 
-<h3 id="L2985">Overview</h3>
+<h3 id="L3010">Overview</h3>
 <hr />
 
 <p>Access Security limits access to A PVData database. Access Security for a
@@ -3808,17 +3835,17 @@ Security".</p>
 </ul>
 <hr />
 
-<h3 id="L3043">Quick Start</h3>
+<h3 id="L3068">Quick Start</h3>
 <hr />
 
 <p>TBD. This section will describe how to start access security for a
 javaIOC.</p>
 <hr />
 
-<h3 id="L3051">Features and Limitations</h3>
+<h3 id="L3076">Features and Limitations</h3>
 <hr />
 
-<h4 id="L3055">Features</h4>
+<h4 id="L3080">Features</h4>
 
 <p>Access security protects IOC databases from unauthorized PVAccess Clients.
 Access security is based on the following:</p>
@@ -3854,7 +3881,7 @@ should define and use a common implementation.</p>
 supports. It allows only two levels: 0 and 1 with 1 being the highest security
 level.</p>
 
-<h4 id="L3090">Limitations</h4>
+<h4 id="L3115">Limitations</h4>
 
 <p>PVAccess can be enhanced to implement authentication for udp and tcp access
 to a PVData database but this is not the responsibility of access security. The
@@ -3869,14 +3896,14 @@ Network security methods must be used to limit access to the subnet on which
 the iocs reside. </p>
 <hr />
 
-<h3 id="L3100">Access Security Configuration File</h3>
+<h3 id="L3125">Access Security Configuration File</h3>
 <hr />
 
 <p>This section describes the format of a file containing definitions of the
 user access groups, host access groups, and access security groups. Lets first
 give a simple example and then a complete description of the syntax. </p>
 
-<h4 id="L3106">Simple Example</h4>
+<h4 id="L3131">Simple Example</h4>
 <pre>&lt;accessSecurity&gt;
   &lt;credentials&gt;
     &lt;credential name="user"&gt;[publickey,sharedkey]&lt;/credential&gt;
@@ -3905,7 +3932,7 @@ give a simple example and then a complete description of the syntax. </p>
 <p>These rules provide read access to anyone located anywhere and read,write,
 and process access to user1 and user2 if they are located at host1 or host2.</p>
 
-<h4 id="L3112">Syntax Definition</h4>
+<h4 id="L3137">Syntax Definition</h4>
 
 <p>An access security configuration file must start and end as follows:</p>
 <pre>&lt;?xml version="1.0" ?&gt;
@@ -3965,7 +3992,7 @@ and process access to user1 and user2 if they are located at host1 or host2.</p>
      &lt;!-- an arbitrary number of groups can be defined --&gt;
   &lt;/log&gt;</pre>
 
-<h5 id="L3124">credentials</h5>
+<h5 id="L3149">credentials</h5>
 
 <p>Credentials allow group names to be verified by PVAccess. All credential
 definitions are enclosed in a single credentials xml element. An arbitrary set
@@ -3978,7 +4005,7 @@ on the server for authentication For example "void" just uses the response from
 the client, "sharedkey" does some real work, "client-ip" yields the client's IP
 number from PVAccess.</p>
 
-<h5 id="L3130">groups</h5>
+<h5 id="L3155">groups</h5>
 
 <p>groups provide a way to combine a set of names with a single name. For
 example all accelerator physicists can be combined into a single group named
@@ -3987,7 +4014,7 @@ room can be combined in a group named controlRoom.</p>
 
 <p>A group has a name, selectes a credential, and contains a set of names.</p>
 
-<h5 id="L3136">states</h5>
+<h5 id="L3161">states</h5>
 
 <p>states alow rules to apply only when something is or is not in a particular
 state. A single xml element "states" holds all possible states.</p>
@@ -4006,7 +4033,7 @@ sub-elements: provider and pvname:</p>
       fails then the result is failure.</dd>
 </dl>
 
-<h5 id="L3153">access and access group</h5>
+<h5 id="L3178">access and access group</h5>
 
 <p>access contains definitions for an arbitrary number of access groups. Each
 access group defines an arbitrary number of rules. Each record being proctected
@@ -4066,7 +4093,7 @@ level. Within a rule the following elements can appear:</p>
   chosen.</li>
 </ol>
 
-<h5 id="L3205">log and log group</h5>
+<h5 id="L3230">log and log group</h5>
 
 <p>The definitions are similar to those for access and access group. But these
 are differences:</p>
@@ -4083,10 +4110,10 @@ are differences:</p>
 </ul>
 <hr />
 
-<h3 id="L3225">Examples</h3>
+<h3 id="L3250">Examples</h3>
 <hr />
 
-<h4 id="L3229">Credentials</h4>
+<h4 id="L3254">Credentials</h4>
 
 <p>The following:</p>
 <pre>&lt;credentials&gt;
@@ -4111,7 +4138,7 @@ that order) to authenticate users, the client may just declare its host name
 without further checking, and a PVAccess call is used to determine the
 numerical IP of the client. </p>
 
-<h4 id="L3237">Groups</h4>
+<h4 id="L3262">Groups</h4>
 <pre>&lt;groups&gt;
    &lt;group name = "operator" credential = "user"&gt;[op1,op2,superguy]&lt;/group&gt;
    &lt;group name = "supervisor" credential = "user"&gt;[superguy]&lt;/group&gt;
@@ -4120,7 +4147,7 @@ numerical IP of the client. </p>
    &lt;group name = "ioc" credential = "ip"&gt;[192.168.143.0/24,192.168.144.1,192.168.144.2]&lt;/group&gt;
 &lt;/group&gt;</pre>
 
-<h4 id="L3241">States</h4>
+<h4 id="L3266">States</h4>
 
 <p>The following:</p>
 <pre>&lt;states&gt;
@@ -4138,7 +4165,7 @@ numerical IP of the client. </p>
 state are determined by the site. As an example they could be something like:
 "offline", "standy", and "operational"</p>
 
-<h4 id="L3249">Access Rules</h4>
+<h4 id="L3274">Access Rules</h4>
 
 <p>The following"</p>
 <pre>&lt;access&gt;
@@ -4167,7 +4194,7 @@ state are determined by the site. As an example they could be something like:
     offLine.</li>
 </ul>
 
-<h4 id="L3267">Logging Rules</h4>
+<h4 id="L3292">Logging Rules</h4>
 
 <p>The following:</p>
 <pre>&lt;log&gt;
@@ -4191,7 +4218,7 @@ access group default except:</p>
 </ul>
 <hr />
 
-<h3 id="L3284">Linac Example</h3>
+<h3 id="L3309">Linac Example</h3>
 <hr />
 
 <p>Lets design a set of rules for a Linac. Assume the following:</p>
@@ -4319,10 +4346,10 @@ placed in group default.</p>
 &lt;/access&gt;</pre>
 <hr />
 
-<h3 id="L3329">Design Summary</h3>
+<h3 id="L3354">Design Summary</h3>
 <hr />
 
-<h4 id="L3333">Summary of Design Requirements</h4>
+<h4 id="L3358">Summary of Design Requirements</h4>
 
 <p>A brief summary of the Functional Requirements is:</p>
 <ol>
@@ -4341,7 +4368,7 @@ placed in group default.</p>
   </li>
 </ol>
 
-<h4 id="L3366">Additional Requirements</h4>
+<h4 id="L3391">Additional Requirements</h4>
 <dl>
   <dt>Performance</dt>
     <dd>Although the functional requirements does not mention it, a fundamental
@@ -4373,26 +4400,26 @@ placed in group default.</p>
 </dl>
 <hr />
 
-<h3 id="L3401">Implementation Overview</h3>
+<h3 id="L3426">Implementation Overview</h3>
 <hr />
 
 <p>TBD.</p>
 <hr />
 
-<h3 id="L3409">Java IOC Support</h3>
+<h3 id="L3434">Java IOC Support</h3>
 <hr />
 
 <p>TBD. The plan is to start/restart access security via record instances that
 have support that interfaces to access security</p>
 <hr />
 
-<h3 id="L3417">PVAccess Support</h3>
+<h3 id="L3442">PVAccess Support</h3>
 <hr />
 
 <p>TBD.</p>
 <hr />
 
-<h3 id="L3425">Logging PVAccess Puts</h3>
+<h3 id="L3450">Logging PVAccess Puts</h3>
 <hr />
 
 <p>TBD.</p>
