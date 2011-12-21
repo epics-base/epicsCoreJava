@@ -71,7 +71,7 @@
                 </executions>
 
 <configuration>
-<addtionalparam>-overview=src/overview.html</additionalparam>
+<overview>src/overview.html</overview>
 </configuration>
 
             </plugin>
