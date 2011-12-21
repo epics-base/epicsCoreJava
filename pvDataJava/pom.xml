@@ -69,6 +69,11 @@
                         </goals>
                     </execution>
                 </executions>
+
+<configuration>
+<addtionalparam>-overview=src/overview.html</additionalparam>
+</configuration>
+
             </plugin>
         </plugins>
     </build>
