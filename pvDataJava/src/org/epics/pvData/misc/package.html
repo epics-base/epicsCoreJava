@@ -1,6 +1,35 @@
 <html>
 <body>
 <p>This package provides a number of utility classes that are used by pvData code.</p>
+<p>This package provides utility code:</p>
+<dl>
+  <dt>multiChoice</dt>
+    <dd>Support for a multiChoice structre, which is a structure containing two
+      fields: choices and bitMask. choices is an array of strings and bitMask
+      selects a subset of the choices.</dd>
+  <dt>Message Queue</dt>
+    <dd>Support for queuing messages to give to requesters.</dd>
+  <dt>Thread</dt>
+    <dd>ThreadCreate and Executor</dd>
+  <dt>TimeFunction</dt>
+    <dd>Time how long a function call requires.</dd>
+  <dt>LinkedList</dt>
+    <dd>A douuble linked list facility that requires the user to allocate a
+      node. It is more efficient that ArrayList and does not require the
+      implementation to allocate storage for the nodes.</dd>
+  <dt>Timer</dt>
+    <dd>An implementation of Timer that does not require an object to be
+      created for each timer request.</dd>
+  <dt>BitSet</dt>
+    <dd>An implementation of BitSet that can be serialized.</dd>
+  <dt>Queue</dt>
+    <dd>A queue implementation.</dd>
+  <dt>Destroyable</dt>
+    <dd>A base interface for destroy.</dd>
+  <dt>Serialize</dt>
+    <dd>A helper for serialization.</dd>
+</dl>
+
 <p>See documentation/pvDataJava.html for a more complete overview.</p>
 </body>
 </html>

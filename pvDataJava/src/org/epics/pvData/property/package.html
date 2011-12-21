@@ -1,6 +1,14 @@
 <html>
 <body>
 <p>This package contains interfaces and code for standard pvData structure fields.</p>
+<p>Only fields named "value" have properties. A record can have multiple value
+fields, which can appear in the top level structure of a record or in a
+substructure. All other fields in the structure containing a value field are
+considered properties of the value field. The fieldname is also the property
+name. The value field can have any type, i.e. scalar, scalarArray, or
+structure. Typical property fields are timeStamp, alarm, display, control, and
+history. The timeStamp is a special case. If it appears anywhere in the
+structure hieraracy above a value field it is a property of the value field.</p>
 <p>See documentation/pvDataJava.html for a more complete overview.</p>
 </body>
 </html>
