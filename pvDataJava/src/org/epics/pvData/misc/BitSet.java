@@ -1231,7 +1231,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
     	}
     	*/
     	
-        final int n = wordsInUse;
+        int n = wordsInUse;
         if (n == 0) {
     		SerializeHelper.writeSize(0, buffer, flusher);
     		return;
@@ -1239,15 +1239,17 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         int len = 8 * (n-1);
         for (long x = words[n - 1]; x != 0; x >>>= 8)
             len++;
-
-		SerializeHelper.writeSize(len, buffer, flusher);
+        
+ 		SerializeHelper.writeSize(len, buffer, flusher);
 		flusher.ensureBuffer(len);
 
-        for (int i = 0; i < n - 1; i++)
+	    n = len / 8;
+	    for (int i = 0; i < n; i++)
         	buffer.putLong(words[i]);
-        
-        for (long x = words[n - 1]; x != 0; x >>>= 8)
-        	buffer.put((byte) (x & 0xff));
+	    
+	    if (n < wordsInUse)
+	        for (long x = words[wordsInUse - 1]; x != 0; x >>>= 8)
+	        	buffer.put((byte) (x & 0xff));
     }
 
 	/* (non-Javadoc)
@@ -1297,4 +1299,57 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
     	*/
 	}
     
+	/* TODO JUnit
+	static class T implements SerializableControl, DeserializableControl
+	{
+
+		@Override
+		public void ensureData(int size) {
+		}
+
+		@Override
+		public void alignData(int alignment) {
+		}
+
+		@Override
+		public void flushSerializeBuffer() {
+		}
+
+		@Override
+		public void ensureBuffer(int size) {
+		}
+
+		@Override
+		public void alignBuffer(int alignment) {
+		}
+
+	}
+	public static void main(String[] a)
+	{
+		ByteBuffer b = ByteBuffer.allocate(129+1);
+		T t = new T();
+		
+		for (int i = -1; i <= 1024; i++)
+		{
+			System.out.println(i);
+			
+			b.clear();
+			BitSet s1 = new BitSet();
+			if (i >= 0) s1.set(i);
+			s1.serialize(b, t);
+			
+			b.flip();
+			
+			BitSet s2 = new BitSet();
+			s2.deserialize(b, t);
+			
+			if (!s1.equals(s2) && (i+1)/64 == b.limit())
+			{
+				System.out.println(s1);
+				System.out.println(s2);
+				throw new RuntimeException("bug");
+			}
+		}		
+	}
+	*/
 }
