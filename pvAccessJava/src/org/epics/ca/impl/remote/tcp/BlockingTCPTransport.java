@@ -724,7 +724,7 @@ public abstract class BlockingTCPTransport implements ConnectedTransport, Transp
 //context.getLogger().finest("Buffer full, position " + buffer.position() + " of total " + limit + " bytes.");
 //System.out.println("Buffer full, position " + buffer.position() + " of total " + limit + " bytes.");
 	        		// buffers full, reset the limit and indicate that there are more data to be sent
-	        		if (bytesSent == maxBytesToSend)
+	        		if (bytesToSend == maxBytesToSend)
 	        			buffer.limit(limit);
 
 //context.getLogger().finest("Send buffer full for " + socketAddress + ", waiting...");
