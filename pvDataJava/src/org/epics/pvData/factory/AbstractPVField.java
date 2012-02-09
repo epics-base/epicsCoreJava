@@ -218,7 +218,7 @@ public abstract class AbstractPVField implements PVField{
         String fieldName = field.getFieldName();
         for(int i=0; i<pvFields.length; i++) {
         	PVField pvField = pvFields[i];
-        	if(pvField.getField().getFieldName()==fieldName) {
+        	if(pvField.getField().getFieldName().equals(fieldName)) {
         		index = i;
         		break;
         	}

@@ -90,7 +90,7 @@ public class BasePVString extends AbstractPVScalar implements PVString
             if (bv != null)
                 return bv.equals(value);
             else
-                return bv == value;
+                return value == null;
         }
         else
             return false;
