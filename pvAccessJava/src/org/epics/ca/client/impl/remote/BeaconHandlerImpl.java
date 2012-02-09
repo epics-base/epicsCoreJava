@@ -32,12 +32,12 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	/**
 	 * Context instance.
 	 */
-	private ClientContextImpl context;
+	private final ClientContextImpl context;
 
 	/**
 	 * Remote address.
 	 */
-	private InetSocketAddress responseFrom;
+	private final InetSocketAddress responseFrom;
 
 	/**
 	 * Last beacon sequence ID.

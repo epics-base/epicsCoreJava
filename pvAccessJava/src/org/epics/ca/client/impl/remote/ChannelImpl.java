@@ -15,6 +15,9 @@
 package org.epics.ca.client.impl.remote;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -477,13 +480,19 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		{
 			this.connectionState = connectionState;
 			
-			//boolean connectionStatusToReport = (connectionState == ConnectionState.CONNECTED);
-			//if (connectionStatusToReport != lastReportedConnectionState)
+			try
 			{
-				//lastReportedConnectionState = connectionStatusToReport;
-				// TODO via dispatcher ?!!!
 				requester.channelStateChange(this, connectionState);
 			}
+			catch (Throwable th)
+			{
+				// guard CA code from exceptions
+				Writer writer = new StringWriter();
+				PrintWriter printWriter = new PrintWriter(writer);
+				th.printStackTrace(printWriter);
+				requester.message("Unexpected exception caught: " + writer, MessageType.fatalError);
+			}
+			
 		}
 	}
 
