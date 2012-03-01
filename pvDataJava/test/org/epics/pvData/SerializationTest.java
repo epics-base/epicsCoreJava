@@ -67,6 +67,15 @@ public class SerializationTest extends TestCase {
 			// TODO Auto-generated method stub
 			
 		}
+
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.SerializableControl#cachedSerialize(org.epics.pvData.pv.Field, java.nio.ByteBuffer)
+		 */
+		@Override
+		public void cachedSerialize(Field field, ByteBuffer buffer) {
+			// no cache
+			field.serialize(buffer, this);
+		}
 		
 	}
 	private static SerializableControl flusher = new SerializableFlushImpl();
@@ -84,6 +93,15 @@ public class SerializationTest extends TestCase {
 		public void alignData(int alignment) {
 			// TODO Auto-generated method stub
 			
+		}
+
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.DeserializableControl#cachedDeserialize(java.nio.ByteBuffer)
+		 */
+		@Override
+		public Field cachedDeserialize(ByteBuffer buffer) {
+			// no cache
+			return FieldFactory.getFieldCreate().deserialize(buffer, this);
 		}
 		
 	}

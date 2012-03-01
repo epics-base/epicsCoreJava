@@ -9,8 +9,10 @@ import java.nio.ByteBuffer;
 
 import junit.framework.TestCase;
 
+import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.pv.DeserializableControl;
+import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
@@ -42,6 +44,14 @@ public class StatusTest extends TestCase {
 			// TODO Auto-generated method stub
 			
 		}
+
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.SerializableControl#cachedSerialize(org.epics.pvData.pv.Field, java.nio.ByteBuffer)
+		 */
+		@Override
+		public void cachedSerialize(Field field, ByteBuffer buffer) {
+			field.serialize(buffer, this);
+		}
 		
 	}
 	private static SerializableControl flusher = new SerializableFlushImpl();
@@ -59,6 +69,15 @@ public class StatusTest extends TestCase {
 		public void alignData(int alignment) {
 			// TODO Auto-generated method stub
 			
+		}
+
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.DeserializableControl#cachedDeserialize(java.nio.ByteBuffer)
+		 */
+		@Override
+		public Field cachedDeserialize(ByteBuffer buffer) {
+			// no cache
+			return FieldFactory.getFieldCreate().deserialize(buffer, this);
 		}
 		
 	}

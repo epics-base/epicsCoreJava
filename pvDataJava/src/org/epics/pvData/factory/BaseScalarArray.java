@@ -5,8 +5,13 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
+
+import org.epics.pvData.misc.SerializeHelper;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Type;
 
 /**
@@ -72,4 +77,25 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 			return false;
 		return true;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
+	 */
+	@Override
+	public void serialize(ByteBuffer buffer, SerializableControl control) {
+		control.ensureBuffer(1);
+		buffer.put((byte)(Type.scalarArray.ordinal() << 4 | elementType.ordinal()));
+		SerializeHelper.serializeString(getFieldName(), buffer, control);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
+	 */
+	@Override
+	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }

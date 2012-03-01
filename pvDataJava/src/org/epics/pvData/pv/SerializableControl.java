@@ -5,6 +5,8 @@
  */
 package org.epics.pvData.pv;
 
+import java.nio.ByteBuffer;
+
 
 /**
  * Flush control interface.
@@ -33,5 +35,12 @@ public interface SerializableControl {
 	 * @param alignment size in bytes, must be power of two. 
 	 */
 	void alignBuffer(int alignment);
+	
+	/**
+	 * Serialize <i>Field</i> instance via cache.
+	 * @param field <i>Field</i> instance to be serialized.
+	 * @param buffer Buffer to be serialized to.
+	 */
+	void cachedSerialize(Field field, ByteBuffer buffer);
 	
 }

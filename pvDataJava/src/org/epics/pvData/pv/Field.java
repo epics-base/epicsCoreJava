@@ -10,7 +10,7 @@ package org.epics.pvData.pv;
  * @author mrk
  *
  */
-public interface Field {
+public interface Field extends Serializable {
     /**
      * Get the field name
      * @return the field name

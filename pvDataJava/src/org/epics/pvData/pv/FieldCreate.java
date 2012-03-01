@@ -5,6 +5,8 @@
  */
 package org.epics.pvData.pv;
 
+import java.nio.ByteBuffer;
+
 /**
  * Interface for creating introspection interfaces.
  * @author mrk
@@ -47,4 +49,14 @@ public interface FieldCreate {
      * @return a <i>Structure</i> interface for the newly created object.
      */
     Structure createStructure(String fieldName, Field[] fields);
+    
+	/**
+	 * Deserialize <i>Field</i> instance from given byte buffer.
+	 * @param buffer Buffer containing serialized <i>Field</i> instance. 
+	 * @param control Deserialization control instance.
+	 * @return a deserialized <i>Field</i> instance.
+	 */
+	Field deserialize(ByteBuffer buffer, DeserializableControl control);
+
 }
+

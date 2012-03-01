@@ -5,6 +5,10 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
+
+import org.epics.pvData.misc.SerializeHelper;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.Scalar;
@@ -12,6 +16,7 @@ import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.Type;
 
 /**
  * FieldFactory creates Field instances.
@@ -94,6 +99,42 @@ public final class FieldFactory {
         public Structure createStructure(String fieldName, Field[] field)
         {
             return new BaseStructure(fieldName,field);
-        }    
+        }
+		/* (non-Javadoc)
+		 * @see org.epics.pvData.pv.FieldCreate#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
+		 */
+		@Override
+		public Field deserialize(ByteBuffer buffer, DeserializableControl control) {
+			control.ensureData(1);
+			final byte typeCode = buffer.get();
+
+			// high nibble means scalar/array/structure
+			final Type type = Type.values()[typeCode >>> 4]; 
+			switch (type)
+			{
+				case scalar:
+					final ScalarType scalar = ScalarType.values()[typeCode & 0x0F];
+					final String scalarFieldName = SerializeHelper.deserializeString(buffer, control);
+					return new BaseScalar(scalarFieldName, scalar);
+					
+				case scalarArray:
+					final ScalarType element = ScalarType.values()[typeCode & 0x0F];
+					final String arrayFieldName = SerializeHelper.deserializeString(buffer, control);
+					return new BaseScalarArray(arrayFieldName, element);
+					
+				case structure:
+					return BaseStructure.deserializeStructureField(buffer, control);
+
+				case structureArray:
+					final String structureArrayFieldName = SerializeHelper.deserializeString(buffer, control);
+					final Structure arrayElement = BaseStructure.deserializeStructureField(buffer, control);
+					return new BaseStructureArray(structureArrayFieldName, arrayElement);
+
+				default:
+					throw new UnsupportedOperationException("unsupported type: " + type);
+			}
+		}  
+        
+        
     }
 }

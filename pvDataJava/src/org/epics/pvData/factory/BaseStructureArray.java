@@ -5,7 +5,12 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
+
+import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.DeserializableControl;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
 import org.epics.pvData.pv.Type;
@@ -72,4 +77,27 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 			return false;
 		return true;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
+	 */
+	@Override
+	public void serialize(ByteBuffer buffer, SerializableControl control) {
+		control.ensureBuffer(1);
+		buffer.put((byte)(Type.structureArray.ordinal() << 4));
+		SerializeHelper.serializeString(getFieldName(), buffer, control);
+		// we also need to serialize element (structure) introspection data...
+		BaseStructure.serializeStructureField(structure, buffer, control);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
+	 */
+	@Override
+	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }

@@ -5,10 +5,14 @@
  */
 package org.epics.pvData.factory;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 
@@ -122,4 +126,47 @@ public class BaseStructure extends BaseField implements Structure {
 			return false;
 		return true;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
+	 */
+	@Override
+	public void serialize(ByteBuffer buffer, SerializableControl control) {
+		control.ensureBuffer(1);
+		buffer.put((byte)(Type.structure.ordinal() << 4));
+		serializeStructureField(this, buffer, control);
+	}
+
+	static void serializeStructureField(final Structure structure, ByteBuffer buffer, 
+			SerializableControl control) {
+		SerializeHelper.serializeString(structure.getFieldName(), buffer, control);
+		final Field[] fields = structure.getFields();
+		SerializeHelper.writeSize(fields.length, buffer, control);
+		for (int i = 0; i < fields.length; i++)
+			control.cachedSerialize(fields[i], buffer);
+	}
+	
+	static final Structure deserializeStructureField(ByteBuffer buffer, DeserializableControl control) {
+		final String structureFieldName = SerializeHelper.deserializeString(buffer, control);
+		final int size = SerializeHelper.readSize(buffer, control);
+		Field[] fields = null;
+		if (size > 0)
+		{
+			fields = new Field[size];
+			for (int i = 0; i < size; i++)
+				fields[i] = control.cachedDeserialize(buffer);
+		}
+		return new BaseStructure(structureFieldName, fields);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
+	 */
+	@Override
+	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }

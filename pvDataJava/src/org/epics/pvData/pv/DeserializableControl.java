@@ -5,6 +5,8 @@
  */
 package org.epics.pvData.pv;
 
+import java.nio.ByteBuffer;
+
 
 /**
  * Deserialization control interface.
@@ -25,4 +27,12 @@ public interface DeserializableControl {
 	 * @param alignment size in bytes, must be power of two. 
 	 */
 	void alignData(int alignment);
+	
+	/**
+	 * Deserialize <i>Field</i> instance via cache.
+	 * @param buffer Buffer to be deserialized from.
+	 * @param deserialized <i>Field</i> instance.
+	 */
+	Field cachedDeserialize(ByteBuffer buffer);
+	
 }
