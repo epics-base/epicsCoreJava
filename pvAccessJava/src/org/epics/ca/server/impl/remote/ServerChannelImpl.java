@@ -18,7 +18,7 @@ import java.io.PrintStream;
 
 import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.Channel;
-import org.epics.ca.impl.remote.ServerChannel;
+import org.epics.ca.impl.remote.server.ServerChannel;
 import org.epics.ca.util.IntHashMap;
 import org.epics.pvData.misc.Destroyable;
 import org.epics.pvData.pv.PVField;

@@ -26,8 +26,8 @@ import org.epics.ca.client.impl.remote.handlers.MessageHandler;
 import org.epics.ca.client.impl.remote.handlers.MultipleDataResponseHandler;
 import org.epics.ca.client.impl.remote.handlers.NoopResponse;
 import org.epics.ca.client.impl.remote.handlers.SearchResponseHandler;
-import org.epics.ca.impl.remote.ResponseHandler;
 import org.epics.ca.impl.remote.Transport;
+import org.epics.ca.impl.remote.request.ResponseHandler;
 import org.epics.ca.util.HexDump;
 
 

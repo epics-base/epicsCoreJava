@@ -14,6 +14,7 @@
 
 package org.epics.ca.server.impl.remote.handlers;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
@@ -23,10 +24,10 @@ import org.epics.ca.client.Channel;
 import org.epics.ca.client.ChannelProvider;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.Channel.ConnectionState;
-import org.epics.ca.impl.remote.ChannelHostingTransport;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
+import org.epics.ca.impl.remote.server.ChannelHostingTransport;
 import org.epics.ca.server.impl.remote.ServerChannelImpl;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.pvData.misc.SerializeHelper;
@@ -89,7 +90,11 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 	 */
 	private void disconnect(Transport transport)
 	{
-		transport.close(true);
+		try {
+			transport.close();
+		} catch (IOException e) {
+			// noop
+		}
 	}
 	
 	

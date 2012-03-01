@@ -25,13 +25,14 @@ public class ClientFactory {
      */
     public static synchronized void start() {
         if(isRegistered) return;
-        isRegistered = true;
         
         try {
         	context = new ClientContextImpl();
 			context.initialize();
             ChannelAccessFactory.registerChannelProvider(context.getProvider());
-        } catch (CAException e) {
+            isRegistered = true;
+        } catch (Throwable e) {
+        	stop();
             throw new RuntimeException("Failed to initializa client channel access.", e);
         }
     }
@@ -41,10 +42,12 @@ public class ClientFactory {
      */
     public static synchronized void stop() {
     	if (context != null)
+    	{
     		context.dispose();
-    	ChannelAccessFactory.unregisterChannelProvider(context.getProvider());
+    		ChannelAccessFactory.unregisterChannelProvider(context.getProvider());
+        	// allows GC to cleanup
+        	context = null;
+    	}
     	isRegistered = false;
-    	// allows GC to cleanup
-    	context = null;
     }
 }

@@ -18,19 +18,18 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.epics.ca.CAException;
-import org.epics.ca.impl.remote.DataResponse;
+import org.epics.ca.PVFactory;
 import org.epics.ca.impl.remote.QoS;
-import org.epics.ca.impl.remote.SubscriptionRequest;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
-import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.factory.StatusFactory;
+import org.epics.ca.impl.remote.request.DataResponse;
+import org.epics.ca.impl.remote.request.SubscriptionRequest;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.StatusCreate;
 
 /**
  * Base channel request.
@@ -39,12 +38,12 @@ import org.epics.pvData.pv.Status.StatusType;
  */
 abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, TransportSender {
 
-    protected static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
+    protected static final StatusCreate statusCreate = PVFactory.getStatusCreate();
     protected static final Status okStatus = statusCreate.getStatusOK();
     protected static final Status destroyedStatus = statusCreate.createStatus(StatusType.ERROR, "request destroyed", null);
     protected static final Status channelNotConnected = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
     protected static final Status otherRequestPendingStatus = statusCreate.createStatus(StatusType.ERROR, "other request pending", null);
-    protected static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    protected static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
     /**
 	 * Channel.

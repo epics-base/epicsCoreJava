@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.epics.ca.PVFactory;
 import org.epics.pvData.factory.ConvertFactory;
-import org.epics.pvData.factory.FieldFactory;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.Field;
@@ -21,8 +20,8 @@ import org.epics.pvData.pv.Type;
 public class Mapper
 {
 	private final static Convert convert = ConvertFactory.getConvert();
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
+    private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
 	
 	final PVStructure originStructure;

@@ -7,7 +7,7 @@ package org.epics.ca.client;
 
 import java.util.regex.Pattern;
 
-import org.epics.pvData.factory.PVDataFactory;
+import org.epics.ca.PVFactory;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVDataCreate;
@@ -33,7 +33,7 @@ public class CreateRequestFactory {
     }
     
     static private class CreateRequestImpl {
-        private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+        private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
         private static final Pattern commaPattern = Pattern.compile("[,]");
         private static final Pattern equalPattern = Pattern.compile("[=]");
         

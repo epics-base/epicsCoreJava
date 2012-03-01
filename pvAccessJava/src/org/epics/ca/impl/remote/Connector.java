@@ -16,6 +16,8 @@ package org.epics.ca.impl.remote;
 
 import java.net.InetSocketAddress;
 
+import org.epics.ca.impl.remote.request.ResponseHandler;
+
 /**
  * Interface defining socket connector (Connector-Transport pattern). 
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>

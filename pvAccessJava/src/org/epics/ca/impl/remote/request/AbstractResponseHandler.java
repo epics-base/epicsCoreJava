@@ -12,12 +12,13 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.ca.impl.remote;
+package org.epics.ca.impl.remote.request;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.CAConstants;
+import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.util.HexDump;
 
 /**
@@ -55,7 +56,7 @@ public abstract class AbstractResponseHandler implements ResponseHandler {
 				HexDump.hexDump("Message [" + command + ", v" + Integer.toHexString(version) + "] received from " + responseFrom, description, 
 									payloadBuffer.array(),
 									payloadBuffer.position(),
-									payloadSize); 
+									Math.min(payloadSize, payloadBuffer.limit()-payloadBuffer.position()));	// TODO can be segmented 
 			else
 				System.out.println("Message [" + command + ", v" + Integer.toHexString(version) + "] received from " + responseFrom + ", payload size = " + payloadSize);
 		}

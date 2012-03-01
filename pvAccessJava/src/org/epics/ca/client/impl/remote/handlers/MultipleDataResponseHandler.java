@@ -19,8 +19,8 @@ import java.nio.ByteBuffer;
 
 import org.epics.ca.CAConstants;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
-import org.epics.ca.impl.remote.DataResponse;
 import org.epics.ca.impl.remote.Transport;
+import org.epics.ca.impl.remote.request.DataResponse;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>

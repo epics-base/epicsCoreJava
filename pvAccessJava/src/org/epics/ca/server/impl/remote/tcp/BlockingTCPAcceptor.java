@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,6 +26,7 @@ import java.util.logging.Level;
 
 import org.epics.ca.CAException;
 import org.epics.ca.impl.remote.Context;
+import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.ca.server.impl.remote.ServerResponseHandler;
 
@@ -60,6 +62,7 @@ public class BlockingTCPAcceptor {
 	 */
 	private AtomicBoolean destroyed = new AtomicBoolean(false);
 
+	//private final PollerImpl poller;
 	/**
 	 * @param context
 	 * @param port
@@ -69,7 +72,16 @@ public class BlockingTCPAcceptor {
 	public BlockingTCPAcceptor(Context context, int port, int receiveBufferSize) throws CAException {
 		this.context = context;
 		this.receiveBufferSize = receiveBufferSize;
-		
+
+		/*
+		// TODO!!!
+		try {
+			poller = new PollerImpl();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		poller.start();
+		 */
 		initialize(port);
 	}
 
@@ -86,7 +98,7 @@ public class BlockingTCPAcceptor {
 			{
 				// this will block
 				SocketChannel socket = serverSocketChannel.accept();
-				
+
 				SocketAddress address = socket.socket().getRemoteSocketAddress();
 				context.getLogger().finer("Accepted connection from CA client: " + address);
 				
@@ -95,19 +107,20 @@ public class BlockingTCPAcceptor {
 				
 				// enable TCP_KEEPALIVE
 				socket.socket().setKeepAlive(true);
-			
+
 				// TODO tune buffer sizes?!
 				//socket.socket().setReceiveBufferSize();
 				//socket.socket().setSendBufferSize();
 				
 				// create transport
-				// each transport should have its own response handler since it is not "shareable"
-				final BlockingServerTCPTransport transport = new BlockingServerTCPTransport(context, socket, new ServerResponseHandler((ServerContextImpl)context), receiveBufferSize);
+				// each transport should have its own response handler since it is not "shareable" // TODO not anymore, make it sahreable
+				final Transport transport = new BlockingServerTCPTransport(context, socket, new ServerResponseHandler((ServerContextImpl)context), receiveBufferSize);
+				//final Transport transport = new NonBlockingServerTCPTransport(context, poller, socket, new ServerResponseHandler((ServerContextImpl)context), receiveBufferSize);
 	
 				// validate connection
 				if (!validateConnection(transport, address))
 				{
-					transport.close(true);
+					transport.close();
 					context.getLogger().finer("Connection to CA client " + address + " failed to be validated, closing it.");
 					return;
 				}
@@ -115,6 +128,10 @@ public class BlockingTCPAcceptor {
 				context.getLogger().finer("Serving to CA client: " + address);
 	
 			} 
+			catch (AsynchronousCloseException ace)
+			{
+				// noop
+			}
 			catch (Throwable th)
 			{
 				// TODO remove !!!
@@ -128,13 +145,14 @@ public class BlockingTCPAcceptor {
 	 * Validate connection by sending a validation message request.
 	 * @return <code>true</code> on success.
 	 */
-	private boolean validateConnection(BlockingServerTCPTransport transport, SocketAddress address)
+	private boolean validateConnection(Transport transport, SocketAddress address)
 	{
 		try {
-			transport.verify();
+			transport.verify(0);
 			return true;
 		}
 		catch (Throwable th) {
+			th.printStackTrace();
 			context.getLogger().log(Level.FINEST, "Validation of " + address + " failed.", th);
 			return false;
 		}

@@ -99,37 +99,17 @@ public class BeaconHandlerImpl implements BeaconHandler {
 			serverStartupTime = startupTime;
 			
 			// new server up...
-			context.beaconAnomalyNotify();
-
-			// notify corresponding transport(s)
-			beaconArrivalNotify();
+			context.newServerDetected();
 
 			return false;
 		}
 		
 		final boolean networkChange = !serverStartupTime.equals(startupTime);
 		if (networkChange)
-			context.beaconAnomalyNotify();
-		else
-			beaconArrivalNotify();
+			context.newServerDetected();
 	
 		return networkChange;
 	}
-
-	/**
-	 * Notify transport about beacon arrival.
-	 */
-	private void beaconArrivalNotify()
-	{
-		Transport[] transports = context.getTransportRegistry().get(ProtocolType.TCP.name(), responseFrom);
-		if (transports == null)
-			return;
-
-		// notify all
-		for (int i = 0; i < transports.length; i++)
-			transports[i].aliveNotification();
-	}
-
 
 	/**
 	 * Changed transport (server restarted) notify. 

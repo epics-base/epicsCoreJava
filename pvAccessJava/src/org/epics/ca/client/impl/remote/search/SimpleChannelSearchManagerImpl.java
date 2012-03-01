@@ -29,6 +29,7 @@ import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.misc.Timer.TimerCallback;
 import org.epics.pvData.misc.Timer.TimerNode;
 import org.epics.pvData.misc.TimerFactory;
+import org.epics.pvData.pv.Field;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
@@ -211,6 +212,12 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		public void flushSerializeBuffer() {
 		}
 		
+		@Override
+		public void cachedSerialize(Field field, ByteBuffer buffer) {
+			// no cache
+			field.serialize(buffer, this);
+		}
+		
 	};
 	
 	private final static int DATA_COUNT_POSITION = CAConstants.CA_MESSAGE_HEADER_SIZE + Integer.SIZE/Byte.SIZE + 1;
@@ -349,7 +356,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	 * Beacon anomaly detected.
 	 * Boost searching of all channels.
 	 */
-	public void beaconAnomalyNotify()
+	public void newServerDetected()
 	{
 		boost();
 		callback();

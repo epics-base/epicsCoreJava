@@ -12,7 +12,7 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.ca.impl.remote;
+package org.epics.ca.impl.remote.server;
 
 import org.epics.pvData.pv.PVField;
 

@@ -15,6 +15,9 @@
 package org.epics.ca.client.impl.remote;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -23,6 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.ca.CAConstants;
 import org.epics.ca.CAException;
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.ChannelArray;
@@ -41,14 +45,12 @@ import org.epics.ca.client.ChannelRPCRequester;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.GetFieldRequester;
 import org.epics.ca.client.impl.remote.search.SearchInstance;
-import org.epics.ca.impl.remote.ReferenceCountingTransport;
-import org.epics.ca.impl.remote.ResponseRequest;
-import org.epics.ca.impl.remote.SubscriptionRequest;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
-import org.epics.pvData.factory.StatusFactory;
+import org.epics.ca.impl.remote.request.ResponseRequest;
+import org.epics.ca.impl.remote.request.SubscriptionRequest;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorRequester;
@@ -184,8 +186,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		if (this.transport != null && this.transport != transport)
 		{
 			disconnectPendingIO(false);
-			if (this.transport instanceof ReferenceCountingTransport)
-				((ReferenceCountingTransport)this.transport).release(this);
+			this.transport.release(this);
 		}
 		else if (this.transport == transport)
 		{
@@ -199,14 +200,14 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	}
 	
 	/**
-	 * @see org.epics.ca.impl.remote.ResponseRequest#cancel()
+	 * @see org.epics.ca.impl.remote.request.ResponseRequest#cancel()
 	 */
 	public void cancel() {
 		// noop
 	}
 
 	/**
-	 * @see org.epics.ca.impl.remote.ResponseRequest#timeout()
+	 * @see org.epics.ca.impl.remote.request.ResponseRequest#timeout()
 	 */
 	public void timeout() {
 		createChannelFailed();
@@ -305,8 +306,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		else if (transport != null)
 		{
 			// unresponsive state, do not forget to release transport
-			if (transport instanceof ReferenceCountingTransport)
-				((ReferenceCountingTransport)transport).release(this);
+			transport.release(this);
 			transport = null;
 		}
 
@@ -359,8 +359,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 				transport.enqueueSendRequest(this);
 			}
 			
-			if (transport instanceof ReferenceCountingTransport)
-				((ReferenceCountingTransport)transport).release(this);
+			transport.release(this);
 			transport = null;
 		}
 		
@@ -382,7 +381,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			// TODO not only first
 			// TODO minor version
 			// TODO what to do if there is no channel, do not search in a loop!!! do this in other thread...!
-			searchResponse(CAConstants.CA_MINOR_PROTOCOL_REVISION, addresses[0]);
+			searchResponse(CAConstants.CA_PROTOCOL_REVISION, addresses[0]);
 	}
 
 	/* (non-Javadoc)
@@ -477,12 +476,17 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		{
 			this.connectionState = connectionState;
 			
-			//boolean connectionStatusToReport = (connectionState == ConnectionState.CONNECTED);
-			//if (connectionStatusToReport != lastReportedConnectionState)
+			try
 			{
-				//lastReportedConnectionState = connectionStatusToReport;
-				// TODO via dispatcher ?!!!
 				requester.channelStateChange(this, connectionState);
+			}
+			catch (Throwable th)
+			{
+				// guard CA code from exceptions
+				Writer writer = new StringWriter();
+				PrintWriter printWriter = new PrintWriter(writer);
+				th.printStackTrace(printWriter);
+				requester.message("Unexpected exception caught: " + writer, MessageType.fatalError);
 			}
 		}
 	}
@@ -608,7 +612,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	
 	private boolean needSubscriptionUpdate = false;
 	
-    private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
+    private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 	public static final Status channelDestroyed = statusCreate.createStatus(StatusType.WARNING, "channel destroyed", null);
 	public static final Status channelDisconnected = statusCreate.createStatus(StatusType.WARNING, "channel disconnected", null);
 	

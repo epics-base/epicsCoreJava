@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.ChannelArray;
@@ -46,9 +47,6 @@ import org.epics.ca.server.test.helpers.PVTopStructure;
 import org.epics.ca.server.test.helpers.PVTopStructure.PVTopStructureListener;
 import org.epics.ca.server.test.helpers.RPCTopStructure;
 import org.epics.pvData.factory.ConvertFactory;
-import org.epics.pvData.factory.FieldFactory;
-import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.misc.ThreadPriority;
 import org.epics.pvData.misc.Timer;
@@ -70,6 +68,7 @@ import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Type;
 
 /**
@@ -78,25 +77,26 @@ import org.epics.pvData.pv.Type;
  */
 public class TestChannelProviderImpl implements ChannelProvider
 {
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
+    private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+    private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
     private static final Convert convert = ConvertFactory.getConvert();
 
-    private static final Status okStatus = StatusFactory.getStatusCreate().getStatusOK();
+    private static final Status okStatus = statusCreate.getStatusOK();
 	private static final Status fieldDoesNotExistStatus =
-		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "field does not exist", null);
+		statusCreate.createStatus(StatusType.ERROR, "field does not exist", null);
 	private static final Status destroyedStatus =
-		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "channel destroyed", null);
+		statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
     private static final Status illegalRequestStatus =
-    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "illegal pvRequest", null);
+    	statusCreate.createStatus(StatusType.ERROR, "illegal pvRequest", null);
     private static final Status capacityImmutableStatus =
-    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "capacity is immutable", null);
+    	statusCreate.createStatus(StatusType.ERROR, "capacity is immutable", null);
     private static final Status subFieldDoesNotExistStatus =
-    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "subField does not exist", null);
+    	statusCreate.createStatus(StatusType.ERROR, "subField does not exist", null);
     private static final Status subFieldNotDefinedStatus =
-    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "subField not defined", null);
+    	statusCreate.createStatus(StatusType.ERROR, "subField not defined", null);
     private static final Status subFieldNotArrayStatus =
-    	StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "subField is not an array", null);
+    	statusCreate.createStatus(StatusType.ERROR, "subField is not an array", null);
 
     class TestChannelImpl implements Channel
 	{
@@ -420,7 +420,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				}
 				catch (Throwable th)
 				{
-					status = StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "exceptuon caught: " + th.getMessage(), th);
+					status = statusCreate.createStatus(StatusType.ERROR, "exceptuon caught: " + th.getMessage(), th);
 				}
 				finally {
 					pvTopStructure.unlock();
@@ -1070,7 +1070,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 		
 		@Override
 		public ChannelProvider getChannelProvider() {
-			return getChannelProvider();
+			return TestChannelProviderImpl.this;
 		}
 		
 		@Override
@@ -1162,7 +1162,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 	}
 
 	private static final Status channelNotFoundStatus =
-		StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "channel not found", null);
+		statusCreate.createStatus(StatusType.ERROR, "channel not found", null);
 
 	@Override
 	public Channel createChannel(String channelName,

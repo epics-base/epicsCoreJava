@@ -18,8 +18,8 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.client.impl.remote.ClientContextImpl;
-import org.epics.ca.impl.remote.ResponseRequest;
 import org.epics.ca.impl.remote.Transport;
+import org.epics.ca.impl.remote.request.ResponseRequest;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.Requester;

@@ -71,15 +71,19 @@ public class ServerStatusMonitor implements BeaconHandler {
 	public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
 							 long timestamp, TimeStamp startupTime, int sequentalID,
 							 PVField data) {
-		final byte major = (byte)(remoteTransportRevision >> 4); 
-		final byte minor = (byte)(remoteTransportRevision & 0x0F);
-		System.out.printf("[%s] %s: seqID %d, version %d.%d, startup %s\n",
-				timeFormatter.format(new Date(timestamp)),
-				from,
-				sequentalID, major, minor,
-				timeFormatter.format(new Date(startupTime.getMilliSeconds())));
-		if (data != null)
-			System.out.println(data);
+		// sync timeFormatter and System.out
+		synchronized(timeFormatter)
+		{
+			final byte major = (byte)(remoteTransportRevision >> 4); 
+			final byte minor = (byte)(remoteTransportRevision & 0x0F);
+			System.out.printf("[%s] %s: seqID %d, version %d.%d, startup %s\n",
+					timeFormatter.format(new Date(timestamp)),
+					from,
+					sequentalID, major, minor,
+					timeFormatter.format(new Date(startupTime.getMilliSeconds())));
+			if (data != null)
+				System.out.println(data);
+		}
 	}
 
 

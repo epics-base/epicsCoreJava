@@ -14,18 +14,20 @@
 
 package org.epics.ca.server.impl.remote.tcp;
 
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.ca.CAConstants;
-import org.epics.ca.impl.remote.ChannelHostingTransport;
 import org.epics.ca.impl.remote.Context;
 import org.epics.ca.impl.remote.IntrospectionRegistry;
-import org.epics.ca.impl.remote.ResponseHandler;
-import org.epics.ca.impl.remote.ServerChannel;
+import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
+import org.epics.ca.impl.remote.request.ResponseHandler;
+import org.epics.ca.impl.remote.server.ChannelHostingTransport;
+import org.epics.ca.impl.remote.server.ServerChannel;
 import org.epics.ca.impl.remote.tcp.BlockingTCPTransport;
 import org.epics.ca.util.IntHashMap;
 import org.epics.pvData.pv.PVField;
@@ -62,7 +64,7 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	public BlockingServerTCPTransport(Context context, 
 			   SocketChannel channel,
 			   ResponseHandler responseHandler,
-			   int receiveBufferSize) {
+			   int receiveBufferSize) throws SocketException {
 		super(context, channel, responseHandler, receiveBufferSize, CAConstants.CA_DEFAULT_PRIORITY);
 		// NOTE: priority not yet known, default priority is used to register/unregister
 		// TODO implement priorities in Reactor... not that user will change it.. still getPriority() must return "registered" priority!
@@ -78,11 +80,11 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	
 	
 	/**
-	 * @see org.epics.ca.impl.remote.tcp.TCPTransport#internalClose(boolean)
+	 * @see org.epics.ca.impl.remote.tcp.TCPTransport#internalClose()
 	 */
 	@Override
-	protected void internalClose(boolean forced) {
-		super.internalClose(forced);
+	protected void internalClose() {
+		super.internalClose();
 		destroyAllChannels();
 	}
 
@@ -271,13 +273,41 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 		control.flush(true);
 	}
 
-	/**
-	 * Verify transport. Server side is self-verified.
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#acquire(org.epics.ca.impl.remote.TransportClient)
 	 */
-	public void verify() 
-	{
+	@Override
+	public boolean acquire(TransportClient client) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#release(org.epics.ca.impl.remote.TransportClient)
+	 */
+	@Override
+	public void release(TransportClient client) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#verified()
+	 */
+	@Override
+	public void verified() {
+	}
+	
+	/**
+     * Verify transport. Server side is self-verified.
+	 * @see org.epics.ca.impl.remote.Transport#verify(long)
+	 */
+	@Override
+	public boolean verify(long timeoutMs) {
 		enqueueSendRequest(this);
 		verified();
+		return true;
 	}
 	
 }

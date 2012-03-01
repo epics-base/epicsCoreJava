@@ -12,7 +12,7 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.ca.impl.remote;
+package org.epics.ca.impl.remote.request;
 
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Status;

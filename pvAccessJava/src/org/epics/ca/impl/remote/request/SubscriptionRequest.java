@@ -12,22 +12,29 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.ca.impl.remote;
+package org.epics.ca.impl.remote.request;
 
-import java.nio.ByteBuffer;
+import org.epics.ca.CAException;
+import org.epics.ca.impl.remote.Transport;
+
 
 /**
+ * A request that expects an response multiple responses.
+ * Responses identified by its I/O ID. 
+ * This interface needs to be extended (to provide method called on response).
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public interface DataResponse extends ResponseRequest {
-
+public interface SubscriptionRequest extends ResponseRequest {
+	
 	/**
-	 * Notification response.
-	 * @param transport
-	 * @param version
-	 * @param payloadBuffer
+	 * Update (e.g. after some time of unresponsiveness) - report current value.
 	 */
-	public void response(Transport transport, byte version, ByteBuffer payloadBuffer);
-
+	public void updateSubscription() throws CAException;
+	
+	/**
+	 * Rescubscribe (e.g. when server was restarted)
+	 * @param transport new transport to be used.
+	 */
+	public void resubscribeSubscription(Transport transport) throws CAException;
 }

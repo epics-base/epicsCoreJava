@@ -17,8 +17,8 @@ package org.epics.ca.server.impl.remote;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.ca.impl.remote.ResponseHandler;
 import org.epics.ca.impl.remote.Transport;
+import org.epics.ca.impl.remote.request.ResponseHandler;
 import org.epics.ca.server.impl.remote.handlers.ArrayHandler;
 import org.epics.ca.server.impl.remote.handlers.BadResponse;
 import org.epics.ca.server.impl.remote.handlers.CancelRequestHandler;

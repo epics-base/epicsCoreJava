@@ -14,7 +14,7 @@
 
 package org.epics.ca.server.impl.remote.handlers;
 
-import org.epics.ca.impl.remote.AbstractResponseHandler;
+import org.epics.ca.impl.remote.request.AbstractResponseHandler;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 
 

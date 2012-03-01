@@ -20,10 +20,10 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
 import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.Transport;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.property.TimeStamp;
 import org.epics.pvData.property.TimeStampFactory;
 import org.epics.pvData.pv.Field;
@@ -41,7 +41,7 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 	/**
 	 * PVField factory.
 	 */
-	private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+	private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
 	/**
 	 * @param context

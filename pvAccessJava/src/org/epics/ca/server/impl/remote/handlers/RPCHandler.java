@@ -19,12 +19,12 @@ import java.nio.ByteBuffer;
 
 import org.epics.ca.client.ChannelRPC;
 import org.epics.ca.client.ChannelRPCRequester;
-import org.epics.ca.impl.remote.ChannelHostingTransport;
 import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.QoS;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
+import org.epics.ca.impl.remote.server.ChannelHostingTransport;
 import org.epics.ca.server.impl.remote.ServerChannelImpl;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.pvData.pv.PVStructure;

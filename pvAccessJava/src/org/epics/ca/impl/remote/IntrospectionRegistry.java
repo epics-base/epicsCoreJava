@@ -16,26 +16,17 @@ package org.epics.ca.impl.remote;
 
 import java.nio.ByteBuffer;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.util.ShortHashMap;
-import org.epics.pvData.factory.BaseScalar;
-import org.epics.pvData.factory.BaseScalarArray;
-import org.epics.pvData.factory.BaseStructure;
-import org.epics.pvData.factory.BaseStructureArray;
-import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.factory.StatusFactory;
-import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.Scalar;
-import org.epics.pvData.pv.ScalarArray;
-import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Structure;
-import org.epics.pvData.pv.StructureArray;
 import org.epics.pvData.pv.Type;
 import org.omg.CORBA.BooleanHolder;
 import org.omg.CORBA.ShortHolder;
@@ -51,12 +42,12 @@ public final class IntrospectionRegistry {
 	/**
 	 * PVField factory.
 	 */
-	private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+	private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 	
 	/**
 	 * Status factory.
 	 */
-    private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
+    private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 
 	protected ShortHashMap registry = new ShortHashMap();
 	protected short incomingIdPointer;
@@ -203,68 +194,22 @@ public final class IntrospectionRegistry {
 				}
 			}
 
-			// NOTE: high nibble is field.getType() ordinal, low nibble is scalar type ordinal; -1 is null
-			switch (field.getType())
-			{
-				case scalar:
-					final Scalar scalar = (Scalar)field;
-					control.ensureBuffer(1);
-					buffer.put((byte)(Type.scalar.ordinal() << 4 | scalar.getScalarType().ordinal()));
-					SerializeHelper.serializeString(field.getFieldName(), buffer, control);
-					break;
-					
-				case scalarArray:
-					final ScalarArray array = (ScalarArray)field;
-					control.ensureBuffer(1);
-					buffer.put((byte)(Type.scalarArray.ordinal() << 4 | array.getElementType().ordinal()));
-					SerializeHelper.serializeString(field.getFieldName(), buffer, control);
-					break;
-		
-				case structure:
-					final Structure structure = (Structure)field;
-					control.ensureBuffer(1);
-					buffer.put((byte)(Type.structure.ordinal() << 4));
-					serializeStructureField(buffer, control, registry, structure);
-					break;
-		
-				case structureArray:
-					final StructureArray structureArray = (StructureArray)field;
-					control.ensureBuffer(1);
-					buffer.put((byte)(Type.structureArray.ordinal() << 4));
-					SerializeHelper.serializeString(field.getFieldName(), buffer, control);
-					// we also need to serialize structure field...
-					final Structure structureElement = structureArray.getStructure();
-					serializeStructureField(buffer, control, registry, structureElement);
-					break;
-			}
+			field.serialize(buffer, control);
 		}
 	}
 
-	/**
-	 * @param buffer
-	 * @param control
-	 * @param registry
-	 * @param structure
-	 */
-	private static void serializeStructureField(ByteBuffer buffer,
-			SerializableControl control, IntrospectionRegistry registry,
-			final Structure structure) {
-		SerializeHelper.serializeString(structure.getFieldName(), buffer, control);
-		final Field[] fields = structure.getFields();
-		SerializeHelper.writeSize(fields.length, buffer, control);
-		for (int i = 0; i < fields.length; i++)
-			serialize(fields[i], structure, buffer, control, registry);
-	}
+	static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 	
 	public static final Field deserialize(ByteBuffer buffer, DeserializableControl control, IntrospectionRegistry registry) {
 
 		control.ensureData(1);
+		int pos = buffer.position();
 		final byte typeCode = buffer.get();
 		if (typeCode == NULL_TYPE_CODE)
 			return null;
 		else if (typeCode == ONLY_ID_TYPE_CODE) {
 			if (registry == null)
-				throw new IllegalStateException("deserialization provided chached ID, but no registry provided");
+				throw new IllegalStateException("deserialization provided cached ID, but no registry provided");
 			control.ensureData(Short.SIZE/Byte.SIZE);
 			return registry.getIntrospectionInterface(buffer.getShort());
 		}
@@ -272,62 +217,19 @@ public final class IntrospectionRegistry {
 		// could also be a mask
 		if (typeCode == FULL_WITH_ID_TYPE_CODE) {
 			if (registry == null)
-				throw new IllegalStateException("deserialization provided chached ID, but no registry provided");
+				throw new IllegalStateException("deserialization provided cached ID, but no registry provided");
 			control.ensureData(Short.SIZE/Byte.SIZE);
 			final short key = buffer.getShort();
 			final Field field = deserialize(buffer, control, registry);
 			registry.registerIntrospectionInterface(key, field);
 			return field;
 		}
-		
 
-		// high nibble means scalar/array/structure
-		final Type type = Type.values()[typeCode >>> 4]; 
-		switch (type)
-		{
-			case scalar:
-				final ScalarType scalar = ScalarType.values()[typeCode & 0x0F];
-				final String scalarFieldName = SerializeHelper.deserializeString(buffer, control);
-				return new BaseScalar(scalarFieldName, scalar);
-				
-			case scalarArray:
-				final ScalarType element = ScalarType.values()[typeCode & 0x0F];
-				final String arrayFieldName = SerializeHelper.deserializeString(buffer, control);
-				return new BaseScalarArray(arrayFieldName, element);
-				
-			case structure:
-				return deserializeStructureField(buffer, control, registry);
-
-			case structureArray:
-				final String structureArrayFieldName = SerializeHelper.deserializeString(buffer, control);
-				final Structure arrayElement = deserializeStructureField(buffer, control, registry);
-				return new BaseStructureArray(structureArrayFieldName, arrayElement);
-
-			default:
-				throw new UnsupportedOperationException("unsupported type: " + type);
-		}
+		// return typeCode back
+		buffer.position(pos);
+		return fieldCreate.deserialize(buffer, control);
 	}
 
-	/**
-	 * Deserialize Structure.
-	 * @param buffer
-	 * @param control
-	 * @param registry
-	 * @return deserialized Structure instance.
-	 */
-	public static final Structure deserializeStructureField(ByteBuffer buffer, DeserializableControl control, IntrospectionRegistry registry) {
-		final String structureFieldName = SerializeHelper.deserializeString(buffer, control);
-		final int size = SerializeHelper.readSize(buffer, control);
-		Field[] fields = null;
-		if (size > 0)
-		{
-			fields = new Field[size];
-			for (int i = 0; i < size; i++)
-				fields[i] = deserialize(buffer, control, registry);
-		}
-		return new BaseStructure(structureFieldName, fields);
-	}
-	
 	/**
 	 * Serialize optional PVStructrue.
 	 * @param buffer data buffer.

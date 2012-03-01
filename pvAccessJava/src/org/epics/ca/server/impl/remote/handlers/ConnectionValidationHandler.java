@@ -46,7 +46,7 @@ public class ConnectionValidationHandler extends AbstractServerResponseHandler {
 		transport.setRemoteTransportReceiveBufferSize(payloadBuffer.getInt());
 		transport.setRemoteTransportSocketReceiveBufferSize(payloadBuffer.getInt());
 		transport.setRemoteMinorRevision(version);
-		// TODO support priority  !!!
+		payloadBuffer.getShort();
 		//transport.setPriority(payloadBuffer.getShort());
 	}
 	

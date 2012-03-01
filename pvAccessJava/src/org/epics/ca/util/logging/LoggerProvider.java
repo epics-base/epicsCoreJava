@@ -17,7 +17,7 @@ package org.epics.ca.util.logging;
 import java.util.logging.Logger;
 
 /**
- * Interface defininf an instance providing a Java Logger API <code>Logger</code> instance.
+ * Interface defining an instance providing a Java Logger API <code>Logger</code> instance.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */

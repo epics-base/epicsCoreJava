@@ -3,8 +3,7 @@
  */
 package org.epics.ca.server.test.helpers;
 
-import org.epics.pvData.factory.FieldFactory;
-import org.epics.pvData.factory.PVDataFactory;
+import org.epics.ca.PVFactory;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.PVDataCreate;
@@ -17,8 +16,8 @@ import org.epics.pvData.pv.ScalarType;
  */
 public class RPCTopStructure extends PVTopStructure {
 
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+    private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 
     public RPCTopStructure() {
 		super(null);

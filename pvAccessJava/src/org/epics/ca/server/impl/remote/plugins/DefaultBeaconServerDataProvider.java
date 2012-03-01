@@ -18,10 +18,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.ThreadMXBean;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.ca.server.plugins.BeaconServerStatusProvider;
-import org.epics.pvData.factory.FieldFactory;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.PVDataCreate;
@@ -62,8 +61,8 @@ public class DefaultBeaconServerDataProvider implements
 	 */
 	private void initialize()
 	{
-        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();        
+        FieldCreate fieldCreate = PVFactory.getFieldCreate();
+        PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();        
         Field[] fields = new Field[6];
         // TODO hierarchy can be used...
         fields[0] = fieldCreate.createScalar("connections",ScalarType.pvInt);

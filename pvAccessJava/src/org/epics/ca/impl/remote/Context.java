@@ -19,7 +19,7 @@ import org.epics.pvData.misc.Timer;
 
 
 /**
- * Interface defining <code>CAContext</code> (logging, reactor, thread-pool, etc.).
+ * Interface defining <code>Context</code> (logging, reactor, thread-pool, etc.).
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */

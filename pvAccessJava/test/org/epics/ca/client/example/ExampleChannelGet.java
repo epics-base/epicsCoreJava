@@ -52,7 +52,7 @@ public class ExampleChannelGet {
     
     private static final String providerName = "pvAccess";
     private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
-    //private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    //private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
     
     private static class Client implements ChannelRequester, ChannelGetRequester {
         

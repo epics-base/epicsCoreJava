@@ -17,14 +17,18 @@ package org.epics.ca.client.impl.remote;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.epics.ca.CAConstants;
 import org.epics.ca.CAException;
+import org.epics.ca.PVFactory;
 import org.epics.ca.Version;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.ChannelFind;
@@ -34,13 +38,18 @@ import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.impl.remote.search.ChannelSearchManager;
 import org.epics.ca.client.impl.remote.search.SearchInstance;
 import org.epics.ca.client.impl.remote.search.SimpleChannelSearchManagerImpl;
+import org.epics.ca.client.impl.remote.tcp.BlockingClientTCPTransport;
 import org.epics.ca.client.impl.remote.tcp.BlockingTCPConnector;
+import org.epics.ca.client.impl.remote.tcp.BlockingTCPConnector.TransportFactory;
+import org.epics.ca.client.impl.remote.tcp.NonBlockingClientTCPTransport;
 import org.epics.ca.impl.remote.ConnectionException;
 import org.epics.ca.impl.remote.Context;
-import org.epics.ca.impl.remote.ResponseRequest;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportRegistry;
+import org.epics.ca.impl.remote.io.impl.PollerImpl;
+import org.epics.ca.impl.remote.request.ResponseHandler;
+import org.epics.ca.impl.remote.request.ResponseRequest;
 import org.epics.ca.impl.remote.udp.BlockingUDPConnector;
 import org.epics.ca.impl.remote.udp.BlockingUDPTransport;
 import org.epics.ca.util.InetAddressUtil;
@@ -50,7 +59,6 @@ import org.epics.ca.util.configuration.ConfigurationProvider;
 import org.epics.ca.util.configuration.impl.ConfigurationFactory;
 import org.epics.ca.util.logging.ConsoleLogHandler;
 import org.epics.ca.util.sync.NamedLockPattern;
-import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.ThreadPriority;
 import org.epics.pvData.misc.Timer;
 import org.epics.pvData.misc.TimerFactory;
@@ -352,6 +360,10 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		
 	}
 
+	// TODO remove
+	final AtomicBoolean pollerInitialized = new AtomicBoolean();
+	PollerImpl poller;
+	
 	/**
 	 * @throws CAException
 	 */
@@ -359,7 +371,45 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		
 		timer = TimerFactory.create("pvAccess-client timer", ThreadPriority.lower);
 //		connector = new TCPConnector(this, receiveBufferSize, beaconPeriod);
-		connector = new BlockingTCPConnector(this, receiveBufferSize, beaconPeriod);
+		
+		TransportFactory transportFactory = new TransportFactory() {
+			
+			@Override
+			public Transport create(Context context, SocketChannel channel,
+					ResponseHandler responseHandler, int receiveBufferSize,
+					TransportClient client, short transportRevision,
+					float heartbeatInterval, short priority) {
+				try {
+					return new BlockingClientTCPTransport(context, channel, responseHandler, receiveBufferSize, client, transportRevision, heartbeatInterval, priority);
+				} catch (SocketException e) {
+					throw new RuntimeException("Failed to create transport.");
+				}
+			}
+		};
+		
+		TransportFactory nonBlockingTransportFactory = new TransportFactory() {
+			
+			@Override
+			public Transport create(Context context, SocketChannel channel,
+					ResponseHandler responseHandler, int receiveBufferSize,
+					TransportClient client, short transportRevision,
+					float heartbeatInterval, short priority) {
+				try {
+					// TODO !!!
+					if (!pollerInitialized.getAndSet(true))
+					{
+						poller = new PollerImpl();
+						poller.start();
+					}
+					return new NonBlockingClientTCPTransport(context, poller, channel, responseHandler, receiveBufferSize, client, transportRevision, heartbeatInterval, priority);
+				} catch (IOException e) {
+					throw new RuntimeException("Failed to create transport.");
+				}
+			}
+		};
+
+		connector = new BlockingTCPConnector(this, transportFactory, receiveBufferSize, beaconPeriod);
+		//connector = new BlockingTCPConnector(this, nonBlockingTransportFactory, receiveBufferSize, beaconPeriod);
 		transportRegistry = new TransportRegistry();
 		namedLocker = new NamedLockPattern();
 /*
@@ -436,7 +486,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			broadcastTransport = (BlockingUDPTransport)broadcastConnector.connect(
 //			broadcastTransport = (UDPTransport)broadcastConnector.connect(
 						null, new ClientResponseHandler(this),
-						listenLocalAddress, CAConstants.CA_MINOR_PROTOCOL_REVISION,
+						listenLocalAddress, CAConstants.CA_PROTOCOL_REVISION,
 						CAConstants.CA_DEFAULT_PRIORITY);
 
 //			UDPConnector searchConnector = new UDPConnector(this, false, broadcastAddresses, true);
@@ -445,7 +495,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			searchTransport = (BlockingUDPTransport)searchConnector.connect(
 //			searchTransport = (UDPTransport)searchConnector.connect(
 										null, new ClientResponseHandler(this),
-										new InetSocketAddress(0), CAConstants.CA_MINOR_PROTOCOL_REVISION,
+										new InetSocketAddress(0), CAConstants.CA_PROTOCOL_REVISION,
 										CAConstants.CA_DEFAULT_PRIORITY);
 
 			// set broadcast address list
@@ -510,9 +560,24 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		
 		// close broadcast transport
 		if (broadcastTransport != null)
-			broadcastTransport.close(true);
+		{
+			try {
+				broadcastTransport.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		if (searchTransport != null)
-			searchTransport.close(true);
+		{
+			try {
+				searchTransport.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 	/*	
 		// shutdown reactor
@@ -912,12 +977,12 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     }*/
 	
 	/**
-	 * Called each time beacon anomaly is detected. 
+	 * Called each time new server is detected. 
 	 */
-	public void beaconAnomalyNotify()
+	public void newServerDetected()
 	{
 		if (channelSearchManager != null)
-			channelSearchManager.beaconAnomalyNotify();
+			channelSearchManager.newServerDetected();
 	}
 	
 	/**
@@ -930,6 +995,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	{
 		try
 		{
+			// TODO singleton for ClientResponseHandler
 			return connector.connect(client, new ClientResponseHandler(this), serverAddress, minorRevision, priority);
 		}
 		catch (ConnectionException cex)
@@ -1046,7 +1112,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		return channelProvider;
 	}
 
-	private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
+	private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
     private static final Status okStatus = statusCreate.getStatusOK();
 
     private class ChannelProviderImpl implements ChannelProvider

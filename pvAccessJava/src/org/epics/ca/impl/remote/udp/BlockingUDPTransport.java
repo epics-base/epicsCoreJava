@@ -25,13 +25,17 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 
 import org.epics.ca.CAConstants;
-import org.epics.ca.impl.remote.ConnectionlessTransport;
+import org.epics.ca.PVFactory;
 import org.epics.ca.impl.remote.Context;
 import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.ProtocolType;
-import org.epics.ca.impl.remote.ResponseHandler;
+import org.epics.ca.impl.remote.Transport;
+import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
+import org.epics.ca.impl.remote.request.ResponseHandler;
+import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.FieldCreate;
 
 
 /**
@@ -39,7 +43,7 @@ import org.epics.ca.impl.remote.TransportSender;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class BlockingUDPTransport implements ConnectionlessTransport, TransportSendControl {
+public class BlockingUDPTransport implements Transport, TransportSendControl {
 
 	/**
 	 * Context instance.
@@ -133,7 +137,8 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	/**
 	 * Close transport.
 	 */
-	public void close(boolean forced)
+	@Override
+	public void close() throws IOException
 	{
 		if (closed)
 			return;
@@ -153,10 +158,29 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.epics.ca.core.Transport#isClosed()
+	 * @see java.nio.channels.Channel#isOpen()
 	 */
-	public boolean isClosed() {
-		return closed;
+	public boolean isOpen() {
+		return !closed;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#acquire(org.epics.ca.impl.remote.TransportClient)
+	 */
+	@Override
+	public boolean acquire(TransportClient client) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#release(org.epics.ca.impl.remote.TransportClient)
+	 */
+	@Override
+	public void release(TransportClient client) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**
@@ -212,9 +236,19 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
  			}
 			
 		} catch (AsynchronousCloseException ace) {
-			close(true);
+			try {
+				close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (ClosedChannelException cce) {
-			close(true);
+			try {
+				close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} catch (IOException ioex) {
 			// TODO what to do here
 			ioex.printStackTrace();
@@ -244,8 +278,6 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 			// second byte version - major/minor nibble 
 			// check only major version for compatibility
 			final byte version = receiveBuffer.get(); 
-			if ((version >> 4) != CAConstants.CA_MAJOR_PROTOCOL_REVISION)
-				return false;
 			
 			// only data for UDP
 			final byte flags = receiveBuffer.get();
@@ -339,18 +371,10 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	}
 
 	/**
-	 * Get major revision number.
-	 * @see org.epics.ca.impl.remote.Transport#getMajorRevision()
-	 */
-	public byte getMajorRevision() {
-		return CAConstants.CA_MAJOR_PROTOCOL_REVISION;
-	}
-
-	/**
 	 * @see org.epics.ca.impl.remote.Transport#getMinorRevision()
 	 */
 	public byte getMinorRevision() {
-		return CAConstants.CA_MINOR_PROTOCOL_REVISION;
+		return CAConstants.CA_PROTOCOL_REVISION;
 	}
 
 	/**
@@ -359,13 +383,6 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 	 */
 	public String getType() {
 		return ProtocolType.UDP.name();
-	}
-
-	/**
-	 * @see org.epics.ca.impl.remote.Transport#aliveNotification()
-	 */
-	public void aliveNotification() {
-		// noop
 	}
 
 	/**
@@ -494,22 +511,6 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 		throw new UnsupportedOperationException("not supported by UDP transport");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.epics.ca.core.Transport#isVerified()
-	 */
-	@Override
-	public boolean isVerified() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.epics.ca.core.Transport#verified()
-	 */
-	@Override
-	public void verified() {
-		// noop
-	}
-
 	private InetSocketAddress sendTo = null;
 	
 	/* (non-Javadoc)
@@ -614,6 +615,27 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 		// noop for UDP (packet based)
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.SerializableControl#cachedSerialize(org.epics.pvData.pv.Field, java.nio.ByteBuffer)
+	 */
+	@Override
+	public void cachedSerialize(Field field, ByteBuffer buffer) {
+		// no cache
+		field.serialize(buffer, this);
+	}
+	
+	private final static FieldCreate fieldCreate = PVFactory.getFieldCreate();
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.DeserializableControl#cachedDeserialize(java.nio.ByteBuffer)
+	 */
+	@Override
+	public Field cachedDeserialize(ByteBuffer buffer) {
+		// no cache
+		return fieldCreate.deserialize(buffer, this);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.DeserializableControl#alignData(int)
 	 */
@@ -636,6 +658,23 @@ public class BlockingUDPTransport implements ConnectionlessTransport, TransportS
 		synchronized (this) {
 			sendBuffer.order(byteOrder);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#verify(long)
+	 */
+	@Override
+	public boolean verify(long timeoutMs) {
+		// noop
+		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#verified()
+	 */
+	@Override
+	public void verified() {
+		// noop
 	}
 	
 }

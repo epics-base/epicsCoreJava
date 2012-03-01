@@ -12,15 +12,24 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.ca.impl.remote;
+package org.epics.ca.impl.remote.request;
 
+import java.nio.ByteBuffer;
 
+import org.epics.ca.impl.remote.Transport;
 
 /**
- * Interface defining transport connectionless transport (e.g. UDP).
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public interface ConnectionlessTransport extends Transport {
-	
+public interface DataResponse extends ResponseRequest {
+
+	/**
+	 * Notification response.
+	 * @param transport
+	 * @param version
+	 * @param payloadBuffer
+	 */
+	public void response(Transport transport, byte version, ByteBuffer payloadBuffer);
+
 }

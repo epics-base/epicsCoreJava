@@ -12,10 +12,12 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.ca.impl.remote;
+package org.epics.ca.impl.remote.request;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+
+import org.epics.ca.impl.remote.Transport;
 
 /**
  * Interface defining response handler.

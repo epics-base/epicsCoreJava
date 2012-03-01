@@ -1,6 +1,6 @@
 package org.epics.ca.server.test.helpers;
 
-import org.epics.pvData.factory.FieldFactory;
+import org.epics.ca.PVFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.misc.Timer;
 import org.epics.pvData.misc.Timer.TimerCallback;
@@ -17,7 +17,7 @@ import org.epics.pvData.pv.ScalarType;
 
 public class CounterTopStructure extends PVTopStructure implements TimerCallback
 {
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 
     private final PVInt valueField;
 	private final int timeStampFieldOffset;
@@ -62,20 +62,20 @@ public class CounterTopStructure extends PVTopStructure implements TimerCallback
 		timeStamp.getCurrentTime();
 		timeStampField.set(timeStamp);
 		changedBitSet.set(timeStampFieldOffset);
-		
 		notifyListeners(changedBitSet);
 	}
 
 	@Override
 	public void callback() {
-		lock();
+		// TODO this causes deadlock !!! with topStructure
+	//	lock();
 		try
 		{
 			process();
 		} 
 		finally
 		{
-			unlock();
+	//		unlock();
 		}
 	}
 

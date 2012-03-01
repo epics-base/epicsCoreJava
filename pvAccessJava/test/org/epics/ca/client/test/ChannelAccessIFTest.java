@@ -22,9 +22,10 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.epics.ca.CAConstants;
+import org.epics.ca.PVFactory;
+import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.Channel;
 import org.epics.ca.client.Channel.ConnectionState;
-import org.epics.ca.client.AccessRights;
 import org.epics.ca.client.ChannelArray;
 import org.epics.ca.client.ChannelArrayRequester;
 import org.epics.ca.client.ChannelFind;
@@ -44,8 +45,6 @@ import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.CreateRequestFactory;
 import org.epics.ca.client.GetFieldRequester;
 import org.epics.pvData.factory.ConvertFactory;
-import org.epics.pvData.factory.FieldFactory;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorElement;
@@ -684,7 +683,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		return ch;
 	}
 
-    private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
     private class ChannelGetRequesterImpl implements ChannelGetRequester
 	{
@@ -2295,7 +2294,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		*/
 	}
 
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+    private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 
     private static PVStructure createRPCArguments()
 	{

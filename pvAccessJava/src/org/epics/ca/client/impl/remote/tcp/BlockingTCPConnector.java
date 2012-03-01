@@ -22,9 +22,9 @@ import org.epics.ca.impl.remote.ConnectionException;
 import org.epics.ca.impl.remote.Connector;
 import org.epics.ca.impl.remote.Context;
 import org.epics.ca.impl.remote.ProtocolType;
-import org.epics.ca.impl.remote.ResponseHandler;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportClient;
+import org.epics.ca.impl.remote.request.ResponseHandler;
 import org.epics.ca.util.sync.NamedLockPattern;
 
 /**
@@ -34,44 +34,62 @@ import org.epics.ca.util.sync.NamedLockPattern;
  */
 public class BlockingTCPConnector implements Connector {
 
-	/**
-	 * Context instance.
-	 */
-	private Context context;
+	public interface TransportFactory {
+		public Transport create(Context context, SocketChannel channel,
+				ResponseHandler responseHandler, int receiveBufferSize, 
+				TransportClient client, short transportRevision,
+				float heartbeatInterval, short priority);
+	}
 	
 	/**
 	 * Context instance.
 	 */
-	private NamedLockPattern namedLocker;
-
+	private final Context context;
+	
 	/**
 	 * Context instance.
+	 */
+	private final NamedLockPattern namedLocker;
+
+	/**
+	 * Lock timeout.
 	 */
 	private static final int LOCK_TIMEOUT = 20 * 1000;	// 20s
 
 	/**
+	 * Verification timeout.
+	 */
+	private static final int VERIFICATION_TIMEOUT = 3000;	// 3s
+
+	/**
 	 * Receive buffer size.
 	 */
-	private int receiveBufferSize;
+	private final int receiveBufferSize;
 	
 	/**
-	 * Beacon interval.
+	 * Heartbeat interval.
 	 */
-	private float beaconInterval; 
+	private final float heartbeatInterval; 
+
+	/**
+	 * Transport factory.
+	 */
+	private final TransportFactory transportFactory; 
 
 	/**
 	 * @param context
 	 */
-	public BlockingTCPConnector(Context context, int receiveBufferSize, float beaconInterval) {
+	public BlockingTCPConnector(Context context, TransportFactory transportFactory, int receiveBufferSize, float heartbeatInterval) {
 		this.context = context;
+		this.transportFactory = transportFactory;
 		this.receiveBufferSize = receiveBufferSize;
-		this.beaconInterval = beaconInterval;
+		this.heartbeatInterval = heartbeatInterval;
 		namedLocker = new NamedLockPattern();
 	}
 	
 	
 	/**
-	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.ResponseHandler, java.net.InetSocketAddress, byte, short)
+	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.request.ResponseHandler, java.net.InetSocketAddress, byte, short)
 	 */
 	public Transport connect(TransportClient client, ResponseHandler responseHandler,
 							 InetSocketAddress address, byte transportRevision, short priority)
@@ -81,7 +99,7 @@ public class BlockingTCPConnector implements Connector {
 		SocketChannel socket = null;
 		
 		// first try to check cache w/o named lock...
-		BlockingClientTCPTransport transport = (BlockingClientTCPTransport)context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
+		Transport transport = context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
 		if (transport != null)
 		{
 			context.getLogger().finer("Reusing existant connection to CA server: " + address);
@@ -95,7 +113,7 @@ public class BlockingTCPConnector implements Connector {
 			try
 			{   
 				// ... transport created during waiting in lock 
-				transport = (BlockingClientTCPTransport)context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
+				transport = context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
 				if (transport != null)
 				{
 					context.getLogger().finer("Reusing existant connection to CA server: " + address);
@@ -121,12 +139,12 @@ public class BlockingTCPConnector implements Connector {
 				//socket.socket().setSendBufferSize();
 	
 				// create transport
-				transport = new BlockingClientTCPTransport(context, socket, responseHandler, receiveBufferSize, client, transportRevision, beaconInterval, priority);
+				transport = transportFactory.create(context, socket, responseHandler, receiveBufferSize, client, transportRevision, heartbeatInterval, priority);
 
 				// verify
-				if (!transport.waitUntilVerified(3000))
+				if (!transport.verify(VERIFICATION_TIMEOUT))
 				{
-					transport.close(true);
+					transport.close();
 					context.getLogger().finer("Connection to CA client " + address + " failed to be validated, closing it.");
 					throw new ConnectionException("Failed to verify connection to '" + address + "'.", address, ProtocolType.TCP.name(), null);
 				}

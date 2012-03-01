@@ -16,6 +16,7 @@ package org.epics.ca.impl.remote;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
+import java.nio.channels.Channel;
 
 import org.epics.pvData.pv.DeserializableControl;
 
@@ -26,13 +27,20 @@ import org.epics.pvData.pv.DeserializableControl;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public interface Transport extends DeserializableControl {
+public interface Transport extends DeserializableControl, Channel {
 
-	/**
-	 * Get remote address.
-	 * @return remote address.
+	/** 
+	 * Acquires transport.
+	 * @param client client (channel) acquiring the transport
+	 * @return <code>true</code> if transport was granted, <code>false</code> otherwise.
 	 */
-	public InetSocketAddress getRemoteAddress();
+	public boolean acquire(TransportClient client);
+	
+	/** 
+	 * Releases transport.
+	 * @param client client (channel) releasing the transport
+	 */
+	public void release(TransportClient client);
 
 	/**
 	 * Get protocol type (tcp, udp, ssl, etc.).
@@ -41,16 +49,16 @@ public interface Transport extends DeserializableControl {
 	public String getType();
 	
 	/**
+	 * Get remote address.
+	 * @return remote address.
+	 */
+	public InetSocketAddress getRemoteAddress();
+
+	/**
 	 * Get context transport is living in.
 	 * @return context transport is living in.
 	 */
 	public Context getContext();
-	
-	/**
-	 * Transport protocol major revision.
-	 * @return protocol major revision.
-	 */
-	public byte getMajorRevision();
 
 	/**
 	 * Transport protocol minor revision.
@@ -101,12 +109,7 @@ public interface Transport extends DeserializableControl {
 	public void setByteOrder(ByteOrder byteOrder);
 	
 	/**
-	 * Notification transport that is still alive.
-	 */
-	public void aliveNotification();
-
-	/**
-	 * Notification that transport has changed.
+	 * Notification that transport has changed (server restarted).
 	 */
 	public void changedTransport();
 
@@ -115,29 +118,6 @@ public interface Transport extends DeserializableControl {
 	 * @return <code>IntrospectionRegistry</code> instance.
 	 */
 	public IntrospectionRegistry getIntrospectionRegistry();
-	
-	/**
-	 * Close transport.
-	 * @param force flag indicating force-full (e.g. remote disconnect) close.
-	 */
-	public void close(boolean force);
-
-	/**
-	 * Check connection status.
-	 * @return <code>true</code> if connected.
-	 */
-	public boolean isClosed();
-
-	/**
-	 * Get transport verification status.
-	 * @return verification flag.
-	 */
-	public boolean isVerified();
-	
-	/**
-	 * Notify transport that it is has been verified.
-	 */
-	public void verified();
 
 	/**
 	 * Enqueue send request.
@@ -145,4 +125,15 @@ public interface Transport extends DeserializableControl {
 	 */
 	void enqueueSendRequest(TransportSender sender);
 
+	/**
+	 * Waits (if needed) until transport is verified, i.e. verified() method is being called.
+	 * @param timeoutMs timeout to wait for verification, infinite if 0.
+	 */
+	boolean verify(long timeoutMs);
+	
+	/**
+	 * Acknowledge that transport was verified.
+	 */
+	void verified();
+	
 }

@@ -54,7 +54,7 @@ public interface ChannelSearchManager {
 	 * Beacon anomaly detected.
 	 * Boost searching of all channels.
 	 */
-	public void beaconAnomalyNotify();
+	public void newServerDetected();
 	
 	/**
 	 * Cancel.

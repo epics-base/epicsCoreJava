@@ -16,12 +16,12 @@ package org.epics.ca.client.impl.remote;
 
 import java.nio.ByteBuffer;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.GetFieldRequester;
-import org.epics.ca.impl.remote.DataResponse;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
-import org.epics.pvData.factory.StatusFactory;
+import org.epics.ca.impl.remote.request.DataResponse;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.Requester;
@@ -35,7 +35,7 @@ import org.epics.pvData.pv.StatusCreate;
  */
 public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender {
 
-    private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
+    private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 
     /**
 	 * Channel.

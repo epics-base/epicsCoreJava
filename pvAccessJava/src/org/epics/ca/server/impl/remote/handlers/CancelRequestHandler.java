@@ -17,8 +17,8 @@ package org.epics.ca.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.ca.impl.remote.ChannelHostingTransport;
 import org.epics.ca.impl.remote.Transport;
+import org.epics.ca.impl.remote.server.ChannelHostingTransport;
 import org.epics.ca.server.impl.remote.ServerChannelImpl;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 import org.epics.pvData.misc.Destroyable;

@@ -16,19 +16,19 @@ package org.epics.ca.server.impl.remote.handlers;
 
 import java.nio.ByteBuffer;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
 import org.epics.ca.server.impl.remote.ServerChannelImpl;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
-import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.Destroyable;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.StatusCreate;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.StatusCreate;
 
 /**
  * Base requester class.
@@ -36,7 +36,7 @@ import org.epics.pvData.pv.Status.StatusType;
  */
 abstract class BaseChannelRequester implements Requester, Destroyable {
     
-    public static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
+    public static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 
     public static final Status okStatus = statusCreate.getStatusOK();
     public static final Status badCIDStatus = statusCreate.createStatus(StatusType.ERROR, "bad channel id", null);

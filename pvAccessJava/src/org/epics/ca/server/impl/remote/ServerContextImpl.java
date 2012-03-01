@@ -14,6 +14,7 @@
 
 package org.epics.ca.server.impl.remote;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -415,7 +416,7 @@ public class ServerContextImpl implements ServerContext, Context {
 			broadcastTransport = (BlockingUDPTransport)broadcastConnector.connect(
 //			broadcastTransport = (UDPTransport)broadcastConnector.connect(
 										null, new ServerResponseHandler(this),
-										listenLocalAddress, CAConstants.CA_MINOR_PROTOCOL_REVISION,
+										listenLocalAddress, CAConstants.CA_PROTOCOL_REVISION,
 										CAConstants.CA_DEFAULT_PRIORITY);
 
 			// set ignore address list
@@ -541,8 +542,14 @@ public class ServerContextImpl implements ServerContext, Context {
 
 		// stop responding to search requests
 		if (broadcastTransport != null) 
-			broadcastTransport.close(true);
-		
+		{
+			try {
+				broadcastTransport.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		// stop accepting connections
 		if (acceptor != null) 
 			acceptor.destroy();
@@ -593,7 +600,7 @@ public class ServerContextImpl implements ServerContext, Context {
 			Transport transport = (Transport)transports[i];
 			try
 			{
-				transport.close(true);
+				transport.close();
 			} catch (Throwable th) {
 				// do all exception safe, print stack in case of an error
 				th.printStackTrace();

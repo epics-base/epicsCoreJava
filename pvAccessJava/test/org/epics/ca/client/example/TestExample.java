@@ -19,7 +19,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.epics.ca.CAConstants;
 import org.epics.ca.CAException;
 import org.epics.ca.ClientFactory;
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.Channel;
+import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.ChannelArray;
 import org.epics.ca.client.ChannelArrayRequester;
 import org.epics.ca.client.ChannelGet;
@@ -32,10 +34,7 @@ import org.epics.ca.client.ChannelPutGetRequester;
 import org.epics.ca.client.ChannelPutRequester;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.GetFieldRequester;
-import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
-import org.epics.pvData.factory.FieldFactory;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.monitor.Monitor;
 import org.epics.pvData.monitor.MonitorElement;
@@ -101,8 +100,8 @@ public class TestExample {
         }
     }
     
-    private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static FieldCreate fieldCreate = PVFactory.getFieldCreate();
+    private static PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
     /**
 	 * @param channelName
@@ -156,8 +155,8 @@ public class TestExample {
 		    };
 
 		    /*
-			Scalar field = FieldFactory.getFieldCreate().createScalar("nameSearchV1", ScalarType.pvString);
-			PVString searchData = (PVString)PVDataFactory.getPVDataCreate().createPVScalar(null, field);
+			Scalar field = PVFactory.getFieldCreate().createScalar("nameSearchV1", ScalarType.pvString);
+			PVString searchData = (PVString)PVFactory.getPVDataCreate().createPVScalar(null, field);
 			searchData.put("*");
 		    context.introspectionSearch(searchData, dl, 3.0f, 0, -1);
 		    Thread.sleep(1000);

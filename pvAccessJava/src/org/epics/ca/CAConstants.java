@@ -27,14 +27,9 @@ public interface CAConstants {
 	public static final byte CA_MAGIC = (byte)0xCA;
 
 	/**
-	 * CA protocol major revision (implemented by this library).
-	 */
-	public static final byte CA_MAJOR_PROTOCOL_REVISION = 5;
-	
-	/**
 	 * CA protocol minor revision (implemented by this library).
 	 */
-	public static final byte CA_MINOR_PROTOCOL_REVISION = 0;
+	public static final byte CA_PROTOCOL_REVISION = 0;
 
 	/**
 	 * Unknown CA protocol minor revision.
@@ -42,21 +37,15 @@ public interface CAConstants {
 	public static final byte CA_UNKNOWN_MINOR_PROTOCOL_REVISION = 0;
 
 	/**
-	 * CA version signature (e.g. 0x50).
+	 * CA version signature used to report this implementation version in header.
 	 */
-	public static final byte CA_VERSION = 
-	  CAConstants.CA_MAJOR_PROTOCOL_REVISION << 4 |
-	  CAConstants.CA_MINOR_PROTOCOL_REVISION;
-
-	/**
-	 * CA protocol port base.
-	 */
-	public static final int CA_PORT_BASE = 5056;
+	// TODO no more major
+	public static final byte CA_VERSION = CA_PROTOCOL_REVISION | 0x50;
 
 	/**
 	 * Default CA server port.
 	 */
-	public static final int CA_SERVER_PORT = CA_PORT_BASE + 2 * CA_MAJOR_PROTOCOL_REVISION;
+	public static final int CA_SERVER_PORT = 5066;
 
 	/**
 	 * Default CA beacon port.
@@ -113,7 +102,7 @@ public interface CAConstants {
     /**
      * All messages must be aligned to 8-bytes (64-bit).
      */
-    public static final int CA_ALIGNMENT = 8;
+    public static final int CA_ALIGNMENT = 1;	// TODO
 
     /**
      * Default CA provider name.

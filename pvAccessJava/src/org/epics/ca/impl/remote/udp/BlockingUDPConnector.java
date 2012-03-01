@@ -21,9 +21,9 @@ import org.epics.ca.impl.remote.ConnectionException;
 import org.epics.ca.impl.remote.Connector;
 import org.epics.ca.impl.remote.Context;
 import org.epics.ca.impl.remote.ProtocolType;
-import org.epics.ca.impl.remote.ResponseHandler;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportClient;
+import org.epics.ca.impl.remote.request.ResponseHandler;
 
 
 /**
@@ -66,7 +66,7 @@ public class BlockingUDPConnector implements Connector {
 	
 	/**
 	 * NOTE: transport client is ignored for broadcast (UDP). 
-	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.ResponseHandler, java.net.InetSocketAddress, byte, short)
+	 * @see org.epics.ca.impl.remote.Connector#connect(org.epics.ca.impl.remote.TransportClient, org.epics.ca.impl.remote.request.ResponseHandler, java.net.InetSocketAddress, byte, short)
 	 */
 	public Transport connect(TransportClient client, ResponseHandler responseHandler, InetSocketAddress bindAddress, byte transportRevision, short priority)
 		throws ConnectionException

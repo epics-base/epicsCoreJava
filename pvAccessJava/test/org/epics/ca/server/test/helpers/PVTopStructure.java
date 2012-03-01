@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.Lockable;
-import org.epics.pvData.factory.FieldFactory;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
@@ -24,8 +23,8 @@ public class PVTopStructure implements Lockable
 		public void topStructureChanged(BitSet changedBitSet);
 	}
 	
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
+    private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
     private final Lock lock = new ReentrantLock();
 	private final PVStructure pvStructure;

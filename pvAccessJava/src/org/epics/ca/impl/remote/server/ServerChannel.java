@@ -1,4 +1,4 @@
-package org.epics.ca.impl.remote;
+package org.epics.ca.impl.remote.server;
 
 public interface ServerChannel {
 

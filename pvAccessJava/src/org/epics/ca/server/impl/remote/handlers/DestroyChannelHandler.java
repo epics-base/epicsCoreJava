@@ -18,10 +18,10 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import org.epics.ca.impl.remote.ChannelHostingTransport;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
+import org.epics.ca.impl.remote.server.ChannelHostingTransport;
 import org.epics.ca.server.impl.remote.ServerChannelImpl;
 import org.epics.ca.server.impl.remote.ServerContextImpl;
 
@@ -57,7 +57,7 @@ public class DestroyChannelHandler extends AbstractServerResponseHandler {
 		final ServerChannelImpl channel = (ServerChannelImpl)casTransport.getChannel(sid);
 		if (channel == null) 
 		{
-			if (!transport.isClosed())
+			if (transport.isOpen())
 				context.getLogger().log(Level.WARNING, "Trying to destroy a channel that no longer exists (SID: " + sid + ", CID: " + cid + ", client: " + responseFrom + ").");
 			return;
 		} 

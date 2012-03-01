@@ -18,12 +18,11 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.epics.ca.CAException;
+import org.epics.ca.PVFactory;
 import org.epics.ca.impl.remote.QoS;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.factory.ConvertFactory;
-import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.factory.StatusFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.misc.BitSetUtil;
 import org.epics.pvData.misc.BitSetUtilFactory;
@@ -38,8 +37,8 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.Structure;
 
 /**
  * CA monitor request.
@@ -51,7 +50,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	/**
 	 * PVField factory.
 	 */
-	private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+	private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
 	/**
 	 * Response callback listener.
@@ -97,7 +96,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 				queueSize = Integer.parseInt(value);
 			} catch (NumberFormatException e) {
 				callback.monitorConnect(
-						StatusFactory.getStatusCreate().createStatus(StatusType.ERROR, "queueSize type is not a valid integer", e),
+						PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "queueSize type is not a valid integer", e),
 						null, null);
 				monitorStrategy = null;
 				return;

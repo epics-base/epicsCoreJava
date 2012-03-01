@@ -14,6 +14,8 @@
 
 package org.epics.ca.client.impl.remote.tcp;
 
+import java.io.IOException;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashSet;
@@ -21,22 +23,22 @@ import java.util.Set;
 
 import org.epics.ca.impl.remote.Context;
 import org.epics.ca.impl.remote.IntrospectionRegistry;
-import org.epics.ca.impl.remote.ReferenceCountingTransport;
-import org.epics.ca.impl.remote.ResponseHandler;
+import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
+import org.epics.ca.impl.remote.request.ResponseHandler;
 import org.epics.ca.impl.remote.tcp.BlockingTCPTransport;
-import org.epics.pvData.misc.TimerFactory;
 import org.epics.pvData.misc.Timer.TimerCallback;
 import org.epics.pvData.misc.Timer.TimerNode;
+import org.epics.pvData.misc.TimerFactory;
 
 /**
  * Client TCP transport implementation.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class BlockingClientTCPTransport extends BlockingTCPTransport implements ReferenceCountingTransport, TimerCallback, TransportSender {
+public class BlockingClientTCPTransport extends BlockingTCPTransport implements Transport, TimerCallback, TransportSender {
 
 	/**
 	 * Owners (users) of the transport.
@@ -82,7 +84,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	public BlockingClientTCPTransport(Context context, SocketChannel channel,
 					ResponseHandler responseHandler, int receiveBufferSize, 
 					TransportClient client, short remoteTransportRevision,
-					float beaconInterval, short priority) {
+					float beaconInterval, short priority) throws SocketException {
 		super(context, channel, responseHandler, receiveBufferSize, priority);
 		
 		// create introspection registry
@@ -93,7 +95,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 		acquire(client);
 		
 		// use immediate for clients
-		setSendQueueFlushStrategy(SendQueueFlushStrategy.IMMEDIATE);
+		//setSendQueueFlushStrategy(SendQueueFlushStrategy.IMMEDIATE);
 		
 		// setup connection timeout timer (watchdog)
 		connectionTimeout = (long)(beaconInterval * 1000);
@@ -105,11 +107,11 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	}
 	
 	/**
-	 * @see org.epics.ca.impl.remote.tcp.TCPTransport#internalClose(boolean)
+	 * @see org.epics.ca.impl.remote.tcp.TCPTransport#internalClose()
 	 */
 	@Override
-	protected void internalClose(boolean forced) {
-		super.internalClose(forced);
+	protected void internalClose() {
+		super.internalClose();
 
 		timerNode.cancel();
 
@@ -163,14 +165,14 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	 */
 	public synchronized boolean acquire(TransportClient client) {
 
-		if (closed)
+		if (!isOpen())
 			return false;
 			
 		context.getLogger().finer("Acquiring transport to " + socketAddress + ".");
 
 		synchronized (owners)
 		{
-			if (closed)
+			if (!isOpen())
 				return false;
 				
 			owners.add(client);
@@ -185,7 +187,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	 */
 	public synchronized void release(TransportClient client) {
 
-		if (closed)
+		if (!isOpen())
 			return;
 			
 		context.getLogger().finer("Releasing transport to " + socketAddress + ".");
@@ -197,7 +199,14 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 			// not used anymore
 			// TODO consider delayed destruction (can improve performance!!!)
 			if (owners.size() == 0)
-				close(false);
+			{
+				try {
+					close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -207,7 +216,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	 * at least once in this period, if not echo will be issued
 	 * and if there is not reponse to it, transport will be considered as unresponsive.
 	 */
-	@Override
+	// TODO @Override
 	public final void aliveNotification()
 	{
 		aliveTimestamp = System.currentTimeMillis();
@@ -378,4 +387,35 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 		}
 	}
 
+	protected boolean verified = false;
+	private Object verifiedMonitor = new Object();
+	
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#verified()
+	 */
+	@Override
+	public void verified() {
+		synchronized (verifiedMonitor) {
+			verified = true;
+			verifiedMonitor.notifyAll();
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.ca.impl.remote.Transport#verify(long)
+	 */
+	@Override
+	public boolean verify(long timeoutMs) {
+		synchronized (verifiedMonitor) {
+			try {
+				final long start = System.currentTimeMillis();
+				while (!verified && (System.currentTimeMillis() - start) < timeoutMs)
+						verifiedMonitor.wait(timeoutMs);
+			} catch (InterruptedException e) {
+				// noop
+			}
+			return verified;
+		}
+	}
+	
 }

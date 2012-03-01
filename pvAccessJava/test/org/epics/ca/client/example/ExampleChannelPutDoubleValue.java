@@ -6,7 +6,9 @@
 package org.epics.ca.client.example;
 
 import org.epics.ca.CAException;
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.Channel;
+import org.epics.ca.client.Channel.ConnectionState;
 import org.epics.ca.client.ChannelAccess;
 import org.epics.ca.client.ChannelAccessFactory;
 import org.epics.ca.client.ChannelProvider;
@@ -14,8 +16,6 @@ import org.epics.ca.client.ChannelPut;
 import org.epics.ca.client.ChannelPutRequester;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.CreateRequestFactory;
-import org.epics.ca.client.Channel.ConnectionState;
-import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
@@ -55,7 +55,7 @@ public class ExampleChannelPutDoubleValue {
     
     private static final String providerName = "pvAccess";
     private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
     
     private static class Client implements ChannelRequester, ChannelPutRequester {
         

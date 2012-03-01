@@ -34,7 +34,7 @@ public enum QoS {
 	/**
 	 * Best-effort option (no reply).
 	 */
-	BESY_EFFORT(0x02),
+	UNUSED_0(0x02),
 
 	/**
 	 * Process option.
@@ -54,7 +54,7 @@ public enum QoS {
 	/**
 	 * Share data option.
 	 */
-	SHARE(0x20),
+	UNUSED_1(0x20),
 	
 	/**
 	 * Get.
