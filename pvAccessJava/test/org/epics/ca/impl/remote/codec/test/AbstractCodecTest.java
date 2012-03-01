@@ -529,6 +529,9 @@ public class AbstractCodecTest extends TestCase {
 	
 	public void testSplitAlignment() throws Throwable
 	{
+		if (CAConstants.CA_ALIGNMENT == 1)
+			return;
+		
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		
@@ -804,7 +807,7 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.put(CAConstants.CA_VERSION);
 		codec.readBuffer.put((byte)0xB0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize3 = CAConstants.CA_ALIGNMENT-2;
+		final int payloadSize3 = CAConstants.CA_ALIGNMENT+2;
 		final int payloadSize3Real = payloadSize3 + payloadSize2Real % CAConstants.CA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize3Real);
 
@@ -1813,22 +1816,25 @@ public class AbstractCodecTest extends TestCase {
 			// OK
 		}
 
-		try
+		if (CAConstants.CA_ALIGNMENT > 1)
 		{
-			// non aligned
-			new TestCodec(2*AbstractCodec.MAX_ENSURE_SIZE+1, DEFAULT_BUFFER_SIZE);
-			fail("non-aligned buffer size accepted");
-		} catch (IllegalArgumentException iae) {
-			// OK
-		}
+			try
+			{
+				// non aligned
+				new TestCodec(2*AbstractCodec.MAX_ENSURE_SIZE+1, DEFAULT_BUFFER_SIZE);
+				fail("non-aligned buffer size accepted");
+			} catch (IllegalArgumentException iae) {
+				// OK
+			}
 	
-		try
-		{
-			// non aligned
-			new TestCodec(DEFAULT_BUFFER_SIZE, 2*AbstractCodec.MAX_ENSURE_SIZE+1);
-			fail("non-aligned buffer size accepted");
-		} catch (IllegalArgumentException iae) {
-			// OK
+			try
+			{
+				// non aligned
+				new TestCodec(DEFAULT_BUFFER_SIZE, 2*AbstractCodec.MAX_ENSURE_SIZE+1);
+				fail("non-aligned buffer size accepted");
+			} catch (IllegalArgumentException iae) {
+				// OK
+			}
 		}
 		
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
