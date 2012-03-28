@@ -81,12 +81,12 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     /**
      * Major version.
      */
-    private static final int VERSION_MAJOR = 2;
+    private static final int VERSION_MAJOR = 1;
     
     /**
      * Minor version.
      */
-    private static final int VERSION_MINOR = 0;
+    private static final int VERSION_MINOR = 2;
 
     /**
      * Maintenance version.
@@ -96,7 +96,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     /**
      * Development version.
      */
-    private static final int VERSION_DEVELOPMENT = 0;
+    private static final boolean VERSION_DEVELOPMENT = true;
 
     /**
      * Version.
@@ -635,7 +635,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	private final void checkChannelName(String name) throws IllegalArgumentException {
 		if (name == null || name.length() == 0)
 			throw new IllegalArgumentException("null or empty channel name");
-		else if (name.length() > CAConstants.UNREASONABLE_CHANNEL_NAME_LENGTH)
+		else if (name.length() > CAConstants.MAX_CHANNEL_NAME_LENGTH)
 			throw new IllegalArgumentException("name too long");
 	}
 	/**

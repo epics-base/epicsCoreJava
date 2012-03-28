@@ -929,6 +929,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				Status status,
 				ChannelPutGet channelPutGet,
 				PVStructure pvPutStructure, PVStructure pvGetStructure) {
+			System.out.println(status);
 			synchronized (this)
 			{
 				this.channelPutGet = channelPutGet;
@@ -2095,7 +2096,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		channelPutGetTestIntProcess(ch, false);
 		//channelPutGetTestIntProcess(ch, true);
-
+System.out.println("-----------------------------");
 		channelPutGetTestNoConnection(ch, true);
 		channelPutGetTestNoConnection(ch, false);
 		

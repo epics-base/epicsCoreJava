@@ -19,8 +19,8 @@ import java.nio.ByteBuffer;
 
 import org.epics.ca.client.ChannelPut;
 import org.epics.ca.client.ChannelPutRequester;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
@@ -161,16 +161,15 @@ public class PutHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)11, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			final IntrospectionRegistry introspectionRegistry = transport.getIntrospectionRegistry();
 			synchronized (this) {
-				introspectionRegistry.serializeStatus(buffer, control, status);
+				status.serialize(buffer, control);
 			}
 
 			if (status.isSuccess())
 			{
 				if (QoS.INIT.isSet(request))
 				{
-					introspectionRegistry.serialize(pvStructure != null ? pvStructure.getField() : null, buffer, control);
+					control.cachedSerialize(pvStructure != null ? pvStructure.getField() : null, buffer);
 				}
 				else if (QoS.GET.isSet(request))
 				{
@@ -222,7 +221,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 			*/
 
 			// pvRequest
-		    final PVStructure pvRequest = transport.getIntrospectionRegistry().deserializePVRequest(payloadBuffer, transport);
+		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 	
 			// create...
 		    new ChannelPutRequesterImpl(context, channel, ioid, transport, pvRequest);

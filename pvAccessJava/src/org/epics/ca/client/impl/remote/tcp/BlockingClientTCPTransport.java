@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.epics.ca.impl.remote.Context;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportSendControl;
@@ -66,11 +65,6 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	private volatile long aliveTimestamp;
 	
 	/**
-	 * Introspection registry.
-	 */
-	protected IntrospectionRegistry introspectionRegistry;
-	
-	/**
 	 * Client TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socker channel.
@@ -87,9 +81,6 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 					float beaconInterval, short priority) throws SocketException {
 		super(context, channel, responseHandler, receiveBufferSize, priority);
 		
-		// create introspection registry
-		introspectionRegistry = new IntrospectionRegistry(false);
-
 		// initialize owners list, send queue
 		owners = new HashSet<TransportClient>();
 		acquire(client);
@@ -119,13 +110,6 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	}
 
 	final Object sendBufferFreed = new Object();
-
-	/**
-	 * @see org.epics.ca.impl.remote.Transport#getIntrospectionRegistry()
-	 */
-	public IntrospectionRegistry getIntrospectionRegistry() {
-		return introspectionRegistry;
-	}
 
 	/**
 	 * Notifies clients about disconnect.
@@ -312,7 +296,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	@Override
 	public void changedTransport()
 	{
-		introspectionRegistry.reset();
+		outgoingIR.reset();
 		
 		synchronized (owners)
 		{

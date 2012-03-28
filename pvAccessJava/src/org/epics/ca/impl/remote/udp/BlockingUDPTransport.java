@@ -115,10 +115,10 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		socketAddress = bindAddress;
 
 		// allocate receive buffer
-		receiveBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_RECV);
+		receiveBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_PACKET);
 		
 		// allocate send buffer and non-reentrant lock
-		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_SEND);
+		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_UNFRAGMENTED_SEND);
 	}
 	
 	/**

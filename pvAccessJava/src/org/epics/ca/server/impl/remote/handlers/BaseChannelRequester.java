@@ -143,7 +143,7 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 					control.startMessage(command, Integer.SIZE/Byte.SIZE + 1);
 					buffer.putInt(ioid);
 					buffer.put(qos);
-					transport.getIntrospectionRegistry().serializeStatus(buffer, control, status);
+					status.serialize(buffer, control);
 				}
 
 				@Override

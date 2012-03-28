@@ -22,7 +22,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.epics.ca.impl.remote.Context;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportSendControl;
@@ -67,11 +66,6 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 	private volatile long aliveTimestamp;
 	
 	/**
-	 * Introspection registry.
-	 */
-	protected IntrospectionRegistry introspectionRegistry;
-	
-	/**
 	 * Client TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socker channel.
@@ -88,9 +82,6 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 					float beaconInterval, short priority) throws SocketException {
 		super(context, poller, channel, responseHandler, receiveBufferSize, priority);
 		
-		// create introspection registry
-		introspectionRegistry = new IntrospectionRegistry(false);
-
 		// initialize owners list, send queue
 		owners = new HashSet<TransportClient>();
 		acquire(client);
@@ -120,13 +111,6 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 	}
 
 	final Object sendBufferFreed = new Object();
-
-	/**
-	 * @see org.epics.ca.impl.remote.Transport#getIntrospectionRegistry()
-	 */
-	public IntrospectionRegistry getIntrospectionRegistry() {
-		return introspectionRegistry;
-	}
 
 	/**
 	 * Notifies clients about disconnect.
@@ -313,7 +297,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 	@Override
 	public void changedTransport()
 	{
-		introspectionRegistry.reset();
+		outgoingIR.reset();
 		
 		synchronized (owners)
 		{

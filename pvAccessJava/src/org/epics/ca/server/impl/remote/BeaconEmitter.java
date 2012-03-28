@@ -19,16 +19,16 @@ import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.epics.ca.impl.remote.IntrospectionRegistry;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
 import org.epics.ca.server.plugins.BeaconServerStatusProvider;
 import org.epics.ca.util.InetAddressUtil;
 import org.epics.pvData.misc.Timer;
-import org.epics.pvData.misc.TimerFactory;
 import org.epics.pvData.misc.Timer.TimerCallback;
 import org.epics.pvData.misc.Timer.TimerNode;
+import org.epics.pvData.misc.TimerFactory;
 import org.epics.pvData.property.TimeStamp;
 import org.epics.pvData.property.TimeStampFactory;
 import org.epics.pvData.pv.PVField;
@@ -201,11 +201,12 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 		if (serverStatus != null)
 		{
 			// introspection interface + data
-			IntrospectionRegistry.serializeFull(serverStatus.getField(), buffer, control);
+			serverStatus.getField().serialize(buffer, control);
 			serverStatus.serialize(buffer, control);
 		}
 		else
-			IntrospectionRegistry.serializeFull(null, buffer, control);
+			SerializationHelper.serializeNullField(buffer, control);
+
 		control.flush(true);
 			
 		// increment beacon sequence ID

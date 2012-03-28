@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.ca.CAConstants;
 import org.epics.ca.impl.remote.Context;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.TransportClient;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
@@ -50,11 +49,6 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	private IntHashMap channels;
 
 	/**
-	 * Introspection registry.
-	 */
-	protected IntrospectionRegistry introspectionRegistry;
-
-	/**
 	 * Server TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socket channel.
@@ -69,9 +63,6 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 		// NOTE: priority not yet known, default priority is used to register/unregister
 		// TODO implement priorities in Reactor... not that user will change it.. still getPriority() must return "registered" priority!
 		
-		// create introspection registry
-		introspectionRegistry = new IntrospectionRegistry(true);
-
 		final int INITIAL_SIZE = 64;
 		channels = new IntHashMap(INITIAL_SIZE);
 		
@@ -86,13 +77,6 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	protected void internalClose() {
 		super.internalClose();
 		destroyAllChannels();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.epics.ca.impl.remote.Transport#getIntrospectionRegistry()
-	 */
-	public IntrospectionRegistry getIntrospectionRegistry() {
-		return introspectionRegistry;
 	}
 
 	/**

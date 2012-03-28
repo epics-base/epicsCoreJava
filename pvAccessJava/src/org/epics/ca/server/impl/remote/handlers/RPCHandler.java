@@ -19,8 +19,8 @@ import java.nio.ByteBuffer;
 
 import org.epics.ca.client.ChannelRPC;
 import org.epics.ca.client.ChannelRPCRequester;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
@@ -142,9 +142,8 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)20, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			final IntrospectionRegistry introspectionRegistry = transport.getIntrospectionRegistry();
 			synchronized (this) {
-				introspectionRegistry.serializeStatus(buffer, control, status);
+				status.serialize(buffer, control);
 			}
 
 			if (status.isSuccess())
@@ -155,7 +154,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 				}
 				else
 				{
-					introspectionRegistry.serializeStructure(buffer, control, pvResponse);
+					SerializationHelper.serializeStructureFull(buffer, control, pvResponse);
 				}
 			}
 				
@@ -203,7 +202,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			*/
 
 			// pvRequest
-		    final PVStructure pvRequest = transport.getIntrospectionRegistry().deserializePVRequest(payloadBuffer, transport);
+		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 		    
 			// create...
 		    new ChannelRPCRequesterImpl(context, channel, ioid, transport, pvRequest);
@@ -246,7 +245,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			*/
 
 			// deserialize put data
-			final PVStructure pvArgument = transport.getIntrospectionRegistry().deserializeStructure(payloadBuffer, transport);
+			final PVStructure pvArgument = SerializationHelper.deserializeStructureFull(payloadBuffer, transport);
 			request.getChannelRPC().request(pvArgument, lastRequest);
 		}
 	}

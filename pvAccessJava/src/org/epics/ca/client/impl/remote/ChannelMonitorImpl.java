@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.epics.ca.CAException;
 import org.epics.ca.PVFactory;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.factory.ConvertFactory;
@@ -576,7 +577,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// pvRequest
-			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
+			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		}
 
 		stopRequest();
@@ -606,7 +607,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		}
 		
 		// deserialize Structure...
-		final Structure structure = (Structure)transport.getIntrospectionRegistry().deserialize(payloadBuffer, transport);
+		final Structure structure = (Structure)transport.cachedDeserialize(payloadBuffer);
 		monitorStrategy.init(structure);
 
 		// notify

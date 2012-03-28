@@ -114,12 +114,6 @@ public interface Transport extends DeserializableControl, Channel {
 	public void changedTransport();
 
 	/**
-	 * Get introspection registry for transport.
-	 * @return <code>IntrospectionRegistry</code> instance.
-	 */
-	public IntrospectionRegistry getIntrospectionRegistry();
-
-	/**
 	 * Enqueue send request.
 	 * @param sender
 	 */

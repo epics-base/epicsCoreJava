@@ -18,7 +18,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.client.GetFieldRequester;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
@@ -89,10 +88,9 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			control.startMessage((byte)17, Integer.SIZE/Byte.SIZE);
 			buffer.putInt(ioid);
-			final IntrospectionRegistry introspectionRegistry = transport.getIntrospectionRegistry();
 			synchronized (this) {
-				introspectionRegistry.serializeStatus(buffer, control, status);
-				introspectionRegistry.serialize(field, buffer, control);
+				status.serialize(buffer, control);
+				control.cachedSerialize(field, buffer);
 			}
 		}
 
@@ -138,7 +136,7 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 					public void send(ByteBuffer buffer, TransportSendControl control) {
 						control.startMessage((byte)17, Integer.SIZE/Byte.SIZE);
 						buffer.putInt(ioid);
-						transport.getIntrospectionRegistry().serializeStatus(buffer, control, errorStatus);
+						errorStatus.serialize(buffer, control);
 					}
 
 					@Override

@@ -23,6 +23,7 @@ import org.epics.ca.CAException;
 import org.epics.ca.client.ChannelArray;
 import org.epics.ca.client.ChannelArrayRequester;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.misc.SerializeHelper;
@@ -100,7 +101,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// pvRequest
-			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
+			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		}
 		else if (QoS.GET.isSet(pendingRequest))
 		{
@@ -160,7 +161,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 				return;
 			}
 			
-			final Field field = transport.getIntrospectionRegistry().deserialize(payloadBuffer, transport);
+			final Field field = transport.cachedDeserialize(payloadBuffer);
 
 			lock();
 			try {

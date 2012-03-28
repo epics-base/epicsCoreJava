@@ -21,12 +21,7 @@ import org.epics.ca.util.ShortHashMap;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.PVDataCreate;
-import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.SerializableControl;
-import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.StatusCreate;
-import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Type;
 import org.omg.CORBA.BooleanHolder;
 import org.omg.CORBA.ShortHolder;
@@ -37,27 +32,14 @@ import org.omg.CORBA.ShortHolder;
  * Registry is used to cache introspection interfaces to minimize network traffic.
  * @author msekoranja
  */
+// TODO optional sync!!! if used only by one thread
 public final class IntrospectionRegistry {
 
-	/**
-	 * PVField factory.
-	 */
-	private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-	
-	/**
-	 * Status factory.
-	 */
-    private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
-
 	protected ShortHashMap registry = new ShortHashMap();
-	protected short incomingIdPointer;
-	protected short outgoingIdPointer;
+	protected short pointer;
 	
-	protected short direction;
-	
-	public IntrospectionRegistry(boolean serverSide)
+	public IntrospectionRegistry()
 	{
-		direction = serverSide ? (short)1 : (short)-1;
 		reset();
 	}
 	
@@ -66,16 +48,9 @@ public final class IntrospectionRegistry {
 	 */
 	public void reset()
 	{
-		synchronized (registry) {
-			incomingIdPointer = (short)-direction;
-			outgoingIdPointer = direction;
-			registry.clear();
-		}
+		pointer = 1;
+		registry.clear();
 	}
-
-	// TODO if 'id' is somewhere on the head and other side is near the tail...
-	// this might become dangerous... do some work here to solve this
-
 	/**
 	 * Get introspection interface for given ID.
 	 * @param id
@@ -83,22 +58,17 @@ public final class IntrospectionRegistry {
 	 */
 	public Field getIntrospectionInterface(short id)
 	{
-		synchronized (registry) {
-			return (Field)registry.get(id);
-		}
+		return (Field)registry.get(id);
 	}
 
 	/**
-	 * Register introspection interface with given ID. Always INCOMING.
+	 * Register introspection interface with given ID. 
 	 * @param id
 	 * @param field
 	 */
 	public void registerIntrospectionInterface(short id, Field field)
 	{
-		synchronized (registry) {
-			registry.put(id, field);
-			incomingIdPointer = id;
-		}
+		registry.put(id, field);
 	}
 
 	/**
@@ -114,43 +84,19 @@ public final class IntrospectionRegistry {
 	 */
 	public short registerIntrospectionInterface(Field field, BooleanHolder existing)
 	{
-		synchronized (registry) {
-			if (registry.contains(field, shortHolder))
-			{
-				existing.value = true;
-				return shortHolder.value;
-			}
-			else
-			{
-				existing.value = false;
-				final short key = outgoingIdPointer;
-				outgoingIdPointer += direction;
-				// wrap check
-				if (outgoingIdPointer * direction < 0)
-					outgoingIdPointer = direction;
-				registry.put(key, field);
-				return key;
-			}
+		if (registry.contains(field, shortHolder))
+		{
+			existing.value = true;
+			return shortHolder.value;
+		}
+		else
+		{
+			existing.value = false;
+			final short key = pointer++;
+			registry.put(key, field);
+			return key;
 		}
 	}
-	
-	public final void serialize(Field field, ByteBuffer buffer, SerializableControl control) {
-		serialize(field, null, buffer, control, this);
-	}
-	
-	public final Field deserialize(ByteBuffer buffer, DeserializableControl control) {
-		return deserialize(buffer, control, this);
-	}
-
-
-	public static final void serializeFull(Field field, ByteBuffer buffer, SerializableControl control) {
-		serialize(field, null, buffer, control, null);
-	}
-
-	public static final Field deserializeFull(ByteBuffer buffer, DeserializableControl control) {
-		return deserialize(buffer, control, null);
-	}
-	
 	
 	/**
 	 * Null type.
@@ -167,20 +113,18 @@ public final class IntrospectionRegistry {
 	 */
 	public static final byte FULL_WITH_ID_TYPE_CODE = (byte)-3;
 	
-	public static final void serialize(Field field, Structure parent,
-			ByteBuffer buffer, SerializableControl control, IntrospectionRegistry registry) {
+	
+	public final void serialize(Field field, ByteBuffer buffer, SerializableControl control) {
 		if (field == null) {
-			control.ensureBuffer(1);
-    		buffer.put(NULL_TYPE_CODE);
+			SerializationHelper.serializeNullField(buffer, control);
 		}
 		else
 		{ 
-			// use registry check
-			// only top IFs and structures
-			if (registry != null && (parent == null || field.getType() == Type.structure || field.getType() == Type.structureArray))
+			// only structures registry check
+			if (field.getType() == Type.structure)
 			{
 				BooleanHolder existing = new BooleanHolder();
-				final short key = registry.registerIntrospectionInterface(field, existing);
+				final short key = registerIntrospectionInterface(field, existing);
 				if (existing.value) {
 					control.ensureBuffer(1+Short.SIZE/Byte.SIZE);
 					buffer.put(ONLY_ID_TYPE_CODE);
@@ -193,121 +137,43 @@ public final class IntrospectionRegistry {
 					buffer.putShort(key);
 				}
 			}
-
+			
 			field.serialize(buffer, control);
 		}
 	}
 
 	static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 	
-	public static final Field deserialize(ByteBuffer buffer, DeserializableControl control, IntrospectionRegistry registry) {
+	public final Field deserialize(ByteBuffer buffer, DeserializableControl control) {
 
 		control.ensureData(1);
 		int pos = buffer.position();
 		final byte typeCode = buffer.get();
+		
 		if (typeCode == NULL_TYPE_CODE)
+		{
 			return null;
-		else if (typeCode == ONLY_ID_TYPE_CODE) {
-			if (registry == null)
-				throw new IllegalStateException("deserialization provided cached ID, but no registry provided");
-			control.ensureData(Short.SIZE/Byte.SIZE);
-			return registry.getIntrospectionInterface(buffer.getShort());
 		}
-
+		else if (typeCode == ONLY_ID_TYPE_CODE)
+		{
+			control.ensureData(Short.SIZE/Byte.SIZE);
+			return getIntrospectionInterface(buffer.getShort());
+		}
 		// could also be a mask
-		if (typeCode == FULL_WITH_ID_TYPE_CODE) {
-			if (registry == null)
-				throw new IllegalStateException("deserialization provided cached ID, but no registry provided");
+		else if (typeCode == FULL_WITH_ID_TYPE_CODE)
+		{
 			control.ensureData(Short.SIZE/Byte.SIZE);
 			final short key = buffer.getShort();
-			final Field field = deserialize(buffer, control, registry);
-			registry.registerIntrospectionInterface(key, field);
+			final Field field = fieldCreate.deserialize(buffer, control);
+			registerIntrospectionInterface(key, field);
 			return field;
 		}
-
-		// return typeCode back
-		buffer.position(pos);
-		return fieldCreate.deserialize(buffer, control);
+		else
+		{
+			// return typeCode back
+			buffer.position(pos);
+			return fieldCreate.deserialize(buffer, control);
+		}
 	}
 
-	/**
-	 * Serialize optional PVStructrue.
-	 * @param buffer data buffer.
-	 */
-	public final void serializeStructure(ByteBuffer buffer, SerializableControl control, PVStructure pvStructure) {
-
-	    if (pvStructure == null)
-		    serialize(null, buffer, control);
-	    else {
-		    serialize(pvStructure.getField(), buffer, control);
-		    pvStructure.serialize(buffer, control);
-	    }
-	}
-
-	/**
-	 * Deserialize optional PVStructrue.
-	 * @param payloadBuffer data buffer.
-	 * @return deserialized PVStructure, can be <code>null</code>.
-	 */
-	public final PVStructure deserializeStructure(ByteBuffer payloadBuffer, DeserializableControl control) {
-	    PVStructure pvStructure = null;
-	    final Field structureField = deserialize(payloadBuffer, control);
-	    if (structureField != null)
-	    {
-	    	pvStructure = pvDataCreate.createPVStructure(null, (Structure)structureField);
-	    	pvStructure.deserialize(payloadBuffer, control);
-	    }
-	    return pvStructure;
-	}
-	
-	/**
-	 * Serialize PVRequest.
-	 * @param buffer data buffer.
-	 */
-	public final void serializePVRequest(ByteBuffer buffer, SerializableControl control, PVStructure pvRequest) {
-		// for now ordinary structure, later can be changed
-		serializeStructure(buffer, control, pvRequest);
-	}
-
-	/**
-	 * Deserialize PVRequest.
-	 * @param payloadBuffer data buffer.
-	 * @return deserialized PVRequest, can be <code>null</code>.
-	 */
-	public final PVStructure deserializePVRequest(ByteBuffer payloadBuffer, DeserializableControl control) {
-		// for now ordinary structure, later can be changed
-		return deserializeStructure(payloadBuffer, control);
-	}
-		
-	/**
-	 * Deserialize Structure and create PVStructure instance.
-	 * @param payloadBuffer data buffer.
-	 * @return PVStructure instance, can be <code>null</code>.
-	 */
-	public final PVStructure deserializeStructureAndCreatePVStructure(ByteBuffer payloadBuffer, DeserializableControl control) {
-		final Field field = deserialize(payloadBuffer, control);
-		if (field == null)
-			return null;
-		return pvDataCreate.createPVStructure(null, (Structure)field);
-	}
-	
-	/**
-	 * Serialize status.
-	 * TODO optimize duplicates
-	 * @param buffer data buffer.
-	 * @param control serializaiton control instance.
-	 * @param status status to serialize.
-	 */
-	public final void serializeStatus(ByteBuffer buffer, SerializableControl control, Status status) {
-		status.serialize(buffer, control);
-	}
-
-	/**
-	 * Serialize status.
-	 * TODO optimize duplicates
-	 * @param buffer data buffer.
-	 */
-	public final Status deserializeStatus(ByteBuffer buffer, DeserializableControl control) {
-		return statusCreate.deserializeStatus(buffer, control);
-	}
 }

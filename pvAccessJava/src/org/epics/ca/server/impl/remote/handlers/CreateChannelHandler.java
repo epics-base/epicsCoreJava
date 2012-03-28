@@ -74,7 +74,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			disconnect(transport);
 			return;
 		}
-		else if (channelName.length() > CAConstants.UNREASONABLE_CHANNEL_NAME_LENGTH)
+		else if (channelName.length() > CAConstants.MAX_CHANNEL_NAME_LENGTH)
 		{
 			context.getLogger().warning("Unreasonable channel name length, disconnecting client: " + transport.getRemoteAddress());
 			disconnect(transport);
@@ -209,7 +209,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 					control.startMessage((byte)7, 2*Integer.SIZE/Byte.SIZE);
 					buffer.putInt(cid);
 					buffer.putInt(sid);
-					transport.getIntrospectionRegistry().serializeStatus(buffer, control, status);
+					status.serialize(buffer, control);
 					//buffer.putShort(serverChannel.getAccessRights());
 					//control.flush(true);
 				} catch (Throwable th) {
@@ -232,7 +232,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)7, 2*Integer.SIZE/Byte.SIZE);
 			buffer.putInt(cid);
 			buffer.putInt(-1);
-			transport.getIntrospectionRegistry().serializeStatus(buffer, control, status);
+			status.serialize(buffer, control);
 			//control.flush(true);
 		}
 

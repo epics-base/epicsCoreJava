@@ -80,7 +80,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		this.context = context;
 
 		// create and initialize send buffer
-		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_SEND);
+		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_UNFRAGMENTED_SEND);
 		initializeSendBuffer();
 		
 		// add some jitter so that all the clients do not send at the same time

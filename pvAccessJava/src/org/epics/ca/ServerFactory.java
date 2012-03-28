@@ -97,7 +97,7 @@ public class ServerFactory {
 			                destroy();
 			            }
 					}
-				}, "CA-server");
+				}, "pvAccess-server");
                 runThread.setDaemon(false);
                 runThread.start();
                 threadReady.ready();

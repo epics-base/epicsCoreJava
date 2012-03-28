@@ -152,7 +152,7 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 			if (status.isSuccess())
 			{
 				// deserialize Field...
-				final Field field = transport.getIntrospectionRegistry().deserialize(payloadBuffer, transport);
+				final Field field = transport.cachedDeserialize(payloadBuffer);
 				callback.getDone(status, field);
 			}
 			else

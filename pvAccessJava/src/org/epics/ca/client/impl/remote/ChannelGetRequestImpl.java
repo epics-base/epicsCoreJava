@@ -23,6 +23,7 @@ import org.epics.ca.CAException;
 import org.epics.ca.client.ChannelGet;
 import org.epics.ca.client.ChannelGetRequester;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.misc.BitSet;
@@ -96,7 +97,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// pvRequest
-			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
+			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		}
 		
 		stopRequest();
@@ -128,7 +129,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 			lock();
 			try {
 				// create data and its bitSet
-				data = transport.getIntrospectionRegistry().deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+				data = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
 				bitSet = new BitSet(data.getNumberFields());
 			} finally {
 				unlock();

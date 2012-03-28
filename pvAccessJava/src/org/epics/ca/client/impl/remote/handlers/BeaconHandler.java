@@ -22,11 +22,11 @@ import java.util.logging.Level;
 
 import org.epics.ca.PVFactory;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.pvData.property.TimeStamp;
 import org.epics.pvData.property.TimeStampFactory;
 import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVField;
 
@@ -42,6 +42,11 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 	 * PVField factory.
 	 */
 	private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+
+	/**
+	 * Field factory.
+	 */
+	private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 
 	/**
 	 * @param context
@@ -97,7 +102,7 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 
 		// extra data
 		PVField data = null;
-		final Field field = IntrospectionRegistry.deserializeFull(payloadBuffer, transport);
+		final Field field = fieldCreate.deserialize(payloadBuffer, transport);
 		if (field != null)
 		{
 			data = pvDataCreate.createPVField(null, field);

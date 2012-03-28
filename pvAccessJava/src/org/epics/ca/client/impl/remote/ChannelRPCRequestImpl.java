@@ -23,6 +23,7 @@ import org.epics.ca.CAException;
 import org.epics.ca.client.ChannelRPC;
 import org.epics.ca.client.ChannelRPCRequester;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.pv.MessageType;
@@ -93,14 +94,14 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			buffer.put((byte)QoS.INIT.getMaskValue());
 
 			// pvRequest
-			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
+			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		    
 		}
 		else
 		{
 			lock();
 			try {
-				channel.getTransport().getIntrospectionRegistry().serializeStructure(buffer, control, argumentData);
+				SerializationHelper.serializeStructureFull(buffer, control, argumentData);
 			} finally {
 				unlock();
 			}
@@ -160,7 +161,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			}
 			
 			// deserialize data
-			final PVStructure retVal = transport.getIntrospectionRegistry().deserializeStructure(payloadBuffer, transport);
+			final PVStructure retVal = SerializationHelper.deserializeStructureFull(payloadBuffer, transport);
 			callback.requestDone(status, retVal);
 		}
 		catch (Throwable th)

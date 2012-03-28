@@ -32,42 +32,42 @@ public interface CAConstants {
 	public static final byte CA_PROTOCOL_REVISION = 0;
 
 	/**
-	 * Unknown CA protocol minor revision.
-	 */
-	public static final byte CA_UNKNOWN_MINOR_PROTOCOL_REVISION = 0;
-
-	/**
 	 * CA version signature used to report this implementation version in header.
 	 */
-	// TODO no more major
-	public static final byte CA_VERSION = CA_PROTOCOL_REVISION | 0x50;
+	public static final byte CA_VERSION = CA_PROTOCOL_REVISION;
 
 	/**
 	 * Default CA server port.
 	 */
-	public static final int CA_SERVER_PORT = 5066;
+	public static final int CA_SERVER_PORT = 5075;
 
 	/**
 	 * Default CA beacon port.
 	 */
-	public static final int CA_BROADCAST_PORT = CA_SERVER_PORT + 1;
+	public static final int CA_BROADCAST_PORT = 5076;
 
 	/**
 	 * CA protocol message header size.
 	 */
 	public static final short CA_MESSAGE_HEADER_SIZE = 8;
 
-	/**
-	 * UDP maximum send message size.
+    /**
+     * All messages must be aligned to 8-bytes (64-bit).
+     */
+    public static final int CA_ALIGNMENT = 1;	// TODO
+
+    /**
+	 * UDP maximum send message size (for sending search requests).
 	 * MAX_UDP: 1500 (max of ethernet and 802.{2,3} MTU) - 20/40(IPv4/IPv6) - 8(UDP) - some reserve 
 	 * (the MTU of Ethernet is currently independent of its speed variant)
 	 */
-	public static final int MAX_UDP_SEND = 1440;
+	public static final int MAX_UDP_UNFRAGMENTED_SEND = 1440;
 
-	/**
+    /**
 	 * UDP maximum receive message size.
+	 * MAX_UDP: 65535 (max UDP packet size) - 20/40(IPv4/IPv6) - 8(UDP) 
 	 */
-	public static final int MAX_UDP_RECV = 0xFFFF + 16;
+	public static final int MAX_UDP_PACKET = 65487;
 
 	/**
 	 * TCP maximum receive message size.
@@ -77,17 +77,17 @@ public interface CAConstants {
 	/**
 	 * Maximum number of search requests in one search message.
 	 */
-	public static final int MAX_SEARCH_BATCH_COUNT = 0xFFFF;
+	public static final int MAX_SEARCH_BATCH_COUNT = Short.MAX_VALUE;  // 32767
 		
 	/**
-	 * Default priority (corresponds to POSIX SCHED_OTHER)
+	 * Default priority.
 	 */
 	public static final short CA_DEFAULT_PRIORITY = 0;
 	
 	/**
-	 * Unreasonable channel name length.
+	 * Max channel name length.
 	 */
-	public static final int UNREASONABLE_CHANNEL_NAME_LENGTH = 500;
+	public static final int MAX_CHANNEL_NAME_LENGTH = 500;
 	
 	/**
 	 * Invalid data type.
@@ -99,11 +99,6 @@ public interface CAConstants {
      */
     public static final int CA_INVALID_IOID = 0;
     
-    /**
-     * All messages must be aligned to 8-bytes (64-bit).
-     */
-    public static final int CA_ALIGNMENT = 1;	// TODO
-
     /**
      * Default CA provider name.
      */

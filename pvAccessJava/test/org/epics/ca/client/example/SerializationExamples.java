@@ -182,7 +182,7 @@ public class SerializationExamples {
 			alarmStructure.getStringField("message").put("Allo, Allo!");
 			
 			
-			IntrospectionRegistry ir = new IntrospectionRegistry(true);
+			IntrospectionRegistry ir = new IntrospectionRegistry();
 			ir.serialize(pvStructure.getStructure(), bb, control);
 			
 	        System.out.println(pvStructure.getStructure());

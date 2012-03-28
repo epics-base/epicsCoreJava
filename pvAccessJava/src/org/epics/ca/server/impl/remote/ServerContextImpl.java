@@ -61,12 +61,12 @@ public class ServerContextImpl implements ServerContext, Context {
     /**
      * Major version.
      */
-    private static final int VERSION_MAJOR = 2;
+    private static final int VERSION_MAJOR = 1;
     
     /**
      * Minor version.
      */
-    private static final int VERSION_MINOR = 0;
+    private static final int VERSION_MINOR = 2;
 
     /**
      * Maintenance version.
@@ -76,7 +76,7 @@ public class ServerContextImpl implements ServerContext, Context {
     /**
      * Development version.
      */
-    private static final int VERSION_DEVELOPMENT = 0;
+    private static final boolean VERSION_DEVELOPMENT = false;
 
     /**
      * Version.

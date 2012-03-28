@@ -17,10 +17,12 @@ package org.epics.ca.client.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.epics.ca.PVFactory;
 import org.epics.ca.client.impl.remote.ChannelImpl;
 import org.epics.ca.client.impl.remote.ClientContextImpl;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.pvData.pv.Status;
+import org.epics.pvData.pv.StatusCreate;
 
 /**
  * CA create channel response.
@@ -30,6 +32,11 @@ import org.epics.pvData.pv.Status;
 public class CreateChannelHandler extends AbstractClientResponseHandler {
 
 	/**
+	 * Status factory.
+	 */
+    private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
+
+    /**
 	 * @param context
 	 */
 	public CreateChannelHandler(ClientContextImpl context) {
@@ -46,7 +53,7 @@ public class CreateChannelHandler extends AbstractClientResponseHandler {
 		transport.ensureData(2*Integer.SIZE/Byte.SIZE);
 		final int cid = payloadBuffer.getInt();
 		final int sid = payloadBuffer.getInt();
-		final Status status = transport.getIntrospectionRegistry().deserializeStatus(payloadBuffer, transport);
+		final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
 		
 		ChannelImpl channel = context.getChannel(cid);
 		if (channel != null)

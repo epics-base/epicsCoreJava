@@ -23,6 +23,7 @@ import org.epics.ca.CAException;
 import org.epics.ca.client.ChannelProcess;
 import org.epics.ca.client.ChannelProcessRequester;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.pv.MessageType;
@@ -82,7 +83,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// pvRequest
-			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
+			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		}
 		
 		stopRequest();

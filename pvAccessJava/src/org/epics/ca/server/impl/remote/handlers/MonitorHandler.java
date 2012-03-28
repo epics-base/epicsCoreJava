@@ -17,8 +17,8 @@ package org.epics.ca.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.ca.impl.remote.TransportSender;
@@ -31,8 +31,8 @@ import org.epics.pvData.monitor.MonitorElement;
 import org.epics.pvData.monitor.MonitorRequester;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.Status.StatusType;
+import org.epics.pvData.pv.Structure;
 
 /**
  * Monitor request handler.
@@ -162,14 +162,13 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 				buffer.putInt(ioid);
 				buffer.put((byte)request);
 				
-				final IntrospectionRegistry introspectionRegistry = transport.getIntrospectionRegistry();
 				synchronized (this) {
-					introspectionRegistry.serializeStatus(buffer, control, status);
+					status.serialize(buffer, control);
 				}
 
 				if (status.isSuccess())
 				{
-					introspectionRegistry.serialize(structure, buffer, control);
+					control.cachedSerialize(structure, buffer);
 				}
 				
 				stopRequest(); startRequest(QoS.DEFAULT.getMaskValue());
@@ -239,7 +238,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 		{
 			
 			// pvRequest
-		    final PVStructure pvRequest = transport.getIntrospectionRegistry().deserializePVRequest(payloadBuffer, transport);
+		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 			
 			// create...
 			new MonitorRequesterImpl(context, channel, ioid, transport, pvRequest);

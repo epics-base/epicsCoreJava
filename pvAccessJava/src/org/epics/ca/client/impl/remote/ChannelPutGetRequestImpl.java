@@ -22,8 +22,8 @@ import java.nio.ByteBuffer;
 import org.epics.ca.CAException;
 import org.epics.ca.client.ChannelPutGet;
 import org.epics.ca.client.ChannelPutGetRequester;
-import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.impl.remote.QoS;
+import org.epics.ca.impl.remote.SerializationHelper;
 import org.epics.ca.impl.remote.Transport;
 import org.epics.ca.impl.remote.TransportSendControl;
 import org.epics.pvData.pv.MessageType;
@@ -98,7 +98,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			buffer.put((byte)QoS.INIT.getMaskValue());
 
 			// pvRequest
-			channel.getTransport().getIntrospectionRegistry().serializePVRequest(buffer, control, pvRequest);
+			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		}
 		else if (QoS.GET.isSet(pendingRequest) || QoS.GET_PUT.isSet(pendingRequest)) {
 			// noop
@@ -141,11 +141,10 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				return;
 			}
 			
-			final IntrospectionRegistry registry = transport.getIntrospectionRegistry();
 			lock();
 			try {
-				putData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-				getData = registry.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+				putData = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+				getData = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
 			} finally {
 				unlock();
 			}

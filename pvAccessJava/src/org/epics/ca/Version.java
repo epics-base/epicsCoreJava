@@ -23,32 +23,32 @@ public class Version {
     /**
      * @see Version#getProductName()
      */
-    private String productName;
+    private final String productName;
     
     /**
      * @see Version#getImplementationLanguage()
      */
-    private String implementationLanguage;
+    private final String implementationLanguage;
     
     /**
      * @see Version#getMajorVersion()
      */
-    private int majorVersion;
+    private final int majorVersion;
     
     /**
      * @see Version#getMinorVersion()
      */
-    private int minorVersion;
+    private final int minorVersion;
     
     /**
      * @see Version#getMaintenanceVersion()
      */
-    private int maintenanceVersion;
+    private final int maintenanceVersion;
     
     /**
      * @see Version#getDevelopmentVersion()
      */
-    private int developmentVersion;
+    private final boolean developmentFlag;
     
     /**
      * Default constructor.
@@ -57,11 +57,11 @@ public class Version {
      * @param majorVersion	major version.
      * @param minorVersion	minor version.
      * @param maintenanceVersion	maintenance version.
-     * @param developmentVersion	development version.
+     * @param developmentFlag	development indicator flag.
      */
     public Version(String productName, String implementationLangugage,
             	   int majorVersion, int minorVersion, int maintenanceVersion,
-            	   int developmentVersion)
+            	   boolean developmentFlag)
     {
         //assert (productName != null);
         //assert (implementationLangugage != null);
@@ -71,15 +71,11 @@ public class Version {
         this.majorVersion = majorVersion;
         this.minorVersion = minorVersion;
         this.maintenanceVersion = maintenanceVersion;
-        this.developmentVersion = developmentVersion;
+        this.developmentFlag = developmentFlag;
     }
     
     /**
-     * Get the long version string. Version String formatted like <BR/><CODE>
-     * "<B>ProductName </B> \[<B>ImplementationLanguage</B>\] 'v'v.r[.dd|<B>D</B>nn]"
-     * </CODE> <BR/>e.g. <BR/><CODE>"<B>CAJ </B> [<B>Java</B>] v1.0.1"</CODE>
-     * <BR/>
-     * 
+     * Get the long version string.
      * @return String denoting current version
      */
     public String getLongVersionString()
@@ -87,33 +83,30 @@ public class Version {
         return getProductName()
                 + " ["
                 + getImplementationLanguage()
-                + "] v"
-                + getMajorVersion()
-                + "."
-                + getMinorVersion()
-                + "."
-                + ((getDevelopmentVersion() > 0) ? ("D" + getDevelopmentVersion())
-                        : ("" + getMaintenanceVersion()));
+                + "] " + getVersionString();
     }
 
     /**
-     * Get the basic version string. Version String formatted like <BR/><CODE>
-     * "<B>ProductName </B> 'v'v.r[.dd|<B>D</B>nn]"
-     * </CODE> <BR/>e.g. <BR/><CODE>"<B>CAJ </B> v1.0.1"</CODE>
-     * <BR/>
-     * 
+     * Get the basic version string.
+     *
      * @return String denoting current version
      */
     public String getVersionString()
     {
-        return getProductName()
+    	String version =
+    		getProductName()
                 + " v"
                 + getMajorVersion()
                 + "."
-                + getMinorVersion()
-                + "."
-                + ((getDevelopmentVersion() > 0) ? ("D" + getDevelopmentVersion())
-                        : ("" + getMaintenanceVersion()));
+                + getMinorVersion();
+    	
+        if (getMaintenanceVersion() > 0)
+        	version += "." + getMaintenanceVersion();
+        
+        if (isDevelopmentVersion())
+        	version += "-SNAPSHOT";
+        
+        return version;
     }
     
     /**
@@ -172,22 +165,17 @@ public class Version {
     }
 
     /**
-     * Development drop number. Optional identifier designates development drop
-     * of a specific release. D01 is the first development drop of a new
-     * release.
+     * Development flag.
      * 
-     * Development drops are works in progress towards a compeleted, final
+     * Development drops are works in progress towards a completed, final
      * release. A specific development drop may not completely implement all
      * aspects of a new feature, which may take several development drops to
      * complete. At the point of the final drop for the release, the D suffix
      * will be omitted.
-     * 
-     * Each 'D' drops can contain functional enhancements as well as defect
-     * fixes. 'D' drops may not be as stable as the final releases.
      */
-    public int getDevelopmentVersion()
+    public boolean isDevelopmentVersion()
     {
-        return developmentVersion;
+        return developmentFlag;
     }
 
     /**
