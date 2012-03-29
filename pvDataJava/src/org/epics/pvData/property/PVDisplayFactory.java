@@ -31,29 +31,11 @@ public final class PVDisplayFactory implements PVDisplay{
      */
     @Override
     public boolean attach(PVField pvField) {
-        PVStructure pvStructure = null;
-        if(!pvField.getField().getFieldName().equals("display")) {
-            if(!pvField.getField().getFieldName().equals("value")) {
-                pvField.message(noDisplayFound,MessageType.error);
-                return false;
-            }
-            PVStructure pvParent = pvField.getParent();
-            if(pvParent==null) {
-                pvField.message(noDisplayFound,MessageType.error);
-                return false;
-            }
-            pvStructure = pvParent.getStructureField("display");
-            if(pvStructure==null) {
-                pvField.message(noDisplayFound,MessageType.error);
-                return false;
-            }
-        } else {
-            if(pvField.getField().getType()!=Type.structure) {
-                pvField.message(noDisplayFound,MessageType.error);
-                return false;
-            }
-            pvStructure = (PVStructure)(pvField);
+        if(pvField.getField().getType()!=Type.structure) {
+            pvField.message(noDisplayFound,MessageType.error);
+            return false;
         }
+        PVStructure pvStructure = (PVStructure)(pvField);
         pvDescription = pvStructure.getStringField("description");
         if(pvDescription==null) {
             pvField.message(noDisplayFound,MessageType.error);

@@ -12,11 +12,6 @@ package org.epics.pvData.pv;
  */
 public interface Field extends Serializable {
     /**
-     * Get the field name
-     * @return the field name
-     */
-    String getFieldName();
-    /**
      * Get the field type.
      * @return The field type.
      */

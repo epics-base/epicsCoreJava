@@ -24,7 +24,6 @@ import org.epics.pvData.pv.Type;
 public class MultiChoiceFactory {
 	private static final int nBitsPerByte = 8;
 	public static MultiChoice getMultiChoice(PVField pvField) {
-		if(!pvField.getField().getFieldName().equals("multiChoice")) return null;
 		if(pvField.getField().getType()!=Type.structure) return null;
 		PVStructure pvStructure = (PVStructure)pvField;
         PVField pvf = pvStructure.getSubField("bitMask");

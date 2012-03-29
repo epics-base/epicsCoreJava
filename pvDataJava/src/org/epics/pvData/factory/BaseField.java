@@ -16,7 +16,6 @@ import org.epics.pvData.pv.Type;
  */
 public abstract class BaseField implements Field
 {
-    private String fieldName;
     private Type type;
 
     /**
@@ -25,19 +24,12 @@ public abstract class BaseField implements Field
      * @param type The field type.
      * @throws IllegalArgumentException if type is null;
      */
-    public BaseField(String fieldName, Type type) {
+    public BaseField(Type type) {
         if(type==null) {
             throw new IllegalArgumentException("type is null");
         }
-        this.fieldName = fieldName;
         this.type = type;
     }   
-    /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Field#getFieldName()
-     */
-    public String getFieldName() {
-        return(fieldName);
-    }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Field#getType()
      */
@@ -48,10 +40,7 @@ public abstract class BaseField implements Field
      * @see org.epics.pvData.pv.Field#toString(java.lang.StringBuilder, int)
      */
     @Override
-    public void toString(StringBuilder buf, int indentLevel) {
-        buf.append(" ");
-        buf.append(fieldName);
-    }
+    public void toString(StringBuilder buf, int indentLevel) {}
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Field#toString(java.lang.StringBuilder)
      */
@@ -75,7 +64,6 @@ public abstract class BaseField implements Field
 	public int hashCode() {
 		final int PRIME = 31;
 		int result = 1;
-		result = PRIME * result + ((fieldName == null) ? 0 : fieldName.hashCode());
 		result = PRIME * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
@@ -91,11 +79,6 @@ public abstract class BaseField implements Field
 		if (getClass() != obj.getClass())
 			return false;
 		final BaseField other = (BaseField) obj;
-		if (fieldName == null) {
-			if (other.fieldName != null)
-				return false;
-		} else if (!fieldName.equals(other.fieldName))
-			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;

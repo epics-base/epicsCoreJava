@@ -9,6 +9,7 @@ import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVLong;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVULong;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -18,7 +19,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVLong extends AbstractPVScalar implements PVLong
+public class BasePVLong extends AbstractPVScalar implements PVLong,PVULong
 {
     protected long value;
     

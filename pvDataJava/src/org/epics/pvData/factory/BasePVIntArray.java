@@ -14,6 +14,7 @@ import org.epics.pvData.pv.IntArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVIntArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVUIntArray;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -23,7 +24,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVIntArray extends AbstractPVScalarArray implements PVIntArray
+public class BasePVIntArray extends AbstractPVScalarArray implements PVIntArray,PVUIntArray
 {
     protected int[] value;
     private IntArrayData intArrayData = new IntArrayData();

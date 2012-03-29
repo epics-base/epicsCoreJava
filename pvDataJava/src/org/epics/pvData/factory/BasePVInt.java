@@ -9,6 +9,7 @@ import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVUInt;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -18,7 +19,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVInt extends AbstractPVScalar implements PVInt
+public class BasePVInt extends AbstractPVScalar implements PVInt,PVUInt
 {
     protected int value;
 

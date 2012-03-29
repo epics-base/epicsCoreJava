@@ -29,29 +29,11 @@ public final class PVAlarmFactory implements PVAlarm{
      */
     @Override
     public boolean attach(PVField pvField) {
-        PVStructure pvStructure = null;
-        if(!pvField.getField().getFieldName().equals("alarm")) {
-            if(!pvField.getField().getFieldName().equals("value")) {
-                pvField.message(noAlarmFound,MessageType.error);
-                return false;
-            }
-            PVStructure pvParent = pvField.getParent();
-            if(pvParent==null) {
-                pvField.message(noAlarmFound,MessageType.error);
-                return false;
-            }
-            pvStructure = pvParent.getStructureField("alarm");
-            if(pvStructure==null) {
-                pvField.message(noAlarmFound,MessageType.error);
-                return false;
-            }
-        } else {
-            if(pvField.getField().getType()!=Type.structure) {
-                pvField.message(noAlarmFound,MessageType.error);
-                return false;
-            }
-            pvStructure = (PVStructure)(pvField);
+        if(pvField.getField().getType()!=Type.structure) {
+            pvField.message(noAlarmFound,MessageType.error);
+            return false;
         }
+        PVStructure pvStructure = (PVStructure)(pvField);
         PVInt pvInt = pvStructure.getIntField("severity");
         if(pvInt==null) {
             pvField.message(noAlarmFound,MessageType.error);

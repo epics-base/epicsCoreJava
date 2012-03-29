@@ -63,7 +63,7 @@ public interface StandardPVField {
      * @param number
      * @return
      */
-    PVStructure enumerated(PVStructure parent,String fieldName,String[] choices, int number);
+    PVStructure enumerated(PVStructure parent,String fieldName,String[] choices);
     /**
      * @param parent
      * @param fieldName
@@ -72,7 +72,7 @@ public interface StandardPVField {
      * @param properties
      * @return
      */
-    PVStructure enumerated(PVStructure parent,String fieldName,String[] choices, int number, String properties);
+    PVStructure enumerated(PVStructure parent,String fieldName,String[] choices,String properties);
     /**
      * @param parent
      * @param type
@@ -118,7 +118,7 @@ public interface StandardPVField {
      * @param number
      * @return
      */
-    PVStructure enumeratedValue(PVStructure parent,String[] choices,int number);
+    PVStructure enumeratedValue(PVStructure parent,String[] choices);
     /**
      * @param parent
      * @param choices
@@ -126,7 +126,7 @@ public interface StandardPVField {
      * @param properties
      * @return
      */
-    PVStructure enumeratedValue(PVStructure parent,String[] choices,int number, String properties);
+    PVStructure enumeratedValue(PVStructure parent,String[] choices,String properties);
     /**
      * @param parent
      * @return

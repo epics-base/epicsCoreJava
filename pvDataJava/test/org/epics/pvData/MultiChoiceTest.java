@@ -39,10 +39,11 @@ public class MultiChoiceTest extends TestCase {
      * test structure.
      */
     public static void testMultiString() {
-        ScalarArray bitMask = fieldCreate.createScalarArray("bitMask", ScalarType.pvByte);
-    	ScalarArray choices =fieldCreate.createScalarArray("choices", ScalarType.pvString);
+        ScalarArray bitMask = fieldCreate.createScalarArray(ScalarType.pvByte);
+    	ScalarArray choices =fieldCreate.createScalarArray(ScalarType.pvString);
     	Field[] fields = new Field[]{bitMask,choices};
-    	Structure structure = fieldCreate.createStructure("multiChoice", fields);
+    	String[] fieldNames = {"bitMask","choices"};
+    	Structure structure = fieldCreate.createStructure(fieldNames, fields);
     	PVStructure pvMultiChoice = dataCreate.createPVStructure(null, structure);
     	MultiChoice multiChoice = MultiChoiceFactory.getMultiChoice(pvMultiChoice);
     	assertTrue(multiChoice!=null);

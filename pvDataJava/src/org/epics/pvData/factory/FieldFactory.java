@@ -50,23 +50,22 @@ public final class FieldFactory {
          * @see org.epics.pvData.pv.FieldCreate#create(java.lang.String, org.epics.pvData.pv.Field)
          */
         @Override
-        public Field create(String fieldName, Field field) {
+        public Field create(Field field) {
         	switch(field.getType()) {
         	case scalar: {
         		Scalar scalar = (Scalar)field;
-        		return createScalar(fieldName,scalar.getScalarType());
+        		return createScalar(scalar.getScalarType());
         	}
         	case scalarArray:{
         		ScalarArray array = (ScalarArray)field;
-        		return createScalarArray(fieldName,array.getElementType());
+        		return createScalarArray(array.getElementType());
         	}
         	case structure: {
-        		Structure structure = (Structure)field;
-        		return createStructure(fieldName,structure.getFields());
+        		throw new IllegalArgumentException("can not create a structure without fieldNames");
         	}
         	case structureArray: {
         		StructureArray structureArray = (StructureArray)field;
-        		return createStructureArray(fieldName,structureArray.getStructure());
+        		return createStructureArray(structureArray.getStructure());
         	}
         	}
         	throw new IllegalStateException("Logic error. Should never get here");
@@ -74,65 +73,70 @@ public final class FieldFactory {
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createArray(java.lang.String, org.epics.pvData.pv.ScalarType)
          */
-        public ScalarArray createScalarArray(String fieldName, ScalarType elementType)
+        public ScalarArray createScalarArray(ScalarType elementType)
         {
-            return new BaseScalarArray(fieldName,elementType);
+            return new BaseScalarArray(elementType);
         }
         /* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createArray(java.lang.String, org.epics.pvData.pv.Structure)
          */
         @Override
-		public StructureArray createStructureArray(String fieldName, Structure elementStructure) {
+		public StructureArray createStructureArray(Structure elementStructure) {
         	
-			return new BaseStructureArray(fieldName,elementStructure);
+			return new BaseStructureArray(elementStructure);
 		}
 		/* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createScalar(java.lang.String, org.epics.pvData.pv.ScalarType)
          */
-        public Scalar createScalar(String fieldName, ScalarType type)
+        public Scalar createScalar(ScalarType type)
         {
-            return new BaseScalar(fieldName,type);
+            return new BaseScalar(type);
         }
 		/* (non-Javadoc)
          * @see org.epics.pvData.pv.FieldCreate#createStructure(java.lang.String, org.epics.pvData.pv.Field[])
          */
-        public Structure createStructure(String fieldName, Field[] field)
+        public Structure createStructure(String[] fieldNames, Field[] fields)
         {
-            return new BaseStructure(fieldName,field);
+            if(fieldNames.length != fields.length) {
+                throw new IllegalArgumentException("fieldNames and fields have different length");
+            }
+            return new BaseStructure(fieldNames,fields);
         }
 		/* (non-Javadoc)
 		 * @see org.epics.pvData.pv.FieldCreate#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
 		@Override
 		public Field deserialize(ByteBuffer buffer, DeserializableControl control) {
-			control.ensureData(1);
-			final byte typeCode = buffer.get();
-
-			// high nibble means scalar/array/structure
-			final Type type = Type.values()[typeCode >>> 4]; 
-			switch (type)
-			{
-				case scalar:
-					final ScalarType scalar = ScalarType.values()[typeCode & 0x0F];
-					final String scalarFieldName = SerializeHelper.deserializeString(buffer, control);
-					return new BaseScalar(scalarFieldName, scalar);
-					
-				case scalarArray:
-					final ScalarType element = ScalarType.values()[typeCode & 0x0F];
-					final String arrayFieldName = SerializeHelper.deserializeString(buffer, control);
-					return new BaseScalarArray(arrayFieldName, element);
-					
-				case structure:
-					return BaseStructure.deserializeStructureField(buffer, control);
-
-				case structureArray:
-					final String structureArrayFieldName = SerializeHelper.deserializeString(buffer, control);
-					final Structure arrayElement = BaseStructure.deserializeStructureField(buffer, control);
-					return new BaseStructureArray(structureArrayFieldName, arrayElement);
-
-				default:
-					throw new UnsupportedOperationException("unsupported type: " + type);
-			}
+			return null;
+			// MATEJ 
+//			control.ensureData(1);
+//			final byte typeCode = buffer.get();
+//
+//			// high nibble means scalar/array/structure
+//			final Type type = Type.values()[typeCode >>> 4]; 
+//			switch (type)
+//			{
+//				case scalar:
+//					final ScalarType scalar = ScalarType.values()[typeCode & 0x0F];
+//					final String scalarFieldName = SerializeHelper.deserializeString(buffer, control);
+//					return new BaseScalar(scalarFieldName, scalar);
+//					
+//				case scalarArray:
+//					final ScalarType element = ScalarType.values()[typeCode & 0x0F];
+//					final String arrayFieldName = SerializeHelper.deserializeString(buffer, control);
+//					return new BaseScalarArray(arrayFieldName, element);
+//					
+//				case structure:
+//					return BaseStructure.deserializeStructureField(buffer, control);
+//
+//				case structureArray:
+//					final String structureArrayFieldName = SerializeHelper.deserializeString(buffer, control);
+//					final Structure arrayElement = BaseStructure.deserializeStructureField(buffer, control);
+//					return new BaseStructureArray(structureArrayFieldName, arrayElement);
+//
+//				default:
+//					throw new UnsupportedOperationException("unsupported type: " + type);
+//			}
 		}  
         
         

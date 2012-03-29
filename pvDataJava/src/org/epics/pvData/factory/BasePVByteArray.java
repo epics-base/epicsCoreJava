@@ -14,6 +14,7 @@ import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVByteArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVUByteArray;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -23,7 +24,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArray
+public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArray,PVUByteArray
 {
     protected byte[] value;
     private ByteArrayData byteArrayData = new ByteArrayData();

@@ -25,60 +25,78 @@ import org.epics.pvData.pv.Type;
 public class BaseStructure extends BaseField implements Structure {
     private static Convert convert = ConvertFactory.getConvert();
     private Field[] fields;
+    private String[] fieldNames;
     
     /**
      * Constructor for a structure field.
-     * @param fieldName The field name.
+     * @param fieldNames The field names for the subfields
      * @param fields The array of nodes definitions for the nodes of the structure.
      * @throws IllegalArgumentException if structureName is null;
      */
-    public BaseStructure(String fieldName,Field[] fields)
+    public BaseStructure(String[] fieldNames,Field[] fields)
     {
-        super(fieldName, Type.structure);  
-        initializeFields(fields);
+    	super(Type.structure);
+    	if(fieldNames.length != fields.length) {
+    		throw new IllegalArgumentException("fieldNames has different length than fields");
+    	}
+    	this.fields = fields;
+    	this.fieldNames = fieldNames;
+    	for(int i=0; i<fields.length; i++) {
+    		String fieldName = fieldNames[i];
+    		for(int j=i+1; j<fields.length; j++) {
+    			if(fieldName.equals(fieldNames[j])) {
+    				throw new IllegalArgumentException(
+    						"fieldName " + fieldName
+    						+ " appears more than once");
+    			}
+    		}
+    	}
     }
-	/**
-	 * Initialize nodes.
-	 * @param field
-	 * @throws IllegalArgumentException
-	 */
-	private void initializeFields(Field[] field) throws IllegalArgumentException {
-		if(field==null) field = new Field[0];
-        this.fields = field;
-        for(int i=0; i<fields.length; i++) {
-        	String fieldName = fields[i].getFieldName();
-        	for(int j=i+1; j<fields.length; j++) {
-        		if(fieldName.equals(fields[j].getFieldName())) {
-        			throw new IllegalArgumentException(
-                            "fieldName " + fieldName
-                            + " appears more than once");
-        		}
-        	}
-        }
-	}    
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Structure#getField(java.lang.String)
      */
 	@Override
     public Field getField(String name) {
 		for(int i=0; i<fields.length; i++) {
-			if(name.equals(fields[i].getFieldName())) {
+			if(name.equals(fieldNames[i])) {
 				return fields[i];
 			}
 		}
         return null;
     }
-    /* (non-Javadoc)
+	/* (non-Javadoc)
      * @see org.epics.pvData.pv.Structure#getFieldIndex(java.lang.String)
      */
 	@Override
     public int getFieldIndex(String name) {
 		for(int i=0; i<fields.length; i++) {
-			if(name.equals(fields[i].getFieldName())) {
+			if(name.equals(fieldNames[i])) {
 				return i;
 			}
 		}
         return -1;
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.Structure#getField(int)
+     */
+    @Override
+    public Field getField(int fieldIndex) {
+	    if(fieldIndex<0 || fieldIndex>=fields.length) return null;
+	    return fields[fieldIndex];
+    }
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Structure#getFieldNames()
+	 */
+	@Override
+    public String[] getFieldNames() {
+	    return fieldNames;
+    }
+	/* (non-Javadoc)
+	 * @see org.epics.pvData.pv.Structure#getFieldName(int)
+	 */
+	@Override
+    public String getFieldName(int fieldIndex) {
+	    return fieldNames[fieldIndex];
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Structure#getFields()
@@ -87,15 +105,39 @@ public class BaseStructure extends BaseField implements Structure {
     public Field[] getFields() {
         return fields;
     }
-    
+    /* (non-Javadoc)
+     * @see org.epics.pvData.factory.BaseField#toString(java.lang.StringBuilder, int)
+     */
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
-        buf.append("structure ");
-        super.toString(buf, indentLevel);
-        convert.newLine(buf,indentLevel+1);
+        buf.append("structure");
+        toStringCommon(buf,indentLevel);
+    }
+    private void toString(String fieldName,StringBuilder buf, int indentLevel) {
+    	buf.append("structure " + fieldName);
+    	toStringCommon(buf,indentLevel);
+    }
+    private void toStringCommon(StringBuilder buf, int indentLevel) {
+    	convert.newLine(buf,indentLevel+1);
         int length = fields.length;
         for(int i=0; i<length; i++) {
-            fields[i].toString(buf, indentLevel+1);
+        	Field field = fields[i];
+        	Type type = field.getType();
+        	switch(type) {
+        	case scalar:
+        	case scalarArray:
+        		field.toString(buf, indentLevel+1);
+                buf.append(" " + fieldNames[i]);
+                break;
+        	case structure:
+        		BaseStructure struct = (BaseStructure)field;
+        		struct.toString(fieldNames[i], buf, indentLevel + 1);
+        		break;
+        	case structureArray:
+        		convert.newLine(buf,indentLevel+1);
+        		buf.append("structure[] " + fieldNames[i]);
+        		field.toString(buf, indentLevel+1);
+        	}
             if(i<length-1) convert.newLine(buf,indentLevel+1);
 
         }
@@ -139,7 +181,6 @@ public class BaseStructure extends BaseField implements Structure {
 
 	static void serializeStructureField(final Structure structure, ByteBuffer buffer, 
 			SerializableControl control) {
-		SerializeHelper.serializeString(structure.getFieldName(), buffer, control);
 		final Field[] fields = structure.getFields();
 		SerializeHelper.writeSize(fields.length, buffer, control);
 		for (int i = 0; i < fields.length; i++)
@@ -147,16 +188,18 @@ public class BaseStructure extends BaseField implements Structure {
 	}
 	
 	static final Structure deserializeStructureField(ByteBuffer buffer, DeserializableControl control) {
-		final String structureFieldName = SerializeHelper.deserializeString(buffer, control);
-		final int size = SerializeHelper.readSize(buffer, control);
-		Field[] fields = null;
-		if (size > 0)
-		{
-			fields = new Field[size];
-			for (int i = 0; i < size; i++)
-				fields[i] = control.cachedDeserialize(buffer);
-		}
-		return new BaseStructure(structureFieldName, fields);
+		// MATEJ PLEASE FIX
+//		final String structureFieldName = SerializeHelper.deserializeString(buffer, control);
+//		final int size = SerializeHelper.readSize(buffer, control);
+//		Field[] fields = null;
+//		if (size > 0)
+//		{
+//			fields = new Field[size];
+//			for (int i = 0; i < size; i++)
+//				fields[i] = control.cachedDeserialize(buffer);
+//		}
+//		return new BaseStructure(structureFieldName, fields);
+	    return null;
 	}
 
 	/* (non-Javadoc)

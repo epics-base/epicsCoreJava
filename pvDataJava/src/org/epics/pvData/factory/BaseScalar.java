@@ -26,11 +26,10 @@ public class BaseScalar extends BaseField implements Scalar {
     
     /**
      * Constructor for BaseScalar.
-     * @param fieldName The field name.
      * @param scalarType The scalar Type.
      */
-    public BaseScalar(String fieldName,ScalarType scalarType) {
-        super(fieldName, Type.scalar);
+    public BaseScalar(ScalarType scalarType) {
+        super(Type.scalar);
         this.scalarType = scalarType;
         if(scalarType==null) {
         	throw new NullPointerException("scalarType is null");
@@ -48,7 +47,6 @@ public class BaseScalar extends BaseField implements Scalar {
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
         buf.append(scalarType.toString());
-        super.toString(buf,indentLevel);
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -87,7 +85,6 @@ public class BaseScalar extends BaseField implements Scalar {
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		buffer.put((byte)(Type.scalar.ordinal() << 4 | scalarType.ordinal()));
-		SerializeHelper.serializeString(getFieldName(), buffer, control);
 	}
 	
 	/* (non-Javadoc)

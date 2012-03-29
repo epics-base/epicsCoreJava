@@ -14,6 +14,7 @@ import org.epics.pvData.pv.LongArrayData;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVLongArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVULongArray;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -23,7 +24,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVLongArray extends AbstractPVScalarArray implements PVLongArray
+public class BasePVLongArray extends AbstractPVScalarArray implements PVLongArray,PVULongArray
 {
     protected long[] value;   
     private LongArrayData longArrayData = new LongArrayData();

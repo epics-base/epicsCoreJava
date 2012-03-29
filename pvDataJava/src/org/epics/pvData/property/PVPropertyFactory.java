@@ -29,15 +29,26 @@ public class PVPropertyFactory {
     }
     
     private static final class PVPropertyImpl implements PVProperty{
+        private static boolean isValueField(PVField pvField) {
+            PVStructure parent = pvField.getParent();
+            if(parent==null) return false;
+            PVField[] pvFields = parent.getPVFields();
+            String[] fieldNames = parent.getStructure().getFieldNames();
+            for(int i=0; i< fieldNames.length; i++) {
+                if(pvFields[i]== pvField) {
+                    if(fieldNames[i].equals("value")) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         /* (non-Javadoc)
          * @see org.epics.pvData.property.PVProperty#findProperty(org.epics.pvData.pv.PVField, java.lang.String)
          */
         public PVField findProperty(PVField pvField,String fieldName) {
-            Field field = pvField.getField();
-            if(!field.getFieldName().equals("value")) return null;
-            if(fieldName==null || fieldName.length()==0) return null;
-            PVStructure pvParent = pvField.getParent();
-            PVField pvFound = pvParent.getSubField(fieldName);
+            if(!isValueField(pvField)) return null;
+            PVField pvFound = pvField.getParent().getSubField(fieldName);
             if(pvFound!=null) return pvFound;
             if(fieldName.equals("timeStamp")) {
                 return findPropertyViaParent(pvField,fieldName);
@@ -62,22 +73,21 @@ public class PVPropertyFactory {
          */
         public String[] getPropertyNames(PVField pv) {
             PVField pvField = pv;
-            Field field = pvField.getField();
-            if(!field.getFieldName().equals("value"))  return null;
-            if(pvField.getParent()==null) return null;
-            pvField = pvField.getParent();
-            PVStructure pvStructure = (PVStructure)pvField;
+            if(!isValueField(pvField)) return null;
+            PVStructure pvStructure = pvField.getParent();
             PVField[] pvFields = pvStructure.getPVFields();
+            String[] fieldNames = pvStructure.getStructure().getFieldNames();
             int size = 0;
             boolean addTimeStamp = true;
-            for(PVField pvf: pvFields) {
-                field = pvf.getField();
-                String fieldName = field.getFieldName();
-                if(fieldName.equals("timeStamp")) addTimeStamp = false;
-                if(fieldName.equals("value")) continue;
+            PVField pvTimeStamp = null;
+            for(int i=0; i<pvFields.length; i++) {
+                if(fieldNames[i].equals("timeStamp")){
+                    pvTimeStamp = pvFields[i];
+                    addTimeStamp = false;
+                }
+                if(fieldNames[i].equals("value")) continue;
                 size++;
             }
-            PVField pvTimeStamp = null;
             if(addTimeStamp) {
                 pvTimeStamp = findPropertyViaParent(pv,"timeStamp");
                 if(pvTimeStamp!=null) size++;
@@ -86,13 +96,12 @@ public class PVPropertyFactory {
             String[] propertyNames = new String[size];
             int index = 0;
             if(pvTimeStamp!=null) {
-                propertyNames[index++] = pvTimeStamp.getField().getFieldName();
+                propertyNames[index++] = "timeStamp";
             }
-            for(PVField pvf: pvFields) {
-                field = pvf.getField();
-                String fieldName = field.getFieldName();
-                if(fieldName.equals("value")) continue;
-                propertyNames[index++] = pvf.getField().getFieldName();
+            for(int i=0; i<pvFields.length; i++) {
+                if(fieldNames[i].equals("timeStamp")) continue;
+                if(fieldNames[i].equals("value")) continue;
+                propertyNames[index++] = fieldNames[i];
             }
             return propertyNames;
         }

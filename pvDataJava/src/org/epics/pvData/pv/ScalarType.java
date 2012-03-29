@@ -32,6 +32,22 @@ public enum ScalarType {
      */
     pvLong,
     /**
+     * Value has type <i>ubyte</i>.
+     */
+    pvUByte,
+    /**
+     * Value has type <i>ushort</i>.
+     */
+    pvUShort,
+    /**
+     * Value has type <i>uint</i>.
+     */
+    pvUInt,
+    /**
+     * Value has type <i>ulong</i>.
+     */
+    pvULong,
+    /**
      * value has type <i>float</i>.
      */
     pvFloat,
@@ -40,15 +56,25 @@ public enum ScalarType {
      */
     pvDouble,
     /**
-     * Value has type <i>String</i>.
+     * Value has type <i>string</i>.
      */
     pvString;
     /**
-     * Is this an integer. true if byte, short, int, or long.
+     * Is this an integer (signed or unsigned). true if byte, short, int, long, ubyte, ushort, uint, or ulong.
      * @return true if it is an integer type.
      */
     public boolean isInteger() {
-        if( (ordinal() >= ScalarType.pvByte.ordinal()) && (ordinal() <= ScalarType.pvLong.ordinal()) ) {
+        if( (ordinal() >= ScalarType.pvByte.ordinal()) && (ordinal() <= ScalarType.pvULong.ordinal()) ) {
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Is this an unsigned integer. true if ubyte, ushort, uint, or ulong.
+     * @return true if it is an unsigned integer type.
+     */
+    public boolean isUInteger() {
+        if( (ordinal() >= ScalarType.pvUByte.ordinal()) && (ordinal() <= ScalarType.pvULong.ordinal()) ) {
             return true;
         }
         return false;
@@ -85,6 +111,10 @@ public enum ScalarType {
         if(type.equals("short")) return ScalarType.pvShort;
         if(type.equals("int")) return ScalarType.pvInt;
         if(type.equals("long")) return ScalarType.pvLong;
+        if(type.equals("ubyte")) return ScalarType.pvUByte;
+        if(type.equals("ushort")) return ScalarType.pvUShort;
+        if(type.equals("uint")) return ScalarType.pvUInt;
+        if(type.equals("ulong")) return ScalarType.pvULong;
         if(type.equals("float")) return ScalarType.pvFloat;
         if(type.equals("double")) return ScalarType.pvDouble;
         if(type.equals("string")) return ScalarType.pvString;
@@ -97,6 +127,10 @@ public enum ScalarType {
         case pvShort: return "short";
         case pvInt:   return "int";
         case pvLong:  return "long";
+        case pvUByte: return "ubyte";
+        case pvUShort: return "ushort";
+        case pvUInt:   return "uint";
+        case pvULong:  return "ulong";
         case pvFloat: return "float";
         case pvDouble: return "double";
         case pvString: return "string";

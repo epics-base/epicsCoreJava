@@ -9,6 +9,7 @@ import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVByte;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVUByte;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -18,7 +19,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVByte extends AbstractPVScalar implements PVByte
+public class BasePVByte extends AbstractPVScalar implements PVByte,PVUByte
 {
     protected byte value;
     

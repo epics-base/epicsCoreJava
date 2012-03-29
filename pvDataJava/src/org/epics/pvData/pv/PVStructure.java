@@ -39,17 +39,19 @@ public interface PVStructure extends PVField, BitSetSerializable {
     /**
      * Append a new PVField to this structure.
      * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
+     * @param fieldName The name of the fueld to append,
      * @param pvField The field to append.
      */
-    void appendPVField(PVField pvField);
+    void appendPVField(String fieldName,PVField pvField);
     /**
      * Append a PVField[]. Each element of the array must have been created with this PVStructure as the parent.
      * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
+     * @param fieldNames The names for the new fields.
      * @param pvFields The fields to append.
      * Note that if the original number of fields is 0 than pvFields replaces the original.
      * Thus the caller must NOT reuse pvFields after calling this method.
      */
-    void appendPVFields(PVField[] pvFields);
+    void appendPVFields(String[] fieldNames,PVField[] pvFields);
     /**
      * Remove a field.
      * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.

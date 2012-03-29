@@ -9,6 +9,7 @@ import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVShort;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVUShort;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.SerializableControl;
 
@@ -18,7 +19,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVShort extends AbstractPVScalar implements PVShort
+public class BasePVShort extends AbstractPVScalar implements PVShort,PVUShort
 {
     protected short value;
     

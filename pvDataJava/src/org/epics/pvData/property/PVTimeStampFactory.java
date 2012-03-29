@@ -32,56 +32,27 @@ public class PVTimeStampFactory implements PVTimeStamp {
      */
     @Override
     public boolean attach(PVField pvField) {
-        PVStructure pvStructure = null;
-        if(!pvField.getField().getFieldName().equals("timeStamp")) {
-            if(!pvField.getField().getFieldName().equals("value")) {
-                pvField.message(noTimeStampFound,MessageType.error);
-                return false;
+        if(pvField.getField().getType()!=Type.structure) {
+            pvField.message(noTimeStampFound,MessageType.error);
+            return false;
+        }
+        PVStructure pvStructure = (PVStructure)(pvField);
+        while(true) {
+            PVLong pvLong = pvStructure.getLongField("secondsPastEpoch");
+            if(pvLong!=null) {
+                pvSecs = pvLong;
+                pvNano = pvStructure.getIntField("nanoSeconds");
+                pvUserTag = pvStructure.getIntField("userTag");
             }
-            PVStructure pvParent = pvField.getParent();
-            if(pvParent==null) {
-                pvField.message(noTimeStampFound,MessageType.error);
-                return false;
-            }
+            if(pvSecs!=null && pvNano!=null && pvUserTag!=null) return true;
+            pvSecs = null;
+            pvNano = null;
+            pvUserTag = null;
             // look up the tree for a timeSyamp
-            while(pvParent!=null) {
-                PVStructure pvs = pvParent.getStructureField("timeStamp");
-                if(pvs!=null) {
-                    pvStructure = pvs;
-                    break;
-                }
-                pvParent = pvParent.getParent();
-            }
-            if(pvStructure==null) {
-                pvField.message(noTimeStampFound,MessageType.error);
-                return false;
-            }
-        } else {
-            if(pvField.getField().getType()!=Type.structure) {
-                pvField.message(noTimeStampFound,MessageType.error);
-                return false;
-            }
-            pvStructure = (PVStructure)(pvField);
+            pvStructure = pvStructure.getParent();
+            if(pvStructure==null) break;
         }
-        PVLong pvLong = pvStructure.getLongField("secondsPastEpoch");
-        if(pvLong==null) {
-            pvField.message(noTimeStampFound,MessageType.error);
-            return false;
-        }
-        pvSecs = pvLong;
-        PVInt pvInt = pvStructure.getIntField("nanoSeconds");
-        if(pvInt==null) {
-            pvField.message(noTimeStampFound,MessageType.error);
-            return false;
-        }
-        pvNano = pvInt;
-        pvInt = pvStructure.getIntField("userTag");
-        if(pvInt==null) {
-            pvField.message(noTimeStampFound,MessageType.error);
-            return false;
-        }
-        pvUserTag = pvInt;
-        return true;
+        return false;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.property.PVTimeStamp#detach()

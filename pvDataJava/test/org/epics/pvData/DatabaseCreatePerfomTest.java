@@ -31,21 +31,24 @@ public class DatabaseCreatePerfomTest extends TestCase {
     
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-    private static Field[] propertyFields;
+    private static Structure propertyStructure;
 	private static PVStructure pvChannelToClone;
 	private static final int numFields = 500;
 	private static final int numProperties = 10;
 	
 	
 	static {
-		propertyFields = new Field[2];
-		propertyFields[0] = fieldCreate.createScalar("value", ScalarType.pvString);
-		propertyFields[1] = fieldCreate.createScalar("owner", ScalarType.pvString);
-		
+		Field[] propertyFields = new Field[2];
+		propertyFields[0] = fieldCreate.createScalar( ScalarType.pvString);
+		propertyFields[1] = fieldCreate.createScalar(ScalarType.pvString);
+		String[] propertyFieldNames = {"value","owner"};
+		propertyStructure = fieldCreate.createStructure(propertyFieldNames, propertyFields);
 		Field[] fields = new Field[2];
-		fields[0] = fieldCreate.createScalar("name", ScalarType.pvString);
-		fields[1] = fieldCreate.createStructure("properties", new Field[0]);
-		pvChannelToClone = pvDataCreate.createPVStructure(null, "pvChannelFinder", fields);
+		fields[0] = fieldCreate.createScalar( ScalarType.pvString);
+		fields[1] = fieldCreate.createStructure(new String[0], new Field[0]);
+		String[] fieldNames = {"name","properties"};
+		Structure structure = fieldCreate.createStructure(fieldNames, fields);
+		pvChannelToClone = pvDataCreate.createPVStructure(null,structure);
 	}
     /**
      * test boolean.
@@ -60,29 +63,32 @@ public class DatabaseCreatePerfomTest extends TestCase {
         	propertyValues[i] = "property" +Integer.toString(i);
         }
         long startTime = System.currentTimeMillis();
-        PVStructure pvStucture = pvDataCreate.createPVStructure(null, "top", new Field[0]);
-        appendFields(pvStucture,fieldNames,propertyNames,propertyValues);
+        PVStructure pvStructure = pvDataCreate.createPVStructure(
+            null,fieldCreate.createStructure(new String[0], new Field[0]));
+//System.out.println(pvStructure);
+        appendFields(pvStructure,fieldNames,propertyNames,propertyValues);
         // Make it compute offsets
-        pvStucture.getFieldOffset();
+        pvStructure.getFieldOffset();
         long endTime = System.currentTimeMillis();
         double elapsedTime = endTime-startTime;
         elapsedTime /= 1000.0;
         System.out.println("appendFields " + elapsedTime + " seconds");
-//System.out.println(pvStucture);
+//System.out.println(pvStructure);
         startTime = System.currentTimeMillis();
-        pvStucture = pvDataCreate.createPVStructure(null, "top", new Field[0]);
-        appendField(pvStucture,fieldNames,propertyNames,propertyValues);
+        pvStructure = pvDataCreate.createPVStructure(
+            null,fieldCreate.createStructure(new String[0], new Field[0]));
+        appendField(pvStructure,fieldNames,propertyNames,propertyValues);
         // Make it compute offsets
-        pvStucture.getFieldOffset();
+        pvStructure.getFieldOffset();
         endTime = System.currentTimeMillis();
         elapsedTime = endTime-startTime;
         elapsedTime /= 1000.0;
         System.out.println("appendField " + elapsedTime + " seconds");
-//System.out.println(pvStucture);
+//System.out.println(pvStructure);
         startTime = System.currentTimeMillis();
         PVStructure[] pvStructures = new PVStructure[numFields];
         for(int i=0;i<numFields; i++) {
-            pvStructures[i] = pvDataCreate.createPVStructure(null, fieldNames[i],pvChannelToClone);
+            pvStructures[i] = pvDataCreate.createPVStructure(null,pvChannelToClone);
             PVString pvName = pvStructures[i].getStringField("name");
             //pvName.put("pvName" + chanName);
             pvName.put(fieldNames[i]);
@@ -91,21 +97,21 @@ public class DatabaseCreatePerfomTest extends TestCase {
             for(int j=0; j<propertyValues.length; j++) {
                 pvProps[j] = appendPropertys(null, propertyNames[j],propertyValues[j],"irmis");
             }
-            pvProperties.appendPVFields(pvProps);
+            pvProperties.appendPVFields(propertyNames,pvProps);
         }
-        pvStucture = pvDataCreate.createPVStructure(null,"top",pvStructures);
-        pvStucture.getFieldOffset();
+        pvStructure = pvDataCreate.createPVStructure(null,fieldNames,(PVField[])pvStructures);
+        pvStructure.getFieldOffset();
         endTime = System.currentTimeMillis();
         elapsedTime = endTime-startTime;
         elapsedTime /= 1000.0;
         System.out.println("createSubFields first " + elapsedTime + " seconds");
-        PVField[] pvFields = pvStucture.getPVFields();
+        PVField[] pvFields = pvStructure.getPVFields();
         for(int i=0;i<pvFields.length; i++) {
             PVField pvField = pvFields[i];
             checkParent(pvField);
            
         }
-//System.out.println(pvStucture);        
+//System.out.println(pvStructure);        
     }
     
     private static void checkParent(PVField pvField) {
@@ -123,7 +129,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
 			PVStructure[] pvChannels = new PVStructure[fieldNames.length];
 			for(int i=0; i<fieldNames.length; i++) {
 				String fieldName = fieldNames[i];
-				PVStructure pvChannel = pvChannels[i] = pvDataCreate.createPVStructure(pvStructure, fieldName, pvChannelToClone);
+				PVStructure pvChannel = pvChannels[i] = pvDataCreate.createPVStructure(pvStructure, pvChannelToClone);
 				PVString pvName = pvChannel.getStringField("name");
 				//pvName.put("pvName" + chanName);
 				pvName.put(fieldName);
@@ -132,14 +138,13 @@ public class DatabaseCreatePerfomTest extends TestCase {
 				for(int j=0; j<propertyValues.length; j++) {
 					pvProps[j] =appendPropertys(pvProperties, propertyNames[j],propertyValues[j],"irmis");
 				}
-				pvProperties.appendPVFields(pvProps);
+				pvProperties.appendPVFields(propertyNames,pvProps);
 			}
-			pvStructure.appendPVFields(pvChannels);
+			pvStructure.appendPVFields(fieldNames,pvChannels);
 	}
 	
 	private static PVStructure appendPropertys(PVStructure pvProperties,String name,String value,String owner) {
-		Structure structure = fieldCreate.createStructure(name, propertyFields);
-		PVStructure pvStructure = pvDataCreate.createPVStructure(pvProperties, structure);
+		PVStructure pvStructure = pvDataCreate.createPVStructure(pvProperties, propertyStructure);
 		PVString pvValue = pvStructure.getStringField("value");
 		PVString pvOwner = pvStructure.getStringField("owner");
 		pvValue.put(value);
@@ -151,7 +156,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
 		int numberFields = fieldNames.length;
 		for(int i=0; i<numberFields; i++) {
 		    String fieldName = fieldNames[i];
-			PVStructure pvChannel = pvDataCreate.createPVStructure(pvStructure, fieldName, pvChannelToClone);
+			PVStructure pvChannel = pvDataCreate.createPVStructure(pvStructure, pvChannelToClone);
 			PVString pvName = pvChannel.getStringField("name");
 			//pvName.put("pvName" + chanName);
 			pvName.put(fieldName);
@@ -159,18 +164,17 @@ public class DatabaseCreatePerfomTest extends TestCase {
 			for(int j=0; j<propertyValues.length; j++) {
 			    appendProperty(pvProperties, propertyNames[j],propertyValues[j],"irmis");
 			}
-			pvStructure.appendPVField(pvChannel);
+			pvStructure.appendPVField(fieldName,pvChannel);
 		}
 	}
 
 	private static void appendProperty(PVStructure pvProperties,String name,String value,String owner) {
-		Structure structure = fieldCreate.createStructure(name, propertyFields);
-		PVStructure pvStructure = pvDataCreate.createPVStructure(pvProperties, structure);
+		PVStructure pvStructure = pvDataCreate.createPVStructure(pvProperties, propertyStructure);
 		PVString pvValue = pvStructure.getStringField("value");
 		PVString pvOwner = pvStructure.getStringField("owner");
 		pvValue.put(value);
 		pvOwner.put(owner);
-		pvProperties.appendPVField(pvStructure);
+		pvProperties.appendPVField(name,pvStructure);
 	}
 }
 

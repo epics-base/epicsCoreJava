@@ -12,9 +12,9 @@ package org.epics.pvData.pv;
  */
 public interface Structure extends Field{
     /**
-     * Get the <i>Field</i> for the specified field.
+     * Get the Field for the specified fieldName
      * @param fieldName The name of the field.
-     * @return The <i>Field</i> that describes the field.
+     * @return The Field that describes the field.
      */
     Field getField(String fieldName);
     /**
@@ -24,9 +24,26 @@ public interface Structure extends Field{
      */
     int getFieldIndex(String fieldName);
     /**
-     * Get all the <i>Field</i>s for the structure.
-     * @return An array of <i>Field</i> that describes
-     * each of the nodes in the structure.
+     * Get all the subfields of the structure.
+     * @return An array of Field that describes
+     * each of the subfields in the structure.
      */
     Field[] getFields();
+    /**
+     * Get a sub fields by index.
+     * @param fieldIndex The field index.
+     * @return The field of null if index out of bounds.
+     */
+    Field getField(int fieldIndex);
+    /**
+     * Get the array of the subfield names.
+     * @return The array.
+     */
+    String[] getFieldNames();
+    /**
+     * Get the name of the subfield by index.
+     * @param fieldIndex The field index.
+     * @return The name of the field or an empty string if index is out of bounds.
+     */
+    String getFieldName(int fieldIndex);
 }

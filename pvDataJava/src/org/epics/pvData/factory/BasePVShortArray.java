@@ -13,6 +13,7 @@ import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVUShortArray;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.ShortArrayData;
@@ -23,7 +24,7 @@ import org.epics.pvData.pv.ShortArrayData;
  * @author mrk
  *
  */
-public class BasePVShortArray extends AbstractPVScalarArray implements PVShortArray
+public class BasePVShortArray extends AbstractPVScalarArray implements PVShortArray,PVUShortArray
 {
     protected short[] value;
     

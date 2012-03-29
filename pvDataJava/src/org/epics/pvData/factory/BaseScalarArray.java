@@ -26,11 +26,10 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
     
     /**
      * Constructor for BaseArray.
-     * @param fieldName The field name.
      * @param elementType The element Type.
      */
-    public BaseScalarArray(String fieldName,ScalarType elementType) {
-        super(fieldName, Type.scalarArray);
+    public BaseScalarArray(ScalarType elementType) {
+        super(Type.scalarArray);
         this.elementType = elementType;
     }
     /* (non-Javadoc)
@@ -46,7 +45,6 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
     public void toString(StringBuilder buf, int indentLevel) {
         buf.append(elementType.toString());
         buf.append("[]");
-        super.toString(buf, indentLevel);
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -85,7 +83,6 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		buffer.put((byte)(Type.scalarArray.ordinal() << 4 | elementType.ordinal()));
-		SerializeHelper.serializeString(getFieldName(), buffer, control);
 	}
 	
 	/* (non-Javadoc)

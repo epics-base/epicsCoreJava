@@ -58,18 +58,18 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     		switch(field.getType()) {
     		case scalar: {
     			Scalar scalar = (Scalar)field;
-    			pvFields[i] = pvDataCreate.createPVScalar(this,field.getFieldName(),scalar.getScalarType());
+    			pvFields[i] = pvDataCreate.createPVScalar(this,scalar.getScalarType());
     			break;
     		}
     		case scalarArray: {
     			ScalarArray array = (ScalarArray)field;
     			ScalarType elementType = array.getElementType();
-    			pvFields[i] = pvDataCreate.createPVScalarArray(this,field.getFieldName(),elementType);
+    			pvFields[i] = pvDataCreate.createPVScalarArray(this,elementType);
     			break;
     		}
     		case structure: {
     			Structure struct = (Structure)field;
-    			pvFields[i] = pvDataCreate.createPVStructure(this, field.getFieldName(), struct.getFields());
+    			pvFields[i] = pvDataCreate.createPVStructure(this,struct);
     			break;
     		}
     		case structureArray: {
@@ -142,39 +142,47 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         return (Structure)getField();
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVStructure#appendPVField(org.epics.pvData.pv.PVField, boolean)
+     * @see org.epics.pvData.pv.PVStructure#appendPVField(java.lang.String, org.epics.pvData.pv.PVField)
      */
     @Override
-    public void appendPVField(PVField pvField) {
+    public void appendPVField(String fieldName,PVField pvField) {
         int origLength = pvFields.length;
         PVField[] newPVFields = new PVField[origLength + 1];
+        String[] newFieldNames = new String[origLength + 1];
         for(int i=0; i<origLength; i++) {
             newPVFields[i] = pvFields[i];
+            newFieldNames[i] = this.getStructure().getFieldName(i);
         }
         newPVFields[newPVFields.length-1] = pvField;
+        newFieldNames[newPVFields.length-1] = fieldName;
         pvFields = newPVFields;
-        super.replaceStructure(this);
+        super.replaceStructure(newFieldNames,this);
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVStructure#appendPVFields(org.epics.pvData.pv.PVField[], boolean)
+     * @see org.epics.pvData.pv.PVStructure#appendPVFields(java.lang.String[], org.epics.pvData.pv.PVField[])
      */
     @Override
-	public void appendPVFields(PVField[] pvFields) {
+	public void appendPVFields(String[] fieldNames,PVField[] pvFields) {
+        String[] newFieldNames = null;
 		if(this.pvFields.length==0) {
 			this.pvFields = pvFields;
+			newFieldNames = fieldNames;
 		} else {
 			int original = this.pvFields.length;
 			int additional = pvFields.length;
 			int length = original + additional;
 			PVField[] newPVFields = new PVField[length];
+			newFieldNames = new String[length];
 	        for(int i=0; i<original; i++) {
 	            newPVFields[i] = this.pvFields[i];
+	            newFieldNames[i] = this.getStructure().getFieldName(i);
 	        }
 	        for(int i=0; i<additional; i++) {
 	        	newPVFields[original +i] = pvFields[i];
+ 	        	newFieldNames[original +i] = fieldNames[i];
 	        }
 		}
-		super.replaceStructure(this);
+		super.replaceStructure(newFieldNames,this);
 	}
 	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#removePVField(java.lang.String)
@@ -188,13 +196,15 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         int origLength = pvFields.length;
         PVField[] newPVFields = new PVField[origLength - 1];
+        String[] newFieldNames = new String[origLength - 1];
         int newIndex = 0;
         for(int i=0; i<origLength; i++) {
             if(pvFields[i]==pvField) continue;
+            newFieldNames[newIndex++] = this.getStructure().getFieldName(i);
             newPVFields[newIndex++] = pvFields[i];
         }
         pvFields = newPVFields;
-        replaceStructure(this);
+        replaceStructure(newFieldNames,this);
     }
 	/* (non-Javadoc)
      * @see org.epics.pvData.pv.PVStructure#getPVFields()
@@ -461,10 +471,11 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             }
         }
         PVField[] pvFields = pvStructure.getPVFields();
+        String[] fieldNames = pvStructure.getStructure().getFieldNames();
         PVField pvField = null;
-        for(PVField pvf : pvFields) {
-            if(pvf.getField().getFieldName().equals(name)) {
-                pvField = pvf;
+        for(int i=0; i<pvFields.length; i++) {
+            if(fieldNames[i].equals(name)) {
+                pvField = pvFields[i];
                 break;
             }
         }

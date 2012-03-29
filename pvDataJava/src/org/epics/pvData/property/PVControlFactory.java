@@ -27,29 +27,11 @@ public final class PVControlFactory implements PVControl{
      */
     @Override
     public boolean attach(PVField pvField) {
-        PVStructure pvStructure = null;
-        if(!pvField.getField().getFieldName().equals("control")) {
-            if(!pvField.getField().getFieldName().equals("value")) {
-                pvField.message(noControlFound,MessageType.error);
-                return false;
-            }
-            PVStructure pvParent = pvField.getParent();
-            if(pvParent==null) {
-                pvField.message(noControlFound,MessageType.error);
-                return false;
-            }
-            pvStructure = pvParent.getStructureField("control");
-            if(pvStructure==null) {
-                pvField.message(noControlFound,MessageType.error);
-                return false;
-            }
-        } else {
-            if(pvField.getField().getType()!=Type.structure) {
-                pvField.message(noControlFound,MessageType.error);
-                return false;
-            }
-            pvStructure = (PVStructure)(pvField);
+        if(pvField.getField().getType()!=Type.structure) {
+            pvField.message(noControlFound,MessageType.error);
+            return false;
         }
+        PVStructure pvStructure = (PVStructure)(pvField);
         PVDouble pvDouble = pvStructure.getDoubleField("limit.low");
         if(pvDouble==null) {
             pvField.message(noControlFound,MessageType.error);

@@ -27,11 +27,10 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 
 	/**
 	 * Constructor for BaseStructureArray
-	 * @param fieldName The fieldName.
 	 * @param elementStructure The structure introspection interface for each element
 	 */
-	public BaseStructureArray(String fieldName,Structure elementStructure) {
-		super(fieldName, Type.structureArray);
+	public BaseStructureArray(Structure elementStructure) {
+		super(Type.structureArray);
 		this.structure = elementStructure;
 	}
 	/* (non-Javadoc)
@@ -43,10 +42,7 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	}
 	@Override
     public void toString(StringBuilder buf, int indentLevel) {
-        buf.append("structure[]");
-        super.toString(buf, indentLevel +1);
-		convert.newLine(buf, indentLevel+1);
-		structure.toString(buf, indentLevel+1);
+		structure.toString(buf, indentLevel);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -85,7 +81,6 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		buffer.put((byte)(Type.structureArray.ordinal() << 4));
-		SerializeHelper.serializeString(getFieldName(), buffer, control);
 		// we also need to serialize element (structure) introspection data...
 		BaseStructure.serializeStructureField(structure, buffer, control);
 	}

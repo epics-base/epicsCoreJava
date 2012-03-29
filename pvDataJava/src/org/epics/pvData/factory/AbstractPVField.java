@@ -58,17 +58,17 @@ public abstract class AbstractPVField implements PVField{
     /**
      * Called by derived classes to replace a Structure.
      */
-    protected void replaceStructure(PVStructure pvStructure) {
+    protected void replaceStructure(String[] newFieldNames,PVStructure pvStructure) {
         PVField[] pvFields = pvStructure.getPVFields();
         int length = pvFields.length;
         Field[] newFields = new Field[length];
         for(int i=0; i<length; i++) {
             newFields[i] = pvFields[i].getField();
         }
-        Structure newStructure = fieldCreate.createStructure(field.getFieldName(), newFields);
+        Structure newStructure = fieldCreate.createStructure(newFieldNames,newFields);
         field = newStructure;
         if(pvParent!=null) {
-            ((AbstractPVField)pvParent).replaceStructure(pvParent);
+            ((AbstractPVField)pvParent).replaceStructure(pvParent.getStructure().getFieldNames(),pvParent);
         }
     }
     protected void setParent(PVStructure parent)
@@ -88,29 +88,31 @@ public abstract class AbstractPVField implements PVField{
 	}
     
     
-    private void message(String fieldName,String message,MessageType messageType)
+    private void messagePvt(String message,MessageType messageType)
     {
-         if(pvParent!=null) {
-             String parentName = pvParent.getField().getFieldName();
-             if(parentName.length()>0)  fieldName = parentName + "." + fieldName;
-             AbstractPVField xxx = (AbstractPVField)pvParent;
-             xxx.message(fieldName,message,messageType);
-             return;
-         }
-         if(requester!=null) {
-             String mess = fieldName + " " + message;
-             requester.message(mess,messageType);
+        if(pvParent!=null) {
+            Structure structure = pvParent.getStructure();
+            String[] fieldNames = structure.getFieldNames();
+            Field[] fields = structure.getFields();
+            for(int i=0; i < fields.length; i++) {
+                if(fields[i]==this.field) {
+                    message = fieldNames[i] + " " + message;
+                    AbstractPVField xxx = (AbstractPVField)pvParent;
+                    xxx.messagePvt(message, messageType);
+                    return;
+                }
+            }    		
+            throw new IllegalStateException("Logic error in pvDataJava");
 
-         } else {
-             System.out.println(messageType.toString() + " " + fieldName  + " " + message);
-         }
+        }
+        System.out.println(messageType.toString() + " "  + message);
     }
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Requester#message(java.lang.String, org.epics.pvData.pv.MessageType)
 	 */
 	@Override
 	public void message(String message, MessageType messageType) {
-	    message(field.getFieldName(),message,messageType);
+	    messagePvt(message,messageType);
 		
 	}
 	/* (non-Javadoc)
@@ -213,53 +215,35 @@ public abstract class AbstractPVField implements PVField{
     public void replacePVField(PVField newPVField) {
         PVStructure parent = getParent();
         if(parent==null) throw new IllegalStateException("no pvParent");
+        Field[] fields = parent.getStructure().getFields();
+        String[] fieldNames = parent.getStructure().getFieldNames();
         PVField[] pvFields = parent.getPVFields();
-        int index = -1;
-        String fieldName = field.getFieldName();
-        for(int i=0; i<pvFields.length; i++) {
-        	PVField pvField = pvFields[i];
-        	if(pvField.getField().getFieldName().equals(fieldName)) {
-        		index = i;
-        		break;
-        	}
+        for(int i=0; i < fields.length; i++) {
+            if(fields[i]==field) {
+                pvFields[i] = newPVField;
+                ((AbstractPVField)parent).replaceStructure(fieldNames,parent);
+                return;
+            }
         }
-        if(index==-1) {
-        	throw new IllegalStateException("Did not find field in parent");
-        }
-        pvFields[index] = newPVField;
-        ((AbstractPVField)parent).replaceStructure(parent);
+        throw new IllegalStateException("Did not find field in parent");    
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#renameField(java.lang.String)
      */
     @Override
     public void renameField(String newName) {
-        switch(field.getType()) {
-        case scalar: {
-            Scalar scalar = (Scalar)field;
-            scalar = fieldCreate.createScalar(newName, scalar.getScalarType());
-            this.field = scalar;
-            break;
+        PVStructure parent = getParent();
+        if(parent==null) throw new IllegalStateException("no pvParent");
+        Structure structure = parent.getStructure();
+        String[] fieldNames = structure.getFieldNames();
+        Field[] fields = structure.getFields();
+        for(int i=0; i < fields.length; i++) {
+            if(fields[i]==field) {
+                fieldNames[i] = newName;
+                return;
+            }
         }
-        case scalarArray: {
-            ScalarArray array = (ScalarArray)field;
-            array = fieldCreate.createScalarArray(newName, array.getElementType());
-            this.field = array;
-            break;
-        }
-        case structure: {
-            Structure structure = (Structure)field;
-            Field[] origFields = structure.getFields();
-            structure = fieldCreate.createStructure(newName, origFields);
-            this.field = structure;
-            break;
-        }
-        case structureArray: {
-            StructureArray structureArray = (StructureArray)field;
-            structureArray = fieldCreate.createStructureArray(newName, structureArray.getStructure());
-            this.field = structureArray;
-        }
-        }
+        throw new IllegalStateException("Did not find field in parent");
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.PVField#toString(java.lang.StringBuilder)
