@@ -81,7 +81,6 @@ public class BaseStructure extends BaseField implements Structure {
      */
     @Override
     public Field getField(int fieldIndex) {
-	    if(fieldIndex<0 || fieldIndex>=fields.length) return null;
 	    return fields[fieldIndex];
     }
 	/* (non-Javadoc)

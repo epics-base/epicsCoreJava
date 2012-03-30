@@ -4087,6 +4087,7 @@ public final class ConvertFactory {
                     }
                 }
             }
+            builder.append(" ");
             switch (scalarType) {
             case pvBoolean: {
                 PVBoolean data = (PVBoolean) pv;
