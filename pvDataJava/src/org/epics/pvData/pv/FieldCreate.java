@@ -44,6 +44,22 @@ public interface FieldCreate {
      * @return a <i>Structure</i> interface for the newly created object.
      */
     Structure createStructure(String[] fieldNames, Field[] fields);
+    /**
+     * Append a field to a structure,
+     * @param structure The structure to which the field is appended.
+     * @param fieldName the name for the appended field.
+     * @param field The appended field.
+     * @return The new structure.
+     */
+    Structure appendField(Structure structure,String fieldName, Field field);
+    /**
+     * Append  fields to a structure,
+     * @param structure The structure to which the fields are appended.
+     * @param fieldNames the names for the appended fields.
+     * @param fields The appended fields.
+     * @return The new structure.
+     */
+    Structure appendFields(Structure structure,String[] fieldNames, Field[] fields);
     
 	/**
 	 * Deserialize <i>Field</i> instance from given byte buffer.

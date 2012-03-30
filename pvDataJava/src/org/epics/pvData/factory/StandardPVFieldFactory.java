@@ -6,15 +6,7 @@
 
 package org.epics.pvData.factory;
 
-import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.PVDataCreate;
-import org.epics.pvData.pv.PVScalar;
-import org.epics.pvData.pv.PVScalarArray;
-import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.PVStructureArray;
-import org.epics.pvData.pv.ScalarType;
-import org.epics.pvData.pv.StandardPVField;
-import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.*;
 
 /**
  * @author mrk
@@ -31,152 +23,78 @@ public final class  StandardPVFieldFactory {
 	private static StandardPVFieldImpl impl = null;
 	private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
 	private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+	private static StandardField standardField = StandardFieldFactory.getStandardField();
 	private static final class StandardPVFieldImpl implements StandardPVField
 	{
-
 		StandardPVFieldImpl(){}
+		
+		private PVStructure create(PVStructure parent,String fieldName,Field field,String properties) {
+            boolean gotAlarm = false;
+            boolean gotTimeStamp = false;
+            boolean gotDisplay = false;
+            boolean gotControl = false;
+            int nextra = 0;
+            if(properties.contains("alarm"))  {gotAlarm = true; nextra++;}
+            if(properties.contains("timeStamp"))  {gotTimeStamp = true; nextra++;}
+            if(properties.contains("display")) {gotDisplay = true; nextra++;}
+            if(properties.contains("control")) {gotControl = true; nextra++;}
+            if(nextra==0) {
+                throw new IllegalStateException("PVStructure.getSubField: Logic error");
+            }
+            String[] fieldNames = new String[nextra + 1];
+            Field[] fields = new Field[nextra + 1];
+            fieldNames[0] = fieldName;
+            fields[0] = field;
+            int index = 1;
+            if(gotAlarm) {
+                fieldNames[index] = "alarm";
+                fields[index++] = standardField.alarm();
+            }
+            if(gotTimeStamp) {
+                fieldNames[index] = "timeStamp";
+                fields[index++] = standardField.timeStamp();
+            }
+            if(gotDisplay) {
+                fieldNames[index] = "display";
+                fields[index++] = standardField.display();
+            }
+            if(gotControl) {
+                fieldNames[index] = "control";
+                fields[index++] = standardField.control();
+            }
+            Structure structure = fieldCreate.createStructure(fieldNames, fields);
+            return pvDataCreate.createPVStructure(parent, structure);
+        }
 		@Override
-		public PVScalar scalar(PVStructure parent,String fieldName,ScalarType type)
+		public PVStructure scalar(PVStructure parent,String fieldName,ScalarType scalarType,String properties)
 		{
-            return null;
-		}
-		@Override
-		public PVStructure scalar(PVStructure parent,String fieldName,ScalarType type,String properties)
-		{
-			return null;
-		}
-		@Override
-		public PVScalarArray scalarArray(PVStructure parent,String fieldName,ScalarType elementType)
-		{
-			return null;
+			Field field = fieldCreate.createScalar(scalarType);
+			return create(parent,fieldName,field,properties);
 		}
 		@Override
 		public PVStructure scalarArray(PVStructure parent,String fieldName,ScalarType elementType, String properties)
 		{
-			return null;
-		}
-		@Override
-		public PVStructureArray structureArray(PVStructure parent,String fieldName,Structure structure)
-		{
-			return null;
+		    ScalarArray field = standardField.scalarArray(elementType);
+            return create(parent,fieldName,field,properties);
 		}
 		@Override
 		public PVStructure structureArray(PVStructure parent,String fieldName,Structure structure,String properties)
 		{
-			return null;
+		    StructureArray field = standardField.structureArray(structure);
+		    return create(parent,fieldName,field,properties);
 		}
 		@Override
-		public PVStructure enumerated(PVStructure parent,String fieldName,String[] choices)
+		public PVStructure enumerated(PVStructure parent,String[] choices)
 		{
-			return null;
+			Structure field = standardField.enumerated();
+			PVStructure pvStructure = pvDataCreate.createPVStructure(parent,field);
+			PVStringArray pvChoices = (PVStringArray)pvStructure.getSubField(1);
+			pvChoices.put(0,choices.length, choices, 0);
+			pvChoices.setImmutable();
+			return pvStructure;
 		}
 		@Override
 		public PVStructure enumerated(PVStructure parent,String fieldName,String[] choices,String properties)
-		{
-			return null;
-		}
-		@Override
-		public PVScalar scalarValue(PVStructure parent,ScalarType type)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure scalarValue(PVStructure parent,ScalarType type,String properties)
-		{
-			return null;
-		}
-		@Override
-		public PVScalarArray scalarArrayValue(PVStructure parent,ScalarType elementType)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure scalarArrayValue(PVStructure parent,ScalarType elementType, String properties)
-		{
-			return null;
-		}
-		@Override
-		public PVStructureArray structureArrayValue(PVStructure parent,Structure structure)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure structureArrayValue(PVStructure parent,Structure structure,String properties)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure enumeratedValue(PVStructure parent,String[] choices)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure enumeratedValue(PVStructure parent,String[] choices,String properties)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure alarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure timeStamp(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure display(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure control(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure booleanAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure byteAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure shortAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure intAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure longAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure floatAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure doubleAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure enumeratedAlarm(PVStructure parent)
-		{
-			return null;
-		}
-		@Override
-		public PVStructure powerSupply(PVStructure parent)
 		{
 			return null;
 		}

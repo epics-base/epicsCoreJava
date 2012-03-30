@@ -102,7 +102,41 @@ public final class FieldFactory {
             }
             return new BaseStructure(fieldNames,fields);
         }
-		/* (non-Javadoc)
+		@Override
+        public Structure appendField(Structure structure, String fieldName, Field field) {
+		    String[] oldNames = structure.getFieldNames();
+		    Field[] oldFields = structure.getFields();
+		    int oldlen = oldNames.length;
+		    String[] newNames = new String[oldlen+1];
+		    Field[] newFields = new Field[oldlen+1];
+		    for(int i=0; i<oldlen; i++) {
+		        newNames[i] = oldNames[i];
+		        newFields[i] = oldFields[i];
+		    }
+		    newNames[oldlen] = fieldName;
+		    newFields[oldlen] = field;
+            return createStructure(newNames,newFields);
+            
+        }
+        @Override
+        public Structure appendFields(Structure structure, String[] fieldNames,Field[] fields) {
+            String[] oldNames = structure.getFieldNames();
+            Field[] oldFields = structure.getFields();
+            int oldlen = oldNames.length;
+            int newlen = oldlen + fieldNames.length;
+            String[] newNames = new String[newlen];
+            Field[] newFields = new Field[newlen];
+            for(int i=0; i<oldlen; i++) {
+                newNames[i] = oldNames[i];
+                newFields[i] = oldFields[i];
+            }
+            for(int i=0; i<newlen; i++) {
+                newNames[i+oldlen] = fieldNames[i];
+                newFields[i+oldlen] = oldFields[i];
+            }
+            return createStructure(newNames,newFields);
+        }
+        /* (non-Javadoc)
 		 * @see org.epics.pvData.pv.FieldCreate#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
 		@Override
