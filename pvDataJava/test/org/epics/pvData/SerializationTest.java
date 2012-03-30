@@ -11,7 +11,7 @@ import junit.framework.TestCase;
 
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
-import org.epics.pvData.factory.StandardPVFieldFactory;
+import org.epics.pvData.factory.StandardFieldFactory;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
@@ -434,7 +434,7 @@ public class SerializationTest extends TestCase {
         ScalarArray array = fieldCreate.createScalarArray(ScalarType.pvDouble);
         serializatioTest(array);
         
-        Structure structure = (Structure)StandardPVFieldFactory.getStandardPVField().timeStamp(null).getField();
+        Structure structure = (Structure)StandardFieldFactory.getStandardField().timeStamp();
         serializatioTest(structure);
         
 	}
@@ -443,8 +443,8 @@ public class SerializationTest extends TestCase {
 	{
         FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
-        PVStructure pvStructure = StandardPVFieldFactory.getStandardPVField().timeStamp(null);
-        pvStructure.getLongField("secondsSinceEpoch").put(123);
+        PVStructure pvStructure = (PVStructure)pvDataCreate.createPVField(null, StandardFieldFactory.getStandardField().timeStamp());
+        pvStructure.getLongField("secondsPastEpoch").put(123);
         pvStructure.getIntField("nanoSeconds").put(456);
 
 		serializatioTest(pvStructure);
@@ -465,7 +465,7 @@ public class SerializationTest extends TestCase {
         da.put(0, dd.length, dd, 0);
         
         PVStructure ps = pvStructure2.getStructureField("timeStamp");
-        ps.getLongField("secondsSinceEpoch").put(789);
+        ps.getLongField("secondsPastEpoch").put(789);
         ps.getIntField("nanoSeconds").put(1011);
         ps.getIntField("userTag").put(-1);
 
