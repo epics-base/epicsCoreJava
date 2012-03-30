@@ -7,7 +7,6 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
-import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
@@ -16,7 +15,6 @@ import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
-import org.epics.pvData.pv.Type;
 
 /**
  * FieldFactory creates Field instances.
@@ -81,8 +79,8 @@ public final class FieldFactory {
          * @see org.epics.pvData.pv.FieldCreate#createArray(java.lang.String, org.epics.pvData.pv.Structure)
          */
         @Override
-		public StructureArray createStructureArray(Structure elementStructure) {
-        	
+		public StructureArray createStructureArray(Structure elementStructure)
+        {
 			return new BaseStructureArray(elementStructure);
 		}
 		/* (non-Javadoc)
@@ -97,46 +95,115 @@ public final class FieldFactory {
          */
         public Structure createStructure(String[] fieldNames, Field[] fields)
         {
-            if(fieldNames.length != fields.length) {
-                throw new IllegalArgumentException("fieldNames and fields have different length");
-            }
             return new BaseStructure(fieldNames,fields);
         }
+        
+        
+        
+        
+        
+    	static final ScalarType integerLUT[] =
+    	{
+    		ScalarType.pvByte,  // 8-bits
+    		ScalarType.pvShort, // 16-bits
+    		ScalarType.pvInt,   // 32-bits
+    		ScalarType.pvLong,  // 64-bits
+    		null, 
+    		null, 
+    		null, 
+    		null, 
+    		ScalarType.pvUByte,  // unsigned 8-bits
+    		ScalarType.pvUShort, // unsigned 16-bits
+    		ScalarType.pvUInt,   // unsigned 32-bits
+    		ScalarType.pvULong,  // unsigned 64-bits
+    		null,
+    		null,
+    		null,
+    		null
+    	};
+
+    	static final ScalarType floatLUT[] =
+    	{
+    		null, // reserved
+    		null, // 16-bits
+    		ScalarType.pvFloat,   // 32-bits
+    		ScalarType.pvDouble,  // 64-bits
+    		null, 
+    		null,
+    		null, 
+    		null,
+    		null, 
+    		null,
+    		null, 
+    		null,
+    		null, 
+    		null,
+    		null, 
+    		null
+    	};
+
+    	static final ScalarType decodeScalar(byte code)
+    	{
+    		// bits 7-5
+    		switch (code >> 5)
+    		{
+    		case 0: return ScalarType.pvBoolean;
+    		case 1: return integerLUT[code & 0x0F];
+    		case 2: return floatLUT[code & 0x0F];
+    		case 3: return ScalarType.pvString;
+    		default: return null;
+    		}
+    	}
+        
 		/* (non-Javadoc)
 		 * @see org.epics.pvData.pv.FieldCreate#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
 		 */
 		@Override
 		public Field deserialize(ByteBuffer buffer, DeserializableControl control) {
-			return null;
-			// MATEJ 
-//			control.ensureData(1);
-//			final byte typeCode = buffer.get();
-//
-//			// high nibble means scalar/array/structure
-//			final Type type = Type.values()[typeCode >>> 4]; 
-//			switch (type)
-//			{
-//				case scalar:
-//					final ScalarType scalar = ScalarType.values()[typeCode & 0x0F];
-//					final String scalarFieldName = SerializeHelper.deserializeString(buffer, control);
-//					return new BaseScalar(scalarFieldName, scalar);
-//					
-//				case scalarArray:
-//					final ScalarType element = ScalarType.values()[typeCode & 0x0F];
-//					final String arrayFieldName = SerializeHelper.deserializeString(buffer, control);
-//					return new BaseScalarArray(arrayFieldName, element);
-//					
-//				case structure:
-//					return BaseStructure.deserializeStructureField(buffer, control);
-//
-//				case structureArray:
-//					final String structureArrayFieldName = SerializeHelper.deserializeString(buffer, control);
-//					final Structure arrayElement = BaseStructure.deserializeStructureField(buffer, control);
-//					return new BaseStructureArray(structureArrayFieldName, arrayElement);
-//
-//				default:
-//					throw new UnsupportedOperationException("unsupported type: " + type);
-//			}
+    		control.ensureData(1);
+    		final byte code = buffer.get();
+    		if (code == (byte)-1)
+    			return null;
+    		
+    		final int typeCode = code & 0xE0;
+    		final boolean notArray = ((code & 0x10) == 0);
+    		if (notArray)
+    		{			
+    			if (typeCode < 0x80)
+    			{
+    				// Type type = Type.scalar;
+    				ScalarType scalarType = decodeScalar(code);
+    				if (scalarType == null)
+    					throw new IllegalArgumentException("invalid scalar type encoding");
+    				return new BaseScalar(scalarType);
+    			}
+    			else if (typeCode == 0x80)
+    			{
+    				// Type type = Type.structure;
+    				return BaseStructure.deserializeStructureField(buffer, control);
+    			}
+    			else
+    				throw new IllegalArgumentException("invalid type encoding");
+    		}
+    		else // array
+    		{
+    			if (typeCode < 0x80)
+    			{
+    				// Type type = Type.scalarArray;
+    				ScalarType scalarType = decodeScalar(code);
+    				if (scalarType == null)
+    					throw new IllegalArgumentException("invalid scalarArray type encoding");
+    				return new BaseScalar(scalarType);
+    			}
+    			else if (typeCode == 0x80)
+    			{
+    				// Type type = Type.structureArray;
+    				final Structure elementStructure = (Structure)control.cachedDeserialize(buffer);
+    				return new BaseStructureArray(elementStructure);
+    			}
+    			else
+    				throw new IllegalArgumentException("invalid type encoding");
+    		}
 		}  
         
         

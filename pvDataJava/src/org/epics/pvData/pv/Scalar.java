@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
 public interface Scalar extends Field{
     /**
      * Get the ScalarType.
-     * @return The ScalarType.
+     * @return The ScalarType, non-<code>null</code>.
      */
     ScalarType getScalarType();
 }

@@ -8,11 +8,12 @@ package org.epics.pvData;
 
 import junit.framework.TestCase;
 
-import org.epics.pvData.factory.*;
-import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.DeserializableControl;
-import org.epics.pvData.pv.*;
-import org.epics.pvData.pv.SerializableControl;
+import org.epics.pvData.factory.FieldFactory;
+import org.epics.pvData.factory.StandardFieldFactory;
+import org.epics.pvData.pv.FieldCreate;
+import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.StandardField;
+import org.epics.pvData.pv.Structure;
 
 /**
  * JUnit test for BitSet.

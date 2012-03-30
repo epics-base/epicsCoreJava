@@ -8,11 +8,21 @@ package org.epics.pvData;
 
 import junit.framework.TestCase;
 
-import org.epics.pvData.factory.*;
-import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.pv.DeserializableControl;
-import org.epics.pvData.pv.*;
-import org.epics.pvData.pv.SerializableControl;
+import org.epics.pvData.factory.ConvertFactory;
+import org.epics.pvData.factory.PVDataFactory;
+import org.epics.pvData.pv.Convert;
+import org.epics.pvData.pv.PVByte;
+import org.epics.pvData.pv.PVDataCreate;
+import org.epics.pvData.pv.PVDouble;
+import org.epics.pvData.pv.PVFloat;
+import org.epics.pvData.pv.PVInt;
+import org.epics.pvData.pv.PVLong;
+import org.epics.pvData.pv.PVShort;
+import org.epics.pvData.pv.PVUByte;
+import org.epics.pvData.pv.PVUInt;
+import org.epics.pvData.pv.PVULong;
+import org.epics.pvData.pv.PVUShort;
+import org.epics.pvData.pv.ScalarType;
 
 /**
  * JUnit test for BitSet.

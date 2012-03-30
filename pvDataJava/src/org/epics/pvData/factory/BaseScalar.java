@@ -7,7 +7,6 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
-import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarType;
@@ -22,7 +21,7 @@ import org.epics.pvData.pv.Type;
  */
 public class BaseScalar extends BaseField implements Scalar {
     
-    private ScalarType scalarType;
+    private final ScalarType scalarType;
     
     /**
      * Constructor for BaseScalar.
@@ -30,10 +29,9 @@ public class BaseScalar extends BaseField implements Scalar {
      */
     public BaseScalar(ScalarType scalarType) {
         super(Type.scalar);
-        this.scalarType = scalarType;
-        if(scalarType==null) {
+        if (scalarType==null)
         	throw new NullPointerException("scalarType is null");
-        }
+        this.scalarType = scalarType;
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Scalar#getScalarType()
@@ -53,10 +51,7 @@ public class BaseScalar extends BaseField implements Scalar {
 	 */
 	@Override
 	public int hashCode() {
-		final int PRIME = 31;
-		int result = super.hashCode();
-		result = PRIME * result + ((scalarType == null) ? 0 : scalarType.hashCode());
-		return result;
+		return scalarType.ordinal();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -70,13 +65,25 @@ public class BaseScalar extends BaseField implements Scalar {
 		if (getClass() != obj.getClass())
 			return false;
 		final BaseScalar other = (BaseScalar) obj;
-		if (scalarType == null) {
-			if (other.scalarType != null)
-				return false;
-		} else if (!scalarType.equals(other.scalarType))
+		if (!scalarType.equals(other.scalarType))
 			return false;
 		return true;
 	}
+	
+	public static final byte[] typeCodeLUT = {
+		0x00, // pvBoolean
+		0x20, // pvByte
+		0x21, // pvShort
+		0x22, // pvInt
+		0x23, // pvLong
+		0x40, // pvFloat
+		0x40, // pvDouble
+		0x60, // pvString
+		0x28, // pvUByte
+		0x29, // pvUShort
+		0x2A, // pvUInt
+		0x2B  // pvULong
+	};
 	
 	/* (non-Javadoc)
 	 * @see org.epics.pvData.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvData.pv.SerializableControl)
@@ -84,7 +91,7 @@ public class BaseScalar extends BaseField implements Scalar {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		buffer.put((byte)(Type.scalar.ordinal() << 4 | scalarType.ordinal()));
+		buffer.put(typeCodeLUT[scalarType.ordinal()]);
 	}
 	
 	/* (non-Javadoc)
@@ -92,8 +99,8 @@ public class BaseScalar extends BaseField implements Scalar {
 	 */
 	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		// TODO Auto-generated method stub
-		
+		// must be done via FieldCreate
+		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 	
 	

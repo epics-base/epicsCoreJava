@@ -24,8 +24,8 @@ import org.epics.pvData.pv.Type;
  */
 public class BaseStructure extends BaseField implements Structure {
     private static Convert convert = ConvertFactory.getConvert();
-    private Field[] fields;
-    private String[] fieldNames;
+    private final Field[] fields;
+    private final String[] fieldNames;
     
     /**
      * Constructor for a structure field.
@@ -148,9 +148,7 @@ public class BaseStructure extends BaseField implements Structure {
 	@Override
 	public int hashCode() {
 		final int PRIME = 31;
-		int result = super.hashCode();
-		result = PRIME * result + Arrays.hashCode(fields);
-		return result;
+		return PRIME * Arrays.hashCode(fieldNames) + Arrays.hashCode(fields);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -164,6 +162,8 @@ public class BaseStructure extends BaseField implements Structure {
 		if (getClass() != obj.getClass())
 			return false;
 		final BaseStructure other = (BaseStructure) obj;
+		if (!Arrays.equals(fieldNames, other.fieldNames))
+			return false;
 		if (!Arrays.equals(fields, other.fields))
 			return false;
 		return true;
@@ -175,31 +175,32 @@ public class BaseStructure extends BaseField implements Structure {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		buffer.put((byte)(Type.structure.ordinal() << 4));
+		buffer.put((byte)0x80);
 		serializeStructureField(this, buffer, control);
 	}
 
 	static void serializeStructureField(final Structure structure, ByteBuffer buffer, 
 			SerializableControl control) {
 		final Field[] fields = structure.getFields();
+		final String[] fieldNames = structure.getFieldNames();
 		SerializeHelper.writeSize(fields.length, buffer, control);
 		for (int i = 0; i < fields.length; i++)
+		{
+			SerializeHelper.serializeString(fieldNames[i], buffer, control);
 			control.cachedSerialize(fields[i], buffer);
+		}
 	}
 	
 	static final Structure deserializeStructureField(ByteBuffer buffer, DeserializableControl control) {
-		// MATEJ PLEASE FIX
-//		final String structureFieldName = SerializeHelper.deserializeString(buffer, control);
-//		final int size = SerializeHelper.readSize(buffer, control);
-//		Field[] fields = null;
-//		if (size > 0)
-//		{
-//			fields = new Field[size];
-//			for (int i = 0; i < size; i++)
-//				fields[i] = control.cachedDeserialize(buffer);
-//		}
-//		return new BaseStructure(structureFieldName, fields);
-	    return null;
+		final int size = SerializeHelper.readSize(buffer, control);
+		final Field[] fields = new Field[size];
+		final String[] fieldNames = new String[size];
+		for (int i = 0; i < size; i++)
+		{
+			fieldNames[i] = SerializeHelper.deserializeString(buffer, control);
+			fields[i] = control.cachedDeserialize(buffer);
+		}
+		return new BaseStructure(fieldNames, fields);
 	}
 
 	/* (non-Javadoc)
@@ -207,9 +208,8 @@ public class BaseStructure extends BaseField implements Structure {
 	 */
 	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		// TODO Auto-generated method stub
-		
+		// must be done via FieldCreate
+		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
-	
 	
 }

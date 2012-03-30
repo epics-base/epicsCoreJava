@@ -13,7 +13,7 @@ package org.epics.pvData.pv;
 public interface ScalarArray extends Field{
     /**
      * Get the element type for the array.
-     * @return The element ScalarType.
+     * @return The element ScalarType, non-<code>null</code>.
      */
     ScalarType getElementType();
 }

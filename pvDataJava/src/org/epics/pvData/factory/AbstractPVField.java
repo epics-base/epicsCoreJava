@@ -15,10 +15,7 @@ import org.epics.pvData.pv.PVField;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PostHandler;
 import org.epics.pvData.pv.Requester;
-import org.epics.pvData.pv.Scalar;
-import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.Structure;
-import org.epics.pvData.pv.StructureArray;
 import org.epics.pvData.pv.Type;
 
 

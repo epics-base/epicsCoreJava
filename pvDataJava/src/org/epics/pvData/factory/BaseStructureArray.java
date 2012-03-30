@@ -7,8 +7,6 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
-import org.epics.pvData.misc.SerializeHelper;
-import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
@@ -22,8 +20,8 @@ import org.epics.pvData.pv.Type;
  *
  */
 public class BaseStructureArray extends BaseField implements StructureArray {
-    private static final Convert convert = ConvertFactory.getConvert();
-	private Structure structure;
+
+	private final Structure structure;
 
 	/**
 	 * Constructor for BaseStructureArray
@@ -31,6 +29,8 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	 */
 	public BaseStructureArray(Structure elementStructure) {
 		super(Type.structureArray);
+        if (elementStructure==null)
+        	throw new NullPointerException("elementStructure is null");
 		this.structure = elementStructure;
 	}
 	/* (non-Javadoc)
@@ -49,10 +49,7 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	 */
 	@Override
 	public int hashCode() {
-		final int PRIME = 31;
-		int result = super.hashCode();
-		result = PRIME * result + ((structure == null) ? 0 : structure.hashCode());
-		return result;
+		return 0x10 | structure.hashCode();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -66,10 +63,7 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 		if (getClass() != obj.getClass())
 			return false;
 		final BaseStructureArray other = (BaseStructureArray) obj;
-		if (structure == null) {
-			if (other.structure != null)
-				return false;
-		} else if (!structure.equals(other.structure))
+		if (!structure.equals(other.structure))
 			return false;
 		return true;
 	}
@@ -80,9 +74,8 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		buffer.put((byte)(Type.structureArray.ordinal() << 4));
-		// we also need to serialize element (structure) introspection data...
-		BaseStructure.serializeStructureField(structure, buffer, control);
+		buffer.put((byte)0x90);
+		control.cachedSerialize(structure, buffer);
 	}
 	
 	/* (non-Javadoc)
@@ -90,8 +83,8 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	 */
 	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		// TODO Auto-generated method stub
-		
+		// must be done via FieldCreate
+		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 	
 	

@@ -7,7 +7,6 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
-import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
@@ -22,7 +21,7 @@ import org.epics.pvData.pv.Type;
  */
 public class BaseScalarArray extends BaseField implements ScalarArray {
     
-    private ScalarType elementType;
+    private final ScalarType elementType;
     
     /**
      * Constructor for BaseArray.
@@ -30,10 +29,12 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
      */
     public BaseScalarArray(ScalarType elementType) {
         super(Type.scalarArray);
+        if (elementType==null)
+        	throw new NullPointerException("elementType is null");
         this.elementType = elementType;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Array#getElementType()
+     * @see org.epics.pvData.pv.ScalarArray#getElementType()
      */
     public ScalarType getElementType() {
         return elementType;
@@ -51,10 +52,7 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	 */
 	@Override
 	public int hashCode() {
-		final int PRIME = 31;
-		int result = super.hashCode();
-		result = PRIME * result + ((elementType == null) ? 0 : elementType.hashCode());
-		return result;
+		return 0x10 | elementType.ordinal();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -68,10 +66,7 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 		if (getClass() != obj.getClass())
 			return false;
 		final BaseScalarArray other = (BaseScalarArray) obj;
-		if (elementType == null) {
-			if (other.elementType != null)
-				return false;
-		} else if (!elementType.equals(other.elementType))
+		if (!elementType.equals(other.elementType))
 			return false;
 		return true;
 	}
@@ -82,7 +77,7 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		buffer.put((byte)(Type.scalarArray.ordinal() << 4 | elementType.ordinal()));
+		buffer.put((byte)(0x10 | BaseScalar.typeCodeLUT[elementType.ordinal()]));
 	}
 	
 	/* (non-Javadoc)
@@ -90,8 +85,8 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	 */
 	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		// TODO Auto-generated method stub
-		
+		// must be done via FieldCreate
+		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 	
 	

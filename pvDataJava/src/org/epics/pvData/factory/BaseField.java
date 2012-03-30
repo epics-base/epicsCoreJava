@@ -12,11 +12,10 @@ import org.epics.pvData.pv.Type;
  * Base class for creating a Field.
  * It can also be a complete implementation.
  * @author mrk
- *
  */
 public abstract class BaseField implements Field
 {
-    private Type type;
+    private final Type type;
 
     /**
      * Constructor for BaseField.
@@ -40,7 +39,7 @@ public abstract class BaseField implements Field
      * @see org.epics.pvData.pv.Field#toString(java.lang.StringBuilder, int)
      */
     @Override
-    public void toString(StringBuilder buf, int indentLevel) {}
+    public abstract void toString(StringBuilder buf, int indentLevel);
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Field#toString(java.lang.StringBuilder)
      */
@@ -57,34 +56,4 @@ public abstract class BaseField implements Field
         toString(builder);
         return builder.toString();
     }
-    /* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int PRIME = 31;
-		int result = 1;
-		result = PRIME * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final BaseField other = (BaseField) obj;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
-		return true;
-	}
-    
 }
