@@ -10,14 +10,6 @@ import junit.framework.TestCase;
 import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.factory.PVDataFactory;
 import org.epics.pvData.factory.StandardPVFieldFactory;
-import org.epics.pvData.pv.Field;
-import org.epics.pvData.pv.FieldCreate;
-import org.epics.pvData.pv.PVDataCreate;
-import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.ScalarType;
-import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.*;
 
 
@@ -34,10 +26,22 @@ public class StandardPVFieldTest extends TestCase {
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private static final StandardPVField standardPVField = StandardPVFieldFactory.getStandardPVField();
 	
-	
+    static private void print(String name,String value) {
+        System.out.println();
+        System.out.println(name);
+        System.out.println(value);
+    }
+    
     public static void testSimple() {     
-        PVStructure pvStructure = standardPVField.scalar(null, "value",ScalarType.pvDouble,"alarm,timeStamp.display,control");
-        System.out.println(pvStructure);
+        PVStructure pvStructure = standardPVField.scalar(null, "value",ScalarType.pvDouble,"alarm,timeStamp.display,control,valueAlarm");
+        print("simpleTest",pvStructure.toString());
+        PVDouble pvValue = pvStructure.getDoubleField("value");
+        pvValue.put(10.0);
+        PVInt pvSeverity = pvStructure.getIntField("alarm.severity");
+        pvSeverity.put(2);
+        PVString pvMessage = pvStructure.getStringField("alarm.message");
+        pvMessage.put("test message");
+        print("simpleTest",pvStructure.toString());
     }
     
 }

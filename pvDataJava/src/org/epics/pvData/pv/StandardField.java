@@ -12,24 +12,12 @@ package org.epics.pvData.pv;
  */
 public interface StandardField {
     /**
-     * Create a Scalar field.
-     * @param scalarType The scalar type. 
-     * @return The Scalar.
-     */
-    Scalar scalar(ScalarType scalarType);
-    /**
      * Create a Scalar field with additional properties.
      * @param scalarType The scalar type.
      * @param properties The list of additional properties which is some combination of alarm, timeStamp, display, control, and valueAlarm.
      * @return The Scalar.
      */
     Structure scalar(ScalarType scalarType,String properties);
-    /**
-     * Create a ScalarArray.
-     * @param elementType The scalar type for each element
-     * @return The ScalarArray
-     */
-    ScalarArray scalarArray(ScalarType elementType);
     /**
      * Create a ScalarArray with additional properties.
      * @param elementType The scalar type for each element
@@ -40,25 +28,12 @@ public interface StandardField {
     /**
      * Create a StructureArray.
      * @param structure The introspection interface for each array element.
-     * @return The StructureArray
-     */
-    StructureArray structureArray(Structure structure);
-    /**
-     * Create a StructureArray.
-     * @param structure The introspection interface for each array element.
      * @param properties The list of additional properties which is some combination of alarm and timeStamp.
      * @return The StructureArray.
      */
     Structure structureArray(Structure structure,String properties);
     /**
-     * Create a Structure.
-     * @param fieldNames An array of fieldNames for the structure.
-     * @param fields An array of fields for the structure.
-     * @return The Structure.
-     */
-    Structure structure(String[]fieldNames,Field[] fields);
-    /**
-     * Create and enumerated structure.
+     * Create an enumerated structure.
      * @return The Structure.
      */
     Structure enumerated();

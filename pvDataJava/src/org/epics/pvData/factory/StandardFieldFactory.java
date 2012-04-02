@@ -254,20 +254,10 @@ public final class StandardFieldFactory {
 		StandardFieldImpl(){}
 
 		@Override
-		public Scalar scalar(ScalarType scalarType)
-		{
-			return fieldCreate.createScalar(scalarType);
-		}
-		@Override
 		public Structure scalar(ScalarType scalarType,String properties)
 		{
 			Scalar field = fieldCreate.createScalar(scalarType);
 		    return createProperties(field,properties);
-		}
-		@Override
-		public ScalarArray scalarArray(ScalarType elementType)
-		{
-			return fieldCreate.createScalarArray(elementType);
 		}
 		@Override
 		public Structure scalarArray(ScalarType elementType, String properties)
@@ -276,20 +266,10 @@ public final class StandardFieldFactory {
 		    return createProperties(field,properties);
 		}
 		@Override
-		public StructureArray structureArray(Structure structure)
-		{
-			return fieldCreate.createStructureArray(structure);
-		}
-		@Override
 		public Structure structureArray(Structure structure,String properties)
 		{
 			StructureArray field = fieldCreate.createStructureArray(structure);
 		    return createProperties(field,properties);
-		}
-		@Override
-		public Structure structure(String[] fieldNames,Field[] fields)
-		{
-			return fieldCreate.createStructure(fieldNames,fields);
 		}
 		@Override
 		public Structure enumerated()

@@ -74,13 +74,13 @@ public final class  StandardPVFieldFactory {
 		@Override
 		public PVStructure scalarArray(PVStructure parent,String fieldName,ScalarType elementType, String properties)
 		{
-		    ScalarArray field = standardField.scalarArray(elementType);
+		    ScalarArray field = fieldCreate.createScalarArray(elementType);
             return create(parent,fieldName,field,properties);
 		}
 		@Override
 		public PVStructure structureArray(PVStructure parent,String fieldName,Structure structure,String properties)
 		{
-		    StructureArray field = standardField.structureArray(structure);
+		    StructureArray field = fieldCreate.createStructureArray(structure);
 		    return create(parent,fieldName,field,properties);
 		}
 		@Override

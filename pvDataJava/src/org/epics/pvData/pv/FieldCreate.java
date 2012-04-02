@@ -14,12 +14,6 @@ import java.nio.ByteBuffer;
  */
 public interface FieldCreate {
     /**
-     * Create a new Field like an existing field but with a different name.
-     * @param field An existing field
-     * @return a <i>Field</i> interface for the newly created object.
-     */
-    Field create(Field field);
-    /**
      * Create a <i>ScalarField</i>.
      * @param scalarType The scalar type.
      * @return a <i>Scalar</i> interface for the newly created object.

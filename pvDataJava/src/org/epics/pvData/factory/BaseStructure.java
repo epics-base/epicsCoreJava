@@ -110,14 +110,10 @@ public class BaseStructure extends BaseField implements Structure {
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
         buf.append("structure");
-        toStringCommon(buf,indentLevel);
-    }
-    private void toString(String fieldName,StringBuilder buf, int indentLevel) {
-    	buf.append("structure " + fieldName);
-    	toStringCommon(buf,indentLevel);
+        toStringCommon(buf,indentLevel+1);
     }
     private void toStringCommon(StringBuilder buf, int indentLevel) {
-    	convert.newLine(buf,indentLevel+1);
+    	convert.newLine(buf,indentLevel);
         int length = fields.length;
         for(int i=0; i<length; i++) {
         	Field field = fields[i];
@@ -125,20 +121,21 @@ public class BaseStructure extends BaseField implements Structure {
         	switch(type) {
         	case scalar:
         	case scalarArray:
-        		field.toString(buf, indentLevel+1);
+        		field.toString(buf, indentLevel);
                 buf.append(" " + fieldNames[i]);
                 break;
         	case structure:
         		BaseStructure struct = (BaseStructure)field;
-        		struct.toString(fieldNames[i], buf, indentLevel + 1);
+        		buf.append("structure " + fieldNames[i]);
+        		struct.toStringCommon(buf, indentLevel + 1);
         		break;
         	case structureArray:
-        		convert.newLine(buf,indentLevel+1);
         		buf.append("structure[] " + fieldNames[i]);
+        		convert.newLine(buf,indentLevel+1);
         		field.toString(buf, indentLevel+1);
+        		break;
         	}
-            if(i<length-1) convert.newLine(buf,indentLevel+1);
-
+        	if(i<length-1) convert.newLine(buf,indentLevel);
         }
     }
 	/* (non-Javadoc)

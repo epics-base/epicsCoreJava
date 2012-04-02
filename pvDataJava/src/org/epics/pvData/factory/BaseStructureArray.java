@@ -7,6 +7,7 @@ package org.epics.pvData.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvData.pv.Convert;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
@@ -20,7 +21,7 @@ import org.epics.pvData.pv.Type;
  *
  */
 public class BaseStructureArray extends BaseField implements StructureArray {
-
+    private static Convert convert = ConvertFactory.getConvert();
 	private final Structure structure;
 
 	/**
@@ -42,6 +43,12 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	}
 	@Override
     public void toString(StringBuilder buf, int indentLevel) {
+	    if(indentLevel==0) {
+	        buf.append("structure[]");
+	        convert.newLine(buf,indentLevel+1);
+	        structure.toString(buf,indentLevel+1);
+	        return;
+	    }
 		structure.toString(buf, indentLevel);
 	}
 	/* (non-Javadoc)

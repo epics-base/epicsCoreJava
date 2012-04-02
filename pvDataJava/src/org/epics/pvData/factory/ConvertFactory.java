@@ -4219,7 +4219,8 @@ public final class ConvertFactory {
             }
             builder.append(" ");
             switch (type) {
-            case pvBoolean: {
+            case pvBoolean:
+            {
                 PVBooleanArray pvdata = (PVBooleanArray) pv;
                 builder.append("[");
                 int len = pvdata.getLength();
@@ -4247,7 +4248,9 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            case pvByte: {
+            case pvByte:
+            case pvUByte:
+            {
                 PVByteArray pvdata = (PVByteArray) pv;
                 builder.append("[");
                 int len = pvdata.getLength();
@@ -4275,7 +4278,9 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            case pvShort: {
+            case pvShort: 
+            case pvUShort:
+            {
                 PVShortArray pvdata = (PVShortArray) pv;
                 builder.append("[");
                 int len = pvdata.getLength();
@@ -4303,7 +4308,9 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            case pvInt: {
+            case pvInt: 
+            case pvUInt:
+            {
                 PVIntArray pvdata = (PVIntArray) pv;
                 builder.append("[");
                 int len = pvdata.getLength();
@@ -4331,7 +4338,9 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            case pvLong: {
+            case pvLong:
+            case pvULong:
+            {
                 PVLongArray pvdata = (PVLongArray) pv;
                 builder.append("[");
                 int len = pvdata.getLength();
@@ -4359,7 +4368,8 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            case pvFloat: {
+            case pvFloat:
+            {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 builder.append("[");
                 int len = pvdata.getLength();
@@ -4388,7 +4398,8 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            case pvDouble: {
+            case pvDouble:
+            {
                 PVDoubleArray pvdata = (PVDoubleArray) pv;
                 builder.append("[");
                 int len = pvdata.getLength();
@@ -4416,7 +4427,8 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            case pvString: {
+            case pvString:
+            {
                 PVStringArray pvdata = (PVStringArray) pv;
                 StringArrayData data = new StringArrayData();
                 builder.append("[");
