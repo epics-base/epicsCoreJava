@@ -62,17 +62,26 @@ public class DefaultBeaconServerDataProvider implements
 	private void initialize()
 	{
         FieldCreate fieldCreate = PVFactory.getFieldCreate();
-        PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();        
-        Field[] fields = new Field[6];
+        PVDataCreate pvDataCreate = PVFactory.getPVDataCreate(); 
         // TODO hierarchy can be used...
-        fields[0] = fieldCreate.createScalar("connections",ScalarType.pvInt);
-        fields[1] = fieldCreate.createScalar("allocatedMemory",ScalarType.pvLong);
-        fields[2] = fieldCreate.createScalar("freeMemory",ScalarType.pvLong);
-        fields[3] = fieldCreate.createScalar("threads",ScalarType.pvInt);
-        fields[4] = fieldCreate.createScalar("deadlocks",ScalarType.pvInt);
-        fields[5] = fieldCreate.createScalar("averageSystemLoad",ScalarType.pvDouble);
+        String[] fieldNames = new String[] { 
+        		"connections", 
+        		"allocatedMemory",
+        		"freeMemory",
+        		"threads",
+        		"deadlocks",
+        		"averageSystemLoad"
+        		};
+
+        Field[] fields = new Field[6];
+        fields[0] = fieldCreate.createScalar(ScalarType.pvInt);
+        fields[1] = fieldCreate.createScalar(ScalarType.pvLong);
+        fields[2] = fieldCreate.createScalar(ScalarType.pvLong);
+        fields[3] = fieldCreate.createScalar(ScalarType.pvInt);
+        fields[4] = fieldCreate.createScalar(ScalarType.pvInt);
+        fields[5] = fieldCreate.createScalar(ScalarType.pvDouble);
         
-        status = pvDataCreate.createPVStructure(null,"status",fields);
+        status = pvDataCreate.createPVStructure(null,fieldCreate.createStructure(fieldNames,fields));
 	}
 
 	/* (non-Javadoc)

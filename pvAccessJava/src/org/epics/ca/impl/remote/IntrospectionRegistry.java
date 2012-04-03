@@ -126,13 +126,13 @@ public final class IntrospectionRegistry {
 				BooleanHolder existing = new BooleanHolder();
 				final short key = registerIntrospectionInterface(field, existing);
 				if (existing.value) {
-					control.ensureBuffer(1+Short.SIZE/Byte.SIZE);
+					control.ensureBuffer(3);
 					buffer.put(ONLY_ID_TYPE_CODE);
 					buffer.putShort(key);
 					return;
 				} 
 				else {
-					control.ensureBuffer(1+Short.SIZE/Byte.SIZE);
+					control.ensureBuffer(3);
 					buffer.put(FULL_WITH_ID_TYPE_CODE);	// could also be a mask
 					buffer.putShort(key);
 				}

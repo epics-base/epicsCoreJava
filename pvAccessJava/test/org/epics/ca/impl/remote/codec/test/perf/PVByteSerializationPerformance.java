@@ -101,7 +101,7 @@ public class PVByteSerializationPerformance extends JapexDriverBase implements S
 	public void initializeDriver() {
 		super.initializeDriver();
 		
-		Field field = fieldCreate.createScalar("value", ScalarType.pvByte);
+		Field field = fieldCreate.createScalar(ScalarType.pvByte);
 		pvField = (PVByte)PVFactory.getPVDataCreate().createPVField(null, field);
 	}
 	

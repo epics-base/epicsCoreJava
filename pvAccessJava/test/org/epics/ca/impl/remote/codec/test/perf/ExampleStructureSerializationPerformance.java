@@ -6,6 +6,7 @@ package org.epics.ca.impl.remote.codec.test.perf;
 import java.nio.ByteBuffer;
 
 import org.epics.ca.PVFactory;
+import org.epics.pvData.factory.StandardFieldFactory;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.FieldCreate;
@@ -14,6 +15,7 @@ import org.epics.pvData.pv.PVDoubleArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
+import org.epics.pvData.pv.StandardField;
 
 import com.sun.japex.JapexDriverBase;
 import com.sun.japex.TestCase;
@@ -102,45 +104,31 @@ public class ExampleStructureSerializationPerformance extends JapexDriverBase im
 		super.initializeDriver();
 		
 		PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-		
-			PVStructure timeStampStructure;
-			{
-		        Field[] fields = new Field[3];
-		        fields[0] = fieldCreate.createScalar("secondsPastEpoch", ScalarType.pvLong);
-		        fields[1] = fieldCreate.createScalar("nanoSeconds", ScalarType.pvInt);
-		        fields[2] = fieldCreate.createScalar("userTag", ScalarType.pvInt);
-		        timeStampStructure = pvDataCreate.createPVStructure(null, "timeStamp", fields);
-			}
-		
-			PVStructure alarmStructure;
-			{
-		        Field[] fields = new Field[3];
-		        fields[0] = fieldCreate.createScalar("severity", ScalarType.pvInt);
-		        fields[1] = fieldCreate.createScalar("status", ScalarType.pvInt);
-		        fields[2] = fieldCreate.createScalar("message", ScalarType.pvString);
-		        alarmStructure = pvDataCreate.createPVStructure(null, "alarm", fields);
-			}
+		// TODO access via PVFactory?
+		StandardField standardField = StandardFieldFactory.getStandardField();
 			
-	        Field[] fields = new Field[3];
-	        fields[0] = fieldCreate.createScalarArray("value", ScalarType.pvDouble);
-	        fields[1] = timeStampStructure.getField();
-	        fields[2] = alarmStructure.getField();
-	        
-	        pvField = pvDataCreate.createPVStructure(null, "", fields);
-	        
-	        PVDoubleArray ba = (PVDoubleArray)pvField.getSubField("value");
-	        double[] toPut = new double[] { (byte)1.23, (byte)-0.456, (byte)333333.3 };
-	        ba.put(0, toPut.length, toPut, 0);
-	
-	        timeStampStructure = pvField.getStructureField("timeStamp");
-			timeStampStructure.getLongField("secondsPastEpoch").put(0x1122334455667788L);
-			timeStampStructure.getIntField("nanoSeconds").put(0xAABBCCDD);
-			timeStampStructure.getIntField("userTag").put(0xEEEEEEEE);
+        Field[] fields = new Field[3];
+        fields[0] = fieldCreate.createScalarArray(ScalarType.pvDouble);
+        fields[1] = standardField.timeStamp();
+        fields[2] = standardField.doubleAlarm();
+        
+        pvField = pvDataCreate.createPVStructure(null,
+        		fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
+        );
+        
+        PVDoubleArray ba = (PVDoubleArray)pvField.getSubField("value");
+        double[] toPut = new double[] { (byte)1.23, (byte)-0.456, (byte)333333.3 };
+        ba.put(0, toPut.length, toPut, 0);
 
-			alarmStructure = pvField.getStructureField("alarm");
-			alarmStructure.getIntField("severity").put(0x11111111);
-			alarmStructure.getIntField("status").put(0x22222222);
-			alarmStructure.getStringField("message").put("Allo, Allo!");
+        PVStructure timeStampStructure = pvField.getStructureField("timeStamp");
+		timeStampStructure.getLongField("secondsPastEpoch").put(0x1122334455667788L);
+		timeStampStructure.getIntField("nanoSeconds").put(0xAABBCCDD);
+		timeStampStructure.getIntField("userTag").put(0xEEEEEEEE);
+
+        PVStructure alarmStructure = pvField.getStructureField("alarm");
+		alarmStructure.getIntField("severity").put(0x11111111);
+		alarmStructure.getIntField("status").put(0x22222222);
+		alarmStructure.getStringField("message").put("Allo, Allo!");
 	}
 	
 	int index;

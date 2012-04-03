@@ -9,12 +9,14 @@ import java.util.regex.Pattern;
 
 import org.epics.ca.PVFactory;
 import org.epics.pvData.pv.Field;
+import org.epics.pvData.pv.FieldCreate;
 import org.epics.pvData.pv.MessageType;
 import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.Requester;
 import org.epics.pvData.pv.ScalarType;
+import org.epics.pvData.pv.Structure;
 
 /**
  * @author mrk
@@ -34,6 +36,8 @@ public class CreateRequestFactory {
     
     static private class CreateRequestImpl {
         private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+        private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
+        private static final Structure emptyStructure = fieldCreate.createStructure(new String[0], new Field[0]);
         private static final Pattern commaPattern = Pattern.compile("[,]");
         private static final Pattern equalPattern = Pattern.compile("[=]");
         
@@ -41,14 +45,14 @@ public class CreateRequestFactory {
     	static PVStructure createRequest(String request,Requester requester) {
     		if(request!=null) request = request.trim();
         	if(request==null || request.length()<=0) {
-        		PVStructure pvStructure =  pvDataCreate.createPVStructure(null,"", new Field[0]);
+        		PVStructure pvStructure =  pvDataCreate.createPVStructure(null, emptyStructure);
         		return pvStructure;
         	}
     		int offsetRecord = request.indexOf("record[");
     		int offsetField = request.indexOf("field(");
     		int offsetPutField = request.indexOf("putField(");
     		int offsetGetField = request.indexOf("getField(");
-    		PVStructure pvStructure =  pvDataCreate.createPVStructure(null,"", new Field[0]);
+    		PVStructure pvStructure =  pvDataCreate.createPVStructure(null, emptyStructure);
     		if(offsetRecord>=0) {
     			int offsetBegin = request.indexOf('[', offsetRecord);
     			int offsetEnd = request.indexOf(']', offsetBegin);
@@ -56,9 +60,9 @@ public class CreateRequestFactory {
     				requester.message("record[ does not have matching ]", MessageType.error);
     				return null;
     			}
-    			PVStructure pvStruct = pvDataCreate.createPVStructure(pvStructure, "record", new Field[0]);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
     			if(!createRequestOptions(pvStruct,request.substring(offsetBegin+1, offsetEnd),requester)) return null;
-    			pvStructure.appendPVField(pvStruct);
+    			pvStructure.appendPVField("record", pvStruct);
     		}
     		if(offsetField>=0) {
     			int offsetBegin = request.indexOf('(', offsetField);
@@ -67,9 +71,9 @@ public class CreateRequestFactory {
     				requester.message("field( does not have matching )", MessageType.error);
     				return null;
     			}
-    			PVStructure pvStruct = pvDataCreate.createPVStructure(pvStructure, "field", new Field[0]);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
     			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd),true,requester)) return null;
-    			pvStructure.appendPVField(pvStruct);
+    			pvStructure.appendPVField("field", pvStruct);
     		}
     		if(offsetPutField>=0) {
     			int offsetBegin = request.indexOf('(', offsetPutField);
@@ -78,9 +82,9 @@ public class CreateRequestFactory {
     				requester.message("putField( does not have matching )", MessageType.error);
     				return null;
     			}
-    			PVStructure pvStruct = pvDataCreate.createPVStructure(pvStructure, "putField", new Field[0]);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
     			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd),true,requester)) return null;
-    			pvStructure.appendPVField(pvStruct);
+    			pvStructure.appendPVField("putField", pvStruct);
     		}
     		if(offsetGetField>=0) {
     			int offsetBegin = request.indexOf('(', offsetGetField);
@@ -89,9 +93,9 @@ public class CreateRequestFactory {
     				requester.message("getField( does not have matching )", MessageType.error);
     				return null;
     			}
-    			PVStructure pvStruct = pvDataCreate.createPVStructure(pvStructure, "getField", new Field[0]);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
     			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd),true,requester)) return null;
-    			pvStructure.appendPVField(pvStruct);
+    			pvStructure.appendPVField("getField", pvStruct);
     		}
     		if(pvStructure.getStructure().getFields().length==0) {
     			if(!createFieldRequest(pvStructure,request,true,requester)) return null;
@@ -127,9 +131,9 @@ public class CreateRequestFactory {
         			return false;
         		}
         		String fieldName = request.substring(0,openBrace);
-        		PVStructure pvStructure = pvDataCreate.createPVStructure(pvParent, fieldName, new Field[0]);
+        		PVStructure pvStructure =  pvDataCreate.createPVStructure(pvParent, emptyStructure);
         		createFieldRequest(pvStructure,request.substring(openBrace+1,closeBrace),false,requester);
-        		pvParent.appendPVField(pvStructure);
+        		pvParent.appendPVField(fieldName, pvStructure);
         		if(request.length()>closeBrace+1) {
         			if(request.charAt(closeBrace+1) != ',') {
         				requester.message(request + "misssing , after }", MessageType.error);
@@ -140,9 +144,9 @@ public class CreateRequestFactory {
         		return true;
         	}
         	if(openBracket==-1 && fieldListOK) {
-        			PVString pvString = (PVString)pvDataCreate.createPVScalar(pvParent, "fieldList", ScalarType.pvString);
+        			PVString pvString = (PVString)pvDataCreate.createPVScalar(pvParent, ScalarType.pvString);
         			pvString.put(request);
-        			pvParent.appendPVField(pvString);
+        			pvParent.appendPVField("fieldList", pvString);
         			return true;
         	}
         	if(openBracket!=-1 && (comma==-1 || comma>openBracket)) {
@@ -171,11 +175,11 @@ public class CreateRequestFactory {
         	int indLast = fullName.lastIndexOf('.');
     		String fieldName = fullName;
     		if(indLast>1) fieldName = fullName.substring(indLast+1);
-        	PVStructure pvStructure = pvDataCreate.createPVStructure(pvParent, fieldName, new Field[0]);
-    		PVStructure pvLeaf = pvDataCreate.createPVStructure(pvStructure,"leaf", new Field[0]);
-    		PVString pvString = (PVString)pvDataCreate.createPVScalar(pvLeaf, "source", ScalarType.pvString);
+        	PVStructure pvStructure = pvDataCreate.createPVStructure(pvParent, emptyStructure);
+    		PVStructure pvLeaf = pvDataCreate.createPVStructure(pvStructure, emptyStructure);
+    		PVString pvString = (PVString)pvDataCreate.createPVScalar(pvLeaf, ScalarType.pvString);
     		pvString.put(fullName);
-    		pvLeaf.appendPVField(pvString);
+    		pvLeaf.appendPVField("source", pvString);
     		if(openBracket>0) {
     			int closeBracket = request.indexOf(']');
     			if(closeBracket==-1) {
@@ -184,8 +188,8 @@ public class CreateRequestFactory {
     			}
     			if(!createRequestOptions(pvLeaf,request.substring(openBracket+1, closeBracket),requester)) return false;
     		}
-    		pvStructure.appendPVField(pvLeaf);
-    		pvParent.appendPVField(pvStructure);
+    		pvStructure.appendPVField("leaf", pvLeaf);
+    		pvParent.appendPVField(fieldName, pvStructure);
     		return true;
         }
         
@@ -199,9 +203,9 @@ public class CreateRequestFactory {
         			requester.message("illegal option ",MessageType.error);
         			return false;
         		}
-        		PVString pvString = (PVString)pvDataCreate.createPVScalar(pvParent, names[0], ScalarType.pvString);
+        		PVString pvString = (PVString)pvDataCreate.createPVScalar(pvParent, ScalarType.pvString);
         		pvString.put(names[1]);
-        		pvParent.appendPVField(pvString);
+        		pvParent.appendPVField(names[0], pvString);
             }
         	return true;
         }

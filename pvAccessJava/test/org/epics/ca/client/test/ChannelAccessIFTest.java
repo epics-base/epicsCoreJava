@@ -929,7 +929,6 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				Status status,
 				ChannelPutGet channelPutGet,
 				PVStructure pvPutStructure, PVStructure pvGetStructure) {
-			System.out.println(status);
 			synchronized (this)
 			{
 				this.channelPutGet = channelPutGet;
@@ -1198,13 +1197,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		@Override
 		public void processDone(Status success) {
-			System.out.println("processDone: " + success);
 			channelProcess.process(true);
 		}
 		
 		@Override
 		public void channelProcessConnect(Status status, ChannelProcess channelProcess) {
-			System.out.println("channelProcessConnect done");
 			this.channelProcess = channelProcess;
 			channelProcess.process(false);
 		}
@@ -1940,7 +1937,6 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelGetField.syncGetField(ch, "value");
 		assertNotNull(channelGetField.field);
 		assertEquals(Type.scalar, channelGetField.field.getType());
-		assertEquals("value", channelGetField.field.getFieldName());
 
 		// non-existant
 		channelGetField.syncGetField(ch, "invalid", false);
@@ -2096,7 +2092,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		channelPutGetTestIntProcess(ch, false);
 		//channelPutGetTestIntProcess(ch, true);
-System.out.println("-----------------------------");
+
 		channelPutGetTestNoConnection(ch, true);
 		channelPutGetTestNoConnection(ch, false);
 		
@@ -2302,9 +2298,9 @@ System.out.println("-----------------------------");
 		PVStructure args;
 		{
 	        Field[] fields = new Field[2];
-	        fields[0] = fieldCreate.createScalar("a", ScalarType.pvDouble);
-	        fields[1] = fieldCreate.createScalar("b", ScalarType.pvDouble);
-	        args = pvDataCreate.createPVStructure(null, "args", fields);
+	        fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
+	        fields[1] = fieldCreate.createScalar(ScalarType.pvDouble);
+	        args = pvDataCreate.createPVStructure(null, fieldCreate.createStructure(new String[] { "a", "b" }, fields));
 		}
 		
 		args.getDoubleField("a").put(12.3);
@@ -2387,13 +2383,16 @@ System.out.println("-----------------------------");
 	    
 	    channelArrayTestParameters(ch);
 
-    	//PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
-    	PVStructure pvRequest = pvDataCreate.createPVStructure(null, "", new Field[0]);
-    	PVString pvFieldName = (PVString)pvDataCreate.createPVScalar(pvRequest, "field", ScalarType.pvString);
+	    // TODO !!
+//    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
+	    Structure requestStructure = 
+	    	fieldCreate.createStructure(new String[] { "field" } , new Field[] { fieldCreate.createScalar(ScalarType.pvString) });
+    	PVStructure pvRequest = pvDataCreate.createPVStructure(null, requestStructure);
+    	PVString pvFieldName = pvRequest.getStringField("field");
     	pvFieldName.put("value");
-    	pvRequest.appendPVField(pvFieldName);
 
-		ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
+    	
+    	ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
 	    ch.createChannelArray(channelArrayRequester, pvRequest);
 	    channelArrayRequester.waitAndCheckConnect();
 	    
@@ -2475,11 +2474,15 @@ System.out.println("-----------------------------");
 	private void channelArrayTestNoConnection(Channel ch, boolean disconnect) throws Throwable
 	{
 		ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
-    	PVStructure pvRequest = pvDataCreate.createPVStructure(null, "", new Field[0]);
-    	PVString pvFieldName = (PVString)pvDataCreate.createPVScalar(pvRequest, "field", ScalarType.pvString);
+
+		//    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)", channelArrayRequester);
+	    Structure requestStructure = 
+	    	fieldCreate.createStructure(new String[] { "field" } , new Field[] { fieldCreate.createScalar(ScalarType.pvString) });
+    	PVStructure pvRequest = pvDataCreate.createPVStructure(null, requestStructure);
+    	PVString pvFieldName = pvRequest.getStringField("field");
     	pvFieldName.put("value");
-    	pvRequest.appendPVField(pvFieldName);
-		ch.createChannelArray(channelArrayRequester, pvRequest);
+
+    	ch.createChannelArray(channelArrayRequester, pvRequest);
 		channelArrayRequester.waitAndCheckConnect(disconnect);
 		if (disconnect) 
 		{

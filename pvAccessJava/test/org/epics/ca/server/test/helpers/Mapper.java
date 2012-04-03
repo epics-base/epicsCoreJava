@@ -63,7 +63,7 @@ public class Mapper
 			if(pvRequest.getSubField("field")!=null) {
 				pvRequest = pvRequest.getStructureField("field");
 			}
-			Structure structure = createStructure(originStructure, indexMapping, pvRequest, "");
+			Structure structure = createStructure(originStructure, indexMapping, pvRequest);
 			this.copyStructure = pvDataCreate.createPVStructure(null, structure);
         }
     	
@@ -205,10 +205,11 @@ public class Mapper
 		}
 	}
 
-    private static Structure createStructure(PVStructure pvRecord, ArrayList<Integer> indexMapping, PVStructure pvFromRequest,String fieldName) {
+    private static Structure createStructure(PVStructure pvRecord, ArrayList<Integer> indexMapping, PVStructure pvFromRequest) {
         PVField[] pvFromFields = pvFromRequest.getPVFields();
         int length = pvFromFields.length;
         ArrayList<Field> fieldList = new ArrayList<Field>(length);
+        ArrayList<String> fieldNameList = new ArrayList<String>(length);
         for(int i=0; i<length; i++) {
         	PVField pvField = pvFromFields[i];
         	if(pvField.getField().getType()==Type.structure) {
@@ -218,38 +219,44 @@ public class Mapper
         			PVString pvString = (PVString)pvLeaf;
         			PVField pvRecordField = pvRecord.getSubField(pvString.get());
         			if(pvRecordField!=null) {
-        				Field field = fieldCreate.create(pvField.getField().getFieldName(),pvRecordField.getField());
         				addMapping(pvRecordField, indexMapping);
-        				fieldList.add(field);
+        				fieldNameList.add(pvString.get());
+        				fieldList.add(pvRecordField.getField());
         			}
         		} else {
     				indexMapping.add(-1);		// fake structure, will not be mapped
-        			fieldList.add(createStructure(pvRecord,indexMapping,pvStruct,pvField.getField().getFieldName()));
+    				fieldNameList.add("fake");
+        			fieldList.add(createStructure(pvRecord,indexMapping,pvStruct));
         		}
         	} else {
         		PVString pvString = (PVString)pvFromFields[i];
-        		if(pvString.getField().getFieldName().equals("fieldList")) {
+        		String n = ((PVStructure)pvString.getParent()).getStructure().getFieldName(i);
+        		if(n.equals("fieldList")) {
         			String[] fieldNames = commaPattern.split(pvString.get());
         			for(int j=0; j<fieldNames.length; j++) {
-        				PVField pvRecordField = pvRecord.getSubField(fieldNames[j].trim());
+        				String name = fieldNames[j].trim();
+        				PVField pvRecordField = pvRecord.getSubField(name);
         				if(pvRecordField!=null) {
             				addMapping(pvRecordField, indexMapping);
+            				fieldNameList.add(name);
         					fieldList.add(pvRecordField.getField());
         				}
         			}
         		} else {
         			PVField pvRecordField = pvRecord.getSubField(pvString.get().trim());
         			if(pvRecordField!=null) {
-        				Field field = fieldCreate.create(pvField.getField().getFieldName(),pvRecordField.getField());
         				addMapping(pvRecordField, indexMapping);
-        				fieldList.add(field);
+        				fieldNameList.add(pvString.get());
+        				fieldList.add(pvRecordField.getField());
         			}
         		}
         	}
         }
         Field[] fields = new Field[fieldList.size()];
         fields = fieldList.toArray(fields);
-        return fieldCreate.createStructure(fieldName, fields);
+        String[] names = new String[fieldNameList.size()];
+        names = fieldNameList.toArray(names);
+        return fieldCreate.createStructure(names, fields);
     }
     
 }

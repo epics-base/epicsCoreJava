@@ -6,6 +6,7 @@ import java.nio.ByteOrder;
 import org.epics.ca.PVFactory;
 import org.epics.ca.impl.remote.IntrospectionRegistry;
 import org.epics.ca.util.HexDump;
+import org.epics.pvData.factory.StandardFieldFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.Field;
@@ -15,6 +16,7 @@ import org.epics.pvData.pv.PVDataCreate;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
+import org.epics.pvData.pv.StandardField;
 import org.epics.pvData.pv.Status;
 import org.epics.pvData.pv.Status.StatusType;
 import org.epics.pvData.pv.StatusCreate;
@@ -142,45 +144,33 @@ public class SerializationExamples {
 		
 		ByteBuffer bb = ByteBuffer.allocate(10240);
 		
-			PVStructure timeStampStructure;
-			{
-		        Field[] fields = new Field[3];
-		        fields[0] = fieldCreate.createScalar("secondsPastEpoch", ScalarType.pvLong);
-		        fields[1] = fieldCreate.createScalar("nanoSeconds", ScalarType.pvInt);
-		        fields[2] = fieldCreate.createScalar("userTag", ScalarType.pvInt);
-		        timeStampStructure = pvDataCreate.createPVStructure(null, "timeStamp", fields);
-			}
-		
-			PVStructure alarmStructure;
-			{
-		        Field[] fields = new Field[3];
-		        fields[0] = fieldCreate.createScalar("severity", ScalarType.pvInt);
-		        fields[1] = fieldCreate.createScalar("status", ScalarType.pvInt);
-		        fields[2] = fieldCreate.createScalar("message", ScalarType.pvString);
-		        alarmStructure = pvDataCreate.createPVStructure(null, "alarm", fields);
-			}
+		// TODO access via PVFactory?
+		StandardField standardField = StandardFieldFactory.getStandardField();
 			
-	        Field[] fields = new Field[3];
-	        fields[0] = fieldCreate.createScalarArray("value", ScalarType.pvByte);
-	        fields[1] = timeStampStructure.getField();
-	        fields[2] = alarmStructure.getField();
-	        
-	        PVStructure pvStructure = pvDataCreate.createPVStructure(null, "", fields);
-	        
-	        PVByteArray ba = (PVByteArray)pvStructure.getSubField("value");
-	        byte[] toPut = new byte[] { (byte)1, (byte)2, (byte)3 };
-	        ba.put(0, toPut.length, toPut, 0);
-	
-	        timeStampStructure = pvStructure.getStructureField("timeStamp");
-			timeStampStructure.getLongField("secondsPastEpoch").put(0x1122334455667788L);
-			timeStampStructure.getIntField("nanoSeconds").put(0xAABBCCDD);
-			timeStampStructure.getIntField("userTag").put(0xEEEEEEEE);
+        Field[] fields = new Field[3];
+        fields[0] = fieldCreate.createScalarArray(ScalarType.pvByte);
+        fields[1] = standardField.timeStamp();
+        fields[2] = standardField.doubleAlarm();
+        
+        PVStructure pvStructure = pvDataCreate.createPVStructure(null,
+        		fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
+        );
+        
+        PVByteArray ba = (PVByteArray)pvStructure.getSubField("value");
+        byte[] toPut = new byte[] { (byte)1, (byte)2, (byte)3 };
+        ba.put(0, toPut.length, toPut, 0);
 
-			alarmStructure = pvStructure.getStructureField("alarm");
-			alarmStructure.getIntField("severity").put(0x11111111);
-			alarmStructure.getIntField("status").put(0x22222222);
-			alarmStructure.getStringField("message").put("Allo, Allo!");
-			
+        PVStructure timeStampStructure = pvStructure.getStructureField("timeStamp");
+		timeStampStructure.getLongField("secondsPastEpoch").put(0x1122334455667788L);
+		timeStampStructure.getIntField("nanoSeconds").put(0xAABBCCDD);
+		timeStampStructure.getIntField("userTag").put(0xEEEEEEEE);
+
+        PVStructure alarmStructure = pvStructure.getStructureField("alarm");
+		alarmStructure.getIntField("severity").put(0x11111111);
+		alarmStructure.getIntField("status").put(0x22222222);
+		alarmStructure.getStringField("message").put("Allo, Allo!");
+
+		    
 			
 			IntrospectionRegistry ir = new IntrospectionRegistry();
 			ir.serialize(pvStructure.getStructure(), bb, control);

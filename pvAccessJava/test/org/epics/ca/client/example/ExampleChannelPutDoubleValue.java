@@ -16,6 +16,7 @@ import org.epics.ca.client.ChannelPut;
 import org.epics.ca.client.ChannelPutRequester;
 import org.epics.ca.client.ChannelRequester;
 import org.epics.ca.client.CreateRequestFactory;
+import org.epics.pvData.factory.FieldFactory;
 import org.epics.pvData.misc.BitSet;
 import org.epics.pvData.pv.Field;
 import org.epics.pvData.pv.MessageType;
@@ -69,7 +70,7 @@ public class ExampleChannelPutDoubleValue {
 
         Client(String channelName,String request) {
             if(request==null) {
-                pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
+                pvRequest = pvDataCreate.createPVStructure(null, FieldFactory.getFieldCreate().createStructure(new String[0], new Field[0]));
             } else {
                 pvRequest = CreateRequestFactory.createRequest(request, this);
             }

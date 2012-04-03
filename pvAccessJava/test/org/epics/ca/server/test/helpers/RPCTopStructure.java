@@ -34,8 +34,11 @@ public class RPCTopStructure extends PVTopStructure {
 		PVStructure result;
 		{
 	        Field[] fields = new Field[1];
-	        fields[0] = fieldCreate.createScalar("c", ScalarType.pvDouble);
-	        result = pvDataCreate.createPVStructure(null, "result", fields);
+	        fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
+	        result = pvDataCreate.createPVStructure(null,
+	        		fieldCreate.createStructure(new String[] { "c" } , fields)
+	        );
+	        
 		}
 		
 		result.getDoubleField("c").put(a+b);

@@ -29,7 +29,7 @@ public class CounterTopStructure extends PVTopStructure implements TimerCallback
 	private final BitSet changedBitSet;
 	
 	public CounterTopStructure(double scanPeriodHz, Timer timer) {
-		super(fieldCreate.createScalar("value", ScalarType.pvInt));
+		super(fieldCreate.createScalar(ScalarType.pvInt));
 
 		changedBitSet = new BitSet(getPVStructure().getNumberFields());
 		

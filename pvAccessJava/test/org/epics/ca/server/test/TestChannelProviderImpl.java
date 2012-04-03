@@ -522,7 +522,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				
 				this.channelArrayRequester = channelArrayRequester;
 				this.pvArray = array;
-				this.pvCopy = pvDataCreate.createPVScalarArray(null, "", pvArray.getScalarArray().getElementType());
+				this.pvCopy = pvDataCreate.createPVScalarArray(null, pvArray.getScalarArray().getElementType());
 			
 				process = false; // TODO PVRequestUtils.getProcess(pvRequest);
 				
@@ -1114,7 +1114,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 		}
 		else if (channelName.equals("valueOnly"))
 		{
-			retVal = new PVTopStructure(fieldCreate.createScalar("value", ScalarType.pvDouble));
+			retVal = new PVTopStructure(fieldCreate.createScalar(ScalarType.pvDouble));
 		}
 		else if (channelName.equals("sum"))
 		{
@@ -1122,7 +1122,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 		}
 		else if (channelName.equals("arrayDouble"))
 		{
-			retVal = new PVTopStructure(fieldCreate.createScalarArray("value", ScalarType.pvDouble));
+			retVal = new PVTopStructure(fieldCreate.createScalarArray(ScalarType.pvDouble));
 			PVDoubleArray pvArray = (PVDoubleArray)retVal.getPVStructure().getSubField("value");
 		    final double[] ARRAY_VALUE = new double[] { 1.1, 2.2, 3.3, 4.4, 5.5 }; 
 			pvArray.setCapacity(ARRAY_VALUE.length);
@@ -1132,7 +1132,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 		else
 		{
 			// default
-			retVal =  new PVTopStructure(fieldCreate.createScalar("value", ScalarType.pvDouble));
+			retVal =  new PVTopStructure(fieldCreate.createScalar(ScalarType.pvDouble));
 		}
 
 		//synchronized (tops) {
