@@ -485,20 +485,17 @@ public class SerializationTest extends TestCase {
 	
 	private void serializatioTest(Field field)
 	{
-		// not implemented... since it is to specific
-		/*
 		// serialize
 		ByteBuffer buffer = ByteBuffer.allocate(1 << 12);
-		field.serialize(buffer);
+		field.serialize(buffer, flusher);
 		
 		// deserialize
 		buffer.flip();
 		
-		Field deserializedField = BaseStructure.deserializeFromType(field.getType(), buffer);
+		Field deserializedField = FieldFactory.getFieldCreate().deserialize(buffer, control);
 	
 		// must equal
-		assertEquals(field.getFieldName(), field, deserializedField);
-		*/
+		assertEquals("field " + field.toString() + " serialization broken", field, deserializedField);
 	}
 	
 }
