@@ -44,6 +44,7 @@ import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.StructureArray;
 
 /**
  * JUnit test for PVData serialization.
@@ -428,15 +429,23 @@ public class SerializationTest extends TestCase {
 	{
         FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         
-        Scalar scalar = fieldCreate.createScalar(ScalarType.pvDouble);
-        serializatioTest(scalar);
-		
-        ScalarArray array = fieldCreate.createScalarArray(ScalarType.pvDouble);
-        serializatioTest(array);
+        // scalars and its arrays
+        for (ScalarType s : ScalarType.values())
+        {
+        	Scalar scalar = fieldCreate.createScalar(s);
+        	serializatioTest(scalar);
+
+        	ScalarArray scalarArray = fieldCreate.createScalarArray(s);
+        	serializatioTest(scalarArray);
+        }
         
+        // and a structure
         Structure structure = (Structure)StandardFieldFactory.getStandardField().timeStamp();
         serializatioTest(structure);
         
+        // and a structure array
+        StructureArray structureArray = fieldCreate.createStructureArray(structure);
+        serializatioTest(structureArray);
 	}
 	
 	public void testStructure()
