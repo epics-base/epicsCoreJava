@@ -122,7 +122,7 @@ public class StatusTest extends TestCase {
 	}
 	
 	public void testSerialization() {
-		ByteBuffer buffer = ByteBuffer.allocate(1024*2);
+		ByteBuffer buffer = ByteBuffer.allocate(10240);
 		
 		Status status = statusCreate.createStatus(StatusType.ERROR, "error", new RuntimeException("simple exception"));
 

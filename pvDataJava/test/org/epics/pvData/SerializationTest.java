@@ -36,6 +36,7 @@ import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVStructureArray;
 import org.epics.pvData.pv.PVUByte;
 import org.epics.pvData.pv.PVUInt;
 import org.epics.pvData.pv.PVUShort;
@@ -45,6 +46,7 @@ import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
 import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.StructureArrayData;
 
 /**
  * JUnit test for PVData serialization.
@@ -483,6 +485,28 @@ public class SerializationTest extends TestCase {
 	}
 	
 	
+	public void testStructureArray()
+	{
+        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+        StructureArray sarray = fieldCreate.createStructureArray(StandardFieldFactory.getStandardField().timeStamp());
+        PVStructureArray pvStructureArray = (PVStructureArray)pvDataCreate.createPVField(null, sarray);
+        pvStructureArray.setCapacity(3);
+        StructureArrayData sad = new StructureArrayData();
+        pvStructureArray.get(0, 3, sad);
+        
+        for (int i = 0; i < sad.data.length; i++)
+        {
+        	PVStructure pvStructure = pvDataCreate.createPVStructure(null, sarray.getStructure());
+        	pvStructure.getLongField("secondsPastEpoch").put(123*i);
+        	pvStructure.getIntField("nanoSeconds").put(456*i);
+        	sad.data[i] = pvStructure;
+        }
+        
+		serializatioTest(pvStructureArray);
+		serializatioTest(pvStructureArray.getStructureArray());
+	}
+
 	private void serializatioTest(Field field)
 	{
 		// serialize
