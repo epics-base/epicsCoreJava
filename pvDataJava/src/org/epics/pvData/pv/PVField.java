@@ -12,6 +12,11 @@ package org.epics.pvData.pv;
  *
  */
 public interface PVField extends Requester,Serializable {
+    /**
+     * Get the fieldName for this field.
+     * @return The name or null if top level field.
+     */
+    String getFieldName();
 	/**
 	 * Register the message requester.
 	 * At most one requester can be registered.

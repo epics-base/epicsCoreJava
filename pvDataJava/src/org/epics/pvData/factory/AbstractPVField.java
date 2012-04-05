@@ -26,6 +26,8 @@ import org.epics.pvData.pv.Type;
  *
  */
 public abstract class AbstractPVField implements PVField{
+  
+
     private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private int fieldOffset = 0;
     private int nextFieldOffset = 0;
@@ -71,6 +73,19 @@ public abstract class AbstractPVField implements PVField{
     protected void setParent(PVStructure parent)
     {
         pvParent = parent;
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvData.pv.PVField#getFieldName()
+     */
+    @Override
+    public String getFieldName() {
+        if(pvParent==null) return null;
+        PVField[] pvFields = pvParent.getPVFields();
+        String[] fieldNames = pvParent.getStructure().getFieldNames();
+        for(int i=0; i<pvFields.length; i++) {
+            if(pvFields[i]==this) return fieldNames[i];
+        }
+        throw new IllegalStateException("logic error");
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Requester#getRequesterName()

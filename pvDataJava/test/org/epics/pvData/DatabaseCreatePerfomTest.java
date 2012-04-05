@@ -33,8 +33,8 @@ public class DatabaseCreatePerfomTest extends TestCase {
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private static Structure propertyStructure;
 	private static PVStructure pvChannelToClone;
-	private static final int numFields = 500;
-	private static final int numProperties = 10;
+	private static final int numFields = 5;//500;
+	private static final int numProperties = 2;//10;
 	
 	
 	static {
@@ -100,6 +100,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
             pvProperties.appendPVFields(propertyNames,pvProps);
         }
         pvStructure = pvDataCreate.createPVStructure(null,fieldNames,(PVField[])pvStructures);
+System.out.println(pvStructure);
         pvStructure.getFieldOffset();
         endTime = System.currentTimeMillis();
         elapsedTime = endTime-startTime;

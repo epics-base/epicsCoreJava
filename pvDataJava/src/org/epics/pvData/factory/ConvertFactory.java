@@ -4075,18 +4075,7 @@ public final class ConvertFactory {
             }
             PVScalar pvScalar = (PVScalar) pv;
             ScalarType scalarType = pvScalar.getScalar().getScalarType();
-            builder.append(scalarType.toString());
-            PVStructure parent = pv.getParent();
-            if(parent!=null) {
-                PVField[] pvFields = parent.getPVFields();
-                for(int i=0; i<pvFields.length; i++) {
-                    if(pvFields[i]==pv) {
-                        builder.append(" ");
-                        builder.append(parent.getStructure().getFieldName(i));
-                        break;
-                    }
-                }
-            }
+            builder.append(scalarType.toString() + " " + pv.getFieldName());
             builder.append(" ");
             switch (scalarType) {
             case pvBoolean: {
@@ -4174,21 +4163,10 @@ public final class ConvertFactory {
         private void convertStructure(StringBuilder buffer,PVStructure data, int indentLevel) {
             String extendsName = data.getExtendsStructureName();
             if(extendsName==null || extendsName.length()<1) {
-                buffer.append("structure ");
+                buffer.append("structure " + data.getFieldName());
             } else {
-                buffer.append(extendsName);
+                buffer.append(extendsName + " " + data.getFieldName());
                 buffer.append(" ");
-            }
-            PVStructure parent = data.getParent();
-            if(parent!=null) {
-                PVField[] pvFields = parent.getPVFields();
-                for(int i=0; i<pvFields.length; i++) {
-                    if(pvFields[i]==data) {
-                        buffer.append(" ");
-                        buffer.append(parent.getStructure().getFieldName(i));
-                        break;
-                    }
-                }
             }
             PVField[] fieldsData = data.getPVFields();
             if (fieldsData != null) {

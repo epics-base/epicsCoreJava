@@ -86,12 +86,14 @@ public final class  StandardPVFieldFactory {
 		@Override
 		public PVStructure enumerated(PVStructure parent,String[] choices)
 		{
-			Structure field = standardField.enumerated();
-			PVStructure pvStructure = pvDataCreate.createPVStructure(parent,field);
-			PVStringArray pvChoices = (PVStringArray)pvStructure.getSubField(1);
-			pvChoices.put(0,choices.length, choices, 0);
-			pvChoices.setImmutable();
-			return pvStructure;
+		    Structure field = standardField.enumerated();
+		    PVStructure pvStructure = pvDataCreate.createPVStructure(parent,field);
+		    PVStringArray pvChoices = (PVStringArray)pvStructure.getSubField(1);
+		    if(choices!=null && choices.length>0) {
+		        pvChoices.put(0,choices.length, choices, 0);
+		        pvChoices.setImmutable();
+		    }
+		    return pvStructure;
 		}
 		@Override
 		public PVStructure enumerated(PVStructure parent,String fieldName,String[] choices,String properties)

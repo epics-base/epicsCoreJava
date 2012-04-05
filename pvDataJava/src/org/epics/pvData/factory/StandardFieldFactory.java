@@ -60,7 +60,7 @@ public final class StandardFieldFactory {
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
 	    timeStampField = fieldCreate.createStructure(timeStampFieldNames,fields);
 	    fields = new Field[5];
-	    String[] displayFieldNames = {"low","high","description","format","units"};
+	    String[] displayFieldNames = {"limitLow","limitHigh","description","format","units"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvDouble);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvString);
@@ -68,7 +68,7 @@ public final class StandardFieldFactory {
 	    fields[4] = fieldCreate.createScalar(ScalarType.pvString);
 	    displayField = fieldCreate.createStructure(displayFieldNames,fields);
 	    fields = new Field[3];
-	    String[] controlFieldNames = {"low","high","minStep"};
+	    String[] controlFieldNames = {"limitLow","limitHigh","minStep"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvDouble);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvDouble);

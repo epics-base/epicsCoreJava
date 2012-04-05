@@ -32,13 +32,13 @@ public final class PVControlFactory implements PVControl{
             return false;
         }
         PVStructure pvStructure = (PVStructure)(pvField);
-        PVDouble pvDouble = pvStructure.getDoubleField("limit.low");
+        PVDouble pvDouble = pvStructure.getDoubleField("limitLow");
         if(pvDouble==null) {
             pvField.message(noControlFound,MessageType.error);
             return false;
         }
         pvLow = pvDouble;
-        pvDouble = pvStructure.getDoubleField("limit.high");
+        pvDouble = pvStructure.getDoubleField("limitHigh");
         if(pvDouble==null) {
             pvLow = null;
             pvField.message(noControlFound,MessageType.error);

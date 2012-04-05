@@ -53,13 +53,13 @@ public final class PVDisplayFactory implements PVDisplay{
             detach();
             return false;
         }
-        pvLow = pvStructure.getDoubleField("limit.low");
+        pvLow = pvStructure.getDoubleField("limitLow");
         if(pvLow==null) {
             pvField.message(noDisplayFound,MessageType.error);
             detach();
             return false;
         }
-        pvHigh = pvStructure.getDoubleField("limit.high");
+        pvHigh = pvStructure.getDoubleField("limitHigh");
         if(pvHigh==null) {
             pvField.message(noDisplayFound,MessageType.error);
             detach();

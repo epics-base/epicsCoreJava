@@ -156,6 +156,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         newPVFields[newPVFields.length-1] = pvField;
         newFieldNames[newPVFields.length-1] = fieldName;
         pvFields = newPVFields;
+        if(pvField.getParent()!=this) {
+            throw new IllegalStateException("PVStructure.appendField: illegal parent");
+        }
         super.replaceStructure(newFieldNames,this);
     }
     /* (non-Javadoc)
@@ -179,6 +182,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 	        }
 	        for(int i=0; i<additional; i++) {
 	        	newPVFields[original +i] = pvFields[i];
+	        	if(pvFields[i].getParent()!=this) {
+	        	    throw new IllegalStateException("PVStructure.appendFields field " + i + " has illegal parent");
+	        	}
  	        	newFieldNames[original +i] = fieldNames[i];
 	        }
 		}
