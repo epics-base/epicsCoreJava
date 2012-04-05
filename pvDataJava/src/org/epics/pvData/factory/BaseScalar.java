@@ -60,8 +60,6 @@ public class BaseScalar extends BaseField implements Scalar {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
-			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		final BaseScalar other = (BaseScalar) obj;
@@ -76,13 +74,13 @@ public class BaseScalar extends BaseField implements Scalar {
 		0x21, // pvShort
 		0x22, // pvInt
 		0x23, // pvLong
-		0x40, // pvFloat
-		0x40, // pvDouble
-		0x60, // pvString
 		0x28, // pvUByte
 		0x29, // pvUShort
 		0x2A, // pvUInt
-		0x2B  // pvULong
+		0x2B, // pvULong
+		0x42, // pvFloat
+		0x43, // pvDouble
+		0x60  // pvString
 	};
 	
 	/* (non-Javadoc)

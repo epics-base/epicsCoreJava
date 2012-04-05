@@ -36,6 +36,7 @@ import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVString;
 import org.epics.pvData.pv.PVStringArray;
 import org.epics.pvData.pv.PVStructure;
+import org.epics.pvData.pv.PVStructureArray;
 import org.epics.pvData.pv.PVUByte;
 import org.epics.pvData.pv.PVUInt;
 import org.epics.pvData.pv.PVUShort;
@@ -44,6 +45,8 @@ import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.ScalarType;
 import org.epics.pvData.pv.SerializableControl;
 import org.epics.pvData.pv.Structure;
+import org.epics.pvData.pv.StructureArray;
+import org.epics.pvData.pv.StructureArrayData;
 
 /**
  * JUnit test for PVData serialization.
@@ -428,15 +431,23 @@ public class SerializationTest extends TestCase {
 	{
         FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         
-        Scalar scalar = fieldCreate.createScalar(ScalarType.pvDouble);
-        serializatioTest(scalar);
-		
-        ScalarArray array = fieldCreate.createScalarArray(ScalarType.pvDouble);
-        serializatioTest(array);
+        // scalars and its arrays
+        for (ScalarType s : ScalarType.values())
+        {
+        	Scalar scalar = fieldCreate.createScalar(s);
+        	serializatioTest(scalar);
+
+        	ScalarArray scalarArray = fieldCreate.createScalarArray(s);
+        	serializatioTest(scalarArray);
+        }
         
+        // and a structure
         Structure structure = (Structure)StandardFieldFactory.getStandardField().timeStamp();
         serializatioTest(structure);
         
+        // and a structure array
+        StructureArray structureArray = fieldCreate.createStructureArray(structure);
+        serializatioTest(structureArray);
 	}
 	
 	public void testStructure()
@@ -474,22 +485,41 @@ public class SerializationTest extends TestCase {
 	}
 	
 	
+	public void testStructureArray()
+	{
+        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+        StructureArray sarray = fieldCreate.createStructureArray(StandardFieldFactory.getStandardField().timeStamp());
+        PVStructureArray pvStructureArray = (PVStructureArray)pvDataCreate.createPVField(null, sarray);
+        pvStructureArray.setCapacity(3);
+        StructureArrayData sad = new StructureArrayData();
+        pvStructureArray.get(0, 3, sad);
+        
+        for (int i = 0; i < sad.data.length; i++)
+        {
+        	PVStructure pvStructure = pvDataCreate.createPVStructure(null, sarray.getStructure());
+        	pvStructure.getLongField("secondsPastEpoch").put(123*i);
+        	pvStructure.getIntField("nanoSeconds").put(456*i);
+        	sad.data[i] = pvStructure;
+        }
+        
+		serializatioTest(pvStructureArray);
+		serializatioTest(pvStructureArray.getStructureArray());
+	}
+
 	private void serializatioTest(Field field)
 	{
-		// not implemented... since it is to specific
-		/*
 		// serialize
 		ByteBuffer buffer = ByteBuffer.allocate(1 << 12);
-		field.serialize(buffer);
+		field.serialize(buffer, flusher);
 		
 		// deserialize
 		buffer.flip();
 		
-		Field deserializedField = BaseStructure.deserializeFromType(field.getType(), buffer);
+		Field deserializedField = FieldFactory.getFieldCreate().deserialize(buffer, control);
 	
 		// must equal
-		assertEquals(field.getFieldName(), field, deserializedField);
-		*/
+		assertEquals("field " + field.toString() + " serialization broken", field, deserializedField);
 	}
 	
 }
