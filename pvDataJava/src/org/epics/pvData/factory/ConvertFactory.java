@@ -188,7 +188,7 @@ public final class ConvertFactory {
             case pvUInt: {
                 PVInt pvvalue = (PVInt) pv;
                 long value = Short.decode(from);
-                if(value>0) value &=0x0ffffffff;
+                if(value>0) value &= 0x0ffffffffL;
                 pvvalue.put((byte)value);
                 break;
             }
@@ -1099,7 +1099,7 @@ public final class ConvertFactory {
                 PVUInt pval = (PVUInt) pv;
                 int val = pval.get();
                 long value = val;
-                if(val<0) value &= 0x0ffffffff;
+                if(val<0) value &= 0x0ffffffffL;
                 return value;
             }
             case pvULong: {
@@ -1168,7 +1168,7 @@ public final class ConvertFactory {
                 PVUInt pval = (PVUInt) pv;
                 int val = pval.get();
                 long value = val;
-                if(val<0) value &= 0x0ffffffff;
+                if(val<0) value &= 0x0ffffffffL;
                 return value;
             }
             case pvULong: {
@@ -1372,37 +1372,37 @@ public final class ConvertFactory {
             case pvUByte: {
                 PVUByte value = (PVUByte) pv;
                 long val = from;
-                if(from<0) val &= 0x0ffffffff;
+                if(from<0) val &= 0x0ffffffffL;
                 value.put((byte)val); return;
             }
             case pvUShort: {
                 PVUShort value = (PVUShort) pv;
                 long val = from;
-                if(from<0) val &= 0x0ffffffff;
+                if(from<0) val &= 0x0ffffffffL;
                 value.put((short) val); return;
             }
             case pvUInt: {
                 PVUInt value = (PVUInt) pv;
                 long val = from;
-                if(from<0) val &= 0x0ffffffff;
+                if(from<0) val &= 0x0ffffffffL;
                 value.put((int)val); return;
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
                 long val = from;
-                if(from<0) val &= 0x0ffffffff;
+                if(from<0) val &= 0x0ffffffffL;
                 value.put(val); return;
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
                 long val = from;
-                if(from<0) val &= 0x0ffffffff;
+                if(from<0) val &= 0x0ffffffffL;
                 value.put(val); return;
             }
             case pvDouble: {
                 PVDouble value = (PVDouble) pv;
                 long val = from;
-                if(from<0) val &= 0x0ffffffff;
+                if(from<0) val &= 0x0ffffffffL;
                 value.put(val); return;
             }
             case pvString: {
@@ -1523,7 +1523,7 @@ public final class ConvertFactory {
             }
             case pvUInt: {
             	long val = (long)from;
-            	if(from<0) val &= 0x0ffffffff;
+            	if(from<0) val &= 0x0ffffffffL;
                 PVUInt value = (PVUInt) pv;
                 value.put((int)val); return;
             }
@@ -1591,7 +1591,7 @@ public final class ConvertFactory {
             }
             case pvUInt: {
             	long val = (long)from;
-            	if(from<0) val &= 0x0ffffffff;
+            	if(from<0) val &= 0x0ffffffffL;
                 PVUInt value = (PVUInt) pv;
                 value.put((int)val); return;
             }
@@ -1756,6 +1756,9 @@ public final class ConvertFactory {
             int num = convertFromDoubleArray(pv, offset, len, from, fromOffset);
             return num;
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvData.pv.Convert#toString(org.epics.pvData.pv.PVScalar)
+         */
         @Override
         public String toString(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
@@ -1799,7 +1802,7 @@ public final class ConvertFactory {
                 PVInt arg = (PVInt) pv;
                 int val = arg.get();
                 long value = val;
-                if(val<0) value &= 0x0ffffffff;
+                if(val<0) value &= 0x0ffffffffL;
                 return String.valueOf(value);
             }
             case pvULong: {
@@ -2569,7 +2572,7 @@ public final class ConvertFactory {
                 while (len > 0) {
                 	int val = from[fromOffset];
                 	long value = val;
-                	if(val<0) value &=0x0ffffffff;
+                	if(val<0) value &= 0x0ffffffffL;
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2586,7 +2589,7 @@ public final class ConvertFactory {
                 while (len > 0) {
                 	int val = from[fromOffset];
                 	long value = val;
-                	if(val<0) value &=0x0ffffffff;
+                	if(val<0) value &= 0x0ffffffffL;
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2603,7 +2606,7 @@ public final class ConvertFactory {
                 while (len > 0) {
                 	int val = from[fromOffset];
                 	long value = val;
-                	if(val<0) value &=0x0ffffffff;
+                	if(val<0) value &= 0x0ffffffffL;
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -3085,7 +3088,7 @@ public final class ConvertFactory {
                     for (int i = 0; i < num; i++) {
                     	int val = dataArray[i + dataOffset];
                     	long value = val;
-                    	if(val<0) value &= 0x0ffffffff;
+                    	if(val<0) value &= 0x0ffffffffL;
                         to[i + toOffset] = value;
                     }
                     len -= num;
@@ -3226,7 +3229,7 @@ public final class ConvertFactory {
                     for (int i = 0; i < num; i++) {
                     	int val = dataArray[i + dataOffset];
         				long value = val;
-        				if(val<0) value &= 0x0ffffffff;
+        				if(val<0) value &= 0x0ffffffffL;
         				to[i + toOffset] = value;
                     }
                     len -= num;
@@ -4129,7 +4132,7 @@ public final class ConvertFactory {
                 PVInt data = (PVInt) pv;
                 int val = data.get();
                 long value = val;
-                value &=0x0ffffffff;
+                value &=0x0ffffffffL;
                 builder.append(value);
                 return;
             }
