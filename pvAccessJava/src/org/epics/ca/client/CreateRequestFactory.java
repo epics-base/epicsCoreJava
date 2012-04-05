@@ -60,7 +60,7 @@ public class CreateRequestFactory {
     				requester.message("record[ does not have matching ]", MessageType.error);
     				return null;
     			}
-        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(pvStructure, emptyStructure);
     			if(!createRequestOptions(pvStruct,request.substring(offsetBegin+1, offsetEnd),requester)) return null;
     			pvStructure.appendPVField("record", pvStruct);
     		}
@@ -71,7 +71,7 @@ public class CreateRequestFactory {
     				requester.message("field( does not have matching )", MessageType.error);
     				return null;
     			}
-        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(pvStructure, emptyStructure);
     			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd),true,requester)) return null;
     			pvStructure.appendPVField("field", pvStruct);
     		}
@@ -82,7 +82,7 @@ public class CreateRequestFactory {
     				requester.message("putField( does not have matching )", MessageType.error);
     				return null;
     			}
-        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(pvStructure, emptyStructure);
     			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd),true,requester)) return null;
     			pvStructure.appendPVField("putField", pvStruct);
     		}
@@ -93,7 +93,7 @@ public class CreateRequestFactory {
     				requester.message("getField( does not have matching )", MessageType.error);
     				return null;
     			}
-        		PVStructure pvStruct =  pvDataCreate.createPVStructure(null, emptyStructure);
+        		PVStructure pvStruct =  pvDataCreate.createPVStructure(pvStructure, emptyStructure);
     			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd),true,requester)) return null;
     			pvStructure.appendPVField("getField", pvStruct);
     		}
