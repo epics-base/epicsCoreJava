@@ -79,7 +79,7 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public String getFieldName() {
-        if(pvParent==null) return null;
+        if(pvParent==null) return "";
         PVField[] pvFields = pvParent.getPVFields();
         String[] fieldNames = pvParent.getStructure().getFieldNames();
         for(int i=0; i<pvFields.length; i++) {

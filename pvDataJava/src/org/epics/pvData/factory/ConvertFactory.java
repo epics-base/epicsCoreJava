@@ -1104,7 +1104,9 @@ public final class ConvertFactory {
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
-                return (float) value.get();
+                long val = value.get();
+                if(val<0) val = -val;
+                return (float) val;
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1173,7 +1175,9 @@ public final class ConvertFactory {
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
-                return (float) value.get();
+                long val = value.get();
+                if(val<0) val = -val;
+                return (double) val;
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -4138,8 +4142,9 @@ public final class ConvertFactory {
             }
             case pvULong: {
                 PVLong data = (PVLong) pv;
-                // can not handle overflow without Big Integer
-                builder.append(data.get());
+                long val = data.get();
+                if(val<0) val = -val;
+                builder.append(val);
                 return;
             }
             case pvFloat: {
