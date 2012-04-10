@@ -1030,7 +1030,7 @@ public final class ConvertFactory {
             	PVUInt pvval = (PVUInt) pv;
                 int val = pvval.get();
                 long rtnval = val;
-                if(val<0) rtnval &= 0x0ffff;
+                if(val<0) rtnval &= 0x0ffffffffL;
                 return rtnval;
             }
             case pvULong: {
