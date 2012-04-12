@@ -24,7 +24,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVIntArray extends AbstractPVScalarArray implements PVIntArray,PVUIntArray
+public class BasePVIntArray extends AbstractPVScalarArray implements PVIntArray
 {
     protected int[] value;
     private IntArrayData intArrayData = new IntArrayData();

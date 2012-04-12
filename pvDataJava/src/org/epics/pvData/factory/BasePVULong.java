@@ -7,38 +7,38 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVByte;
+import org.epics.pvData.pv.PVLong;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.PVUByte;
+import org.epics.pvData.pv.PVULong;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.SerializableControl;
 
 /**
- * Base class for PVByte.
- * It provides a complete implementation but can be extended.
+ * Base class for PVLong.
+ * It provides a complete implementation but cal also be extended.
  * @author mrk
  *
  */
-public class BasePVByte extends AbstractPVScalar implements PVByte
+public class BasePVULong extends AbstractPVScalar implements PVULong
 {
-    protected byte value;
+    protected long value;
     
-    public BasePVByte(PVStructure parent,Scalar scalar) {
+    public BasePVULong(PVStructure parent,Scalar scalar) {
         super(parent,scalar);
         value = 0;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVByte#get()
+     * @see org.epics.pvData.pv.PVLong#get()
      */
     @Override
-    public byte get() {
+    public long get() {
         return value;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVByte#put(byte)
+     * @see org.epics.pvData.pv.PVLong#put(long)
      */
     @Override
-    public void put(byte value) {
+    public void put(long value) {
         if(super.isImmutable()) {
             super.message("field is immutable", MessageType.error);
             return;
@@ -51,16 +51,16 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
      */
     @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
-    	flusher.ensureBuffer(1);
-        buffer.put(value);
+    	flusher.ensureBuffer(Long.SIZE/Byte.SIZE);
+        buffer.putLong(value);
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvData.pv.DeserializableControl)
      */
     @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	control.ensureData(1);
-        value = buffer.get();
+    	control.ensureData(Long.SIZE/Byte.SIZE);
+        value = buffer.getLong();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
@@ -68,8 +68,8 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
     @Override
     public boolean equals(Object obj) {
         // TODO anything else?
-        if (obj instanceof PVByte) {
-            PVByte b = (PVByte)obj;
+        if (obj instanceof PVLong) {
+            PVLong b = (PVLong)obj;
             return b.get() == value;
         }
         else
@@ -81,7 +81,6 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
 	 */
 	@Override
 	public int hashCode() {
-		return value;
+		return (int)value;
 	}
-    
 }

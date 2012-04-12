@@ -24,7 +24,7 @@ import org.epics.pvData.pv.ShortArrayData;
  * @author mrk
  *
  */
-public class BasePVShortArray extends AbstractPVScalarArray implements PVShortArray,PVUShortArray
+public class BasePVShortArray extends AbstractPVScalarArray implements PVShortArray
 {
     protected short[] value;
     

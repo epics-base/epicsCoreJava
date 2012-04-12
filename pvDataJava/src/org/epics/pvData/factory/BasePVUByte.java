@@ -19,11 +19,11 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVByte extends AbstractPVScalar implements PVByte
+public class BasePVUByte extends AbstractPVScalar implements PVUByte
 {
     protected byte value;
     
-    public BasePVByte(PVStructure parent,Scalar scalar) {
+    public BasePVUByte(PVStructure parent,Scalar scalar) {
         super(parent,scalar);
         value = 0;
     }

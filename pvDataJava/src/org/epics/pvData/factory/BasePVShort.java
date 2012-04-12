@@ -19,7 +19,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVShort extends AbstractPVScalar implements PVShort,PVUShort
+public class BasePVShort extends AbstractPVScalar implements PVShort
 {
     protected short value;
     

@@ -19,7 +19,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVInt extends AbstractPVScalar implements PVInt,PVUInt
+public class BasePVInt extends AbstractPVScalar implements PVInt
 {
     protected int value;
 

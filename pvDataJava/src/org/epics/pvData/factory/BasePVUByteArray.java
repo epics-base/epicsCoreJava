@@ -24,7 +24,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArray
+public class BasePVUByteArray extends AbstractPVScalarArray implements PVUByteArray
 {
     protected byte[] value;
     private ByteArrayData byteArrayData = new ByteArrayData();
@@ -34,7 +34,7 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
      * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVByteArray(PVStructure parent,ScalarArray array)
+    public BasePVUByteArray(PVStructure parent,ScalarArray array)
     {
         super(parent,array);
         value = new byte[capacity];

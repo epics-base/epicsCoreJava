@@ -206,7 +206,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         int newIndex = 0;
         for(int i=0; i<origLength; i++) {
             if(pvFields[i]==pvField) continue;
-            newFieldNames[newIndex++] = this.getStructure().getFieldName(i);
+            newFieldNames[newIndex] = this.getStructure().getFieldName(i);
             newPVFields[newIndex++] = pvFields[i];
         }
         pvFields = newPVFields;

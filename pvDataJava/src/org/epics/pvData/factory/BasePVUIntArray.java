@@ -9,35 +9,35 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvData.misc.SerializeHelper;
-import org.epics.pvData.pv.ByteArrayData;
 import org.epics.pvData.pv.DeserializableControl;
+import org.epics.pvData.pv.IntArrayData;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVByteArray;
+import org.epics.pvData.pv.PVIntArray;
 import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.PVUByteArray;
+import org.epics.pvData.pv.PVUIntArray;
 import org.epics.pvData.pv.ScalarArray;
 import org.epics.pvData.pv.SerializableControl;
 
 
 /**
- * Base class for implementing PVByteArray.
+ * Base class for implementing PVIntArray.
  * @author mrk
  *
  */
-public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArray
+public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArray
 {
-    protected byte[] value;
-    private ByteArrayData byteArrayData = new ByteArrayData();
+    protected int[] value;
+    private IntArrayData intArrayData = new IntArrayData();
     
     /**
      * Constructor.
      * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVByteArray(PVStructure parent,ScalarArray array)
+    public BasePVUIntArray(PVStructure parent,ScalarArray array)
     {
         super(parent,array);
-        value = new byte[capacity];
+        value = new int[capacity];
     }
     /* (non-Javadoc)
      * @see org.epics.pvData.factory.AbstractPVArray#setCapacity(int)
@@ -50,27 +50,27 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
             return;
         }
         if(length>len) length = len;
-        byte[]newarray = new byte[len];
+        int[]newarray = new int[len];
         if(length>0) System.arraycopy(value,0,newarray,0,length);
         value = newarray;
         capacity = len;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVByteArray#get(int, int, org.epics.pvData.pv.ByteArrayData)
+     * @see org.epics.pvData.pv.PVIntArray#get(int, int, org.epics.pvData.pv.IntArrayData)
      */
     @Override
-    public int get(int offset, int len, ByteArrayData data) {
+    public int get(int offset, int len, IntArrayData data) {
         int n = len;
-        if(offset+len > length) n = Math.max(0, length-offset);;
+        if(offset+len > length) n = Math.max(0, length-offset);
         data.data = value;
         data.offset = offset;
         return n;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVByteArray#put(int, int, byte[], int)
+     * @see org.epics.pvData.pv.PVIntArray#put(int, int, int[], int)
      */
     @Override
-    public int put(int offset, int len, byte[]from, int fromOffset) {
+    public int put(int offset, int len, int[]from, int fromOffset) {
         if(super.isImmutable()) {
             super.message("field is immutable", MessageType.error);
             return 0;
@@ -88,13 +88,13 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
         }
         System.arraycopy(from,fromOffset,value,offset,len);
         super.postPut();
-        return len;        
+        return len;      
     }
 	/* (non-Javadoc)
-     * @see org.epics.pvData.pv.PVByteArray#shareData(byte[])
+     * @see org.epics.pvData.pv.PVIntArray#shareData(int[])
      */
     @Override
-    public void shareData(byte[] from) {
+    public void shareData(int[] from) {
         this.value = from;
         super.capacity = from.length;
         super.length = from.length;
@@ -106,7 +106,7 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
     	// cache
     	final int length = this.length;
-    	final byte[] value = this.value;
+    	final int[] value = this.value;
 
     	// check bounds
 		if (offset < 0) offset = 0;
@@ -123,9 +123,9 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 		int i = offset;
 		while (true)
 		{
-        	final int maxIndex = Math.min(end-i, buffer.remaining())+i;
+        	final int maxIndex = Math.min(end-i, buffer.remaining()/(Integer.SIZE/Byte.SIZE))+i;
 			for (; i < maxIndex; i++)
-				buffer.put(value[i]);
+				buffer.putInt(value[i]);
 			if (i < end)
 				flusher.flushSerializeBuffer();
 			else
@@ -146,11 +146,11 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 			int i = 0;
 			while (true)
 			{
-				final int toRead = Math.min(size-i, buffer.remaining());
-				buffer.get(value, i, toRead);
-				i += toRead;
+				final int maxIndex = Math.min(size-i, buffer.remaining()/(Integer.SIZE/Byte.SIZE))+i;
+				for (; i < maxIndex; i++)
+					value[i] = buffer.getInt();
 				if (i < size)
-					control.ensureData(1);
+					control.ensureData(Integer.SIZE/Byte.SIZE);
 				else
 					break;
 			}
@@ -165,11 +165,11 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 	@Override
 	public boolean equals(Object obj) {
 		// TODO anything else?
-		if (obj instanceof PVByteArray) {
-			PVByteArray b = (PVByteArray)obj;
-			b.get(0, b.getLength(), byteArrayData);
-			if(byteArrayData.data==value) return true;
-			return Arrays.equals(byteArrayData.data, value);
+		if (obj instanceof PVIntArray) {
+			PVIntArray b = (PVIntArray)obj;
+			b.get(0, b.getLength(), intArrayData);
+			if(intArrayData.data==value) return true;
+			return Arrays.equals(intArrayData.data, value);
 		}
 		else
 			return false;

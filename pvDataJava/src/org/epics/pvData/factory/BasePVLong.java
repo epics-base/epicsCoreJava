@@ -19,7 +19,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVLong extends AbstractPVScalar implements PVLong,PVULong
+public class BasePVLong extends AbstractPVScalar implements PVLong
 {
     protected long value;
     

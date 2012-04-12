@@ -24,7 +24,7 @@ import org.epics.pvData.pv.SerializableControl;
  * @author mrk
  *
  */
-public class BasePVLongArray extends AbstractPVScalarArray implements PVLongArray,PVULongArray
+public class BasePVLongArray extends AbstractPVScalarArray implements PVLongArray
 {
     protected long[] value;   
     private LongArrayData longArrayData = new LongArrayData();
