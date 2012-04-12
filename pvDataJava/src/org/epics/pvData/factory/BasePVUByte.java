@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVByte;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVUByte;
 import org.epics.pvData.pv.Scalar;
@@ -68,8 +67,8 @@ public class BasePVUByte extends AbstractPVScalar implements PVUByte
     @Override
     public boolean equals(Object obj) {
         // TODO anything else?
-        if (obj instanceof PVByte) {
-            PVByte b = (PVByte)obj;
+        if (obj instanceof PVUByte) {
+            PVUByte b = (PVUByte)obj;
             return b.get() == value;
         }
         else

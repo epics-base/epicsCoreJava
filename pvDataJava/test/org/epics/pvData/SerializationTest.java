@@ -39,6 +39,7 @@ import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVStructureArray;
 import org.epics.pvData.pv.PVUByte;
 import org.epics.pvData.pv.PVUInt;
+import org.epics.pvData.pv.PVULong;
 import org.epics.pvData.pv.PVUShort;
 import org.epics.pvData.pv.Scalar;
 import org.epics.pvData.pv.ScalarArray;
@@ -276,7 +277,7 @@ public class SerializationTest extends TestCase {
 		pvUInt.put(Integer.MIN_VALUE);
 		serializatioTest(pvUInt);
 
-		PVLong pvULong = (PVLong)factory.createPVScalar(null, ScalarType.pvULong);
+		PVULong pvULong = (PVULong)factory.createPVScalar(null, ScalarType.pvULong);
 		pvULong.put(0);
 		serializatioTest(pvULong);
 		pvULong.put(12345678901L);

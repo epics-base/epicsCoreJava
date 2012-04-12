@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVShortArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVUShortArray;
 import org.epics.pvData.pv.ScalarArray;
@@ -164,8 +163,8 @@ public class BasePVUShortArray extends AbstractPVScalarArray implements PVUShort
 	@Override
 	public boolean equals(Object obj) {
 		// TODO anything else?
-		if (obj instanceof PVShortArray) {
-			PVShortArray b = (PVShortArray)obj;
+		if (obj instanceof PVUShortArray) {
+			PVUShortArray b = (PVUShortArray)obj;
 			ShortArrayData shortArrayData = new ShortArrayData();
 			b.get(0, b.getLength(), shortArrayData);
 			if(shortArrayData.data==value) return true;

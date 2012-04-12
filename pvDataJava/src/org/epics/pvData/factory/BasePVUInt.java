@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVInt;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVUInt;
 import org.epics.pvData.pv.Scalar;
@@ -68,8 +67,8 @@ public class BasePVUInt extends AbstractPVScalar implements PVUInt
     @Override
     public boolean equals(Object obj) {
         // TODO anything else?
-        if (obj instanceof PVInt) {
-            PVInt b = (PVInt)obj;
+        if (obj instanceof PVUInt) {
+            PVUInt b = (PVUInt)obj;
             return b.get() == value;
         }
         else

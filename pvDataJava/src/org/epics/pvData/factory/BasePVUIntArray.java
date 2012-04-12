@@ -12,7 +12,6 @@ import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.IntArrayData;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVIntArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVUIntArray;
 import org.epics.pvData.pv.ScalarArray;
@@ -165,8 +164,8 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
 	@Override
 	public boolean equals(Object obj) {
 		// TODO anything else?
-		if (obj instanceof PVIntArray) {
-			PVIntArray b = (PVIntArray)obj;
+		if (obj instanceof PVUIntArray) {
+			PVUIntArray b = (PVUIntArray)obj;
 			b.get(0, b.getLength(), intArrayData);
 			if(intArrayData.data==value) return true;
 			return Arrays.equals(intArrayData.data, value);

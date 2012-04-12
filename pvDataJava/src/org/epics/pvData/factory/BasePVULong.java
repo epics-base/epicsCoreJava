@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVLong;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVULong;
 import org.epics.pvData.pv.Scalar;
@@ -68,8 +67,8 @@ public class BasePVULong extends AbstractPVScalar implements PVULong
     @Override
     public boolean equals(Object obj) {
         // TODO anything else?
-        if (obj instanceof PVLong) {
-            PVLong b = (PVLong)obj;
+        if (obj instanceof PVULong) {
+            PVULong b = (PVULong)obj;
             return b.get() == value;
         }
         else

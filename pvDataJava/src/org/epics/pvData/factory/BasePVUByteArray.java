@@ -12,7 +12,6 @@ import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.ByteArrayData;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVByteArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVUByteArray;
 import org.epics.pvData.pv.ScalarArray;
@@ -165,8 +164,8 @@ public class BasePVUByteArray extends AbstractPVScalarArray implements PVUByteAr
 	@Override
 	public boolean equals(Object obj) {
 		// TODO anything else?
-		if (obj instanceof PVByteArray) {
-			PVByteArray b = (PVByteArray)obj;
+		if (obj instanceof PVUByteArray) {
+			PVUByteArray b = (PVUByteArray)obj;
 			b.get(0, b.getLength(), byteArrayData);
 			if(byteArrayData.data==value) return true;
 			return Arrays.equals(byteArrayData.data, value);

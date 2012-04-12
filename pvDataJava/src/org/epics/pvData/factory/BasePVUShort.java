@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVShort;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVUShort;
 import org.epics.pvData.pv.Scalar;
@@ -68,8 +67,8 @@ public class BasePVUShort extends AbstractPVScalar implements PVUShort
     @Override
     public boolean equals(Object obj) {
         // TODO anything else?
-        if (obj instanceof PVShort) {
-            PVShort b = (PVShort)obj;
+        if (obj instanceof PVUShort) {
+            PVUShort b = (PVUShort)obj;
             return b.get() == value;
         }
         else

@@ -12,7 +12,6 @@ import org.epics.pvData.misc.SerializeHelper;
 import org.epics.pvData.pv.DeserializableControl;
 import org.epics.pvData.pv.LongArrayData;
 import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVLongArray;
 import org.epics.pvData.pv.PVStructure;
 import org.epics.pvData.pv.PVULongArray;
 import org.epics.pvData.pv.ScalarArray;
@@ -165,8 +164,8 @@ public class BasePVULongArray extends AbstractPVScalarArray implements PVULongAr
 	@Override
 	public boolean equals(Object obj) {
 		// TODO anything else?
-		if (obj instanceof PVLongArray) {
-			PVLongArray b = (PVLongArray)obj;
+		if (obj instanceof PVULongArray) {
+			PVULongArray b = (PVULongArray)obj;
 			b.get(0, b.getLength(), longArrayData);
 			if(longArrayData.data==value) return true;
 			return Arrays.equals(longArrayData.data, value);
