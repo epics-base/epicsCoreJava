@@ -259,6 +259,34 @@ public interface Convert {
      */
     void  fromLong(PVScalar pv, long from);
     /**
+     * Convert a PV from a byte interpreted as unsigned
+     * @param pv a PV
+     * @param from value to put into PV
+     * @throws IllegalArgumentException if the Type is not a numeric scalar
+     */
+    void fromUByte(PVScalar pv, byte from);
+    /**
+     * Convert a PV from a short interpreted as unsigned
+     * @param pv a PV
+     * @param from value to put into PV
+     * @throws IllegalArgumentException if the Type is not a numeric scalar
+     */
+    void  fromUShort(PVScalar pv, short from);
+    /**
+     * Convert a PV from an int interpreted as unsigned
+     * @param pv a PV
+     * @param from value to put into PV
+     * @throws IllegalArgumentException if the Type is not a numeric scalar
+     */
+    void  fromUInt(PVScalar pv, int from);
+    /**
+     * Convert a PV from a long interpreted as unsigned
+     * @param pv a PV
+     * @param from value to put into PV
+     * @throws IllegalArgumentException if the Type is not a numeric scalar
+     */
+    void  fromULong(PVScalar pv, long from);
+    /**
      * Convert a PV from a float
      * @param pv a PV
      * @param from value to put into PV
@@ -372,7 +400,7 @@ public interface Convert {
      */
     int fromIntArray(PVScalarArray pv, int offset, int length, int[]from, int fromOffset);
     /**
-     * Convert a PV array from a long array.
+     * Convert a PV array from a long array interpreted as unsigned.
      * @param pv a PV
      * @param offset starting element in a PV
      * @param length number of elements to transfer
@@ -382,6 +410,50 @@ public interface Convert {
      * @throws IllegalArgumentException if the element type is not numeric
      */
     int fromLongArray(PVScalarArray pv, int offset, int length, long[]from, int fromOffset);
+    /**
+     * Convert a PV array from a long array.
+     * @param pv a PV
+     * @param offset starting element in a PV
+     * @param length number of elements to transfer
+     * @param from value to put into PV
+     * @param fromOffset starting element in the source array
+     * @return number of elements converted
+     * @throws IllegalArgumentException if the element type is not numeric
+     */
+    int fromULongArray(PVScalarArray pv, int offset, int length, long[]from, int fromOffset);
+    /**
+     * Convert a PV array from a byte array interpreted as unsigned.
+     * @param pv a PV
+     * @param offset starting element in a PV
+     * @param length number of elements to transfer
+     * @param from value to put into PV
+     * @param fromOffset
+     * @return number of elements converted
+     * @throws IllegalArgumentException if the element type is not numeric
+     */
+    int fromUByteArray(PVScalarArray pv, int offset, int length, byte[]from, int fromOffset);
+    /**
+     * Convert a PV array from a short array interpreted as unsigned.
+     * @param pv a PV
+     * @param offset starting element in a PV
+     * @param length number of elements to transfer
+     * @param from value to put into PV
+     * @param fromOffset starting element in the source array
+     * @return number of elements converted
+     * @throws IllegalArgumentException if the element type is not numeric
+     */
+    int fromUShortArray(PVScalarArray pv, int offset, int length, short[]from, int fromOffset);
+    /**
+     * Convert a PV array from an int array interpreted as unsigned.
+     * @param pv a PV
+     * @param offset starting element in a PV
+     * @param length number of elements to transfer
+     * @param from value to put into PV
+     * @param fromOffset starting element in the source array
+     * @return number of elements converted
+     * @throws IllegalArgumentException if the element type is not numeric
+     */
+    int fromUIntArray(PVScalarArray pv, int offset, int length, int[]from, int fromOffset);
     /**
      * Convert a PV array from a float array.
      * @param pv a PV
