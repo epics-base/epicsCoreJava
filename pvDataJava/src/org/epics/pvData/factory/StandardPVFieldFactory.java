@@ -38,9 +38,6 @@ public final class  StandardPVFieldFactory {
             if(properties.contains("timeStamp"))  {gotTimeStamp = true; nextra++;}
             if(properties.contains("display")) {gotDisplay = true; nextra++;}
             if(properties.contains("control")) {gotControl = true; nextra++;}
-            if(nextra==0) {
-                throw new IllegalStateException("PVStructure.getSubField: Logic error");
-            }
             String[] fieldNames = new String[nextra + 1];
             Field[] fields = new Field[nextra + 1];
             fieldNames[0] = fieldName;
