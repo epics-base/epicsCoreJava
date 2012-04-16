@@ -32,6 +32,16 @@
             <artifactId>japex-maven-plugin</artifactId>
             <version>1.2.4</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jca</artifactId>
+            <version>2.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>caj</artifactId>
+            <version>1.1.9</version>
+        </dependency>
     </dependencies>
     
     <distributionManagement>
