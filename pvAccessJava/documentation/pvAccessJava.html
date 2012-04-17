@@ -85,9 +85,9 @@ CONTENTS
   <li><a href="#L56">Introduction</a></li>
   <li><a href="#L93">User Interface Packages</a> 
     <ul>
-      <li><a href="#L99">org.epics.ca</a></li>
-      <li><a href="#L116">org.epics.ca.client</a></li>
-      <li><a href="#L171">org.epics.ca.server.plugins</a></li>
+      <li><a href="#L99">org.epics.pvaccess</a></li>
+      <li><a href="#L116">org.epics.pvaccess.client</a></li>
+      <li><a href="#L171">org.epics.pvaccess.server.plugins</a></li>
     </ul>
   </li>
   <li><a href="#L177">Problems and Future Plans</a> 
@@ -100,38 +100,38 @@ CONTENTS
   <li><a href="#L211">Network Protocol</a></li>
   <li><a href="#L219">Helper Packages</a> 
     <ul>
-      <li><a href="#L225">org.epics.ca</a></li>
-      <li><a href="#L255">org.epics.ca.util</a></li>
-      <li><a href="#L320">org.epics.ca.util.logging</a></li>
-      <li><a href="#L324">org.epics.ca.util.sync</a></li>
+      <li><a href="#L225">org.epics.pvaccess</a></li>
+      <li><a href="#L255">org.epics.pvaccess.util</a></li>
+      <li><a href="#L320">org.epics.pvaccess.util.logging</a></li>
+      <li><a href="#L324">org.epics.pvaccess.util.sync</a></li>
     </ul>
   </li>
   <li><a href="#L330">Implementation Packages</a> 
     <ul>
-      <li><a href="#L336">org.epics.ca.impl.remote</a></li>
-      <li><a href="#L340">org.epics.ca.impl.remote.tcp</a></li>
-      <li><a href="#L344">org.epics.ca.impl.remote.udp</a></li>
-      <li><a href="#L348">org.epics.ca.impl.remote.utils</a></li>
+      <li><a href="#L336">org.epics.pvaccess.impl.remote</a></li>
+      <li><a href="#L340">org.epics.pvaccess.impl.remote.tcp</a></li>
+      <li><a href="#L344">org.epics.pvaccess.impl.remote.udp</a></li>
+      <li><a href="#L348">org.epics.pvaccess.impl.remote.utils</a></li>
     </ul>
   </li>
   <li><a href="#L354">Client Implementation Packages</a> 
     <ul>
-      <li><a href="#L360">org.epics.ca.client.impl.remote</a></li>
-      <li><a href="#L364">org.epics.ca.client.impl.remote.handlers</a></li>
-      <li><a href="#L368">org.epics.ca.client.impl.remote.requests</a></li>
-      <li><a href="#L372">org.epics.ca.client.impl.remote.tcp</a></li>
+      <li><a href="#L360">org.epics.pvaccess.client.impl.remote</a></li>
+      <li><a href="#L364">org.epics.pvaccess.client.impl.remote.handlers</a></li>
+      <li><a href="#L368">org.epics.pvaccess.client.impl.remote.requests</a></li>
+      <li><a href="#L372">org.epics.pvaccess.client.impl.remote.tcp</a></li>
     </ul>
   </li>
   <li><a href="#L378">Server Implementation Packages</a> 
     <ul>
-      <li><a href="#L384">org.epics.ca.server.impl.remote</a></li>
-      <li><a href="#L388">org.epics.ca.server.impl.remote.handlers</a></li>
-      <li><a href="#L392">org.epics.ca.server.impl.remote.plugins</a></li>
-      <li><a href="#L396">org.epics.ca.server.impl.remote.requests</a></li>
-      <li><a href="#L400">org.epics.ca.server.impl.remote.tcp</a></li>
+      <li><a href="#L384">org.epics.pvaccess.server.impl.remote</a></li>
+      <li><a href="#L388">org.epics.pvaccess.server.impl.remote.handlers</a></li>
+      <li><a href="#L392">org.epics.pvaccess.server.impl.remote.plugins</a></li>
+      <li><a href="#L396">org.epics.pvaccess.server.impl.remote.requests</a></li>
+      <li><a href="#L400">org.epics.pvaccess.server.impl.remote.tcp</a></li>
     </ul>
   </li>
-  <li><a href="#L406">Package org.epics.ca</a> 
+  <li><a href="#L406">Package org.epics.pvaccess</a> 
     <ul>
       <li><a href="#L410">Overview</a></li>
       <li><a href="#L435">Factories</a></li>
@@ -140,7 +140,7 @@ CONTENTS
       <li><a href="#L474">Version</a></li>
     </ul>
   </li>
-  <li><a href="#L480">Package org.epics.ca.client</a> 
+  <li><a href="#L480">Package org.epics.pvaccess.client</a> 
     <ul>
       <li><a href="#L484">Overview</a></li>
       <li><a href="#L510">Example</a> 
@@ -190,7 +190,7 @@ CONTENTS
       <li><a href="#L1282">Monitor</a></li>
     </ul>
   </li>
-  <li><a href="#L1388">Package org.epics.ca.server</a> 
+  <li><a href="#L1388">Package org.epics.pvaccess.server</a> 
     <ul>
       <li><a href="#L1392">Overview</a></li>
       <li><a href="#L1412">Channel Processor</a></li>
@@ -222,18 +222,18 @@ description of the packages provided by this project.</p>
 Access that fully supports pvData. Package <span
 style="font-family: Courier New,Courier,monospace;color:#add8e6"><span
 style="color:#1e90ff"><span
-style="color:#0000ff">org.epics.ca.client</span></span></span> is of interest
+style="color:#0000ff">org.epics.pvaccess.client</span></span></span> is of interest
 to anyone who wants to write client code for pvAccess and is also of interest
 to anyone who wants to write a server that interfaces to other system. The
 other packages are mainly of interest to those who want to understand the
 internals of the implementation.</p>
 
 <p>If your interest is only to write client code go directly to <span
-style="color:#0000ff">org.epics.ca.client</span></p>
+style="color:#0000ff">org.epics.pvaccess.client</span></p>
 
 <p>This project provides the client and server networking spport for the
 interfaces defined in <span
-style="color:#0000ff;font-family: Courier New,Courier,monospace">org.epics.ca.client</span>.
+style="color:#0000ff;font-family: Courier New,Courier,monospace">org.epics.pvaccess.client</span>.
 The javaIOC provides a local implementation of Channel, which registers itself
 with the server support provides by this project. Other implementations of
 Channel can also be provided.</p>
@@ -242,14 +242,14 @@ Channel can also be provided.</p>
 <ol>
   <li>An application can be created that provide a pvAccess server that
     provides full support for pvData. This is done by starting a local
-    PVDatabase, calling org.epics.ca.LocalFactory.start(), and calling
-    org.epics.ca.ServerFactory.start().</li>
+    PVDatabase, calling org.epics.pvaccess.LocalFactory.start(), and calling
+    org.epics.pvaccess.ServerFactory.start().</li>
   <li>An extensible set of monitoring algorithms is supported. Monitoring is
     defined by project pvData. pvAccess provides access to this facility. A
     default set of monitoring algorithms is provided by pvData but other
     algorithms can be implemented. The code that implements an algorithm must
-    extend org.epics.pvData..monitor.AbstractMonitor and register with
-    org.epics.ca.server.ChannelServer.</li>
+    extend org.epics.pvdata..monitor.AbstractMonitor and register with
+    org.epics.pvaccess.server.ChannelServer.</li>
   <li>A query facility is supported. A client can ask that a network query
     request can be made. For example "get the channel list of all Beam Position
     Monitors". A query faciity is registered via a call to (TO BE
@@ -272,9 +272,9 @@ Channel can also be provided.</p>
 by an application that supports a pvAccess server. It only describes how things
 are connected, i.e. it does not describe interface Channel or any of its
 related interfaces because they are described in the package overview for
-org.epics.ca.client.</p>
+org.epics.pvaccess.client.</p>
 
-<h3 id="L99">org.epics.ca</h3>
+<h3 id="L99">org.epics.pvaccess</h3>
 
 <p>This package provides the factories that start the various components of
 pvAccess:</p>
@@ -288,7 +288,7 @@ pvAccess:</p>
       local PVDatabase. For example the javaIOC can start this.</dd>
 </dl>
 
-<h3 id="L116">org.epics.ca.client</h3>
+<h3 id="L116">org.epics.pvaccess.client</h3>
 
 <p>This package provides everything required for a pvAccess client. See the
 package overview for details. This section only describes how to connect to a
@@ -356,7 +356,7 @@ channelRequester,short priority);
 <p>This is the method a client calls to connect to a Channel. See the package
 overview for details.</p>
 
-<h3 id="L171">org.epics.ca.server.plugins</h3>
+<h3 id="L171">org.epics.pvaccess.server.plugins</h3>
 
 <p>Matej? What to say?</p>
 <hr />
@@ -404,7 +404,7 @@ each send request, to specify the following options:</p>
 
 <p>This is set of packages that are used by other parts of this project</p>
 
-<h3 id="L225">org.epics.ca</h3>
+<h3 id="L225">org.epics.pvaccess</h3>
 
 <p>This has the following:</p>
 <dl>
@@ -420,7 +420,7 @@ each send request, to specify the following options:</p>
     <dd>Defines the version.</dd>
 </dl>
 
-<h3 id="L255">org.epics.ca.util</h3>
+<h3 id="L255">org.epics.pvaccess.util</h3>
 
 <p>This has the following:</p>
 <dl>
@@ -460,11 +460,11 @@ each send request, to specify the following options:</p>
       efficency.</dd>
 </dl>
 
-<h3 id="L320">org.epics.ca.util.logging</h3>
+<h3 id="L320">org.epics.pvaccess.util.logging</h3>
 
 <p>A logging facility based on java.util.logging. MATEJ can you describe?</p>
 
-<h3 id="L324">org.epics.ca.util.sync</h3>
+<h3 id="L324">org.epics.pvaccess.util.sync</h3>
 
 <p>MATEJ can you describe?</p>
 <hr />
@@ -475,22 +475,22 @@ each send request, to specify the following options:</p>
 <p>These packages provide implementation classes and interfaces shared by both
 the client and server code for pvAccess</p>
 
-<h3 id="L336">org.epics.ca.impl.remote</h3>
+<h3 id="L336">org.epics.pvaccess.impl.remote</h3>
 
 <p>This package contains enums, interface, and abstract class definitions
 common to both the client and server implementation. </p>
 
-<h3 id="L340">org.epics.ca.impl.remote.tcp</h3>
+<h3 id="L340">org.epics.pvaccess.impl.remote.tcp</h3>
 
 <p>This contains the code that sends and receives tcp messages. It creates a
 send and a receive thread for each tcp connectrion.</p>
 
-<h3 id="L344">org.epics.ca.impl.remote.udp</h3>
+<h3 id="L344">org.epics.pvaccess.impl.remote.udp</h3>
 
 <p>This contains the code that sends and receives udp messages. It creates a
 send and a receive thread for each udp connectrion.</p>
 
-<h3 id="L348">org.epics.ca.impl.remote.utils</h3>
+<h3 id="L348">org.epics.pvaccess.impl.remote.utils</h3>
 
 <p>Some network utility support.</p>
 <hr />
@@ -501,23 +501,23 @@ send and a receive thread for each udp connectrion.</p>
 <p>These packages provide the implementation classes and interfaces for the
 client code for pvAccess.</p>
 
-<h3 id="L360">org.epics.ca.client.impl.remote</h3>
+<h3 id="L360">org.epics.pvaccess.client.impl.remote</h3>
 
 <p>This implements the client side of passing the various ChannelXXX requests
 over the network, where XXX is Get, Put, PutGet, etc. This code uses the code
 in the following two packages to send requests and receive responses.</p>
 
-<h3 id="L364">org.epics.ca.client.impl.remote.handlers</h3>
+<h3 id="L364">org.epics.pvaccess.client.impl.remote.handlers</h3>
 
 <p>This implements handlers for receiving responses from network requests.</p>
 
-<h3 id="L368">org.epics.ca.client.impl.remote.requests</h3>
+<h3 id="L368">org.epics.pvaccess.client.impl.remote.requests</h3>
 
 <p>This implements code that sends a network request.</p>
 
-<h3 id="L372">org.epics.ca.client.impl.remote.tcp</h3>
+<h3 id="L372">org.epics.pvaccess.client.impl.remote.tcp</h3>
 
-<p>This interfaces the client code to package org.epics.ca.impl.remote.tcp.</p>
+<p>This interfaces the client code to package org.epics.pvaccess.impl.remote.tcp.</p>
 <hr />
 
 <h2 style="text-align: center" id="L378">Server Implementation Packages</h2>
@@ -526,31 +526,31 @@ in the following two packages to send requests and receive responses.</p>
 <p>These packages provide the implementation classes and interfaces for the
 server code for pvAccess.</p>
 
-<h3 id="L384">org.epics.ca.server.impl.remote</h3>
+<h3 id="L384">org.epics.pvaccess.server.impl.remote</h3>
 
 <p>This implements the server side of passing the various ChannelXXX requests
 over the network, where XXX is Get, Put, PutGet, etc. This code uses the code
 in the following two packages to send requests and receive responses. It also
 has the code which issues beacons.</p>
 
-<h3 id="L388">org.epics.ca.server.impl.remote.handlers</h3>
+<h3 id="L388">org.epics.pvaccess.server.impl.remote.handlers</h3>
 
 <p>This implements handlers for receiving requests from the client.</p>
 
-<h3 id="L392">org.epics.ca.server.impl.remote.plugins</h3>
+<h3 id="L392">org.epics.pvaccess.server.impl.remote.plugins</h3>
 
 <p>Currently has just code related to beacons.</p>
 
-<h3 id="L396">org.epics.ca.server.impl.remote.requests</h3>
+<h3 id="L396">org.epics.pvaccess.server.impl.remote.requests</h3>
 
 <p>This implements code that sends responses to the client.</p>
 
-<h3 id="L400">org.epics.ca.server.impl.remote.tcp</h3>
+<h3 id="L400">org.epics.pvaccess.server.impl.remote.tcp</h3>
 
-<p>This interfaces the server code to package org.epics.ca.impl.remote.tcp.</p>
+<p>This interfaces the server code to package org.epics.pvaccess.impl.remote.tcp.</p>
 <hr />
 
-<h2 style="text-align: center" id="L406">Package org.epics.ca</h2>
+<h2 style="text-align: center" id="L406">Package org.epics.pvaccess</h2>
 <hr />
 
 <h3 style="text-align: center" id="L410">Overview</h3>
@@ -574,7 +574,7 @@ has the code which issues beacons.</p>
 <pre>    public static synchronized void start();</pre>
 
 <p>For example the pvAccess client can be started by calling:</p>
-<pre>    org.epics.ca.ClientFactory.start();</pre>
+<pre>    org.epics.pvaccess.ClientFactory.start();</pre>
 
 <p>The following factories are available:</p>
 <dl>
@@ -607,7 +607,7 @@ that channel access specific exceptions can be thrown.</p>
 code for details.</p>
 <hr />
 
-<h2 style="text-align: center" id="L480">Package org.epics.ca.client</h2>
+<h2 style="text-align: center" id="L480">Package org.epics.pvaccess.client</h2>
 <hr />
 
 <h3 style="text-align: center" id="L484">Overview</h3>
@@ -615,7 +615,7 @@ code for details.</p>
 <p>This package defines the client interfaces for pvAccess, which is a version
 of channel access that fully supports structured data as defined by PVData. It
 is assumed that the reader understands PVData, which is implemented by the
-eclipse project "org.epics.pvData". </p>
+eclipse project "org.epics.pvdata". </p>
 
 <p>A Channel provides a communication path beween a client and a PVRecord. A
 channel access server, which must reside in the same process as the PVRecord,
@@ -655,7 +655,7 @@ When a failure occurs, other arguments may be null.</p>
 
 <p>This section shows an example of issuing a channel get request. the example
 is a java main program that can be executed as follows:</p>
-<pre>java org.epics.ca.client.example.ExampleChannelGet  channelName request</pre>
+<pre>java org.epics.pvaccess.client.example.ExampleChannelGet  channelName request</pre>
 
 <p>For example if the arguments are:</p>
 <pre>    scalarCounter value</pre>
@@ -702,7 +702,7 @@ is a java main program that can be executed as follows:</p>
 <h5 id="L538">main</h5>
 <pre>public class ExampleChannelGet {
     public static void main(String[] args) throws CAException {
-        org.epics.ca.ClientFactory.start();
+        org.epics.pvaccess.ClientFactory.start();
         int len = args.length;
         if(len&lt;1 || len&gt;2 || (len==1 &amp;&amp; args[0].equals("?"))) {
             System.out.println("Usage: channelName request");
@@ -845,9 +845,9 @@ request.</p>
 support is started by calling the start method of a factory that starts the
 support. For example the client side of network based channel access is started
 by calling:</p>
-<pre>    org.epics.ca.ClientFactory.start();</pre>
+<pre>    org.epics.pvaccess.ClientFactory.start();</pre>
 
-<p>Package org.epics.ca provides the following factories:</p>
+<p>Package org.epics.pvaccess provides the following factories:</p>
 <dl>
   <dt><span style="font-family: Courier">ClientFactory</span></dt>
     <dd>This starts the client side of the network support for pvAccess. This
@@ -892,7 +892,7 @@ details. </p>
 
 <h4 id="L645">ChannelAccessFactory</h4>
 
-<p>Class org.epics.ca.client.ChannelAccessFactory has the following public
+<p>Class org.epics.pvaccess.client.ChannelAccessFactory has the following public
 methods:</p>
 <pre>public class ChannelAccessFactory {
     public static ChannelAccess getChannelAccess();
@@ -1127,7 +1127,7 @@ convenience part is repeated here.</p>
 <h4 id="L881">PVStructure pvRequest</h4>
 
 <p>This is a PVStructure that describes the fields and options in PVRecord that
-are to be accessed. The format is defined by org.epics.pvData.pvCopy. See the
+are to be accessed. The format is defined by org.epics.pvdata.pvCopy. See the
 package overview for details.</p>
 
 <h4 id="L885">CreateRequestFactory.createRequest</h4>
@@ -1285,7 +1285,7 @@ value and alarm.</p>
       all fields of pvStructure have new data. Note that each PVField
       implements a method getFieldOffset(). this can be used with bitSet to
       determine which fields have new data values. See BitSet and PVField in
-      org.epics.pvData for details.</dd>
+      org.epics.pvdata for details.</dd>
   <dt><span style="font-family: Courier">getDone</span></dt>
     <dd>The get request is done. status provides the result of the get request.
       If successful the pvStructure and bitSet returned by the call to
@@ -1344,7 +1344,7 @@ value and alarm.</p>
       is set then all fields of pvStructure have new data. Note that each
       PVField implements a method getFieldOffset(). this can be used with
       bitSet to determine which fields have new data values. See BitSet and
-      PVField in org.epics.pvData for details.</dd>
+      PVField in org.epics.pvdata for details.</dd>
   <dt><span style="font-family: Courier">putDone</span></dt>
     <dd>The put request is done. status provides the result of the put request.
     </dd>
@@ -1585,7 +1585,7 @@ and onPercentChange.</p>
     <dd>Described next.</dd>
   <dt><span style="font-family: Courier">pvRequest</span></dt>
     <dd>This is defined by pvCopy and pvMonitor. See their package overviews
-      for details (org.epics.pvData.pvCopy and org.epics.pvData.pvMonitor). The
+      for details (org.epics.pvdata.pvCopy and org.epics.pvdata.pvMonitor). The
       format of the request for CreateRequest.createRequest has the form
       "record[options]field(fieldOptions)". Note that you can specify monitor
       options for individual fields. See the package overview for pvMonitor for
@@ -1656,7 +1656,7 @@ and onPercentChange.</p>
 </dl>
 <hr />
 
-<h2 style="text-align: center" id="L1388">Package org.epics.ca.server</h2>
+<h2 style="text-align: center" id="L1388">Package org.epics.pvaccess.server</h2>
 <hr />
 
 <h3 style="text-align: center" id="L1392">Overview</h3>

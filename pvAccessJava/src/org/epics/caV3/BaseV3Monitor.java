@@ -17,15 +17,15 @@ import gov.aps.jca.event.GetListener;
 import gov.aps.jca.event.MonitorEvent;
 import gov.aps.jca.event.MonitorListener;
 
-import org.epics.pvData.factory.StatusFactory;
-import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.monitor.MonitorElement;
-import org.epics.pvData.monitor.MonitorRequester;
-import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.Status.StatusType;
-import org.epics.pvData.pv.StatusCreate;
+import org.epics.pvdata.factory.StatusFactory;
+import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.monitor.MonitorElement;
+import org.epics.pvdata.monitor.MonitorRequester;
+import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Status.StatusType;
+import org.epics.pvdata.pv.StatusCreate;
 
 
 /**
@@ -33,7 +33,7 @@ import org.epics.pvData.pv.StatusCreate;
  * @author mrk
  *
  */
-public class BaseV3Monitor implements org.epics.pvData.monitor.Monitor,MonitorListener,GetListener,ConnectionListener
+public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorListener,GetListener,ConnectionListener
 {
     private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
     private static final Status okStatus = statusCreate.getStatusOK();
@@ -141,7 +141,7 @@ public class BaseV3Monitor implements org.epics.pvData.monitor.Monitor,MonitorLi
         }
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.monitor.Monitor#poll()
+     * @see org.epics.pvdata.monitor.Monitor#poll()
      */
     @Override
     public MonitorElement poll() {
@@ -149,7 +149,7 @@ public class BaseV3Monitor implements org.epics.pvData.monitor.Monitor,MonitorLi
         return monitorElement;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.monitor.Monitor#release(org.epics.pvData.monitor.MonitorElement)
+     * @see org.epics.pvdata.monitor.Monitor#release(org.epics.pvdata.monitor.MonitorElement)
      */
     @Override
     public void release(MonitorElement monitorElement) {
@@ -192,21 +192,21 @@ public class BaseV3Monitor implements org.epics.pvData.monitor.Monitor,MonitorLi
             this.overrunBitSet = overrunBitSet;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.monitor.MonitorElement#getChangedBitSet()
+         * @see org.epics.pvdata.monitor.MonitorElement#getChangedBitSet()
          */
         @Override
         public BitSet getChangedBitSet() {
             return changedBitSet;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.monitor.MonitorElement#getOverrunBitSet()
+         * @see org.epics.pvdata.monitor.MonitorElement#getOverrunBitSet()
          */
         @Override
         public BitSet getOverrunBitSet() {
             return overrunBitSet;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvData.monitor.MonitorElement#getPVStructure()
+         * @see org.epics.pvdata.monitor.MonitorElement#getPVStructure()
          */
         @Override
         public PVStructure getPVStructure() {

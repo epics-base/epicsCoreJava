@@ -48,28 +48,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.epics.pvData.factory.ConvertFactory;
-import org.epics.pvData.factory.StandardPVFieldFactory;
-import org.epics.pvData.misc.BitSet;
-import org.epics.pvData.property.AlarmSeverity;
-import org.epics.pvData.property.AlarmStatus;
-import org.epics.pvData.property.PVEnumerated;
-import org.epics.pvData.property.PVEnumeratedFactory;
-import org.epics.pvData.pv.Convert;
-import org.epics.pvData.pv.Field;
-import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVDouble;
-import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVLong;
-import org.epics.pvData.pv.PVScalar;
-import org.epics.pvData.pv.PVScalarArray;
-import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.Scalar;
-import org.epics.pvData.pv.ScalarType;
-import org.epics.pvData.pv.StandardPVField;
-import org.epics.pvData.pv.Type;
+import org.epics.pvdata.factory.ConvertFactory;
+import org.epics.pvdata.factory.StandardPVFieldFactory;
+import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.property.AlarmSeverity;
+import org.epics.pvdata.property.AlarmStatus;
+import org.epics.pvdata.property.PVEnumerated;
+import org.epics.pvdata.property.PVEnumeratedFactory;
+import org.epics.pvdata.pv.Convert;
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVLong;
+import org.epics.pvdata.pv.PVScalar;
+import org.epics.pvdata.pv.PVScalarArray;
+import org.epics.pvdata.pv.PVString;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.StandardPVField;
+import org.epics.pvdata.pv.Type;
 
 /**
  * @author mrk
@@ -136,7 +136,7 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
         this.v3Channel = v3Channel;
     }
     /* (non-Javadoc)
-     * @see org.epics.ioc.caV3.V3ChannelStructure#createPVStructure(org.epics.ioc.caV3.V3ChannelStructureRequester, org.epics.pvData.pv.PVStructure, boolean)
+     * @see org.epics.ioc.caV3.V3ChannelStructure#createPVStructure(org.epics.ioc.caV3.V3ChannelStructureRequester, org.epics.pvdata.pv.PVStructure, boolean)
      */
     @Override
     public PVStructure createPVStructure(PVStructure pvRequest,boolean propertiesAllowed)

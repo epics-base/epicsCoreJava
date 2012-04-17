@@ -20,33 +20,33 @@ import gov.aps.jca.event.PutListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.epics.ca.client.ChannelPut;
-import org.epics.ca.client.ChannelPutRequester;
-import org.epics.pvData.factory.StatusFactory;
-import org.epics.pvData.pv.ByteArrayData;
-import org.epics.pvData.pv.DoubleArrayData;
-import org.epics.pvData.pv.FloatArrayData;
-import org.epics.pvData.pv.IntArrayData;
-import org.epics.pvData.pv.MessageType;
-import org.epics.pvData.pv.PVByte;
-import org.epics.pvData.pv.PVByteArray;
-import org.epics.pvData.pv.PVDouble;
-import org.epics.pvData.pv.PVDoubleArray;
-import org.epics.pvData.pv.PVField;
-import org.epics.pvData.pv.PVFloat;
-import org.epics.pvData.pv.PVFloatArray;
-import org.epics.pvData.pv.PVInt;
-import org.epics.pvData.pv.PVIntArray;
-import org.epics.pvData.pv.PVShort;
-import org.epics.pvData.pv.PVShortArray;
-import org.epics.pvData.pv.PVString;
-import org.epics.pvData.pv.PVStringArray;
-import org.epics.pvData.pv.PVStructure;
-import org.epics.pvData.pv.ShortArrayData;
-import org.epics.pvData.pv.Status;
-import org.epics.pvData.pv.Status.StatusType;
-import org.epics.pvData.pv.StatusCreate;
-import org.epics.pvData.pv.StringArrayData;
+import org.epics.pvaccess.client.ChannelPut;
+import org.epics.pvaccess.client.ChannelPutRequester;
+import org.epics.pvdata.factory.StatusFactory;
+import org.epics.pvdata.pv.ByteArrayData;
+import org.epics.pvdata.pv.DoubleArrayData;
+import org.epics.pvdata.pv.FloatArrayData;
+import org.epics.pvdata.pv.IntArrayData;
+import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVByte;
+import org.epics.pvdata.pv.PVByteArray;
+import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVDoubleArray;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVFloat;
+import org.epics.pvdata.pv.PVFloatArray;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVIntArray;
+import org.epics.pvdata.pv.PVShort;
+import org.epics.pvdata.pv.PVShortArray;
+import org.epics.pvdata.pv.PVString;
+import org.epics.pvdata.pv.PVStringArray;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ShortArrayData;
+import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Status.StatusType;
+import org.epics.pvdata.pv.StatusCreate;
+import org.epics.pvdata.pv.StringArrayData;
 
 /**
  * Base class that implements ChannelPut for communicating with a V3 IOC.
@@ -135,7 +135,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     }
     
     /* (non-Javadoc)
-     * @see org.epics.ca.client.ChannelPut#get()
+     * @see org.epics.pvaccess.client.ChannelPut#get()
      */
     @Override
     public void get() {
@@ -177,7 +177,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         channelPutRequester.getDone(success);
     }
     /* (non-Javadoc)
-     * @see org.epics.ca.client.ChannelPut#put(boolean)
+     * @see org.epics.pvaccess.client.ChannelPut#put(boolean)
      */
     @Override
     public void put(boolean lastRequest) {
@@ -300,7 +300,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         return channelPutRequester.getRequesterName();
     }
     /* (non-Javadoc)
-     * @see org.epics.pvData.pv.Requester#message(java.lang.String, org.epics.pvData.pv.MessageType)
+     * @see org.epics.pvdata.pv.Requester#message(java.lang.String, org.epics.pvdata.pv.MessageType)
      */
     public void message(String message, MessageType messageType) {
         channelPutRequester.message(message, messageType);

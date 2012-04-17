@@ -5,10 +5,10 @@
  */
 package org.epics.caV3;
 
-import org.epics.ca.client.Channel;
-import org.epics.ca.client.ChannelGet;
-import org.epics.ca.client.ChannelPut;
-import org.epics.pvData.monitor.Monitor;
+import org.epics.pvaccess.client.Channel;
+import org.epics.pvaccess.client.ChannelGet;
+import org.epics.pvaccess.client.ChannelPut;
+import org.epics.pvdata.monitor.Monitor;
 
 
 /**

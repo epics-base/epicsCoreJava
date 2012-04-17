@@ -13,18 +13,18 @@ import gov.aps.jca.event.ContextMessageEvent;
 import gov.aps.jca.event.ContextMessageListener;
 import gov.aps.jca.event.ContextVirtualCircuitExceptionEvent;
 
-import org.epics.ca.client.Channel;
-import org.epics.ca.client.ChannelAccessFactory;
-import org.epics.ca.client.ChannelFind;
-import org.epics.ca.client.ChannelFindRequester;
-import org.epics.ca.client.ChannelProvider;
-import org.epics.ca.client.ChannelRequester;
-import org.epics.pvData.misc.RunnableReady;
-import org.epics.pvData.misc.ThreadCreate;
-import org.epics.pvData.misc.ThreadCreateFactory;
-import org.epics.pvData.misc.ThreadPriority;
-import org.epics.pvData.misc.ThreadReady;
-import org.epics.pvData.pv.Status;
+import org.epics.pvaccess.client.Channel;
+import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelFind;
+import org.epics.pvaccess.client.ChannelFindRequester;
+import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelRequester;
+import org.epics.pvdata.misc.RunnableReady;
+import org.epics.pvdata.misc.ThreadCreate;
+import org.epics.pvdata.misc.ThreadCreateFactory;
+import org.epics.pvdata.misc.ThreadPriority;
+import org.epics.pvdata.misc.ThreadReady;
+import org.epics.pvdata.pv.Status;
 
 
 
@@ -82,7 +82,7 @@ public class ClientFactory  {
             ChannelAccessFactory.unregisterChannelProvider(this);
         }
         /* (non-Javadoc)
-         * @see org.epics.ca.client.ChannelProvider#channelFind(java.lang.String, org.epics.ca.client.ChannelFindRequester)
+         * @see org.epics.pvaccess.client.ChannelProvider#channelFind(java.lang.String, org.epics.pvaccess.client.ChannelFindRequester)
          */
         @Override
         public ChannelFind channelFind(String channelName,ChannelFindRequester channelFindRequester) {
@@ -91,7 +91,7 @@ public class ClientFactory  {
             return locateFind;
         }
         /* (non-Javadoc)
-         * @see org.epics.ca.client.ChannelProvider#createChannel(java.lang.String, org.epics.ca.client.ChannelRequester, short)
+         * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short)
          */
         @Override
         public Channel createChannel(String channelName,
@@ -101,7 +101,7 @@ public class ClientFactory  {
             return locateFind.create(channelRequester);
         }
         /* (non-Javadoc)
-         * @see org.epics.ca.client.ChannelProvider#createChannel(java.lang.String, org.epics.ca.client.ChannelRequester, short, java.lang.String)
+         * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short, java.lang.String)
          */
         @Override
 		public Channel createChannel(String channelName,
@@ -170,14 +170,14 @@ public class ClientFactory  {
             return v3Channel;
         }
         /* (non-Javadoc)
-         * @see org.epics.ca.client.ChannelFind#cancelChannelFind()
+         * @see org.epics.pvaccess.client.ChannelFind#cancelChannelFind()
          */
         @Override
         public void cancelChannelFind() {
             v3Channel.destroy();
         }
         /* (non-Javadoc)
-         * @see org.epics.ca.client.ChannelFind#getChannelProvider()
+         * @see org.epics.pvaccess.client.ChannelFind#getChannelProvider()
          */
         @Override
         public ChannelProvider getChannelProvider() {
@@ -185,7 +185,7 @@ public class ClientFactory  {
         }
 
         /* (non-Javadoc)
-         * @see org.epics.ca.client.ChannelFindRequester#channelFindResult(Stayus,org.epics.ca.client.ChannelFind, boolean)
+         * @see org.epics.pvaccess.client.ChannelFindRequester#channelFindResult(Stayus,org.epics.pvaccess.client.ChannelFind, boolean)
          */
         @Override
         public void channelFindResult(Status status, ChannelFind channelFind, boolean wasFound) {

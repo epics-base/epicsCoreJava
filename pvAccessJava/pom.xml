@@ -124,7 +124,7 @@
 		  <param name="japex.warmupTime" value="3"/>
 		  <param name="japex.runTime" value="10"/>
 		  <driver name="TestAbstractCodec">
-		    <param name="japex.driverClass" value="org.epics.ca.impl.remote.codec.test.perf.MessageProcessPerformance"/>
+		    <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.MessageProcessPerformance"/>
 		    <param name="description" value="Header process performance test"/>
 		  </driver>
 		  
@@ -294,22 +294,22 @@
 		  <param name="japex.runTime" value="10"/>
 
 		  <driver name="PVByte">
-		    <param name="japex.driverClass" value="org.epics.ca.impl.remote.codec.test.perf.PVByteSerializationPerformance"/>
+		    <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.PVByteSerializationPerformance"/>
 		    <param name="description" value="PVByte serialization performance test"/>
 		  </driver>
 		  
 		  <driver name="PVInt">
-		    <param name="japex.driverClass" value="org.epics.ca.impl.remote.codec.test.perf.PVIntSerializationPerformance"/>
+		    <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.PVIntSerializationPerformance"/>
 		    <param name="description" value="PVInt serialization performance test"/>
 		  </driver>
 
 		  <driver name="PVDouble">
-		    <param name="japex.driverClass" value="org.epics.ca.impl.remote.codec.test.perf.PVDoubleSerializationPerformance"/>
+		    <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.PVDoubleSerializationPerformance"/>
 		    <param name="description" value="PVDouble serialization performance test"/>
 		  </driver>
 
 		  <driver name="PVStructure">
-		    <param name="japex.driverClass" value="org.epics.ca.impl.remote.codec.test.perf.ExampleStructureSerializationPerformance"/>
+		    <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.ExampleStructureSerializationPerformance"/>
 		    <param name="description" value="PVStructure serialization performance test"/>
 		  </driver>
 
