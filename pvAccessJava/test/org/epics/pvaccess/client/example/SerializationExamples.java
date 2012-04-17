@@ -25,6 +25,20 @@ public class SerializationExamples {
 
 	static class SerDeSerControl implements SerializableControl, DeserializableControl
 	{
+		final IntrospectionRegistry incomingIR;
+		final IntrospectionRegistry outgoingIR;
+		
+		public SerDeSerControl()
+		{
+			this.incomingIR = new IntrospectionRegistry();
+			this.outgoingIR = new IntrospectionRegistry();
+		}
+
+		public SerDeSerControl(IntrospectionRegistry incomingIR, IntrospectionRegistry outgoingIR)
+		{
+			this.incomingIR = incomingIR;
+			this.outgoingIR = outgoingIR;
+		}
 
 		@Override
 		public void ensureData(int size) {
@@ -48,11 +62,12 @@ public class SerializationExamples {
 
 		@Override
 		public Field cachedDeserialize(ByteBuffer buffer) {
-			return null;
+			return incomingIR.deserialize(buffer, this);
 		}
 
 		@Override
 		public void cachedSerialize(Field field, ByteBuffer buffer) {
+			outgoingIR.serialize(field, buffer, this);
 		}
 
 	}
@@ -150,7 +165,7 @@ public class SerializationExamples {
         Field[] fields = new Field[3];
         fields[0] = fieldCreate.createScalarArray(ScalarType.pvByte);
         fields[1] = standardField.timeStamp();
-        fields[2] = standardField.doubleAlarm();
+        fields[2] = standardField.alarm();
         
         PVStructure pvStructure = pvDataCreate.createPVStructure(null,
         		fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
@@ -170,7 +185,6 @@ public class SerializationExamples {
 		alarmStructure.getIntField("status").put(0x22222222);
 		alarmStructure.getStringField("message").put("Allo, Allo!");
 
-		    
 			
 			IntrospectionRegistry ir = new IntrospectionRegistry();
 			ir.serialize(pvStructure.getStructure(), bb, control);
@@ -200,9 +214,9 @@ public class SerializationExamples {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		bitSetExamples();
+		//bitSetExamples();
 		//statusExamples();
-		//structureExample();
+		structureExample();
 	}
 
 }

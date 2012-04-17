@@ -12,15 +12,15 @@ import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
-import org.epics.pvaccess.impl.remote.codec.test.AbstractCodecTest.TestCodec.ReadPollOneCallback;
-import org.epics.pvaccess.impl.remote.codec.test.AbstractCodecTest.TestCodec.WritePollOneCallback;
 import org.epics.pvaccess.CAConstants;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
-import org.epics.pvaccess.impl.remote.codec.ConnectionClosedException;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec.ReadMode;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec.WriteMode;
+import org.epics.pvaccess.impl.remote.codec.ConnectionClosedException;
+import org.epics.pvaccess.impl.remote.codec.test.AbstractCodecTest.TestCodec.ReadPollOneCallback;
+import org.epics.pvaccess.impl.remote.codec.test.AbstractCodecTest.TestCodec.WritePollOneCallback;
 import org.epics.pvdata.pv.Field;
 
 
