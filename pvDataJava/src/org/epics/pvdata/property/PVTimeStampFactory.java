@@ -1,0 +1,101 @@
+/**
+ * Copyright - See the COPYRIGHT that is included with this distribution.
+ * EPICS pvData is distributed subject to a Software License Agreement found
+ * in file LICENSE that is included with this distribution.
+ */
+package org.epics.pvdata.property;
+import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVLong;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.Type;
+
+/**
+ * @author mrk
+ *
+ */
+public class PVTimeStampFactory implements PVTimeStamp {
+    private PVLong pvSecs = null;
+    private PVInt pvNano = null;
+    private PVInt pvUserTag = null;
+    private static final String noTimeStampFound = "No timeStamp structure was located";
+    private static final String notAttached = "Not attached to an timeStamp structure";
+
+    /**
+     * Create a PVTimeStamp.
+     * @return The newly created PVTimeStamp.
+     */
+    public static PVTimeStamp create() { return new PVTimeStampFactory();} 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.property.PVTimeStamp#attach(org.epics.pvdata.pv.PVField)
+     */
+    @Override
+    public boolean attach(PVField pvField) {
+        if(pvField.getField().getType()!=Type.structure) {
+            pvField.message(noTimeStampFound,MessageType.error);
+            return false;
+        }
+        PVStructure pvStructure = (PVStructure)(pvField);
+        while(true) {
+            PVLong pvLong = pvStructure.getLongField("secondsPastEpoch");
+            if(pvLong!=null) {
+                pvSecs = pvLong;
+                pvNano = pvStructure.getIntField("nanoSeconds");
+                pvUserTag = pvStructure.getIntField("userTag");
+            }
+            if(pvSecs!=null && pvNano!=null && pvUserTag!=null) return true;
+            pvSecs = null;
+            pvNano = null;
+            pvUserTag = null;
+            // look up the tree for a timeSyamp
+            pvStructure = pvStructure.getParent();
+            if(pvStructure==null) break;
+        }
+        return false;
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.property.PVTimeStamp#detach()
+     */
+    @Override
+    public void detach() {
+        pvSecs = null;
+        pvUserTag = null;
+        pvNano = null;
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.property.PVTimeStamp#isAttached()
+     */
+    @Override
+    public boolean isAttached() {
+        if(pvSecs==null || pvNano==null) return false;
+        return true;
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.property.PVTimeStamp#get(org.epics.pvdata.property.TimeStamp)
+     */
+    @Override
+    public void get(TimeStamp timeStamp) {
+        if(pvSecs==null || pvNano==null) {
+            throw new IllegalStateException(notAttached);
+        }
+        timeStamp.put(pvSecs.get(), pvNano.get());
+        timeStamp.setUserTag(pvUserTag.get());
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.property.PVTimeStamp#set(org.epics.pvdata.property.TimeStamp)
+     */
+    @Override
+    public boolean set(TimeStamp timeStamp) {
+        if(pvSecs==null || pvNano==null || pvUserTag==null) {
+            throw new IllegalStateException(notAttached);
+        }
+        if(pvSecs.isImmutable() || pvNano.isImmutable()) return false;
+        pvSecs.put(timeStamp.getSecondsPastEpoch());
+        pvUserTag.put(timeStamp.getUserTag());
+        pvNano.put(timeStamp.getNanoSeconds());
+        return true;
+    }
+
+
+}

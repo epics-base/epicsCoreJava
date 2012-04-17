@@ -99,15 +99,15 @@ CONTENTS
   </li>
   <li><a href="#L560">Package Summary</a> 
     <ul>
-      <li><a href="#L568">org.epics.pvData.pv</a></li>
-      <li><a href="#L572">org.epics.pvData.factory</a></li>
-      <li><a href="#L594">org.epics.pvData.property</a></li>
-      <li><a href="#L602">org.epics.pvData.misc</a></li>
-      <li><a href="#L606">org.epics.pvData.monitor</a></li>
-      <li><a href="#L610">org.epics.pvData.accessSecurity</a></li>
+      <li><a href="#L568">org.epics.pvdata.pv</a></li>
+      <li><a href="#L572">org.epics.pvdata.factory</a></li>
+      <li><a href="#L594">org.epics.pvdata.property</a></li>
+      <li><a href="#L602">org.epics.pvdata.misc</a></li>
+      <li><a href="#L606">org.epics.pvdata.monitor</a></li>
+      <li><a href="#L610">org.epics.pvdata.accessSecurity</a></li>
     </ul>
   </li>
-  <li><a href="#L616">Package org.epics.pvData.pv</a> 
+  <li><a href="#L616">Package org.epics.pvdata.pv</a> 
     <ul>
       <li><a href="#L620">Overview</a></li>
       <li><a href="#L632">Process Variable Reflection</a> 
@@ -148,7 +148,7 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L1247">Package org.epics.pvData.factory</a> 
+  <li><a href="#L1247">Package org.epics.pvdata.factory</a> 
     <ul>
       <li><a href="#L1251">Overview</a></li>
       <li><a href="#L1255">Factory</a> 
@@ -200,7 +200,7 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L1415">Package org.epics.pvData.property</a> 
+  <li><a href="#L1415">Package org.epics.pvdata.property</a> 
     <ul>
       <li><a href="#L1419">Definition of Property</a></li>
       <li><a href="#L1431">Standard Properties</a></li>
@@ -225,7 +225,7 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L2071">Package org.epics.pvData.misc</a> 
+  <li><a href="#L2071">Package org.epics.pvdata.misc</a> 
     <ul>
       <li><a href="#L2075">Overview</a></li>
       <li><a href="#L2130">MultiChoice</a></li>
@@ -260,7 +260,7 @@ CONTENTS
       <li><a href="#L2525">Serialize</a></li>
     </ul>
   </li>
-  <li><a href="#L2561">Package org.epics.pvData.monitor</a> 
+  <li><a href="#L2561">Package org.epics.pvdata.monitor</a> 
     <ul>
       <li><a href="#L2565">Overview</a></li>
       <li><a href="#L2619">Standard Monitor Requests</a> 
@@ -283,7 +283,7 @@ CONTENTS
       </li>
     </ul>
   </li>
-  <li><a href="#L2984">Package org.epics.pvData.accessSecurity</a> 
+  <li><a href="#L2984">Package org.epics.pvdata.accessSecurity</a> 
     <ul>
       <li><a href="#L2990">Outstanding Issues</a> 
         <ul>
@@ -357,7 +357,7 @@ located via the same sourceforge site as this project.</p>
 store, access, and transmit memory resident structured data.</p>
 <dl>
   <dt>definition</dt>
-    <dd>Package org.epics.pvData.pv has Java interface definitions that define
+    <dd>Package org.epics.pvdata.pv has Java interface definitions that define
       pvData. Although defined with Java syntax they also document what is
       required for implementation in other languages such as C++.</dd>
   <dt>implementation</dt>
@@ -899,7 +899,7 @@ interface PVStructure extends PVField , BitSetSerializable{
 <h3 id="L554">pvData Conversion</h3>
 
 <p>An interface named Convert provides all reasonable conversions to/from
-pvData. See org.epics.pvData.pv.Convert for details.</p>
+pvData. See org.epics.pvdata.pv.Convert for details.</p>
 <hr />
 
 <h2 style="text-align: center" id="L560">Package Summary</h2>
@@ -912,13 +912,13 @@ other languages such as C++.</p>
 <p>pvData is distributed as a eclipse Java Project named pvData. This project
 consists of the following java packages:</p>
 
-<h3 id="L568">org.epics.pvData.pv</h3>
+<h3 id="L568">org.epics.pvdata.pv</h3>
 
 <p>The Java enum, interface, and class definitions that define pvData. This
 section provides a complete definition of what pvData is. This package
 completely describes how pvData is accessed.</p>
 
-<h3 id="L572">org.epics.pvData.factory</h3>
+<h3 id="L572">org.epics.pvdata.factory</h3>
 
 <p>Provides everything required for creating pvData. It provides the following
 factories:</p>
@@ -936,7 +936,7 @@ types, often it is desirable to provide other implementations. To make it easy
 to create alternate implementations a set of abstract and base classes are
 supplied.</p>
 
-<h3 id="L594">org.epics.pvData.property</h3>
+<h3 id="L594">org.epics.pvdata.property</h3>
 
 <p>Provides a way to associated properties with a field. </p>
 
@@ -949,30 +949,30 @@ package overview for details.</p>
 timeStamp, alarm, display,etc. Code that uses pvData can be simplified by using
 this support.</p>
 
-<h3 id="L602">org.epics.pvData.misc</h3>
+<h3 id="L602">org.epics.pvdata.misc</h3>
 
 <p>This package provides support that is used by pvData factories and might
 also be useful to software that uses pvData.</p>
 
-<h3 id="L606">org.epics.pvData.monitor</h3>
+<h3 id="L606">org.epics.pvdata.monitor</h3>
 
 <p>Provides the ability to monitor changes to an arbitrary subset of the fields
 in a record.</p>
 
-<h3 id="L610">org.epics.pvData.accessSecurity</h3>
+<h3 id="L610">org.epics.pvdata.accessSecurity</h3>
 
 <p>Access security is no implement but a discusssion of what it should be is
 provided.</p>
 <hr />
 
-<h2 style="text-align: center" id="L616">Package org.epics.pvData.pv</h2>
+<h2 style="text-align: center" id="L616">Package org.epics.pvdata.pv</h2>
 <hr />
 
 <h3 id="L620">Overview</h3>
 
 <p>This package has the complete set of enum, interface, and class definitions
 that describe PVData. The implementation is provided in package
-org.epics.pvData.factory.</p>
+org.epics.pvdata.factory.</p>
 
 <p>A PVStructure is a field that contains an array of subfields. Each field has
 code for accessing the field. The interface for each field is PVField or an
@@ -1899,13 +1899,13 @@ structure created in the previous example.</p>
     PVStructure pvStruct = pvDataCreate.createPVStructure(null,"myStructure",fields);</pre>
 <hr />
 
-<h2 style="text-align: center" id="L1247">Package org.epics.pvData.factory</h2>
+<h2 style="text-align: center" id="L1247">Package org.epics.pvdata.factory</h2>
 <hr />
 
 <h3 id="L1251">Overview</h3>
 
 <p>This package provides factories and classes to implement everything defined
-in package org.epics.pvData.pv</p>
+in package org.epics.pvdata.pv</p>
 
 <h3 id="L1255">Factory</h3>
 
@@ -1998,7 +1998,7 @@ be the base class for any class that extends PVField. </p>
     // All public methods of PVField
 }</pre>
 
-<p>The public methods are described in package org.epics.pvData.pv. The
+<p>The public methods are described in package org.epics.pvdata.pv. The
 protected methods are: </p>
 <dl>
   <dt>convert</dt>
@@ -2179,7 +2179,7 @@ array type. For most uses it is not necessary to extend these classes.</p>
 }</pre>
 <hr />
 
-<h2 style="text-align: center" id="L1415">Package org.epics.pvData.property</h2>
+<h2 style="text-align: center" id="L1415">Package org.epics.pvdata.property</h2>
 <hr />
 
 <h3 id="L1419">Definition of Property</h3>
@@ -2782,7 +2782,7 @@ class PVEnumeratedFactory{
 </dl>
 <hr />
 
-<h2 style="text-align: center" id="L2071">Package org.epics.pvData.misc</h2>
+<h2 style="text-align: center" id="L2071">Package org.epics.pvdata.misc</h2>
 <hr />
 
 <h3 id="L2075">Overview</h3>
@@ -3375,7 +3375,7 @@ receiving pvData over the nerwork.</p>
 </dl>
 <hr />
 
-<h2 style="text-align: center" id="L2561">Package org.epics.pvData.monitor</h2>
+<h2 style="text-align: center" id="L2561">Package org.epics.pvdata.monitor</h2>
 <hr />
 
 <h3 id="L2565">Overview</h3>
@@ -3767,7 +3767,7 @@ class MonitorQueueFactory {
 <hr />
 
 <h2 style="text-align: center" id="L2984">Package
-org.epics.pvData.accessSecurity</h2>
+org.epics.pvdata.accessSecurity</h2>
 <hr />
 
 <p>This package describes Access Security. Acceses security is not currently
