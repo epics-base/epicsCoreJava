@@ -33,6 +33,7 @@ public abstract class AbstractPVField implements PVField{
     private int nextFieldOffset = 0;
     private PVAuxInfo pvAuxInfo = null;
     private boolean isImmutable = false;
+    private String fieldName = null;
     private Field field;
     private PVStructure pvParent;
     private Requester requester = null;
@@ -79,11 +80,18 @@ public abstract class AbstractPVField implements PVField{
      */
     @Override
     public String getFieldName() {
-        if(pvParent==null) return "";
+        if(fieldName!=null) return fieldName;
+        if(pvParent==null) {
+            fieldName = "";
+            return fieldName;
+        }
         PVField[] pvFields = pvParent.getPVFields();
         String[] fieldNames = pvParent.getStructure().getFieldNames();
         for(int i=0; i<pvFields.length; i++) {
-            if(pvFields[i]==this) return fieldNames[i];
+            if(pvFields[i]==this) {
+                fieldName = fieldNames[i];
+                return fieldName;
+            }
         }
         throw new IllegalStateException("logic error");
     }
