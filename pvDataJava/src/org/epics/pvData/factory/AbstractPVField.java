@@ -107,7 +107,6 @@ public abstract class AbstractPVField implements PVField{
 		}
 	}
     
-    
     private void messagePvt(String message,MessageType messageType)
     {
         if(pvParent!=null) {
