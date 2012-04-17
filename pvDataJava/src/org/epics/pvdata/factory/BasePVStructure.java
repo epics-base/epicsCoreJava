@@ -187,6 +187,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 	        	}
  	        	newFieldNames[original +i] = fieldNames[i];
 	        }
+	        this.pvFields = newPVFields;
 		}
 		super.replaceStructure(newFieldNames,this);
 	}
