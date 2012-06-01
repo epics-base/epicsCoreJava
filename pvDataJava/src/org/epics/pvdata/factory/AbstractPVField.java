@@ -71,6 +71,9 @@ public abstract class AbstractPVField implements PVField{
             newFieldNames[i] = fieldNames[i];
         }
         field = fieldCreate.createStructure(newFieldNames,newFields);
+        if(pvParent!=null) {
+            ((AbstractPVField)pvParent).replaceStructure(pvParent);
+        }
     }
     protected  void appendField(String fieldName,Field field,PVStructure pvStructure) {
         Structure oldStructure = pvStructure.getStructure();

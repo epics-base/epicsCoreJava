@@ -113,6 +113,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      */
     @Override
     public void appendPVField(String fieldName,PVField pvField) {
+
         int origLength = pvFields.length;
         PVField[] newPVFields = new PVField[origLength + 1];
         for(int i=0; i<origLength; i++) {
