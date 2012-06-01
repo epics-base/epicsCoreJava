@@ -103,7 +103,7 @@ public class PVIntSerializationPerformance extends JapexDriverBase implements Se
 		super.initializeDriver();
 		
 		Field field = fieldCreate.createScalar(ScalarType.pvInt);
-		pvField = (PVInt)PVFactory.getPVDataCreate().createPVField(null, field);
+		pvField = (PVInt)PVFactory.getPVDataCreate().createPVField(field);
 	}
 	
 	int index;

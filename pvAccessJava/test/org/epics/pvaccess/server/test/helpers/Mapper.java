@@ -50,7 +50,7 @@ public class Mapper
 		
         if(pvRequest.getPVFields().length==0)
         {
-        	copyStructure = pvDataCreate.createPVStructure(null, originStructure.getStructure());
+        	copyStructure = pvDataCreate.createPVStructure(originStructure.getStructure());
 			// 1-1 mapping
 			int fieldCount = copyStructure.getNumberFields();
 			for (int i = 0; i < fieldCount; i++)
@@ -64,7 +64,7 @@ public class Mapper
 				pvRequest = pvRequest.getStructureField("field");
 			}
 			Structure structure = createStructure(originStructure, indexMapping, pvRequest);
-			this.copyStructure = pvDataCreate.createPVStructure(null, structure);
+			this.copyStructure = pvDataCreate.createPVStructure(structure);
         }
     	
     	

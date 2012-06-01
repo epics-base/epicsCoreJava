@@ -70,7 +70,7 @@ public class ExampleChannelPutDoubleValue {
 
         Client(String channelName,String request) {
             if(request==null) {
-                pvRequest = pvDataCreate.createPVStructure(null, FieldFactory.getFieldCreate().createStructure(new String[0], new Field[0]));
+                pvRequest = pvDataCreate.createPVStructure(FieldFactory.getFieldCreate().createStructure(new String[0], new Field[0]));
             } else {
                 pvRequest = CreateRequestFactory.createRequest(request, this);
             }

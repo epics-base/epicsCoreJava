@@ -112,8 +112,7 @@ public class ExampleStructureSerializationPerformance extends JapexDriverBase im
         fields[1] = standardField.timeStamp();
         fields[2] = standardField.doubleAlarm();
         
-        pvField = pvDataCreate.createPVStructure(null,
-        		fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
+        pvField = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
         );
         
         PVDoubleArray ba = (PVDoubleArray)pvField.getSubField("value");

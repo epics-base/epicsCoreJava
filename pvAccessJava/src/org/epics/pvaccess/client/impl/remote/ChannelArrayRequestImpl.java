@@ -166,7 +166,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			lock();
 			try {
 				// deserialize Field and create PVArray
-				data = (PVArray)pvDataCreate.createPVField(null, field);
+				data = (PVArray)pvDataCreate.createPVField(field);
 			} finally {
 				unlock();
 			}

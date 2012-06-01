@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/pvDataJava"/>
 	<classpathentry kind="var" path="M2_REPO/epics/caj/1.1.9/caj-1.1.9.jar"/>
 	<classpathentry kind="var" path="M2_REPO/epics/jca/2.3.5/jca-2.3.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

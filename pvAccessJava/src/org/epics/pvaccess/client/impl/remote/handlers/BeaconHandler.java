@@ -105,7 +105,7 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 		final Field field = fieldCreate.deserialize(payloadBuffer, transport);
 		if (field != null)
 		{
-			data = pvDataCreate.createPVField(null, field);
+			data = pvDataCreate.createPVField(field);
 			data.deserialize(payloadBuffer, transport);
 		}
 		

@@ -102,7 +102,7 @@ public class PVDoubleSerializationPerformance extends JapexDriverBase implements
 		super.initializeDriver();
 		
 		Field field = fieldCreate.createScalar(ScalarType.pvDouble);
-		pvField = (PVDouble)PVFactory.getPVDataCreate().createPVField(null, field);
+		pvField = (PVDouble)PVFactory.getPVDataCreate().createPVField(field);
 	}
 	
 	int index;

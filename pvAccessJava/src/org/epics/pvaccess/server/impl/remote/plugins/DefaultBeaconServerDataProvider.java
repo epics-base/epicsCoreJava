@@ -81,7 +81,7 @@ public class DefaultBeaconServerDataProvider implements
         fields[4] = fieldCreate.createScalar(ScalarType.pvInt);
         fields[5] = fieldCreate.createScalar(ScalarType.pvDouble);
         
-        status = pvDataCreate.createPVStructure(null,fieldCreate.createStructure(fieldNames,fields));
+        status = pvDataCreate.createPVStructure(fieldCreate.createStructure(fieldNames,fields));
 	}
 
 	/* (non-Javadoc)

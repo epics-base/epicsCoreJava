@@ -181,7 +181,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 			synchronized (this)
 			{
-	            PVStructure pvStructure = pvDataCreate.createPVStructure(null, structure);
+	            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
 				monitorElement = MonitorQueueFactory.createMonitorElement(pvStructure);
 
 				monitorElementStructure = monitorElement.getPVStructure();
@@ -260,7 +260,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 			synchronized (this)
 			{
-	            PVStructure pvStructure = pvDataCreate.createPVStructure(null, structure);
+	            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
 				monitorElement = MonitorQueueFactory.createMonitorElement(pvStructure);
 
 				monitorElementStructure = monitorElement.getPVStructure();
@@ -389,7 +389,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			{
 	    		MonitorElement[] monitorElements = new MonitorElement[queueSize];
 	            for(int i=0; i<queueSize; i++) {
-	                PVStructure pvNew = pvDataCreate.createPVStructure(null, structure);
+	                PVStructure pvNew = pvDataCreate.createPVStructure(structure);
 	                monitorElements[i] = MonitorQueueFactory.createMonitorElement(pvNew);
 	            }
 	            monitorQueue = MonitorQueueFactory.create(monitorElements);

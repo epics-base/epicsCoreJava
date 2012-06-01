@@ -2300,7 +2300,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	        Field[] fields = new Field[2];
 	        fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
 	        fields[1] = fieldCreate.createScalar(ScalarType.pvDouble);
-	        args = pvDataCreate.createPVStructure(null, fieldCreate.createStructure(new String[] { "a", "b" }, fields));
+	        args = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] { "a", "b" }, fields));
 		}
 		
 		args.getDoubleField("a").put(12.3);
@@ -2387,7 +2387,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 //    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
 	    Structure requestStructure = 
 	    	fieldCreate.createStructure(new String[] { "field" } , new Field[] { fieldCreate.createScalar(ScalarType.pvString) });
-    	PVStructure pvRequest = pvDataCreate.createPVStructure(null, requestStructure);
+    	PVStructure pvRequest = pvDataCreate.createPVStructure(requestStructure);
     	PVString pvFieldName = pvRequest.getStringField("field");
     	pvFieldName.put("value");
 
@@ -2478,7 +2478,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		//    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)", channelArrayRequester);
 	    Structure requestStructure = 
 	    	fieldCreate.createStructure(new String[] { "field" } , new Field[] { fieldCreate.createScalar(ScalarType.pvString) });
-    	PVStructure pvRequest = pvDataCreate.createPVStructure(null, requestStructure);
+    	PVStructure pvRequest = pvDataCreate.createPVStructure(requestStructure);
     	PVString pvFieldName = pvRequest.getStringField("field");
     	pvFieldName.put("value");
 
@@ -2563,7 +2563,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		    assertTrue(channelMonitorRequester.changeBitSet.get(0));
 
 		    PVField valueField = channelMonitorRequester.pvStructure.getSubField("value");
-		    PVField previousValue = pvDataCreate.createPVField(null, valueField.getField());
+		    PVField previousValue = pvDataCreate.createPVField(valueField.getField());
 		    convert.copy(valueField, previousValue);
 		    assertTrue(valueField.equals(previousValue));
 		    

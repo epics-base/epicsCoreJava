@@ -36,7 +36,7 @@ public class SerializationHelper {
 		final Field field = control.cachedDeserialize(payloadBuffer);
 		if (field == null)
 			return null;
-		return pvDataCreate.createPVStructure(null, (Structure)field);
+		return pvDataCreate.createPVStructure((Structure)field);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class SerializationHelper {
 	    final Field structureField = control.cachedDeserialize(payloadBuffer);
 	    if (structureField != null)
 	    {
-	    	pvStructure = pvDataCreate.createPVStructure(null, (Structure)structureField);
+	    	pvStructure = pvDataCreate.createPVStructure((Structure)structureField);
 	    	pvStructure.deserialize(payloadBuffer, control);
 	    }
 	    return pvStructure;

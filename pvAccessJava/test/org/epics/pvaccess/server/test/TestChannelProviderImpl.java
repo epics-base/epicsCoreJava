@@ -522,7 +522,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				
 				this.channelArrayRequester = channelArrayRequester;
 				this.pvArray = array;
-				this.pvCopy = pvDataCreate.createPVScalarArray(null, pvArray.getScalarArray().getElementType());
+				this.pvCopy = pvDataCreate.createPVScalarArray(pvArray.getScalarArray().getElementType());
 			
 				process = false; // TODO PVRequestUtils.getProcess(pvRequest);
 				

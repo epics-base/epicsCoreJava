@@ -47,8 +47,7 @@ public class PVTopStructure implements Lockable
 	        fields[1] = standardField.timeStamp();
 	        fields[2] = standardField.doubleAlarm();
 	        
-	        pvStructure = pvDataCreate.createPVStructure(null,
-	        		fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
+	        pvStructure = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
 	        );
 		}
 	}
