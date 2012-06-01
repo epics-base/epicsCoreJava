@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVBoolean;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -22,8 +21,8 @@ public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
 {
     protected boolean value = false;
 
-    public BasePVBoolean(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVBoolean(Scalar scalar) {
+        super(scalar);
     }        
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVBoolean#get()

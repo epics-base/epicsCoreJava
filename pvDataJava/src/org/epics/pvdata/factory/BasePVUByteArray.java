@@ -12,7 +12,6 @@ import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.ByteArrayData;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVUByteArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
@@ -30,12 +29,11 @@ public class BasePVUByteArray extends AbstractPVScalarArray implements PVUByteAr
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVUByteArray(PVStructure parent,ScalarArray array)
+    public BasePVUByteArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new byte[capacity];
     }
     /* (non-Javadoc)

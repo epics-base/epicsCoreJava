@@ -13,7 +13,6 @@ import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.FloatArrayData;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVFloatArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -30,12 +29,11 @@ public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatAr
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */    
-    public BasePVFloatArray(PVStructure parent,ScalarArray array)
+    public BasePVFloatArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new float[capacity];
     }
     /* (non-Javadoc)

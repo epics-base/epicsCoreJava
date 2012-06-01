@@ -13,7 +13,6 @@ import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.DoubleArrayData;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -30,12 +29,11 @@ public class BasePVDoubleArray  extends AbstractPVScalarArray implements PVDoubl
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVDoubleArray(PVStructure parent,ScalarArray array)
+    public BasePVDoubleArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new double[capacity];
     }
     /* (non-Javadoc)

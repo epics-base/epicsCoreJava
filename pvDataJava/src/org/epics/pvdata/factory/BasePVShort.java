@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVShort;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVUShort;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
@@ -23,8 +22,8 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
 {
     protected short value;
     
-    public BasePVShort(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVShort(Scalar scalar) {
+        super(scalar);
         value = 0;
     }
     /* (non-Javadoc)

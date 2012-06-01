@@ -30,8 +30,8 @@ import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Structure;
-import org.epics.pvdata.pv.StructureArray;
-import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.factory.*;
+import org.epics.pvdata.pv.*;
 
 /**
  * Base class for a PVStructure.
@@ -41,71 +41,38 @@ import org.epics.pvdata.pv.Type;
 public class BasePVStructure extends AbstractPVField implements PVStructure
 {
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
+    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private PVField[] pvFields;
     private String extendsStructureName = null;
     
     /**
      * Constructor.
-     * @param parent The parent interface.
      * @param structure the reflection interface for the PVStructure data.
      */
-    public BasePVStructure(PVStructure parent, Structure structure) {
-        super(parent,structure);
+    public BasePVStructure(Structure structure) {
+        super(structure);
     	Field[] fields = structure.getFields();
+    	String[] fieldNames = structure.getFieldNames();
     	pvFields = new PVField[fields.length];
     	for(int i=0; i < pvFields.length; i++) {
-    		Field field = fields[i];
-    		switch(field.getType()) {
-    		case scalar: {
-    			Scalar scalar = (Scalar)field;
-    			pvFields[i] = pvDataCreate.createPVScalar(this,scalar.getScalarType());
-    			break;
-    		}
-    		case scalarArray: {
-    			ScalarArray array = (ScalarArray)field;
-    			ScalarType elementType = array.getElementType();
-    			pvFields[i] = pvDataCreate.createPVScalarArray(this,elementType);
-    			break;
-    		}
-    		case structure: {
-    			Structure struct = (Structure)field;
-    			pvFields[i] = pvDataCreate.createPVStructure(this,struct);
-    			break;
-    		}
-    		case structureArray: {
-    			StructureArray structArray = (StructureArray)field;
-    			pvFields[i] = pvDataCreate.createPVStructureArray(this, structArray);
-    			break;
-    		}
-    		}
+    		pvFields[i] = pvDataCreate.createPVField(fields[i]);
+    		AbstractPVField base = (AbstractPVField)pvFields[i];
+    		base.setParentAndName(this, fieldNames[i]);
     	}
     }
     /**
      * Constructor.
-     * @param parent The parent interface.
      * @param structure the reflection interface for the PVStructure data.
      * @param pvFields The PVField array for the subfields.
      */
-    public BasePVStructure(PVStructure parent, Structure structure,PVField[] pvFields)
+    public BasePVStructure(Structure structure, PVField[] pvFields)
     {
-        super(parent,structure);
+        super(structure);
         this.pvFields = pvFields;
+        String[] fieldNames = structure.getFieldNames();
         for(int i=0; i<pvFields.length; i++) {
-            AbstractPVField pvField = (AbstractPVField)(pvFields[i]);
-            setParent(pvField,this);
-        }
-    }
-    
-    static private void setParent(AbstractPVField pvField,PVStructure parent)
-    {
-        pvField.setParent(parent);
-        if(pvField.getField().getType()==Type.structure) {
-            PVStructure subStructure = (PVStructure)pvField;
-            PVField[] subFields = subStructure.getPVFields();
-            for(int i=0; i<subFields.length; i++) {
-                AbstractPVField subField = (AbstractPVField)(subFields[i]);
-                setParent(subField,subStructure);
-            }
+            AbstractPVField base = (AbstractPVField)(pvFields[i]);
+            base.setParentAndName(this, fieldNames[i]);
         }
     }
     /* (non-Javadoc)
@@ -148,49 +115,39 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     public void appendPVField(String fieldName,PVField pvField) {
         int origLength = pvFields.length;
         PVField[] newPVFields = new PVField[origLength + 1];
-        String[] newFieldNames = new String[origLength + 1];
         for(int i=0; i<origLength; i++) {
             newPVFields[i] = pvFields[i];
-            newFieldNames[i] = this.getStructure().getFieldName(i);
         }
-        newPVFields[newPVFields.length-1] = pvField;
-        newFieldNames[newPVFields.length-1] = fieldName;
+        newPVFields[origLength] = pvField;
         pvFields = newPVFields;
-        if(pvField.getParent()!=this) {
-            throw new IllegalStateException("PVStructure.appendField: illegal parent");
-        }
-        super.replaceStructure(newFieldNames,this);
+        appendField(fieldName,pvField.getField(),this);
+        AbstractPVField xxx = (AbstractPVField)pvField;
+        xxx.setParentAndName(this, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#appendPVFields(java.lang.String[], org.epics.pvdata.pv.PVField[])
      */
     @Override
-	public void appendPVFields(String[] fieldNames,PVField[] pvFields) {
-        String[] newFieldNames = null;
-		if(this.pvFields.length==0) {
-			this.pvFields = pvFields;
-			newFieldNames = fieldNames;
-		} else {
-			int original = this.pvFields.length;
-			int additional = pvFields.length;
-			int length = original + additional;
-			PVField[] newPVFields = new PVField[length];
-			newFieldNames = new String[length];
-	        for(int i=0; i<original; i++) {
-	            newPVFields[i] = this.pvFields[i];
-	            newFieldNames[i] = this.getStructure().getFieldName(i);
-	        }
-	        for(int i=0; i<additional; i++) {
-	        	newPVFields[original +i] = pvFields[i];
-	        	if(pvFields[i].getParent()!=this) {
-	        	    throw new IllegalStateException("PVStructure.appendFields field " + i + " has illegal parent");
-	        	}
- 	        	newFieldNames[original +i] = fieldNames[i];
-	        }
-	        this.pvFields = newPVFields;
-		}
-		super.replaceStructure(newFieldNames,this);
-	}
+	public void appendPVFields(String[] fieldNames,PVField[] extraFields)
+    {
+        int len = pvFields.length;
+        int extra = fieldNames.length;
+        if(extra==0) return;
+        int newLength = len + extra;
+        PVField[] newPVFields = new PVField[newLength];
+        for(int i=0; i<len; i++) {
+            newPVFields[i] = pvFields[i];
+        }
+        for(int i=0; i<extra; i++) {
+            newPVFields[len + i] = extraFields[i];
+        }
+        pvFields = newPVFields;
+        appendFields(fieldNames,extraFields,this);
+        for(int i=0; i<extra; i++) {
+            AbstractPVField xxx = (AbstractPVField)extraFields[i];
+            xxx.setParentAndName(this,fieldNames[i]);
+        };
+    }
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#removePVField(java.lang.String)
      */
@@ -202,8 +159,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             return;
         }
         int origLength = pvFields.length;
-        PVField[] newPVFields = new PVField[origLength - 1];
-        String[] newFieldNames = new String[origLength - 1];
+        int newLength = origLength - 1;
+        PVField[] newPVFields = new PVField[newLength];
+        String[] newFieldNames = new String[newLength];
         int newIndex = 0;
         for(int i=0; i<origLength; i++) {
             if(pvFields[i]==pvField) continue;
@@ -211,7 +169,12 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             newPVFields[newIndex++] = pvFields[i];
         }
         pvFields = newPVFields;
-        replaceStructure(newFieldNames,this);
+        Structure structure = (Structure)getField();
+        String[] fieldNames = structure.getFieldNames();
+        for(int i=0; i<newLength; i++ ) {
+            AbstractPVField base = (AbstractPVField)pvFields[i];
+            base.setParentAndName(this,fieldNames[i]);
+        }
     }
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getPVFields()

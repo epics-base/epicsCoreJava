@@ -24,8 +24,8 @@ import org.epics.pvdata.pv.Type;
  */
 public class BaseStructure extends BaseField implements Structure {
     private static Convert convert = ConvertFactory.getConvert();
-    private final Field[] fields;
-    private final String[] fieldNames;
+    private  Field[] fields;
+    private  String[] fieldNames;
     
     /**
      * Constructor for a structure field.
@@ -51,6 +51,32 @@ public class BaseStructure extends BaseField implements Structure {
     			}
     		}
     	}
+    }
+    /**
+     * Called by FieldFactory
+     * @param newFields new fields
+     * @param newFieldNames new names
+     */
+    void clone(Field[] fields,String[] fieldNames) {
+        this.fields = fields;
+        this.fieldNames = fieldNames;
+        int n = fieldNames.length;
+        for(int i=0; i<n; i++) {
+            if(fields[i].getType()==Type.structure) {
+                BaseStructure sub = (BaseStructure)fields[i];
+                String[] subNames = sub.getFieldNames();
+                Field[] subFields = sub.getFields();
+                int m = subNames.length;
+                String[] newNames = new String[m];
+                Field[] newFields = new Field[m];
+                for(int j=0; j<m; j++) {
+                    newNames[j] = subNames[j];
+                    newFields[j] = subFields[j];
+                }
+                sub.clone(newFields, newNames);
+            }
+        }
+        
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Structure#getField(java.lang.String)

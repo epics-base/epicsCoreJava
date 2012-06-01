@@ -6,7 +6,6 @@
 package org.epics.pvdata.factory;
 
 import org.epics.pvdata.pv.PVScalar;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Scalar;
 
 /**
@@ -16,11 +15,10 @@ import org.epics.pvdata.pv.Scalar;
 public abstract class AbstractPVScalar extends AbstractPVField implements PVScalar {
     /**
      * Constructor.
-     * @param parent The parent.
      * @param scalar The ScalarType.
      */
-    protected AbstractPVScalar(PVStructure parent, Scalar scalar) {
-        super(parent,scalar);
+    protected AbstractPVScalar(Scalar scalar) {
+        super(scalar);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVScalar#getScalar()

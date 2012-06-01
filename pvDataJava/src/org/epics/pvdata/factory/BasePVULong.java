@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVULong;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
@@ -22,8 +21,8 @@ public class BasePVULong extends AbstractPVScalar implements PVULong
 {
     protected long value;
     
-    public BasePVULong(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVULong(Scalar scalar) {
+        super(scalar);
         value = 0;
     }
     /* (non-Javadoc)

@@ -13,7 +13,6 @@ import org.epics.pvdata.pv.ByteArrayData;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVUByteArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
@@ -31,12 +30,11 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVByteArray(PVStructure parent,ScalarArray array)
+    public BasePVByteArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new byte[capacity];
     }
     /* (non-Javadoc)

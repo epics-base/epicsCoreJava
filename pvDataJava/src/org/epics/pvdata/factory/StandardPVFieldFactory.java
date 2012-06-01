@@ -60,7 +60,7 @@ public final class  StandardPVFieldFactory {
                 fields[index++] = standardField.control();
             }
             Structure structure = fieldCreate.createStructure(fieldNames, fields);
-            return pvDataCreate.createPVStructure(parent, structure);
+            return pvDataCreate.createPVStructure(structure);
         }
 		@Override
 		public PVStructure scalar(PVStructure parent,String fieldName,ScalarType scalarType,String properties)
@@ -84,7 +84,7 @@ public final class  StandardPVFieldFactory {
 		public PVStructure enumerated(PVStructure parent,String[] choices)
 		{
 		    Structure field = standardField.enumerated();
-		    PVStructure pvStructure = pvDataCreate.createPVStructure(parent,field);
+		    PVStructure pvStructure = pvDataCreate.createPVStructure(field);
 		    PVStringArray pvChoices = (PVStringArray)pvStructure.getSubField(1);
 		    if(choices!=null && choices.length>0) {
 		        pvChoices.put(0,choices.length, choices, 0);

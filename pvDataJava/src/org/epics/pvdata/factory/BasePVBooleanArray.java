@@ -13,7 +13,6 @@ import org.epics.pvdata.pv.BooleanArrayData;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVBooleanArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -30,12 +29,11 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVBooleanArray(PVStructure parent,ScalarArray array)
+    public BasePVBooleanArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new boolean[capacity];
     }        
     /* (non-Javadoc)

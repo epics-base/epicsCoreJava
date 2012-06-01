@@ -121,8 +121,8 @@ public class SerializationTest extends TestCase {
 		ScalarType[] types = ScalarType.values();
 		for (int i = 0; i < types.length; i++)
 		{
-			PVScalar scalar1 = factory.createPVScalar(null, types[i]);
-			PVScalar scalar2 = factory.createPVScalar(null, types[i]);
+			PVScalar scalar1 = factory.createPVScalar(types[i]);
+			PVScalar scalar2 = factory.createPVScalar(types[i]);
 			assertEquals(scalar1, scalar2);
 		}
 	}
@@ -137,7 +137,7 @@ public class SerializationTest extends TestCase {
 		buffer.flip();
 		
 		// create new instance and deserialize
-		PVField deserializedField = PVDataFactory.getPVDataCreate().createPVField(null, field.getField());
+		PVField deserializedField = PVDataFactory.getPVDataCreate().createPVField(field.getField());
 		deserializedField.deserialize(buffer, control);
 	
 		// must equal
@@ -150,7 +150,7 @@ public class SerializationTest extends TestCase {
 		ScalarType[] types = ScalarType.values();
 		for (int i = 0; i < types.length; i++)
 		{
-			PVScalar scalar = factory.createPVScalar(null, types[i]);
+			PVScalar scalar = factory.createPVScalar(types[i]);
 			serializatioTest(scalar);
 		}
 	}
@@ -159,13 +159,13 @@ public class SerializationTest extends TestCase {
 	{
 		PVDataCreate factory = PVDataFactory.getPVDataCreate();
 		
-		PVBoolean pvBoolean = (PVBoolean)factory.createPVScalar(null, ScalarType.pvBoolean);
+		PVBoolean pvBoolean = (PVBoolean)factory.createPVScalar(ScalarType.pvBoolean);
 		pvBoolean.put(false);
 		serializatioTest(pvBoolean);
 		pvBoolean.put(true);
 		serializatioTest(pvBoolean);
 		
-		PVByte pvByte = (PVByte)factory.createPVScalar(null, ScalarType.pvByte);
+		PVByte pvByte = (PVByte)factory.createPVScalar(ScalarType.pvByte);
 		pvByte.put((byte)0);
 		serializatioTest(pvByte);
 		pvByte.put((byte)12);
@@ -175,7 +175,7 @@ public class SerializationTest extends TestCase {
 		pvByte.put((byte)Byte.MIN_VALUE);
 		serializatioTest(pvByte);
 		
-		PVShort pvShort = (PVShort)factory.createPVScalar(null, ScalarType.pvShort);
+		PVShort pvShort = (PVShort)factory.createPVScalar(ScalarType.pvShort);
 		pvShort.put((short)0);
 		serializatioTest(pvShort);
 		pvShort.put((short)1234);
@@ -189,7 +189,7 @@ public class SerializationTest extends TestCase {
 		pvShort.put((short)Short.MIN_VALUE);
 		serializatioTest(pvShort);
 
-		PVInt pvInt = (PVInt)factory.createPVScalar(null, ScalarType.pvInt);
+		PVInt pvInt = (PVInt)factory.createPVScalar(ScalarType.pvInt);
 		pvInt.put(0);
 		serializatioTest(pvInt);
 		pvInt.put(123456);
@@ -207,7 +207,7 @@ public class SerializationTest extends TestCase {
 		pvInt.put(Integer.MIN_VALUE);
 		serializatioTest(pvInt);
 
-		PVLong pvLong = (PVLong)factory.createPVScalar(null, ScalarType.pvLong);
+		PVLong pvLong = (PVLong)factory.createPVScalar(ScalarType.pvLong);
 		pvLong.put(0);
 		serializatioTest(pvLong);
 		pvLong.put(12345678901L);
@@ -229,7 +229,7 @@ public class SerializationTest extends TestCase {
 		pvLong.put(Long.MIN_VALUE);
 		serializatioTest(pvLong);
 	
-		PVUByte pvUByte = (PVUByte)factory.createPVScalar(null, ScalarType.pvUByte);
+		PVUByte pvUByte = (PVUByte)factory.createPVScalar(ScalarType.pvUByte);
 		pvUByte.put((byte)0);
 		serializatioTest(pvUByte);
 		pvUByte.put((byte)12);
@@ -241,7 +241,7 @@ public class SerializationTest extends TestCase {
 		pvUByte.put((byte)Byte.MIN_VALUE);
 		serializatioTest(pvUByte);
 		
-		PVUShort pvUShort = (PVUShort)factory.createPVScalar(null, ScalarType.pvUShort);
+		PVUShort pvUShort = (PVUShort)factory.createPVScalar(ScalarType.pvUShort);
 		pvUShort.put((short)0);
 		serializatioTest(pvUShort);
 		pvUShort.put((short)1234);
@@ -257,7 +257,7 @@ public class SerializationTest extends TestCase {
 		pvUShort.put((short)Short.MIN_VALUE);
 		serializatioTest(pvUShort);
 
-		PVUInt pvUInt = (PVUInt)factory.createPVScalar(null, ScalarType.pvUInt);
+		PVUInt pvUInt = (PVUInt)factory.createPVScalar(ScalarType.pvUInt);
 		pvUInt.put(0);
 		serializatioTest(pvUInt);
 		pvUInt.put(123456);
@@ -277,7 +277,7 @@ public class SerializationTest extends TestCase {
 		pvUInt.put(Integer.MIN_VALUE);
 		serializatioTest(pvUInt);
 
-		PVULong pvULong = (PVULong)factory.createPVScalar(null, ScalarType.pvULong);
+		PVULong pvULong = (PVULong)factory.createPVScalar(ScalarType.pvULong);
 		pvULong.put(0);
 		serializatioTest(pvULong);
 		pvULong.put(12345678901L);
@@ -301,7 +301,7 @@ public class SerializationTest extends TestCase {
 		pvULong.put(Long.MIN_VALUE);
 		serializatioTest(pvULong);
 
-		PVFloat pvFloat = (PVFloat)factory.createPVScalar(null, ScalarType.pvFloat);
+		PVFloat pvFloat = (PVFloat)factory.createPVScalar(ScalarType.pvFloat);
 		pvFloat.put(0);
 		serializatioTest(pvFloat);
 		pvFloat.put((float)12.345);
@@ -317,7 +317,7 @@ public class SerializationTest extends TestCase {
 		pvFloat.put(Float.NEGATIVE_INFINITY);
 		serializatioTest(pvFloat);
 
-		PVDouble pvDouble = (PVDouble)factory.createPVScalar(null, ScalarType.pvDouble);
+		PVDouble pvDouble = (PVDouble)factory.createPVScalar(ScalarType.pvDouble);
 		pvDouble.put(0);
 		serializatioTest(pvDouble);
 		pvDouble.put(12.345);
@@ -333,7 +333,7 @@ public class SerializationTest extends TestCase {
 		pvDouble.put(Double.NEGATIVE_INFINITY);
 		serializatioTest(pvDouble);
 
-		PVString pvString = (PVString)factory.createPVScalar(null, ScalarType.pvString);
+		PVString pvString = (PVString)factory.createPVScalar(ScalarType.pvString);
 		pvString.put("");
 		serializatioTest(pvString);
 		pvString.put("s");
@@ -359,7 +359,7 @@ public class SerializationTest extends TestCase {
 		ScalarType[] types = ScalarType.values();
 		for (int i = 0; i < types.length; i++)
 		{
-			PVArray array = factory.createPVScalarArray(null, types[i]);
+			PVArray array = factory.createPVScalarArray(types[i]);
 			serializatioTest(array);
 		}
 	}
@@ -369,56 +369,56 @@ public class SerializationTest extends TestCase {
 	{
 		PVDataCreate factory = PVDataFactory.getPVDataCreate();
 		
-		PVBooleanArray pvBoolean = (PVBooleanArray)factory.createPVScalarArray(null, ScalarType.pvBoolean);
+		PVBooleanArray pvBoolean = (PVBooleanArray)factory.createPVScalarArray(ScalarType.pvBoolean);
 		pvBoolean.put(0, 0, new boolean[0], 0);
 		serializatioTest(pvBoolean);
 		final boolean[] bv = new boolean[] { false, true, false, true, true };
 		pvBoolean.put(0, bv.length, bv, 0);
 		serializatioTest(pvBoolean);
 
-		PVByteArray pvByte = (PVByteArray)factory.createPVScalarArray(null, ScalarType.pvByte);
+		PVByteArray pvByte = (PVByteArray)factory.createPVScalarArray(ScalarType.pvByte);
 		pvByte.put(0, 0, new byte[0], 0);
 		serializatioTest(pvByte);
 		final byte[] byv = new byte[] { 0, 1, 2, -1, Byte.MAX_VALUE, Byte.MAX_VALUE - 1, Byte.MIN_VALUE + 1, Byte.MIN_VALUE };		
 		pvByte.put(0, byv.length, byv, 0);
 		serializatioTest(pvByte);
 
-		PVShortArray pvShort = (PVShortArray)factory.createPVScalarArray(null, ScalarType.pvShort);
+		PVShortArray pvShort = (PVShortArray)factory.createPVScalarArray(ScalarType.pvShort);
 		pvShort.put(0, 0, new short[0], 0);
 		serializatioTest(pvShort);
 		final short[] sv = new short[] { 0, 1, 2, -1, Short.MAX_VALUE, Short.MAX_VALUE - 1, Short.MIN_VALUE + 1, Short.MIN_VALUE };		
 		pvShort.put(0, sv.length, sv, 0);
 		serializatioTest(pvShort);
 
-		PVIntArray pvInt = (PVIntArray)factory.createPVScalarArray(null, ScalarType.pvInt);
+		PVIntArray pvInt = (PVIntArray)factory.createPVScalarArray(ScalarType.pvInt);
 		pvInt.put(0, 0, new int[0], 0);
 		serializatioTest(pvInt);
 		final int[] iv = new int[] { 0, 1, 2, -1, Integer.MAX_VALUE, Integer.MAX_VALUE - 1, Integer.MIN_VALUE + 1, Integer.MIN_VALUE };		
 		pvInt.put(0, iv.length, iv, 0);
 		serializatioTest(pvInt);
 
-		PVLongArray pvLong = (PVLongArray)factory.createPVScalarArray(null, ScalarType.pvLong);
+		PVLongArray pvLong = (PVLongArray)factory.createPVScalarArray(ScalarType.pvLong);
 		pvLong.put(0, 0, new long[0], 0);
 		serializatioTest(pvLong);
 		final long[] lv = new long[] { 0, 1, 2, -1, Long.MAX_VALUE, Long.MAX_VALUE - 1, Long.MIN_VALUE + 1, Long.MIN_VALUE };		
 		pvLong.put(0, lv.length, lv, 0);
 		serializatioTest(pvLong);
 	
-		PVFloatArray pvFloat = (PVFloatArray)factory.createPVScalarArray(null, ScalarType.pvFloat);
+		PVFloatArray pvFloat = (PVFloatArray)factory.createPVScalarArray(ScalarType.pvFloat);
 		pvFloat.put(0, 0, new float[0], 0);
 		serializatioTest(pvFloat);
 		final float[] fv = new float[] { (float)0.0, (float)1.1, (float)2.3, (float)-1.4, Float.MAX_VALUE, Float.MAX_VALUE - (float)1.6, Float.MIN_VALUE + (float)1.1, Float.MIN_VALUE };		
 		pvFloat.put(0, fv.length, fv, 0);
 		serializatioTest(pvFloat);
 
-		PVDoubleArray pvDouble = (PVDoubleArray)factory.createPVScalarArray(null, ScalarType.pvDouble);
+		PVDoubleArray pvDouble = (PVDoubleArray)factory.createPVScalarArray(ScalarType.pvDouble);
 		pvDouble.put(0, 0, new double[0], 0);
 		serializatioTest(pvDouble);
 		final double[] dv = new double[] { (double)0.0, (double)1.1, (double)2.3, (double)-1.4, Double.MAX_VALUE, Double.MAX_VALUE - (double)1.6, Double.MIN_VALUE + (double)1.1, Double.MIN_VALUE };		
 		pvDouble.put(0, dv.length, dv, 0);
 		serializatioTest(pvDouble);
 
-		PVStringArray pvString = (PVStringArray)factory.createPVScalarArray(null, ScalarType.pvString);
+		PVStringArray pvString = (PVStringArray)factory.createPVScalarArray(ScalarType.pvString);
 		pvString.put(0, 0, new String[0], 0);
 		serializatioTest(pvString);
 		final String[] strv = new String[] { null, "", "a", "a b", " ", "test", "smile", "this is a little longer string... maybe a little but longer... this makes test better" };		
@@ -455,7 +455,7 @@ public class SerializationTest extends TestCase {
 	{
         FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
-        PVStructure pvStructure = (PVStructure)pvDataCreate.createPVField(null, StandardFieldFactory.getStandardField().timeStamp());
+        PVStructure pvStructure = (PVStructure)pvDataCreate.createPVField(StandardFieldFactory.getStandardField().timeStamp());
         pvStructure.getLongField("secondsPastEpoch").put(123);
         pvStructure.getIntField("nanoSeconds").put(456);
 
@@ -468,8 +468,7 @@ public class SerializationTest extends TestCase {
         fields2[1] = fieldCreate.createScalar(ScalarType.pvInt);
         fields2[2] = fieldCreate.createScalarArray(ScalarType.pvDouble);
         fields2[3] = pvStructure.getField();
-        PVStructure pvStructure2 = pvDataCreate.createPVStructure(null,
-        		fieldCreate.createStructure(new String[] {"longVal", "intVal", "values", "timeStamp"},fields2));
+        PVStructure pvStructure2 = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] {"longVal", "intVal", "values", "timeStamp"},fields2));
         pvStructure2.getLongField("longVal").put(1234);
         pvStructure2.getIntField("intVal").put(4567);
         PVDoubleArray da = (PVDoubleArray)pvStructure2.getScalarArrayField("values", ScalarType.pvDouble);
@@ -491,14 +490,14 @@ public class SerializationTest extends TestCase {
         FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
         StructureArray sarray = fieldCreate.createStructureArray(StandardFieldFactory.getStandardField().timeStamp());
-        PVStructureArray pvStructureArray = (PVStructureArray)pvDataCreate.createPVField(null, sarray);
+        PVStructureArray pvStructureArray = (PVStructureArray)pvDataCreate.createPVField(sarray);
         pvStructureArray.setCapacity(3);
         StructureArrayData sad = new StructureArrayData();
         pvStructureArray.get(0, 3, sad);
         
         for (int i = 0; i < sad.data.length; i++)
         {
-        	PVStructure pvStructure = pvDataCreate.createPVStructure(null, sarray.getStructure());
+        	PVStructure pvStructure = pvDataCreate.createPVStructure(sarray.getStructure());
         	pvStructure.getLongField("secondsPastEpoch").put(123*i);
         	pvStructure.getIntField("nanoSeconds").put(456*i);
         	sad.data[i] = pvStructure;

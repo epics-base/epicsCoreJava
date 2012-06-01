@@ -15,6 +15,7 @@ import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
+import org.epics.pvdata.pv.Type;
 
 /**
  * FieldFactory creates Field instances.
@@ -79,8 +80,23 @@ public final class FieldFactory {
         {
             return new BaseStructure(fieldNames,fields);
         }
-        
 		@Override
+        public Structure createStructure(Structure structToClone) {
+		    String[] oldFieldNames = structToClone.getFieldNames();
+		    Field[] oldFields = structToClone.getFields();
+		    int n = oldFieldNames.length;
+		    String[] fieldNames = new String[n];
+		    Field[] fields = new Field[n];
+		    for(int i=0; i<n; i++) {
+		        fieldNames[i] = oldFieldNames[i];
+		        fields[i] = oldFields[i];
+		    }
+		    
+		    BaseStructure structure = (BaseStructure)createStructure(fieldNames,fields);
+		    structure.clone(fields, fieldNames);
+		    return structure;
+        }
+        @Override
         public Structure appendField(Structure structure, String fieldName, Field field) {
 		    String[] oldNames = structure.getFieldNames();
 		    Field[] oldFields = structure.getFields();
@@ -110,7 +126,7 @@ public final class FieldFactory {
             }
             for(int i=0; i<newlen; i++) {
                 newNames[i+oldlen] = fieldNames[i];
-                newFields[i+oldlen] = oldFields[i];
+                newFields[i+oldlen] = fields[i];
             }
             return createStructure(newNames,newFields);
         }

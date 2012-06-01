@@ -59,7 +59,7 @@ public class BasePVAuxInfo implements PVAuxInfo {
                     + " requestType is " + scalarType.toString(),MessageType.error);
             return null;
         }
-        PVScalar pvScalar = pvDataCreate.createPVScalar(null,scalarType);
+        PVScalar pvScalar = pvDataCreate.createPVScalar(scalarType);
         attributeMap.put(key, pvScalar);
         return pvScalar;
     }

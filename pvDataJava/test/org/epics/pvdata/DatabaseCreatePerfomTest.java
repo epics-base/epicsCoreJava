@@ -48,7 +48,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
 		fields[1] = fieldCreate.createStructure(new String[0], new Field[0]);
 		String[] fieldNames = {"name","properties"};
 		Structure structure = fieldCreate.createStructure(fieldNames, fields);
-		pvChannelToClone = pvDataCreate.createPVStructure(null,structure);
+		pvChannelToClone = pvDataCreate.createPVStructure(structure);
 	}
     /**
      * test boolean.
@@ -64,7 +64,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
         }
         long startTime = System.currentTimeMillis();
         PVStructure pvStructure = pvDataCreate.createPVStructure(
-            null,fieldCreate.createStructure(new String[0], new Field[0]));
+            fieldCreate.createStructure(new String[0], new Field[0]));
 //System.out.println(pvStructure);
         appendFields(pvStructure,fieldNames,propertyNames,propertyValues);
         // Make it compute offsets
@@ -76,7 +76,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
 //System.out.println(pvStructure);
         startTime = System.currentTimeMillis();
         pvStructure = pvDataCreate.createPVStructure(
-            null,fieldCreate.createStructure(new String[0], new Field[0]));
+            fieldCreate.createStructure(new String[0], new Field[0]));
         appendField(pvStructure,fieldNames,propertyNames,propertyValues);
         // Make it compute offsets
         pvStructure.getFieldOffset();
@@ -88,7 +88,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
         startTime = System.currentTimeMillis();
         PVStructure[] pvStructures = new PVStructure[numFields];
         for(int i=0;i<numFields; i++) {
-            pvStructures[i] = pvDataCreate.createPVStructure(null,pvChannelToClone);
+            pvStructures[i] = pvDataCreate.createPVStructure(pvChannelToClone);
             PVString pvName = pvStructures[i].getStringField("name");
             //pvName.put("pvName" + chanName);
             pvName.put(fieldNames[i]);
@@ -99,7 +99,7 @@ public class DatabaseCreatePerfomTest extends TestCase {
             }
             pvProperties.appendPVFields(propertyNames,pvProps);
         }
-        pvStructure = pvDataCreate.createPVStructure(null,fieldNames,(PVField[])pvStructures);
+        pvStructure = pvDataCreate.createPVStructure(fieldNames,(PVField[])pvStructures);
 System.out.println(pvStructure);
         pvStructure.getFieldOffset();
         endTime = System.currentTimeMillis();
@@ -130,7 +130,7 @@ System.out.println(pvStructure);
 			PVStructure[] pvChannels = new PVStructure[fieldNames.length];
 			for(int i=0; i<fieldNames.length; i++) {
 				String fieldName = fieldNames[i];
-				PVStructure pvChannel = pvChannels[i] = pvDataCreate.createPVStructure(pvStructure, pvChannelToClone);
+				PVStructure pvChannel = pvChannels[i] = pvDataCreate.createPVStructure(pvChannelToClone);
 				PVString pvName = pvChannel.getStringField("name");
 				//pvName.put("pvName" + chanName);
 				pvName.put(fieldName);
@@ -145,7 +145,7 @@ System.out.println(pvStructure);
 	}
 	
 	private static PVStructure appendPropertys(PVStructure pvProperties,String name,String value,String owner) {
-		PVStructure pvStructure = pvDataCreate.createPVStructure(pvProperties, propertyStructure);
+		PVStructure pvStructure = pvDataCreate.createPVStructure(propertyStructure);
 		PVString pvValue = pvStructure.getStringField("value");
 		PVString pvOwner = pvStructure.getStringField("owner");
 		pvValue.put(value);
@@ -157,7 +157,7 @@ System.out.println(pvStructure);
 		int numberFields = fieldNames.length;
 		for(int i=0; i<numberFields; i++) {
 		    String fieldName = fieldNames[i];
-			PVStructure pvChannel = pvDataCreate.createPVStructure(pvStructure, pvChannelToClone);
+			PVStructure pvChannel = pvDataCreate.createPVStructure(pvChannelToClone);
 			PVString pvName = pvChannel.getStringField("name");
 			//pvName.put("pvName" + chanName);
 			pvName.put(fieldName);
@@ -170,7 +170,7 @@ System.out.println(pvStructure);
 	}
 
 	private static void appendProperty(PVStructure pvProperties,String name,String value,String owner) {
-		PVStructure pvStructure = pvDataCreate.createPVStructure(pvProperties, propertyStructure);
+		PVStructure pvStructure = pvDataCreate.createPVStructure(propertyStructure);
 		PVString pvValue = pvStructure.getStringField("value");
 		PVString pvOwner = pvStructure.getStringField("owner");
 		pvValue.put(value);

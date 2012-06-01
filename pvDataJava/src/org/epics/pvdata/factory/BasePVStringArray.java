@@ -12,7 +12,6 @@ import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.StringArrayData;
@@ -31,12 +30,11 @@ public class BasePVStringArray extends AbstractPVScalarArray implements PVString
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVStringArray(PVStructure parent,ScalarArray array)
+    public BasePVStringArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new String[capacity];
     } 
     /* (non-Javadoc)

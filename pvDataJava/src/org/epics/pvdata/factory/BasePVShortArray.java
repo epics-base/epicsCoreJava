@@ -12,7 +12,6 @@ import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVShortArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVUShortArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
@@ -30,12 +29,11 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVShortArray(PVStructure parent,ScalarArray array)
+    public BasePVShortArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new short[capacity];
     }
     /* (non-Javadoc)

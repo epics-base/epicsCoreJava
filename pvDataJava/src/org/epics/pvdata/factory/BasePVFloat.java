@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVFloat;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -22,8 +21,8 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
 {
     protected float value;
     
-    public BasePVFloat(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVFloat(Scalar scalar) {
+        super(scalar);
         value = 0;
     }
     /* (non-Javadoc)

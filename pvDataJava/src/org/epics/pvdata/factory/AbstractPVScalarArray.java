@@ -6,7 +6,6 @@
 package org.epics.pvdata.factory;
 
 import org.epics.pvdata.pv.PVScalarArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarArray;
 
 /**
@@ -17,11 +16,10 @@ import org.epics.pvdata.pv.ScalarArray;
  */
 public abstract class AbstractPVScalarArray extends AbstractPVArray implements PVScalarArray{
 	/**Constructor that derived classes must call.
-	 * @param parent The parent
 	 * @param array The reflection interface.
 	 */
-	protected AbstractPVScalarArray(PVStructure parent,ScalarArray array) {
-        super(parent,array);
+	protected AbstractPVScalarArray(ScalarArray array) {
+        super(array);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#getArray()

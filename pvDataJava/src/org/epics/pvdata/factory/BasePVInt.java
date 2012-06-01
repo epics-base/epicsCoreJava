@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVInt;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVUInt;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
@@ -23,8 +22,8 @@ public class BasePVInt extends AbstractPVScalar implements PVInt
 {
     protected int value;
 
-    public BasePVInt(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVInt(Scalar scalar) {
+        super(scalar);
         value = 0;
     }
     /* (non-Javadoc)

@@ -37,16 +37,16 @@ public class ConvertTest extends TestCase {
 	static private void print(String value) {System.out.println(value);}
 
 	public void testConvertScalar() {
-		PVByte pvByte = (PVByte)pvDataCreate.createPVScalar(null, ScalarType.pvByte);
-		PVUByte pvUByte = (PVUByte)pvDataCreate.createPVScalar(null, ScalarType.pvUByte);
-		PVShort pvShort = (PVShort)pvDataCreate.createPVScalar(null, ScalarType.pvShort);
-		PVUShort pvUShort = (PVUShort)pvDataCreate.createPVScalar(null, ScalarType.pvUShort);
-		PVInt pvInt = (PVInt)pvDataCreate.createPVScalar(null, ScalarType.pvInt);
-		PVUInt pvUInt = (PVUInt)pvDataCreate.createPVScalar(null, ScalarType.pvUInt);
-		PVLong pvLong = (PVLong)pvDataCreate.createPVScalar(null, ScalarType.pvLong);
-		PVULong pvULong = (PVULong)pvDataCreate.createPVScalar(null, ScalarType.pvULong);
-		PVFloat pvFloat = (PVFloat)pvDataCreate.createPVScalar(null, ScalarType.pvFloat);
-		PVDouble pvDouble = (PVDouble)pvDataCreate.createPVScalar(null, ScalarType.pvDouble);
+		PVByte pvByte = (PVByte)pvDataCreate.createPVScalar(ScalarType.pvByte);
+		PVUByte pvUByte = (PVUByte)pvDataCreate.createPVScalar(ScalarType.pvUByte);
+		PVShort pvShort = (PVShort)pvDataCreate.createPVScalar(ScalarType.pvShort);
+		PVUShort pvUShort = (PVUShort)pvDataCreate.createPVScalar(ScalarType.pvUShort);
+		PVInt pvInt = (PVInt)pvDataCreate.createPVScalar(ScalarType.pvInt);
+		PVUInt pvUInt = (PVUInt)pvDataCreate.createPVScalar(ScalarType.pvUInt);
+		PVLong pvLong = (PVLong)pvDataCreate.createPVScalar(ScalarType.pvLong);
+		PVULong pvULong = (PVULong)pvDataCreate.createPVScalar(ScalarType.pvULong);
+		PVFloat pvFloat = (PVFloat)pvDataCreate.createPVScalar(ScalarType.pvFloat);
+		PVDouble pvDouble = (PVDouble)pvDataCreate.createPVScalar(ScalarType.pvDouble);
 		print("");
 		print("fromByte");
 		byte bval = Byte.MAX_VALUE;
@@ -349,16 +349,16 @@ public class ConvertTest extends TestCase {
 	}
 	
 	public void testConvertScalarArray() {
-        PVByteArray pvByte = (PVByteArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvByte);
-        PVUByteArray pvUByte = (PVUByteArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvUByte);
-        PVShortArray pvShort = (PVShortArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvShort);
-        PVUShortArray pvUShort = (PVUShortArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvUShort);
-        PVIntArray pvInt = (PVIntArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvInt);
-        PVUIntArray pvUInt = (PVUIntArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvUInt);
-        PVLongArray pvLong = (PVLongArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvLong);
-        PVULongArray pvULong = (PVULongArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvULong);
-        PVFloatArray pvFloat = (PVFloatArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvFloat);
-        PVDoubleArray pvDouble = (PVDoubleArray)pvDataCreate.createPVScalarArray(null, ScalarType.pvDouble);
+        PVByteArray pvByte = (PVByteArray)pvDataCreate.createPVScalarArray(ScalarType.pvByte);
+        PVUByteArray pvUByte = (PVUByteArray)pvDataCreate.createPVScalarArray(ScalarType.pvUByte);
+        PVShortArray pvShort = (PVShortArray)pvDataCreate.createPVScalarArray(ScalarType.pvShort);
+        PVUShortArray pvUShort = (PVUShortArray)pvDataCreate.createPVScalarArray(ScalarType.pvUShort);
+        PVIntArray pvInt = (PVIntArray)pvDataCreate.createPVScalarArray(ScalarType.pvInt);
+        PVUIntArray pvUInt = (PVUIntArray)pvDataCreate.createPVScalarArray(ScalarType.pvUInt);
+        PVLongArray pvLong = (PVLongArray)pvDataCreate.createPVScalarArray(ScalarType.pvLong);
+        PVULongArray pvULong = (PVULongArray)pvDataCreate.createPVScalarArray(ScalarType.pvULong);
+        PVFloatArray pvFloat = (PVFloatArray)pvDataCreate.createPVScalarArray(ScalarType.pvFloat);
+        PVDoubleArray pvDouble = (PVDoubleArray)pvDataCreate.createPVScalarArray(ScalarType.pvDouble);
         print("");
         print("fromByteArray");
         int length = 4;

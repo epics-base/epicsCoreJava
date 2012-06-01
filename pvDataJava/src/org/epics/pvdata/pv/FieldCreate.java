@@ -34,7 +34,8 @@ public interface FieldCreate {
     StructureArray createStructureArray(Structure elementStructure);
     /**
      * Create a <i>Structure</i> field.
-     * @param fieldNmess The array of field namess for the structure.
+     * @param fieldNmess The array of field names for the structure.
+     * @param fields The array of fields for the structure.
      * @return a <i>Structure</i> interface for the newly created object.
      */
     Structure createStructure(String[] fieldNames, Field[] fields);
@@ -54,7 +55,12 @@ public interface FieldCreate {
      * @return The new structure.
      */
     Structure appendFields(Structure structure,String[] fieldNames, Field[] fields);
-    
+    /**
+     * Create a <i>Structure</i> field.
+     * @param structToClone The structure to clone.
+     * @return a <i>Structure</i> interface for the newly created object.
+     */
+    Structure createStructure(Structure structToClone);
 	/**
 	 * Deserialize <i>Field</i> instance from given byte buffer.
 	 * @param buffer Buffer containing serialized <i>Field</i> instance. 

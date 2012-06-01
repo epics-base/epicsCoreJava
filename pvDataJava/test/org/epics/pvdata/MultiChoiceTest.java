@@ -44,7 +44,7 @@ public class MultiChoiceTest extends TestCase {
     	Field[] fields = new Field[]{bitMask,choices};
     	String[] fieldNames = {"bitMask","choices"};
     	Structure structure = fieldCreate.createStructure(fieldNames, fields);
-    	PVStructure pvMultiChoice = dataCreate.createPVStructure(null, structure);
+    	PVStructure pvMultiChoice = dataCreate.createPVStructure(structure);
     	MultiChoice multiChoice = MultiChoiceFactory.getMultiChoice(pvMultiChoice);
     	assertTrue(multiChoice!=null);
     	PVField pvField = pvMultiChoice.getScalarArrayField("choices", ScalarType.pvString);

@@ -56,7 +56,7 @@ public class PVAllTypesTest extends TestCase {
             fields[i+numscalar] = arrayFields[i];
         }
         Structure structure = fieldCreate.createStructure(names, fields);
-        PVStructure pvStructure = pvDataCreate.createPVStructure(null, structure);
+        PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
         System.out.println(pvStructure);
     }
     

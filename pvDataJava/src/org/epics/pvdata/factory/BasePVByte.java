@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVByte;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVUByte;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
@@ -23,8 +22,8 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
 {
     protected byte value;
     
-    public BasePVByte(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVByte(Scalar scalar) {
+        super(scalar);
         value = 0;
     }
     /* (non-Javadoc)

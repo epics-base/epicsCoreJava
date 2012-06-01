@@ -778,8 +778,7 @@ public final class ConvertFactory {
                     if (toArray[i] == null) {
                         Structure structure = to.getStructureArray()
                                 .getStructure();
-                        toArray[i] = pvDataCreate.createPVStructure(null,
-                                structure);
+                        toArray[i] = pvDataCreate.createPVStructure(structure);
                     }
                     copyStructure(fromArray[i], toArray[i]);
                 }

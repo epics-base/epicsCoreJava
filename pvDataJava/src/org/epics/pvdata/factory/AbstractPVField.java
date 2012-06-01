@@ -35,7 +35,7 @@ public abstract class AbstractPVField implements PVField{
     private boolean isImmutable = false;
     private String fieldName = null;
     private Field field;
-    private PVStructure pvParent;
+    private PVStructure pvParent = null;
     private Requester requester = null;
 	private PostHandler postHandler = null;
     /**
@@ -44,31 +44,72 @@ public abstract class AbstractPVField implements PVField{
     protected static final Convert convert = ConvertFactory.getConvert();
     /**
      * Constructor that must be called by derived classes.
-     * @param pvParent The pvParent PVStructure.
      * @param field The introspection interface.
+     * @param pvParent The pvParent PVStructure.
      * @throws IllegalArgumentException if field is null;
      */
-    protected AbstractPVField(PVStructure parent, Field field) {
+    protected AbstractPVField(Field field) {
         if(field==null) {
             throw new IllegalArgumentException("field is null");
         }
         this.field = field;
-        this.pvParent = parent;
     }
-    /**
-     * Called by derived classes to replace a Structure.
-     */
-    protected void replaceStructure(String[] newFieldNames,PVStructure pvStructure) {
+    protected void setParentAndName(PVStructure parent, String fieldName)
+    {
+        pvParent = parent;
+        this.fieldName = fieldName;
+    }
+    private void replaceStructure(PVStructure pvStructure) {
         PVField[] pvFields = pvStructure.getPVFields();
         int length = pvFields.length;
         Field[] newFields = new Field[length];
+        String[] newFieldNames = new String[length];
+        Structure structure = pvStructure.getStructure();
+        String[] fieldNames = structure.getFieldNames();
         for(int i=0; i<length; i++) {
             newFields[i] = pvFields[i].getField();
+            newFieldNames[i] = fieldNames[i];
         }
-        Structure newStructure = fieldCreate.createStructure(newFieldNames,newFields);
-        field = newStructure;
+        field = fieldCreate.createStructure(newFieldNames,newFields);
+    }
+    protected  void appendField(String fieldName,Field field,PVStructure pvStructure) {
+        Structure oldStructure = pvStructure.getStructure();
+        Field[] oldFields = oldStructure.getFields();
+        String[] oldFieldNames = oldStructure.getFieldNames();
+        int len = oldFields.length;
+        Field[] newFields = new Field[len+1];
+        String[] newFieldNames = new String[len+1];
+        for(int i=0; i<len; i++) {
+            newFields[i] = oldFields[i];
+            newFieldNames[i] = oldFieldNames[i];
+        }
+        newFields[len] = field;
+        newFieldNames[len] = fieldName;
+        this.field = fieldCreate.createStructure(newFieldNames, newFields);
         if(pvParent!=null) {
-            ((AbstractPVField)pvParent).replaceStructure(pvParent.getStructure().getFieldNames(),pvParent);
+            ((AbstractPVField)pvParent).replaceStructure(pvParent);
+        }
+    }
+    protected void appendFields(String[] fieldNames,PVField[] pvFields,PVStructure pvStructure) {
+        Structure oldStructure = pvStructure.getStructure();
+        Field[] oldFields = oldStructure.getFields();
+        String[] oldFieldNames = oldStructure.getFieldNames();
+        int len = oldFields.length;
+        int extra = fieldNames.length;
+        int newLength = len + extra;
+        Field[] newFields = new Field[newLength];
+        String[] newFieldNames = new String[newLength];
+        for(int i=0; i<len; i++) {
+            newFields[i] = oldFields[i];
+            newFieldNames[i] = oldFieldNames[i];
+        }
+        for(int i=0; i<extra; i++) {
+            newFields[len+1] = pvFields[i].getField();
+            newFieldNames[len+i] = fieldNames[i];
+        }
+        this.field = fieldCreate.createStructure(newFieldNames, newFields);
+        if(pvParent!=null) {
+            ((AbstractPVField)pvParent).replaceStructure(pvParent);
         }
     }
     protected void setParent(PVStructure parent)
@@ -234,13 +275,12 @@ public abstract class AbstractPVField implements PVField{
     public void replacePVField(PVField newPVField) {
         PVStructure parent = getParent();
         if(parent==null) throw new IllegalStateException("no pvParent");
-        Field[] fields = parent.getStructure().getFields();
-        String[] fieldNames = parent.getStructure().getFieldNames();
+        field = newPVField.getField();
         PVField[] pvFields = parent.getPVFields();
-        for(int i=0; i < fields.length; i++) {
-            if(fields[i]==field) {
+        for(int i=0; i<pvFields.length; i++) {
+            if(pvFields[i]==this) {
                 pvFields[i] = newPVField;
-                ((AbstractPVField)parent).replaceStructure(fieldNames,parent);
+                ((AbstractPVField)parent).replaceStructure(parent);
                 return;
             }
         }
@@ -254,11 +294,13 @@ public abstract class AbstractPVField implements PVField{
         PVStructure parent = getParent();
         if(parent==null) throw new IllegalStateException("no pvParent");
         Structure structure = parent.getStructure();
+        PVField[] pvFields = parent.getPVFields();
         String[] fieldNames = structure.getFieldNames();
-        Field[] fields = structure.getFields();
-        for(int i=0; i < fields.length; i++) {
-            if(fields[i]==field) {
+        for(int i=0; i < pvFields.length; i++) {
+            if(pvFields[i]==this) {
+                fieldName = newName;
                 fieldNames[i] = newName;
+                ((AbstractPVField)parent).replaceStructure(parent);
                 return;
             }
         }

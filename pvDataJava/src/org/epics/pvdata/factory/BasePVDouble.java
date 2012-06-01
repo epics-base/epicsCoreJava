@@ -8,7 +8,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDouble;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -22,8 +21,8 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
 {
     protected double value;
     
-    public BasePVDouble(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVDouble(Scalar scalar) {
+        super(scalar);
         value = 0;
     }        
     /* (non-Javadoc)

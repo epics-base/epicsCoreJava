@@ -34,12 +34,11 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param structureArray The Introspection interface.
      */
-    public BasePVStructureArray(PVStructure parent,StructureArray structureArray)
+    public BasePVStructureArray(StructureArray structureArray)
     {
-        super(parent,structureArray);
+        super(structureArray);
         this.structureArray = structureArray;
         value = new PVStructure[capacity];
     }
@@ -169,7 +168,7 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
 					value[i] = null;
 				} else {
 					if(value[i]==null) {
-						value[i] = pvDataCreate.createPVStructure(null,structureArray.getStructure());
+						value[i] = pvDataCreate.createPVStructure(structureArray.getStructure());
 					}
 					value[i].deserialize(buffer, control);
 				}

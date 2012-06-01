@@ -13,7 +13,6 @@ import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.IntArrayData;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVUIntArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
@@ -31,12 +30,11 @@ public class BasePVIntArray extends AbstractPVScalarArray implements PVIntArray
     
     /**
      * Constructor.
-     * @param parent The parent.
      * @param array The Introspection interface.
      */
-    public BasePVIntArray(PVStructure parent,ScalarArray array)
+    public BasePVIntArray(ScalarArray array)
     {
-        super(parent,array);
+        super(array);
         value = new int[capacity];
     }
     /* (non-Javadoc)

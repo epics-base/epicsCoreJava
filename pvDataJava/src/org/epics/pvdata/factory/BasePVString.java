@@ -9,7 +9,6 @@ import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVString;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -23,8 +22,8 @@ public class BasePVString extends AbstractPVScalar implements PVString
 {
     protected String value = "";
     
-    public BasePVString(PVStructure parent,Scalar scalar) {
-        super(parent,scalar);
+    public BasePVString(Scalar scalar) {
+        super(scalar);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVString#get()

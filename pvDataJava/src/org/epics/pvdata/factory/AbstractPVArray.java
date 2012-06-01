@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVArray;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.SerializableControl;
 
 /**
@@ -34,11 +33,10 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     protected boolean capacityMutable = true;
     /**
      * Constructor that derived classes must call.
-     * @param parent The parent interface.
      * @param field The reflection interface.
      */
-    protected AbstractPVArray(PVStructure parent,Field field) {
-        super(parent,field);
+    protected AbstractPVArray(Field field) {
+        super(field);
     }
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#setCapacity(int)
