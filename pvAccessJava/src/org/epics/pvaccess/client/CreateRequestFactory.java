@@ -41,6 +41,7 @@ public class CreateRequestFactory {
         private static final Structure emptyStructure = fieldCreate.createStructure(new String[0], new Field[0]);
         private static final Pattern commaPattern = Pattern.compile("[,]");
         private static final Pattern equalPattern = Pattern.compile("[=]");
+        private static final Pattern periodPattern = Pattern.compile("[.]");
         
     	
     	static PVStructure createRequest(String request,Requester requester) {
@@ -185,17 +186,25 @@ public class CreateRequestFactory {
         	}
         	String subFields = request.substring(openBrace+1, closeBrace);
         	if(!createFieldRequest(pvStructure,subFields,requester)) return false;
+        	request = request.substring(closeBrace+1);
         	int period = nextFieldName.indexOf('.');
-            if(period>0) {
-                String fieldName = nextFieldName.substring(0,period);
-                PVStructure xxx =  pvDataCreate.createPVStructure(emptyStructure);
-                String rest = nextFieldName.substring(period+1);
-                createFieldRequest(xxx,rest,requester);
-                pvParent.appendPVField(fieldName, xxx);
-            } else {
-                pvParent.appendPVField(nextFieldName, pvStructure);
-            }
-            request = request.substring(closeBrace+1);
+        	if(period<=0) {
+        	    pvParent.appendPVField(nextFieldName, pvStructure);
+                return createFieldRequest(pvParent,request,requester);
+        	}
+        	PVStructure yyy = pvParent;
+        	while(period>=0) {
+        	    String fieldName = nextFieldName.substring(0,period);
+        	    PVStructure xxx =  pvDataCreate.createPVStructure(emptyStructure);
+                yyy.appendPVField(fieldName,xxx);
+                nextFieldName = nextFieldName.substring(period+1);
+                period = nextFieldName.indexOf('.');
+                if(period<=0) {
+                    xxx.appendPVField(nextFieldName, pvStructure);
+                    break;
+                }
+                yyy = xxx;
+        	}
             return createFieldRequest(pvParent,request,requester);
         }
         	
