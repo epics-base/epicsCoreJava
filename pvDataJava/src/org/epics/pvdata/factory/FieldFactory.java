@@ -117,6 +117,7 @@ public final class FieldFactory {
             String[] oldNames = structure.getFieldNames();
             Field[] oldFields = structure.getFields();
             int oldlen = oldNames.length;
+            int extra = fieldNames.length;
             int newlen = oldlen + fieldNames.length;
             String[] newNames = new String[newlen];
             Field[] newFields = new Field[newlen];
@@ -124,7 +125,7 @@ public final class FieldFactory {
                 newNames[i] = oldNames[i];
                 newFields[i] = oldFields[i];
             }
-            for(int i=0; i<newlen; i++) {
+            for(int i=0; i<extra; i++) {
                 newNames[i+oldlen] = fieldNames[i];
                 newFields[i+oldlen] = fields[i];
             }

@@ -71,11 +71,6 @@ public interface PVField extends Requester,Serializable {
      */
     PVStructure getParent();
     /**
-     * Replace the data implementation for a field.
-     * @param newPVField The new implementation for this field.
-     */
-    void replacePVField(PVField newPVField);
-    /**
      * Rename the field name.
      * @param newName The new name.
      */

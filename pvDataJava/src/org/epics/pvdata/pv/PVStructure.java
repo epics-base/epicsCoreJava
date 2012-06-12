@@ -59,6 +59,12 @@ public interface PVStructure extends PVField, BitSetSerializable {
      */
     void removePVField(String fieldName);
     /**
+     * Replace a field with a new field.
+     * @param oldPVField The old field.
+     * @param newPVField The new field.
+     */
+    void replacePVField(PVField oldPVField,PVField newPVField);
+    /**
      * Find a boolean subfield with the specified fieldName.
      * The fieldName is of the form name.name...
      * @param fieldName The field name to find.
@@ -148,4 +154,9 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * It succeeds only if extendPVStructure is not null and no previous call was successful.
      */
     boolean putExtendsStructureName(String extendsStructureName);
+    /**
+     * Check if PVStructure and sub fields are valid.
+     * @return (true,false) if (OK, problems found).
+     */
+    public boolean checkValid();
 }

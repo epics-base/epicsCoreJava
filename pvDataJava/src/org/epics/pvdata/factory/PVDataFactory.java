@@ -211,7 +211,8 @@ public class PVDataFactory {
             Field[] fields = new Field[length];
             for(int i=0; i<length; i++) fields[i] = pvFields[i].getField();
             Structure structure = fieldCreate.createStructure(fieldNames, fields);
-            return new BasePVStructure(structure,pvFields);
+            PVStructure pvStructure = new BasePVStructure(structure,pvFields);
+            return pvStructure;
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.PVDataCreate#createPVStructure(org.epics.pvdata.pv.PVStructure, org.epics.pvdata.pv.PVStructure)
@@ -222,8 +223,15 @@ public class PVDataFactory {
             if(structToClone==null) {
                 throw new IllegalArgumentException("structToClone is null");
             }
-        	PVStructure pvStructure = new BasePVStructure(fieldCreate.createStructure(structToClone.getStructure()));
-        	copyStructure(structToClone,pvStructure);
+        	Structure structure = fieldCreate.createStructure(structToClone.getStructure());
+            PVStructure pvStructure = new BasePVStructure(structure);
+        	if(!copyStructure(structToClone,pvStructure)) {
+        	    System.err.printf("strictToClone%n%s%n", structToClone);
+        	    System.err.printf("pvStructure%n%s%n", pvStructure);
+        	    System.err.printf("strictToClone structure%n%s%n", structToClone.getStructure());
+                System.err.printf("pvStructure structure%n%s%n", pvStructure.getStructure());
+        	    throw new IllegalStateException("structureToClone differs from pvStructure");
+        	}
         	return pvStructure;
         }
         /* (non-Javadoc)
@@ -257,7 +265,8 @@ public class PVDataFactory {
             private int currentIndex = 0;
         }
         
-        private void copyStructure(PVStructure from,PVStructure to)  {
+        private boolean copyStructure(PVStructure from,PVStructure to)  {
+            boolean result = true;
             Map<String,PVScalar> attributes = from.getPVAuxInfo().getInfos();
             PVAuxInfo pvAttribute = to.getPVAuxInfo();
             Set<Map.Entry<String, PVScalar>> set = attributes.entrySet();
@@ -275,14 +284,15 @@ public class PVDataFactory {
             			from.toString(),to.toString());
             	String message = formatter.toString();
             	System.out.println(message);
-            	throw new IllegalStateException("PVDataFactory.copyStructure number of fields differ");
+            	return false;
             }
             for(int i=0; i<fromFields.length; i++) {
             	PVField fromPV = fromFields[i];
             	PVField toPV = toFields[i];
             	Type type = fromPV.getField().getType();
             	if(type==Type.structure) {
-            		copyStructure((PVStructure)fromPV,(PVStructure)toPV);
+            		boolean xxx = copyStructure((PVStructure)fromPV,(PVStructure)toPV);
+            		if(result) result = xxx;
             		continue;
             	}
             	attributes = fromPV.getPVAuxInfo().getInfos();
@@ -306,7 +316,7 @@ public class PVDataFactory {
                 	convert.copyStructureArray(fromPVArray,toPVArray);
                 }
             }
+            return result;
         }
-        
     }
 }

@@ -5197,11 +5197,10 @@ public final class ConvertFactory {
         }
 
         private void convertStructure(StringBuilder buffer,PVStructure data, int indentLevel) {
+            buffer.append("structure " + data.getFieldName());
             String extendsName = data.getExtendsStructureName();
-            if(extendsName==null || extendsName.length()<1) {
-                buffer.append("structure " + data.getFieldName());
-            } else {
-                buffer.append(extendsName + " " + data.getFieldName());
+            if(extendsName!=null && extendsName.length()>0) {
+                buffer.append(" extends " +extendsName);
                 buffer.append(" ");
             }
             PVField[] fieldsData = data.getPVFields();

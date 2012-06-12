@@ -142,9 +142,6 @@ public class PVCloneTest extends TestCase {
              PVByte pvByte = clone.getByteField(name);
              byte value = pvByte.get();
              assertTrue(value==(byte)level);
-//StringBuilder builder = new StringBuilder();
-//convert.getFullFieldName(builder, pvByte);
-//System.out.printf("fullName %s value %d%n",builder.toString(),(int)value);
         }
         pvs = clone;
         name = "";
@@ -220,14 +217,14 @@ public class PVCloneTest extends TestCase {
             PVField pvField = pvs.getSubField("a");
             PVString newPVField = (PVString)pvDataCreate.createPVScalar(ScalarType.pvString);
             newPVField.put("string" + level);
-            pvField.replacePVField(newPVField);
+            pvs.replacePVField(pvField, newPVField);
             pvField = pvs.getSubField("b");
             PVStringArray xxx = (PVStringArray)pvDataCreate.createPVScalarArray(ScalarType.pvString);
             String[] values = new String[2];
             values[0] = "string" + level;
             values[1] = "anotherstring" + level;
             xxx.put(0, 0, values, 0);
-            pvField.replacePVField(xxx);
+            pvs.replacePVField(pvField, xxx);
         }
 //System.out.println(clone);
 	}
