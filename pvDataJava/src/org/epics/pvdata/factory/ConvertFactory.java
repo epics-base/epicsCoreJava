@@ -884,26 +884,20 @@ public final class ConvertFactory {
             case pvUByte: {
                 PVUByte pvval = (PVUByte) pv;
                 long value = pvval.get();
-                if(value<0) value = -value;
+                if(value<0) value &= 0x0ffL;
                 return (short)value;
             }
             case pvUShort: {
             	PVUShort pvval = (PVUShort) pv;
-            	long value = pvval.get();
-                if(value<0) value = -value;
-                return (short)value;
+                return (short)pvval.get();
             }
             case pvUInt: {
             	PVUInt pvval = (PVUInt) pv;
-            	long value = pvval.get();
-                if(value<0) value = -value;
-                return (short)value;
+                return (short)pvval.get();
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
-                long value = pvval.get();
-                if(value<0) value = -value;
-                return (short)value;
+                return (short)pvval.get();
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -951,26 +945,22 @@ public final class ConvertFactory {
             case pvUByte: {
             	PVUByte pvval = (PVUByte) pv;
             	long value = pvval.get();
-                if(value<0) value = -value;
+                if(value<0) value &= 0x0ffL;
                 return (int)value;
             }
             case pvUShort: {
             	PVUShort pvval = (PVUShort) pv;
             	long value = pvval.get();
-                if(value<0) value = -value;
+                if(value<0) value &= 0x0ffffL;
                 return (int)value;
             }
             case pvUInt: {
                 PVUInt pvval = (PVUInt) pv;
-                long value = pvval.get();
-                if(value<0) value = -value;
-                return (int)value;
+                return (int)pvval.get();
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
-                long value = pvval.get();
-                if(value<0) value = -value;
-                return (int)value;
+                return (int)pvval.get();
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1018,26 +1008,24 @@ public final class ConvertFactory {
             case pvUByte: {
                 PVUByte pvval = (PVUByte) pv;
                 long value = pvval.get();
-                if(value<0) value = -value;
+                if(value<0) value &= 0x0ffL;
                 return value;
             }
             case pvUShort: {
             	PVUShort pvval = (PVUShort) pv;
             	long value = pvval.get();
-                if(value<0) value = -value;
+                if(value<0) value &= 0x0ffffL;
                 return value;
             }
             case pvUInt: {
             	PVUInt pvval = (PVUInt) pv;
             	long value = pvval.get();
-                if(value<0) value = -value;
+                if(value<0) value &= 0x0ffffffffL;
                 return value;
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
-                long value = pvval.get();
-                if(value<0) value = -value;
-                return value;
+                return pvval.get();
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -2060,25 +2048,25 @@ public final class ConvertFactory {
                 return String.valueOf(value.get());
             }
             case pvUByte: {
-                PVByte arg = (PVByte) pv;
+                PVUByte arg = (PVUByte) pv;
                 int value = arg.get();
                 if(value<0) value = -value;
                 return String.valueOf(value);
             }
             case pvUShort: {
-                PVShort arg = (PVShort) pv;
+                PVUShort arg = (PVUShort) pv;
                 int value = arg.get();
                 if(value<0) value = -value;
                 return String.valueOf(value);
             }
             case pvUInt: {
-                PVInt arg = (PVInt) pv;
+                PVUInt arg = (PVUInt) pv;
                 long value = arg.get();
                 if(value<0) value = -value;
                 return String.valueOf(value);
             }
             case pvULong: {
-                PVLong pvLong = (PVLong) pv;
+                PVULong pvLong = (PVULong) pv;
                 long val = pvLong.get();
                 String value = String.valueOf(val);
                 if(val<0) value = value.substring(1);

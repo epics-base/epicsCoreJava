@@ -35,6 +35,19 @@ public class ConvertTest extends TestCase {
 	private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
 	
 	static private void print(String value) {System.out.println(value);}
+	
+	public void testUint() {
+	    PVUInt pv = (PVUInt)pvDataCreate.createPVScalar(ScalarType.pvUInt);
+        pv.put(-1);
+        System.out.println(pv);
+        System.out.println(convert.toLong(pv));
+        System.out.println(convert.toString(pv));
+        long val = 0x080000000L;
+        pv.put((int)val);
+        System.out.println(pv);
+        System.out.println(convert.toLong(pv));
+        System.out.println(convert.toString(pv));
+	}
 
 	public void testConvertScalar() {
 		PVByte pvByte = (PVByte)pvDataCreate.createPVScalar(ScalarType.pvByte);
