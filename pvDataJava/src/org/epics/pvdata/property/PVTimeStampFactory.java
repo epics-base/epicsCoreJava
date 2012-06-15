@@ -38,13 +38,15 @@ public class PVTimeStampFactory implements PVTimeStamp {
         }
         PVStructure pvStructure = (PVStructure)(pvField);
         while(true) {
-            PVLong pvLong = pvStructure.getLongField("secondsPastEpoch");
-            if(pvLong!=null) {
-                pvSecs = pvLong;
+            PVField xxx = pvStructure.getSubField("secondsPastEpoch");
+            if(xxx!=null) xxx = pvStructure.getSubField("nanoSeconds");
+            if(xxx!=null) xxx = pvStructure.getSubField("userTag");
+            if(xxx!=null) {
+                pvSecs = pvStructure.getLongField("secondsPastEpoch");
                 pvNano = pvStructure.getIntField("nanoSeconds");
                 pvUserTag = pvStructure.getIntField("userTag");
+                if(pvSecs!=null && pvNano!=null && pvUserTag!=null) return true;
             }
-            if(pvSecs!=null && pvNano!=null && pvUserTag!=null) return true;
             pvSecs = null;
             pvNano = null;
             pvUserTag = null;

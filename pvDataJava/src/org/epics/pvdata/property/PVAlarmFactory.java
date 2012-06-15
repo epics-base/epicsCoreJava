@@ -34,26 +34,26 @@ public final class PVAlarmFactory implements PVAlarm{
             return false;
         }
         PVStructure pvStructure = (PVStructure)(pvField);
-        PVInt pvInt = pvStructure.getIntField("severity");
-        if(pvInt==null) {
-            pvField.message(noAlarmFound,MessageType.error);
-            return false;
+        boolean again = true;
+        while(true) {
+            PVField xxx = pvStructure.getSubField("severity");
+            if(xxx!=null) xxx = pvStructure.getSubField("status");
+            if(xxx!=null) xxx = pvStructure.getSubField("message");
+            if(xxx!=null) {
+                pvSeverity = pvStructure.getIntField("severity");
+                pvStatus = pvStructure.getIntField("status");
+                pvMessage = pvStructure.getStringField("message");
+            }
+            if(pvSeverity!=null && pvStatus!=null && pvMessage!=null) return true;
+            if(!again) break;
+            pvStructure = pvStructure.getParent();
+            if(pvStructure==null) break;
+            again = false;
         }
-        pvSeverity = pvInt;
-        pvInt = pvStructure.getIntField("status");
-        if(pvInt==null) {
-            pvField.message(noAlarmFound,MessageType.error);
-            return false;
-        }
-        pvStatus = pvInt;
-        PVString pvString = pvStructure.getStringField("message");
-        if(pvString==null) {
-            pvField.message(noAlarmFound,MessageType.error);
-            return false;
-        }
-        pvMessage = pvString;
-        return true;
-
+        pvSeverity = null;
+        pvStatus = null;
+        pvMessage = null;
+        return false;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVAlarm#detach()

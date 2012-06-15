@@ -85,6 +85,9 @@ public final class PVEnumeratedFactory implements PVEnumerated{
        }
        int index = pvIndex.get();
        pvChoices.get(0,pvChoices.getLength(),data);
+       if(data.data.length<=index) {
+           return String.format("PVEnumerated.getChoice index out of bounds pvChoices %s%n",pvChoices);
+       }
        return data.data[index];
 
     }
