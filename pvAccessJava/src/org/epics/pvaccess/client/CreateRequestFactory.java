@@ -164,15 +164,16 @@ public class CreateRequestFactory {
                     return false;
                 }
         	    String options = request.substring(openBracket+1, closeBracket);
-        	    if(!createRequestOptions(pvStructure,options,requester)) return false;
         	    int period = nextFieldName.indexOf('.');
                 if(period>0) {
                     String fieldName = nextFieldName.substring(0,period);
                     PVStructure xxx =  pvDataCreate.createPVStructure(emptyStructure);
+                    if(!createRequestOptions(xxx,options,requester)) return false;
                     String rest = nextFieldName.substring(period+1);
                     createFieldRequest(xxx,rest,requester);
                     pvParent.appendPVField(fieldName, xxx);
                 } else {
+                    if(!createRequestOptions(pvStructure,options,requester)) return false;
                     pvParent.appendPVField(nextFieldName, pvStructure);
                 }
         	    request = request.substring(closeBracket+1);
