@@ -43,6 +43,16 @@ public class BaseStructure extends BaseField implements Structure {
     	this.fieldNames = fieldNames;
     	for(int i=0; i<fields.length; i++) {
     		String fieldName = fieldNames[i];
+    		if(fieldName==null) {
+    		    throw new IllegalArgumentException(
+                        "fieldName " + i
+                        + " is null");
+    		}
+    		if(fieldName.length()<1) {
+    		    throw new IllegalArgumentException(
+                        "fieldName " + i
+                        + " has length 0");
+    		}
     		for(int j=i+1; j<fields.length; j++) {
     			if(fieldName.equals(fieldNames[j])) {
     				throw new IllegalArgumentException(
