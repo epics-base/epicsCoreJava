@@ -4,6 +4,7 @@
 package org.epics.pvaccess.server.rpc.impl;
 
 import java.util.HashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelFind;
@@ -30,7 +31,12 @@ public class RPCChannelProvider implements ChannelProvider {
 		statusCreate.createStatus(StatusType.ERROR, "no such channel", null);
 	
 	private final HashMap<String, RPCService> services = new HashMap<String, RPCService>();
+	private final ThreadPoolExecutor threadPool;
 	
+	public RPCChannelProvider(ThreadPoolExecutor threadPool) {
+		this.threadPool = threadPool;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProvider#getProviderName()
 	 */
@@ -88,7 +94,9 @@ public class RPCChannelProvider implements ChannelProvider {
 		RPCChannel rpcChannel = new RPCChannel(
 				this,
 				channelName,
-				channelRequester, service);
+				channelRequester,
+				service,
+				threadPool);
 		channelRequester.channelCreated(okStatus, rpcChannel);
 		return rpcChannel;
 	}

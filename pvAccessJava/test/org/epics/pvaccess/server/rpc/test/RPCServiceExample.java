@@ -21,25 +21,30 @@ public class RPCServiceExample {
 				new String[] { "c" },
 				new Field[] { fieldCreate.createScalar(ScalarType.pvDouble) }
 				);
+
+	static class SumServiceImpl implements RPCService
+	{
+		@Override
+		public PVStructure request(PVStructure args) throws RPCRequestException {
+			// TODO error handling
+			
+			double a = Double.valueOf(args.getStringField("a").get());
+			double b = Double.valueOf(args.getStringField("b").get());
+			
+			PVStructure result = PVDataFactory.getPVDataCreate().createPVStructure(resultStructure);
+			result.getDoubleField("c").put(a+b);
+			
+			return result;
+		}
+	}
 	
 	public static void main(String[] args) throws CAException
 	{
+
 		RPCServer server = new RPCServer();
 		
-		server.registerService("sum", 
-			new RPCService() {
-				
-				@Override
-				public PVStructure request(PVStructure args) throws RPCRequestException {
-					double a = Double.valueOf(args.getStringField("a").get());
-					double b = Double.valueOf(args.getStringField("b").get());
-					
-					PVStructure result = PVDataFactory.getPVDataCreate().createPVStructure(resultStructure);
-					result.getDoubleField("c").put(a+b);
-					
-					return result;
-				}
-			});
+		server.registerService("sum", new SumServiceImpl());
+		// you can register as many services as you want here ...
 		
 		server.printInfo();
 		server.run(0);

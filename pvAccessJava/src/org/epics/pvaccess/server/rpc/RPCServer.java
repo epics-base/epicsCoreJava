@@ -1,5 +1,9 @@
 package org.epics.pvaccess.server.rpc;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
@@ -11,9 +15,33 @@ public class RPCServer {
 	private final ServerContextImpl serverContext;
 	private final RPCChannelProvider channelProviderImpl;
 	
+	private final ThreadPoolExecutor threadPoll;
+
 	public RPCServer()
 	{
-		channelProviderImpl = new RPCChannelProvider();
+		// sync processing of RPC requests
+		this(0, 1);
+	}
+	
+	public RPCServer(int threads, int queueSize)
+	{
+		if (threads < 0)
+			throw new IllegalArgumentException("threads < 0");
+		
+		if (threads > 0 && queueSize < 1)
+			throw new IllegalArgumentException("queueSize < 1");
+		
+		if (threads > 0)
+		{
+			threadPoll = new ThreadPoolExecutor(threads, threads,
+												0, TimeUnit.SECONDS,
+												new ArrayBlockingQueue<Runnable>(queueSize));
+			threadPoll.prestartAllCoreThreads();
+		}
+		else
+			threadPoll = null;		// sync processing
+
+		channelProviderImpl = new RPCChannelProvider(threadPoll);
 		ChannelAccessFactory.registerChannelProvider(channelProviderImpl);
 		System.setProperty("EPICS4_CAS_PROVIDER_NAME", channelProviderImpl.getProviderName());
 
@@ -43,7 +71,15 @@ public class RPCServer {
 	
 	public void destroy() throws CAException
 	{
-		serverContext.destroy();
+		if (threadPoll == null)
+			serverContext.destroy();
+		else
+		{
+			// notify to shutdown and do not accept any new requests
+			threadPoll.shutdown();
+			serverContext.destroy();
+			threadPoll.shutdownNow();
+		}
 	}
 	
 	public void registerService(String serviceName, RPCService service)

@@ -4,6 +4,7 @@
 package org.epics.pvaccess.server.rpc.impl;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.epics.pvaccess.client.AccessRights;
@@ -57,15 +58,18 @@ public class RPCChannel implements Channel {
 	private final ChannelRequester channelRequester;
 	
 	private final RPCService rpcService;
+	private final ThreadPoolExecutor threadPool;
 	
 	
 	public RPCChannel(ChannelProvider provider, String channelName,
-			ChannelRequester channelRequester, RPCService rpcService)
+			ChannelRequester channelRequester, RPCService rpcService,
+			ThreadPoolExecutor threadPool)
 	{
 		this.provider = provider;
 		this.channelName = channelName;
 		this.channelRequester = channelRequester;
 		this.rpcService = rpcService;
+		this.threadPool = threadPool;
 	}
 
 	@Override
@@ -130,12 +134,11 @@ public class RPCChannel implements Channel {
 			}
 		}
 
-		@Override
-		public void request(PVStructure pvArgument, boolean lastRequest) {
-			// TODO now this is sync
-			
+		private void processRequest(PVStructure pvArgument, boolean lastRequest)
+		{
 			PVStructure result = null;
 			Status status = okStatus;
+			boolean ok = true;
 			try
 			{
 				result = rpcService.request(pvArgument);
@@ -147,6 +150,7 @@ public class RPCChannel implements Channel {
 						rre.getStatus(),
 						rre.getMessage(),
 						rre);
+				ok = false;
 			}
 			catch (Throwable th)
 			{
@@ -155,10 +159,11 @@ public class RPCChannel implements Channel {
 					statusCreate.createStatus(StatusType.FATAL,
 								"Unexpected exception caught while calling RPCService.request(PVStructure).",
 								th);
+				ok = false;
 			}
 		
 			// check null result
-			if (result == null)
+			if (ok && result == null)
 			{
 				status =
 					statusCreate.createStatus(
@@ -168,6 +173,24 @@ public class RPCChannel implements Channel {
 			}
 			
 			channelRPCRequester.requestDone(status, result);
+			
+			if (lastRequest)
+				destroy();
+		}
+		
+		@Override
+		public void request(final PVStructure pvArgument, final boolean lastRequest) {
+			if (threadPool == null)
+				processRequest(pvArgument, lastRequest);
+			else
+			{
+				threadPool.execute(new Runnable() {
+					@Override
+					public void run() {
+						processRequest(pvArgument, lastRequest);
+					}
+				});
+			}
 		}
 		
 		@Override
