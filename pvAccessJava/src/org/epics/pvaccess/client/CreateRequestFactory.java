@@ -41,7 +41,7 @@ public class CreateRequestFactory {
         private static final Structure emptyStructure = fieldCreate.createStructure(new String[0], new Field[0]);
         private static final Pattern commaPattern = Pattern.compile("[,]");
         private static final Pattern equalPattern = Pattern.compile("[=]");
-        private static final Pattern periodPattern = Pattern.compile("[.]");
+        //private static final Pattern periodPattern = Pattern.compile("[.]");
         
     	
     	static PVStructure createRequest(String request,Requester requester) {

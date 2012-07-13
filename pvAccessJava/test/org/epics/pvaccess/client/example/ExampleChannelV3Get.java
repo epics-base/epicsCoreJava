@@ -32,8 +32,10 @@ public class ExampleChannelV3Get {
      * @param  args is a sequence of flags and filenames.
      */
     public static void main(String[] args) throws CAException {
+    	
     	org.epics.caV3.ClientFactory.start();
-        int len = args.length;
+        
+    	int len = args.length;
         if(len<1 || len>2 || (len==1 && args[0].equals("?"))) {
             System.out.println("Usage: channelName request");
             return;
@@ -46,7 +48,7 @@ public class ExampleChannelV3Get {
         
         Client client = new Client(channelName,request);
         client.waitUntilDone(1000000);
-        org.epics.pvaccess.ClientFactory.stop();
+        //org.epics.caV3.ClientFactory.stop();
         System.exit(0);
     }
     

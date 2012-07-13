@@ -27,7 +27,7 @@ public interface CAConstants {
 	public static final byte CA_MAGIC = (byte)0xCA;
 
 	/**
-	 * CA protocol minor revision (implemented by this library).
+	 * CA protocol revision (implemented by this library).
 	 */
 	public static final byte CA_PROTOCOL_REVISION = 0;
 
