@@ -11,7 +11,7 @@ import org.epics.pvdata.pv.Type;
 public class PVRequestUtils {
 
     public static boolean getProcess(PVStructure pvRequest) {
-    	PVField pvField = pvRequest.getSubField("record.process");
+    	PVField pvField = pvRequest.getSubField("record._options.process");
     	if(pvField==null || pvField.getField().getType()!=Type.scalar) return false;
     	Scalar scalar = (Scalar)pvField.getField();
     	if(scalar.getScalarType()==ScalarType.pvString) {
