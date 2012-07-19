@@ -79,7 +79,6 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
     private static final Convert convert = ConvertFactory.getConvert();
     private static final StandardPVField standardPVField = StandardPVFieldFactory.getStandardPVField();
     private static enum DBRProperty {none,status,time,graphic,control};
-    private static final Pattern commaPattern = Pattern.compile("[,]");
     private static final Map<gov.aps.jca.dbr.Status, AlarmStatus> statusMap = new HashMap<Status, AlarmStatus>();
     
     private final V3Channel v3Channel;
@@ -168,48 +167,46 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
         }
         for(int indField = 0; indField<pvFields.length; indField++) {
             PVField pvField = pvFields[indField];
-            Field field = pvField.getField();
-            if(field.getType()!=Type.scalar) return null;
-            Scalar scalar = (Scalar)field;
-            if(scalar.getScalarType()!=ScalarType.pvString) return null;
-            PVString pvString = (PVString)pvField;
-            String fieldName = fieldNames[indField];
-            if(fieldName.equals("fieldList")) {
-                String fieldList = pvString.get();
-                String[] fields = commaPattern.split(fieldList);
-                for(int i=0; i<fields.length; i++) {
-                	String val = fields[i].trim();
-                	if(val.equals("value.index")) {
-                        valueIsIndex = true;
-                    } else if(val.equals("value.choice")) {
-                        valueIsChoice = true;
-                    } else if(!fields[i].equals("value")) {
-                        propertyList.add(fields[i]);
-                    }
-                }
-            } else if(fieldName.equals("value")) {
-                String val = pvString.get();
-                if(val.equals("value.index")) {
-                    valueIsIndex = true;
-                } else if(val.equals("value.choice")) {
+            if(pvField.getFieldName().equals("alarm")) {
+                if(propertiesAllowed) propertyList.add("alarm");
+                continue;
+            }
+            if(pvField.getFieldName().equals("timeStamp")) {
+                if(propertiesAllowed) propertyList.add("timeStamp");
+                continue;
+            }
+            if(pvField.getFieldName().equals("display")) {
+                if(propertiesAllowed && nativeDBRType!=DBRType.ENUM) propertyList.add("display");
+                continue;
+            }
+            if(pvField.getFieldName().equals("control")) {
+                if(propertiesAllowed && nativeDBRType!=DBRType.ENUM) propertyList.add("control");
+                continue;
+            }
+            if(!pvField.getFieldName().equals("value")) {
+System.out.printf("%s not recoginized%n",pvField);
+                continue;
+            }
+            // must be value
+            if(nativeDBRType!=DBRType.ENUM) continue;
+            PVStructure pvValue = (PVStructure)pvField;
+            PVField[] pvValueFields = pvValue.getPVFields();
+            if(pvValueFields.length==0) {
+                valueIsChoice = true;
+            } else {
+                if(pvValueFields.length!=1) {
                     valueIsChoice = true;
-                }
-            } else if(propertiesAllowed) {
-                String val = pvString.get();
-                if(val.equals(fieldName)) {
-                    if(val.equals("timeStamp")) {
-                        propertyList.add(val);
-                    } else if(val.equals("alarm")) {
-                        propertyList.add(val);
-                    } else if(nativeDBRType==DBRType.ENUM) {
-                        // do not add
-                    } else if(val.equals("display")) {
-                        propertyList.add(val);
-                    } else if(val.equals("control")) {
-                        propertyList.add(val);
+System.out.printf("%s value has unknown subfields%n",pvField);
+                } else {
+                    String fieldName = pvValueFields[0].getFieldName();
+                    if(fieldName.equals("index")) {
+                        valueIsIndex = true;
+                    } else {
+                        valueIsChoice = true;
                     }
                 }
             }
+            
         }
         if(nativeDBRType.isENUM()) {
             if(valueIsIndex) {
@@ -916,28 +913,22 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
                         pvUnits.put(units.toString());
                     }
                 }
-                PVStructure pvLimits = pvStructure.getStructureField("limit");
-                if(pvLimits!=null) {
-                    PVDouble pvLow = pvLimits.getDoubleField("low");
-                    PVDouble pvHigh = pvLimits.getDoubleField("high");
-                    if(pvLow!=null && pvHigh!=null) {
-                        pvLow.put(displayLow);
-                        pvHigh.put(displayHigh);
-                    }
+                PVDouble pvLow = pvStructure.getDoubleField("limitLow");
+                PVDouble pvHigh = pvStructure.getDoubleField("limitHigh");
+                if(pvLow!=null && pvHigh!=null) {
+                    pvLow.put(displayLow);
+                    pvHigh.put(displayHigh);
                 }
             }
         }
         if(controlLow<controlHigh) {
             pvStructure = this.pvStructure.getStructureField("control");
             if(pvStructure!=null) {
-                pvStructure = pvStructure.getStructureField("limit");
-                if(pvStructure!=null) {
-                    PVDouble pvLow = pvStructure.getDoubleField("low");
-                    PVDouble pvHigh = pvStructure.getDoubleField("high");
-                    if(pvLow!=null && pvHigh!=null) {
-                        pvLow.put(controlLow);
-                        pvHigh.put(controlHigh);
-                    }
+                PVDouble pvLow = pvStructure.getDoubleField("limitLow");
+                PVDouble pvHigh = pvStructure.getDoubleField("limitHigh");
+                if(pvLow!=null && pvHigh!=null) {
+                    pvLow.put(displayLow);
+                    pvHigh.put(displayHigh);
                 }
             }
         }

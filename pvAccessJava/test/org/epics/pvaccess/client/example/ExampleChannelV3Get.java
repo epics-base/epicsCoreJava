@@ -66,11 +66,7 @@ public class ExampleChannelV3Get {
         private BitSet bitSet = null;
 
         Client(String channelName,String request) {
-            //if(request==null) {
-            //    pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
-            //} else {
-                pvRequest = CreateRequestFactory.createRequest("field(value,alarm,timeStamp)", this);
-            //}
+            pvRequest = CreateRequestFactory.createRequest(request,this);
             channelProvider = channelAccess.getProvider(org.epics.caV3.ClientFactory.PROVIDER_NAME);
             channel = channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
         }
