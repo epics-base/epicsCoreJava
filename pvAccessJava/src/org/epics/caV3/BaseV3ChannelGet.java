@@ -39,36 +39,31 @@ implements ChannelGet,GetListener,ConnectionListener
 {
     private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
     private static final Status okStatus = statusCreate.getStatusOK();
-    private static Status channelDestroyedStatus = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
-    private static Status channelNotConnectedStatus = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
-    private static Status disconnectedWhileActiveStatus = statusCreate.createStatus(StatusType.ERROR, "disconnected while active", null);
-    private static Status createChannelStructureStatus = statusCreate.createStatus(StatusType.ERROR, "createChannelStructure failed", null);
+    private static final Status channelDestroyedStatus = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
+    private static final Status channelNotConnectedStatus = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
+    private static final Status disconnectedWhileActiveStatus = statusCreate.createStatus(StatusType.ERROR, "disconnected while active", null);
+    private static final Status createChannelStructureStatus = statusCreate.createStatus(StatusType.ERROR, "createChannelStructure failed", null);
     
     private final ChannelGetRequester channelGetRequester;
 
-    private V3Channel v3Channel = null;
-    private V3ChannelStructure v3ChannelStructure = null;
+    private final V3Channel v3Channel;
+    private final V3ChannelStructure v3ChannelStructure;
     
     private volatile boolean isDestroyed = false;
     
     private final ReentrantLock lock = new ReentrantLock();
     
-    private AtomicBoolean isActive = new AtomicBoolean(false);
+    private final AtomicBoolean isActive = new AtomicBoolean(false);
+    
     /**
      * Constructor.
      * @param channelGetRequester The channelGetRequester.
-     */
-    public BaseV3ChannelGet(ChannelGetRequester channelGetRequester)
-    {
-        this.channelGetRequester = channelGetRequester;
-    }
-    /**
-     * Initialize the channelGet.
      * @param v3Channel The V3Channel
      * @param pvRequest The request structure.
      */
-    public void init(V3Channel v3Channel,PVStructure pvRequest)
+    public BaseV3ChannelGet(ChannelGetRequester channelGetRequester, V3Channel v3Channel,PVStructure pvRequest)
     {
+        this.channelGetRequester = channelGetRequester;
         this.v3Channel = v3Channel;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
@@ -140,8 +135,8 @@ implements ChannelGet,GetListener,ConnectionListener
     /* (non-Javadoc)
      * @see gov.aps.jca.event.ConnectionListener#connectionChanged(gov.aps.jca.event.ConnectionEvent)
      */
-    public void connectionChanged(ConnectionEvent arg0) {
-        if(!arg0.isConnected()) {
+    public void connectionChanged(ConnectionEvent event) {
+        if(!event.isConnected()) {
     		getDone(disconnectedWhileActiveStatus);
         }
     }

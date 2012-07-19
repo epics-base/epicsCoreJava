@@ -80,9 +80,9 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
     private static final StandardPVField standardPVField = StandardPVFieldFactory.getStandardPVField();
     private static enum DBRProperty {none,status,time,graphic,control};
     private static final Pattern commaPattern = Pattern.compile("[,]");
-    private static Map<gov.aps.jca.dbr.Status, AlarmStatus> statusMap = new HashMap<Status, AlarmStatus>();
+    private static final Map<gov.aps.jca.dbr.Status, AlarmStatus> statusMap = new HashMap<Status, AlarmStatus>();
     
-    private V3Channel v3Channel;
+    private final V3Channel v3Channel;
     
     private DBRType nativeDBRType = null;
     private DBRType requestDBRType = null;

@@ -58,58 +58,58 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
 {
     private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
     private static final Status okStatus = statusCreate.getStatusOK();
-    private static Status channelDestroyedStatus = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
-    private static Status channelNotConnectedStatus = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
-    private static Status disconnectedWhileActiveStatus = statusCreate.createStatus(StatusType.ERROR, "disconnected while active", null);
-    private static Status createChannelStructureStatus = statusCreate.createStatus(StatusType.ERROR, "createChannelStructure failed", null);
+    private static final Status channelDestroyedStatus = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
+    private static final Status channelNotConnectedStatus = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
+    private static final Status disconnectedWhileActiveStatus = statusCreate.createStatus(StatusType.ERROR, "disconnected while active", null);
+    private static final Status createChannelStructureStatus = statusCreate.createStatus(StatusType.ERROR, "createChannelStructure failed", null);
 
-    private V3Channel v3Channel = null;
-    private gov.aps.jca.Channel jcaChannel = null;
-    private int elementCount = 1;
     private final ChannelPutRequester channelPutRequester;
-    private V3ChannelStructure v3ChannelStructure = null;
+    private final V3Channel v3Channel;
+    private final V3ChannelStructure v3ChannelStructure;
+    private final gov.aps.jca.Channel jcaChannel;
+    private final int elementCount;
 
     private final ReentrantLock lock = new ReentrantLock();
 
     private volatile boolean isDestroyed = false;
-    private PVField pvField = null;
-    private PVInt pvIndex = null; // only if nativeDBRType.isENUM()
-    private ByteArrayData byteArrayData = new ByteArrayData();
-    private ShortArrayData shortArrayData = new ShortArrayData();
-    private IntArrayData intArrayData = new IntArrayData();
-    private FloatArrayData floatArrayData = new FloatArrayData();
-    private DoubleArrayData doubleArrayData = new DoubleArrayData();
-    private StringArrayData stringArrayData = new StringArrayData();
+    private final PVField pvField;
+    private final PVInt pvIndex; // only if nativeDBRType.isENUM()
+    private final ByteArrayData byteArrayData = new ByteArrayData();
+    private final ShortArrayData shortArrayData = new ShortArrayData();
+    private final IntArrayData intArrayData = new IntArrayData();
+    private final FloatArrayData floatArrayData = new FloatArrayData();
+    private final DoubleArrayData doubleArrayData = new DoubleArrayData();
+    private final StringArrayData stringArrayData = new StringArrayData();
     
-    private AtomicBoolean isActive = new AtomicBoolean(false);
+    private final AtomicBoolean isActive = new AtomicBoolean(false);
 
     /**
      * Constructor.
      * @param channelPutRequester The channelPutRequester.
+     * @param v3Channel The V3Channel
+     * @param pvRequest The request structure.
      */
-    public BaseV3ChannelPut(ChannelPutRequester channelPutRequester)
+    public BaseV3ChannelPut(ChannelPutRequester channelPutRequester,
+    		V3Channel v3Channel,PVStructure pvRequest)
     {
         this.channelPutRequester = channelPutRequester;
-    }
-    /**
-     * Initialize the channelPut.
-     * @param v3Channel The V3Channel
-     */
-    public void init(V3Channel v3Channel,PVStructure pvRequest)
-    {
         this.v3Channel = v3Channel;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
         if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
+            jcaChannel = null; elementCount = 1; pvField = null; pvIndex = null;
             channelPutRequester.channelPutConnect(createChannelStructureStatus,null,null,null);
+            destroy();
+            return;
         }
         DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
         jcaChannel = v3Channel.getJCAChannel();
         try {
             jcaChannel.addConnectionListener(this);
         } catch (CAException e) {
+            elementCount = 1; pvField = null; pvIndex = null;
             channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", e),null,null,null);
-            jcaChannel = null;
+            destroy();
             return;
         }
         PVStructure pvStructure = v3ChannelStructure.getPVStructure();
@@ -117,15 +117,19 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         elementCount = jcaChannel.getElementCount();
         if(nativeDBRType.isENUM()) {
             if(elementCount!=1) {
+                pvIndex = null;
                 channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "array of ENUM not supported", null),null,null,null);
+                destroy();
                 return;
             }
             PVStructure pvStruct = (PVStructure)pvField;
             pvIndex = pvStruct.getIntField("index");
         }
+        else
+        	pvIndex = null;
         channelPutRequester.channelPutConnect(okStatus,this,
             v3ChannelStructure.getPVStructure(),v3ChannelStructure.getBitSet());
-    } 
+    }
     /* (non-Javadoc)
      * @see org.epics.ioc.ca.ChannelPut#destroy()
      */
@@ -285,8 +289,8 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     /* (non-Javadoc)
      * @see gov.aps.jca.event.PutListener#putCompleted(gov.aps.jca.event.PutEvent)
      */
-    public void putCompleted(PutEvent arg0) {
-    	CAStatus caStatus = arg0.getStatus();
+    public void putCompleted(PutEvent event) {
+    	CAStatus caStatus = event.getStatus();
         if(!caStatus.isSuccessful()) {
             putDone(statusCreate.createStatus(StatusType.ERROR, caStatus.toString(), null));
             return;
@@ -309,8 +313,9 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     /* (non-Javadoc)
      * @see gov.aps.jca.event.ConnectionListener#connectionChanged(gov.aps.jca.event.ConnectionEvent)
      */
-    public void connectionChanged(ConnectionEvent arg0) {
-        if(!arg0.isConnected()) {
+    public void connectionChanged(ConnectionEvent event) {
+    	// TODO notification for pending get request is missing
+        if(!event.isConnected()) {
     		putDone(disconnectedWhileActiveStatus);
         }
     }

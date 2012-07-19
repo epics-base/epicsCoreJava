@@ -37,54 +37,53 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
 {
     private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
     private static final Status okStatus = statusCreate.getStatusOK();
-    private static Status channelDestroyedStatus = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
-    private static Status createChannelStructureStatus = statusCreate.createStatus(StatusType.ERROR, "createChannelStructure failed", null);
-    private static Status getInitialStatus = statusCreate.createStatus(StatusType.ERROR, "get initial failed", null);
+    private static final Status channelDestroyedStatus = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
+    private static final Status createChannelStructureStatus = statusCreate.createStatus(StatusType.ERROR, "createChannelStructure failed", null);
+    private static final Status getInitialStatus = statusCreate.createStatus(StatusType.ERROR, "get initial failed", null);
 
-    private MonitorRequester monitorRequester;
+    private final MonitorRequester monitorRequester;
     
-    private V3Channel v3Channel = null;
-    private gov.aps.jca.Channel jcaChannel = null;
-    private V3ChannelStructure v3ChannelStructure = null;
+    private final V3Channel v3Channel;
+    private final gov.aps.jca.Channel jcaChannel;
+    private final V3ChannelStructure v3ChannelStructure;
    
-    private Monitor monitor = null;
-    private boolean isDestroyed = false;
+    private volatile Monitor monitor = null;
+    private volatile boolean isDestroyed = false;
     
-    private BitSet overrunBitSet = null;
-    private MonitorElement monitorElement = null;
+    private final BitSet overrunBitSet;
+    private final MonitorElement monitorElement;
     /**
      * Constructor.
      * @param monitorRequester The monitorRequester.
-     */
-    public BaseV3Monitor(MonitorRequester monitorRequester) {
-        this.monitorRequester = monitorRequester;
-    }
-    /**
-     * Initialize the channelMonitor.
      * @param v3Channel The V3Channel
      * @param pvRequest The request structure.
      */
-    public void init(V3Channel v3Channel,PVStructure pvRequest)
-    {
+    public BaseV3Monitor(MonitorRequester monitorRequester,V3Channel v3Channel,PVStructure pvRequest) {
+        this.monitorRequester = monitorRequester;
         this.v3Channel = v3Channel;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
         if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
+        	jcaChannel = null; overrunBitSet = null; monitorElement = null;
             monitorRequester.monitorConnect(createChannelStructureStatus,null,null);
             destroy();
+            return;
         }
         jcaChannel = v3Channel.getJCAChannel();
         try {
             jcaChannel.addConnectionListener(this);
         } catch (CAException e) {
+        	overrunBitSet = null; monitorElement = null;
             monitorRequester.monitorConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", e), null,null);
-            jcaChannel = null;
+            destroy();
             return;
         };
         try {
             jcaChannel.get(v3ChannelStructure.getRequestDBRType(),jcaChannel.getElementCount(), this);
         } catch (Throwable th) {
+        	overrunBitSet = null; monitorElement = null;
             monitorRequester.monitorConnect(getInitialStatus,null,null);
+            destroy();
             return;
         }
         PVStructure pvStructure = v3ChannelStructure.getPVStructure();
@@ -173,20 +172,24 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
     /* (non-Javadoc)
      * @see gov.aps.jca.event.ConnectionListener#connectionChanged(gov.aps.jca.event.ConnectionEvent)
      */
-    public void connectionChanged(ConnectionEvent arg0) {
-        if(!arg0.isConnected()) {
+    public void connectionChanged(ConnectionEvent event) {
+        if(!event.isConnected()) {
             if(monitor!=null) stop();
         }
+        /*
+        else
+        {
+        	if(monitor!=null) start();
+        }
+        */
     }
     
     private static class MonitorElementImpl implements MonitorElement {
-        private PVStructure pvStructure;
-        private BitSet changedBitSet;
-        private BitSet overrunBitSet;
+        private final PVStructure pvStructure;
+        private final BitSet changedBitSet;
+        private final BitSet overrunBitSet;
         
-
         MonitorElementImpl(PVStructure pvStructure,BitSet changedBitSet, BitSet overrunBitSet) {
-            super();
             this.pvStructure = pvStructure;
             this.changedBitSet = changedBitSet;
             this.overrunBitSet = overrunBitSet;

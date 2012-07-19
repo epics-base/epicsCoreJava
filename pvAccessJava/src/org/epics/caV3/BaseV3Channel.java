@@ -77,8 +77,8 @@ V3Channel,ConnectionListener
     private final LinkedList<ChannelPut> channelPutList = new LinkedList<ChannelPut>();
     private final LinkedList<Monitor> monitorList =  new LinkedList<Monitor>();
     
-    private gov.aps.jca.Channel jcaChannel = null;
-    private volatile boolean isDestroyed = false;
+    private volatile gov.aps.jca.Channel jcaChannel = null;
+    private boolean isDestroyed = false;
     /**
      * The constructor.
      * @param channelProvider The channelProvider.
@@ -239,9 +239,7 @@ V3Channel,ConnectionListener
     public ChannelGet createChannelGet(ChannelGetRequester channelGetRequester,
             PVStructure pvRequest)
     {
-        BaseV3ChannelGet channelGet = new BaseV3ChannelGet(channelGetRequester);
-        channelGet.init(this,pvRequest);
-        return channelGet;
+        return new BaseV3ChannelGet(channelGetRequester, this, pvRequest);
     }
     /* (non-Javadoc)
      * @see org.epics.pvaccess.client.Channel#createMonitor(org.epics.pvdata.monitor.MonitorRequester, org.epics.pvdata.pv.PVStructure, org.epics.pvdata.pv.PVStructure)
@@ -251,9 +249,7 @@ V3Channel,ConnectionListener
             MonitorRequester monitorRequester,
             PVStructure pvRequest)
     {
-        BaseV3Monitor monitor = new BaseV3Monitor(monitorRequester);
-        monitor.init(this,pvRequest);
-        return monitor;
+        return new BaseV3Monitor(monitorRequester, this, pvRequest);
     }
     /* (non-Javadoc)
      * @see org.epics.pvaccess.client.Channel#createChannelProcess(org.epics.pvaccess.client.ChannelProcessRequester, org.epics.pvdata.pv.PVStructure)
@@ -273,9 +269,7 @@ V3Channel,ConnectionListener
     public ChannelPut createChannelPut(ChannelPutRequester channelPutRequester,
             PVStructure pvRequest)
     {
-        BaseV3ChannelPut channelPut = new BaseV3ChannelPut(channelPutRequester);
-        channelPut.init(this,pvRequest);
-        return channelPut;
+        return new BaseV3ChannelPut(channelPutRequester, this, pvRequest);
     }
     /* (non-Javadoc)
      * @see org.epics.pvaccess.client.Channel#createChannelPutGet(org.epics.pvaccess.client.ChannelPutGetRequester, org.epics.pvdata.pv.PVStructure, boolean, org.epics.pvdata.pv.PVStructure, boolean, boolean, org.epics.pvdata.pv.PVStructure)

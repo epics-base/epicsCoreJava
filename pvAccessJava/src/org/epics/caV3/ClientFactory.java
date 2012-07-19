@@ -35,9 +35,9 @@ import org.epics.pvdata.pv.Status;
  *
  */
 public class ClientFactory  {
-    static ChannelProviderImpl channelProvider = new ChannelProviderImpl();
+    static final ChannelProviderImpl channelProvider = new ChannelProviderImpl();
     private static Context context = null;
-    private static ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
+    private static final ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
 
     public static final String PROVIDER_NAME = "caV3";
 
@@ -52,7 +52,7 @@ public class ClientFactory  {
     implements ChannelProvider,ContextExceptionListener, ContextMessageListener
     {
         private volatile boolean isRegistered = false; 
-        private CAThread caThread = null;
+        private volatile CAThread caThread = null;
         
         synchronized private void register() {
             if(isRegistered) return;
@@ -146,9 +146,9 @@ public class ClientFactory  {
     private static class LocateFind implements ChannelFind,ChannelFindRequester{
         
         private final ChannelProvider channelProvider;
-        private ChannelFindRequester channelFindRequester = null;
-        private BaseV3Channel v3Channel = null;
-        private String channelName = null;
+        private volatile ChannelFindRequester channelFindRequester = null;
+        private volatile BaseV3Channel v3Channel = null;
+        private final String channelName;
         
         
         LocateFind(ChannelProvider channelProvider, String channelName) {
@@ -195,7 +195,7 @@ public class ClientFactory  {
     }
     
     private static class CAThread implements RunnableReady {
-        private Thread thread = null;
+        private final Thread thread;
         private CAThread(String threadName,int threadPriority)
         {
             thread = threadCreate.create(threadName, threadPriority, this);
