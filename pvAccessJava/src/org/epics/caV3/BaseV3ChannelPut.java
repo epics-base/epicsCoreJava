@@ -82,6 +82,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     private final StringArrayData stringArrayData = new StringArrayData();
     
     private final AtomicBoolean isActive = new AtomicBoolean(false);
+    private final AtomicBoolean isGetActive = new AtomicBoolean(false);
 
     /**
      * Constructor.
@@ -152,6 +153,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
             return;
         }
         
+        isGetActive.set(true);
         try {
             jcaChannel.get(v3ChannelStructure.getRequestDBRType(), elementCount, this);
         } catch (Throwable th) {
@@ -178,8 +180,10 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         getDone(okStatus);
     }
     private void getDone(Status success) {
+    	if (!isGetActive.getAndSet(false)) return;
         channelPutRequester.getDone(success);
     }
+    
     /* (non-Javadoc)
      * @see org.epics.pvaccess.client.ChannelPut#put(boolean)
      */
@@ -314,9 +318,9 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
      * @see gov.aps.jca.event.ConnectionListener#connectionChanged(gov.aps.jca.event.ConnectionEvent)
      */
     public void connectionChanged(ConnectionEvent event) {
-    	// TODO notification for pending get request is missing
         if(!event.isConnected()) {
     		putDone(disconnectedWhileActiveStatus);
+    		getDone(disconnectedWhileActiveStatus);
         }
     }
     

@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.factory.StandardPVFieldFactory;
@@ -56,7 +55,6 @@ import org.epics.pvdata.property.AlarmStatus;
 import org.epics.pvdata.property.PVEnumerated;
 import org.epics.pvdata.property.PVEnumeratedFactory;
 import org.epics.pvdata.pv.Convert;
-import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVField;
@@ -66,7 +64,6 @@ import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVScalarArray;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.StandardPVField;
 import org.epics.pvdata.pv.Type;
@@ -145,15 +142,12 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
         int elementCount = jcaChannel.getElementCount();
         nativeDBRType = jcaChannel.getFieldType();
         PVField[] pvFields = null;
-        String[] fieldNames = null;
         PVField pvf = pvRequest.getSubField("field");
         if(pvf!=null && pvf.getField().getType()==Type.structure) {
             PVStructure pvStruct = pvRequest.getStructureField("field");
             pvFields = pvStruct.getPVFields();
-            fieldNames = pvStruct.getStructure().getFieldNames();
         } else {
         	pvFields = pvRequest.getPVFields();
-        	fieldNames = pvRequest.getStructure().getFieldNames();
         } 
         boolean valueIsIndex = false;
         boolean valueIsChoice = false;
