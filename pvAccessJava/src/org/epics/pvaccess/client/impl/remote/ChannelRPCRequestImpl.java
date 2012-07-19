@@ -54,8 +54,11 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		super(channel, callback);
 		
 		if (callback == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null requester");
-
+		}
+		
 		this.callback = callback;
 		
 		this.pvRequest = pvRequest;
@@ -65,8 +68,10 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
 			callback.channelRPCConnect(channelNotConnected, null);
+			destroy(true);
 		} catch (CAException e) {		
 			callback.channelRPCConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null);
+			destroy(true);
 		}
 	}
 

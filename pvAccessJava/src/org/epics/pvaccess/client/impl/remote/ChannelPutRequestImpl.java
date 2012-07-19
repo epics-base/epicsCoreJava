@@ -55,10 +55,16 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		super(channel, callback);
 		
 		if (callback == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null requester");
-
+		}
+		
 		if (pvRequest == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null pvRequest");
+		}
 		
 		this.callback = callback;
 		
@@ -72,8 +78,10 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
 			callback.channelPutConnect(channelNotConnected, null, null, null);
+			destroy(true);
 		} catch (CAException e) {
 			callback.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null, null, null);
+			destroy(true);
 		}
 	}
 

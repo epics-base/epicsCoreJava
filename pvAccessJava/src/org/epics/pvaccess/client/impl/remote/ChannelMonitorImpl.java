@@ -80,11 +80,17 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		this.callback = callback;
 		
 		if (callback == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null requester");
-
+		}
+		
 		if (pvRequest == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null pvRequest");
-
+		}
+		
 		this.pvRequest = pvRequest;
 
 		
@@ -100,6 +106,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 						PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "queueSize type is not a valid integer", e),
 						null, null);
 				monitorStrategy = null;
+				destroy(true);
 				return;
 			}
 		}
@@ -119,8 +126,10 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
 			callback.monitorConnect(channelNotConnected, null, null);
+			destroy(true);
 		} catch (CAException e) {		
 			callback.monitorConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null, null);
+			destroy(true);
 		}
 	}
 
