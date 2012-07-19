@@ -63,10 +63,16 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		super(channel, callback);
 		
 		if (callback == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null requester");
+		}
 		
 		if (pvRequest == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null pvRequest");
+		}
 
 		this.callback = callback;
 		this.pvRequest = pvRequest;
@@ -76,8 +82,10 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
 			callback.channelArrayConnect(channelNotConnected, null, null);
+			destroy(true);
 		} catch (CAException e) {
 			callback.channelArrayConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null, null);
+			destroy(true);
 		}
 	}
 

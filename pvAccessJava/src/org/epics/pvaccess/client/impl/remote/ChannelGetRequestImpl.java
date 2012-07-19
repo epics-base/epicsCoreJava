@@ -55,10 +55,16 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		super(channel, callback);
 		
 		if (callback == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null requester");
-
+		}
+		
 		if (pvRequest == null)
+		{
+			destroy(true);
 			throw new IllegalArgumentException("null pvRequest");
+		}
 		
 		this.callback = callback;
 		
@@ -72,8 +78,10 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
 			callback.channelGetConnect(channelNotConnected, null, null, null);
+			destroy(true);
 		} catch (CAException caex) {
 			callback.channelGetConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", caex), null, null, null);
+			destroy(true);
 		}
 	}
 

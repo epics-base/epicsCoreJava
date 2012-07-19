@@ -181,10 +181,11 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		destroy();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelRequest#destroy()
+	/**
+	 * Actial destroy implementation.
+	 * @param createRequestFailed set to true if create request failed.
 	 */
-	public void destroy() {
+	protected void destroy(boolean createRequestFailed) {
 		
 		synchronized (this) {
 			if (destroyed)
@@ -197,7 +198,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		channel.unregisterResponseRequest(this);
 
 		// destroy remote instance
-		if (!remotelyDestroyed)
+		if (!createRequestFailed && !remotelyDestroyed)
 		{
 			startRequest(PURE_DESTROY_REQUEST);
 			try {
@@ -206,7 +207,13 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 				// noop, we are just not connected
 			}
 		}
-		
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.client.ChannelRequest#destroy()
+	 */
+	public void destroy() {
+		destroy(false);
 	}
 	
 	/* (non-Javadoc)
