@@ -103,12 +103,19 @@ public class BeaconHandlerImpl implements BeaconHandler {
 
 			return false;
 		}
-		
+
 		final boolean networkChange = !serverStartupTime.equals(startupTime);
 		if (networkChange)
+		{
+			// update startup time
+			serverStartupTime = startupTime;
+
 			context.newServerDetected();
-	
-		return networkChange;
+			
+			return true;
+		}
+		
+		return false;
 	}
 
 	/**

@@ -16,7 +16,10 @@ package org.epics.pvaccess.util.logging;
 
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * Implementation of Java Logging API handler.
@@ -68,6 +71,18 @@ public class ConsoleLogHandler extends Handler {
 	public void publish(LogRecord record) {
 		if (isLoggable(record))
 			System.out.print(formatter.format(record));
+	}
+	
+	/**
+	 * Setup this handler as the only one root handler.
+	 * @param logLevel root log level to be set.
+	 */
+	public static void defaultConsoleLogging(Level logLevel)
+	{
+		LogManager.getLogManager().reset();
+		Logger rootLogger = Logger.getLogger("");
+		rootLogger.setLevel(logLevel);
+		rootLogger.addHandler(new ConsoleLogHandler());
 	}
 
 }

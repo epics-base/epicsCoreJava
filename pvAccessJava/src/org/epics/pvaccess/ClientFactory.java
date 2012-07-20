@@ -18,8 +18,15 @@ import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 
 public class ClientFactory {
-    static private boolean isRegistered = false; 
+	
+	/**
+	 * Name if the provider this factory registers.
+	 */
+	public static final String PROVIDER_NAME = ClientContextImpl.PROVIDER_NAME;
+
+	static private boolean isRegistered = false; 
     static private ClientContextImpl context;
+    
     /**
      * This initializes the Channel Access client.
      */

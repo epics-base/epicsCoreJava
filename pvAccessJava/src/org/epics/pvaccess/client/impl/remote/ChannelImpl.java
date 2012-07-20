@@ -433,9 +433,15 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	/**
 	 * @see org.epics.pvaccess.impl.remote.TransportClient#transportChanged()
 	 */
-	public void transportChanged() {
+	public /*synchronized*/ void transportChanged() {
 //System.err.println("CHANNEL transportChanged");
-		initiateSearch();
+// this will be called immediately after reconnect... bad...
+		/*
+		if (connectionState == ConnectionState.CONNECTED)
+		{
+			disconnect(true, false);
+		}
+		*/
 	}
 
 	/**
