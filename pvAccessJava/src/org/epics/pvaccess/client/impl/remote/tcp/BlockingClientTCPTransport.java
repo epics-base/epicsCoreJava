@@ -200,7 +200,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	 * at least once in this period, if not echo will be issued
 	 * and if there is not reponse to it, transport will be considered as unresponsive.
 	 */
-	// TODO @Override
+	@Override
 	public final void aliveNotification()
 	{
 		aliveTimestamp = System.currentTimeMillis();

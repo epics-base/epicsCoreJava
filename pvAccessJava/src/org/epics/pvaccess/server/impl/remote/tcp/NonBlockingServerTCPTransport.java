@@ -315,4 +315,12 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport imple
 		enqueueSendRequest(this);
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.impl.remote.Transport#aliveNotification()
+	 */
+	@Override
+	public void aliveNotification() {
+		// noop on server-side
+	}
+	
 }

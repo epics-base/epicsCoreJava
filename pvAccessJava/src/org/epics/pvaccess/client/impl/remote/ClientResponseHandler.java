@@ -22,6 +22,7 @@ import org.epics.pvaccess.client.impl.remote.handlers.BeaconHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.ConnectionValidationHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.CreateChannelHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.DataResponseHandler;
+import org.epics.pvaccess.client.impl.remote.handlers.EchoResponse;
 import org.epics.pvaccess.client.impl.remote.handlers.MessageHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.MultipleDataResponseHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.NoopResponse;
@@ -60,7 +61,7 @@ public class ClientResponseHandler implements ResponseHandler {
 			{
 				new BeaconHandler(context), /*  0 */
 				new ConnectionValidationHandler(context), /*  1 */
-				new NoopResponse(context, "Echo"), /*  2 */
+				new EchoResponse(context), /*  2 */
 				new NoopResponse(context, "Search"), /*  3 */
 				new SearchResponseHandler(context), /*  4 */
 				new NoopResponse(context, "Introspection search"), /*  5 */

@@ -456,13 +456,12 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	 * @see org.epics.pvaccess.impl.remote.TransportClient#transportUnresponsive()
 	 */
 	public synchronized void transportUnresponsive() {
-//System.err.println("CHANNEL transportUnresponsive");
-		if (connectionState == ConnectionState.CONNECTED)
+//		System.err.println("CHANNEL transportUnresponsive");
+		//if (connectionState == ConnectionState.CONNECTED)
 		{
-			// NOTE: 2 types of disconnected state - distinguish them
-			setConnectionState(ConnectionState.DISCONNECTED);
-
-			// ... CA notifies also w/ no access rights callback, although access right are not changed 
+			// TODO 2 types of disconnected state - distinguish them otherwise disconnect will handle connection loss right
+			// setConnectionState(ConnectionState.DISCONNECTED);
+			// should we notify client at all?
 		}
 	}
 
@@ -927,7 +926,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			buffer.putInt(channelID);
 			SerializeHelper.serializeString(name, buffer, control);
 			// send immediately
-			// TODO
+			// TODO really?
 			control.flush(true);
 		}
 		else
@@ -938,7 +937,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			// CID
 			buffer.putInt(channelID);
 			// send immediately
-			// TODO
+			// TODO really?
 			control.flush(true);
 		}
 	}

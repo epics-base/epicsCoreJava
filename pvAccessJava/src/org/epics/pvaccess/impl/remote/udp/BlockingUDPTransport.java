@@ -676,5 +676,13 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	public void verified() {
 		// noop
 	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.impl.remote.Transport#aliveNotification()
+	 */
+	@Override
+	public void aliveNotification() {
+		// noop
+	}
 	
 }

@@ -130,4 +130,12 @@ public interface Transport extends DeserializableControl, Channel {
 	 */
 	void verified();
 	
+	/**
+	 * Alive notification.
+	 * This method needs to be called (by newly received data or beacon)
+	 * at least once in this period, if not echo will be issued
+	 * and if there is not response to it, transport will be considered as unresponsive.
+	 */
+	void aliveNotification();
+	
 }

@@ -294,4 +294,12 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 		return true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.impl.remote.Transport#aliveNotification()
+	 */
+	@Override
+	public void aliveNotification() {
+		// noop on server-side
+	}
+	
 }

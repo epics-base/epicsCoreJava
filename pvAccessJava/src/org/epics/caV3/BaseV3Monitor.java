@@ -49,7 +49,6 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
    
     private volatile Monitor monitor = null;
     private volatile boolean isDestroyed = false;
-    private volatile boolean started = false;
     
     private final BitSet overrunBitSet;
     private final MonitorElement monitorElement;
@@ -109,7 +108,6 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
         } catch (CAException e) {
         	return statusCreate.createStatus(StatusType.ERROR, "failed to start monitor", e);
         }
-        started = true;
         return okStatus;
     }
     /* (non-Javadoc)
@@ -122,7 +120,7 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
         } catch (CAException e) {
         	return statusCreate.createStatus(StatusType.ERROR, "failed to stop monitor", e);
         }
-        started = false;
+        monitor = null;
         return okStatus;
     }
     /* (non-Javadoc)
@@ -176,14 +174,7 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
      * @see gov.aps.jca.event.ConnectionListener#connectionChanged(gov.aps.jca.event.ConnectionEvent)
      */
     public void connectionChanged(ConnectionEvent event) {
-        if(!event.isConnected()) {
-            if(monitor!=null) stop();
-        }
-        else
-        {
-        	// auto-start on reconnect
-        	if(monitor!=null && started) start();
-        }
+    	// noop
     }
     
     private static class MonitorElementImpl implements MonitorElement {
