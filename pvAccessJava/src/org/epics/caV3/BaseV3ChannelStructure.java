@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.factory.StandardPVFieldFactory;
@@ -80,6 +81,7 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
     
     private final V3Channel v3Channel;
     
+    // TODO variables below are not synced!!!
     private DBRType nativeDBRType = null;
     private DBRType requestDBRType = null;
     private PVStructure pvStructure = null;
@@ -93,11 +95,11 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
     private PVInt pvNanoSeconds = null;
     private PVScalar pvScalarValue = null;
     private PVScalarArray pvArrayValue = null;
-    // Following not null if nativeDBRType.isENUM(
+    // Following not null if nativeDBRType.isENUM
     private PVEnumerated pvEnumerated = null;
     private PVInt pvEnumeratedIndex = null;
     
-    private boolean firstGetPVStructure = true;
+    private final AtomicBoolean firstGetPVStructure = new AtomicBoolean(true);
     
     static {
         statusMap.put(Status.NO_ALARM, AlarmStatus.NONE);
@@ -926,10 +928,9 @@ System.out.printf("%s value has unknown subfields%n",pvField);
                 }
             }
         }
-        if(firstGetPVStructure) {
+        if(firstGetPVStructure.getAndSet(false)) {
             bitSet.clear();
             bitSet.set(0);
-            firstGetPVStructure = false;
         } else {
             if(pvAlarmMessage!=null) bitSet.set(pvAlarmMessage.getFieldOffset());
             if(pvAlarmSeverity!=null) bitSet.set(pvAlarmSeverity.getFieldOffset());

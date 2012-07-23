@@ -137,8 +137,8 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 			lock();
 			try {
 				// create data and its bitSet
-				data = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-				bitSet = new BitSet(data.getNumberFields());
+				data = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport, data);
+				bitSet = createBitSetFor(data, bitSet);
 			} finally {
 				unlock();
 			}
@@ -155,7 +155,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 			requester.message("Unexpected exception caught: " + writer, MessageType.fatalError);
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#normalResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */

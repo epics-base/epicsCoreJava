@@ -822,8 +822,10 @@ public abstract class AbstractCodec
 					sendCompleted();	// do not schedule sending
 					
 					if (blockingProcessQueue) {
+						if (terminated())			// termination
+							break;
 						sender = sendQueue.take(0);
-						if (sender == null)		// termination
+						if (sender == null)		// termination (we want to process even if shutdown)
 							break;
 					}
 					else
@@ -923,4 +925,6 @@ public abstract class AbstractCodec
 		sendBuffer.order(byteOrder);
 		byteOrderFlag = ByteOrder.BIG_ENDIAN == byteOrder ? 0x80 : 0x00;
 	}
+	
+	public abstract boolean terminated();
 }

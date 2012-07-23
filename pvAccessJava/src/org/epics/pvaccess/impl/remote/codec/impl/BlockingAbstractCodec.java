@@ -41,7 +41,7 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 
 	@Override
 	public void scheduleSend() {
-		// TODO wakeup
+		// noop since we wait in processSendQueue
 	}
 
 	@Override
@@ -66,6 +66,14 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 	}
 
 	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.impl.remote.codec.AbstractCodec#terminated()
+	 */
+	@Override
+	public boolean terminated() {
+		return !isOpen();
+	}
+
+	/* (non-Javadoc)
 	 * @see java.nio.channels.Channel#isOpen()
 	 */
 	@Override
@@ -74,6 +82,7 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 	}
 
 	private volatile Thread readThread = null;
+	private volatile Thread sendThread = null;
 	
 	public void start()
 	{
@@ -85,12 +94,13 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 		}, "receiveThread");
 		readThread.start();
 		
-		new Thread(new Runnable() {
+		sendThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				sendThread();
 			}
-		}, "sendThread").start();
+		}, "sendThread");
+		sendThread.start();
 		
 	}
 	
@@ -121,7 +131,7 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 				e.printStackTrace();
 			}
 		}
-		
+
 		// wait read thread to die
 		try {
 			readThread.join();		// TODO timeout

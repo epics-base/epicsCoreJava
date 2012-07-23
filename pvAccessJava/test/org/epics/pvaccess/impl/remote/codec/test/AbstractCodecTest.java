@@ -281,6 +281,11 @@ public class AbstractCodecTest extends TestCase {
 		}
 
 		@Override
+		public boolean terminated() {
+			return false;
+		}
+
+		@Override
 		public void cachedSerialize(Field field, ByteBuffer buffer) {
 			field.serialize(buffer, this);
 		}

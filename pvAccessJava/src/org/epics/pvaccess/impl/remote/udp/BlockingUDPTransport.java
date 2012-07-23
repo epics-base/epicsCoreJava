@@ -17,12 +17,14 @@ package org.epics.pvaccess.impl.remote.udp;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
+import java.util.logging.Level;
 
 import org.epics.pvaccess.CAConstants;
 import org.epics.pvaccess.PVFactory;
@@ -340,6 +342,11 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 
 				channel.send(buffer, sendAddresses[i]);
 			}
+			catch (NoRouteToHostException nrthe)
+			{
+				context.getLogger().log(Level.FINER, "No route to host exception caught when sending to: " + sendAddresses[i] + ".", nrthe);
+				return false;
+			}
 			catch (Throwable ex) 
 			{
 				ex.printStackTrace(); // TODO !!!
@@ -362,6 +369,10 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 			//context.getLogger().finest("Sending " + buffer.limit() + " bytes to " + address + ".");
 			buffer.flip();
 			channel.send(buffer, address);
+		}
+		catch (NoRouteToHostException nrthe)
+		{
+			context.getLogger().log(Level.FINER, "No route to host exception caught when sending to: " + address + ".", nrthe);
 		}
 		catch (Throwable ex) 
 		{

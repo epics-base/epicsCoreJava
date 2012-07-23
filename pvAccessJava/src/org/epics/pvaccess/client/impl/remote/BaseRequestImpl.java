@@ -25,7 +25,9 @@ import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.DataResponse;
 import org.epics.pvaccess.impl.remote.request.SubscriptionRequest;
+import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Requester;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -277,4 +279,17 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		lock.unlock();
 	}
 
+	public static final BitSet createBitSetFor(PVStructure pvStructure, BitSet existingBitSet)
+	{
+		final int pvStructureSize = pvStructure.getNumberFields();
+		if (existingBitSet != null && existingBitSet.size() >= pvStructureSize)
+		{
+			// clear existing BitSet
+			// also necessary if larger BitSet is reused
+			existingBitSet.clear();
+			return existingBitSet;
+		}
+		else
+			return new BitSet(pvStructureSize);
+	}
 }

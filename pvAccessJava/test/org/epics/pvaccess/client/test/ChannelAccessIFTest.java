@@ -2610,12 +2610,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
     	}
     }
 	
-    public void _testStressMonitorAndProcess() throws Throwable
+    public void testStressMonitorAndProcess() throws Throwable
     {
         Channel ch = syncCreateChannel("simpleCounter");
 		
     	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=3]field(timeStamp,value,alarm.severity.choices)",ch);
-    	// TODO algorithm onPut
 
     	ChannelMonitorRequesterImpl channelMonitorRequester = new ChannelMonitorRequesterImpl();
 	    ch.createMonitor(channelMonitorRequester, pvRequest);
@@ -2637,7 +2636,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ch.createChannelProcess(channelProcessRequester, null);
 		channelProcessRequester.waitAndCheckConnect();
 
-		final int COUNT = 1000;
+		final int COUNT = 50000;
 		for (int i = 2; i < COUNT; i++)
 		{
 			channelProcessRequester.syncProcess(false);

@@ -203,6 +203,11 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 	}
 
 	@Override
+	public boolean terminated() {
+		return false;
+	}
+
+	@Override
 	public void cachedSerialize(Field field, ByteBuffer buffer) {
 		// no cache
 		field.serialize(buffer, this);

@@ -30,15 +30,32 @@ public class SerializationHelper {
 	/**
 	 * Deserialize Structure and create PVStructure instance.
 	 * @param payloadBuffer data buffer.
+	 * @param control deserialization control.
 	 * @return PVStructure instance, can be <code>null</code>.
 	 */
 	public static final PVStructure deserializeStructureAndCreatePVStructure(ByteBuffer payloadBuffer, DeserializableControl control) {
+		return deserializeStructureAndCreatePVStructure(payloadBuffer, control, null);
+	}
+
+	/**
+	 * Deserialize Structure and create PVStructure instance, if necessary.
+	 * @param payloadBuffer data buffer.
+	 * @param control deserialization control.
+	 * @param existingStructure if deserialized Field matches <code>existingStrcuture</code> Field, then
+	 * 			<code>existingStructure</code> instance is returned. <code>null</code> value is allowed.
+	 * @return PVStructure instance, can be <code>null</code>.
+	 */
+	public static final PVStructure deserializeStructureAndCreatePVStructure(ByteBuffer payloadBuffer, DeserializableControl control, PVStructure existingStructure) {
 		final Field field = control.cachedDeserialize(payloadBuffer);
 		if (field == null)
 			return null;
-		return pvDataCreate.createPVStructure((Structure)field);
+		// reuse existing structure case
+		if (existingStructure != null && field.equals(existingStructure.getField()))
+			return existingStructure;
+		else
+			return pvDataCreate.createPVStructure((Structure)field);
 	}
-
+	
 	/**
 	 * Deserialize optional PVStructrue.
 	 * @param payloadBuffer data buffer.

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -254,7 +255,15 @@ public class ServerContextImpl implements ServerContext, Context {
 		if (System.getProperties().containsKey(CAConstants.PVACCESS_DEBUG))
 		{
 			logger.setLevel(Level.ALL);
-			logger.addHandler(new ConsoleLogHandler());
+			boolean found = false;
+			for (Handler handler : logger.getHandlers())
+				if (handler instanceof ConsoleLogHandler)
+				{
+					found = true;
+					break;
+				}
+			if (!found)
+				logger.addHandler(new ConsoleLogHandler());
 		}
 	}
 

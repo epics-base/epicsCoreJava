@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -292,7 +293,15 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		if (System.getProperties().containsKey(CAConstants.PVACCESS_DEBUG))
 		{
 			logger.setLevel(Level.ALL);
-			logger.addHandler(new ConsoleLogHandler());
+			boolean found = false;
+			for (Handler handler : logger.getHandlers())
+				if (handler instanceof ConsoleLogHandler)
+				{
+					found = true;
+					break;
+				}
+			if (!found)
+				logger.addHandler(new ConsoleLogHandler());
 		}
 	}
 	

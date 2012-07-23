@@ -151,8 +151,8 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			
 			lock();
 			try {
-				putData = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-				getData = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
+				putData = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport, putData);
+				getData = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport, getData);
 			} finally {
 				unlock();
 			}

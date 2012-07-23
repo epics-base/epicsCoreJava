@@ -94,6 +94,14 @@ public abstract class NonBlockingAbstractCodec extends AbstractCodec implements 
 	abstract void internalDestroy();
 
 	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.impl.remote.codec.AbstractCodec#terminated()
+	 */
+	@Override
+	public boolean terminated() {
+		return !isOpen();
+	}
+
+	/* (non-Javadoc)
 	 * @see java.nio.channels.Channel#isOpen()
 	 */
 	@Override

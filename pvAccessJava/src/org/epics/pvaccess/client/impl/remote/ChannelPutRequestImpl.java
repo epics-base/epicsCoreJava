@@ -155,8 +155,8 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			lock();
 			try {
 				// create data and its bitSet
-				data = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport);
-				bitSet = new BitSet(data.getNumberFields());
+				data = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport, data);
+				bitSet = createBitSetFor(data, bitSet);
 			} finally {
 				unlock();
 			}
