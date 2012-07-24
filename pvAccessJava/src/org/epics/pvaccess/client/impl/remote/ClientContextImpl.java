@@ -41,8 +41,8 @@ import org.epics.pvaccess.client.impl.remote.search.SearchInstance;
 import org.epics.pvaccess.client.impl.remote.search.SimpleChannelSearchManagerImpl;
 import org.epics.pvaccess.client.impl.remote.tcp.BlockingClientTCPTransport;
 import org.epics.pvaccess.client.impl.remote.tcp.BlockingTCPConnector;
-import org.epics.pvaccess.client.impl.remote.tcp.NonBlockingClientTCPTransport;
 import org.epics.pvaccess.client.impl.remote.tcp.BlockingTCPConnector.TransportFactory;
+import org.epics.pvaccess.client.impl.remote.tcp.NonBlockingClientTCPTransport;
 import org.epics.pvaccess.impl.remote.ConnectionException;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.Transport;
@@ -103,7 +103,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
      * Version.
      */
     public static final Version VERSION = new Version(
-            "Channel Access in Java", "Java",
+            "pvAccess Client", "Java",
             VERSION_MAJOR, VERSION_MINOR,
             VERSION_MAINTENANCE, VERSION_DEVELOPMENT);
 	  

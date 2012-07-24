@@ -77,23 +77,17 @@ public class ServerContextImpl implements ServerContext, Context {
     /**
      * Development version.
      */
-    private static final boolean VERSION_DEVELOPMENT = false;
+    private static final boolean VERSION_DEVELOPMENT = true;
 
     /**
      * Version.
      */
     public static final Version VERSION = new Version(
-            "Channel Access Server in Java", "Java",
+            "pvAccess Server", "Java",
             VERSION_MAJOR, VERSION_MINOR,
             VERSION_MAINTENANCE, VERSION_DEVELOPMENT);
 	  
    
-    /**
-     * String value of the JVM property key to turn on single threaded model. 
-     */
-    // TODO
-    public static final String CAJ_SINGLE_THREADED_MODEL = "CAJ_SINGLE_THREADED_MODEL";
-    
     /**
      * Server state enum.
      */

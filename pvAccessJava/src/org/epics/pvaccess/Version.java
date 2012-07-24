@@ -75,18 +75,6 @@ public class Version {
     }
     
     /**
-     * Get the long version string.
-     * @return String denoting current version
-     */
-    public String getLongVersionString()
-    {
-        return getProductName()
-                + " ["
-                + getImplementationLanguage()
-                + "] " + getVersionString();
-    }
-
-    /**
      * Get the basic version string.
      *
      * @return String denoting current version
@@ -170,7 +158,7 @@ public class Version {
      * Development drops are works in progress towards a completed, final
      * release. A specific development drop may not completely implement all
      * aspects of a new feature, which may take several development drops to
-     * complete. At the point of the final drop for the release, the D suffix
+     * complete. At the point of the final drop for the release, the -SNAPSHOT suffix
      * will be omitted.
      */
     public boolean isDevelopmentVersion()
@@ -183,6 +171,6 @@ public class Version {
      */
     public String toString()
     {
-        return getLongVersionString();
+        return getVersionString();
     }
 }
