@@ -45,7 +45,7 @@ public class ConnectionValidationHandler extends AbstractServerResponseHandler {
 		transport.ensureData((2*Integer.SIZE+Short.SIZE)/Byte.SIZE);
 		transport.setRemoteTransportReceiveBufferSize(payloadBuffer.getInt());
 		transport.setRemoteTransportSocketReceiveBufferSize(payloadBuffer.getInt());
-		transport.setRemoteMinorRevision(version);
+		transport.setRemoteRevision(version);
 		payloadBuffer.getShort();
 		//transport.setPriority(payloadBuffer.getShort());
 	}

@@ -47,7 +47,7 @@ public class ConnectionValidationHandler extends AbstractClientResponseHandler {
 		transport.setRemoteTransportReceiveBufferSize(payloadBuffer.getInt());
 		transport.setRemoteTransportSocketReceiveBufferSize(payloadBuffer.getInt());
 
-		transport.setRemoteMinorRevision(version);
+		transport.setRemoteRevision(version);
 		
 		transport.enqueueSendRequest((TransportSender)transport);
 		transport.verified();

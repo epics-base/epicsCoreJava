@@ -172,7 +172,6 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 */
 	@Override
 	public boolean acquire(TransportClient client) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -181,8 +180,6 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 */
 	@Override
 	public void release(TransportClient client) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	/**
@@ -382,9 +379,9 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	}
 
 	/**
-	 * @see org.epics.pvaccess.impl.remote.Transport#getMinorRevision()
+	 * @see org.epics.pvaccess.impl.remote.Transport#getRevision()
 	 */
-	public byte getMinorRevision() {
+	public byte getRevision() {
 		return CAConstants.CA_PROTOCOL_REVISION;
 	}
 
@@ -485,7 +482,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.Transport#setRemoteMinorRevision(byte)
 	 */
-	public void setRemoteMinorRevision(byte minor) {
+	public void setRemoteRevision(byte minor) {
 		// noop
 	}
 

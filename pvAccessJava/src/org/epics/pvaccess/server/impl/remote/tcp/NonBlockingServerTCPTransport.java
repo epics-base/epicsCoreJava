@@ -275,7 +275,6 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport imple
 	 */
 	@Override
 	public boolean acquire(TransportClient client) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -285,8 +284,6 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport imple
 	 */
 	@Override
 	public void release(TransportClient client) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/* (non-Javadoc)

@@ -31,7 +31,7 @@ public interface TransportSender extends Lockable {
 	 * Calls on <code>TransportSendControl</code> instance must be made from
 	 * calling thread. Moreover, ownership is valid only for the time of call
 	 * of this method.
-	 * NOTE: these limitations allows efficient implementation.
+	 * NOTE: these limitations allow efficient implementation.
 	 */
 	void send(ByteBuffer buffer, TransportSendControl control);
 }

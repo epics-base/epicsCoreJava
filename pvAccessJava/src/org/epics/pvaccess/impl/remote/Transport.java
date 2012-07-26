@@ -61,10 +61,10 @@ public interface Transport extends DeserializableControl, Channel {
 	public Context getContext();
 
 	/**
-	 * Transport protocol minor revision.
-	 * @return protocol minor revision.
+	 * Transport protocol revision.
+	 * @return protocol revision.
 	 */
-	public byte getMinorRevision();
+	public byte getRevision();
 	
 	/**
 	 * Get receive buffer size.
@@ -85,10 +85,10 @@ public interface Transport extends DeserializableControl, Channel {
 	public short getPriority();
 
 	/**
-	 * Set remote transport protocol minor revision.
-	 * @param minor protocol minor revision.
+	 * Set remote transport protocol revision.
+	 * @param revision protocol revision.
 	 */
-	public void setRemoteMinorRevision(byte minor);
+	public void setRemoteRevision(byte revision);
 	
 	/**
 	 * Set remote transport receive buffer size.

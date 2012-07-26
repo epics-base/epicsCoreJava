@@ -157,7 +157,7 @@ public abstract class NonBlockingTCPTransport extends NonBlockingSocketAbstractC
 	 * @see org.epics.pvaccess.impl.remote.Transport#getMinorRevision()
 	 */
 	@Override
-	public byte getMinorRevision() {
+	public byte getRevision() {
 		return CAConstants.CA_PROTOCOL_REVISION;
 	}
 
@@ -195,7 +195,7 @@ public abstract class NonBlockingTCPTransport extends NonBlockingSocketAbstractC
 	 * @see org.epics.pvaccess.impl.remote.Transport#setRemoteMinorRevision(byte)
 	 */
 	@Override
-	public void setRemoteMinorRevision(byte minor) {
+	public void setRemoteRevision(byte minor) {
 		// TODO Auto-generated method stub
 		//this.remoteTransportRevision = minor;
 	}

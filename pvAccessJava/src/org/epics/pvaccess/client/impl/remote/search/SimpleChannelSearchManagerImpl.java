@@ -353,7 +353,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	}
 	
 	/**
-	 * Beacon anomaly detected.
+	 * New server detected.
 	 * Boost searching of all channels.
 	 */
 	public void newServerDetected()

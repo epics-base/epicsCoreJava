@@ -40,16 +40,6 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	private final InetSocketAddress responseFrom;
 
 	/**
-	 * Last beacon sequence ID.
-	 *
-	private int lastBeaconSequenceID;
-	
-	/**
-	 * Last beacon timestamp.
-	 *
-	private long lastBeaconTimeStamp = Long.MIN_VALUE;
-
-	/**
 	 * Server startup timestamp.
 	 */
 	private TimeStamp serverStartupTime = null;
@@ -123,6 +113,7 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	 */
 	private void changedTransport()
 	{
+		// TODO why only TCP, actually TCP does not need this
 		Transport[] transports = context.getTransportRegistry().get(ProtocolType.TCP.name(), responseFrom);
 		if (transports == null)
 			return;

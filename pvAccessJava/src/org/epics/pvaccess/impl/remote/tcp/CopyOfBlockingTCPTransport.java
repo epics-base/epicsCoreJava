@@ -312,7 +312,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	 * Set minor revision number.
 	 * @param minorRevision	minor revision number.
 	 */
-	public void setRemoteMinorRevision(byte minorRevision) {
+	public void setRemoteRevision(byte minorRevision) {
 		this.remoteTransportRevision = minorRevision;
 	}
 
@@ -342,9 +342,9 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	}
 
 	/**
-	 * @see org.epics.pvaccess.impl.remote.Transport#getMinorRevision()
+	 * @see org.epics.pvaccess.impl.remote.Transport#getRevision()
 	 */
-	public byte getMinorRevision() {
+	public byte getRevision() {
 		return CAConstants.CA_PROTOCOL_REVISION;
 	}
 

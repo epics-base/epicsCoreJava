@@ -262,7 +262,6 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	 */
 	@Override
 	public boolean acquire(TransportClient client) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -272,8 +271,6 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	 */
 	@Override
 	public void release(TransportClient client) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/* (non-Javadoc)

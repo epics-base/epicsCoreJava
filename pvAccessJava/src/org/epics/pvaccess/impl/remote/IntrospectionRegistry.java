@@ -30,9 +30,9 @@ import org.omg.CORBA.ShortHolder;
 /**
  * PVData Structure registry.
  * Registry is used to cache introspection interfaces to minimize network traffic.
+ * This class is not thread safe (optimized to be used only by one thread).
  * @author msekoranja
  */
-// TODO optional sync!!! if used only by one thread
 public final class IntrospectionRegistry {
 
 	protected ShortHashMap registry = new ShortHashMap();
@@ -84,6 +84,7 @@ public final class IntrospectionRegistry {
 	 */
 	public short registerIntrospectionInterface(Field field, BooleanHolder existing)
 	{
+		// TODO this is slow
 		if (registry.contains(field, shortHolder))
 		{
 			existing.value = true;
