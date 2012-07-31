@@ -33,6 +33,28 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
         	throw new NullPointerException("elementType is null");
         this.elementType = elementType;
     }
+	private static final String[] idLUT = {
+		"boolean[]", // pvBoolean
+		"byte[]",    // pvByte
+		"short[]",   // pvShort
+		"int[]",     // pvInt
+		"long[]",    // pvLong
+		"ubyte[]",   // pvUByte
+		"ushort[]",  // pvUShort
+		"uint[]",    // pvUInt
+		"ulong[]",   // pvULong
+		"float[]",   // pvFloat
+		"double[]",  // pvDouble
+		"string[]"   // pvString
+	};
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Field#getID()
+	 */
+	@Override
+	public String getID() {
+		return idLUT[elementType.ordinal()];
+	}
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.ScalarArray#getElementType()
      */

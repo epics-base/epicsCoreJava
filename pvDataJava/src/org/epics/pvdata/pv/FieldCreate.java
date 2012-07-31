@@ -34,11 +34,19 @@ public interface FieldCreate {
     StructureArray createStructureArray(Structure elementStructure);
     /**
      * Create a <i>Structure</i> field.
-     * @param fieldNmess The array of field names for the structure.
+     * @param fieldNames The array of field names for the structure.
      * @param fields The array of fields for the structure.
      * @return a <i>Structure</i> interface for the newly created object.
      */
     Structure createStructure(String[] fieldNames, Field[] fields);
+    /**
+     * Create a <i>Structure</i> field with an identification.
+     * @param id The identification string for the structure.
+     * @param fieldNames The array of field names for the structure.
+     * @param fields The array of fields for the structure.
+     * @return a <i>Structure</i> interface for the newly created object.
+     */
+    Structure createStructure(String id, String[] fieldNames, Field[] fields);
     /**
      * Append a field to a structure,
      * @param structure The structure to which the field is appended.

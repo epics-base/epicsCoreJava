@@ -33,7 +33,30 @@ public class BaseScalar extends BaseField implements Scalar {
         	throw new NullPointerException("scalarType is null");
         this.scalarType = scalarType;
     }
-    /* (non-Javadoc)
+    
+	private static final String[] idLUT = {
+		"boolean", // pvBoolean
+		"byte",    // pvByte
+		"short",   // pvShort
+		"int",     // pvInt
+		"long",    // pvLong
+		"ubyte",   // pvUByte
+		"ushort",  // pvUShort
+		"uint",    // pvUInt
+		"ulong",   // pvULong
+		"float",   // pvFloat
+		"double",  // pvDouble
+		"string"   // pvString
+	};
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Field#getID()
+	 */
+	@Override
+	public String getID() {
+		return idLUT[scalarType.ordinal()];
+	}
+	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.Scalar#getScalarType()
      */
     public ScalarType getScalarType() {

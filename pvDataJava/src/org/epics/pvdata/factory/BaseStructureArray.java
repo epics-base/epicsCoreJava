@@ -35,6 +35,14 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 		this.structure = elementStructure;
 	}
 	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Field#getID()
+	 */
+	@Override
+	public String getID() {
+		// NOTE: structure.getID() can return an empty string
+		return structure.getID() + "[]";
+	}
+	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.StructureArray#getStructure()
 	 */
 	@Override

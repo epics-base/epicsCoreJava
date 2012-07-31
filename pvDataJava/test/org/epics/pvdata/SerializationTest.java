@@ -484,6 +484,29 @@ public class SerializationTest extends TestCase {
 		serializatioTest(pvStructure2.getStructure());
 	}
 	
+	public void testStructureID()
+	{
+        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
+        
+        String[] fieldNames = new String[] { "longField", "intField" };
+        Field[] fields = new Field[]
+            {
+        		fieldCreate.createScalar(ScalarType.pvLong),
+        		fieldCreate.createScalar(ScalarType.pvInt)
+            };
+        Structure structureWithNoId = fieldCreate.createStructure(fieldNames, fields);
+        Structure structure1 = fieldCreate.createStructure("id1", fieldNames, fields);
+        Structure structure2 = fieldCreate.createStructure("id2", fieldNames, fields);
+        
+        assertFalse(structureWithNoId.equals(structure1));
+        assertFalse(structure1.equals(structure2));
+
+        serializatioTest(structure1);
+
+        PVStructure pvStructure = (PVStructure)pvDataCreate.createPVField(structure1);
+		serializatioTest(pvStructure);
+	}
 	
 	public void testStructureArray()
 	{

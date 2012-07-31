@@ -12,6 +12,11 @@ package org.epics.pvdata.pv;
  */
 public interface Field extends Serializable {
     /**
+     * Get the identification string.
+     * @return The identification string, can be empty.
+     */
+    String getID();
+    /**
      * Get the field type.
      * @return The field type.
      */

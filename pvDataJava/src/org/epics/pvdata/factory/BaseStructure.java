@@ -24,9 +24,10 @@ import org.epics.pvdata.pv.Type;
  */
 public class BaseStructure extends BaseField implements Structure {
     private static Convert convert = ConvertFactory.getConvert();
-    private  Field[] fields;
-    private  String[] fieldNames;
-    
+    private final String id;
+    private Field[] fields;
+    private String[] fieldNames;
+    private static final String DEFAULT_ID = "";
     /**
      * Constructor for a structure field.
      * @param fieldNames The field names for the subfields
@@ -35,10 +36,27 @@ public class BaseStructure extends BaseField implements Structure {
      */
     public BaseStructure(String[] fieldNames,Field[] fields)
     {
+    	this(DEFAULT_ID, fieldNames, fields);
+    }
+    
+    /**
+     * Constructor for a structure field.
+     * @param id The identification string for the structure.
+     * @param fieldNames The field names for the subfields
+     * @param fields The array of nodes definitions for the nodes of the structure.
+     * @throws IllegalArgumentException if structureName is null;
+     */
+    public BaseStructure(String id, String[] fieldNames,Field[] fields)
+    {
     	super(Type.structure);
-    	if(fieldNames.length != fields.length) {
+    	
+    	if(id == null)
+    		throw new IllegalArgumentException("id == null");
+    	
+    	if(fieldNames.length != fields.length)
     		throw new IllegalArgumentException("fieldNames has different length than fields");
-    	}
+    	
+    	this.id = id;
     	this.fields = fields;
     	this.fieldNames = fieldNames;
     	for(int i=0; i<fields.length; i++) {
@@ -52,7 +70,14 @@ public class BaseStructure extends BaseField implements Structure {
     		}
     	}
     }
-    /**
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Field#getID()
+	 */
+	@Override
+	public String getID() {
+		return id;
+	}
+	/**
      * Called by FieldFactory
      * @param newFields new fields
      * @param newFieldNames new names
@@ -136,6 +161,7 @@ public class BaseStructure extends BaseField implements Structure {
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
         buf.append("structure");
+        if (!id.isEmpty()) buf.append(' ').append(id);
         toStringCommon(buf,indentLevel+1);
     }
     private void toStringCommon(StringBuilder buf, int indentLevel) {
@@ -170,7 +196,8 @@ public class BaseStructure extends BaseField implements Structure {
 	@Override
 	public int hashCode() {
 		final int PRIME = 31;
-		return PRIME * Arrays.hashCode(fieldNames) + Arrays.hashCode(fields);
+		return id.hashCode() + PRIME *
+			(PRIME * Arrays.hashCode(fieldNames) + Arrays.hashCode(fields));
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -182,6 +209,11 @@ public class BaseStructure extends BaseField implements Structure {
 		if (getClass() != obj.getClass())
 			return false;
 		final BaseStructure other = (BaseStructure) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
 		if (!Arrays.equals(fieldNames, other.fieldNames))
 			return false;
 		if (!Arrays.equals(fields, other.fields))
@@ -201,6 +233,7 @@ public class BaseStructure extends BaseField implements Structure {
 
 	static void serializeStructureField(final Structure structure, ByteBuffer buffer, 
 			SerializableControl control) {
+		SerializeHelper.serializeString(structure.getID(), buffer, control);
 		final Field[] fields = structure.getFields();
 		final String[] fieldNames = structure.getFieldNames();
 		SerializeHelper.writeSize(fields.length, buffer, control);
@@ -212,6 +245,7 @@ public class BaseStructure extends BaseField implements Structure {
 	}
 	
 	static final Structure deserializeStructureField(ByteBuffer buffer, DeserializableControl control) {
+		final String id = SerializeHelper.deserializeString(buffer, control);
 		final int size = SerializeHelper.readSize(buffer, control);
 		final Field[] fields = new Field[size];
 		final String[] fieldNames = new String[size];
@@ -220,7 +254,7 @@ public class BaseStructure extends BaseField implements Structure {
 			fieldNames[i] = SerializeHelper.deserializeString(buffer, control);
 			fields[i] = control.cachedDeserialize(buffer);
 		}
-		return new BaseStructure(fieldNames, fields);
+		return new BaseStructure(id, fieldNames, fields);
 	}
 
 	/* (non-Javadoc)
