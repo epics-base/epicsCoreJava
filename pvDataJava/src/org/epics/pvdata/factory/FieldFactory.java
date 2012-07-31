@@ -107,6 +107,7 @@ public final class FieldFactory {
         public Structure appendField(Structure structure, String fieldName, Field field) {
 		    String[] oldNames = structure.getFieldNames();
 		    Field[] oldFields = structure.getFields();
+                    String oldID = structure.getID();
 		    int oldlen = oldNames.length;
 		    String[] newNames = new String[oldlen+1];
 		    Field[] newFields = new Field[oldlen+1];
@@ -116,13 +117,14 @@ public final class FieldFactory {
 		    }
 		    newNames[oldlen] = fieldName;
 		    newFields[oldlen] = field;
-            return createStructure(newNames,newFields);
+            return createStructure(oldID,newNames,newFields);
             
         }
         @Override
         public Structure appendFields(Structure structure, String[] fieldNames,Field[] fields) {
             String[] oldNames = structure.getFieldNames();
             Field[] oldFields = structure.getFields();
+            String oldID = structure.getID();
             int oldlen = oldNames.length;
             int extra = fieldNames.length;
             int newlen = oldlen + fieldNames.length;
@@ -136,7 +138,7 @@ public final class FieldFactory {
                 newNames[i+oldlen] = fieldNames[i];
                 newFields[i+oldlen] = fields[i];
             }
-            return createStructure(newNames,newFields);
+            return createStructure(oldID,newNames,newFields);
         }
         
         
