@@ -132,7 +132,8 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         int origLength = pvFields.length;
         String[] origNames = getStructure().getFieldNames();
         Field[] origFields = getStructure().getFields();
-        Structure structure = fieldCreate.createStructure(origNames,origFields);
+        String origID = getStructure().getID();
+        Structure structure = fieldCreate.createStructure(origID, origNames, origFields);
         structure = fieldCreate.appendField(structure, fieldName,pvField.getField());
         int newLength = origLength + 1;
         PVField[] newPVFields = new PVField[newLength];
@@ -165,13 +166,14 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         int origLength = pvFields.length;
         String[] origNames = getStructure().getFieldNames();
         Field[] origFields = getStructure().getFields();
+        String origID = getStructure().getID();
         int extra = fieldNames.length;
         if(extra==0) return;
         Field[] extraFields = new Field[extra];
         for(int i=0; i<extra; i++) {
             extraFields[i] = extraPVFields[i].getField();
         }
-        Structure structure = fieldCreate.createStructure(origNames,origFields);
+        Structure structure = fieldCreate.createStructure(origID, origNames, origFields);
         structure = fieldCreate.appendFields(structure, fieldNames, extraFields);
         int newLength = origLength + extra;
         PVField[] newPVFields = new PVField[newLength];
