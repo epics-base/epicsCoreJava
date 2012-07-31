@@ -67,10 +67,10 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		try {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelRPCConnect(channelNotConnected, null);
+			callback.channelRPCConnect(channelNotConnected, this);
 			destroy(true);
 		} catch (CAException e) {		
-			callback.channelRPCConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null);
+			callback.channelRPCConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this);
 			destroy(true);
 		}
 	}

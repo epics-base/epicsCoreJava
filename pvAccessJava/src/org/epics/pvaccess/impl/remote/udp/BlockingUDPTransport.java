@@ -29,7 +29,6 @@ import java.util.logging.Level;
 import org.epics.pvaccess.CAConstants;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.impl.remote.Context;
-import org.epics.pvaccess.impl.remote.IntrospectionRegistry;
 import org.epics.pvaccess.impl.remote.ProtocolType;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportClient;
@@ -510,13 +509,6 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 			// error
 			return -1;
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.impl.remote.Transport#getIntrospectionRegistry()
-	 */
-	public IntrospectionRegistry getIntrospectionRegistry() {
-		throw new UnsupportedOperationException("not supported by UDP transport");
 	}
 
 	private InetSocketAddress sendTo = null;

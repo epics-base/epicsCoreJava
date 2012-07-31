@@ -144,8 +144,8 @@ public class BlockingTCPConnector implements Connector {
 				// verify
 				if (!transport.verify(VERIFICATION_TIMEOUT))
 				{
-					transport.close();
 					context.getLogger().finer("Connection to CA client " + address + " failed to be validated, closing it.");
+                	transport.close();
 					throw new ConnectionException("Failed to verify connection to '" + address + "'.", address, ProtocolType.TCP.name(), null);
 				}
 				

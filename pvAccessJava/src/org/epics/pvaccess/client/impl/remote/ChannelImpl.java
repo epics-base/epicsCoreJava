@@ -776,7 +776,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			throw new IllegalArgumentException("Channel destroyed.");
 		else if (connectionState == ConnectionState.CONNECTED)
 			disconnect(false, true);
-	}
+}
 
 	@Override
 	public ChannelGet createChannelGet(

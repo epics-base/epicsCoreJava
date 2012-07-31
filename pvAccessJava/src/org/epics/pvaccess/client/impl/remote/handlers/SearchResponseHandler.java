@@ -84,7 +84,7 @@ public class SearchResponseHandler extends AbstractClientResponseHandler {
 		{
 			transport.ensureData(Integer.SIZE/Byte.SIZE);
 			final int cid = payloadBuffer.getInt();
-			csm.searchResponse(cid, searchSequenceId, (byte)(version & 0x0F), responseFrom);
+			csm.searchResponse(cid, searchSequenceId, version, responseFrom);
 		}
 	}
 }

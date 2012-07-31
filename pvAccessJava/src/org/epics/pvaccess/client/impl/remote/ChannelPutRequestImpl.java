@@ -77,10 +77,10 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		try {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelPutConnect(channelNotConnected, null, null, null);
+			callback.channelPutConnect(channelNotConnected, this, null, null);
 			destroy(true);
 		} catch (CAException e) {
-			callback.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null, null, null);
+			callback.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this, null, null);
 			destroy(true);
 		}
 	}

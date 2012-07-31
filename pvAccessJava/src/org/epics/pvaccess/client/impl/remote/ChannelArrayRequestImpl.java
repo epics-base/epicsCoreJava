@@ -81,10 +81,10 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		try {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelArrayConnect(channelNotConnected, null, null);
+			callback.channelArrayConnect(channelNotConnected, this, null);
 			destroy(true);
 		} catch (CAException e) {
-			callback.channelArrayConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null, null);
+			callback.channelArrayConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this, null);
 			destroy(true);
 		}
 	}
@@ -165,7 +165,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		{
 			if (!status.isSuccess())
 			{
-				callback.channelArrayConnect(status, null, null);
+				callback.channelArrayConnect(status, this, null);
 				return;
 			}
 			

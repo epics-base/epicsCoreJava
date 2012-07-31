@@ -57,10 +57,10 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 		try {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelProcessConnect(channelNotConnected, null);
+			callback.channelProcessConnect(channelNotConnected, this);
 			destroy(true);
 		} catch (CAException e) {
-			callback.channelProcessConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null);
+			callback.channelProcessConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this);
 			destroy(true);
 		}
 	}

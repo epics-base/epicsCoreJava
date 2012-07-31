@@ -77,10 +77,10 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		try {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelGetConnect(channelNotConnected, null, null, null);
+			callback.channelGetConnect(channelNotConnected, this, null, null);
 			destroy(true);
 		} catch (CAException caex) {
-			callback.channelGetConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", caex), null, null, null);
+			callback.channelGetConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", caex), this, null, null);
 			destroy(true);
 		}
 	}

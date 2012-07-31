@@ -104,7 +104,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			} catch (NumberFormatException e) {
 				callback.monitorConnect(
 						PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "queueSize type is not a valid integer", e),
-						null, null);
+						this, null);
 				monitorStrategy = null;
 				destroy(true);
 				return;
@@ -125,10 +125,10 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		try {
 			resubscribeSubscription(channel.checkAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.monitorConnect(channelNotConnected, null, null);
+			callback.monitorConnect(channelNotConnected, this, null);
 			destroy(true);
 		} catch (CAException e) {		
-			callback.monitorConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), null, null);
+			callback.monitorConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this, null);
 			destroy(true);
 		}
 	}
