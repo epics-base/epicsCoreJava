@@ -70,6 +70,7 @@ public class Mapper
 			System.out.println(indexMapping);
 			System.out.println("----------------------------------------------------------");
 			*/
+			
         }
     	
     	
@@ -266,6 +267,10 @@ public class Mapper
     
     private static Structure createStructure(PVStructure pvRecord, ArrayList<Integer> indexMapping, PVStructure pvFromRequest) {
         if(pvFromRequest.getStructure().getFieldNames().length==0) {
+			// 1-1 mapping
+			int fieldCount = pvRecord.getNumberFields();
+			for (int i = 1; i < fieldCount; i++)
+				indexMapping.add(i);
             return pvRecord.getStructure();
         }
         Field field = createField(pvRecord,indexMapping,pvFromRequest);

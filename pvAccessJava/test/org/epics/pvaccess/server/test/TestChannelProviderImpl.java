@@ -284,7 +284,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					return okStatus;
 
 				// force monitor immediately
-				monitorRequester.monitorEvent(this);
+				topStructureChanged(allChanged);
 				
 				pvTopStructure.registerListener(this);
 				

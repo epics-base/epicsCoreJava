@@ -528,7 +528,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	            		return monitorQueue.getUsed();
 	            	}
 	            	else
-	            		return null;		// should never happen since queueSize >= 2, but (too) smart client can do this
+	            		return null;		// should never happen since queueSize >= 2, but a client not calling release can do this
 	            }
 	            else
 	            	return null;
