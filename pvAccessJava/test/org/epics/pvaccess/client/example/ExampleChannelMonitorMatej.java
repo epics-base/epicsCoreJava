@@ -25,7 +25,7 @@ import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 
 /**
- * ChannelGet example
+ * ExampleChannelMonitorMatej example
  * @author mse
  */
 public class ExampleChannelMonitorMatej {
@@ -143,7 +143,6 @@ public class ExampleChannelMonitorMatej {
 				System.out.println("Changed: " + element.getChangedBitSet());
 				System.out.println("Overrun: " + element.getOverrunBitSet());
 				System.out.println(element.getPVStructure());
-				// TODO bug in pvAccess if this is not called
 				monitor.release(element);
 			}
 			

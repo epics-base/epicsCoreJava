@@ -138,7 +138,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	
 	private final class MonitorStrategyNotify implements MonitorStrategy {
 		private final MonitorElement monitorElement = MonitorQueueFactory.createMonitorElement(null);
-		private volatile boolean gotMonitor = false;
+		private final AtomicBoolean gotMonitor = new AtomicBoolean(false);
 		
 		@Override
 		public void init(Structure structure) {
@@ -147,19 +147,19 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 
 		@Override
 		public void response(Transport transport, ByteBuffer payloadBuffer) {
-			gotMonitor = true;
+			gotMonitor.set(true);
 			// no data, only notify
         	callback.monitorEvent(this);
 		}
 
 		@Override
 		public MonitorElement poll() {
-			return gotMonitor ? monitorElement : null;
+			return gotMonitor.getAndSet(false) ? monitorElement : null;
 		}
 
 		@Override
 		public void release(MonitorElement monitorElement) {
-			gotMonitor = false;
+			// noop
 		}
 
 		@Override
@@ -183,19 +183,24 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		private PVStructure monitorElementStructure = null;
         private BitSet monitorElementChangeBitSet = null;
         private BitSet monitorElementOverrunBitSet = null;
-		private boolean gotMonitor = false;
+		private final AtomicBoolean gotMonitor = new AtomicBoolean(false);
 		
 		@Override
 		public void init(Structure structure)
 		{
 			synchronized (this)
 			{
-	            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-				monitorElement = MonitorQueueFactory.createMonitorElement(pvStructure);
-
-				monitorElementStructure = monitorElement.getPVStructure();
-				monitorElementChangeBitSet = monitorElement.getChangedBitSet();
-	        	monitorElementOverrunBitSet = monitorElement.getOverrunBitSet();
+				// reuse on reconnect
+				if (monitorElementStructure == null ||
+					!monitorElementStructure.getStructure().equals(structure))
+				{
+		            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+					monitorElement = MonitorQueueFactory.createMonitorElement(pvStructure);
+	
+					monitorElementStructure = monitorElement.getPVStructure();
+					monitorElementChangeBitSet = monitorElement.getChangedBitSet();
+		        	monitorElementOverrunBitSet = monitorElement.getOverrunBitSet();
+				}
 			}
 		}
 		
@@ -208,7 +213,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 				monitorElementChangeBitSet.deserialize(payloadBuffer, transport);
 	        	monitorElementStructure.deserialize(payloadBuffer, transport, monitorElementChangeBitSet);
 	        	monitorElementOverrunBitSet.deserialize(payloadBuffer, transport);
-	        	gotMonitor = true;
+	        	gotMonitor.set(true);
 				callback.monitorEvent(this);
 			}
 		}
@@ -218,8 +223,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
             synchronized(this)
             {
-            	if (!gotMonitor) return null;
-                return monitorElement;
+    			return gotMonitor.getAndSet(false) ? monitorElement : null;
             }
 		}
 
@@ -228,7 +232,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
         	synchronized(this)
         	{
-                gotMonitor = false;
+                gotMonitor.set(false);
             }
 		}
 
@@ -237,7 +241,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
             synchronized(this)
             {
-	    		gotMonitor = false;
+                gotMonitor.set(false);
 				return okStatus;
             }
 		}
@@ -261,7 +265,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
         private BitSet monitorElementOverrunBitSet = null;
         private BitSet dataChangeBitSet = null;
         private BitSet dataOverrunBitSet = null;
-		private boolean gotMonitor = false;
+		private final AtomicBoolean gotMonitor = new AtomicBoolean(false);
 		private boolean needToCompress = false;
 		
 		@Override
@@ -269,15 +273,25 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 			synchronized (this)
 			{
-	            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-				monitorElement = MonitorQueueFactory.createMonitorElement(pvStructure);
-
-				monitorElementStructure = monitorElement.getPVStructure();
-				monitorElementChangeBitSet = monitorElement.getChangedBitSet();
-	        	monitorElementOverrunBitSet = monitorElement.getOverrunBitSet();
-	        	
-	        	dataChangeBitSet = (BitSet)monitorElementChangeBitSet.clone();
-	        	dataOverrunBitSet = (BitSet)monitorElementOverrunBitSet.clone();
+				// reuse on reconnect
+				if (monitorElementStructure == null ||
+					!monitorElementStructure.getStructure().equals(structure))
+				{
+		            PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+					monitorElement = MonitorQueueFactory.createMonitorElement(pvStructure);
+	
+					monitorElementStructure = monitorElement.getPVStructure();
+					monitorElementChangeBitSet = monitorElement.getChangedBitSet();
+		        	monitorElementOverrunBitSet = monitorElement.getOverrunBitSet();
+		        	
+		        	dataChangeBitSet = (BitSet)monitorElementChangeBitSet.clone();
+		        	dataOverrunBitSet = (BitSet)monitorElementOverrunBitSet.clone();
+				}
+				else
+				{
+					dataChangeBitSet.clear();
+					dataOverrunBitSet.clear();
+				}
 			}
 		}
 		
@@ -286,13 +300,13 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 			synchronized (this)
 			{
-				if (!gotMonitor)
+				if (!gotMonitor.get())
 				{
 					// simply deserialize and notify
 					monitorElementChangeBitSet.deserialize(payloadBuffer, transport);
 		        	monitorElementStructure.deserialize(payloadBuffer, transport, monitorElementChangeBitSet);
 		        	monitorElementOverrunBitSet.deserialize(payloadBuffer, transport);
-		        	gotMonitor = true;
+		        	gotMonitor.set(true);
 					callback.monitorEvent(this);
 				}
 				else 
@@ -320,7 +334,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
             synchronized(this)
             {
-            	if (!gotMonitor) return null;
+            	if (!gotMonitor.getAndSet(false)) return null;
             	
             	// compress if needed
             	if (needToCompress) {
@@ -338,7 +352,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
         	synchronized(this)
         	{
-                gotMonitor = false;
+                gotMonitor.set(false);
             }
 		}
 
@@ -347,7 +361,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
             synchronized(this)
             {
-	    		gotMonitor = false;
+	    		gotMonitor.set(false);
 	    		monitorElementChangeBitSet.clear();
 	    		monitorElementOverrunBitSet.clear();
 				return okStatus;
@@ -378,9 +392,12 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		private BitSet bitSet2 = null;
 	    private boolean overrunInProgress = false;
 
+	    private Structure lastStructure = null;
 	    private MonitorQueue monitorQueue = null;
 	    
 	    private final Object monitorSync = new Object();
+	    
+	    private boolean needToReleaseFirst = false;
 
 
 		public MonitorStrategyQueue(int queueSize)
@@ -396,12 +413,17 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 			synchronized (monitorSync)
 			{
-	    		MonitorElement[] monitorElements = new MonitorElement[queueSize];
-	            for(int i=0; i<queueSize; i++) {
-	                PVStructure pvNew = pvDataCreate.createPVStructure(structure);
-	                monitorElements[i] = MonitorQueueFactory.createMonitorElement(pvNew);
-	            }
-	            monitorQueue = MonitorQueueFactory.create(monitorElements);
+				// reuse on reconnect
+				if (lastStructure == null || !lastStructure.equals(structure))
+				{
+		    		MonitorElement[] monitorElements = new MonitorElement[queueSize];
+		            for(int i=0; i<queueSize; i++) {
+		                PVStructure pvNew = pvDataCreate.createPVStructure(structure);
+		                monitorElements[i] = MonitorQueueFactory.createMonitorElement(pvNew);
+		            }
+		            monitorQueue = MonitorQueueFactory.create(monitorElements);
+		            lastStructure = structure;
+				}
 			}
 		}
 		
@@ -503,9 +525,14 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		public MonitorElement poll()
 		{
             synchronized(monitorSync) {
+            	if (needToReleaseFirst)
+            		return null;
             	final MonitorElement retVal = monitorQueue.getUsed();
             	if (retVal != null)
+            	{
+            		needToReleaseFirst = true;
             		return retVal;
+            	}
             	
 	            // if in overrun mode and we have free, make it as last element
 	            if (overrunInProgress)
@@ -525,6 +552,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 
 	            		overrunInProgress = false;
 	            		
+	            		needToReleaseFirst = true;
 	            		return monitorQueue.getUsed();
 	            	}
 	            	else
@@ -540,6 +568,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 	        synchronized(monitorSync) {
 	            monitorQueue.releaseUsed(monitorElement);
+	            needToReleaseFirst = false;
 	        }
 		}
 
@@ -550,6 +579,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 				overrunInProgress = false;
 	            monitorQueue.clear();
 	            monitorElement = monitorQueue.getFree();
+	            needToReleaseFirst = false;
 			}
 			return okStatus;
 		}
