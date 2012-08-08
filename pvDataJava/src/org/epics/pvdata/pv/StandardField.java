@@ -44,51 +44,51 @@ public interface StandardField {
      */
     Structure enumerated(String properties);
     /**
-     * @return
+     * @return The Structure.
      */
     Structure alarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure timeStamp();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure display();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure control();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure booleanAlarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure byteAlarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure shortAlarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure intAlarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure longAlarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure floatAlarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure doubleAlarm();
     /**
-     * @return
+     * @return The Structure.
      */
     Structure enumeratedAlarm();
 }

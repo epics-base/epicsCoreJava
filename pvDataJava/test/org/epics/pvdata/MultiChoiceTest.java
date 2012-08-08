@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata;
@@ -9,8 +9,8 @@ import junit.framework.TestCase;
 
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.misc.MultiChoice;
-import org.epics.pvdata.misc.MultiChoiceFactory;
+import org.epics.pvdata.property.MultiChoice;
+import org.epics.pvdata.property.MultiChoiceFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;

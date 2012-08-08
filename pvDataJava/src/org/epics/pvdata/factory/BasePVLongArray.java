@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.factory;
@@ -13,7 +13,6 @@ import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.LongArrayData;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVULongArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
 

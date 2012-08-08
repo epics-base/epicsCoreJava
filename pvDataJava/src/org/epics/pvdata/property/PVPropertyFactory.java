@@ -6,7 +6,6 @@
 package org.epics.pvdata.property;
 
 
-import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 

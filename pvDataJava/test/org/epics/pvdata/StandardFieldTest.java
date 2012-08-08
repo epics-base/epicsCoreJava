@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata;
@@ -8,11 +8,13 @@ package org.epics.pvdata;
 
 import junit.framework.TestCase;
 
-
-
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.StandardField;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * JUnit test for BitSet.
@@ -36,7 +38,7 @@ public class StandardFieldTest extends TestCase {
 		print("doubleValue",doubleValue.toString());
 		Structure stringArrayValue = standardField.scalarArray(ScalarType.pvString, "alarm,timeStamp");
 		print("stringArrayValue",stringArrayValue.toString());
-		Structure enumeratedValue = standardField.enumerated("alarm,timeStamp,enumeratedAtarm");
+		Structure enumeratedValue = standardField.enumerated("alarm,timeStamp,valueAlarm");
 		print("enumeratedValue",enumeratedValue.toString());
 		Field[] fields = new Field[2];
         fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);

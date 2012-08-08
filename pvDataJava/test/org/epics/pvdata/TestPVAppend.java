@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata;
@@ -106,11 +106,11 @@ public class TestPVAppend extends TestCase {
 	    PVStructure pvChild = pvDataCreate.createPVStructure(new String[0],new PVField[0]);
 	    append2(pvChild,"Joe","Mary","Good Guy","Good Girl");
 	    pvFields[0] = pvChild;
-System.out.printf("%nchild0%n", pvChild.toString());
+//System.out.printf("%nchild0%n", pvChild.toString());
 	    pvChild = pvDataCreate.createPVStructure(new String[0],new PVField[0]);
 	    append2(pvChild,"Bill","Jane","Bad Guy","Bad Girl");
 	    pvFields[1] = pvChild;
-System.out.printf("%nchild0%n", pvChild.toString());
+//System.out.printf("%nchild0%n", pvChild.toString());
 	    PVStructure pvStructure = pvDataCreate.createPVStructure(names,pvFields);
 	   
 	    System.out.printf("%s%n",pvStructure.toString());

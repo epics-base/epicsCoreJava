@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.factory;
@@ -8,7 +8,6 @@ package org.epics.pvdata.factory;
 
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVAuxInfo;
 import org.epics.pvdata.pv.PVField;
@@ -87,31 +86,31 @@ public abstract class AbstractPVField implements PVField{
 		}
 	}
     
-    private void messagePvt(String message,MessageType messageType)
+    private void messagePvt(String message,MessageType messageType,String fullFieldName)
     {
         if(pvParent!=null) {
-            Structure structure = pvParent.getStructure();
-            String[] fieldNames = structure.getFieldNames();
-            Field[] fields = structure.getFields();
-            for(int i=0; i < fields.length; i++) {
-                if(fields[i]==this.field) {
-                    message = fieldNames[i] + " " + message;
-                    AbstractPVField xxx = (AbstractPVField)pvParent;
-                    xxx.messagePvt(message, messageType);
-                    return;
-                }
-            }    		
-            throw new IllegalStateException("Logic error in pvDataJava");
-
+            if(fullFieldName.length()>0) {
+                fullFieldName = fieldName + '.' + fullFieldName;
+            } else {
+                fullFieldName = fieldName;
+            }
+            AbstractPVField xxx = (AbstractPVField)pvParent;
+            xxx.messagePvt(message, messageType,fullFieldName);
+            return;
         }
-        System.out.println(messageType.toString() + " "  + message);
+        message = fullFieldName + " " + message;
+        if(requester!=null) {
+            requester.message(message, messageType);
+        } else {
+            System.out.println(messageType.toString() + " "  + message);
+        }
     }
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Requester#message(java.lang.String, org.epics.pvdata.pv.MessageType)
 	 */
 	@Override
 	public void message(String message, MessageType messageType) {
-	    messagePvt(message,messageType);
+	    messagePvt(message,messageType,"");
 		
 	}
 	/* (non-Javadoc)

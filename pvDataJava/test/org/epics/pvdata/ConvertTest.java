@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata;
@@ -12,17 +12,27 @@ import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.PVByte;
+import org.epics.pvdata.pv.PVByteArray;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVFloat;
+import org.epics.pvdata.pv.PVFloatArray;
 import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVIntArray;
 import org.epics.pvdata.pv.PVLong;
+import org.epics.pvdata.pv.PVLongArray;
 import org.epics.pvdata.pv.PVShort;
+import org.epics.pvdata.pv.PVShortArray;
 import org.epics.pvdata.pv.PVUByte;
+import org.epics.pvdata.pv.PVUByteArray;
 import org.epics.pvdata.pv.PVUInt;
+import org.epics.pvdata.pv.PVUIntArray;
 import org.epics.pvdata.pv.PVULong;
+import org.epics.pvdata.pv.PVULongArray;
 import org.epics.pvdata.pv.PVUShort;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.PVUShortArray;
+import org.epics.pvdata.pv.ScalarType;
 
 /**
  * JUnit test for BitSet.

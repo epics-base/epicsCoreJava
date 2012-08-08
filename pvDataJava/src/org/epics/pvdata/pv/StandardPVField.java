@@ -12,43 +12,36 @@ package org.epics.pvdata.pv;
  */
 public interface StandardPVField {
     /**
-     * @param parent
-     * @param fieldName
-     * @param type
-     * @param properties
-     * @return
+     * Create a PVStructure with a scalar value field.
+     * @param type The scalarType
+     * @param properties Some combination of alarm,timeStamp,display,control,valueAlarm
+     * @return The PVStructure with fields value plus the specified properties.
      */
-    PVStructure scalar(PVStructure parent,String fieldName,ScalarType type,String properties);
+    PVStructure scalar(ScalarType type,String properties);
     /**
-     * @param parent
-     * @param fieldName
-     * @param elementType
-     * @param properties
-     * @return
+     * Create a PVStructure with a scalarArray value field.
+     * @param elementType The scalarType for each element.
+     * @param properties Some combination of alarm,timeStamp,display,control,valueAlarm
+     * @return The PVStructure with fields value plus the specified properties.
      */
-    PVStructure scalarArray(PVStructure parent,String fieldName,ScalarType elementType, String properties);
+    PVStructure scalarArray(ScalarType elementType, String properties);
     /**
-     * @param parent
-     * @param fieldName
-     * @param structure
-     * @param properties
-     * @return
+     * Create a PVStructure with a structureArray value field.
+     * @param properties Some combination of alarm,timeStamp
+     * @return The PVStructure with fields value plus the specified properties.
      */
-    PVStructure structureArray(PVStructure parent,String fieldName,Structure structure,String properties);
+    PVStructure structureArray(Structure structure,String properties);
     /**
-     * @param parent
-     * @param choices
-     * @param number
-     * @return
+     * Create a PVStructure with an enumerated value field
+     * @param choices The array of choices.
+     * @return The PVStructure with field value.
      */
-    PVStructure enumerated(PVStructure parent,String[] choices);
+    PVStructure enumerated(String[] choices);
     /**
-     * @param parent
-     * @param fieldName
-     * @param choices
-     * @param number
-     * @param properties
-     * @return
+     * Create a PVStructure with an enumerated value field
+     * @param choices The array of choices.
+     * @param properties Some combination of alarm,timeStamp
+     * @return The PVStructure with field value plus the specified properties.
      */
-    PVStructure enumerated(PVStructure parent,String fieldName,String[] choices,String properties);
+    PVStructure enumerated(String[] choices,String properties);
 }

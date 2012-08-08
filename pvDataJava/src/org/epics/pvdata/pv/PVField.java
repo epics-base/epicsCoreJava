@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.pv;
@@ -17,12 +17,12 @@ public interface PVField extends Requester,Serializable {
      * @return The name or null if top level field.
      */
     String getFieldName();
-	/**
-	 * Register the message requester.
-	 * At most one requester can be registered.
-	 * @param requester The requester.
-	 */
-	void setRequester(Requester requester);
+    /**
+     * Register the message requester.
+     * At most one requester can be registered.
+     * @param requester The requester.
+     */
+    void setRequester(Requester requester);
     /**
      * Get offset of the PVField field within top level structure.
      * Every field within the PVStructure has a unique offset.

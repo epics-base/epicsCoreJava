@@ -1,6 +1,6 @@
 package org.epics.pvdata.util.namedValues;
 
-import java.util.*;
+import java.util.Vector;
 
 /**
  * NamedValues is a particular implementation of a named value system, in 

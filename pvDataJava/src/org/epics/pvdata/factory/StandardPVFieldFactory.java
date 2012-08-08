@@ -6,7 +6,15 @@
 
 package org.epics.pvdata.factory;
 
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVScalarArray;
+import org.epics.pvdata.pv.PVStringArray;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.StandardField;
+import org.epics.pvdata.pv.StandardPVField;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * @author mrk
@@ -28,60 +36,60 @@ public final class  StandardPVFieldFactory {
 	{
 		StandardPVFieldImpl(){}
 		
-		private PVStructure create(PVStructure parent,String fieldName,Field field,String properties) {
-            boolean gotAlarm = false;
-            boolean gotTimeStamp = false;
-            boolean gotDisplay = false;
-            boolean gotControl = false;
-            int nextra = 0;
-            if(properties.contains("alarm"))  {gotAlarm = true; nextra++;}
-            if(properties.contains("timeStamp"))  {gotTimeStamp = true; nextra++;}
-            if(properties.contains("display")) {gotDisplay = true; nextra++;}
-            if(properties.contains("control")) {gotControl = true; nextra++;}
-            String[] fieldNames = new String[nextra + 1];
-            Field[] fields = new Field[nextra + 1];
-            fieldNames[0] = fieldName;
-            fields[0] = field;
-            int index = 1;
-            if(gotAlarm) {
-                fieldNames[index] = "alarm";
-                fields[index++] = standardField.alarm();
-            }
-            if(gotTimeStamp) {
-                fieldNames[index] = "timeStamp";
-                fields[index++] = standardField.timeStamp();
-            }
-            if(gotDisplay) {
-                fieldNames[index] = "display";
-                fields[index++] = standardField.display();
-            }
-            if(gotControl) {
-                fieldNames[index] = "control";
-                fields[index++] = standardField.control();
-            }
-            Structure structure = fieldCreate.createStructure(fieldNames, fields);
-            return pvDataCreate.createPVStructure(structure);
-        }
-		@Override
-		public PVStructure scalar(PVStructure parent,String fieldName,ScalarType scalarType,String properties)
+		private void addExtendsStructureName(PVStructure pvStructure,String properties)
 		{
-			Field field = fieldCreate.createScalar(scalarType);
-			return create(parent,fieldName,field,properties);
+		    boolean gotAlarm = false;
+		    boolean gotTimeStamp = false;
+		    boolean gotDisplay = false;
+		    boolean gotControl = false;
+		    if(properties.contains("alarm"))  gotAlarm = true;
+		    if(properties.contains("timeStamp"))  gotTimeStamp = true;
+		    if(properties.contains("display")) gotDisplay = true;
+		    if(properties.contains("control")) gotControl = true;
+		    if(gotAlarm) {
+		        PVStructure pv = pvStructure.getStructureField("alarm");
+		        if(pv!=null) pv.putExtendsStructureName("alarm");
+		    }
+		    if(gotTimeStamp) {
+		        PVStructure pv = pvStructure.getStructureField("timeStamp");
+		        if(pv!=null) pv.putExtendsStructureName("timeStamp");
+		    }
+		    if(gotDisplay) {
+		        PVStructure pv = pvStructure.getStructureField("display");
+		        if(pv!=null) pv.putExtendsStructureName("display");
+		    }
+		    if(gotControl) {
+		        PVStructure pv = pvStructure.getStructureField("control");
+		        if(pv!=null) pv.putExtendsStructureName("control");
+		    }
+		}
+
+		@Override
+		public PVStructure scalar(ScalarType scalarType,String properties)
+		{
+		    Structure field = standardField.scalar(scalarType,properties);
+		    PVStructure pvStructure = pvDataCreate.createPVStructure(field);
+		    addExtendsStructureName(pvStructure,properties);
+		    return pvStructure;
 		}
 		@Override
-		public PVStructure scalarArray(PVStructure parent,String fieldName,ScalarType elementType, String properties)
+		public PVStructure scalarArray(ScalarType elementType, String properties)
 		{
-		    ScalarArray field = fieldCreate.createScalarArray(elementType);
-            return create(parent,fieldName,field,properties);
+		    Structure field = standardField.scalarArray(elementType,properties);
+            PVStructure pvStructure = pvDataCreate.createPVStructure(field);
+            addExtendsStructureName(pvStructure,properties);
+            return pvStructure;
 		}
 		@Override
-		public PVStructure structureArray(PVStructure parent,String fieldName,Structure structure,String properties)
+		public PVStructure structureArray(Structure structure,String properties)
 		{
-		    StructureArray field = fieldCreate.createStructureArray(structure);
-		    return create(parent,fieldName,field,properties);
+		    Structure field = standardField.structureArray(structure,properties);
+            PVStructure pvStructure = pvDataCreate.createPVStructure(field);
+            addExtendsStructureName(pvStructure,properties);
+            return pvStructure;
 		}
 		@Override
-		public PVStructure enumerated(PVStructure parent,String[] choices)
+		public PVStructure enumerated(String[] choices)
 		{
 		    Structure field = standardField.enumerated();
 		    PVStructure pvStructure = pvDataCreate.createPVStructure(field);
@@ -93,9 +101,18 @@ public final class  StandardPVFieldFactory {
 		    return pvStructure;
 		}
 		@Override
-		public PVStructure enumerated(PVStructure parent,String fieldName,String[] choices,String properties)
+		public PVStructure enumerated(String[] choices,String properties)
 		{
-			return null;
+		    Structure field = standardField.enumerated(properties);
+		    PVStructure pvStructure =  pvDataCreate.createPVStructure(field);
+		    addExtendsStructureName(pvStructure,properties);
+		    PVScalarArray pvScalarArray = pvStructure.getScalarArrayField("value.choices",ScalarType.pvString);
+		    if(pvScalarArray==null) {
+		        throw new IllegalStateException("logic error");
+		    }
+		    PVStringArray pvChoices = (PVStringArray)pvScalarArray;
+		    pvChoices.put(0,choices.length,choices,0);
+		    return pvStructure;
 		}
 	}
 }

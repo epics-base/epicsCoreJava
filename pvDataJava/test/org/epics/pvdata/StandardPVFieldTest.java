@@ -1,16 +1,19 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata;
 
 import junit.framework.TestCase;
 
-import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StandardPVFieldFactory;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVString;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.StandardPVField;
 
 
 
@@ -21,9 +24,6 @@ import org.epics.pvdata.pv.*;
  *
  */
 public class StandardPVFieldTest extends TestCase {
-    
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private static final StandardPVField standardPVField = StandardPVFieldFactory.getStandardPVField();
 	
     static private void print(String name,String value) {
@@ -33,7 +33,7 @@ public class StandardPVFieldTest extends TestCase {
     }
     
     public static void testSimple() {     
-        PVStructure pvStructure = standardPVField.scalar(null, "value",ScalarType.pvDouble,"alarm,timeStamp.display,control,valueAlarm");
+        PVStructure pvStructure = standardPVField.scalar(ScalarType.pvDouble,"alarm,timeStamp.display,control,valueAlarm");
         print("simpleTest",pvStructure.toString());
         PVDouble pvValue = pvStructure.getDoubleField("value");
         pvValue.put(10.0);

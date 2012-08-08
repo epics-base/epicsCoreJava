@@ -1,12 +1,15 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 
 package org.epics.pvdata;
-import org.epics.pvdata.pv.*;
-import org.epics.pvdata.factory.*;
+import org.epics.pvdata.factory.FieldFactory;
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * @author mrk

@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.factory;
@@ -31,8 +31,7 @@ import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Structure;
-import org.epics.pvdata.factory.*;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.Type;
 
 /**
  * Base class for a PVStructure.
@@ -91,6 +90,15 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         this.pvFields = pvFields;
         setParentAndName();
     }
+    @Override
+    public void setImmutable() {
+        super.setImmutable();
+        for(int i=0; i < pvFields.length; i++) {
+            pvFields[i].setImmutable();
+        }
+        super.setImmutable();
+    }
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getSubField(java.lang.String)
      */

@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.factory;
@@ -170,8 +170,11 @@ public class BaseStructure extends BaseField implements Structure {
      */
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
-        buf.append("structure");
-        if (!id.isEmpty()) buf.append(' ').append(id);
+        if (!id.isEmpty()) {
+            buf.append(id);
+        } else {
+            buf.append("structure");
+        }
         toStringCommon(buf,indentLevel+1);
     }
     private void toStringCommon(StringBuilder buf, int indentLevel) {
@@ -188,7 +191,12 @@ public class BaseStructure extends BaseField implements Structure {
                 break;
         	case structure:
         		BaseStructure struct = (BaseStructure)field;
-        		buf.append("structure " + fieldNames[i]);
+        		if(!struct.id.isEmpty()) {
+        		    buf.append(struct.id);
+        		} else {
+        		    buf.append("structure");
+        		}
+        		buf.append(" " + fieldNames[i]);
         		struct.toStringCommon(buf, indentLevel + 1);
         		break;
         	case structureArray:

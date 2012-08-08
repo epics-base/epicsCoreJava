@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.pv;
@@ -31,7 +31,6 @@ public interface DeserializableControl {
 	/**
 	 * Deserialize <i>Field</i> instance via cache.
 	 * @param buffer Buffer to be deserialized from.
-	 * @param deserialized <i>Field</i> instance.
 	 */
 	Field cachedDeserialize(ByteBuffer buffer);
 	

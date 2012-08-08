@@ -1,3 +1,9 @@
+/**
+ * Copyright - See the COPYRIGHT that is included with this distribution.
+ * EPICS pvData is distributed subject to a Software License Agreement found
+ * in file LICENSE that is included with this distribution.
+ */
+
 /*
  * Copyright 1995-2007 Sun Microsystems, Inc.  All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.

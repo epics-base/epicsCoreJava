@@ -52,13 +52,13 @@ public final class StandardFieldFactory {
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvString);
-	    alarmField = fieldCreate.createStructure(alarmFieldNames,fields);
+	    alarmField = fieldCreate.createStructure("alarm_t",alarmFieldNames,fields);
 	    fields = new Field[3];
 	    String[] timeStampFieldNames = {"secondsPastEpoch","nanoSeconds","userTag"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvLong);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
-	    timeStampField = fieldCreate.createStructure(timeStampFieldNames,fields);
+	    timeStampField = fieldCreate.createStructure("timeStamp_t",timeStampFieldNames,fields);
 	    fields = new Field[5];
 	    String[] displayFieldNames = {"limitLow","limitHigh","description","format","units"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
@@ -66,20 +66,20 @@ public final class StandardFieldFactory {
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvString);
 	    fields[3] = fieldCreate.createScalar(ScalarType.pvString);
 	    fields[4] = fieldCreate.createScalar(ScalarType.pvString);
-	    displayField = fieldCreate.createStructure(displayFieldNames,fields);
+	    displayField = fieldCreate.createStructure("display_t",displayFieldNames,fields);
 	    fields = new Field[3];
 	    String[] controlFieldNames = {"limitLow","limitHigh","minStep"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvDouble);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvDouble);
-	    controlField = fieldCreate.createStructure(controlFieldNames,fields);
+	    controlField = fieldCreate.createStructure("control_t",controlFieldNames,fields);
 	    fields = new Field[4];
 	    String[] booleanAlarmFieldNames = {"active","falseSeverity","trueSeverity","changeStateSeverity"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[3] = fieldCreate.createScalar(ScalarType.pvInt);
-	    booleanAlarmField = fieldCreate.createStructure(booleanAlarmFieldNames,fields);
+	   booleanAlarmField = fieldCreate.createStructure("valueAlarm_t",booleanAlarmFieldNames,fields);
 	    
 	    fields = new Field[10];
 	    String[] scalarAlarmFieldNames = {
@@ -97,7 +97,7 @@ public final class StandardFieldFactory {
 	    fields[7] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[8] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[9] = fieldCreate.createScalar(ScalarType.pvByte);
-	    byteAlarmField = fieldCreate.createStructure(scalarAlarmFieldNames,fields);
+	    byteAlarmField = fieldCreate.createStructure("valueAlarm_t",scalarAlarmFieldNames,fields);
 	    fields = new Field[10];
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvShort);
@@ -109,7 +109,7 @@ public final class StandardFieldFactory {
 	    fields[7] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[8] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[9] = fieldCreate.createScalar(ScalarType.pvShort);
-	    shortAlarmField = fieldCreate.createStructure(scalarAlarmFieldNames,fields);
+	    shortAlarmField = fieldCreate.createStructure("valueAlarm_t",scalarAlarmFieldNames,fields);
 	    fields = new Field[10];
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
@@ -121,7 +121,7 @@ public final class StandardFieldFactory {
 	    fields[7] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[8] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[9] = fieldCreate.createScalar(ScalarType.pvInt);
-	    intAlarmField = fieldCreate.createStructure(scalarAlarmFieldNames,fields);
+	    intAlarmField = fieldCreate.createStructure("valueAlarm_t",scalarAlarmFieldNames,fields);
 	    fields = new Field[10];
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvLong);
@@ -133,7 +133,7 @@ public final class StandardFieldFactory {
 	    fields[7] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[8] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[9] = fieldCreate.createScalar(ScalarType.pvLong);
-	    longAlarmField = fieldCreate.createStructure(scalarAlarmFieldNames,fields);
+	    longAlarmField = fieldCreate.createStructure("valueAlarm_t",scalarAlarmFieldNames,fields);
 	    fields = new Field[10];
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvFloat);
@@ -145,7 +145,7 @@ public final class StandardFieldFactory {
 	    fields[7] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[8] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[9] = fieldCreate.createScalar(ScalarType.pvFloat);
-	    floatAlarmField = fieldCreate.createStructure(scalarAlarmFieldNames,fields);
+	    floatAlarmField = fieldCreate.createStructure("valueAlarm_t",scalarAlarmFieldNames,fields);
 	    fields = new Field[10];
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvDouble);
@@ -157,13 +157,13 @@ public final class StandardFieldFactory {
 	    fields[7] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[8] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[9] = fieldCreate.createScalar(ScalarType.pvDouble);
-	    doubleAlarmField = fieldCreate.createStructure(scalarAlarmFieldNames,fields);
+	    doubleAlarmField = fieldCreate.createStructure("valueAlarm_t",scalarAlarmFieldNames,fields);
 	    fields = new Field[3];
 	    String[] enumeratedAlarmFieldNames = {"active","stateSeverity","changeStateSeverity"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
-	    enumeratedAlarmField = fieldCreate.createStructure(enumeratedAlarmFieldNames,fields);
+	    enumeratedAlarmField = fieldCreate.createStructure("valueAlarm_t",enumeratedAlarmFieldNames,fields);
 
 	}
 	static Structure createProperties(Field field,String properties)

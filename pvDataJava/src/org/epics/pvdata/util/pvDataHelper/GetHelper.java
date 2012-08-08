@@ -1,7 +1,17 @@
 package org.epics.pvdata.util.pvDataHelper;
 
 import java.util.Vector;
-import org.epics.pvdata.pv.*;
+
+import org.epics.pvdata.pv.BooleanArrayData;
+import org.epics.pvdata.pv.ByteArrayData;
+import org.epics.pvdata.pv.DoubleArrayData;
+import org.epics.pvdata.pv.LongArrayData;
+import org.epics.pvdata.pv.PVBooleanArray;
+import org.epics.pvdata.pv.PVByteArray;
+import org.epics.pvdata.pv.PVDoubleArray;
+import org.epics.pvdata.pv.PVLongArray;
+import org.epics.pvdata.pv.PVStringArray;
+import org.epics.pvdata.pv.StringArrayData;
 
 /**
  * GetHelper is a utility class with methods to help copy the contents of PVData types

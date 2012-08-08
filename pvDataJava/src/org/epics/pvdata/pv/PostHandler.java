@@ -6,6 +6,7 @@
 package org.epics.pvdata.pv;
 
 /**
+ * Inytrerface for PostHandler.
  * @author mrk
  *
  */

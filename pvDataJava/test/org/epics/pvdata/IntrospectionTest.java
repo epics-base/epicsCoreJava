@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata;
@@ -8,14 +8,17 @@ package org.epics.pvdata;
 
 import junit.framework.TestCase;
 
-
-
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.StandardField;
 import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.StructureArray;
+import org.epics.pvdata.pv.Type;
 
 /**
  * JUnit test for BitSet.

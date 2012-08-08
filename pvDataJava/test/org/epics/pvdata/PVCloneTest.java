@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata;
@@ -10,7 +10,24 @@ import junit.framework.TestCase;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.Convert;
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVByte;
+import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVDoubleArray;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVShort;
+import org.epics.pvdata.pv.PVString;
+import org.epics.pvdata.pv.PVStringArray;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.PVStructureArray;
+import org.epics.pvdata.pv.Requester;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.Structure;
 
 
 
@@ -205,7 +222,7 @@ public class PVCloneTest extends TestCase {
 //convert.getFullFieldName(builder, pvShort);
 //System.out.printf("fullName %s value %d%n",builder.toString(),(int)value);
         }
- System.out.println(clone);
+//System.out.println(clone);
         name = "";
         pvs = clone;
         for(int level = 0; level<nlevels; level ++) {
@@ -240,9 +257,30 @@ public class PVCloneTest extends TestCase {
 //System.out.println(origPVStructure);
 //System.out.println(origStructure);
 //System.out.println(nowPVStructure);
-//System.out.println(nowStructure);
+//System.out.println(nowPVStructure);
         assertTrue(nowPVStructure.equals(origPVStructure));
         assertTrue(nowStructure.equals(origStructure));
+    }
+    
+    public static void testRequester() {
+        PVField pvField = pvChannelToClone.getSubField("d.d.b");
+        pvField.message("this is a test", MessageType.info);
+        Requester requester = new RequesterImpl();
+        pvChannelToClone.setRequester(requester);
+//System.out.println(pvChannelToClone);
+        pvField.message("this is a test", MessageType.info);
+    }
+    
+    private static class RequesterImpl implements Requester {
+        @Override
+        public String getRequesterName() {
+            return "pvCopyTest";
+        }
+        @Override
+        public void message(String message, MessageType messageType) {
+            System.out.printf("pvCopyTest %s messageType %s%n",message,messageType.name());
+            
+        }
     }
 }
 

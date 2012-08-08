@@ -1,6 +1,6 @@
 /**
  * Copyright - See the COPYRIGHT that is included with this distribution.
- * EPICS JavaIOC is distributed subject to a Software License Agreement found
+ * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.pv;
@@ -69,13 +69,13 @@ public interface FieldCreate {
      * @return a <i>Structure</i> interface for the newly created object.
      */
     Structure createStructure(Structure structToClone);
-	/**
-	 * Deserialize <i>Field</i> instance from given byte buffer.
-	 * @param buffer Buffer containing serialized <i>Field</i> instance. 
-	 * @param control Deserialization control instance.
-	 * @return a deserialized <i>Field</i> instance.
-	 */
-	Field deserialize(ByteBuffer buffer, DeserializableControl control);
+    /**
+     * Deserialize <i>Field</i> instance from given byte buffer.
+     * @param buffer Buffer containing serialized <i>Field</i> instance. 
+     * @param control Deserialization control instance.
+     * @return a deserialized <i>Field</i> instance.
+     */
+    Field deserialize(ByteBuffer buffer, DeserializableControl control);
 
 }
 
