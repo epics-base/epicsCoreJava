@@ -256,13 +256,13 @@ System.out.printf("%s value has unknown subfields%n",pvField);
         
         switch(type) {
         case scalar:
-            pvStructure = standardPVField.scalar(null,"value", scalarType, properties);
+            pvStructure = standardPVField.scalar(scalarType, properties);
             break;
         case scalarArray:
-            pvStructure = standardPVField.scalarArray(null,"value", scalarType, properties);
+            pvStructure = standardPVField.scalarArray(scalarType, properties);
             break;
         case structure:
-            pvStructure = standardPVField.enumerated(null,"value",null, properties);
+            pvStructure = standardPVField.enumerated(null, properties);
         }
         if(nativeDBRType.isENUM()) {
             PVStructure pvStruct = (PVStructure)pvStructure.getPVFields()[0];
