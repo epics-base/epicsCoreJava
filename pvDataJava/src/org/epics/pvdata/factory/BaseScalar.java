@@ -67,7 +67,7 @@ public class BaseScalar extends BaseField implements Scalar {
      */
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
-        buf.append(scalarType.toString());
+        buf.append(getID());
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

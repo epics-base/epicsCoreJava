@@ -989,6 +989,15 @@ where
      <dd>Return the introspection interface for the array elements.</dd>
 </dl>
 <h5>FieldCreate</h5>
+<p><b>Syntax for fieldName and id.</b>
+<p>A <b>fieldName</b> must begin with a letter and must be a sequence of letters
+and digits.
+A letter is defined as 'A'-'Z', 'a'-'z','_', or any Unicode character
+that denotes a letter in a language. Similarly digits are '0'-'9' and any
+Unicode character that denotes a digit in a language.
+Note that this is the same as the Java syntax for variable names.</p>
+<p>The syntax for <b>id</b> is the same except the '.' is also allowed
+after the initial letter.</p>
 <pre>
 interface FieldCreate {
     Scalar createScalar(ScalarType scalarType);

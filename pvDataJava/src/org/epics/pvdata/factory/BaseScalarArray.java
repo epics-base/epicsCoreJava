@@ -66,8 +66,7 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
      */
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
-        buf.append(elementType.toString());
-        buf.append("[]");
+        buf.append(getID());
     }
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

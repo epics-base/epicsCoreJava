@@ -27,7 +27,7 @@ public class BaseStructure extends BaseField implements Structure {
     private final String id;
     private Field[] fields;
     private String[] fieldNames;
-    private static final String DEFAULT_ID = "";
+    private static final String DEFAULT_ID = "structure";
     /**
      * Constructor for a structure field.
      * @param fieldNames The field names for the subfields
@@ -170,11 +170,7 @@ public class BaseStructure extends BaseField implements Structure {
      */
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
-        if (!id.isEmpty()) {
-            buf.append(id);
-        } else {
-            buf.append("structure");
-        }
+        buf.append(getID());
         toStringCommon(buf,indentLevel+1);
     }
     private void toStringCommon(StringBuilder buf, int indentLevel) {

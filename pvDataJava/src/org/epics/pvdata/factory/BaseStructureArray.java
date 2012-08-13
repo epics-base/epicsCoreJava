@@ -52,7 +52,7 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	@Override
     public void toString(StringBuilder buf, int indentLevel) {
 	    if(indentLevel==0) {
-	        buf.append("structure[]");
+	        buf.append(getID());
 	        convert.newLine(buf,indentLevel+1);
 	        structure.toString(buf,indentLevel+1);
 	        return;

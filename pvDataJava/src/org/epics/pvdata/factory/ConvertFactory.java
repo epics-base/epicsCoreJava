@@ -5092,8 +5092,9 @@ public final class ConvertFactory {
                 return;
             }
             PVScalar pvScalar = (PVScalar) pv;
-            ScalarType scalarType = pvScalar.getScalar().getScalarType();
-            builder.append(scalarType.toString() + " " + pv.getFieldName());
+            Scalar scalar = pvScalar.getScalar();
+            ScalarType scalarType = scalar.getScalarType();
+            builder.append(scalar.getID() + " " + pv.getFieldName());
             builder.append(" ");
             switch (scalarType) {
             case pvBoolean: {
@@ -5185,7 +5186,7 @@ public final class ConvertFactory {
         }
 
         private void convertStructure(StringBuilder buffer,PVStructure data, int indentLevel) {
-            buffer.append("structure " + data.getFieldName());
+            buffer.append(data.getStructure().getID() + " " + data.getFieldName());
             String extendsName = data.getExtendsStructureName();
             if(extendsName!=null && extendsName.length()>0) {
                 buffer.append(" extends " +extendsName);
@@ -5205,8 +5206,7 @@ public final class ConvertFactory {
         private void convertArray(StringBuilder builder,PVScalarArray pv, int indentLevel) {
             ScalarArray array = pv.getScalarArray();
             ScalarType type = array.getElementType();
-            builder.append(pv.getScalarArray().getElementType().toString());
-            builder.append("[] ");
+            builder.append(array.getID());
             PVStructure parent = pv.getParent();
             if(parent!=null) {
                 PVField[] pvFields = parent.getPVFields();
@@ -5581,7 +5581,7 @@ public final class ConvertFactory {
         }
 
         private void convertStructureArray(StringBuilder builder,PVStructureArray pvdata,int indentLevel) {
-            builder.append("structure[] ");
+            builder.append(pvdata.getStructureArray().getID());
             PVStructure parent = pvdata.getParent();
             if(parent!=null) {
                 PVField[] pvFields = parent.getPVFields();

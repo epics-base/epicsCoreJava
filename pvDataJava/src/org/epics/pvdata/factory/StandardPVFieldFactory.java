@@ -30,46 +30,16 @@ public final class  StandardPVFieldFactory {
 	}
 	private static StandardPVFieldImpl impl = null;
 	private static PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-	private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 	private static StandardField standardField = StandardFieldFactory.getStandardField();
 	private static final class StandardPVFieldImpl implements StandardPVField
 	{
 		StandardPVFieldImpl(){}
-		
-		private void addExtendsStructureName(PVStructure pvStructure,String properties)
-		{
-		    boolean gotAlarm = false;
-		    boolean gotTimeStamp = false;
-		    boolean gotDisplay = false;
-		    boolean gotControl = false;
-		    if(properties.contains("alarm"))  gotAlarm = true;
-		    if(properties.contains("timeStamp"))  gotTimeStamp = true;
-		    if(properties.contains("display")) gotDisplay = true;
-		    if(properties.contains("control")) gotControl = true;
-		    if(gotAlarm) {
-		        PVStructure pv = pvStructure.getStructureField("alarm");
-		        if(pv!=null) pv.putExtendsStructureName("alarm");
-		    }
-		    if(gotTimeStamp) {
-		        PVStructure pv = pvStructure.getStructureField("timeStamp");
-		        if(pv!=null) pv.putExtendsStructureName("timeStamp");
-		    }
-		    if(gotDisplay) {
-		        PVStructure pv = pvStructure.getStructureField("display");
-		        if(pv!=null) pv.putExtendsStructureName("display");
-		    }
-		    if(gotControl) {
-		        PVStructure pv = pvStructure.getStructureField("control");
-		        if(pv!=null) pv.putExtendsStructureName("control");
-		    }
-		}
 
 		@Override
 		public PVStructure scalar(ScalarType scalarType,String properties)
 		{
 		    Structure field = standardField.scalar(scalarType,properties);
 		    PVStructure pvStructure = pvDataCreate.createPVStructure(field);
-		    addExtendsStructureName(pvStructure,properties);
 		    return pvStructure;
 		}
 		@Override
@@ -77,7 +47,6 @@ public final class  StandardPVFieldFactory {
 		{
 		    Structure field = standardField.scalarArray(elementType,properties);
             PVStructure pvStructure = pvDataCreate.createPVStructure(field);
-            addExtendsStructureName(pvStructure,properties);
             return pvStructure;
 		}
 		@Override
@@ -85,7 +54,6 @@ public final class  StandardPVFieldFactory {
 		{
 		    Structure field = standardField.structureArray(structure,properties);
             PVStructure pvStructure = pvDataCreate.createPVStructure(field);
-            addExtendsStructureName(pvStructure,properties);
             return pvStructure;
 		}
 		@Override
@@ -105,7 +73,6 @@ public final class  StandardPVFieldFactory {
 		{
 		    Structure field = standardField.enumerated(properties);
 		    PVStructure pvStructure =  pvDataCreate.createPVStructure(field);
-		    addExtendsStructureName(pvStructure,properties);
 		    PVScalarArray pvScalarArray = pvStructure.getScalarArrayField("value.choices",ScalarType.pvString);
 		    if(pvScalarArray==null) {
 		        throw new IllegalStateException("logic error");

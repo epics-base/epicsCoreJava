@@ -166,7 +166,7 @@ public final class StandardFieldFactory {
 	    enumeratedAlarmField = fieldCreate.createStructure("valueAlarm_t",enumeratedAlarmFieldNames,fields);
 
 	}
-	static Structure createProperties(Field field,String properties)
+	static Structure createProperties(String id,Field field,String properties)
 	{
 	    boolean gotAlarm = false;
 	    boolean gotTimeStamp = false;
@@ -246,7 +246,7 @@ public final class StandardFieldFactory {
 	    	fieldNames[next] = "valueAlarm";
 	    	fields[next++] = valueAlarm;
 	    }
-	    return fieldCreate.createStructure(fieldNames,fields);
+	    return fieldCreate.createStructure(id,fieldNames,fields);
 	}
 
 	private static final class StandardFieldImpl implements StandardField
@@ -257,19 +257,19 @@ public final class StandardFieldFactory {
 		public Structure scalar(ScalarType scalarType,String properties)
 		{
 			Scalar field = fieldCreate.createScalar(scalarType);
-		    return createProperties(field,properties);
+		    return createProperties("scalar_t",field,properties);
 		}
 		@Override
 		public Structure scalarArray(ScalarType elementType, String properties)
 		{
 			ScalarArray field = fieldCreate.createScalarArray(elementType);
-		    return createProperties(field,properties);
+		    return createProperties("scalarArray_t",field,properties);
 		}
 		@Override
 		public Structure structureArray(Structure structure,String properties)
 		{
 			StructureArray field = fieldCreate.createStructureArray(structure);
-		    return createProperties(field,properties);
+		    return createProperties("structureArray_t",field,properties);
 		}
 		@Override
 		public Structure enumerated()
@@ -278,14 +278,14 @@ public final class StandardFieldFactory {
 			String[] fieldNames = {"index","choices"};
 		    fields[0] = fieldCreate.createScalar(ScalarType.pvInt);
 		    fields[1] = fieldCreate.createScalarArray(ScalarType.pvString);
-		    return fieldCreate.createStructure(fieldNames,fields);
+		    return fieldCreate.createStructure("enumerated_t",fieldNames,fields);
 
 		}
 		@Override
 		public Structure enumerated(String properties)
 		{
 		    Structure field = enumerated();
-		    return createProperties(field,properties);
+		    return createProperties("enumerated_t",field,properties);
 
 		}
 		
