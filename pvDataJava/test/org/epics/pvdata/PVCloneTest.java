@@ -7,10 +7,8 @@ package org.epics.pvdata;
 
 import junit.framework.TestCase;
 
-import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.MessageType;
@@ -41,7 +39,6 @@ public class PVCloneTest extends TestCase {
     
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-    private static Convert convert = ConvertFactory.getConvert();
 	private static PVStructure pvChannelToClone;
 	private static int nlevels = 4;
 	

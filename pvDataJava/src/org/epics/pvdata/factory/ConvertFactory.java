@@ -5190,7 +5190,6 @@ public final class ConvertFactory {
             String extendsName = data.getExtendsStructureName();
             if(extendsName!=null && extendsName.length()>0) {
                 buffer.append(" extends " +extendsName);
-                buffer.append(" ");
             }
             PVField[] fieldsData = data.getPVFields();
             if (fieldsData != null) {
@@ -5206,19 +5205,7 @@ public final class ConvertFactory {
         private void convertArray(StringBuilder builder,PVScalarArray pv, int indentLevel) {
             ScalarArray array = pv.getScalarArray();
             ScalarType type = array.getElementType();
-            builder.append(array.getID());
-            PVStructure parent = pv.getParent();
-            if(parent!=null) {
-                PVField[] pvFields = parent.getPVFields();
-                for(int i=0; i<pvFields.length; i++) {
-                    if(pvFields[i]==pv) {
-                        builder.append(" ");
-                        builder.append(parent.getStructure().getFieldName(i));
-                        break;
-                    }
-                }
-            }
-            builder.append(" ");
+            builder.append(array.getID() + " " + pv.getFieldName() + " ");
             switch (type) {
             case pvBoolean:
             {
@@ -5581,19 +5568,7 @@ public final class ConvertFactory {
         }
 
         private void convertStructureArray(StringBuilder builder,PVStructureArray pvdata,int indentLevel) {
-            builder.append(pvdata.getStructureArray().getID());
-            PVStructure parent = pvdata.getParent();
-            if(parent!=null) {
-                PVField[] pvFields = parent.getPVFields();
-                for(int i=0; i<pvFields.length; i++) {
-                    if(pvFields[i]==pvdata) {
-                        builder.append(" ");
-                        builder.append(parent.getStructure().getFieldName(i));
-                        break;
-                    }
-                }
-            }
-            builder.append(" ");
+            builder.append(pvdata.getStructureArray().getID() + " " + pvdata.getFieldName() + " ");
             int length = pvdata.getLength();
             if(length<=0) {
                 return;

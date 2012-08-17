@@ -2744,10 +2744,10 @@ class PVTimeStampFactory implements PVTimeStamp {
 structure alarm
     int severity
     int status
-    String message
+    string message
 </pre>
 
-<p>Note that severity and status are NOT defined a an enumerated structures.
+<p>Note that severity and status are NOT defined as enumerated structures.
 The reason is performance, i. e. prevent passing the array of choice strings everywhere.
 The AlarmStatus and AlarmSeverity provide the equivalent of choices for an
 enumerated structure.</p>
@@ -3021,7 +3021,7 @@ class PVDisplayFactory implements PVDisplay{
 
 <p>An enumerated structure is a structure that has fields:</p>
 <pre>structure
-    int32 index
+    int index
     string[] choices</pre>
 
 <h5>PVEnumerated</h5>

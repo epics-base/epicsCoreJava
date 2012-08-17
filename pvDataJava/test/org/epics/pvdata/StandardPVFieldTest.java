@@ -7,13 +7,19 @@ package org.epics.pvdata;
 
 import junit.framework.TestCase;
 
-import org.epics.pvdata.factory.*;
+import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.factory.StandardFieldFactory;
+import org.epics.pvdata.factory.StandardPVFieldFactory;
+import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.PVStructureArray;
 import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.StandardField;
+import org.epics.pvdata.pv.StandardPVField;
+import org.epics.pvdata.pv.Structure;
 
 
 
@@ -59,7 +65,7 @@ public class StandardPVFieldTest extends TestCase {
         }
         PVStructureArray pvStructureArray = pvStructure.getStructureArrayField("value");
         pvStructureArray.put(0, num, pvStructures, 0);
-        print("structureArrayTest",pvStructureArray.toString());
+        print("structureArrayTest",pvStructure.toString());
     }
 }
 

@@ -9,12 +9,10 @@ import junit.framework.TestCase;
 
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.factory.StandardPVFieldFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.StandardPVField;
 import org.epics.pvdata.pv.Structure;
 
 
@@ -29,7 +27,6 @@ public class PVAllTypesTest extends TestCase {
     
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-    private static final StandardPVField standardPVField = StandardPVFieldFactory.getStandardPVField();
 	
 	
     public static void testSimple() {     

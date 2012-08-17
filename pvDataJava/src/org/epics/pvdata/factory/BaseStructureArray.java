@@ -39,7 +39,6 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	 */
 	@Override
 	public String getID() {
-		// NOTE: structure.getID() can return an empty string
 		return structure.getID() + "[]";
 	}
 	/* (non-Javadoc)
@@ -50,14 +49,10 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 		return structure;
 	}
 	@Override
-    public void toString(StringBuilder buf, int indentLevel) {
-	    if(indentLevel==0) {
-	        buf.append(getID());
-	        convert.newLine(buf,indentLevel+1);
-	        structure.toString(buf,indentLevel+1);
-	        return;
-	    }
-		structure.toString(buf, indentLevel);
+	public void toString(StringBuilder buf, int indentLevel) {
+	    buf.append(getID());
+	    convert.newLine(buf,indentLevel+1);
+	    structure.toString(buf,indentLevel+1);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()

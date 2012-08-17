@@ -6,7 +6,6 @@
 
 package org.epics.pvdata.factory;
 
-import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVScalarArray;
 import org.epics.pvdata.pv.PVStringArray;

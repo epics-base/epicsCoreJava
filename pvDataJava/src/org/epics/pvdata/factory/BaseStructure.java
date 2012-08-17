@@ -178,25 +178,17 @@ public class BaseStructure extends BaseField implements Structure {
         int length = fields.length;
         for(int i=0; i<length; i++) {
         	Field field = fields[i];
+        	buf.append(field.getID() + " " + fieldNames[i]);
         	Type type = field.getType();
         	switch(type) {
         	case scalar:
         	case scalarArray:
-        		field.toString(buf, indentLevel);
-                buf.append(" " + fieldNames[i]);
                 break;
         	case structure:
         		BaseStructure struct = (BaseStructure)field;
-        		if(!struct.id.isEmpty()) {
-        		    buf.append(struct.id);
-        		} else {
-        		    buf.append("structure");
-        		}
-        		buf.append(" " + fieldNames[i]);
         		struct.toStringCommon(buf, indentLevel + 1);
         		break;
         	case structureArray:
-        		buf.append("structure[] " + fieldNames[i]);
         		convert.newLine(buf,indentLevel+1);
         		field.toString(buf, indentLevel+1);
         		break;
