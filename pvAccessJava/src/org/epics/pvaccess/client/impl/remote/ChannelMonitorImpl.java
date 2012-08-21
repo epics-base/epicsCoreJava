@@ -15,6 +15,7 @@
 package org.epics.pvaccess.client.impl.remote;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.epics.pvaccess.CAException;
@@ -119,6 +120,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
         	monitorStrategy = new MonitorStrategySingle();
         else 
         	monitorStrategy = new MonitorStrategyQueue(queueSize);
+//        	monitorStrategy = new MonitorStrategyQueueNoCopy(queueSize);
         	
         	
         // subscribe
@@ -230,10 +232,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		@Override
 		public void release(MonitorElement monitorElement)
 		{
-        	synchronized(this)
-        	{
-                gotMonitor.set(false);
-            }
+			// noop
 		}
 
 		@Override
@@ -350,10 +349,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		@Override
 		public void release(MonitorElement monitorElement)
 		{
-        	synchronized(this)
-        	{
-                gotMonitor.set(false);
-            }
+			// noop
 		}
 
 		@Override
@@ -596,7 +592,211 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		
 	}
 	
-	/* (non-Javadoc)
+    private final class MonitorStrategyQueueNoCopy implements MonitorStrategy {
+		private final int queueSize;
+
+		private MonitorElement overrunElement = null;
+		private BitSet bitSet1 = null;
+		private BitSet bitSet2 = null;
+
+	    private Structure lastStructure = null;
+	    
+	    private final ArrayList<MonitorElement> freeElements;
+	    private final ArrayList<MonitorElement> usedElements;
+	    
+	    private final Object monitorSync = new Object();
+	    
+
+		public MonitorStrategyQueueNoCopy(int queueSize)
+		{
+			if (queueSize <= 1)
+				throw new IllegalArgumentException("queueSize <= 1");
+			
+			this.queueSize = queueSize;
+			this.freeElements = new ArrayList<MonitorElement>(queueSize+1);
+			this.usedElements = new ArrayList<MonitorElement>(queueSize+1);
+		}
+		
+		@Override
+		public void init(Structure structure)
+		{
+			synchronized (monitorSync)
+			{
+				usedElements.clear();
+
+				// reuse on reconnect
+				if (lastStructure == null || !lastStructure.equals(structure))
+				{
+					freeElements.clear();
+		            for(int i = 0; i < queueSize; i++) {
+		                PVStructure pvNew = pvDataCreate.createPVStructure(structure);
+		                freeElements.add(MonitorQueueFactory.createMonitorElement(pvNew));
+		            }
+
+		            bitSet1 = bitSet2 = null;
+		            lastStructure = structure;
+				}
+				
+	            // no overrun
+				overrunElement = null;
+			}
+		}
+		
+		@Override
+		public void response(Transport transport, ByteBuffer payloadBuffer)
+		{
+			boolean notify = false;
+			
+			synchronized (monitorSync)
+			{
+				final int nfree = freeElements.size();
+				System.out.println("nfree: " + nfree + ", overrun:" + overrunElement);
+				
+				if (overrunElement != null)
+				{
+					if (nfree > 1)
+					{
+						// TODO remove, just for time of testing...
+						// in overrun state, we have free elements
+						throw new IllegalStateException("there should be no free elements");
+					}
+					else
+					{
+						// in overrun state, still no free elements
+						
+						// setup current fields
+						final PVStructure pvStructure = overrunElement.getPVStructure();
+						final BitSet changedBitSet = overrunElement.getChangedBitSet();
+						final BitSet overrunBitSet = overrunElement.getOverrunBitSet();
+
+						// lazy init
+		            	if (bitSet1 == null) bitSet1 = new BitSet(changedBitSet.size());
+		            	if (bitSet2 == null) bitSet2 = new BitSet(overrunBitSet.size());
+		            	
+		            	bitSet1.deserialize(payloadBuffer, transport);
+						pvStructure.deserialize(payloadBuffer, transport, bitSet1);
+						bitSet2.deserialize(payloadBuffer, transport);
+
+						// OR local overrun
+						// TODO this does not work perfectly... uncompressed bitSets should be used!!!
+						overrunBitSet.or_and(changedBitSet, bitSet1);
+
+						// OR remove change
+						changedBitSet.or(bitSet1);
+
+						// OR remote overrun
+						overrunBitSet.or(bitSet2);
+					}
+				}
+				else
+				{
+					
+					if (nfree > 1)
+					{
+						// not in overrun state, free elements are available
+						
+						// TODO move up
+						MonitorElement monitorElement = freeElements.remove(nfree - 1);
+	
+						deserializeMonitorResponse(transport, payloadBuffer, monitorElement);
+						
+						notify = usedElements.isEmpty();
+						
+						usedElements.add(monitorElement);
+					}
+					else
+					{
+						// transition to overrun state
+						
+						overrunElement = freeElements.remove(nfree - 1);
+	
+						deserializeMonitorResponse(transport, payloadBuffer, overrunElement);
+	
+					}
+				}
+			}
+			
+			// TODO guard?
+			if (notify)
+				callback.monitorEvent(this);
+		}
+
+		private final void deserializeMonitorResponse(Transport transport,
+				ByteBuffer payloadBuffer, MonitorElement monitorElement) {
+			
+			// setup current fields
+			final PVStructure pvStructure = monitorElement.getPVStructure();
+			final BitSet changedBitSet = monitorElement.getChangedBitSet();
+			final BitSet overrunBitSet = monitorElement.getOverrunBitSet();
+
+			// deserialize changedBitSet and data, and overrun bit set
+			changedBitSet.deserialize(payloadBuffer, transport);
+			pvStructure.deserialize(payloadBuffer, transport, changedBitSet);
+			overrunBitSet.deserialize(payloadBuffer, transport);
+		}
+
+		@Override
+		public MonitorElement poll()
+		{
+            synchronized(monitorSync) {
+            	int size = usedElements.size();
+            	if (size > 0)
+            		return usedElements.remove(size - 1);
+            	else
+            		return null;
+            }
+		}
+
+		@Override
+		public void release(MonitorElement monitorElement)
+		{
+	        synchronized(monitorSync) {
+
+	        	// yes, we compare by ref (fast), since we expect element of the same structure
+	        	if (monitorElement.getPVStructure().getStructure() == lastStructure)
+	        	{
+	        		freeElements.add(monitorElement);
+
+	        		if (overrunElement != null)
+	        		{
+		        		// if in overrun, we've just got one free element
+		        		// return it to usedElements list
+		        		// and move out of overrun state
+	    				final PVStructure pvStructure = overrunElement.getPVStructure();
+			            bitSetUtil.compress(overrunElement.getChangedBitSet(), pvStructure);
+			            bitSetUtil.compress(overrunElement.getOverrunBitSet(), pvStructure);
+			            
+			            usedElements.add(overrunElement);
+			            
+			            overrunElement = null;
+	        		}
+	        	}
+	        }
+		}
+
+		@Override
+		public Status start()
+		{
+			return okStatus;
+		}
+
+		@Override
+		public Status stop() {
+			synchronized (monitorSync) {
+				overrunElement = null;
+				usedElements.clear();
+			}
+			return okStatus;
+		}
+
+		@Override
+		public void destroy() {
+			// noop
+		}
+		
+	}
+
+    /* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 	 */
 	@Override
@@ -715,6 +915,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	public Status start() {
 		if (destroyed)
 			return destroyedStatus;
+		// TODO not initialized (aka created) check?!!
 		
 		monitorStrategy.start();
 		
@@ -737,6 +938,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	public Status stop() {
 		if (destroyed)
 			return destroyedStatus;
+		// TODO not initialized (aka created) check?!!
 		
 		monitorStrategy.stop();
 		
