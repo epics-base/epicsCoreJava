@@ -194,13 +194,11 @@ public final class ConvertFactory {
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
-                //value.put(Float.valueOf(from));
                 value.put(stringToFloat(from)); 
                 break;
             }
             case pvDouble: {
                 PVDouble value = (PVDouble) pv;
-                //value.put(Double.valueOf(from));
                 value.put(stringToDouble(from)); 
                 break;
             }
@@ -1095,7 +1093,6 @@ public final class ConvertFactory {
             }
             case pvString:  {
                 PVString value = (PVString) pv;
-                //return Float.valueOf(value.get());
                 return stringToFloat(value.get());
             }	 
             }
@@ -1158,8 +1155,7 @@ public final class ConvertFactory {
             }
             case pvString:{
                 PVString value = (PVString) pv;
-                //return Double.valueOf(value.get());
-                return stringToDouble(value.get());
+                 return stringToDouble(value.get());
             }	 
             }
             throw new IllegalStateException(
@@ -1688,22 +1684,18 @@ public final class ConvertFactory {
             }
             case pvUByte: {
                 PVUByte value = (PVUByte) pv;
-                //value.put((byte)from); return;
                 value.put(floatToUByte(from)); return;
             }
             case pvUShort: {
                 PVUShort value = (PVUShort) pv;
-                //value.put((short)from); return;
                 value.put(floatToUShort(from)); return;
             }
             case pvUInt: {
                 PVUInt value = (PVUInt) pv;
-                //value.put((int)from); return;
                 value.put(floatToUInt(from)); return;
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
-                //value.put((long) from); return;
                 value.put(floatToULong(from)); return;                
             }
             case pvFloat: {
@@ -1716,7 +1708,6 @@ public final class ConvertFactory {
             }
             case pvString: {
                 PVString value = (PVString) pv;
-                //value.put(String.valueOf(from)); return;
                 value.put(floatToString(from)); return;
             }
             }
@@ -1755,22 +1746,18 @@ public final class ConvertFactory {
             }
             case pvUByte: {
                 PVUByte value = (PVUByte) pv;
-                //value.put((byte)from); return;
                 value.put(doubleToUByte(from)); return;
             }
             case pvUShort: {
                 PVUShort value = (PVUShort) pv;
-                //value.put((short)from); return;
                 value.put(doubleToUShort(from)); return;
             }
             case pvUInt: {
                 PVUInt value = (PVUInt) pv;
-                //value.put((int)from); return;
                 value.put(doubleToUInt(from)); return;
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
-                //value.put((long) from); return;
                 value.put(doubleToULong(from)); return; 
             }
             case pvFloat: {
@@ -1783,7 +1770,6 @@ public final class ConvertFactory {
             }
             case pvString: {
                 PVString value = (PVString) pv;
-                //value.put(String.valueOf(from)); return;
                 value.put(doubleToString(from)); return;
             }
             }
@@ -1998,17 +1984,14 @@ public final class ConvertFactory {
             }
             case pvShort: {
                 PVShort value = (PVShort) pv;
-                //return String.valueOf(value.get());
                 return shortToString(value.get());
             }
             case pvInt: {
                 PVInt value = (PVInt) pv;
-                //return String.valueOf(value.get());
                 return intToString(value.get());
             }
             case pvLong: {
                 PVLong value = (PVLong) pv;
-                //return String.valueOf(value.get());
                 return longToString(value.get());
             }
             case pvUByte: {
@@ -2029,12 +2012,10 @@ public final class ConvertFactory {
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
-                //return String.valueOf(value.get());
                 return floatToString(value.get());
             }
             case pvDouble: {
                 PVDouble value = (PVDouble) pv;
-                //return String.valueOf(value.get());
                 return doubleToString(value.get());
             }
             case pvString: {
@@ -5351,7 +5332,6 @@ public final class ConvertFactory {
                 ByteArrayData data = new ByteArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        //to[toOffset + i] = Byte.toString(data.data[data.offset]);
                         to[toOffset + i] = byteToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
@@ -5364,7 +5344,6 @@ public final class ConvertFactory {
                 ShortArrayData data = new ShortArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        //to[toOffset + i] = Short.toString(data.data[data.offset]);
                         to[toOffset + i] = shortToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
@@ -5377,7 +5356,6 @@ public final class ConvertFactory {
                 IntArrayData data = new IntArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        //to[toOffset + i] = Integer.toString(data.data[data.offset]);
                         to[toOffset + i] = intToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
@@ -5390,7 +5368,6 @@ public final class ConvertFactory {
                 LongArrayData data = new LongArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        //to[toOffset + i] = Long.toString(data.data[data.offset]);
                         to[toOffset + i] = longToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
@@ -5439,7 +5416,7 @@ public final class ConvertFactory {
                 LongArrayData data = new LongArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                       to[toOffset + i] = ulongToString(data.data[data.offset]);
+                        to[toOffset + i] = ulongToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -5452,9 +5429,7 @@ public final class ConvertFactory {
                 FloatArrayData data = new FloatArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        //to[toOffset + i] = Float.toString(data.data[data.offset]);
                         to[toOffset + i] = floatToString(data.data[data.offset]);
-
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -5466,7 +5441,6 @@ public final class ConvertFactory {
                 DoubleArrayData data = new DoubleArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        //to[toOffset + i] = Double.toString(data.data[data.offset]);
                         to[toOffset + i] = doubleToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
@@ -5599,13 +5573,11 @@ public final class ConvertFactory {
             }
             case pvFloat: {
                 PVFloat data = (PVFloat) pv;
-                //builder.append(data.get());
                 builder.append(floatToString(data.get()));
                 return;
             }
             case pvDouble: {
                 PVDouble data = (PVDouble) pv;
-                //builder.append(data.get());
                 builder.append(doubleToString(data.get()));
                 return;
             }
@@ -6451,95 +6423,64 @@ public final class ConvertFactory {
         }
 
         private static String byteToString(byte from) {
-            //return Byte.toString(from);
         	return String.valueOf(from);
         }
 
         private static String shortToString(short from) {
-            //return Short.toString(from);  
         	return String.valueOf(from);
         }        
 
         private static String intToString(int from) {
-            //return Integer.toString(from);
         	return String.valueOf(from);
         }       
         
         private static String longToString(long from) {
-            //return Long.toString(from);
         	return String.valueOf(from);
         }         
         
         private static String ubyteToString(byte from) {
-            //return Short.toString(widenUnsigned(from));
         	return String.valueOf(widenUnsigned(from));
         }
 
         private static String ushortToString(short from) {
-            //return Integer.toString(widenUnsigned(from));
-        	return String.valueOf(widenUnsigned(from));
+         	return String.valueOf(widenUnsigned(from));
         }        
 
         private static String uintToString(int from) {
-            //return Long.toString(widenUnsigned(from));
         	return String.valueOf(widenUnsigned(from));
-        }       
-
-        /*private static String ulongToString(long from) {
-        if (from < 0)
-        {
-            BigInteger big = BigInteger.valueOf(from);
-            big = big.add(twoToTheSixtyFour);
-            return big.toString();
-        }
-        return Long.toString(from);      
-       }*/        
+        }               
         
         private static String ulongToString(long from) {
             // only widen to BigInteger if negative
             if (from < 0)
             {
                 return widenUnsigned(from).toString();
-            }
-            //return Long.toString(from); 
+            } 
             return String.valueOf(from);      
         }        
         
         private static byte stringToByte(String from) {
-            //return Byte.decode(from);
-            //return (byte) (long) Long.decode(from);
             return (byte)convertToLong(from);        
         }
         private static short stringToShort(String from) {
-            //return Short.decode(from);
-            //return (short) (long) Long.decode(from);
-            return (short)convertToLong(from);           
+           return (short)convertToLong(from);           
         } 
         private static int stringToInt(String from) {
-            // return Integer.decode(from);
-            //return (int) (long) Long.decode(from);
             return (int)convertToLong(from);        
         }
         private static long stringToLong(String from) { 	
             return convertToLong(from);      
         }
         private static byte stringToUByte(String from) {
-            //return Byte.decode(from);
-            //return (byte) (long) Long.decode(from); 
             return (byte)convertToLong(from);       
         }
         private static short stringToUShort(String from) {
-            //return Short.decode(from);
-            //return (short) (long) Long.decode(from);
             return (short)convertToLong(from);       
         } 
         private static int stringToUInt(String from) {
-            // return Integer.decode(from);
-            //return (int) (long) Long.decode(from); 
             return (int)convertToLong(from);            
         }
         private static long stringToULong(String from) { 	
-            //return (long) Long.decode(from); 
             return (long)convertToLong(from);        
         }
         private static float stringToFloat(String from) {
@@ -6550,11 +6491,9 @@ public final class ConvertFactory {
         }
         private static String floatToString(float from) { 
         	return String.valueOf(from);
-            //return String.format("%g", from);
         }
         private static String doubleToString(double from) {
         	return String.valueOf(from);
-            //return String.format("%g", from);
         }
         private static long convertToLong(String from) { 	
             try {
@@ -6609,13 +6548,11 @@ public final class ConvertFactory {
         // functions which convert floating point numbers to unsigned integer types
 
         static byte floatToUByte(float f) {
-            //return (byte)f;
             return (byte)floatToUInt(f);
         }
 
         static short floatToUShort(float f)
         {
-            //return (short)f;
             return (short)floatToUInt(f);
         }
 
@@ -6636,7 +6573,6 @@ public final class ConvertFactory {
 
         static long floatToULong(float f)
         {
-            //return (long)f;
             if ((f == Float.NaN) || (f == Float.NEGATIVE_INFINITY) || (f <= 0)) {
                 return 0;
             }
@@ -6652,18 +6588,15 @@ public final class ConvertFactory {
         }
 
         static byte doubleToUByte(double f) {
-            // return (byte)f;
             return (byte)doubleToUInt(f);
         }
 
         static short doubleToUShort(double f) {
-            // return (short)f;
             return (short)doubleToUInt(f);
         }
 
         static int doubleToUInt(double f)
         {
-            // return (int)f;
             if ((f == Double.NaN) || (f == Double.NEGATIVE_INFINITY) || (f <= 0)) {
                 return 0;
             }
@@ -6679,7 +6612,6 @@ public final class ConvertFactory {
         }
 
         static long doubleToULong(double d) {
-            // return (long)f;
             if ((d == Double.NaN) || (d == Double.NEGATIVE_INFINITY) || (d <= 0)) {
                 return 0;
             }
