@@ -31,6 +31,7 @@
             <groupId>com.sun.japex</groupId>
             <artifactId>japex-maven-plugin</artifactId>
             <version>1.2.4</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
