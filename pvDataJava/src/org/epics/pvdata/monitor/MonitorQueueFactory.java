@@ -28,7 +28,6 @@ public class MonitorQueueFactory {
     public static MonitorQueue create(MonitorElement[] monitorElements) {
         int length = monitorElements.length;
         if(length<2) {
-            Thread.dumpStack();
             throw new IllegalStateException("queueSize must be at least 2 ");
         }
         QueueElement<MonitorElement>[] queueElements = new QueueElement[length];
