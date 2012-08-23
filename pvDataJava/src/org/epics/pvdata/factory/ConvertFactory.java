@@ -5,6 +5,7 @@
  */
 package org.epics.pvdata.factory;
 
+import java.math.BigInteger;
 import java.util.regex.Pattern;
 
 import org.epics.pvdata.pv.BooleanArrayData;
@@ -153,60 +154,52 @@ public final class ConvertFactory {
             }
             case pvByte: {
                 PVByte value = (PVByte) pv;
-                value.put((byte) (long) Long.decode(from));
+                value.put(stringToByte(from));
                 break;
             }
             case pvShort: {
                 PVShort value = (PVShort) pv;
-                value.put((short) (long) Long.decode(from));
+                value.put(stringToShort(from));
                 break;
             }
             case pvInt: {
                 PVInt value = (PVInt) pv;
-                value.put((int) (long) Long.decode(from));
+                value.put(stringToInt(from));
                 break;
             }
             case pvLong: {
                 PVLong value = (PVLong) pv;
-                value.put(Long.decode(from));
+                value.put(stringToLong(from));                
                 break;
             }
             case pvUByte: {
-                PVUByte pvvalue = (PVUByte) pv;
-                long value = Long.decode(from);
-                if(value>0) value = -value;
-                pvvalue.put((byte)value);
+                PVUByte value = (PVUByte) pv;
+                value.put(stringToUByte(from));
                 break;
             }
             case pvUShort: {
-                PVUShort pvvalue = (PVUShort) pv;
-                long value = Long.decode(from);
-                if(value>0) value = -value;
-                pvvalue.put((byte)value);
+                PVUShort value = (PVUShort) pv;
+                value.put(stringToUShort(from));
                 break;
             }
             case pvUInt: {
-                PVUInt pvvalue = (PVUInt) pv;
-                long value = Long.decode(from);
-                if(value>0) value = -value;
-                pvvalue.put((byte)value);
+                PVUInt value = (PVUInt) pv;
+                value.put(stringToUInt(from));
                 break;
             }
             case pvULong: {
-                PVULong pvvalue = (PVULong) pv;
-                long value = Long.decode(from);
-                if(value>0) value = -value;
-                pvvalue.put(value);
+                PVULong value = (PVULong) pv;
+                value.put(stringToULong(from)); 
                 break;
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
-                value.put(Float.valueOf(from));
+                value.put(stringToFloat(from)); 
                 break;
             }
             case pvDouble: {
                 PVDouble value = (PVDouble) pv;
-                value.put(Double.valueOf(from));
+                value.put(stringToDouble(from)); 
                 break;
             }
             case pvString: {
@@ -599,6 +592,10 @@ public final class ConvertFactory {
                         toOffset += n;
                     }
                 }
+            } else {
+                throw new IllegalArgumentException(
+                		String.format("%s[] can not be converted to %s[]",
+                	        fromElementType, toElementType));
             }
             return ncopy;
         }
@@ -845,9 +842,10 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (byte) value.get();
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "string can not be converted to byte");
+            case pvString: {       
+                PVString value = (PVString) pv;
+                return stringToByte(value.get());
+            }	
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -883,9 +881,8 @@ public final class ConvertFactory {
             }
             case pvUByte: {
                 PVUByte pvval = (PVUByte) pv;
-                long value = pvval.get();
-                if(value<0) value &= 0x0ffL;
-                return (short)value;
+                short value = widenUnsigned(pvval.get());
+                return value;
             }
             case pvUShort: {
             	PVUShort pvval = (PVUShort) pv;
@@ -907,9 +904,10 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (short) value.get();
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "string can not be converted to short");
+            case pvString: { 
+                PVString value = (PVString) pv;
+                return stringToShort(value.get());
+            }	
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -944,19 +942,17 @@ public final class ConvertFactory {
             }
             case pvUByte: {
             	PVUByte pvval = (PVUByte) pv;
-            	long value = pvval.get();
-                if(value<0) value &= 0x0ffL;
+                short value = widenUnsigned(pvval.get());
                 return (int)value;
             }
             case pvUShort: {
             	PVUShort pvval = (PVUShort) pv;
-            	long value = pvval.get();
-                if(value<0) value &= 0x0ffffL;
-                return (int)value;
+                int value = widenUnsigned(pvval.get());
+                return value;
             }
             case pvUInt: {
                 PVUInt pvval = (PVUInt) pv;
-                return (int)pvval.get();
+                return pvval.get();
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
@@ -970,9 +966,10 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (int) value.get();
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "string can not be converted to int");
+            case pvString:{
+                PVString value = (PVString) pv;
+                return stringToInt(value.get());
+            }	
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -1006,21 +1003,18 @@ public final class ConvertFactory {
                 return (long) value.get();
             }
             case pvUByte: {
-                PVUByte pvval = (PVUByte) pv;
-                long value = pvval.get();
-                if(value<0) value &= 0x0ffL;
-                return value;
+            	PVUByte pvval = (PVUByte) pv;
+                short value = widenUnsigned(pvval.get());
+                return (long)value;
             }
             case pvUShort: {
             	PVUShort pvval = (PVUShort) pv;
-            	long value = pvval.get();
-                if(value<0) value &= 0x0ffffL;
-                return value;
+                int value = widenUnsigned(pvval.get());
+                return (long)value;
             }
             case pvUInt: {
             	PVUInt pvval = (PVUInt) pv;
-            	long value = pvval.get();
-                if(value<0) value &= 0x0ffffffffL;
+                long value = widenUnsigned(pvval.get());
                 return value;
             }
             case pvULong: {
@@ -1035,9 +1029,10 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (long) value.get();
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "string can not be converted to long");
+            case pvString: {
+                PVString value = (PVString) pv;
+                return stringToLong(value.get());
+            }	 
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -1073,27 +1068,20 @@ public final class ConvertFactory {
             }
             case pvUByte: {
                 PVUByte pval = (PVUByte) pv;
-                float value = pval.get();
-                if(value<0) value = -value;
-                return value;
+                return (float)widenUnsigned(pval.get());
             }
             case pvUShort: {
                 PVUShort pval = (PVUShort) pv;
-                float value = pval.get();
-                if(value<0) value = -value;
-                return value;
+                return (float)widenUnsigned(pval.get());
             }
             case pvUInt: {
                 PVUInt pval = (PVUInt) pv;
-                float value = pval.get();
-                if(value<0) value = -value;
-                return value;
+                return (float)widenUnsigned(pval.get());
             }
             case pvULong: {
-                PVULong pval = (PVULong) pv;
-                float value = pval.get();
-                if(value<0) value = -value;
-                return value;
+                PVULong pval = (PVULong)pv;
+                long val = pval.get();
+                return ulongToFloat(val);
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1103,9 +1091,10 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (float) value.get();
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "string can not be converted to float");
+            case pvString:  {
+                PVString value = (PVString) pv;
+                return stringToFloat(value.get());
+            }	 
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -1141,27 +1130,20 @@ public final class ConvertFactory {
             }
             case pvUByte: {
                 PVUByte pval = (PVUByte) pv;
-                double value = pval.get();
-                if(value<0) value = - value;
-                return value;
+                return (double)widenUnsigned(pval.get());
             }
             case pvUShort: {
                 PVUShort pval = (PVUShort) pv;
-                double value = pval.get();
-                if(value<0) value = - value;
-                return value;
+                return (double)widenUnsigned(pval.get());
             }
             case pvUInt: {
                 PVUInt pval = (PVUInt) pv;
-                double value = pval.get();
-                if(value<0) value = - value;
-                return value;
+                return (double)widenUnsigned(pval.get());
             }
             case pvULong: {
-                PVULong pval = (PVULong) pv;
-                double value = pval.get();
-                if(value<0) value = - value;
-                return value;
+                PVULong pval = (PVULong)pv;
+                long val = pval.get();
+                return ulongToDouble(val);
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1171,9 +1153,10 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (double) value.get();
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "string can not be converted to double");
+            case pvString:{
+                PVString value = (PVString) pv;
+                 return stringToDouble(value.get());
+            }	 
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -1210,27 +1193,19 @@ public final class ConvertFactory {
             }
             case pvUByte: {
                 PVUByte pvval = (PVUByte) pv;
-                long value = from;
-                if(value<0) value = -value;
-                pvval.put((byte)value); return;
+                pvval.put(from); return;
             }
             case pvUShort: {
                 PVUShort pvval = (PVUShort) pv;
-                long value = from;
-                if(value<0) value = -value;
-                pvval.put((short)value); return;
+                pvval.put((short)from); return;
             }
             case pvUInt: {
                 PVUInt pvval = (PVUInt) pv;
-                long value = from;
-                if(value<0) value = -value;
-                pvval.put((int)value); return;
+                pvval.put((int)from); return;
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
-                long value = from;
-                if(value<0) value = -value;
-                pvval.put(value); return;
+                pvval.put((long)from); return;
             }
 
             case pvFloat: {
@@ -1282,25 +1257,21 @@ public final class ConvertFactory {
             case pvUByte: {
                 PVUByte pvval = (PVUByte) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((byte)value); return;
             }
             case pvUShort: {
                 PVUShort pvval = (PVUShort) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((short)value); return;
             }
             case pvUInt: {
                 PVUInt pvval = (PVUInt) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((int)value); return;
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put(value); return;
             }
             case pvFloat: {
@@ -1352,25 +1323,21 @@ public final class ConvertFactory {
             case pvUByte: {
                 PVUByte pvval = (PVUByte) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((byte)value); return;
             }
             case pvUShort: {
                 PVUShort pvval = (PVUShort) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((short)value); return;
             }
             case pvUInt: {
                 PVUInt pvval = (PVUInt) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((int)value); return;
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((long)value); return;
             }
             case pvFloat: {
@@ -1422,25 +1389,21 @@ public final class ConvertFactory {
             case pvUByte: {
                 PVUByte pvval = (PVUByte) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((byte)value); return;
             }
             case pvUShort: {
                 PVUShort pvval = (PVUShort) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((short)value); return;
             }
             case pvUInt: {
                 PVUInt pvval = (PVUInt) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((int)value); return;
             }
             case pvULong: {
                 PVULong pvval = (PVULong) pv;
                 long value = from;
-                if(value<0) value = -value;
                 pvval.put((long)value); return;
             }
             case pvFloat: {
@@ -1462,8 +1425,7 @@ public final class ConvertFactory {
         @Override
         public void fromUByte(PVScalar pv, byte xxx)
         {
-            short from = xxx;
-            if(xxx<0) from = (short)-from;
+            short from = widenUnsigned(xxx);
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
             case pvBoolean:
@@ -1512,8 +1474,7 @@ public final class ConvertFactory {
             }
             case pvString: {
                 PVString value = (PVString) pv;
-                String val = Long.toString(from);
-                if(from<0) val = val.substring(1);
+                String val = longToString(from);
                 value.put(val); return;
             }
             }
@@ -1522,8 +1483,7 @@ public final class ConvertFactory {
         }
         @Override
         public void fromUShort(PVScalar pv, short xxx) {
-            int from = xxx;
-            if(xxx<0) from = -from;
+            int from = widenUnsigned(xxx);
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
             case pvBoolean:
@@ -1572,8 +1532,7 @@ public final class ConvertFactory {
             }
             case pvString: {
                 PVString value = (PVString) pv;
-                String val = Long.toString(from);
-                if(from<0) val = val.substring(1);
+                String val = longToString(from);
                 value.put(val); return;
             }
             }
@@ -1582,8 +1541,7 @@ public final class ConvertFactory {
         }
         @Override
         public void fromUInt(PVScalar pv, int xxx) {
-            long from = xxx;
-            if(xxx<0) from = -from;
+            long from = widenUnsigned(xxx);
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
             case pvBoolean:
@@ -1633,7 +1591,6 @@ public final class ConvertFactory {
             case pvString: {
                 PVString value = (PVString) pv;
                 String val = Long.toString(from);
-                if(from<0) val = val.substring(1);
                 value.put(val); return;
             }
             }
@@ -1679,20 +1636,17 @@ public final class ConvertFactory {
                 PVULong value = (PVULong) pv;
                 value.put((long) from); return;
             }
-
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
-                value.put((float) from); return;
+                value.put(ulongToFloat(from)); return;
             }
             case pvDouble: {
                 PVDouble value = (PVDouble) pv;
-                value.put((double) from); return;
+                value.put(ulongToDouble(from)); return;
             }
             case pvString: {
                 PVString value = (PVString) pv;
-                String val = Long.toString(from);
-                if(from<0) val = val.substring(1);
-                value.put(val); return;
+                value.put(ulongToString(from)); return;
             }
             }
             throw new IllegalStateException(
@@ -1729,24 +1683,20 @@ public final class ConvertFactory {
                 value.put((long) from); return;
             }
             case pvUByte: {
-            	if(from<0) from = -from;
                 PVUByte value = (PVUByte) pv;
-                value.put((byte)from); return;
+                value.put(floatToUByte(from)); return;
             }
             case pvUShort: {
-                if(from<0) from = -from;
                 PVUShort value = (PVUShort) pv;
-                value.put((short)from); return;
+                value.put(floatToUShort(from)); return;
             }
             case pvUInt: {
-                if(from<0) from = -from;
                 PVUInt value = (PVUInt) pv;
-                value.put((int)from); return;
+                value.put(floatToUInt(from)); return;
             }
             case pvULong: {
-                if(from<0) from = -from;
                 PVULong value = (PVULong) pv;
-                value.put((long) from); return;
+                value.put(floatToULong(from)); return;                
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1758,7 +1708,7 @@ public final class ConvertFactory {
             }
             case pvString: {
                 PVString value = (PVString) pv;
-                value.put(String.valueOf(from)); return;
+                value.put(floatToString(from)); return;
             }
             }
             throw new IllegalStateException(
@@ -1795,24 +1745,20 @@ public final class ConvertFactory {
                 value.put((long) from); return;
             }
             case pvUByte: {
-                if(from<0) from = -from;
                 PVUByte value = (PVUByte) pv;
-                value.put((byte)from); return;
+                value.put(doubleToUByte(from)); return;
             }
             case pvUShort: {
-                if(from<0) from = -from;
                 PVUShort value = (PVUShort) pv;
-                value.put((short)from); return;
+                value.put(doubleToUShort(from)); return;
             }
             case pvUInt: {
-                if(from<0) from = -from;
                 PVUInt value = (PVUInt) pv;
-                value.put((int)from); return;
+                value.put(doubleToUInt(from)); return;
             }
             case pvULong: {
-                if(from<0) from = -from;
                 PVULong value = (PVULong) pv;
-                value.put((long) from); return;
+                value.put(doubleToULong(from)); return; 
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1824,7 +1770,7 @@ public final class ConvertFactory {
             }
             case pvString: {
                 PVString value = (PVString) pv;
-                value.put(String.valueOf(from)); return;
+                value.put(doubleToString(from)); return;
             }
             }
             throw new IllegalStateException(
@@ -2033,52 +1979,44 @@ public final class ConvertFactory {
             }
             case pvByte: {
                 PVByte value = (PVByte) pv;
-                return String.valueOf(value.get());
+                //return String.valueOf(value.get());
+                return byteToString(value.get());
             }
             case pvShort: {
                 PVShort value = (PVShort) pv;
-                return String.valueOf(value.get());
+                return shortToString(value.get());
             }
             case pvInt: {
                 PVInt value = (PVInt) pv;
-                return String.valueOf(value.get());
+                return intToString(value.get());
             }
             case pvLong: {
                 PVLong value = (PVLong) pv;
-                return String.valueOf(value.get());
+                return longToString(value.get());
             }
             case pvUByte: {
-                PVUByte arg = (PVUByte) pv;
-                int value = arg.get();
-                if(value<0) value = -value;
-                return String.valueOf(value);
+                PVUByte value = (PVUByte) pv;
+                return ubyteToString(value.get());
             }
             case pvUShort: {
-                PVUShort arg = (PVUShort) pv;
-                int value = arg.get();
-                if(value<0) value = -value;
-                return String.valueOf(value);
+                PVUShort value = (PVUShort) pv;
+                return ushortToString(value.get());
             }
-            case pvUInt: {
-                PVUInt arg = (PVUInt) pv;
-                long value = arg.get();
-                if(value<0) value = -value;
-                return String.valueOf(value);
+            case pvUInt: {                
+                PVUInt value = (PVUInt) pv;
+                return uintToString(value.get());
             }
             case pvULong: {
-                PVULong pvLong = (PVULong) pv;
-                long val = pvLong.get();
-                String value = String.valueOf(val);
-                if(val<0) value = value.substring(1);
-                return value;
+                PVULong value = (PVULong) pv;
+                return ulongToString(value.get());
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
-                return String.valueOf(value.get());
+                return floatToString(value.get());
             }
             case pvDouble: {
                 PVDouble value = (PVDouble) pv;
-                return String.valueOf(value.get());
+                return doubleToString(value.get());
             }
             case pvString: {
                 PVString value = (PVString)pv;
@@ -2098,8 +2036,7 @@ public final class ConvertFactory {
             case pvBoolean:
                 throw new IllegalArgumentException(
                         "convert from byte[] to BooleanArray not legal");
-            case pvByte: 
-            {
+            case pvByte: {
                 PVByteArray pvdata = (PVByteArray) pv;
                 while (len > 0) {
                     int n = pvdata.put(offset, len, from, fromOffset);
@@ -2172,9 +2109,8 @@ public final class ConvertFactory {
                 PVUShortArray pvdata = (PVUShortArray) pv;
                 short[] data = new short[1];
                 while (len > 0) {
-                	int value = from[fromOffset];
-                	if(value<0) value = -value;
-                    data[0] = (short)value;
+                	short value = from[fromOffset];
+                    data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2189,7 +2125,6 @@ public final class ConvertFactory {
                 int[] data = new int[1];
                 while (len > 0) {
                     int value = from[fromOffset];
-                    if(value<0) value = -value;
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2205,7 +2140,6 @@ public final class ConvertFactory {
                 long[] data = new long[1];
                 while (len > 0) {
                     long value = from[fromOffset];
-                    if(value<0) value = -value;
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2244,9 +2178,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from byte[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = String.valueOf(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -2278,8 +2223,7 @@ public final class ConvertFactory {
                 PVShortArray pvdata = (PVShortArray) pv;
                 short[] data = new short[1];
                 while (len > 0) {
-                    short value = from[fromOffset];
-                    if(value<0) value = (short)-value;
+                    short value = widenUnsigned(from[fromOffset]);
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2294,9 +2238,8 @@ public final class ConvertFactory {
                 PVIntArray pvdata = (PVIntArray) pv;
                 int[] data = new int[1];
                 while (len > 0) {
-                    int value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;
+                    short value = widenUnsigned(from[fromOffset]);
+                    data[0] = (int)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2310,9 +2253,8 @@ public final class ConvertFactory {
                 PVLongArray pvdata = (PVLongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                    long value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;
+                    short value = widenUnsigned(from[fromOffset]);
+                    data[0] = (long)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2340,9 +2282,7 @@ public final class ConvertFactory {
                 PVUShortArray pvdata = (PVUShortArray) pv;
                 short[] data = new short[1];
                 while (len > 0) {
-                    byte val = from[fromOffset];
-                    short value = val;
-                    if(val<0) value &=0x0ff;
+                    short value = widenUnsigned(from[fromOffset]);
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2357,10 +2297,8 @@ public final class ConvertFactory {
                 PVUIntArray pvdata = (PVUIntArray) pv;
                 int[] data = new int[1];
                 while (len > 0) {
-                    byte val = from[fromOffset];
-                    short value = val;
-                    if(val<0) value &=0x0ff;
-                    data[0] = value;
+                    short value = widenUnsigned(from[fromOffset]);
+                    data[0] = (int)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2374,10 +2312,8 @@ public final class ConvertFactory {
                 PVULongArray pvdata = (PVULongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                    byte val = from[fromOffset];
-                    short value = val;
-                    if(val<0) value &=0x0ff;
-                    data[0] = value;
+                    short value = widenUnsigned(from[fromOffset]);
+                    data[0] = (long)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2391,9 +2327,8 @@ public final class ConvertFactory {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 float[] data = new float[1];
                 while (len > 0) {
-                    float value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;
+                    short value = widenUnsigned(from[fromOffset]);
+                    data[0] = (float)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2407,9 +2342,8 @@ public final class ConvertFactory {
                 PVDoubleArray pvdata = (PVDoubleArray) pv;
                 double[] data = new double[1];
                 while (len > 0) {
-                    double value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;;
+                    short value = widenUnsigned(from[fromOffset]);
+                    data[0] = (double)value;;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2419,10 +2353,21 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from byte[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = ubyteToString(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
             }
+            }                
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
@@ -2629,9 +2574,24 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert StringArray to byte[]] not legal");
+            case pvString: {
+                PVStringArray pvdata = (PVStringArray) pv;
+                StringArrayData data = new StringArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    String[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = stringToByte(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -2732,10 +2692,8 @@ public final class ConvertFactory {
                 PVUIntArray pvdata = (PVUIntArray) pv;
                 int[] data = new int[1];
                 while (len > 0) {
-                	short val = from[fromOffset];
-                	int value = val;
-                	if(val<0) value &=0x0ffff;
-                    data[0] = value;
+                	short value = from[fromOffset];
+                    data[0] = (int)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2749,10 +2707,8 @@ public final class ConvertFactory {
                 PVULongArray pvdata = (PVULongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                	short val = from[fromOffset];
-                	int value = val;
-                	if(val<0) value &=0x0ffff;
-                    data[0] = value;
+                	short value = from[fromOffset];
+                    data[0] = (long)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2790,9 +2746,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from short[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = String.valueOf(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -2837,8 +2804,7 @@ public final class ConvertFactory {
                 PVIntArray pvdata = (PVIntArray) pv;
                 int[] data = new int[1];
                 while (len > 0) {
-                    int value = from[fromOffset];
-                    if(value<0) value = -value;
+                    int value = widenUnsigned(from[fromOffset]);
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2853,9 +2819,8 @@ public final class ConvertFactory {
                 PVLongArray pvdata = (PVLongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                    long value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;
+                    int value = widenUnsigned(from[fromOffset]);
+                    data[0] = (long)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2896,9 +2861,7 @@ public final class ConvertFactory {
                 PVUIntArray pvdata = (PVUIntArray) pv;
                 int[] data = new int[1];
                 while (len > 0) {
-                    short val = from[fromOffset];
-                    int value = val;
-                    if(val<0) value &=0x0ffff;
+                    int value = widenUnsigned(from[fromOffset]);
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -2913,10 +2876,8 @@ public final class ConvertFactory {
                 PVULongArray pvdata = (PVULongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                    short val = from[fromOffset];
-                    int value = val;
-                    if(val<0) value &=0x0ffff;
-                    data[0] = value;
+                    int value = widenUnsigned(from[fromOffset]);
+                    data[0] = (long)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2930,9 +2891,8 @@ public final class ConvertFactory {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 float[] data = new float[1];
                 while (len > 0) {
-                    float value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;
+                    int value = widenUnsigned(from[fromOffset]);
+                    data[0] = (float)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2946,9 +2906,8 @@ public final class ConvertFactory {
                 PVDoubleArray pvdata = (PVDoubleArray) pv;
                 double[] data = new double[1];
                 while (len > 0) {
-                    double value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;;
+                    int value = widenUnsigned(from[fromOffset]);
+                    data[0] = (double)value;;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -2958,9 +2917,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from short[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = ushortToString(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -3173,9 +3143,24 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert StringArray to short[]] not legal");
+            case pvString: {
+                PVStringArray pvdata = (PVStringArray) pv;
+                StringArrayData data = new StringArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    String[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = stringToShort(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -3295,9 +3280,7 @@ public final class ConvertFactory {
                 PVULongArray pvdata = (PVULongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                	int val = from[fromOffset];
-                	long value = val;
-                	if(val<0) value &= 0x0ffffffffL;
+                    long value = from[fromOffset];
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -3336,9 +3319,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from int[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = String.valueOf(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -3400,8 +3394,7 @@ public final class ConvertFactory {
                 PVLongArray pvdata = (PVLongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                    long value = from[fromOffset];
-                    if(value<0) value = -value;
+                    long value = widenUnsigned(from[fromOffset]);
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -3460,9 +3453,7 @@ public final class ConvertFactory {
                 PVULongArray pvdata = (PVULongArray) pv;
                 long[] data = new long[1];
                 while (len > 0) {
-                    int val = from[fromOffset];
-                    long value = val;
-                    if(val<0) value &= 0x0ffffffffL;
+                    long value = widenUnsigned(from[fromOffset]);
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -3477,9 +3468,8 @@ public final class ConvertFactory {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 float[] data = new float[1];
                 while (len > 0) {
-                    float value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;
+                    long value = widenUnsigned(from[fromOffset]); 
+                    data[0] = (float)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -3493,9 +3483,8 @@ public final class ConvertFactory {
                 PVDoubleArray pvdata = (PVDoubleArray) pv;
                 double[] data = new double[1];
                 while (len > 0) {
-                    double value = from[fromOffset];
-                    if(value<0) value = -value;
-                    data[0] = value;;
+                    long value = widenUnsigned(from[fromOffset]); 
+                    data[0] = (double)value;;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -3505,9 +3494,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from int[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = uintToString(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -3719,9 +3719,24 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert StringArray to int[]] not legal");
+            case pvString: {
+                PVStringArray pvdata = (PVStringArray) pv;
+                StringArrayData data = new StringArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    String[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = stringToInt(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -3881,9 +3896,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from long[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = String.valueOf(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -4019,8 +4045,7 @@ public final class ConvertFactory {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 float[] data = new float[1];
                 while (len > 0) {
-                    float value = from[fromOffset];
-                    if(value<0) value = -value;
+                    float value = ulongToFloat(from[fromOffset]); 
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -4035,8 +4060,7 @@ public final class ConvertFactory {
                 PVDoubleArray pvdata = (PVDoubleArray) pv;
                 double[] data = new double[1];
                 while (len > 0) {
-                    double value = from[fromOffset];
-                    if(value<0) value = -value;
+                    double value = ulongToDouble(from[fromOffset]); 
                     data[0] = value;;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -4047,9 +4071,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from long[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                    data[0] = ulongToString(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -4264,9 +4299,24 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert StringArray to long[]] not legal");
+            case pvString: {
+                PVStringArray pvdata = (PVStringArray) pv;
+                StringArrayData data = new StringArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    String[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = stringToLong(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -4336,6 +4386,66 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
+            case pvUByte: {
+                PVUByteArray pvdata = (PVUByteArray) pv;
+                byte[] data = new byte[1];
+                while (len > 0) {
+                    //data[0] = (byte) from[fromOffset];
+                	data[0] = floatToUByte(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvUShort: {
+                PVUShortArray pvdata = (PVUShortArray) pv;
+                short[] data = new short[1];
+                while (len > 0) {
+                    //data[0] = (short) from[fromOffset];
+                	data[0] = floatToUShort(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvUInt: {
+                PVUIntArray pvdata = (PVUIntArray) pv;
+                int[] data = new int[1];
+                while (len > 0) {
+                    //data[0] = (int) from[fromOffset];
+                	data[0] = floatToUInt(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvULong: {
+                PVULongArray pvdata = (PVULongArray) pv;
+                long[] data = new long[1];
+                while (len > 0) {
+                    //data[0] = (long) from[fromOffset];
+                	data[0] = floatToULong(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             case pvFloat: {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 while (len > 0) {
@@ -4363,9 +4473,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from float[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                	data[0] = doubleToString(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -4451,6 +4572,78 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
+            case pvUByte: {
+                PVUByteArray pvdata = (PVUByteArray) pv;
+                ByteArrayData data = new ByteArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    byte[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = (float)widenUnsigned(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
+            case pvUShort: {
+                PVUShortArray pvdata = (PVUShortArray) pv;
+                ShortArrayData data = new ShortArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    short[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = (float)widenUnsigned(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
+            case pvUInt: {
+                PVUIntArray pvdata = (PVUIntArray) pv;
+                IntArrayData data = new IntArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    int[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = (float)widenUnsigned(dataArray[i + dataOffset]);;
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
+            case pvULong: {
+                PVULongArray pvdata = (PVULongArray) pv;
+                LongArrayData data = new LongArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    long[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = ulongToFloat(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
             case pvFloat: {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 while (len > 0) {
@@ -4490,9 +4683,24 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert StringArray to float[]] not legal");
+            case pvString: {
+                PVStringArray pvdata = (PVStringArray) pv;
+                StringArrayData data = new StringArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    String[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = Float.valueOf(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -4562,6 +4770,66 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
+            case pvUByte: {
+                PVUByteArray pvdata = (PVUByteArray) pv;
+                byte[] data = new byte[1];
+                while (len > 0) {
+                    //data[0] = (byte) from[fromOffset];
+                	data[0] = doubleToUByte(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvUShort: {
+                PVUShortArray pvdata = (PVUShortArray) pv;
+                short[] data = new short[1];
+                while (len > 0) {
+                    //data[0] = (short) from[fromOffset];
+                	data[0] = doubleToUShort(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvUInt: {
+                PVUIntArray pvdata = (PVUIntArray) pv;
+                int[] data = new int[1];
+                while (len > 0) {
+                    //data[0] = (int) from[fromOffset];
+                	data[0] = doubleToUInt(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvULong: {
+                PVULongArray pvdata = (PVULongArray) pv;
+                long[] data = new long[1];
+                while (len > 0) {
+                    //data[0] = (long) from[fromOffset];
+                	data[0] = doubleToULong(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
             case pvFloat: {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 float[] data = new float[1];
@@ -4589,9 +4857,20 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert from double[] to StringArray not legal");
+            case pvString: {
+            	PVStringArray pvdata = (PVStringArray) pv;
+                String[] data = new String[1];
+                while (len > 0) {
+                	data[0] = doubleToString(from[fromOffset]);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }                
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -4677,6 +4956,79 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
+            case pvUByte: {
+                PVUByteArray pvdata = (PVUByteArray) pv;
+                ByteArrayData data = new ByteArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    byte[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = (double)widenUnsigned(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
+            case pvUShort: {
+                PVUShortArray pvdata = (PVUShortArray) pv;
+                ShortArrayData data = new ShortArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    short[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = (double)widenUnsigned(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
+            case pvUInt: {
+                PVUIntArray pvdata = (PVUIntArray) pv;
+                IntArrayData data = new IntArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    int[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = (double)widenUnsigned(dataArray[i + dataOffset]);;
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
+            case pvULong: {
+                PVULongArray pvdata = (PVULongArray) pv;
+                LongArrayData data = new LongArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    long[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        to[i + toOffset] = ulongToDouble(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
+
             case pvFloat: {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 FloatArrayData data = new FloatArrayData();
@@ -4716,9 +5068,25 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvString:
-                throw new IllegalArgumentException(
-                        "convert StringArray to double[]] not legal");
+            case pvString:  {
+                PVStringArray pvdata = (PVStringArray) pv;
+                StringArrayData data = new StringArrayData();
+                while (len > 0) {
+                    int num = pvdata.get(offset, len, data);
+                    if (num == 0)
+                        break;
+                    String[] dataArray = data.data;
+                    int dataOffset = data.offset;
+                    for (int i = 0; i < num; i++)
+                        //to[i + toOffset] = Float.valueOf(dataArray[i + dataOffset]);
+                        to[i + toOffset] = stringToFloat(dataArray[i + dataOffset]);
+                    len -= num;
+                    offset += num;
+                    toOffset += num;
+                    ntransfered += num;
+                }
+                return ntransfered;
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -4777,7 +5145,7 @@ public final class ConvertFactory {
                 byte[] data = new byte[1];
                 while (len > 0) {
                     String fromString = removeWhiteSpace(from[fromOffset]);
-                    data[0] = Byte.decode(fromString);
+                    data[0] = stringToByte(fromString);
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -4792,7 +5160,7 @@ public final class ConvertFactory {
                 short[] data = new short[1];
                 while (len > 0) {
                     String fromString = removeWhiteSpace(from[fromOffset]);
-                    data[0] = Short.decode(fromString);
+                    data[0] = stringToShort(fromString);
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -4807,7 +5175,7 @@ public final class ConvertFactory {
                 int[] data = new int[1];
                 while (len > 0) {
                     String fromString = removeWhiteSpace(from[fromOffset]);
-                    data[0] = Integer.decode(fromString);
+                    data[0] = stringToInt(fromString);
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -4822,7 +5190,67 @@ public final class ConvertFactory {
                 long[] data = new long[1];
                 while (len > 0) {
                     String fromString = removeWhiteSpace(from[fromOffset]);
-                    data[0] = Long.decode(fromString);
+                    data[0] = stringToLong(fromString);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvUByte: {
+                PVUByteArray pvdata = (PVUByteArray) pv;
+                byte[] data = new byte[1];
+                while (len > 0) {
+                    String fromString = removeWhiteSpace(from[fromOffset]);
+                    data[0] = stringToUByte(fromString);                  
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvUShort: {
+                PVUShortArray pvdata = (PVUShortArray) pv;
+                short[] data = new short[1];
+                while (len > 0) {
+                    String fromString = removeWhiteSpace(from[fromOffset]);
+                    data[0] = stringToUShort(fromString);
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvUInt: {
+                PVUIntArray pvdata = (PVUIntArray) pv;
+                int[] data = new int[1];
+                while (len > 0) {
+                    String fromString = removeWhiteSpace(from[fromOffset]);
+                    data[0] = stringToInt(fromString);                    
+                    if (pvdata.put(offset, 1, data, 0) == 0)
+                        return ntransfered;
+                    --len;
+                    ++ntransfered;
+                    ++offset;
+                    ++fromOffset;
+                }
+                return ntransfered;
+            }
+            case pvULong: {
+                PVULongArray pvdata = (PVULongArray) pv;
+                long[] data = new long[1];
+                while (len > 0) {
+                    String fromString = removeWhiteSpace(from[fromOffset]);
+                    data[0] = stringToULong(fromString);
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -4904,7 +5332,7 @@ public final class ConvertFactory {
                 ByteArrayData data = new ByteArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        to[toOffset + i] = Byte.toString(data.data[data.offset]);
+                        to[toOffset + i] = byteToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -4916,7 +5344,7 @@ public final class ConvertFactory {
                 ShortArrayData data = new ShortArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        to[toOffset + i] = Short.toString(data.data[data.offset]);
+                        to[toOffset + i] = shortToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -4928,7 +5356,7 @@ public final class ConvertFactory {
                 IntArrayData data = new IntArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        to[toOffset + i] = Integer.toString(data.data[data.offset]);
+                        to[toOffset + i] = intToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -4940,7 +5368,7 @@ public final class ConvertFactory {
                 LongArrayData data = new LongArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        to[toOffset + i] = Long.toString(data.data[data.offset]);
+                        to[toOffset + i] = longToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -4952,10 +5380,7 @@ public final class ConvertFactory {
                 ByteArrayData data = new ByteArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        byte value = data.data[i];
-                        String svalue = Byte.toString(value);
-                        if(value<0) svalue = svalue.substring(1);
-                        to[toOffset + i] = svalue;
+                        to[toOffset + i] = ubyteToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -4967,10 +5392,7 @@ public final class ConvertFactory {
                 ShortArrayData data = new ShortArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        short value = data.data[i];
-                        String svalue = Short.toString(value);
-                        if(value<0) svalue = svalue.substring(1);
-                        to[toOffset + i] = svalue;
+                        to[toOffset + i] = ushortToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -4982,10 +5404,7 @@ public final class ConvertFactory {
                 IntArrayData data = new IntArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        int value = data.data[i];
-                        String svalue = Integer.toString(value);
-                        if(value<0) svalue = svalue.substring(1);
-                        to[toOffset + i] = svalue;
+                        to[toOffset + i] = uintToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -4997,10 +5416,7 @@ public final class ConvertFactory {
                 LongArrayData data = new LongArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        long value = data.data[i];
-                        String svalue = Long.toString(value);
-                        if(value<0) svalue = svalue.substring(1);
-                        to[toOffset + i] = svalue;
+                        to[toOffset + i] = ulongToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -5013,7 +5429,7 @@ public final class ConvertFactory {
                 FloatArrayData data = new FloatArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        to[toOffset + i] = Float.toString(data.data[data.offset]);
+                        to[toOffset + i] = floatToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -5025,7 +5441,7 @@ public final class ConvertFactory {
                 DoubleArrayData data = new DoubleArrayData();
                 for (int i = 0; i < num; i++) {
                     if (pvdata.get(offset + i, 1, data) == 1) {
-                        to[toOffset + i] = Double.toString(data.data[data.offset]);
+                        to[toOffset + i] = doubleToString(data.data[data.offset]);
                     } else {
                         to[toOffset + i] = "bad pv";
                     }
@@ -5131,47 +5547,38 @@ public final class ConvertFactory {
             case pvUByte: {
                 PVUByte data = (PVUByte) pv;
                 byte val = data.get();
-                short value = val;
-                value &=0x0ff;
+                short value = widenUnsigned(val);
                 builder.append(value);
                 return;
             }
             case pvUShort: {
                 PVUShort data = (PVUShort) pv;
                 short val = data.get();
-                int value = val;
-                value &=0x0ffff;
+                int value = widenUnsigned(val);
                 builder.append(value);
                 return;
             }
             case pvUInt: {
                 PVUInt data = (PVUInt) pv;
                 int val = data.get();
-                long value = val;
-                value &=0x0ffffffffL;
+                long value = widenUnsigned(val);
                 builder.append(value);
                 return;
             }
             case pvULong: {
                 PVULong data = (PVULong) pv;
                 long val = data.get();
-                String value = Long.toString(val);
-                if(val<0) {
-                    if(value.startsWith("-", 0)) {
-                        value = value.substring(1);
-                    }
-                }
-                builder.append(value);
+                builder.append(ulongToString(val));
                 return;
             }
             case pvFloat: {
                 PVFloat data = (PVFloat) pv;
-                builder.append(data.get());
+                builder.append(floatToString(data.get()));
                 return;
             }
             case pvDouble: {
                 PVDouble data = (PVDouble) pv;
-                builder.append(data.get());
+                builder.append(doubleToString(data.get()));
                 return;
             }
             case pvString: {
@@ -5376,9 +5783,7 @@ public final class ConvertFactory {
                             firstElement = false;
                         }
                         byte val = data[i + fromOffset];
-                        String value = Byte.toString(val);
-                        if(val<0) value = value.substring(1);
-                        builder.append(value);
+                        builder.append(widenUnsigned(val));
                     }
                     len -= num;
                 }
@@ -5408,9 +5813,7 @@ public final class ConvertFactory {
                             firstElement = false;
                         }
                         short val = data[i + fromOffset];
-                        String value = Short.toString(val);
-                        if(val<0) value = value.substring(1);
-                        builder.append(value);
+                        builder.append(widenUnsigned(val));
                     }
                     len -= num;
                 }
@@ -5440,9 +5843,7 @@ public final class ConvertFactory {
                             firstElement = false;
                         }
                         int val = data[i + fromOffset];
-                        String value = Integer.toString(val);
-                        if(val<0) value = value.substring(1);
-                        builder.append(value);
+                        builder.append(widenUnsigned(val));
                     }
                     len -= num;
                 }
@@ -5472,9 +5873,7 @@ public final class ConvertFactory {
                             firstElement = false;
                         }
                         long val = data[i + fromOffset];
-                        String value = Long.toString(val);
-                        if(val<0) value = value.substring(1);
-                        builder.append(value);
+                        builder.append(ulongToString(val));
                     }
                     len -= num;
                 }
@@ -5503,8 +5902,8 @@ public final class ConvertFactory {
                         } else {
                             firstElement = false;
                         }
-                        builder.append(String
-                                .format("%g", data[i + fromOffset]));
+                        float val = data[i + fromOffset];
+                        builder.append(floatToString(val));
                     }
                     len -= num;
                 }
@@ -5533,7 +5932,8 @@ public final class ConvertFactory {
                         } else {
                             firstElement = false;
                         }
-                        builder.append(String.format("%g", data[i + fromOffset]));
+                        double val = data[i + fromOffset];
+                        builder.append(doubleToString(val));
                     }
                     len -= num;
                 }
@@ -5962,5 +6362,270 @@ public final class ConvertFactory {
             return ncopy;
         }
 
+        // used in unsigned integer conversions
+        private static final BigInteger twoToTheSixtyFour = new BigInteger("10000000000000000", 16);
+        private static final double twoToTheSixtyFourReal = Math.pow(2.0, 64); 
+        private static final double twoToTheThirtyTwoReal = Math.pow(2.0, 32);
+
+        // functions which convert the n-bit signed representation of an n-bit 
+        // unsigned integer (sometimes called the raw value) to a wider (2n-bit)
+        // signed type with the value returned being the unsigned integer
+        // represented by the raw value (i.e. it is guarenteed to be positive).
+
+        private static short widenUnsigned(byte rawValue) {
+            short wide = rawValue;
+            wide &= 0x0ff;
+            return wide;
+        }
+
+        private static int widenUnsigned(short rawValue) {
+            int wide = rawValue;
+            wide &= 0x0ffff;
+            return wide;
+        }       
+        
+        private static long widenUnsigned(int rawValue) {
+            long wide = rawValue;
+            wide &= 0x0ffffffffL;
+            return wide;
+        }        
+
+        // unsigned long requires special handling as there is no wider primitive type 
+        // to promote to. BigInteger has to be used, but is avoided where possible 
+        // (conversion to float or double and for string conversions when ulong is 
+        // less than 2^63).
+
+        private static BigInteger widenUnsigned(long rawValue) {
+            BigInteger wide = BigInteger.valueOf(rawValue);
+            if (rawValue < 0)
+            {
+                wide = wide.add(twoToTheSixtyFour);
+            }
+            return wide;
+        } 
+
+        private static float ulongToFloat(long rawValue) {
+            float val = rawValue;
+            if (rawValue < 0)
+            {
+                val += twoToTheSixtyFourReal;
+            }
+            return val; 
+        } 
+
+        private static double ulongToDouble(long rawValue) {
+            double val = rawValue;
+            if (rawValue < 0)
+            {
+                val += twoToTheSixtyFourReal;
+            }
+            return val;      
+        }
+
+        private static String byteToString(byte from) {
+        	return String.valueOf(from);
+        }
+
+        private static String shortToString(short from) {
+        	return String.valueOf(from);
+        }        
+
+        private static String intToString(int from) {
+        	return String.valueOf(from);
+        }       
+        
+        private static String longToString(long from) {
+        	return String.valueOf(from);
+        }         
+        
+        private static String ubyteToString(byte from) {
+        	return String.valueOf(widenUnsigned(from));
+        }
+
+        private static String ushortToString(short from) {
+         	return String.valueOf(widenUnsigned(from));
+        }        
+
+        private static String uintToString(int from) {
+        	return String.valueOf(widenUnsigned(from));
+        }               
+        
+        private static String ulongToString(long from) {
+            // only widen to BigInteger if negative
+            if (from < 0)
+            {
+                return widenUnsigned(from).toString();
+            } 
+            return String.valueOf(from);      
+        }        
+        
+        private static byte stringToByte(String from) {
+            return (byte)convertToLong(from);        
+        }
+        private static short stringToShort(String from) {
+           return (short)convertToLong(from);           
+        } 
+        private static int stringToInt(String from) {
+            return (int)convertToLong(from);        
+        }
+        private static long stringToLong(String from) { 	
+            return convertToLong(from);      
+        }
+        private static byte stringToUByte(String from) {
+            return (byte)convertToLong(from);       
+        }
+        private static short stringToUShort(String from) {
+            return (short)convertToLong(from);       
+        } 
+        private static int stringToUInt(String from) {
+            return (int)convertToLong(from);            
+        }
+        private static long stringToULong(String from) { 	
+            return (long)convertToLong(from);        
+        }
+        private static float stringToFloat(String from) {
+            return Float.valueOf(from);            
+        }
+        private static double stringToDouble(String from) { 	
+            return Double.valueOf(from);        
+        }
+        private static String floatToString(float from) { 
+        	return String.valueOf(from);
+        }
+        private static String doubleToString(double from) {
+        	return String.valueOf(from);
+        }
+        private static long convertToLong(String from) { 	
+            try {
+                return Long.decode(from);
+            }
+            catch (NumberFormatException e) {
+                try {                    
+                    BigInteger big = new BigInteger(from);
+                    return big.longValue();
+                }
+                catch (NumberFormatException e2) {
+                	try {
+                		BigInteger big = null;
+                		String str = from;
+                		boolean negative = false;
+                		if (from.startsWith("-", 0)) {
+                			negative = true;
+                			str = from.substring(1);
+                		}
+                		if ((str.startsWith("0x", 0)) || (str.startsWith("0X", 0))) {
+                			// try hex conversion
+                            str = str.substring(2);
+                            big = new BigInteger(str, 16);
+                		}
+                		else if ((str.startsWith("#", 0))) {
+                			// try hex conversion
+                            str = str.substring(1);
+                            big = new BigInteger(str, 16);
+                        }
+                		else if ((str.startsWith("o", 0))) {
+                			// try octal conversion
+                            str = str.substring(1);
+                            big = new BigInteger(str, 8);
+                		}
+                		
+                		if (big != null) {
+                			if (negative)
+                			{                				
+                			    big = big.negate();	
+                			}
+                            return big.longValue(); 
+                        }
+                	}
+                    catch (NumberFormatException e3) {           	
+                    }
+                }
+            }
+            throw new NumberFormatException("For input string: " + from); 
+        } 
+
+
+        // functions which convert floating point numbers to unsigned integer types
+
+        static byte floatToUByte(float f) {
+            return (byte)floatToUInt(f);
+        }
+
+        static short floatToUShort(float f)
+        {
+            return (short)floatToUInt(f);
+        }
+
+        static int floatToUInt(float f) {
+            if ((f == Float.NaN) || (f == Float.NEGATIVE_INFINITY) || (f <= 0)) {
+                return 0;
+            }
+            else if ((f == Float.POSITIVE_INFINITY) || (f >= twoToTheThirtyTwoReal)) {
+                return -1;
+            }
+            else {
+                if (f >= twoToTheThirtyTwoReal/2) {
+                    f -= twoToTheThirtyTwoReal;
+                }
+            }
+            return (int)f;
+        }
+
+        static long floatToULong(float f)
+        {
+            if ((f == Float.NaN) || (f == Float.NEGATIVE_INFINITY) || (f <= 0)) {
+                return 0;
+            }
+            else if ((f == Float.POSITIVE_INFINITY) || (f >= twoToTheSixtyFourReal)) {
+                return -1;
+            }
+            else {
+                if (f >= twoToTheSixtyFourReal/2) {
+                    f -= twoToTheSixtyFourReal;
+                }
+            }
+            return (long)f;
+        }
+
+        static byte doubleToUByte(double f) {
+            return (byte)doubleToUInt(f);
+        }
+
+        static short doubleToUShort(double f) {
+            return (short)doubleToUInt(f);
+        }
+
+        static int doubleToUInt(double f)
+        {
+            if ((f == Double.NaN) || (f == Double.NEGATIVE_INFINITY) || (f <= 0)) {
+                return 0;
+            }
+            else if ((f == Double.POSITIVE_INFINITY) || (f >= twoToTheThirtyTwoReal)) {
+                return -1;
+            }
+            else {
+                if (f >= twoToTheThirtyTwoReal/2) {
+                    f -= twoToTheThirtyTwoReal;
+                }
+            }
+            return (int)f;
+        }
+
+        static long doubleToULong(double d) {
+            if ((d == Double.NaN) || (d == Double.NEGATIVE_INFINITY) || (d <= 0)) {
+                return 0;
+            }
+            else if ((d == Double.POSITIVE_INFINITY) || (d>= twoToTheSixtyFourReal)) {
+                return -1;
+            }
+            else {
+                if (d >= twoToTheSixtyFourReal/2)
+                {
+                    d -= twoToTheSixtyFourReal;
+                }
+            }
+            return (long)d;
+        } 
+    
     }
 }
