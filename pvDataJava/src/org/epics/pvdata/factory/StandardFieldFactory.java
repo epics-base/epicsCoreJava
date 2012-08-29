@@ -161,7 +161,7 @@ public final class StandardFieldFactory {
 	    fields = new Field[3];
 	    String[] enumeratedAlarmFieldNames = {"active","stateSeverity","changeStateSeverity"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
-	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
+	    fields[1] = fieldCreate.createScalarArray(ScalarType.pvInt);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
 	    enumeratedAlarmField = fieldCreate.createStructure("valueAlarm_t",enumeratedAlarmFieldNames,fields);
 

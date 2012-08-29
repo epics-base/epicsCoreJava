@@ -98,8 +98,8 @@ public final class FieldFactory {
 		        fieldNames[i] = oldFieldNames[i];
 		        fields[i] = oldFields[i];
 		    }
-		    
-		    BaseStructure structure = (BaseStructure)createStructure(fieldNames,fields);
+		    String id = structToClone.getID();
+		    BaseStructure structure = (BaseStructure)createStructure(id,fieldNames,fields);
 		    structure.clone(fields, fieldNames);
 		    return structure;
         }
