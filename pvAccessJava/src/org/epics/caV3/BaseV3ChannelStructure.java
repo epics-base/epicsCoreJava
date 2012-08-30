@@ -180,7 +180,8 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
                 continue;
             }
             if(!pvField.getFieldName().equals("value")) {
-System.out.printf("%s not recoginized%n",pvField);
+                String message = pvField.toString() + " name not suported";
+                v3Channel.message(message, MessageType.error);
                 continue;
             }
             // must be value
@@ -188,11 +189,12 @@ System.out.printf("%s not recoginized%n",pvField);
             PVStructure pvValue = (PVStructure)pvField;
             PVField[] pvValueFields = pvValue.getPVFields();
             if(pvValueFields.length==0) {
-                valueIsChoice = true;
+                continue;
             } else {
                 if(pvValueFields.length!=1) {
                     valueIsChoice = true;
-System.out.printf("%s value has unknown subfields%n",pvField);
+                    String message = pvField.toString() + " value has unsupported subfields";
+                    v3Channel.message(message, MessageType.error);
                 } else {
                     String fieldName = pvValueFields[0].getFieldName();
                     if(fieldName.equals("index")) {
@@ -253,6 +255,7 @@ System.out.printf("%s value has unknown subfields%n",pvField);
         }
         
         String properties = propertyList.toString();
+        if(elementCount>1 && type==Type.scalar) type = Type.scalarArray;
         
         switch(type) {
         case scalar:
@@ -262,7 +265,7 @@ System.out.printf("%s value has unknown subfields%n",pvField);
             pvStructure = standardPVField.scalarArray(scalarType, properties);
             break;
         case structure:
-            pvStructure = standardPVField.enumerated(null, properties);
+            pvStructure = standardPVField.enumerated(new String[0], properties);
         }
         if(nativeDBRType.isENUM()) {
             PVStructure pvStruct = (PVStructure)pvStructure.getPVFields()[0];
