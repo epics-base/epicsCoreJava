@@ -9,13 +9,11 @@ package org.epics.pvdata;
 import junit.framework.TestCase;
 
 import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.StandardField;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.Type;
@@ -28,12 +26,7 @@ import org.epics.pvdata.pv.Type;
  */
 public class IntrospectionTest extends TestCase {
 	private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-	private static StandardField standardField = StandardFieldFactory.getStandardField();
 	
-	static private void print(String name,String value) {
-		System.out.println(name);
-		System.out.println(value);
-	}
 
 	public void testIntrospection() {
 	    Scalar scalar = fieldCreate.createScalar(ScalarType.pvBoolean);
