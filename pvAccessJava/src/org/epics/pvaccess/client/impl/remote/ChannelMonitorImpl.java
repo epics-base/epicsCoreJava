@@ -592,6 +592,8 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		
 	}
 	
+    // TODO not used yet
+	@SuppressWarnings("unused")
     private final class MonitorStrategyQueueNoCopy implements MonitorStrategy {
 		private final int queueSize;
 
@@ -606,7 +608,6 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	    
 	    private final Object monitorSync = new Object();
 	    
-
 		public MonitorStrategyQueueNoCopy(int queueSize)
 		{
 			if (queueSize <= 1)

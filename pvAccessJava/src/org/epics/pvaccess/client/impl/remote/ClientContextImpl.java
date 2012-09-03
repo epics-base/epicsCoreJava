@@ -396,6 +396,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			}
 		};
 		
+		// TODO not used yet
+		@SuppressWarnings("unused")
 		TransportFactory nonBlockingTransportFactory = new TransportFactory() {
 			
 			@Override

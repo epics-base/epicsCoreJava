@@ -534,9 +534,12 @@ public class AbstractCodecTest extends TestCase {
 	
 	public void testSplitAlignment() throws Throwable
 	{
-		if (CAConstants.CA_ALIGNMENT == 1)
+		// "<=" used instead of "==" to suppress compiler warning
+		if (CAConstants.CA_ALIGNMENT <= 1)
 			return;
 		
+		// used to suppress dead code
+		@SuppressWarnings("unused")
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		
@@ -1801,6 +1804,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.writeBuffer.position());
 	}
 	
+	// used to suppress "if (CAConstants.CA_ALIGNMENT > 1)" dead code
+	@SuppressWarnings("unused")
 	public void testInvalidArguments() throws Throwable
 	{
 		try
