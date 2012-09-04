@@ -19,7 +19,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.client.ChannelPutGet;
 import org.epics.pvaccess.client.ChannelPutGetRequester;
 import org.epics.pvaccess.impl.remote.QoS;
@@ -29,7 +28,6 @@ import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
-import org.epics.pvdata.pv.Status.StatusType;
 
 /**
  * CA putGet request.
@@ -43,8 +41,6 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	 */
 	protected final ChannelPutGetRequester callback;
 
-	protected final PVStructure pvRequest;
-	
 	protected PVStructure putData = null;
 	protected PVStructure getData = null;
 	
@@ -52,32 +48,15 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			ChannelPutGetRequester callback,
 	        PVStructure pvRequest)
 	{
-		super(channel, callback);
-		
-		if (callback == null)
-		{
-			destroy(true);
-			throw new IllegalArgumentException("null requester");
-		}
-		
-		if (pvRequest == null)
-		{
-			destroy(true);
-			throw new IllegalArgumentException("null pvRequest");
-		}
+		super(channel, callback, pvRequest, false);
 		
 		this.callback = callback;
-		
-		this.pvRequest = pvRequest;
 
 		// subscribe
 		try {
-			resubscribeSubscription(channel.checkAndGetTransport());
+			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelPutGetConnect(channelNotConnected, this, null, null);
-			destroy(true);
-		} catch (CAException e) {		
-			callback.channelPutGetConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this, null, null);
+			callback.channelPutGetConnect(channelDestroyed, this, null, null);
 			destroy(true);
 		}
 	}
@@ -306,15 +285,6 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			stopRequest();
 			callback.getPutDone(channelNotConnected);
 		}
-	}
-
-	/* Called on server restart...
-	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
-	 */
-	@Override
-	public final void resubscribeSubscription(Transport transport) throws CAException {
-		startRequest(QoS.INIT.getMaskValue());
-		transport.enqueueSendRequest(this);
 	}
 
 }

@@ -84,6 +84,8 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 		channel.registerResponseRequest(this);
 
 		// enqueue send request
+		// ChannelGetField is not a Subscription
+		// and on channel reconnect, introspection IF can change
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {

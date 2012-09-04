@@ -674,13 +674,18 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
     };
 
-	protected Channel syncCreateChannel(String name) throws Throwable
+	protected Channel syncCreateChannel(String name, boolean waitForConnectEvent) throws Throwable
 	{
 		ConnectionListener cl = new ConnectionListener();
 	    Channel ch = getChannelProvider().createChannel(name, cl, CAConstants.CA_DEFAULT_PRIORITY);
 	    registerChannelForDestruction(ch);
-	    cl.waitAndCheck();
+	    if (waitForConnectEvent) cl.waitAndCheck();
 		return ch;
+	}
+
+	protected Channel syncCreateChannel(String name) throws Throwable
+	{
+		return syncCreateChannel(name, true);
 	}
 
     private static PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
@@ -1641,6 +1646,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ch.destroy();
 		channelGetTestNoConnection(ch, false);
 		*/
+
+		ch = syncCreateChannel("simpleCounter", false);
+		// channel not yet connected
+		channelGetTestIntProcess(ch, false);
 	}
 	
 	private void channelGetTestParameters(Channel ch) throws Throwable
@@ -1780,6 +1789,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ch.destroy();
 		channelPutTestNoConnection(ch, false);
 		*/
+	    ch = syncCreateChannel("simpleCounter", false);
+	    // channel not yet connected
+		channelPutTestIntProcess(ch, false);
 	}
 	
 	private void channelPutTestParameters(Channel ch) throws Throwable
@@ -2027,6 +2039,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ch.destroy();
 		channelProcessTestNoConnection(ch, false);
 		*/
+		
+	    ch = syncCreateChannel("simpleCounter", false);
+		// channel not yet connected
+		channelProcessRequester = new ChannelProcessRequesterImpl();
+		ch.createChannelProcess(channelProcessRequester, null);
+		channelProcessRequester.waitAndCheckConnect();
+		
 	}
 
 	private void channelProcessTestNoConnection(Channel ch, boolean disconnect) throws Throwable
@@ -2100,6 +2119,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ch.destroy();
 		channelPutGetTestNoConnection(ch, false);
 		*/
+		
+	    ch = syncCreateChannel("simpleCounter", false);
+		// channel not yet connected
+		channelPutGetTestIntProcess(ch, false);
 	}
 	
 	private void channelPutGetTestParameters(Channel ch) throws Throwable
@@ -2257,6 +2280,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		channelRPCTestNoConnection(ch, true);
 		channelRPCTestNoConnection(ch, false);
+
+		
+		ch = syncCreateChannel("sum", false);
+		// channel not yet connected
+		channelRPCTest(ch);
 	}
 	
 	private void channelRPCTestParameters(Channel ch) throws Throwable
@@ -2469,6 +2497,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ch.destroy();
 		channelArrayTestNoConnection(ch, false);
 		*/
+		
+	    ch = syncCreateChannel("arrayDouble", false);
+	    // channel not yet connected
+	    channelArrayRequester = new ChannelArrayRequesterImpl();
+	    ch.createChannelArray(channelArrayRequester, pvRequest);
+	    channelArrayRequester.waitAndCheckConnect();
 	}
 
 	private void channelArrayTestNoConnection(Channel ch, boolean disconnect) throws Throwable
@@ -2536,6 +2570,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		//channelMonitorTest(2);
 		channelMonitorTest(1);
 //		channelMonitorTest(0);
+		
+		
+        ch = syncCreateChannel("counter", false);
+        // channel not yet connected
+        channelMonitorRequester = new ChannelMonitorRequesterImpl();
+	    ch.createMonitor(channelMonitorRequester, pvRequest);
+	    channelMonitorRequester.waitAndCheckConnect();
+
 	}
 
 	public void channelMonitorTest(int queueSize) throws Throwable
@@ -2596,6 +2638,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		    // no more monitors
 		    assertEquals(mc, channelMonitorRequester.monitorCounter.get());
 	    }
+	    ch.destroy();
 	}	
 	
 	/** ----------------- stress tests -------------- **/

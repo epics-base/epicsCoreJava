@@ -19,7 +19,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.client.ChannelRPC;
 import org.epics.pvaccess.client.ChannelRPCRequester;
 import org.epics.pvaccess.impl.remote.QoS;
@@ -29,7 +28,6 @@ import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
-import org.epics.pvdata.pv.Status.StatusType;
 
 /**
  * CA RPC request.
@@ -43,34 +41,21 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	 */
 	protected final ChannelRPCRequester callback;
 
-	protected final PVStructure pvRequest;
-	
 	protected PVStructure argumentData;
 	
 	public ChannelRPCRequestImpl(ChannelImpl channel,
 			ChannelRPCRequester callback,
 	        PVStructure pvRequest)
 	{
-		super(channel, callback);
-		
-		if (callback == null)
-		{
-			destroy(true);
-			throw new IllegalArgumentException("null requester");
-		}
+		super(channel, callback, pvRequest, true);
 		
 		this.callback = callback;
-		
-		this.pvRequest = pvRequest;
 
 		// subscribe
 		try {
-			resubscribeSubscription(channel.checkAndGetTransport());
+			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelRPCConnect(channelNotConnected, this);
-			destroy(true);
-		} catch (CAException e) {		
-			callback.channelRPCConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this);
+			callback.channelRPCConnect(channelDestroyed, this);
 			destroy(true);
 		}
 	}
@@ -107,6 +92,8 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			lock();
 			try {
 				SerializationHelper.serializeStructureFull(buffer, control, argumentData);
+                // release argumentData structure
+				argumentData = null;
 			} finally {
 				unlock();
 			}
@@ -203,15 +190,6 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			stopRequest();
 			callback.requestDone(channelNotConnected, null);
 		}
-	}
-
-	/* Called on server restart...
-	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
-	 */
-	@Override
-	public final void resubscribeSubscription(Transport transport) throws CAException {
-		startRequest(QoS.INIT.getMaskValue());
-		transport.enqueueSendRequest(this);
 	}
 
 }

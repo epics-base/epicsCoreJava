@@ -19,7 +19,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.client.ChannelPut;
 import org.epics.pvaccess.client.ChannelPutRequester;
 import org.epics.pvaccess.impl.remote.QoS;
@@ -30,7 +29,6 @@ import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
-import org.epics.pvdata.pv.Status.StatusType;
 
 /**
  * CA put request.
@@ -44,43 +42,24 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	 */
 	protected final ChannelPutRequester callback;
 
-	protected final PVStructure pvRequest;
-	
 	protected PVStructure data = null;
 	protected BitSet bitSet = null;
 	
 	public ChannelPutRequestImpl(ChannelImpl channel, ChannelPutRequester callback,
             PVStructure pvRequest)
 	{
-		super(channel, callback);
-		
-		if (callback == null)
-		{
-			destroy(true);
-			throw new IllegalArgumentException("null requester");
-		}
-		
-		if (pvRequest == null)
-		{
-			destroy(true);
-			throw new IllegalArgumentException("null pvRequest");
-		}
+		super(channel, callback, pvRequest, false);
 		
 		this.callback = callback;
-		
-		this.pvRequest = pvRequest;
 		
 		// TODO low-overhead put
 		// TODO best-effort put
 
 		// subscribe
 		try {
-			resubscribeSubscription(channel.checkAndGetTransport());
+			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelPutConnect(channelNotConnected, this, null, null);
-			destroy(true);
-		} catch (CAException e) {
-			callback.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this, null, null);
+			callback.channelPutConnect(channelDestroyed, this, null, null);
 			destroy(true);
 		}
 	}
@@ -259,13 +238,4 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		}
 	}
 	
-	/* Called on server restart...
-	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
-	 */
-	@Override
-	public void resubscribeSubscription(Transport transport) throws CAException {
-		startRequest(QoS.INIT.getMaskValue());
-		transport.enqueueSendRequest(this);
-	}
-
 }

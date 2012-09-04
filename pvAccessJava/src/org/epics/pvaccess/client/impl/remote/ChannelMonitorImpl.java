@@ -18,7 +18,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.SerializationHelper;
@@ -59,8 +58,6 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	 */
 	protected final MonitorRequester callback;
 
-	protected final PVStructure pvRequest;
-	
 	protected AtomicBoolean started = new AtomicBoolean(false);
 
 
@@ -76,24 +73,9 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			MonitorRequester callback,
 	        PVStructure pvRequest)
 	{
-		super(channel, callback);
+		super(channel, callback, pvRequest, false);
 		
 		this.callback = callback;
-		
-		if (callback == null)
-		{
-			destroy(true);
-			throw new IllegalArgumentException("null requester");
-		}
-		
-		if (pvRequest == null)
-		{
-			destroy(true);
-			throw new IllegalArgumentException("null pvRequest");
-		}
-		
-		this.pvRequest = pvRequest;
-
 		
 		int queueSize = 2;
 		PVField pvField = pvRequest.getSubField("record.queueSize");
@@ -125,12 +107,9 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
         	
         // subscribe
 		try {
-			resubscribeSubscription(channel.checkAndGetTransport());
+			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.monitorConnect(channelNotConnected, this, null);
-			destroy(true);
-		} catch (CAException e) {		
-			callback.monitorConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this, null);
+			callback.monitorConnect(channelDestroyed, this, null);
 			destroy(true);
 		}
 	}
@@ -971,21 +950,11 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		monitorStrategy.release(monitorElement);
 	}
 
-	/* Called on server restart...
-	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
-	 */
-	@Override
-	public final void resubscribeSubscription(Transport transport) throws CAException {
-		startRequest(QoS.INIT.getMaskValue());
-		transport.enqueueSendRequest(this);
-	}
-
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.core.SubscriptionRequest#updateSubscription()
-	 */
+	 *
 	@Override
-	public void updateSubscription() throws CAException {
-		/*
+	public void updateSubscription() {
 		// get latest value
 		try {
 			startRequest(QoS.GET.getMaskValue());
@@ -994,8 +963,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			// TODO how to report
 			requester.message(e.toString(), MessageType.error);
 		}
-		*/
-		// TODO
 	}
+	*/
  
 }

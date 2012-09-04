@@ -17,7 +17,6 @@ package org.epics.pvaccess.client.impl.remote;
 import java.nio.ByteBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.Transport;
@@ -44,6 +43,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
     protected static final Status okStatus = statusCreate.getStatusOK();
     protected static final Status destroyedStatus = statusCreate.createStatus(StatusType.ERROR, "request destroyed", null);
     protected static final Status channelNotConnected = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
+    protected static final Status channelDestroyed = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
     protected static final Status otherRequestPendingStatus = statusCreate.createStatus(StatusType.ERROR, "other request pending", null);
     protected static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
@@ -68,6 +68,11 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	protected final Requester requester;
 
 	/**
+	 * pvRequest structure.
+	 */
+	protected final PVStructure pvRequest;
+	
+	/**
 	 * Destroyed flag.
 	 */
 	protected volatile boolean destroyed = false;
@@ -84,15 +89,20 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	
 	protected final ReentrantLock lock = new ReentrantLock();
 	
-	public BaseRequestImpl(ChannelImpl channel, Requester requester)
+	public BaseRequestImpl(ChannelImpl channel, Requester requester,
+				PVStructure pvRequest, boolean allowNullPVRequest)
 	{
 		if (requester == null)
 			throw new IllegalArgumentException("requester == null");
+
+		if (pvRequest == null && !allowNullPVRequest)
+			throw new IllegalArgumentException("pvRequest == null");
 
 		this.channel = channel;
 		this.context = (ClientContextImpl)channel.getContext();
 		
 		this.requester = requester;
+		this.pvRequest = pvRequest;
 
 		// register response request
 		ioid = context.registerResponseRequest(this);
@@ -239,14 +249,6 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.core.SubscriptionRequest#updateSubscription()
-	 */
-	@Override
-	public void updateSubscription() throws CAException {
-		// default is noop
-	}
-	
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 	 */
 	@Override
@@ -292,4 +294,23 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		else
 			return new BitSet(pvStructureSize);
 	}
+	
+	/* Called on server restart...
+	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
+	 */
+	@Override
+	public void resubscribeSubscription(Transport transport) {
+		// NOTE: transport is null if channel was never connected
+		if (transport != null && startRequest(QoS.INIT.getMaskValue()))
+			transport.enqueueSendRequest(this);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.core.SubscriptionRequest#updateSubscription()
+	 */
+	@Override
+	public void updateSubscription() {
+		// default is noop
+	}
+	
 }

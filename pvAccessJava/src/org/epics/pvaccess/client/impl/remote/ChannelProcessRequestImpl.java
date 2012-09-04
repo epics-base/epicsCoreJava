@@ -19,7 +19,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.client.ChannelProcess;
 import org.epics.pvaccess.client.ChannelProcessRequester;
 import org.epics.pvaccess.impl.remote.QoS;
@@ -29,7 +28,6 @@ import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
-import org.epics.pvdata.pv.Status.StatusType;
 
 /**
  * CA process request.
@@ -43,24 +41,18 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	 */
 	protected final ChannelProcessRequester callback;
 
-	protected final PVStructure pvRequest;
-
 	public ChannelProcessRequestImpl(ChannelImpl channel, ChannelProcessRequester callback, PVStructure pvRequest) {
-		super(channel, callback);
+		super(channel, callback, pvRequest, true);
+		
 		this.callback = callback;
-
-		this.pvRequest = pvRequest;
 		
 		// TODO best-effort support
 
 		// subscribe
 		try {
-			resubscribeSubscription(channel.checkAndGetTransport());
+			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelProcessConnect(channelNotConnected, this);
-			destroy(true);
-		} catch (CAException e) {
-			callback.channelProcessConnect(statusCreate.createStatus(StatusType.ERROR, "failed to sent message over network", e), this);
+			callback.channelProcessConnect(channelDestroyed, this);
 			destroy(true);
 		}
 	}
@@ -137,15 +129,6 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			th.printStackTrace(printWriter);
 			requester.message("Unexpected exception caught while calling a callback: " + writer, MessageType.fatalError);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
-	 */
-	@Override
-	public final void resubscribeSubscription(Transport transport) throws CAException {
-		startRequest(QoS.INIT.getMaskValue());
-		transport.enqueueSendRequest(this);
 	}
 
 	/* (non-Javadoc)

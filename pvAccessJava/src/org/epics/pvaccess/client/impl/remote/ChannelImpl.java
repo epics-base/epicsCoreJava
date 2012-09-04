@@ -555,6 +555,17 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	}
 
 	/**
+	 * Checks if channel is destroyed and returns transport, <code>null</code> not connected.
+	 * @throws IllegalStateException if not connected
+	 */
+	public synchronized final Transport checkDestroyedAndGetTransport()
+	{
+		if (connectionState == ConnectionState.DESTROYED)
+			throw new IllegalStateException("Channel destroyed.");
+		return transport;
+	}
+
+	/**
 	 * Checks if channel is in connected or disconnected state,
 	 * if not throws <code>IllegalStateException</code> if not.
 	 *

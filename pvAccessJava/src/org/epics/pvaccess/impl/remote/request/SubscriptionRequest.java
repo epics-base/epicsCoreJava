@@ -14,7 +14,6 @@
 
 package org.epics.pvaccess.impl.remote.request;
 
-import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.impl.remote.Transport;
 
 
@@ -30,11 +29,11 @@ public interface SubscriptionRequest extends ResponseRequest {
 	/**
 	 * Update (e.g. after some time of unresponsiveness) - report current value.
 	 */
-	public void updateSubscription() throws CAException;
+	public void updateSubscription();
 	
 	/**
-	 * Rescubscribe (e.g. when server was restarted)
+	 * Resubscribe (e.g. when server was restarted)
 	 * @param transport new transport to be used.
 	 */
-	public void resubscribeSubscription(Transport transport) throws CAException;
+	public void resubscribeSubscription(Transport transport);
 }
