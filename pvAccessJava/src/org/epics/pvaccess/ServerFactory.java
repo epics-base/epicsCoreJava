@@ -22,6 +22,10 @@ import org.epics.pvdata.misc.ThreadCreate;
 import org.epics.pvdata.misc.ThreadCreateFactory;
 import org.epics.pvdata.misc.ThreadReady;
 
+/**
+ * Utility class that starts pvAccess server.
+ * @author msekoranja
+ */
 public class ServerFactory {
     /**
      * This starts the Channel Access Server.

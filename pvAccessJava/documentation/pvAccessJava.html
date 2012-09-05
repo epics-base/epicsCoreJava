@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
   <title>EPICS pvAccessJava</title>
@@ -38,14 +38,14 @@
 <h1>EPICS pvAccessJava</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date. -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 17-Aug-2012</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 05-Sep-2012</h2>
 <dl>
   <dt>This version:</dt>
     <dd><a
-      href="http://epics-pvdata.sourceforge.net/pvAccessJava_20111220.html">pvAccessJava_20111220.html</a></dd>
+      href="http://epics-pvdata.sourceforge.net/pvAccessJava_20111220.html">pvAccessJava_20120905.html</a></dd>
   <dt>Latest version:</dt>
     <dd><a
-      href="http://epics-pvdata.sourceforge.net/pvAccessJava_20111220.html">pvAccessJava_20111220.html</a></dd>
+      href="http://epics-pvdata.sourceforge.net/pvAccessJava_20111220.html">pvAccessJava_20120905.html</a></dd>
   <dt>Editors:</dt>
     <dd>Marty Kraimer, BNL<br />
       Matej Sekoranja, CosyLab</dd>
@@ -54,7 +54,7 @@
 
 <h2 class="nocount">Abstract</h2>
 
-<p>pvAccessJava is the CPP implementation of pvAccess, which is one of a
+<p>pvAccessJava is the Java implementation of pvAccess, which is one of a
 related set of products:</p>
 <dl>
   <dt>pvData</dt>
@@ -75,7 +75,7 @@ related set of products:</p>
     <dd>A middle layer for implementing services.</dd>
 </dl>
 
-<p>Each of the products has a CPP and a C++ implementation.</p>
+<p>Each of the products has a Java and a C++ implementation.</p>
 
 <p>The products are all part of the <a
 href="http://epics-pvdata.sourceforge.net/">V4</a> implementation of <a
@@ -84,15 +84,15 @@ Control System.</a></p>
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 17-Aug-2012 version of the C++ implementation of pvAccess. It is
-a complete implementation of pvAccess as currently defined. </p>
+<p>This is the 05-Sep-2012 version of the Java implementation of pvAccess. It
+is a complete implementation of pvAccess as currently defined. </p>
 
 <h2 class="nocount">TODO</h2>
 
 <p>The following is a list of unresolved issues for pvAccessJava:</p>
 <dl>
-  <dt>XXX</dt>
-    <dd>YYY</dd>
+  <dt>(none)</dt>
+    <dd>(none)</dd>
 </dl>
 
 <div id="toc">
@@ -126,43 +126,37 @@ understand the internals of the implementation.</p>
 <b>org.epics.pvaccess.client</b></p>
 
 <p>This project provides the client and server networking spport for the
-interfaces defined in <b>org.epics.pvaccess.client</b>. The javaIOC provides a
-local implementation of Channel, which registers itself with the server support
-provides by this project. Other implementations of Channel can also be
+interfaces defined in <b>org.epics.pvaccess.client</b>. The pvIOCJava provides
+a local implementation of pvAccess API, which registers itself with the server
+support provided by this project. Other implementations can also be
 provided.</p>
 
 <p>This package also allows the following:</p>
 <ol>
   <li>An application can be created that provide a pvAccess server that
-    provides full support for pvData. This is done by starting a local
+    provides full support for pvData.This is done by starting a local
     PVDatabase, calling org.epics.pvaccess.LocalFactory.start(), and calling
     org.epics.pvaccess.ServerFactory.start().</li>
   <li>An extensible set of monitoring algorithms is supported. Monitoring is
     defined by project pvData. pvAccess provides access to this facility. A
     default set of monitoring algorithms is provided by pvData but other
     algorithms can be implemented. The code that implements an algorithm must
-    extend org.epics.pvdata..monitor.AbstractMonitor and register with
+    extend org.epics.pvdata.monitor.AbstractMonitor and register with
     org.epics.pvaccess.server.ChannelServer.</li>
-  <li>A query facility is supported. A client can ask that a network query
-    request can be made. For example "get the channel list of all Beam Position
-    Monitors". A query faciity is registered via a call to (TO BE
-  DETERMINED).</li>
   <li>A gateway between pvAccess and other systems can be implemented. For
-    example project javaIOC provides gateway code between caV3 and pvAccess. It
-    allows a caV3 client to talk to a pvAccess server and allows a pvAccess
-    client to talk to a caV3 server. For a pvAccess client the gateway
-    implements interface Channel by using JCA/CAJ version 3. It implements a
-    caV3 server by accessing the local PVDatabase. See project javaIOC
-    (org.epics.ioc.caV3) for an example of what to do. It is complex because it
-    is translating between different ways of defining data.</li>
+    example projects pvAccessJava and pvIOCJava provide gateway code between
+    caV3 and pvAccess. pvAccessJava (see package <b>org.epics.caV3</b>) allows
+    pvAccess client to talk to a caV3 server, pvIOCJava (see package
+    <b>org.epics.pvioc.caV3</b>) allows caV3 client to talk to a pvAccess
+    server.</li>
 </ol>
 
 <h2>User Interface Packages</h2>
 
 <p>This section briefly describes the interfaces used by a pvAccess client and
 by an application that supports a pvAccess server. It only describes how things
-are connected, i.e. it does not describe interface Channel or any of its
-related interfaces because they are described in the package overview for
+are connected, i.e. it does not describe pvAccess API or any of its related
+interfaces because they are described in the package overview for
 org.epics.pvaccess.client.</p>
 
 <h3>org.epics.pvaccess</h3>
@@ -176,7 +170,8 @@ pvAccess:</p>
       example shown in the previous section calls this.</dd>
   <dt>ServerFactory</dt>
     <dd>This must be started in order to allow pvAccess clients to access the
-      local PVDatabase. For example the javaIOC can start this.</dd>
+      local pvAccess data source. For example the pvIOCJava (PVDatabase) can
+      start this.</dd>
 </dl>
 
 <h3>org.epics.pvaccess.client</h3>
@@ -190,27 +185,30 @@ channel and how to register monitor algoritms and channel providers.</p>
     private static final ChannelAccess channelAccess
          = ChannelAccessFactory.getChannelAccess();
 
-    // to connect to a channel must know providerName and ChannelName
-    String providerName = "pvAccess";
-    String channelName = "someChannel";
-    // then
-    ChannelProvider channelProvider = channelAccess.getProvider(providerName);
-    Channel = channelProvider.createChannel(
-        channelName, this, ChannelProvider.PRIORITY_DEFAULT);</pre>
+    // get wanted channel provider 
+    ChannelProvider channelProvider = channelAccess.getProvider("pvAccess");
+
+    // connect to a channel with given name
+    Channel channel = channelProvider.createChannel(
+                                         "someChannel",
+                                         channelRequester,
+                                         ChannelProvider.PRIORITY_DEFAULT);</pre>
 
 <p>This package defines the interfaces a client uses to comnmunicate with a
-pvAccess server. This project fully supports all the interfaces. If a server is
-implemented for other systems, it is OK to implement a subset of the
-interfaces. For example the caV3 server implemented by the javaIOC does not
+pvAccess server. This project fully implements all the interfaces. If a server
+is implemented for other systems, it is OK to implement a subset of the
+interfaces. For example the caV3 server implemented by the pvIOCJava does not
 support ChannelPutGet because an EPICS V3 IOC does not provide an equivalent
 facility.</p>
 
-<p>Except for ChannelAccessFactory, this class contains only Java interface and
-enum definition. ChannelAccessFactory provides a complete implementation of
-interface ChannelAccess and two static public members:</p>
+<p>Except for ChannelAccessFactory and CreateRequestFactory, this package
+contains only Java interface and enum definition. ChannelAccessFactory provides
+a complete implementation of interface ChannelAccess and three static public
+members:</p>
 <pre>public class ChannelAccessFactory {
     public static ChannelAccess getChannelAccess();
     public static void registerChannelProvider(ChannelProvider channelProvider);
+    public static void unregisterChannelProvider(ChannelProvider channelProvider);
 }</pre>
 
 <p>where</p>
@@ -218,15 +216,18 @@ interface ChannelAccess and two static public members:</p>
   <dt>getChannelAccess</dt>
     <dd>This gets the single instance of ChannelAccess</dd>
   <dt>registerChannelProvider</dt>
-    <dd>This registers a ChannelProvider. User code does not call this. It is
-      called via the factories in org.,epics.ca.</dd>
+    <dd>This registers a ChannelProvider. Usually user code does not call this,
+      e.g. it is called via the factories in <b>org.epics.pvaccess</b></dd>
+  <dt>unregisterChannelProvider</dt>
+    <dd>This unregisters a ChannelProvider. Usually user code does not call
+      this, e.g. it is called via the factories in
+    <b>org.epics.pvaccess</b></dd>
 </dl>
 
 <p>ChannelAccess is defined as:</p>
 <pre>interface ChannelAccess {
     ChannelProvider getProvider(String providerName);
     String[] getProviderNames();
-    PVStructure createRequest(String structureName,String request);
 }</pre>
 
 <p>where</p>
@@ -234,28 +235,17 @@ interface ChannelAccess and two static public members:</p>
   <dt>getProvider</dt>
     <dd>Get the channel provider.</dd>
   <dt>getProviderNames</dt>
-    <dd>Get the names of all the providers.</dd>
-  <dt>createRequest</dt>
-    <dd>A convenience method for clients see the package overview for
-    details.</dd>
+    <dd>Get the names of all regsitered providers.</dd>
 </dl>
 
-<p>ChannelProvider has a method:</p>
-Channel createChannel(String channelName, ChannelRequester
-channelRequester,short priority); 
+<p>ChannelProvider has a method (among others):</p>
+<pre>Channel createChannel(String channelName, ChannelRequester channelRequester, short priority); 
+ ...</pre>
 
 <p>This is the method a client calls to connect to a Channel. See the package
 overview for details.</p>
 
-<h3>org.epics.pvaccess.server.plugins</h3>
-
-<p>Matej? What to say?</p>
-
 <h2>Problems and Future Plans</h2>
-
-<h3>Query Facility</h3>
-
-<p>This needs to be defined and implemented.</p>
 
 <h3>Access Security</h3>
 
@@ -281,10 +271,6 @@ each send request, to specify the following options:</p>
       queue should be transfered to the send thread.</dd>
 </dl>
 
-<h2>Network Protocol</h2>
-
-<p>Must be described.</p>
-
 <h2>Helper Packages</h2>
 
 <p>This is set of packages that are used by other parts of this project</p>
@@ -295,7 +281,7 @@ each send request, to specify the following options:</p>
 <dl>
   <dt>ClientFactory</dt>
     <dd>Starts the client side of remote pvAccess.</dd>
-  <dt>ServerFacyory</dt>
+  <dt>ServerFactory</dt>
     <dd>Starts the server side of remote pvAccess.</dd>
   <dt>CAConstants</dt>
     <dd>A set of constants for pvAccess</dd>
@@ -303,26 +289,47 @@ each send request, to specify the following options:</p>
     <dd>An extension to Exception for pvAccess</dd>
   <dt>Version</dt>
     <dd>Defines the version.</dd>
+  <dt>PVFactory</dt>
+    <dd>Factory proxy for all the standard pvData factories used by
+    pvAccess.</dd>
 </dl>
+
+<h3>org.epics.pvaccess.util.logging</h3>
+
+<p>A logging facility based on java.util.logging. This has the following:</p>
+<dl>
+  <dt>LoggerProvider</dt>
+    <dd>Defines an interface that provides a logger.</dd>
+  <dt>ConsoleLogFormatter</dt>
+    <dd>Java API formatter that produces single line log reports meant to go to
+      the console.</dd>
+  <dt>ConsoleLogHandler</dt>
+    <dd>Java API log handler output logs to the System.out. By default it uses
+      ConsoleLogFormatter.</dd>
+</dl>
+
+<p>To setup a simple logging in you console application, use the following
+code:</p>
+<pre>        ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
+        Logger logger = Logger.getLogger(MyApplicationClass.class.getName());
+
+        ...
+        logger.info("Hello world.");</pre>
+
+<h2>Implementation Packages</h2>
+
+<p>These packages provide implementation classes and interfaces shared by both
+the client and server code for pvAccess</p>
 
 <h3>org.epics.pvaccess.util</h3>
 
 <p>This has the following:</p>
 <dl>
-  <dt>ArrayFIFO</dt>
-    <dd>A FIFO queue.</dd>
-  <dt>BasicMutex</dt>
-    <dd>Provides lock/unlock. This is used instead of
-      java.util.concurrent.locks.ReentrantLock because recursive locking is not
-      desired. </dd>
   <dt>CircularBuffer</dt>
     <dd>A fixed size circular buffer. If full a new element replaces the
     oldest.</dd>
   <dt>GrowingCircularBuffer</dt>
     <dd>A circular buffer that holds an unlimited number of elements.</dd>
-  <dt>Heap</dt>
-    <dd>A heap based priority queue. QUESTION: Is this better than
-      java.util.PriorityQueue?</dd>
   <dt>HexDump</dt>
     <dd>Converts a byte array to hex and writes to System.out.println.</dd>
   <dt>InetAddressUtil</dt>
@@ -330,38 +337,33 @@ each send request, to specify the following options:</p>
   <dt>IntHashMap</dt>
     <dd>An integer hash map. This is used instead of java.util.HashMap so that
       Integer objects do not have to be allocated.</dd>
+  <dt>Mailbox</dt>
+    <dd>Optimized usage of concurrent linked list queue.</dd>
   <dt>ShortHashMap</dt>
     <dd>A short hash map. This is used instead of java.util.HashMap so that
       Short objects do not have to be allocated.</dd>
-  <dt>Timer</dt>
-    <dd>QUESTION: Why not use pvData.misc.Timer? It does not require a new to
-      add something to the list. Additional methods may have to be implemented
-      for pvData.misc.Timer in order to provide the same functionality.</dd>
-  <dt>TimeStamp</dt>
-    <dd>QUESTION: Why not use pvData.property.TimeStamp? It can be changed to
-      implement hashCode and equals. </dd>
-  <dt>WildcharMatcher</dt>
-    <dd>This is implemented instead of java.util.regex.Pattern because of code
-      efficency.</dd>
 </dl>
-
-<h3>org.epics.pvaccess.util.logging</h3>
-
-<p>A logging facility based on java.util.logging. MATEJ can you describe?</p>
 
 <h3>org.epics.pvaccess.util.sync</h3>
 
-<p>MATEJ can you describe?</p>
+<h3>org.epics.pvaccess.util.configuration</h3>
 
-<h2>Implementation Packages</h2>
-
-<p>These packages provide implementation classes and interfaces shared by both
-the client and server code for pvAccess</p>
+<h3>org.epics.pvaccess.util.configuration.impl</h3>
 
 <h3>org.epics.pvaccess.impl.remote</h3>
 
 <p>This package contains enums, interface, and abstract class definitions
 common to both the client and server implementation. </p>
+
+<h3>org.epics.pvaccess.impl.remote.codec</h3>
+
+<h3>org.epics.pvaccess.impl.remote.codec.impl</h3>
+
+<h3>org.epics.pvaccess.impl.remote.io</h3>
+
+<h3>org.epics.pvaccess.impl.remote.io.impl</h3>
+
+<h3>org.epics.pvaccess.impl.remote.request</h3>
 
 <h3>org.epics.pvaccess.impl.remote.tcp</h3>
 
@@ -396,6 +398,8 @@ in the following two packages to send requests and receive responses.</p>
 
 <p>This implements code that sends a network request.</p>
 
+<h3>org.epics.pvaccess.client.impl.remote.search</h3>
+
 <h3>org.epics.pvaccess.client.impl.remote.tcp</h3>
 
 <p>This interfaces the client code to package
@@ -421,14 +425,14 @@ has the code which issues beacons.</p>
 
 <p>Currently has just code related to beacons.</p>
 
-<h3>org.epics.pvaccess.server.impl.remote.requests</h3>
-
-<p>This implements code that sends responses to the client.</p>
-
 <h3>org.epics.pvaccess.server.impl.remote.tcp</h3>
 
 <p>This interfaces the server code to package
 org.epics.pvaccess.impl.remote.tcp.</p>
+
+<h3>org.epics.pvaccess.server.impl.rpc</h3>
+
+<h3>org.epics.pvaccess.server.impl.rpc.impl</h3>
 
 <h2>Package org.epics.pvaccess</h2>
 
@@ -532,10 +536,10 @@ When a failure occurs, other arguments may be null.</p>
 
 <p>This section shows an example of issuing a channel get request. the example
 is a java main program that can be executed as follows:</p>
-<pre>java org.epics.pvaccess.client.example.ExampleChannelGet  channelName request</pre>
+<pre>java org.epics.pvaccess.client.example.ExampleChannelGet &lt;channelName&gt; &lt;request&gt;</pre>
 
 <p>For example if the arguments are:</p>
-<pre>    scalarCounter value</pre>
+<pre>    counter field(value)</pre>
 
 <p>The output is:</p>
 <pre>structure example
@@ -544,9 +548,9 @@ is a java main program that can be executed as follows:</p>
 }</pre>
 
 <p>If the arguments are: </p>
-<pre>    scalarCounter value,alarm,timeStamp</pre>
+<pre>    counter field(value,alarm,timeStamp)</pre>
 
-<p>The output is:</p>
+<p>The output is (TODO now actually isn't):</p>
 <pre>structure example
 {
     value = 5

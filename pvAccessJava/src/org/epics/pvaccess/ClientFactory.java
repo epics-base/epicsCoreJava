@@ -17,6 +17,10 @@ package org.epics.pvaccess;
 import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 
+/**
+ * Utility class that starts/stops remote pvAccess client channel provider.
+ * @author msekoranja
+ */
 public class ClientFactory {
 	
 	/**

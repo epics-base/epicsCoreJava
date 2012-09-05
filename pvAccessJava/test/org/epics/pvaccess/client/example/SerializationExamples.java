@@ -167,7 +167,7 @@ public class SerializationExamples {
         fields[1] = standardField.timeStamp();
         fields[2] = standardField.alarm();
         
-        PVStructure pvStructure = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
+        PVStructure pvStructure = pvDataCreate.createPVStructure(fieldCreate.createStructure("exampleStructure", new String[] { "value", "timeStamp", "alarm" }, fields)
         );
         
         PVByteArray ba = (PVByteArray)pvStructure.getSubField("value");

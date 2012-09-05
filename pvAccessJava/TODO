@@ -1,1 +1,1 @@
-on channel request creation: if channel is not connected or connection goes down, an error is returned and request is self-destroyed; not sure this is good... should simply wait for connection to come back
+possible race conditions between startRequest and transport.enqueueSend..
