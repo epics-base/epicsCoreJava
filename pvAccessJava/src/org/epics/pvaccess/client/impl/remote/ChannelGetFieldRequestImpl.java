@@ -67,7 +67,18 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	 */
 	protected volatile boolean destroyed = false;
 
-	public ChannelGetFieldRequestImpl(ChannelImpl channel, GetFieldRequester callback,
+	public static ChannelGetFieldRequestImpl create(ChannelImpl channel,
+			GetFieldRequester callback,
+            String subField)
+	{
+		ChannelGetFieldRequestImpl thisInstance =
+			new ChannelGetFieldRequestImpl(channel, callback, subField);
+		thisInstance.activate();
+		return thisInstance;
+	}
+	
+	protected ChannelGetFieldRequestImpl(ChannelImpl channel,
+			GetFieldRequester callback,
             String subField)
 	{
 		if (callback == null)
@@ -80,7 +91,11 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 		this.subField = subField;
 		
 		// register response request
-		ioid = context.registerResponseRequest(this);
+		this.ioid = context.registerResponseRequest(this);
+	}
+	
+	protected void activate()
+	{
 		channel.registerResponseRequest(this);
 
 		// enqueue send request

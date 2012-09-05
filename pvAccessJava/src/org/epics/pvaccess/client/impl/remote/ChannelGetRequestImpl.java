@@ -45,7 +45,19 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 	protected PVStructure data = null;
 	protected BitSet bitSet = null;
 	
-	public ChannelGetRequestImpl(ChannelImpl channel, ChannelGetRequester callback,
+	public static ChannelGetRequestImpl create(ChannelImpl channel,
+		ChannelGetRequester callback,
+	    PVStructure pvRequest)
+	{
+		ChannelGetRequestImpl thisInstance =
+			new ChannelGetRequestImpl(channel, callback, pvRequest);
+		thisInstance.activate();
+		return thisInstance;
+	}
+	
+	protected ChannelGetRequestImpl(
+			ChannelImpl channel,
+			ChannelGetRequester callback,
             PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, false);
@@ -54,7 +66,12 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		
 		// TODO immediate get, i.e. get data with init message
 		// TODO one-time get, i.e. immediate get + lastRequest 
-
+	}
+	
+	protected void activate()
+	{
+		super.activate();
+		
 		// subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());

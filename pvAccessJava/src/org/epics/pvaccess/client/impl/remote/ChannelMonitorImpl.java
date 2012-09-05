@@ -68,8 +68,17 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	
 	private final MonitorStrategy monitorStrategy;
 
+	public static ChannelMonitorImpl create(ChannelImpl channel,
+			MonitorRequester callback,
+	        PVStructure pvRequest)
+	{
+		ChannelMonitorImpl thisInstance = 
+			new ChannelMonitorImpl(channel, callback, pvRequest);
+		thisInstance.activate();
+		return thisInstance;
+	}
 	
-	public ChannelMonitorImpl(ChannelImpl channel,
+	protected ChannelMonitorImpl(ChannelImpl channel,
 			MonitorRequester callback,
 	        PVStructure pvRequest)
 	{
@@ -103,8 +112,13 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
         else 
         	monitorStrategy = new MonitorStrategyQueue(queueSize);
 //        	monitorStrategy = new MonitorStrategyQueueNoCopy(queueSize);
-        	
-        	
+	}
+
+
+	protected void activate()
+	{
+		super.activate();
+		
         // subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
@@ -113,8 +127,6 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			destroy(true);
 		}
 	}
-
-	
 	
 	
 	private final class MonitorStrategyNotify implements MonitorStrategy {

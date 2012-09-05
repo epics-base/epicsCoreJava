@@ -45,7 +45,18 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	protected PVStructure data = null;
 	protected BitSet bitSet = null;
 	
-	public ChannelPutRequestImpl(ChannelImpl channel, ChannelPutRequester callback,
+	public static ChannelPutRequestImpl create(ChannelImpl channel,
+			ChannelPutRequester callback,
+            PVStructure pvRequest)
+	{
+		ChannelPutRequestImpl thisInstance =
+			new ChannelPutRequestImpl(channel, callback, pvRequest);
+		thisInstance.activate();
+		return thisInstance;
+	}
+	
+	protected ChannelPutRequestImpl(ChannelImpl channel,
+			ChannelPutRequester callback,
             PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, false);
@@ -54,7 +65,13 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		
 		// TODO low-overhead put
 		// TODO best-effort put
-
+	}
+	
+	
+	protected void activate()
+	{
+		super.activate();
+		
 		// subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());

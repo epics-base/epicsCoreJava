@@ -76,11 +76,14 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	 * Destroyed flag.
 	 */
 	protected volatile boolean destroyed = false;
-	
 	/**
 	 * Remote instance destroyed.
 	 */
 	protected volatile boolean remotelyDestroyed = false;
+	/**
+	 * Initialized flag.
+	 */
+	protected volatile boolean subscribed = false;
 	
 	protected int pendingRequest = NULL_REQUEST;
 	/* negative... */
@@ -105,7 +108,13 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		this.pvRequest = pvRequest;
 
 		// register response request
-		ioid = context.registerResponseRequest(this);
+		// NOTE: this reference given in constructor,
+		// however it is not used until registerToChannel is called
+		this.ioid = context.registerResponseRequest(this);
+	}
+	
+	protected void activate()
+	{
 		channel.registerResponseRequest(this);
 	}
 
@@ -194,7 +203,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	}
 
 	/**
-	 * Actial destroy implementation.
+	 * Actual destroy implementation.
 	 * @param createRequestFailed set to true if create request failed.
 	 */
 	protected void destroy(boolean createRequestFailed) {
@@ -244,7 +253,10 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		if (status == ChannelImpl.channelDestroyed)
 			destroy();
 		else if (status == ChannelImpl.channelDisconnected)
+		{
+			subscribed = false;
 			stopRequest();
+		}
 		// TODO notify?
 	}
 
@@ -301,8 +313,11 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	@Override
 	public void resubscribeSubscription(Transport transport) {
 		// NOTE: transport is null if channel was never connected
-		if (transport != null && startRequest(QoS.INIT.getMaskValue()))
+		if (transport != null && !subscribed && startRequest(QoS.INIT.getMaskValue()))
+		{
+			subscribed = true;
 			transport.enqueueSendRequest(this);
+		}
 	}
 
 	/* (non-Javadoc)

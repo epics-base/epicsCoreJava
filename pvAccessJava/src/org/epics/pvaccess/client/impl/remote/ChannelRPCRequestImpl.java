@@ -43,14 +43,29 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 
 	protected PVStructure argumentData;
 	
-	public ChannelRPCRequestImpl(ChannelImpl channel,
+	public static ChannelRPCRequestImpl create(ChannelImpl channel,
+			ChannelRPCRequester callback,
+	        PVStructure pvRequest)
+	{
+		ChannelRPCRequestImpl thisInstance =
+			new ChannelRPCRequestImpl(channel, callback, pvRequest);
+		thisInstance.activate();
+		return thisInstance;
+	}
+	
+	protected ChannelRPCRequestImpl(ChannelImpl channel,
 			ChannelRPCRequester callback,
 	        PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, true);
 		
 		this.callback = callback;
+	}
 
+	protected void activate()
+	{
+		super.activate();
+		
 		// subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
@@ -59,7 +74,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			destroy(true);
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 	 */

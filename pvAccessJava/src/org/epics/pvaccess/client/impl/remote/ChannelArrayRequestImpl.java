@@ -52,14 +52,29 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	protected int length = -1;
 	protected int capacity = -1;
 
-	public ChannelArrayRequestImpl(ChannelImpl channel,
+	public static ChannelArrayRequestImpl create(ChannelImpl channel,
+			ChannelArrayRequester callback,
+			PVStructure pvRequest)
+	{
+		ChannelArrayRequestImpl thisInstance =
+			new ChannelArrayRequestImpl(channel, callback, pvRequest);
+		thisInstance.activate();
+		return thisInstance;
+	}
+		
+	protected ChannelArrayRequestImpl(ChannelImpl channel,
 			ChannelArrayRequester callback,
 			PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, false);
 		
 		this.callback = callback;
+	}
 
+	protected void activate()
+	{
+		super.activate();
+		
 		// subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
@@ -68,7 +83,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			destroy(true);
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 	 */

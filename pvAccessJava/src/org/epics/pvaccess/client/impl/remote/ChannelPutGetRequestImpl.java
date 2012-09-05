@@ -44,13 +44,28 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	protected PVStructure putData = null;
 	protected PVStructure getData = null;
 	
-	public ChannelPutGetRequestImpl(ChannelImpl channel,
+	public static ChannelPutGetRequestImpl create(ChannelImpl channel,
+			ChannelPutGetRequester callback,
+	        PVStructure pvRequest)
+	{
+		ChannelPutGetRequestImpl thisInstance =
+			new ChannelPutGetRequestImpl(channel, callback, pvRequest);
+		thisInstance.activate();
+		return thisInstance;
+	}
+	
+	protected ChannelPutGetRequestImpl(ChannelImpl channel,
 			ChannelPutGetRequester callback,
 	        PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, false);
 		
 		this.callback = callback;
+	}
+	
+	protected void activate()
+	{
+		super.activate();
 
 		// subscribe
 		try {

@@ -793,39 +793,39 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	public ChannelGet createChannelGet(
 			ChannelGetRequester channelGetRequester,
 			PVStructure pvRequest) {
-		return new ChannelGetRequestImpl(this, channelGetRequester, pvRequest);
+		return ChannelGetRequestImpl.create(this, channelGetRequester, pvRequest);
 	}
 
 	@Override
 	public Monitor createMonitor(
 			MonitorRequester monitorRequester, PVStructure pvRequest) {
-    	return new ChannelMonitorImpl(this, monitorRequester, pvRequest);	
+    	return ChannelMonitorImpl.create(this, monitorRequester, pvRequest);	
 	}
 
 	@Override
 	public ChannelProcess createChannelProcess(
 			ChannelProcessRequester channelProcessRequester,
 			PVStructure pvRequest) {
-		return new ChannelProcessRequestImpl(this, channelProcessRequester, pvRequest);
+		return ChannelProcessRequestImpl.create(this, channelProcessRequester, pvRequest);
 	}
 	
 	@Override
 	public ChannelPut createChannelPut(
 			ChannelPutRequester channelPutRequester,
 			PVStructure pvRequest) {
-    	return new ChannelPutRequestImpl(this, channelPutRequester, pvRequest);
+    	return ChannelPutRequestImpl.create(this, channelPutRequester, pvRequest);
 	}
 
 	@Override
 	public ChannelPutGet createChannelPutGet(
 			ChannelPutGetRequester channelPutGetRequester,
 			PVStructure pvRequest) {
-    	return new ChannelPutGetRequestImpl(this, channelPutGetRequester, pvRequest);	
+    	return ChannelPutGetRequestImpl.create(this, channelPutGetRequester, pvRequest);	
 	}
 
 	@Override
 	public ChannelRPC createChannelRPC(ChannelRPCRequester channelRPCRequester, PVStructure pvRequest) {
-    	return new ChannelRPCRequestImpl(this, channelRPCRequester, pvRequest);	
+    	return ChannelRPCRequestImpl.create(this, channelRPCRequester, pvRequest);	
 	}
 
 	/* (non-Javadoc)
@@ -907,7 +907,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	public ChannelArray createChannelArray(
 			ChannelArrayRequester channelArrayRequester,
 			PVStructure pvRequest) {
-		return new ChannelArrayRequestImpl(this, channelArrayRequester, pvRequest);
+		return ChannelArrayRequestImpl.create(this, channelArrayRequester, pvRequest);
 	}
     
 	/* (non-Javadoc)
@@ -915,7 +915,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	 */
 	@Override
 	public void getField(GetFieldRequester requester, String subField) {
-		new ChannelGetFieldRequestImpl(this, requester, subField);
+		ChannelGetFieldRequestImpl.create(this, requester, subField);
 	}
 
 	/* (non-Javadoc)

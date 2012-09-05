@@ -41,12 +41,30 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	 */
 	protected final ChannelProcessRequester callback;
 
-	public ChannelProcessRequestImpl(ChannelImpl channel, ChannelProcessRequester callback, PVStructure pvRequest) {
+	public static ChannelProcessRequestImpl create(ChannelImpl channel,
+			ChannelProcessRequester callback,
+			PVStructure pvRequest)
+	{
+		ChannelProcessRequestImpl thisInstance = 
+			new ChannelProcessRequestImpl(channel, callback, pvRequest);
+		thisInstance.activate();
+		return thisInstance;
+	}
+	
+	protected ChannelProcessRequestImpl(ChannelImpl channel,
+			ChannelProcessRequester callback,
+			PVStructure pvRequest)
+	{
 		super(channel, callback, pvRequest, true);
 		
 		this.callback = callback;
 		
 		// TODO best-effort support
+	}
+	
+	protected void activate()
+	{
+		super.activate();
 
 		// subscribe
 		try {
@@ -55,6 +73,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			callback.channelProcessConnect(channelDestroyed, this);
 			destroy(true);
 		}
+		
 	}
 
 	/* (non-Javadoc)
