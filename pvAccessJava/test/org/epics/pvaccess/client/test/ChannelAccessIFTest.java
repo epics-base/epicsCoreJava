@@ -2653,6 +2653,23 @@ public abstract class ChannelAccessIFTest extends TestCase {
     	}
     }
 	
+    public void testStressConnectGetDisconnect() throws Throwable
+    {
+    	final int COUNT = 300;
+    	for (int i = 1; i <= COUNT; i++)
+    	{
+    		ChannelGetRequesterImpl channelGetRequesterImpl = new ChannelGetRequesterImpl();
+    		PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)", channelGetRequesterImpl);
+
+    		Channel channel = syncCreateChannel("valueOnly", false);
+    		channel.createChannelGet(channelGetRequesterImpl, pvRequest);
+    		channelGetRequesterImpl.waitAndCheckConnect();
+    		channelGetRequesterImpl.syncGet(true);
+    		
+    		channel.destroy();
+    	}
+    }
+
     public void testStressMonitorAndProcess() throws Throwable
     {
         Channel ch = syncCreateChannel("simpleCounter");

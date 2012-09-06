@@ -242,9 +242,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			this.serverChannelID = sid;
 			//setAccessRights(rights);
 
-			// user might create monitors in listeners, so this has to be done before this can happen
-			// however, it would not be nice if events would come before connection event is fired
-			// but this cannot happen since transport (TCP) is serving in this thread 
+			// TODO think what to call first
 			resubscribeSubscriptions();
 			setConnectionState(ConnectionState.CONNECTED);
 		}
@@ -562,7 +560,10 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	{
 		if (connectionState == ConnectionState.DESTROYED)
 			throw new IllegalStateException("Channel destroyed.");
-		return transport;
+		else if (connectionState == ConnectionState.CONNECTED)
+			return transport;
+		else 
+			return null;
 	}
 
 	/**

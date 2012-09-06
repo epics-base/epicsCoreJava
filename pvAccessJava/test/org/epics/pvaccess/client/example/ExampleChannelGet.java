@@ -5,182 +5,151 @@
  */
 package org.epics.pvaccess.client.example;
 
-import org.epics.pvaccess.CAException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.epics.pvaccess.client.Channel;
-import org.epics.pvaccess.client.ChannelAccess;
+import org.epics.pvaccess.client.Channel.ConnectionState;
 import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelGet;
 import org.epics.pvaccess.client.ChannelGetRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.CreateRequestFactory;
-import org.epics.pvaccess.client.Channel.ConnectionState;
+import org.epics.pvaccess.util.logging.ConsoleLogHandler;
+import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 
-
 /**
  * ChannelGet example
- * @author mrk
+ * @author mse
  */
 public class ExampleChannelGet {
 
-    /**
-     * main.
-     * @param  args is a sequence of flags and filenames.
-     */
-    public static void main(String[] args) throws CAException {
-        org.epics.pvaccess.ClientFactory.start();
-        int len = args.length;
-        if(len<1 || len>2 || (len==1 && args[0].equals("?"))) {
-            System.out.println("Usage: channelName request");
+    public static void main(String[] args) throws Throwable {
+        
+    	int len = args.length;
+        if (len == 0 || len > 2)
+        {
+            System.out.println("Usage: <channelName> <pvRequest>");
             return;
         }
-        String channelName = args[0];
-        String request = null;
-        if(len==2) {
-            request = args[1];
-        }
         
-        Client client = new Client(channelName,request);
-        client.waitUntilDone(1000000);
+        final String channelName = args[0];
+        final String pvRequestString = args[1];
+        
+        ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
+        Logger logger = Logger.getLogger(ExampleChannelGet.class.getName());
+        logger.setLevel(Level.ALL);
+
+        org.epics.pvaccess.ClientFactory.start();
+        
+        ChannelProvider channelProvider =
+        	ChannelAccessFactory.getChannelAccess()
+        		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
+        
+        CountDownLatch doneSignal = new CountDownLatch(1);
+
+        ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
+        Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
+        
+        ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, channel, doneSignal);
+		channel.createChannelGet(
+				channelGetRequester,
+				CreateRequestFactory.createRequest(pvRequestString, channelGetRequester)
+				);
+
+		if (!doneSignal.await(3, TimeUnit.SECONDS))
+			logger.info("Failed to get value (timeout condition).");
+        
         org.epics.pvaccess.ClientFactory.stop();
-        System.exit(0);
     }
     
-    private static final String providerName = "pvAccess";
-    private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
-    //private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-    
-    private static class Client implements ChannelRequester, ChannelGetRequester {
-        
-        private final PVStructure pvRequest;
-        private final ChannelProvider channelProvider;
-        private final Channel channel;
-        private boolean done = false;
-        private ChannelGet channelGet = null;
-        private PVStructure pvStructure = null;
-        private BitSet bitSet = null;
+    static class ChannelRequesterImpl implements ChannelRequester
+    {
+    	private final Logger logger;
+    	public ChannelRequesterImpl(Logger logger)
+    	{
+    		this.logger = logger;
+    	}
 
-        Client(String channelName,String request) {
-            //if(request==null) {
-            //    pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
-            //} else {
-                pvRequest = CreateRequestFactory.createRequest("field(value)", this);
-            //}
-            channelProvider = channelAccess.getProvider(providerName);
-            channel = channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
-        }
-        
-        
-      
-        public void waitUntilDone(long timeoutMs) {
-        	System.out.println("waiting");
-        	synchronized (this) {
-				if (!done) {
-					try {
-						this.wait(timeoutMs);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
+		@Override
+		public String getRequesterName() {
+			return getClass().getName();
+		}
+
+		@Override
+		public void message(String message, MessageType messageType) {
+			logger.log(LoggingUtils.toLevel(messageType), message);
+		}
+
+		@Override
+		public void channelCreated(Status status, Channel channel) {
+			logger.info("Channel '" + channel.getChannelName() + "' created with status: " + status + ".");
+		}
+		
+		@Override
+		public void channelStateChange(Channel channel, ConnectionState connectionState) {
+			logger.info("Channel '" + channel.getChannelName() + "' " + connectionState + ".");
+		}
+    	
+    }
+    
+    static class ChannelGetRequesterImpl implements ChannelGetRequester
+    {
+    	private final Logger logger;
+    	private final Channel channel;
+    	private final CountDownLatch doneSignaler;
+    	
+		private volatile PVStructure pvStructure = null;
+   	
+    	public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler)
+    	{
+    		this.logger = logger;
+    		this.channel = channel;
+    		this.doneSignaler = doneSignaler;
+    	}
+
+		@Override
+		public String getRequesterName() {
+			return getClass().getName();
+		}
+
+		@Override
+		public void message(String message, MessageType messageType) {
+			logger.log(LoggingUtils.toLevel(messageType), message);
+		}
+		
+		@Override
+		public void channelGetConnect(Status status, ChannelGet channelGet,
+				PVStructure pvStructure, BitSet bitSet) {
+			logger.info("ChannelGet for '" + channel.getChannelName() + "' connected with status: " + status + ".");
+			if (status.isSuccess())
+			{
+				this.pvStructure = pvStructure;
+				channelGet.get(true);
 			}
-        }
-        
-        private void done() {
-    		channel.destroy();
-        	synchronized (this) {
-        		done = true;
-        		this.notifyAll();
-        	}
-        }
-        
-        /* (non-Javadoc)
-         * @see org.epics.pvaccess.client.ChannelRequester#channelCreated(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.Channel)
-         */
-        @Override
-        public void channelCreated(Status status, Channel channel) {
-            if(!status.isSuccess()) {
-                message("channelCreated " + status.getMessage(),MessageType.error);
-                done();
-                return;
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvaccess.client.ChannelRequester#channelStateChange(org.epics.pvaccess.client.Channel, org.epics.pvaccess.client.Channel.ConnectionState)
-         */
-        @Override
-        public void channelStateChange(Channel c,ConnectionState connectionState) {
-            if(connectionState==ConnectionState.CONNECTED) {
-                channelGet =channel.createChannelGet(this, pvRequest);
-            } else {
-                message(connectionState.name(),MessageType.info);
-                done = true;
-            }
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvaccess.client.ChannelGetRequester#channelGetConnect(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.ChannelGet, org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)
-         */
-        @Override
-        public void channelGetConnect(Status status, ChannelGet channelGet,PVStructure pvStructure, BitSet bitSet) {
-            if(!status.isSuccess()) {
-                message("channelGetConnect " + status.getMessage(),MessageType.error);
-                done();
-                return;
-            }
-            synchronized(this) {
-                this.channelGet = channelGet;
-                this.pvStructure = pvStructure;
-                this.bitSet = bitSet;
-            }
-            this.channelGet.get(false);
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvaccess.client.ChannelGetRequester#getDone(org.epics.pvdata.pv.Status)
-         */
-        @Override
-        public void getDone(Status status) {
-            if(!status.isSuccess()) {
-                message("getDone " + status.getMessage(),MessageType.error);
-                done();
-                return;
-            }
-            
-            message("bitSet" + bitSet.toString() + pvStructure.toString(),MessageType.info);
-            done();
+			else
+				doneSignaler.countDown();
+		}
 
-            /*
-             * cyclic array get test
-            PVDoubleArray arr = (PVDoubleArray)pvStructure.getScalarArrayField("value", ScalarType.pvDouble);
-            System.out.println("got array with n elements: " +arr.getLength());
-            DoubleArrayData dad = new DoubleArrayData();
-            arr.get(arr.getLength() - 10, 10, dad);
-            System.out.println("lst values: " +dad.data[arr.getLength()-1]);
-            
-            channelGet.get(false);
-            */
-        }
-        
-        /* (non-Javadoc)
-         * @see org.epics.pvdata.pv.Requester#getRequesterName()
-         */
-        @Override
-        public String getRequesterName() {
-            return "example";
-        }
-        /* (non-Javadoc)
-         * @see org.epics.pvdata.pv.Requester#message(java.lang.String, org.epics.pvdata.pv.MessageType)
-         */
-        @Override
-        public void message(String message, MessageType messageType) {
-            if(messageType!=MessageType.info) {
-                System.err.println(messageType + " " + message);
-            } else {
-                System.out.println(message);
-            }
-        }
-        
+		@Override
+		public void getDone(Status status) {
+			logger.info("getDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
+
+			if (status.isSuccess())
+			{
+				// NOTE: no need to call channelGet.lock()/unlock() since we read pvStructure in the same thread (i.e. in the callback)
+				System.out.println(pvStructure.toString());
+			}	
+			
+			doneSignaler.countDown();
+		}
     }
+    
 }

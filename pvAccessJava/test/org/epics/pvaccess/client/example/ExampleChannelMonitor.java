@@ -5,7 +5,7 @@
  */
 package org.epics.pvaccess.client.example;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,32 +16,35 @@ import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.CreateRequestFactory;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
+import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorElement;
 import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
-import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 
 /**
- * ExampleChannelMonitorMatej example
+ * ExampleChannelMonitor example
  * @author mse
  */
-public class ExampleChannelMonitorMatej {
+public class ExampleChannelMonitor {
 
     public static void main(String[] args) throws Throwable {
-        int len = args.length;
-        if(len<1 || len>2 || (len==1 && args[0].equals("?"))) {
-            System.out.println("Usage: channelName request");
+
+    	int len = args.length;
+        if (len == 0 || len > 2)
+        {
+            System.out.println("Usage: <channelName> <pvRequest>");
             return;
         }
+        
         
         final String channelName = args[0];
         final String pvRequestString = args[1];
         
         ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
-        Logger logger = Logger.getLogger(ExampleChannelMonitorMatej.class.getName());
+        Logger logger = Logger.getLogger(ExampleChannelMonitor.class.getName());
         logger.setLevel(Level.ALL);
 
         org.epics.pvaccess.ClientFactory.start();
@@ -50,11 +53,19 @@ public class ExampleChannelMonitorMatej {
         	ChannelAccessFactory.getChannelAccess()
         		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
         
-        ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger, pvRequestString);
-        channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
+        CountDownLatch doneSignal = new CountDownLatch(1);
 
-        // TODO
-        Thread.sleep(Long.MAX_VALUE);
+        ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
+        Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
+        
+        MonitorRequesterImpl monitorRequester = new MonitorRequesterImpl(logger, channel, doneSignal);
+        channel.createMonitor(
+        		monitorRequester,
+        		CreateRequestFactory.createRequest(pvRequestString, monitorRequester)
+        		);
+
+        // wait forever
+        doneSignal.await();
         
         org.epics.pvaccess.ClientFactory.stop();
     }
@@ -62,13 +73,9 @@ public class ExampleChannelMonitorMatej {
     static class ChannelRequesterImpl implements ChannelRequester
     {
     	private final Logger logger;
-    	private final PVStructure pvRequest;
-    	public ChannelRequesterImpl(Logger logger, String pvRequestString)
+    	public ChannelRequesterImpl(Logger logger)
     	{
     		this.logger = logger;
-    		this.pvRequest = CreateRequestFactory.createRequest(pvRequestString, this);
-    		if (pvRequest == null)
-    			throw new IllegalArgumentException();
     	}
 
 		@Override
@@ -78,25 +85,17 @@ public class ExampleChannelMonitorMatej {
 
 		@Override
 		public void message(String message, MessageType messageType) {
-			logger.log(toLoggerLevel(messageType), message);
+			logger.log(LoggingUtils.toLevel(messageType), message);
 		}
 
 		@Override
 		public void channelCreated(Status status, Channel channel) {
-			logger.info("Channel '" + channel.getChannelName() + "' created with status: " + status);
+			logger.info("Channel '" + channel.getChannelName() + "' created with status: " + status + ".");
 		}
 		
-		private final AtomicBoolean first = new AtomicBoolean(false);
-
 		@Override
 		public void channelStateChange(Channel channel, ConnectionState connectionState) {
-			logger.info("Channel '" + channel.getChannelName() + "' " + connectionState);
-			
-			if (connectionState == ConnectionState.CONNECTED && !first.getAndSet(true))
-				channel.createMonitor(
-						new MonitorRequesterImpl(logger, channel),
-						pvRequest
-						);
+			logger.info("Channel '" + channel.getChannelName() + "' " + connectionState + ".");
 		}
     	
     }
@@ -104,12 +103,14 @@ public class ExampleChannelMonitorMatej {
     static class MonitorRequesterImpl implements MonitorRequester
     {
     	private final Logger logger;
-    	//private final Channel channel;
+    	private final Channel channel;
+    	private final CountDownLatch doneSignaler;
     	
-    	public MonitorRequesterImpl(Logger logger, Channel channel)
+    	public MonitorRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler)
     	{
     		this.logger = logger;
-    		//this.channel = channel;
+    		this.channel = channel;
+    		this.doneSignaler = doneSignaler;
     	}
 
 		@Override
@@ -119,19 +120,24 @@ public class ExampleChannelMonitorMatej {
 
 		@Override
 		public void message(String message, MessageType messageType) {
-			logger.log(toLoggerLevel(messageType), message);
+			logger.log(LoggingUtils.toLevel(messageType), message);
 		}
 		
 		@Override
 		public void monitorConnect(Status status, Monitor monitor,
 				Structure structure) {
+			logger.info("ChannelMonitor for '" + channel.getChannelName() + "' connected with status: " + status + ".");
 
-			status = monitor.start();
-			if (!status.isSuccess())
+			if (status.isSuccess())
 			{
-				// TODO
-				System.err.println(status);
+				status = monitor.start();
+				logger.info("Monitor.start() status: " + status + ".");
+				
+				if (!status.isSuccess())
+					doneSignaler.countDown();
 			}
+			else
+				doneSignaler.countDown();
 		}
 
 		@Override
@@ -143,6 +149,7 @@ public class ExampleChannelMonitorMatej {
 				System.out.println("Changed: " + element.getChangedBitSet());
 				System.out.println("Overrun: " + element.getOverrunBitSet());
 				System.out.println(element.getPVStructure());
+				System.out.println();
 				monitor.release(element);
 			}
 			
@@ -150,23 +157,8 @@ public class ExampleChannelMonitorMatej {
 
 		@Override
 		public void unlisten(Monitor monitor) {
-			System.out.println("unlisten");
+			logger.info("ChannelMonitor for '" + channel.getChannelName() + "' unlisten called.");
 		}
     }
-
-	public static Level toLoggerLevel(MessageType messageType) {
-		switch (messageType)
-		{
-			case info:
-				return Level.INFO;
-			case warning:
-				return Level.WARNING;
-			case error:
-			case fatalError:
-				return Level.SEVERE;
-			default:
-				return Level.INFO;
-		}
-	}
 
 }

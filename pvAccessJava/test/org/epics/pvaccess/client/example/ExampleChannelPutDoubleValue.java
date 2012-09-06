@@ -26,6 +26,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 
 /**
+ * TODO cleanup
  * ChannelGet example
  * @author mrk
  */

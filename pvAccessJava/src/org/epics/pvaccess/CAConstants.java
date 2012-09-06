@@ -89,11 +89,6 @@ public interface CAConstants {
 	 */
 	public static final int MAX_CHANNEL_NAME_LENGTH = 500;
 	
-	/**
-	 * Invalid data type.
-	 */
-	public static final short CA_INVALID_DATA_TYPE = (short)0xFFFF;
-
     /**
      * Invalid IOID.
      */
