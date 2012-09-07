@@ -15,7 +15,10 @@
 package org.epics.pvaccess.server.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -1059,6 +1062,9 @@ public class TestChannelProviderImpl implements ChannelProvider
 
 	public TestChannelProviderImpl()
 	{
+		// not nice but users would like to see this
+		System.out.println("Created 'test' ChannelProvider that hosts the following channels: "
+				+ HOSTED_CHANNELS_SET.toString());
 	}
 	
 	@Override
@@ -1079,14 +1085,21 @@ public class TestChannelProviderImpl implements ChannelProvider
 		}
 	};
 	
+	private static final String[] HOSTED_CHANNELS =
+		new String[] {
+			"counter",
+			"simpleCounter",
+			"valueOnly",
+			"arrayDouble",
+			"sum"
+	};
+	
+	private static Set<String> HOSTED_CHANNELS_SET = 
+		new HashSet<String>(Arrays.asList(HOSTED_CHANNELS));
+	
 	private boolean isSupported(String channelName)
 	{
-		return
-			channelName.equals("counter") ||
-			channelName.equals("simpleCounter") ||
-			channelName.equals("valueOnly") ||
-			channelName.equals("arrayDouble") ||
-			channelName.equals("sum");
+		return HOSTED_CHANNELS_SET.contains(channelName);
 	}
 
 	private static final Timer timer = TimerFactory.create("counter timer", ThreadPriority.middle);

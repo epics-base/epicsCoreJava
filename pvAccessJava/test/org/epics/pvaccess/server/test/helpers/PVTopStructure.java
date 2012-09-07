@@ -16,7 +16,9 @@ import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.StandardField;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.Structure;
 
 public class PVTopStructure implements Lockable
 {
@@ -33,22 +35,35 @@ public class PVTopStructure implements Lockable
 	
 	public PVTopStructure(Field valueType)
 	{
-		if (valueType == null)
+		if (valueType instanceof Scalar)
 		{
-			pvStructure = null;
+			// TODO access via PVFactory?
+			Field field = 
+				StandardFieldFactory.getStandardField().
+					scalar(
+							((Scalar)valueType).getScalarType(),
+							"value,timeStamp,alarm,display,control,valueAlarm");
+				
+	        pvStructure = pvDataCreate.createPVStructure((Structure)field);
+		}
+		else if (valueType instanceof ScalarArray)
+		{
+			// TODO access via PVFactory?
+			Field field = 
+				StandardFieldFactory.getStandardField().
+					scalarArray(
+							((ScalarArray)valueType).getElementType(),
+							"value,timeStamp,alarm,display,control" /*,valueAlarm"*/);
+				
+	        pvStructure = pvDataCreate.createPVStructure((Structure)field);
+		}
+		else if (valueType instanceof Structure)
+		{
+	        pvStructure = pvDataCreate.createPVStructure((Structure)valueType);
 		}
 		else
 		{
-			// TODO access via PVFactory?
-			StandardField standardField = StandardFieldFactory.getStandardField();
-				
-	        Field[] fields = new Field[3];
-	        fields[0] = valueType;
-	        fields[1] = standardField.timeStamp();
-	        fields[2] = standardField.doubleAlarm();
-	        
-	        pvStructure = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] { "value", "timeStamp", "alarm" }, fields)
-	        );
+			pvStructure = null;
 		}
 	}
 	
