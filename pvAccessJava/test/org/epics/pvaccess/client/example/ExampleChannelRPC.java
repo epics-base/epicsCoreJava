@@ -124,7 +124,7 @@ public class ExampleChannelRPC {
     	{
     		this.logger = logger;
     		this.channel = channel;
-    	}
+   	}
 
 		@Override
 		public String getRequesterName() {
@@ -139,13 +139,17 @@ public class ExampleChannelRPC {
 		@Override
 		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
 			logger.info("ChannelRPC for '" + channel.getChannelName() + "' connected with status: " + status + ".");
+			boolean reconnect = (this.channelRPC != null);
 			this.channelRPC = channelRPC;
 
 			connectedSignaler.countDown();
 			
 			// in case of reconnect
-			this.result = null;
-			doneSemaphore.release();
+			if (reconnect)
+			{
+				this.result = null;
+				doneSemaphore.release();
+			}
 		}
 
 		/**
@@ -180,9 +184,9 @@ public class ExampleChannelRPC {
 			if (rpc == null)
 				throw new IllegalStateException("ChannelRPC never connected.");
 
+			rpc.request(pvArgument, false);
 			// use tryAcquire if you need timeout support
 			doneSemaphore.acquire(1);
-			rpc.request(pvArgument, false);
 			return result;
 		}
     }
