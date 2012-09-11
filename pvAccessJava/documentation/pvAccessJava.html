@@ -300,6 +300,9 @@ each send request, to specify the following options:</p>
 <dl>
   <dt>LoggerProvider</dt>
     <dd>Defines an interface that provides a logger.</dd>
+  <dt>LoggingUtils</dt>
+    <dd>Contains various logging helper methods, e.g. mapping from pvData
+      MessageType to Java Logging API Level.</dd>
   <dt>ConsoleLogFormatter</dt>
     <dd>Java API formatter that produces single line log reports meant to go to
       the console.</dd>
@@ -346,9 +349,17 @@ the client and server code for pvAccess</p>
 
 <h3>org.epics.pvaccess.util.sync</h3>
 
+<p>This package contains thread synchronization utility classes, e.g. named
+lock pattern implementation (lock guarding a named instance).</p>
+
 <h3>org.epics.pvaccess.util.configuration</h3>
 
+<p>This package defines interfaces for configuration framework used by
+pvAccess.</p>
+
 <h3>org.epics.pvaccess.util.configuration.impl</h3>
+
+<p>This package implements default configuration method for pvAccess.</p>
 
 <h3>org.epics.pvaccess.impl.remote</h3>
 
@@ -357,23 +368,36 @@ common to both the client and server implementation. </p>
 
 <h3>org.epics.pvaccess.impl.remote.codec</h3>
 
+<p>This package implement pvAccess protocol (codec) in a way that can be
+plugged into the blocking or non-blocking IO system.</p>
+
 <h3>org.epics.pvaccess.impl.remote.codec.impl</h3>
+
+<p>This package partly implements codec to be used by blocking or non-blocking
+IO system.</p>
 
 <h3>org.epics.pvaccess.impl.remote.io</h3>
 
+<p>This package currently provides interfaces of a non-blocking IO system.</p>
+
 <h3>org.epics.pvaccess.impl.remote.io.impl</h3>
+
+<p>This package contains an implementation of non-blocking IO system using
+Selector.</p>
 
 <h3>org.epics.pvaccess.impl.remote.request</h3>
 
+<p>This pakcage contains interfaces pvAccess uses to handle requests.</p>
+
 <h3>org.epics.pvaccess.impl.remote.tcp</h3>
 
-<p>This contains the code that sends and receives tcp messages. It creates a
-send and a receive thread for each tcp connectrion.</p>
+<p>This package contains the code that implements pvAccess codec over TCP
+transport.</p>
 
 <h3>org.epics.pvaccess.impl.remote.udp</h3>
 
-<p>This contains the code that sends and receives udp messages. It creates a
-send and a receive thread for each udp connectrion.</p>
+<p>his package contains the code that implements pvAccess codec over UDP
+transport.</p>
 
 <h3>org.epics.pvaccess.impl.remote.utils</h3>
 
@@ -386,9 +410,10 @@ client code for pvAccess.</p>
 
 <h3>org.epics.pvaccess.client.impl.remote</h3>
 
-<p>This implements the client side of passing the various ChannelXXX requests
-over the network, where XXX is Get, Put, PutGet, etc. This code uses the code
-in the following two packages to send requests and receive responses.</p>
+<p>This implements the client side pvAccess API of passing the various
+ChannelXXX requests over the network, where XXX is Get, Put, PutGet, etc. This
+code uses the code in the following two packages to send requests and receive
+responses.</p>
 
 <h3>org.epics.pvaccess.client.impl.remote.handlers</h3>
 
@@ -399,6 +424,8 @@ in the following two packages to send requests and receive responses.</p>
 <p>This implements code that sends a network request.</p>
 
 <h3>org.epics.pvaccess.client.impl.remote.search</h3>
+
+<p>This implement pvAccess discovery mechanism over UDP.</p>
 
 <h3>org.epics.pvaccess.client.impl.remote.tcp</h3>
 
@@ -412,10 +439,10 @@ server code for pvAccess.</p>
 
 <h3>org.epics.pvaccess.server.impl.remote</h3>
 
-<p>This implements the server side of passing the various ChannelXXX requests
-over the network, where XXX is Get, Put, PutGet, etc. This code uses the code
-in the following two packages to send requests and receive responses. It also
-has the code which issues beacons.</p>
+<p>This implements the server side pvAccess API of passing the various
+ChannelXXX requests over the network, where XXX is Get, Put, PutGet, etc. This
+code uses the code in the following two packages to send requests and receive
+responses. It also has the code which issues beacons.</p>
 
 <h3>org.epics.pvaccess.server.impl.remote.handlers</h3>
 
@@ -423,7 +450,8 @@ has the code which issues beacons.</p>
 
 <h3>org.epics.pvaccess.server.impl.remote.plugins</h3>
 
-<p>Currently has just code related to beacons.</p>
+<p>Currently has just code related to beacons. User can attach its own data to
+the beacon messages (e.g. to report IOC status).</p>
 
 <h3>org.epics.pvaccess.server.impl.remote.tcp</h3>
 
@@ -432,7 +460,13 @@ org.epics.pvaccess.impl.remote.tcp.</p>
 
 <h3>org.epics.pvaccess.server.impl.rpc</h3>
 
+<p>This package contains interfaces to implement a service based on pvAccess
+RPC mechanism.</p>
+
 <h3>org.epics.pvaccess.server.impl.rpc.impl</h3>
+
+<p>This package is the implementation of the org.epics.pvaccess.server.impl.rpc
+package.</p>
 
 <h2>Package org.epics.pvaccess</h2>
 
@@ -462,16 +496,12 @@ org.epics.pvaccess.impl.remote.tcp.</p>
 <p>The following factories are available:</p>
 <dl>
   <dt>ClientFactory</dt>
-    <dd>This starts the client side of the network support for pvAccess. This
-      is the only support that needs to be started by a stand-alone client.</dd>
-  <dt>LocalFactory</dt>
-    <dd>This is called for accessing a local PVDatabase. It is also required by
-      the ServerFactory and must be started before the server factory. An
-      application that wants to use channel access to access the local database
-      must start this. For example the JavaIOC starts this.</dd>
+    <dd>This starts the client side pvAccess API of the network support for
+      pvAccess. This is the only support that needs to be started by a
+      stand-alone client.</dd>
   <dt>ServerFactory</dt>
-    <dd>This must be started in order to allow pvAccess clients to access the
-      local PVDatabase. For example the javaIOC can start this.</dd>
+    <dd>This starts the server side pvAccess API of the network support for
+      pvAccess. For example the pvIOCJava can start this.</dd>
 </dl>
 
 <h3>CAConstants</h3>
@@ -513,7 +543,7 @@ ChannelAccess is located via ChannelAccessFactory.</p>
 <ul>
   <li>An example client.</li>
   <li>How to connect to a channel provider.</li>
-  <li>An overview of all the client interfaces..</li>
+  <li>An overview of all the client interfaces.</li>
 </ul>
 
 <p>Many of the methods described below return or have a argument Status. This
@@ -542,177 +572,195 @@ is a java main program that can be executed as follows:</p>
 <pre>    counter field(value)</pre>
 
 <p>The output is:</p>
-<pre>structure example
-{
-    value = 8
-}</pre>
+<pre>2012-09-11T12:48:44.831 Channel 'counter' created with status: StatusImpl [type=OK]. 
+2012-09-11T12:48:45.631 Channel 'counter' CONNECTED. 
+2012-09-11T12:48:45.708 ChannelGet for 'counter' connected with status: StatusImpl [type=OK]. 
+2012-09-11T12:48:45.710 getDone for 'counter' called with status: StatusImpl [type=OK]. 
+structure 
+    int value 1
+2012-09-11T12:48:45.735 Channel 'counter' DISCONNECTED. 
+2012-09-11T12:48:45.736 Channel 'counter' DESTROYED. </pre>
 
 <p>If the arguments are: </p>
-<pre>    counter field(value,alarm,timeStamp)</pre>
+<pre>    counter field(value,timeStamp,alarm)</pre>
 
-<p>The output is (TODO now actually isn't):</p>
-<pre>structure example
-{
-    value = 5
-    alarm = structure
-    {
-        severity = structure
-        {
-            index = 0
-            choices = [none,minor,major,invalid]
-        }
-        message = null
-        ackTransient = false
-        ackSeverity = structure
-        {
-            index = 0
-            choices = [none,minor,major,invalid]
-        }
-    }
-    timeStamp = structure
-    {
-        secondsPastEpoch = 1253549456
-        nanoSeconds = 478000000
-    }
-}</pre>
+<p>The output is:</p>
+<pre>2012-09-11T12:51:12.113 Channel 'counter' created with status: StatusImpl [type=OK]. 
+2012-09-11T12:51:12.156 Channel 'counter' CONNECTED. 
+2012-09-11T12:51:12.163 ChannelGet for 'counter' connected with status: StatusImpl [type=OK]. 
+2012-09-11T12:51:12.164 getDone for 'counter' called with status: StatusImpl [type=OK]. 
+structure 
+    int value 4
+    timeStamp_t timeStamp
+        long secondsPastEpoch 1347360671
+        int nanoSeconds 660000000
+        int userTag 0
+    alarm_t alarm
+        int severity 0
+        int status 0
+        string message 
+2012-09-11T12:51:12.167 Channel 'counter' DISCONNECTED. 
+2012-09-11T12:51:12.168 Channel 'counter' DESTROYED.</pre>
 
 <p>If the request is not given then the entire record is shown.</p>
 
 <h4>Example Source</h4>
 
-<h5>main</h5>
+<h5>main:</h5>
 <pre>public class ExampleChannelGet {
-    public static void main(String[] args) throws CAException {
-        org.epics.pvaccess.ClientFactory.start();
-        int len = args.length;
-        if(len&lt;1 || len&gt;2 || (len==1 &amp;&amp; args[0].equals("?"))) {
-            System.out.println("Usage: channelName request");
+
+    public static void main(String[] args) throws Throwable {
+        
+    int len = args.length;
+        if (len == 0 || len &gt; 2)
+        {
+            System.out.println("Usage: &lt;channelName&gt; &lt;pvRequest&gt;");
             return;
         }
-        String channelName = args[0];
-        String request = null;
-        if(len==2) {
-            request = args[1];
-        }
-       
-        Client client = new Client(channelName,request);
-        for(int i=0; i&lt;10; i++) {
-            if(client.isDone()) break;
-            try {
-                System.out.println("waiting");
-                Thread.sleep(1000);
-            } catch (Throwable th) {
-                th.printStackTrace();
-            }
-        }
-    }
+        
+        final String channelName = args[0];
+        final String pvRequestString = args[1];
+        
+        // initialize console logging
+        ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
+        Logger logger = Logger.getLogger(ExampleChannelGet.class.getName());
+        logger.setLevel(Level.ALL);
 
-    private static final String providerName = "pvAccess";
-    private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
-    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();</pre>
+        // setup pvAccess client
+        org.epics.pvaccess.ClientFactory.start();
 
-<p>The main routine first checks for valid arguments, creates an instance of
-Client, which is shown below, and then waits for up to ten seconds until Client
-has obtained data.</p>
+        // get pvAccess client provider
+        ChannelProvider channelProvider = ChannelAccessFactory.getChannelAccess().getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
+        
+        //
+        // create channel and channelGet
+        //
+        CountDownLatch doneSignal = new CountDownLatch(1);
 
-<h5>Implementation of channel get client</h5>
-<pre>    private static class Client implements ChannelRequester, ChannelGetRequester {
+        ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
+        Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
+        
+        ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, channel, doneSignal);
+        channel.createChannelGet(
+channelGetRequester,
+CreateRequestFactory.createRequest(pvRequestString, channelGetRequester)
+);
 
-        Client(String channelName,String request) {
-            if(request==null) {
-                pvRequest = pvDataCreate.createPVStructure(null, "example", new Field[0]);
-            } else {
-                pvRequest = CreateRequestFactory.createRequest(request);
-            }
-            channelProvider = channelAccess.getProvider(providerName);
-            channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
-        }
+        // wait up-to 3 seconds for completion
+        if (!doneSignal.await(3, TimeUnit.SECONDS))
+            logger.info("Failed to get value (timeout condition).");
+        
+        // stop pvAccess client
+        org.epics.pvaccess.ClientFactory.stop();
+    }</pre>
 
-        private ChannelProvider channelProvider = null;
-        private Channel channel = null;
-        private ChannelGet channelGet = null;
-        private PVStructure pvStructure = null;
-        private BitSet bitSet = null;
-        private PVStructure pvRequest = null;
-        private boolean done = false;
+<p>The main routine first checks for valid arguments, initializes console
+logging, creates a channel and channel get and then waits for up to 3 seconds
+for response. </p>
 
-        boolean isDone() {return done;}</pre>
-
-<p>The above is the constructor and private data. The constructor creates a
-channel. This will result in a call to channelCreated and, if succesful, a call
-to channelStateChange.</p>
-
-<h5>ChannelRequester methods.</h5>
-<pre>        public void channelCreated(Status status, Channel channel) {
-            if(!status.isSuccess()) {
-                message("channelCreated " + status.getMessage(),MessageType.error);
-                done = true;
-                return;
-            }
-            this.channel = channel;
+<h5>Implementation of ChannelRequester:</h5>
+<pre>    static class ChannelRequesterImpl implements ChannelRequester
+    {
+        private final Logger logger;
+        public ChannelRequesterImpl(Logger logger)
+        {
+            this.logger = logger;
         }
 
-        public void channelStateChange(Channel c,ConnectionState connectionState) {
-            if(connectionState==ConnectionState.CONNECTED) {
-                this.channel = c;
-                channelGet = channel.createChannelGet(this, pvRequest);
-            } else {
-                message(connectionState.name(),MessageType.error);
-                done = true;
-            }
-        }</pre>
-
-<p>channelCreated just checks status and saves the reference to the channel.
-<b>channelStateChange</b> calls <b>createChannelGet</b> when the channel
-connects. This will result in a call to <b>channelGetConnect</b>. </p>
-
-<h5>ChannelGetRequester methods:</h5>
-<pre>        public void channelGetConnect(Status status, ChannelGet channelGet,PVStructure pvStructure, BitSet bitSet) {
-            if(!status.isSuccess()) {
-                message("channelGetConnect " + status.getMessage(),MessageType.error);
-                done = true;
-                return;
-            }
-            synchronized(this) {
-                this.channelGet = channelGet;
-                this.pvStructure = pvStructure;
-                this.bitSet = bitSet;
-            }
-            channelGet.get(true);
+        @Override
+        public String getRequesterName() {
+            return getClass().getName();
         }
 
-        public void getDone(Status status) {
-            if(!status.isSuccess()) {
-                message("getDone " + status.getMessage(),MessageType.error);
-                done = true;
-                return;
-            }
-            message(pvStructure.toString(),MessageType.info);
-            done = true;
-        }</pre>
-
-<p>channelGetConnect issues a get request, specifying that it is the last
-request. A client can issue multiple get requests for each ChannelGet but for a
-particular channelGet a new get request must not be issued until<b>getDone</b>
-is called. <b>getDone</b> is called as a result of a get request.</p>
-
-<h5>Requester methods:</h5>
-<pre>        public String getRequesterName() {
-            return "example";
-        }
-
+        @Override
         public void message(String message, MessageType messageType) {
-            if(messageType!=MessageType.info) {
-                System.err.println(messageType.toString() + " " + message);
-            } else {
-                System.out.println(message);
-            }
+            logger.log(LoggingUtils.toLevel(messageType), message);
         }
 
-    }
-}</pre>
+        @Override
+        public void channelCreated(Status status, Channel channel) {
+            logger.info("Channel '" + channel.getChannelName() + "' created with status: " + status + ".");
+        }
 
-<p>These two methods are defined by project pvData.</p>
+        @Override
+        public void channelStateChange(Channel channel, ConnectionState connectionState) {
+            logger.info("Channel '" + channel.getChannelName() + "' " + connectionState + ".");
+        }
+    
+    }</pre>
+
+<p>ChannelRequester.channelCreated method gets called when channel instance is
+created. ChannelRequester.channelStateChange gets called on very channel state
+change. The implementation above just logs all the information. </p>
+
+<h5>Implementation of ChannelGetRequester:</h5>
+<pre>    
+    static class ChannelGetRequesterImpl implements ChannelGetRequester
+    {
+        private final Logger logger;
+        private final Channel channel;
+        private final CountDownLatch doneSignaler;
+    
+        private volatile PVStructure pvStructure = null;
+   
+        public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler)
+        {
+            this.logger = logger;
+            this.channel = channel;
+            this.doneSignaler = doneSignaler;
+        }
+
+        @Override
+        public String getRequesterName() {
+            return getClass().getName();
+        }
+
+        @Override
+        public void message(String message, MessageType messageType) {
+            logger.log(LoggingUtils.toLevel(messageType), message);
+        }
+
+        @Override
+        public void channelGetConnect(Status status, ChannelGet channelGet,
+                                          PVStructure pvStructure, BitSet bitSet) {
+            logger.info("ChannelGet for '" + channel.getChannelName() + "' connected with status: " + status + ".");
+            if (status.isSuccess())
+            {
+                this.pvStructure = pvStructure;
+                channelGet.get(true);
+            }
+            else
+                doneSignaler.countDown();
+        }
+
+        @Override
+        public void getDone(Status status) {
+            logger.info("getDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
+
+            if (status.isSuccess())
+            {
+                // NOTE: no need to call channelGet.lock()/unlock() since we read pvStructure in the same thread (i.e. in the callback)
+                System.out.println(pvStructure.toString());
+            }
+
+            doneSignaler.countDown();
+        }
+    }</pre>
+
+<p>ChannelGetRequester.channelGetConnect gets called when ChannelGet request is
+created on server side. Client must always check status for errors. In case of
+success, pvStructure is not null and it holds a reference to the data structure
+(container) where values will be stored on actual get request. The
+implementation above issues actual get request on success by calling
+"channelGet.get(true)". The "true" parameter indicates to self-destroy this
+request after get is done. If more than one get operation needs to be done, a
+programmer should call "channel.get(false)" as many time as needed and so reuse
+resources related to a get request (moreover this allows pvAccess to optimize
+network utilization and transfer only values that has changed since the last
+get request). User can always destroy a request by calling
+"channelGet.destroy()".<br />
+ChannelGetRequester.getDone gets called on get operation completion. On success
+indicated by status parameter, pvStructure holds the latest data.</p>
 
 <h3>Starting Channel Access</h3>
 
@@ -725,45 +773,28 @@ by calling:</p>
 <p>Package org.epics.pvaccess provides the following factories:</p>
 <dl>
   <dt>ClientFactory</dt>
-    <dd>This starts the client side of the network support for pvAccess. This
-      is the only support that needs to be started by a stand-alone client. The
-      example shown in the previous section calls this.</dd>
-  <dt>LocalFactory</dt>
-    <dd>This is called for accessing a local PVDatabase. It is also required by
-      the ServerFactory and must be started before the server factory. An
-      application that wants to use channel access to access the local database
-      must start this. For example the JavaIOC starts this.</dd>
+    <dd>This starts the client side pvAccess API of the network support for
+      pvAccess. This is the only support that needs to be started by a
+      stand-alone client. The example shown in the previous section calls
+    this.</dd>
   <dt>ServerFactory</dt>
-    <dd>This must be started in order to allow pvAccess clients to access the
-      local PVDatabase. For example the javaIOC can start this.</dd>
-</dl>
-
-<p>The javaIOC provides factories for starting the gateway code between caV3
-and pvAccess. The factories are located in package org.epics.ioc.caV3 and are
-named:</p>
-<dl>
-  <dt>ClientFactory</dt>
-    <dd>The code that allows a pvAccess client to commuinicate with an epiocs
-      V3 IOC.</dd>
-  <dt>ServerFactory</dt>
-    <dd>The code that allows an epics V3 channel access client to access the
-      local PVDatabase.</dd>
+    <dd>This starts the server side pvAccess API of the network support for
+      pvAccess. For example the pvIOCJava can start this.</dd>
 </dl>
 
 <h3>ChannelAccess, and ChannelProvider</h3>
 
 <p>In order to connect to a channel a client must:</p>
 <ol>
-  <li>Call ChannelAccessFactory to get the ChannelAccess interface.</li>
-  <li>Call ChannelAccess to get a ChannelProvider.</li>
-  <li>Call channelProvider to create a Channel.</li>
+  <li>Call ChannelAccessFactory.getChannelAccess() to get the ChannelAccess
+    interface.</li>
+  <li>Call ChannelAccess.getProvider(String providerName) to get a
+    ChannelProvider.</li>
+  <li>Call ChannelProvider.createChannel(String channelName, ...) to create a
+    Channel.</li>
 </ol>
 
-<p>A client must know the channel name and the name of the channel provider.
-For PVData the channel name is just a record name. This project (CAJv4)
-implements the following channel providers: local and pvAccess. The javaIOC
-eclipse project provides support for version 3 channel access. See it for
-details. </p>
+<p>A client must know the channel name and the name of the channel provider.</p>
 
 <h4>ChannelAccessFactory</h4>
 
@@ -772,15 +803,22 @@ public methods:</p>
 <pre>public class ChannelAccessFactory {
     public static ChannelAccess getChannelAccess();
     public static void registerChannelProvider(ChannelProvider channelProvider);
+    public static void unregisterChannelProvider(ChannelProvider channelProvider);
 }</pre>
 
 <p>where</p>
 <dl>
+</dl>
+<dl>
   <dt>getChannelAccess</dt>
-    <dd>Gets the ChannelAccess interface described next.</dd>
+    <dd>This gets the single instance of ChannelAccess</dd>
   <dt>registerChannelProvider</dt>
-    <dd>Registers a channel provider. Typical providers are local, pvAccess and
-      caV3. This is called by channel providers not by user code.</dd>
+    <dd>This registers a ChannelProvider. Usually user code does not call this,
+      e.g. it is called via the factories in <b>org.epics.pvaccess</b></dd>
+  <dt>unregisterChannelProvider</dt>
+    <dd>This unregisters a ChannelProvider. Usually user code does not call
+      this, e.g. it is called via the factories in
+    <b>org.epics.pvaccess</b></dd>
 </dl>
 
 <h4>ChannelAccess</h4>
@@ -808,8 +846,9 @@ public methods:</p>
 
     void destroy();
     String getProviderName();
-    ChannelFind channelFind(String channelName,ChannelFindRequester channelFindRequester);
-    void createChannel(String channelName, channelRequester,short priority);
+    ChannelFind channelFind(String channelName, ChannelFindRequester channelFindRequester);
+    Channel createChannel(String channelName, ChannelRequester, short priority);
+    Channel createChannel(String channelName, ChannelRequester channelRequester, short priority, String address);
 }</pre>
 
 <p>where</p>
@@ -827,11 +866,13 @@ public methods:</p>
 
 <h4>ChannelFind</h4>
 
-<p>A client can determine if a channel exists without creating a channel. The
-client must implement a requester interface and the implentation provides an
-interface that the client can use to cancel the request. The interfaces are:</p>
+<p>This method is to be used to by local pvAccess implementations (e.g.
+pvAccess server queries pvIOCJava). A client can determine if a channel exists
+without creating a channel. The client must implement a requester interface and
+the implentation provides an interface that the client can use to cancel the
+request. The interfaces are:</p>
 <pre>interface ChannelFindRequester {
-    void channelFindResult(Status status,ChannelFind channelFind,boolean wasFound);
+    void channelFindResult(Status status, ChannelFind channelFind, boolean wasFound);
 }
 
 interface ChannelFind {
@@ -857,7 +898,7 @@ interface ChannelFind {
 
 <p>The Channel interface provides access to the services a channel access
 provider implements for a channel. The principal services are: process, get,
-put, putGet,array, and monitor. Each of these and some other services are
+put, putGet, RPC, array, and monitor. Each of these and some other services are
 described in later sections of this package overview.</p>
 
 <p>As described in the previous section a Channel is created via a call to the
@@ -866,9 +907,8 @@ method:</p>
 
 <p>The caller must implement the interface:</p>
 <pre>interface ChannelRequester extends Requester {
-    void channelCreated(Status status,Channel channel);
-    void channelStateChange(Channel c,ConnectionState connectionState);
-    void destroy(Channel c);
+    void channelCreated(Status status, Channel channel);
+    void channelStateChange(Channel channel, ConnectionState connectionState);
 }</pre>
 
 <p>where</p>
@@ -880,11 +920,9 @@ method:</p>
     <dd>This is called when a channel has been created. The argument provides
       the channel unless status was not success.</dd>
   <dt>channelStateChange</dt>
-    <dd>A channel connection state change has occured. This called the first
-      time when a channel has been created and connected to a server.</dd>
-  <dt>destroy</dt>
-    <dd>This is called if the channel is being terminated for some reason. The
-      requester will no longer be able to make requests of the channel.</dd>
+    <dd>A channel connection state change has occured. This is called the first
+      time when a channel has been created and connected to a server or
+      destroyed.</dd>
 </dl>
 
 <p>The Channel interface is:</p>
@@ -934,7 +972,7 @@ method:</p>
   <dt>destroy</dt>
     <dd>Destroy the channel and all resources used by the channel.</dd>
   <dt>getChannelName</dt>
-    <dd>The name of the channel. For cav4 this is the name if the PVRecord.</dd>
+    <dd>The name of the channel, e.g. the name if the PVRecord.</dd>
   <dt>getChannelRequester</dt>
     <dd>Get the channel requester. This is normally called by the
       implementation rather than the client.</dd>
@@ -958,10 +996,8 @@ overview.</p>
 
 <h3>GetField</h3>
 
-<p>MATEJ There is no way to cancel the request.</p>
-
 <p>The method:</p>
-<pre>    Channel.getField(GetFieldRequester requester,String subField);</pre>
+<pre>    Channel.getField(GetFieldRequester requester, String subField);</pre>
 
 <p>Gets the introspection interface for the specified sub field of the record
 it which the channel is connected. The subField can be null, which means get
@@ -969,14 +1005,15 @@ the introspection interface for the entire record, or is of the form
 "name.name..." . Thus it can be a request for any field within a record. The
 requester must implement the interface:</p>
 <pre>interface GetFieldRequester extends Requester {
-    void getDone(Status status,Field field);
+    void getDone(Status status, Field field);
 }</pre>
 
 <p>where</p>
 <dl>
   <dt>getDone</dt>
     <dd>A getField request has finished. A null is returned if the request
-      fails. If the request succeeds Field is the introspection interface. </dd>
+      fails and status contains a reason of a failure. If the request succeeds
+      Field is the introspection interface. </dd>
 </dl>
 
 <h3>ChannelRequest</h3>
@@ -1009,12 +1046,12 @@ package overview for details.</p>
 
 <p>This package provides the following factory:</p>
 <pre>class CreateRequestFactory {
-    public static PVStructure createRequest(String request,Requester requester);
+    public static PVStructure createRequest(String request, Requester requester);
 }</pre>
 
 <p>This creates a request structure. See the package documentation for
-org.epics.iov.pvCopy/package.html for a detailed description.A few examples are
-repeaed here. </p>
+org.epics.iov.pvCopy/package.html for a detailed description. A few examples
+are repeaed here. </p>
 
 <h4>Examples</h4>
 
@@ -1048,7 +1085,7 @@ powerSupply
 
 <p>The following creates a request for three fields: alarm, timeStamp, and
 power.value</p>
-<pre>    PVStructure pvRequest = CreateRequestFactory.createRequest("alarm,timeStamp,power.value");</pre>
+<pre>    PVStructure pvRequest = CreateRequestFactory.createRequest("field(alarm,timeStamp,power.value)");</pre>
 
 <p>The PVStructure holding data for the requester will have the structure:</p>
 <pre> pvData
@@ -1065,10 +1102,10 @@ field will not be present in the structure returned to the client.</p>
 voltage. Power, current, and voltage will each be a structure with two fields:
 value and alarm.</p>
 <pre>    PVStructure pvRequest = CreateRequestFactory.createRequest(
-       "alarm,timeStamp"
+       "field(alarm,timeStamp"
        + ",power{power.value,power.alarm}"
        + ",current{current.value,current.alarm}"
-       + ",voltage{voltage.value,voltage.alarm}");</pre>
+       + ",voltage{voltage.value,voltage.alarm})");</pre>
 
 <p>The resulting structure that appears to the client has the form:</p>
 <pre>pvData
@@ -1087,14 +1124,14 @@ value and alarm.</p>
 <h3>ChannelProcess</h3>
 
 <p>A ChannelProcess is created via a call to:</p>
-<pre>interface Channel extends Requester{
+<pre>interface Channel extends Requester {
    ChannelProcess createChannelProcess(
        ChannelProcessRequester channelProcessRequester);
 }</pre>
 
 <p>The requester must implement the interface:</p>
 <pre>interface ChannelProcessRequester extends Requester {
-    void channelProcessConnect(Status status,ChannelProcess channelProcess);
+    void channelProcessConnect(Status status, ChannelProcess channelProcess);
     void processDone(Status status);
 }</pre>
 
@@ -1126,8 +1163,8 @@ value and alarm.</p>
 <h3>ChannelGet</h3>
 
 <p>A ChannelGet is created via a call to:</p>
-<pre>interface Channel extends Requester{
-    ChannelGet createChannelGet(ChannelGetRequester channelGetRequester,PVStructure pvRequest);
+<pre>interface Channel extends Requester {
+    ChannelGet createChannelGet(ChannelGetRequester channelGetRequester, PVStructure pvRequest);
 }</pre>
 
 <p>where</p>
@@ -1143,7 +1180,7 @@ value and alarm.</p>
 
 <p>The requester must implement the interface.</p>
 <pre>interface ChannelGetRequester extends Requester {
-    void channelGetConnect(Status status,ChannelGet channelGet,PVStructure pvStructure,BitSet bitSet);
+    void channelGetConnect(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet);
     void getDone(Status status);
 }</pre>
 
@@ -1183,8 +1220,8 @@ value and alarm.</p>
 <h3>ChannelPut</h3>
 
 <p>A ChannelPut is created via a call to:</p>
-<pre>interface Channel extends Requester{
-    ChannelPut createChannelPut(ChannelPutRequester channelPutRequester,PVStructure pvRequest);
+<pre>interface Channel extends Requester {
+    ChannelPut createChannelPut(ChannelPutRequester channelPutRequester, PVStructure pvRequest);
 }</pre>
 
 <p>where</p>
@@ -1200,7 +1237,7 @@ value and alarm.</p>
 
 <p>The requester must implement the interface.</p>
 <pre>interface ChannelPutRequester extends Requester {
-    void channelPutConnect(Status status,ChannelPut channelPut,PVStructure pvStructure,BitSet bitSet);
+    void channelPutConnect(Status status, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet);
     void putDone(Status status);
     void getDone(Status status);
 }</pre>
@@ -1253,7 +1290,8 @@ value and alarm.</p>
 record, and gets data from the record.</p>
 
 <p>A channel putGet is created via a call to:</p>
-<pre>ChannelPutGet createChannelPutGet(ChannelPutGetRequester channelPutGetRequester,PVStructure pvRequest);
+<pre>interface Channel extends Requester {
+    ChannelPutGet createChannelPutGet(ChannelPutGetRequester channelPutGetRequester, PVStructure pvRequest);
 }</pre>
 
 <p>where</p>
@@ -1270,8 +1308,8 @@ record, and gets data from the record.</p>
 
 <p>The requester must implement the interface.</p>
 <pre>interface ChannelPutGetRequester extends Requester {
-    void channelPutGetConnect(Status status,ChannelPutGet channelPutGet,
-            PVStructure pvPutStructure,PVStructure pvGetStructure);
+    void channelPutGetConnect(Status status, ChannelPutGet channelPutGet,
+            PVStructure pvPutStructure, PVStructure pvGetStructure);
     void putGetDone(Status status);
     void getPutDone(Status status);
     void getGetDone(Status status);
@@ -1328,8 +1366,8 @@ called.</p>
 
 <p>A ChannelRPC is like a putProcessGet except that a completly different
 PVStructure can be returned for each request. It is created via a call to:</p>
-<pre>interface Channel extends Requester{
-    ChannelRPC createChannelRPC(ChannelRPCRequester channelRPCRequester,PVStructure pvRequest);
+<pre>interface Channel extends Requester {
+    ChannelRPC createChannelRPC(ChannelRPCRequester channelRPCRequester, PVStructure pvRequest);
 }</pre>
 
 <p>where</p>
@@ -1345,8 +1383,8 @@ PVStructure can be returned for each request. It is created via a call to:</p>
 
 <p>The requester must implement the interface.</p>
 <pre>interface ChannelRPCRequester extends Requester {
-    void channelRPCConnect(Status status,ChannelRPC channelRPC);
-    void requestDone(Status status,PVStructure pvResponse);
+    void channelRPCConnect(Status status, ChannelRPC channelRPC);
+    void requestDone(Status status, PVStructure pvResponse);
 }</pre>
 
 <p>where</p>
@@ -1361,7 +1399,7 @@ PVStructure can be returned for each request. It is created via a call to:</p>
 
 <p>The following is the interface for requesting data from a record.</p>
 <pre>interface ChannelRPC extends ChannelRequest {
-    void request(PVStructure pvArgument,boolean lastRequest);
+    void request(PVStructure pvArgument, boolean lastRequest);
 }</pre>
 
 <p>where</p>
@@ -1372,7 +1410,8 @@ PVStructure can be returned for each request. It is created via a call to:</p>
       calling destroy after the request is complete.</dd>
 </dl>
 
-<p>Only one request at a time can outstanding.</p>
+<p>Only one request at a time can outstanding (this will be allowed in a
+future).</p>
 
 <h3>ChannelArray</h3>
 
@@ -1380,7 +1419,7 @@ PVStructure can be returned for each request. It is created via a call to:</p>
 field in a record. Note that all the other transfer methods can also read or
 write arrays but always transfer entire arrays. ChannelArray provides the
 ability to transfer a subarray. A ChannelArray is created via a call to:</p>
-<pre>interface Channel extends Requester{
+<pre>interface Channel extends Requester {
     ChannelArray createChannelArray(
         ChannelArrayRequester channelArrayRequester,
         PVStructure pvRequest);
@@ -1401,7 +1440,7 @@ pvRequest.appendPVField(pvFieldName);</pre>
 
 <p>The requester must implement the interface.</p>
 <pre>interface ChannelArrayRequester extends Requester {
-    void channelArrayConnect(Status status,ChannelArray channelArray,PVArray pvArray);
+    void channelArrayConnect(Status status, ChannelArray channelArray, PVArray pvArray);
     void putArrayDone(Status status);
     void getArrayDone(Status status);
 }</pre>
@@ -1536,114 +1575,7 @@ and onPercentChange.</p>
 
 <p>This package defines the server interfaces for pvAccess, which is the
 version of channel access that fully supports structured data as defined by
-PVData. This package describes: </p>
-<dl>
-  <dt>Channel Processor</dt>
-    <dd>An application that uses the pvAccess server to make a local PVDatabase
-      available to the network can implement support for processing records,
-      i.e. implement support for the process option of the various
-      Channel.createChannelXXX methods. For example the javaIOC imnplements
-      this by interfacing pvAccess to the RecordProcess facility implemented by
-      the javaIOC.</dd>
-  <dt>Channel Server</dt>
-    <dd>The ChannelServer interface is described.</dd>
-  <dt>Server Context</dt>
-    <dd>The ServerContext implemented by pvAccess is described.</dd>
-</dl>
-
-<h3>Channel Processor</h3>
-
-<p>Three interfaces are involved with support for a client asking that a record
-be processed. ChannelProcessor and ChannelProcessorProvider are implemented by
-the application, e. g. the javaIOC. ChannelProcessorRequester is implemented bu
-pvAccess.</p>
-
-<p>ChannelProcessor, which is attached to a specific PVRecord, is defined
-as:</p>
-<pre>interface ChannelProcessor {
-    void detach();
-    void requestProcess();
-    void process(boolean leaveActive,TimeStamp timeStamp);
-    void setInactive();
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>detach</dt>
-    <dd>End of being a channel processor.</dd>
-  <dt>requestProcess</dt>
-    <dd>Request to process. ChannelProcessorRequester.becomeProcessor is called
-      when the requester can call setActive and/or process.</dd>
-  <dt>setActive</dt>
-    <dd>Set the record active. This is called if the requester wants to put to
-      the record before the record starts processing. If this is successful
-      than the requester must call process after the put is complete.</dd>
-  <dt>process</dt>
-    <dd><p>Process the record. A value of false means that the request failed.
-      If leaveActive is true the record is left active after process is
-      complete. This allows the caller to read data from the record before the
-      record is released.The caller must call setInactive after the caller is
-      done reading data.</p>
-    </dd>
-  <dt>setInactive</dt>
-    <dd>Called if leaveActive was true.</dd>
-</dl>
-
-<p>ChannelProcessorPrivider is defined as:</p>
-<pre>interface ChannelProcessorProvider {
-    ChannelProcessor requestChannelProcessor(PVRecord pvRecord,
-         ChannelProcessorRequester channelProcessorRequester);
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>requestChannelProcessor</dt>
-    <dd>Request to become record processor. A null is returned if the caller
-      could not become the record processor.</dd>
-</dl>
-
-<p>ChannelProcessorRequester is defined as:</p>
-<pre>interface ChannelProcessorRequester extends Requester{
-    void becomeProcessor();
-    void canNotProcess(String reason);
-    void recordProcessResult(Status status);
-    void recordProcessComplete();
-    void lostRightToProcess();
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>becomeProcessor</dt>
-    <dd>Called as a result of a call to requestProcess.</dd>
-  <dt>canNotProcess</dt>
-    <dd>A request was made to become processor but record can not be
-    processed.</dd>
-  <dt>recordProcessResult</dt>
-    <dd>Called to report result of record processing. This is called before the
-      record is unlocked.</dd>
-  <dt>recordProcessComplete</dt>
-    <dd>Called when all processing is complete and record is unlocked.</dd>
-  <dt>lostRightToProcess</dt>
-    <dd>The process requester has lost the right to request processing.</dd>
-</dl>
-
-<h3>Channel Server</h3>
-
-<p>This is an interface implemented by local server:</p>
-<pre>interface ChannelServer extends ChannelProvider{
-    void registerMonitor(MonitorCreate monitorCreate);
-    boolean registerChannelProcessProvider(
-        ChannelProcessorProvider channelProcessProvider);
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>registerMonitor</dt>
-    <dd>register a monitor algorithm.</dd>
-  <dt>registerChannelProcessProvider </dt>
-    <dd>Register the ChannelProcessProvider.</dd>
-</dl>
-
+PVData. 
 <h3>Server Context</h3>
 
 <p>This is an interface implemented by pvAccess server:</p>
@@ -1658,26 +1590,31 @@ as:</p>
     void dispose();
     void setBeaconServerStatusProvider(BeaconServerStatusProvider beaconServerStatusProvider);
 }</pre>
+</p>
 
 <p>where</p>
 <dl>
   <dt>getVersion</dt>
-    <dd>x</dd>
+    <dd>Get server implementation version.</dd>
   <dt>initialize</dt>
-    <dd>x</dd>
+    <dd>Force to initialize server immediately (user does not need to call this).</dd>
   <dt>run</dt>
-    <dd>x</dd>
+    <dd>Run the server for specified amount of time (seconds), 0 stands for forever.</dd>
   <dt>shutdown</dt>
-    <dd>x</dd>
+    <dd>Shutdown the server.</dd>
   <dt>destroy</dt>
-    <dd>x</dd>
+    <dd>Destroy server instance.</dd>
   <dt>printInfo</dt>
-    <dd>x</dd>
+    <dd>Print server info to the System.out.</dd>
   <dt>dispose</dt>
-    <dd>x</dd>
+    <dd>Silently destory the server instance.</dd>
   <dt>setBeaconServerStatusProvider</dt>
-    <dd>x</dd>
+    <dd>Set BeaconServerStatusProvider instance to be used by the server (optional).</dd>
 </dl>
+<p>
+To start pvAccess server you can simply use the following code:
+</p>
+<pre>org.epics.pvaccess.ServerFactory.start();</pre>
 </div>
 </body>
 </html>

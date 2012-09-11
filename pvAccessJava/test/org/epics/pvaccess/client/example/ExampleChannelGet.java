@@ -43,16 +43,22 @@ public class ExampleChannelGet {
         final String channelName = args[0];
         final String pvRequestString = args[1];
         
+        // initialize console logging
         ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
         Logger logger = Logger.getLogger(ExampleChannelGet.class.getName());
         logger.setLevel(Level.ALL);
 
+        // setup pvAccess client
         org.epics.pvaccess.ClientFactory.start();
-        
+
+        // get pvAccess client provider
         ChannelProvider channelProvider =
         	ChannelAccessFactory.getChannelAccess()
         		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
         
+        //
+        // create channel and channelGet
+        //
         CountDownLatch doneSignal = new CountDownLatch(1);
 
         ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
@@ -64,9 +70,11 @@ public class ExampleChannelGet {
 				CreateRequestFactory.createRequest(pvRequestString, channelGetRequester)
 				);
 
+		// wait up-to 3 seconds for completion
 		if (!doneSignal.await(3, TimeUnit.SECONDS))
 			logger.info("Failed to get value (timeout condition).");
         
+		// stop pvAccess client
         org.epics.pvaccess.ClientFactory.stop();
     }
     
