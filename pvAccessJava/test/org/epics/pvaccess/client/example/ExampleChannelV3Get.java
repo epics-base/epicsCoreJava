@@ -67,7 +67,7 @@ public class ExampleChannelV3Get {
 		if (!doneSignal.await(3, TimeUnit.SECONDS))
 			logger.info("Failed to get value (timeout condition).");
         
-        //org.epics.caV3.ClientFactory.stop();
+        org.epics.caV3.ClientFactory.stop();
     }
     
     static class ChannelRequesterImpl implements ChannelRequester

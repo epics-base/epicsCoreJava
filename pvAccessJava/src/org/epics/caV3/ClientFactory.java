@@ -26,17 +26,13 @@ import org.epics.pvdata.misc.ThreadPriority;
 import org.epics.pvdata.misc.ThreadReady;
 import org.epics.pvdata.pv.Status;
 
-
-
-
 /**
  * Factory and implementation of Channel Access V3 client.
  * @author mrk
  *
  */
 public class ClientFactory  {
-    static final ChannelProviderImpl channelProvider = new ChannelProviderImpl();
-    private static Context context = null;
+    static ChannelProviderImpl channelProvider = null;
     private static final ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
 
     public static final String PROVIDER_NAME = "caV3";
@@ -44,30 +40,53 @@ public class ClientFactory  {
     /**
      * This registers the V3 ChannelProvider.
      */
-    public static void start() {
-        channelProvider.register();
+    public static synchronized void start() {
+    	if (channelProvider == null)
+         channelProvider = new ChannelProviderImpl();
     }
     
+    /**
+     * This destroys and unregisters the V3 ChannelProvider.
+     */
+    public static synchronized void stop() {
+    	if (channelProvider != null)
+    	{
+    		channelProvider.destroy();
+    		channelProvider = null;
+    	}
+    }
+
     private static class ChannelProviderImpl
     implements ChannelProvider,ContextExceptionListener, ContextMessageListener
     {
-        private volatile boolean isRegistered = false; 
-        private volatile CAThread caThread = null;
+        private final Context context;
+        private final CAThread caThread;
         
-        synchronized private void register() {
-            if(isRegistered) return;
-            isRegistered = true;
+        ChannelProviderImpl() {
+        	Context c = null;
             try {
-                context = JCALibrary.getInstance().createContext(JCALibrary.CHANNEL_ACCESS_JAVA);
+            	c = JCALibrary.getInstance().createContext(JCALibrary.CHANNEL_ACCESS_JAVA);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                context = null;
+                caThread = null;
+                return;
+            }
+            context = c;
+        	
+            CAThread t;
+            try {
                 context.addContextExceptionListener(this);
                 context.addContextMessageListener(this);
-                caThread = new CAThread("cav3",ThreadPriority.getJavaPriority(ThreadPriority.low));
-            } catch (CAException e) {
-                System.err.println(e.getMessage());
+                t = new CAThread("cav3",ThreadPriority.getJavaPriority(ThreadPriority.low), context);
+            } catch (Throwable e) {
+                e.printStackTrace();
+                caThread = null;
                 return;
             }     
+            caThread = t;
             ChannelAccessFactory.registerChannelProvider(this);
-        }       
+        } 
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.ChannelProvider#destroy()
          */
@@ -77,7 +96,7 @@ public class ClientFactory  {
             try {
                 context.destroy();
             } catch (CAException e) {
-                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
             ChannelAccessFactory.unregisterChannelProvider(this);
         }
@@ -86,7 +105,7 @@ public class ClientFactory  {
          */
         @Override
         public ChannelFind channelFind(String channelName,ChannelFindRequester channelFindRequester) {
-            LocateFind locateFind = new LocateFind(this,channelName);
+            LocateFind locateFind = new LocateFind(this,channelName,context);
             locateFind.find(channelFindRequester);
             return locateFind;
         }
@@ -97,7 +116,7 @@ public class ClientFactory  {
         public Channel createChannel(String channelName,
                 ChannelRequester channelRequester, short priority)
         {
-            LocateFind locateFind = new LocateFind(this,channelName);
+            LocateFind locateFind = new LocateFind(this,channelName,context);
             return locateFind.create(channelRequester);
         }
         /* (non-Javadoc)
@@ -149,11 +168,13 @@ public class ClientFactory  {
         private volatile ChannelFindRequester channelFindRequester = null;
         private volatile BaseV3Channel v3Channel = null;
         private final String channelName;
+        private final Context context;
         
         
-        LocateFind(ChannelProvider channelProvider, String channelName) {
+        LocateFind(ChannelProvider channelProvider, String channelName, Context context) {
         	this.channelProvider = channelProvider;
             this.channelName = channelName;
+            this.context = context;
         }
         
         void find(ChannelFindRequester channelFindRequester) {
@@ -196,9 +217,11 @@ public class ClientFactory  {
     
     private static class CAThread implements RunnableReady {
         private final Thread thread;
-        private CAThread(String threadName,int threadPriority)
+        private final Context context;
+        private CAThread(String threadName,int threadPriority, Context context)
         {
-            thread = threadCreate.create(threadName, threadPriority, this);
+            this.context = context;
+            this.thread = threadCreate.create(threadName, threadPriority, this);
         }         
         /* (non-Javadoc)
          * @see org.epics.ioc.util.RunnableReady#run(org.epics.ioc.util.ThreadReady)

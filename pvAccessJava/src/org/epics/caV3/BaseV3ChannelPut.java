@@ -5,7 +5,6 @@
  */
 package org.epics.caV3;
 
-import gov.aps.jca.CAException;
 import gov.aps.jca.CAStatus;
 import gov.aps.jca.Channel;
 import gov.aps.jca.dbr.DBR;
@@ -67,13 +66,14 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     private final V3Channel v3Channel;
     private final V3ChannelStructure v3ChannelStructure;
     private final gov.aps.jca.Channel jcaChannel;
-    private final int elementCount;
+    
+    private volatile int elementCount;
 
     private final ReentrantLock lock = new ReentrantLock();
 
     private volatile boolean isDestroyed = false;
-    private final PVField pvField;
-    private final PVInt pvIndex; // only if nativeDBRType.isENUM()
+    private volatile PVField pvField;
+    private volatile PVInt pvIndex; // only if nativeDBRType.isENUM()
     private final ByteArrayData byteArrayData = new ByteArrayData();
     private final ShortArrayData shortArrayData = new ShortArrayData();
     private final IntArrayData intArrayData = new IntArrayData();
@@ -83,6 +83,8 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     
     private final AtomicBoolean isActive = new AtomicBoolean(false);
     private final AtomicBoolean isGetActive = new AtomicBoolean(false);
+
+    private final PVStructure pvRequest;
 
     /**
      * Constructor.
@@ -95,24 +97,34 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     {
         this.channelPutRequester = channelPutRequester;
         this.v3Channel = v3Channel;
+        this.pvRequest = pvRequest;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
+        
+        this.jcaChannel = v3Channel.getJCAChannel();
+        try {
+            jcaChannel.addConnectionListener(this);
+        } catch (Throwable th) {
+            elementCount = 1; pvField = null; pvIndex = null;
+            channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", th),null,null,null);
+            destroy();
+            return;
+        }
+
+        // there is a possible run condition, but it's OK
+		if (jcaChannel.getConnectionState() == Channel.CONNECTED)
+			connectionChanged(new ConnectionEvent(jcaChannel, true));
+    }
+    
+    protected void initializePut()
+    {
         if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
-            jcaChannel = null; elementCount = 1; pvField = null; pvIndex = null;
+            elementCount = 1; pvField = null; pvIndex = null;
             channelPutRequester.channelPutConnect(createChannelStructureStatus,null,null,null);
             destroy();
             return;
         }
         DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
-        jcaChannel = v3Channel.getJCAChannel();
-        try {
-            jcaChannel.addConnectionListener(this);
-        } catch (CAException e) {
-            elementCount = 1; pvField = null; pvIndex = null;
-            channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", e),null,null,null);
-            destroy();
-            return;
-        }
         PVStructure pvStructure = v3ChannelStructure.getPVStructure();
         pvField = pvStructure.getSubField("value");
         elementCount = jcaChannel.getElementCount();
@@ -137,6 +149,11 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     public void destroy() {
         isDestroyed = true;
         v3Channel.remove(this);
+        try {
+			jcaChannel.removeConnectionListener(this);
+		} catch (Throwable th) {
+			// noop
+		}
     }
     
     /* (non-Javadoc)
@@ -321,6 +338,10 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         if(!event.isConnected()) {
     		putDone(disconnectedWhileActiveStatus);
     		getDone(disconnectedWhileActiveStatus);
+        }
+        else
+        {
+        	initializePut();
         }
     }
     

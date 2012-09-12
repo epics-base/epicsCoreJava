@@ -450,7 +450,6 @@ V3Channel,ConnectionListener
             }
         } else {
             channelRequester.channelStateChange(this, ConnectionState.DISCONNECTED);
-            message("connection lost", MessageType.warning);
         }
     }
 }

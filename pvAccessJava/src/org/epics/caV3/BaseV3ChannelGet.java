@@ -48,6 +48,7 @@ implements ChannelGet,GetListener,ConnectionListener
 
     private final V3Channel v3Channel;
     private final V3ChannelStructure v3ChannelStructure;
+    private final gov.aps.jca.Channel jcaChannel;
     
     private volatile boolean isDestroyed = false;
     
@@ -55,6 +56,7 @@ implements ChannelGet,GetListener,ConnectionListener
     
     private final AtomicBoolean isActive = new AtomicBoolean(false);
     
+    private final PVStructure pvRequest;
     /**
      * Constructor.
      * @param channelGetRequester The channelGetRequester.
@@ -65,14 +67,23 @@ implements ChannelGet,GetListener,ConnectionListener
     {
         this.channelGetRequester = channelGetRequester;
         this.v3Channel = v3Channel;
+        this.pvRequest = pvRequest;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
-        if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
-            channelGetRequester.channelGetConnect(createChannelStructureStatus,null,null,null);
+        
+    	this.jcaChannel = v3Channel.getJCAChannel();
+
+    	try {
+			jcaChannel.addConnectionListener(this);
+		} catch (Throwable th) {
+            channelGetRequester.channelGetConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", th), null, null,null);
             destroy();
-        } else {
-            channelGetRequester.channelGetConnect(okStatus, this, v3ChannelStructure.getPVStructure(), v3ChannelStructure.getBitSet());
-        }
+            return;
+		}
+		
+		// there is a possible run condition, but it's OK
+		if (jcaChannel.getConnectionState() == Channel.CONNECTED)
+			connectionChanged(new ConnectionEvent(jcaChannel, true));
     }
     /* (non-Javadoc)
      * @see org.epics.ioc.ca.ChannelGet#destroy()
@@ -80,6 +91,11 @@ implements ChannelGet,GetListener,ConnectionListener
     public void destroy() {
         isDestroyed = true;
         v3Channel.remove(this);
+        try {
+			jcaChannel.removeConnectionListener(this);
+		} catch (Throwable th) {
+			// noop
+		}
     }
     /* (non-Javadoc)
      * @see org.epics.pvaccess.client.ChannelGet#get(boolean)
@@ -138,6 +154,15 @@ implements ChannelGet,GetListener,ConnectionListener
     public void connectionChanged(ConnectionEvent event) {
         if(!event.isConnected()) {
     		getDone(disconnectedWhileActiveStatus);
+        }
+        else
+        {
+            if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
+                channelGetRequester.channelGetConnect(createChannelStructureStatus,null,null,null);
+                destroy();
+            } else {
+                channelGetRequester.channelGetConnect(okStatus, this, v3ChannelStructure.getPVStructure(), v3ChannelStructure.getBitSet());
+            }
         }
     }
     
