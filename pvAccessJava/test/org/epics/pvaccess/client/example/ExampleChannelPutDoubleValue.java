@@ -40,7 +40,7 @@ public class ExampleChannelPutDoubleValue {
         org.epics.pvaccess.ClientFactory.start();
         int len = args.length;
         if(len<1 || len>2 || (len==1 && args[0].equals("?"))) {
-            System.out.println("Usage: channelName request");
+            System.out.println("Usage: <channelName> <request>");
             return;
         }
         String channelName = args[0];

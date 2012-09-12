@@ -144,7 +144,7 @@ public class ExampleChannelRPC {
 
 			connectedSignaler.countDown();
 			
-			// in case of reconnect
+			// in case of reconnect, issued request was lost
 			if (reconnect)
 			{
 				this.result = null;
