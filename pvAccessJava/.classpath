@@ -6,8 +6,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="M2_REPO/com/sun/japex/japex/1.2.4/japex-1.2.4.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/pvDataJava"/>
-	<classpathentry kind="var" path="M2_REPO/epics/caj/1.1.9/caj-1.1.9.jar"/>
-	<classpathentry kind="var" path="M2_REPO/epics/jca/2.3.5/jca-2.3.5.jar"/>
+	<classpathentry kind="var" path="M2_REPO/epics/caj/1.1.10/caj-1.1.10.jar"/>
+	<classpathentry kind="var" path="M2_REPO/epics/jca/2.3.6/jca-2.3.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
