@@ -2,9 +2,9 @@ package org.epics.pvaccess.client.rpc.test;
 
 import java.util.logging.Logger;
 
-import org.epics.pvaccess.client.rpc.ServiceClient;
-import org.epics.pvaccess.client.rpc.ServiceClientImpl;
-import org.epics.pvaccess.client.rpc.ServiceClientRequester;
+import org.epics.pvaccess.client.rpc.RPCClient;
+import org.epics.pvaccess.client.rpc.RPCClientImpl;
+import org.epics.pvaccess.client.rpc.RPCClientRequester;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
@@ -41,7 +41,7 @@ public class RPCServiceClientExample {
 			// sync example
 			//
 			{
-				ServiceClientImpl client = new ServiceClientImpl("sum");
+				RPCClientImpl client = new RPCClientImpl("sum");
 				try
 				{
 					PVStructure result = client.request(arguments, 3.0); 
@@ -57,7 +57,7 @@ public class RPCServiceClientExample {
 			//
 			{
 				ServiceClientRequesterImpl requester = new ServiceClientRequesterImpl();
-				ServiceClientImpl client = new ServiceClientImpl("sum", requester);
+				RPCClientImpl client = new RPCClientImpl("sum", requester);
 				// we could sendRequest asynchronously, but this is soo much easier
 				if (!client.waitConnect(3.0))
 					throw new RuntimeException("connection timeout");
@@ -79,7 +79,7 @@ public class RPCServiceClientExample {
 		}
 	}
 	
-	private static class ServiceClientRequesterImpl implements ServiceClientRequester
+	private static class ServiceClientRequesterImpl implements RPCClientRequester
 	{
 	    private static final Logger logger = Logger.getLogger(ServiceClientRequesterImpl.class.getName());
 	    
@@ -97,12 +97,12 @@ public class RPCServiceClientExample {
 		}
 
 		@Override
-		public void connectResult(ServiceClient client, Status status) {
+		public void connectResult(RPCClient client, Status status) {
 			// noop
 		}
 
 		@Override
-		public void requestResult(ServiceClient client, Status status, PVStructure pvResult) {
+		public void requestResult(RPCClient client, Status status, PVStructure pvResult) {
 			this.status = status;
 			this.result = pvResult;
 		}

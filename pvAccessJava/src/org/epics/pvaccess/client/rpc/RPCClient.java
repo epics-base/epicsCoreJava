@@ -10,7 +10,7 @@ import org.epics.pvdata.pv.PVStructure;
  * @author mrk
  *
  */
-public interface ServiceClient {
+public interface RPCClient {
 	/**
 	 * Called by client when the service is no longer required.
 	 */

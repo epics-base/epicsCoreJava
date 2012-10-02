@@ -12,7 +12,6 @@ import org.epics.pvaccess.client.Lockable;
 import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
@@ -26,7 +25,6 @@ public class PVTopStructure implements Lockable
 		public void topStructureChanged(BitSet changedBitSet);
 	}
 	
-    private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
     private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
     private final Lock lock = new ReentrantLock();

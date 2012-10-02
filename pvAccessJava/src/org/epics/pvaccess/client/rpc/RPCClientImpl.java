@@ -27,11 +27,11 @@ import org.epics.pvdata.pv.Status.StatusType;
  * @author msekoranja
  *
  */
-public class ServiceClientImpl implements ServiceClient, ChannelRequester, ChannelRPCRequester {
+public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCRequester {
 
-    private static final Logger logger = Logger.getLogger(ServiceClientImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(RPCClientImpl.class.getName());
 
-    private final ServiceClientRequester serviceRequester;
+    private final RPCClientRequester serviceRequester;
 	private final Channel channel;
 	private final CountDownLatch connectedSignaler = new CountDownLatch(1);
 	
@@ -43,11 +43,11 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 	private Status status = null;
 	private PVStructure result = null;
 
-    public ServiceClientImpl(String serviceName) {
+    public RPCClientImpl(String serviceName) {
 		this(serviceName, null);
 	}
 
-	public ServiceClientImpl(String serviceName, ServiceClientRequester requester) {
+	public RPCClientImpl(String serviceName, RPCClientRequester requester) {
 		
 		this.serviceRequester = requester;
 
@@ -62,7 +62,7 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.rpc.ServiceClient#destroy()
+	 * @see org.epics.pvaccess.client.rpc.RPCClient#destroy()
 	 */
 	@Override
 	public void destroy() {
@@ -71,7 +71,7 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.rpc.ServiceClient#waitConnect(double)
+	 * @see org.epics.pvaccess.client.rpc.RPCClient#waitConnect(double)
 	 */
 	@Override
 	public boolean waitConnect(double timeout) {
@@ -99,7 +99,7 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.rpc.ServiceClient#request(org.epics.pvdata.pv.PVStructure, double)
+	 * @see org.epics.pvaccess.client.rpc.RPCClient#request(org.epics.pvdata.pv.PVStructure, double)
 	 */
 	@Override
 	public PVStructure request(PVStructure pvArgument, double timeout)
@@ -133,7 +133,7 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.rpc.ServiceClient#sendRequest(org.epics.pvdata.pv.PVStructure)
+	 * @see org.epics.pvaccess.client.rpc.RPCClient#sendRequest(org.epics.pvdata.pv.PVStructure)
 	 */
 	@Override
 	public void sendRequest(PVStructure pvArgument) {
@@ -161,7 +161,7 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.rpc.ServiceClient#waitResponse(double)
+	 * @see org.epics.pvaccess.client.rpc.RPCClient#waitResponse(double)
 	 */
 	@Override
 	public boolean waitResponse(double timeout) {
@@ -224,7 +224,7 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 			try {
 				serviceRequester.connectResult(this, status);
 			} catch (Throwable th) {
-				logger.log(Level.SEVERE, "Unhandled exception in ServiceClientRequester.connectResult().", th);
+				logger.log(Level.SEVERE, "Unhandled exception in RPCClientRequester.connectResult().", th);
 			}
 		}
 	}
@@ -246,7 +246,7 @@ public class ServiceClientImpl implements ServiceClient, ChannelRequester, Chann
 			try {
 				serviceRequester.requestResult(this, status, result);
 			} catch (Throwable th) {
-				logger.log(Level.SEVERE, "Unhandled exception in ServiceClientRequester.requestResult().", th);
+				logger.log(Level.SEVERE, "Unhandled exception in RPCClientRequester.requestResult().", th);
 			}
 		}
 	}
