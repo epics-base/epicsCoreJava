@@ -1,1 +1,20 @@
+
+  Abs: Readme of pvDataJava - the Java implementation of pvData. pvData 
+       is a core module of EPICS V4.
+
+-----------------------------------------------------------------------
+  Auth: Marty Kraimer, grandfathered.
+  Mod:  Greg White, 3-Oct-2012
+
+=======================================================================
+
+1) Publishing pvDataJava.html
+
+The following line publishes pvDataJava.html to the SourceForge web site,
+but bypasses the mercurial repo of pvDataJava.html (pvDataJava), so don't use this
+command. Instead use mercurial to pull, update, (make your change) and then
+commit your change. Then BNL's Jenkins CIS will notice the update, and buplish
+to sourceforge for you.
+
 scp pvDataJava.html <user>,epics-pvdata@web.sourceforge.net:htdocs/doc/pvDataJava
+
