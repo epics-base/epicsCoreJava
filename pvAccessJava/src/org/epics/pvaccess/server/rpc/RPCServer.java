@@ -10,6 +10,10 @@ import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.server.impl.remote.plugins.DefaultBeaconServerDataProvider;
 import org.epics.pvaccess.server.rpc.impl.RPCChannelProvider;
 
+/**
+ * pvAccess RPC server implementation.
+ * @author msekoranja
+ */
 public class RPCServer {
 
 	private final ServerContextImpl serverContext;
@@ -17,12 +21,21 @@ public class RPCServer {
 	
 	private final ThreadPoolExecutor threadPoll;
 
+	/**
+	 * Default constructor.
+	 * Creates a simple RPC server that processes requests directly in pvAccess receive thread.
+	 */
 	public RPCServer()
 	{
 		// sync processing of RPC requests
 		this(0, 1);
 	}
 	
+	/**
+	 * Creates a RPC server with a thread-pool used to process requests.
+	 * @param threads number of threads in a thread-pool.
+	 * @param queueSize thread-pool request queue size.
+	 */
 	public RPCServer(int threads, int queueSize)
 	{
 		if (threads < 0)
@@ -64,11 +77,20 @@ public class RPCServer {
         serverContext.printInfo();
 	}
 
+	/**
+	 * Run the server for a given amount of time.
+	 * @param seconds time (in seconds) to run the server, if <code>0</code> server is run until destroyed.
+	 * @throws CAException exception thrown in case of an unexpected error.
+	 */
 	public void run(int seconds) throws CAException
 	{
 		serverContext.run(seconds);
 	}
 	
+	/**
+	 * Destroy (shutdown) the server.
+	 * @throws CAException exception thrown in case of an unexpected error.
+	 */
 	public void destroy() throws CAException
 	{
 		if (threadPoll == null)
@@ -82,11 +104,22 @@ public class RPCServer {
 		}
 	}
 	
+	/**
+	 * Register RPC service.
+	 * Multiple services (with different name) can be registered.
+	 * In case of name duplicates, the last registered service (with the same name) is used.
+	 * @param serviceName RPC service name. This name is used by client to discover/connect to the service.
+	 * @param service service implementation.
+	 */
 	public void registerService(String serviceName, RPCService service)
 	{
 		channelProviderImpl.registerService(serviceName, service);
 	}
-	
+
+	/**
+	 * Unregister RPC service.
+	 * @param serviceName name of the RPC service to be unregistred.
+	 */
 	public void unregisterService(String serviceName)
 	{
 		channelProviderImpl.unregisterService(serviceName);
