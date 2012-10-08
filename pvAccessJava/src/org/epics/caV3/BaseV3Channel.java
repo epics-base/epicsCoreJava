@@ -129,7 +129,7 @@ V3Channel,ConnectionListener
      */
     @Override
     public ChannelProvider getChannelProvider() {
-        return ClientFactory.channelProvider;
+        return channelProvider;
     }
 
     /* (non-Javadoc)

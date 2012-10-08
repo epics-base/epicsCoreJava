@@ -13,7 +13,7 @@ import java.util.TreeMap;
  *
  */
 public class ChannelAccessFactory {
-    private static final Map<String,ChannelProvider> channelProviderMap = new TreeMap<String,ChannelProvider>();
+    private static final Map<String,ChannelProviderFactory> channelProviderMap = new TreeMap<String,ChannelProviderFactory>();
     private static final ChannelAccessImpl channelAccess = new ChannelAccessImpl();
     
     /**
@@ -24,17 +24,17 @@ public class ChannelAccessFactory {
         return channelAccess;
     }
     
-    public static void registerChannelProvider(ChannelProvider channelProvider) {
+    public static void registerChannelProviderFactory(ChannelProviderFactory channelProviderFactory) {
         synchronized(channelProviderMap) {
-            channelProviderMap.put(channelProvider.getProviderName(), channelProvider);
+            channelProviderMap.put(channelProviderFactory.getFactoryName(), channelProviderFactory);
         }
     }
     
-    public static void unregisterChannelProvider(ChannelProvider channelProvider) {
+    public static void unregisterChannelProviderFactory(ChannelProviderFactory channelProviderFactory) {
         synchronized(channelProviderMap) {
-        	ChannelProvider registered = channelProviderMap.get(channelProvider.getProviderName());
-        	if (registered == channelProvider)
-        		channelProviderMap.remove(channelProvider.getProviderName());
+        	ChannelProviderFactory registered = channelProviderMap.get(channelProviderFactory.getFactoryName());
+        	if (registered == channelProviderFactory)
+        		channelProviderMap.remove(channelProviderFactory.getFactoryName());
         }
     }
 
@@ -46,10 +46,28 @@ public class ChannelAccessFactory {
         @Override
         public ChannelProvider getProvider(String providerName) {
             synchronized(channelProviderMap) {
-            	return channelProviderMap.get(providerName);
+            	ChannelProviderFactory cpf = channelProviderMap.get(providerName);
+            	if (cpf != null)
+            		return cpf.sharedInstance();
+            	else
+            		return null;
             }
         }
         /* (non-Javadoc)
+		 * @see org.epics.pvaccess.client.ChannelAccess#createProvider(java.lang.String)
+		 */
+		@Override
+		public ChannelProvider createProvider(String providerName) {
+            synchronized(channelProviderMap) {
+            	ChannelProviderFactory cpf = channelProviderMap.get(providerName);
+            	if (cpf != null)
+            		return cpf.newInstance();
+            	else
+            		return null;
+            }
+		}
+
+		/* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelAccess#getProviderNames()
          */
         @Override

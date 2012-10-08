@@ -8,7 +8,6 @@ import org.epics.pvdata.pv.PVStructure;
 /**
  * Interface that is called by a service client.
  * @author mrk
- *
  */
 public interface RPCClient {
 	/**

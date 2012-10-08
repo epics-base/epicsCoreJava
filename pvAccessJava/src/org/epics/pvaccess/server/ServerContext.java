@@ -19,6 +19,7 @@ import java.io.PrintStream;
 import org.epics.pvaccess.CAException;
 import org.epics.pvaccess.Version;
 import org.epics.pvaccess.client.ChannelAccess;
+import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.server.plugins.BeaconServerStatusProvider;
 
 /**
@@ -36,10 +37,17 @@ public interface ServerContext {
 
 	/**
 	 * Set <code>ChannelAccess</code> implementation and initialize server.
+	 * Served <code>ChannelProvider</code>(s) is read from configuration.
 	 * @param channelAccess implementation of channel access to be served.
 	 */
 	public void initialize(ChannelAccess channelAccess) throws CAException, IllegalStateException;
  
+	/**
+	 * Set <code>ChannelProvider</code> implementation and initialize server.
+	 * @param channelProvider implementation of channel access to be served.
+	 */
+	public void initialize(ChannelProvider channelProvider) throws CAException, IllegalStateException;
+
 	/**
 	 * Run server (process events).
 	 * @param	seconds	time in seconds the server will process events (method will block), if <code>0</code>

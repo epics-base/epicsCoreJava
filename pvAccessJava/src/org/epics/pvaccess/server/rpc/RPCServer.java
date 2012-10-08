@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.epics.pvaccess.CAException;
-import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.server.impl.remote.plugins.DefaultBeaconServerDataProvider;
 import org.epics.pvaccess.server.rpc.impl.RPCChannelProvider;
@@ -55,14 +54,12 @@ public class RPCServer {
 			threadPoll = null;		// sync processing
 
 		channelProviderImpl = new RPCChannelProvider(threadPoll);
-		ChannelAccessFactory.registerChannelProvider(channelProviderImpl);
-		System.setProperty("EPICS4_CAS_PROVIDER_NAME", channelProviderImpl.getProviderName());
 
 		serverContext = new ServerContextImpl();
 		serverContext.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(serverContext));
 
 		try {
-			serverContext.initialize(ChannelAccessFactory.getChannelAccess());
+			serverContext.initialize(channelProviderImpl);
 		} catch (Throwable th) {
 			throw new RuntimeException("Failed to initialize pvAccess RPC server.", th);
 		}
@@ -118,7 +115,7 @@ public class RPCServer {
 
 	/**
 	 * Unregister RPC service.
-	 * @param serviceName name of the RPC service to be unregistred.
+	 * @param serviceName name of the RPC service to be unregistered.
 	 */
 	public void unregisterService(String serviceName)
 	{

@@ -16,6 +16,7 @@ package org.epics.pvaccess.client.test;
 import org.epics.pvaccess.server.test.TestChannelProviderImpl;
 import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelProviderFactory;
 
 /**
  * Channel Access local IF test.
@@ -25,8 +26,29 @@ import org.epics.pvaccess.client.ChannelProvider;
 public class ChannelAccessIFLocalTest extends ChannelAccessIFTest {
 	
 	static {
-		ChannelProvider channelProviderImpl = new TestChannelProviderImpl();
-		ChannelAccessFactory.registerChannelProvider(channelProviderImpl);
+		ChannelProviderFactory channelProviderImplFactory = new ChannelProviderFactory() {
+			
+			private TestChannelProviderImpl provider;
+			
+			@Override
+			public synchronized ChannelProvider sharedInstance() {
+				if (provider == null)
+					provider = new TestChannelProviderImpl();
+				return provider;
+			}
+			
+			@Override
+			public ChannelProvider newInstance() {
+				throw new RuntimeException("not supported");
+			}
+			
+			@Override
+			public String getFactoryName() {
+				return TestChannelProviderImpl.PROVIDER_NAME;
+			}
+		};
+		
+		ChannelAccessFactory.registerChannelProviderFactory(channelProviderImplFactory);
 	}
 
 	/* (non-Javadoc)

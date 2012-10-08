@@ -13,12 +13,11 @@
  */
 package org.epics.pvaccess.client.test;
 
-import org.epics.pvaccess.server.test.TestChannelProviderImpl;
-import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.server.impl.remote.plugins.DefaultBeaconServerDataProvider;
+import org.epics.pvaccess.server.test.TestChannelProviderImpl;
 
 /**
  * Channel Access remote IF test.
@@ -35,17 +34,12 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 		if (serverContext != null)
 			return;
 		
-		ChannelProvider channelProviderImpl = new TestChannelProviderImpl();
-		ChannelAccessFactory.registerChannelProvider(channelProviderImpl);
-		
-		System.setProperty("EPICS4_CAS_PROVIDER_NAME", channelProviderImpl.getProviderName());
-		
 		// Create a context with default configuration values.
 		/*final ServerContextImpl*/ serverContext = new ServerContextImpl();
 		serverContext.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(serverContext));
 		
 		try {
-			serverContext.initialize(ChannelAccessFactory.getChannelAccess());
+			serverContext.initialize(new TestChannelProviderImpl());
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}

@@ -18,6 +18,7 @@ import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelFind;
 import org.epics.pvaccess.client.ChannelFindRequester;
 import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelProviderFactory;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvdata.misc.RunnableReady;
 import org.epics.pvdata.misc.ThreadCreate;
@@ -32,27 +33,69 @@ import org.epics.pvdata.pv.Status;
  *
  */
 public class ClientFactory  {
-    static ChannelProviderImpl channelProvider = null;
+    private static ChannelProviderImpl channelProvider = null;
     private static final ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
+	private static ChannelProviderFactoryImpl factory = null; 
 
     public static final String PROVIDER_NAME = "caV3";
 
+    private static class ChannelProviderFactoryImpl implements ChannelProviderFactory
+    {
+
+		@Override
+		public String getFactoryName() {
+			return PROVIDER_NAME;
+		}
+
+		@Override
+		public synchronized ChannelProvider sharedInstance() {
+	        try
+	        {
+	        	if (channelProvider == null)
+	        		channelProvider = new ChannelProviderImpl();
+	        	
+				return channelProvider;
+	        } catch (Throwable e) {
+	            throw new RuntimeException("Failed to initialize shared CA client instance.", e);
+	        }
+		}
+
+		@Override
+		public ChannelProvider newInstance() {
+	        try
+	        {
+				return new ChannelProviderImpl();
+	        } catch (Throwable e) {
+	            throw new RuntimeException("Failed to initialize new CA client instance.", e);
+	        }
+		}
+    	
+		public synchronized void destroySharedInstance() {
+			if (channelProvider != null)
+			{
+				channelProvider.destroy();
+				channelProvider = null;
+			}
+		}
+    }
+
     /**
-     * This registers the V3 ChannelProvider.
+     * Registers CA client channel provider factory.
      */
     public static synchronized void start() {
-    	if (channelProvider == null)
-         channelProvider = new ChannelProviderImpl();
+        if (factory != null) return;
+        factory = new ChannelProviderFactoryImpl();
+        ChannelAccessFactory.registerChannelProviderFactory(factory);
     }
     
     /**
-     * This destroys and unregisters the V3 ChannelProvider.
+     * Unregisters CA client channel provider factory and destroys shared channel provider instance (if necessary).
      */
     public static synchronized void stop() {
-    	if (channelProvider != null)
+    	if (factory != null)
     	{
-    		channelProvider.destroy();
-    		channelProvider = null;
+    		ChannelAccessFactory.unregisterChannelProviderFactory(factory);
+    		factory.destroySharedInstance();
     	}
     }
 
@@ -85,7 +128,6 @@ public class ClientFactory  {
                 return;
             }     
             caThread = t;
-            ChannelAccessFactory.registerChannelProvider(this);
         } 
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.ChannelProvider#destroy()
@@ -98,7 +140,6 @@ public class ClientFactory  {
             } catch (CAException e) {
                 e.printStackTrace();
             }
-            ChannelAccessFactory.unregisterChannelProvider(this);
         }
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelProvider#channelFind(java.lang.String, org.epics.pvaccess.client.ChannelFindRequester)

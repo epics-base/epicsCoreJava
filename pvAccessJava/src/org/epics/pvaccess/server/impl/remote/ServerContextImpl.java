@@ -232,7 +232,18 @@ public class ServerContextImpl implements ServerContext, Context {
 		loadConfiguration();
 	}
 	
-    /* (non-Javadoc)
+	/**
+	 * Create server instance serving given channel provider only.
+	 * @param channelProvider channel provider to serve.
+	 */
+	public ServerContextImpl(ChannelProvider channelProvider)
+	{
+		this.channelProvider = channelProvider;
+		initializeLogger();
+		loadConfiguration();
+	}
+
+	/* (non-Javadoc)
      * @see org.epics.pvaccess.server.ServerContext#getVersion()
      */
     public Version getVersion()
@@ -319,7 +330,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	public synchronized void initialize(ChannelAccess channelAccess) throws CAException, IllegalStateException
 	{
 		if (channelAccess == null)
-			throw new IllegalArgumentException("non null channelAccess expected");
+			throw new IllegalArgumentException("non-null channelAccess expected");
 		
 		if (state == State.DESTROYED)
 			throw new IllegalStateException("Context destroyed.");
@@ -331,6 +342,27 @@ public class ServerContextImpl implements ServerContext, Context {
 		this.channelProvider = this.channelAccess.getProvider(channelProviderName);
 		if (this.channelProvider == null)
 			throw new RuntimeException("Channel provider with name '" + channelProviderName + "' not available.");
+		
+		internalInitialize();
+		
+		state = State.INITIALIZED;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.server.ServerContext#initialize(org.epics.pvaccess.client.ChannelProvider)
+	 */
+	@Override
+	public synchronized void initialize(ChannelProvider channelProvider) throws CAException, IllegalStateException {
+		if (channelProvider == null)
+			throw new IllegalArgumentException("non-null channelProvider expected");
+		
+		if (state == State.DESTROYED)
+			throw new IllegalStateException("Context destroyed.");
+		else if (state != State.NOT_INITIALIZED)
+			throw new IllegalStateException("Context already initialized.");
+
+		this.channelAccess = null;
+		this.channelProvider = channelProvider;
 		
 		internalInitialize();
 		
@@ -626,7 +658,10 @@ public class ServerContextImpl implements ServerContext, Context {
 	    out.println("VERSION : "+getVersion());
 		//out.println("CHANNEL ACCESS : " + (channelAccess != null ? channelAccess.getClass().getName() : null));
 		//out.println("CHANNEL PROVIDERS : " + (channelAccess != null ? Arrays.toString(channelAccess.getProviderNames()) : "[]"));
-		out.println("CHANNEL PROVIDER : " + channelProviderName);
+		if (channelProvider != null)
+		    out.println("CHANNEL PROVIDER : " + channelProvider.getProviderName());
+		else
+			out.println("CHANNEL PROVIDER : " + channelProviderName);
 		out.println("BEACON_ADDR_LIST : " + beaconAddressList);
 		out.println("AUTO_BEACON_ADDR_LIST : " + autoBeaconAddressList);
 		out.println("BEACON_PERIOD : " + beaconPeriod);

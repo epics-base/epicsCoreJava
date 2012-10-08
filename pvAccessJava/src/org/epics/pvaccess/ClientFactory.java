@@ -15,6 +15,8 @@
 package org.epics.pvaccess;
 
 import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelProviderFactory;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 
 /**
@@ -28,37 +30,72 @@ public class ClientFactory {
 	 */
 	public static final String PROVIDER_NAME = ClientContextImpl.PROVIDER_NAME;
 
-	static private boolean isRegistered = false; 
-    static private ClientContextImpl context;
+	static private ChannelProviderFactoryImpl factory = null; 
+    static private ClientContextImpl context = null;
     
-    /**
-     * This initializes the Channel Access client.
-     */
-    public static synchronized void start() {
-        if(isRegistered) return;
-        
-        try {
-        	context = new ClientContextImpl();
-			context.initialize();
-            ChannelAccessFactory.registerChannelProvider(context.getProvider());
-            isRegistered = true;
-        } catch (Throwable e) {
-        	stop();
-            throw new RuntimeException("Failed to initializa client channel access.", e);
-        }
+    private static class ChannelProviderFactoryImpl implements ChannelProviderFactory
+    {
+
+		@Override
+		public String getFactoryName() {
+			return PROVIDER_NAME;
+		}
+
+		@Override
+		public synchronized ChannelProvider sharedInstance() {
+	        try
+	        {
+	        	if (context == null)
+	        	{
+		        	ClientContextImpl lcontext = new ClientContextImpl();
+					lcontext.initialize();
+					context = lcontext;
+	        	}
+	        	
+				return context.getProvider();
+	        } catch (Throwable e) {
+	            throw new RuntimeException("Failed to initialize shared pvAccess client instance.", e);
+	        }
+		}
+
+		@Override
+		public ChannelProvider newInstance() {
+	        try
+	        {
+	        	ClientContextImpl lcontext = new ClientContextImpl();
+				lcontext.initialize();
+				return lcontext.getProvider();
+	        } catch (Throwable e) {
+	            throw new RuntimeException("Failed to initialize new pvAccess client instance.", e);
+	        }
+		}
+    	
+		public synchronized void destroySharedInstance() {
+			if (context != null)
+			{
+				context.dispose();
+				context = null;
+			}
+		}
     }
     
     /**
-     * Stop the Channel Access client.
+     * Registers pvAccess client channel provider factory.
+     */
+    public static synchronized void start() {
+        if (factory != null) return;
+        factory = new ChannelProviderFactoryImpl();
+        ChannelAccessFactory.registerChannelProviderFactory(factory);
+    }
+    
+    /**
+     * Unregisters pvAccess client channel provider factory and destroys shared channel provider instance (if necessary).
      */
     public static synchronized void stop() {
-    	if (context != null)
+    	if (factory != null)
     	{
-    		context.dispose();
-    		ChannelAccessFactory.unregisterChannelProvider(context.getProvider());
-        	// allows GC to cleanup
-        	context = null;
+    		ChannelAccessFactory.unregisterChannelProviderFactory(factory);
+    		factory.destroySharedInstance();
     	}
-    	isRegistered = false;
     }
 }
