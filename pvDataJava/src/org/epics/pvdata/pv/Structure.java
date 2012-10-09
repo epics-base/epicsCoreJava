@@ -11,6 +11,10 @@ package org.epics.pvdata.pv;
  *
  */
 public interface Structure extends Field{
+	/**
+	 * Default structure ID.
+	 */
+    public static final String DEFAULT_ID = "structure";
     /**
      * Get the Field for the specified fieldName
      * @param fieldName The name of the field.

@@ -27,7 +27,6 @@ public class BaseStructure extends BaseField implements Structure {
     private final String id;
     private Field[] fields;
     private String[] fieldNames;
-    private static final String DEFAULT_ID = "structure";
     /**
      * Constructor for a structure field.
      * @param fieldNames The field names for the subfields
@@ -53,6 +52,9 @@ public class BaseStructure extends BaseField implements Structure {
     	if(id == null)
     		throw new IllegalArgumentException("id == null");
     	
+    	if(id.isEmpty())
+    		throw new IllegalArgumentException("id is empty");
+
     	if(fieldNames.length != fields.length)
     		throw new IllegalArgumentException("fieldNames has different length than fields");
     	
@@ -237,9 +239,17 @@ public class BaseStructure extends BaseField implements Structure {
 		serializeStructureField(this, buffer, control);
 	}
 
+	private static final String EMPTY_ID = "";
+		
 	static void serializeStructureField(final Structure structure, ByteBuffer buffer, 
 			SerializableControl control) {
-		SerializeHelper.serializeString(structure.getID(), buffer, control);
+		
+		// to optimize default (non-empty) IDs optimization (yes, by ref. string comparison)
+		// empty IDs are not allowed
+		final String id = structure.getID();
+		final String idToSerialize = (id == DEFAULT_ID) ? EMPTY_ID : id;
+		SerializeHelper.serializeString(idToSerialize, buffer, control);
+		
 		final Field[] fields = structure.getFields();
 		final String[] fieldNames = structure.getFieldNames();
 		SerializeHelper.writeSize(fields.length, buffer, control);
@@ -260,7 +270,11 @@ public class BaseStructure extends BaseField implements Structure {
 			fieldNames[i] = SerializeHelper.deserializeString(buffer, control);
 			fields[i] = control.cachedDeserialize(buffer);
 		}
-		return new BaseStructure(id, fieldNames, fields);
+		
+		if (id == null || id.isEmpty())
+			return new BaseStructure(fieldNames, fields);
+		else
+			return new BaseStructure(id, fieldNames, fields);
 	}
 
 	/* (non-Javadoc)
