@@ -58,7 +58,7 @@ public final class StandardFieldFactory {
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvLong);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
-	    timeStampField = fieldCreate.createStructure("timeStamp_t",timeStampFieldNames,fields);
+	    timeStampField = fieldCreate.createStructure("time_t",timeStampFieldNames,fields);
 	    fields = new Field[5];
 	    String[] displayFieldNames = {"limitLow","limitHigh","description","format","units"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
@@ -256,20 +256,20 @@ public final class StandardFieldFactory {
 		@Override
 		public Structure scalar(ScalarType scalarType,String properties)
 		{
-			Scalar field = fieldCreate.createScalar(scalarType);
-		    return createProperties("scalar_t",field,properties);
+			Scalar field = fieldCreate.createScalar(scalarType);	// scalar_t
+		    return createProperties("uri:ev4:nt/2012/pwd:NTScalar",field,properties);
 		}
 		@Override
 		public Structure scalarArray(ScalarType elementType, String properties)
 		{
-			ScalarArray field = fieldCreate.createScalarArray(elementType);
-		    return createProperties("scalarArray_t",field,properties);
+			ScalarArray field = fieldCreate.createScalarArray(elementType);	// scalar_t[]
+		    return createProperties("uri:ev4:nt/2012/pwd:NTScalarArray",field,properties);
 		}
 		@Override
 		public Structure structureArray(Structure structure,String properties)
 		{
 			StructureArray field = fieldCreate.createStructureArray(structure);
-		    return createProperties("structureArray_t",field,properties);
+		    return createProperties("uri:ev4:nt/2012/pwd:NTAny",field,properties);
 		}
 		@Override
 		public Structure enumerated()
@@ -278,14 +278,15 @@ public final class StandardFieldFactory {
 			String[] fieldNames = {"index","choices"};
 		    fields[0] = fieldCreate.createScalar(ScalarType.pvInt);
 		    fields[1] = fieldCreate.createScalarArray(ScalarType.pvString);
-		    return fieldCreate.createStructure("enumerated_t",fieldNames,fields);
+		    return fieldCreate.createStructure("enum_t",fieldNames,fields);
+		    // NOTE: if this method is used to get NTEnum wihtout properties the ID will be wrong!
 
 		}
 		@Override
 		public Structure enumerated(String properties)
 		{
-		    Structure field = enumerated();
-		    return createProperties("enumerated_t",field,properties);
+		    Structure field = enumerated();	// enum_t
+		    return createProperties("uri:ev4:nt/2012/pwd:NTEnum",field,properties);
 
 		}
 		
