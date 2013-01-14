@@ -37,7 +37,9 @@
     <build>
         <sourceDirectory>src</sourceDirectory>
         <testSourceDirectory>test</testSourceDirectory>
+
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -47,6 +49,7 @@
                     <target>1.5</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -60,6 +63,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -72,12 +76,23 @@
                         </goals>
                     </execution>
                 </executions>
-
-<configuration>
-<overview>src/overview.html</overview>
-</configuration>
-
+                <configuration>
+                    <overview>src/overview.html</overview>
+                </configuration>
             </plugin>
+
+            <plugin> 
+                <artifactId>maven-deploy-plugin</artifactId> 
+                <version>2.7</version> 
+                <dependencies> 
+                    <dependency> 
+                        <groupId>org.apache.maven.wagon</groupId> 
+                        <artifactId>wagon-ssh</artifactId> 
+                        <version>2.2</version> 
+                    </dependency> 
+                </dependencies> 
+            </plugin>
+
         </plugins>
     </build>
 </project>
