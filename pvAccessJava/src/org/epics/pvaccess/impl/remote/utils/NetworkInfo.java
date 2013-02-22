@@ -34,7 +34,12 @@ public class NetworkInfo {
 		}
 
 		console.printf("Parent: %s%n", netint.getParent());
-		console.printf("Up? %s%n", netint.isUp());
+		try {
+			console.printf("Up? %s%n", netint.isUp());
+		} catch (SocketException se) {
+			// JDK bug
+			console.printf("Up? false");
+		}
 		console.printf("Loopback? %s%n", netint.isLoopback());
 		console.printf("PointToPoint? %s%n", netint.isPointToPoint());
 		console.printf("Supports multicast? %s%n", netint.isVirtual());

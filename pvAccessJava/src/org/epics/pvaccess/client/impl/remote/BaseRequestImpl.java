@@ -127,18 +127,30 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 			pendingRequest = qos;
 			return true;
 		}
+		
+		/*
+		if (qos == PURE_DESTROY_REQUEST)
+		{
+			pendingRequest.set(PURE_DESTROY_REQUEST);
+			return true;
+		}
+		else
+			return pendingRequest.compareAndSet(NULL_REQUEST, qos);
+		 */
 	}
 	
 	public final void stopRequest() {
 		synchronized (this) {
 			pendingRequest = NULL_REQUEST;
 		}
+		// pendingRequest.set(NULL_REQUEST);
 	}
 	
 	public final int getPendingRequest() {
 		synchronized (this) {
 			return pendingRequest;
 		}
+		// return pendingRequest.get();
 	}
 
 	/* (non-Javadoc)
@@ -213,6 +225,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 				return;
 			destroyed = true;
 		}
+		// if (destroyed.getAndSet(true)) return;
 
 		// unregister response request
 		context.unregisterResponseRequest(this);
