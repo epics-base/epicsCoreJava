@@ -34,41 +34,44 @@ public class NetworkInfo {
 		}
 
 		console.printf("Parent: %s%n", netint.getParent());
-		try {
-			console.printf("Up? %s%n", netint.isUp());
-		} catch (SocketException se) {
-			// JDK bug
-			console.printf("Up? false");
-		}
-		console.printf("Loopback? %s%n", netint.isLoopback());
-		console.printf("PointToPoint? %s%n", netint.isPointToPoint());
-		console.printf("Supports multicast? %s%n", netint.isVirtual());
-		console.printf("Virtual? %s%n", netint.isVirtual());
-		final byte[] hwAddr = netint.getHardwareAddress();
-		if (hwAddr != null)
+		try
 		{
-			StringBuffer strHWAddr = new StringBuffer();
-			for (int i = 0; i < hwAddr.length; i++)
+			console.printf("Up? %s%n", netint.isUp());
+			console.printf("Loopback? %s%n", netint.isLoopback());
+			console.printf("PointToPoint? %s%n", netint.isPointToPoint());
+			console.printf("Supports multicast? %s%n", netint.isVirtual());
+			console.printf("Virtual? %s%n", netint.isVirtual());
+			final byte[] hwAddr = netint.getHardwareAddress();
+			if (hwAddr != null)
 			{
-				int val = hwAddr[i];
-				if (val < 0) val += 256;	// fix signess
-				strHWAddr.append(Integer.toHexString(val));
-				if (i < hwAddr.length - 1) strHWAddr.append(':');
+				StringBuffer strHWAddr = new StringBuffer();
+				for (int i = 0; i < hwAddr.length; i++)
+				{
+					int val = hwAddr[i];
+					if (val < 0) val += 256;	// fix signess
+					strHWAddr.append(Integer.toHexString(val));
+					if (i < hwAddr.length - 1) strHWAddr.append(':');
+				}
+				console.printf("Hardware address: %s%n", strHWAddr.toString());
 			}
-			console.printf("Hardware address: %s%n", strHWAddr.toString());
-		}
-		console.printf("MTU: %s%n", netint.getMTU());
-
-		List<InterfaceAddress> interfaceAddresses = netint.getInterfaceAddresses();
-		for (InterfaceAddress addr : interfaceAddresses) {
-			console.printf("InterfaceAddress: %s BroadcastAddress: %s%n", addr.getAddress(), addr.getBroadcast());
-		}
-		
-		console.printf("%n");
-		Enumeration<NetworkInterface> subInterfaces = netint.getSubInterfaces();
-		for (NetworkInterface networkInterface : Collections.list(subInterfaces)) {
-			console.printf("%nSubInterface%n");
-			displayInterfaceInformation(networkInterface);
+			console.printf("MTU: %s%n", netint.getMTU());
+	
+			List<InterfaceAddress> interfaceAddresses = netint.getInterfaceAddresses();
+			for (InterfaceAddress addr : interfaceAddresses) {
+				console.printf("InterfaceAddress: %s BroadcastAddress: %s%n", addr.getAddress(), addr.getBroadcast());
+			}
+			
+			console.printf("%n");
+			Enumeration<NetworkInterface> subInterfaces = netint.getSubInterfaces();
+			for (NetworkInterface networkInterface : Collections.list(subInterfaces)) {
+				console.printf("%nSubInterface%n");
+				displayInterfaceInformation(networkInterface);
+			}
+		} 
+		catch (Throwable th)
+		{
+			// simply dump exception
+			th.printStackTrace();
 		}
 		console.printf("%n");
 	}
