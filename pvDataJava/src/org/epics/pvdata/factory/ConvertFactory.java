@@ -5593,7 +5593,6 @@ public final class ConvertFactory {
         }
 
         private void convertStructure(StringBuilder buffer,PVStructure data, int indentLevel) {
-            buffer.append("structure ");
             String id = data.getStructure().getID();
             if (!id.isEmpty()) buffer.append(id).append(' ');
             buffer.append(data.getFieldName());
