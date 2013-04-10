@@ -20,7 +20,7 @@ public class RPCTopStructure extends PVTopStructure {
     private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 
     public RPCTopStructure() {
-		super(null);
+		super((Field)null);
 	}
 
 	/* (non-Javadoc)

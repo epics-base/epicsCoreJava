@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.epics.pvaccess.server.test.helpers.CounterTopStructure;
 import org.epics.pvaccess.server.test.helpers.Mapper;
@@ -72,6 +74,7 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.StatusCreate;
+import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Type;
 
 /**
@@ -875,7 +878,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			}
 			
 			Field field;
-			if (subField == null)
+			if (subField == null || subField.isEmpty())
 				field = pvTopStructure.getPVStructure().getStructure();
 			else
 				field = pvTopStructure.getPVStructure().getStructure().getField(subField);
@@ -1099,12 +1102,14 @@ public class TestChannelProviderImpl implements ChannelProvider
 	
 	private boolean isSupported(String channelName)
 	{
-		return HOSTED_CHANNELS_SET.contains(channelName);
+		return HOSTED_CHANNELS_SET.contains(channelName) || channelName.startsWith("test");
 	}
 
 	private static final Timer timer = TimerFactory.create("counter timer", ThreadPriority.middle);
 	private final HashMap<String, PVTopStructure> tops = new HashMap<String, PVTopStructure>();
 		
+	private static final Pattern TESTARRAY_PATTERN = Pattern.compile("testArray(\\d+)(.+)?");
+
 	private synchronized PVTopStructure getTopStructure(String channelName)
 	{
 		//synchronized (tops) {
@@ -1142,6 +1147,40 @@ public class TestChannelProviderImpl implements ChannelProvider
 			pvArray.setLength(ARRAY_VALUE.length);
 			pvArray.put(0, ARRAY_VALUE.length, ARRAY_VALUE, 0);
 		}
+		else if (channelName.startsWith("testArray"))
+		{
+		    Matcher matcher = TESTARRAY_PATTERN.matcher(channelName);
+		    int length = 1024*1024; double inc = 1.1;
+		    if (matcher.matches())
+		    {
+		    	length = Integer.parseInt(matcher.group(1));
+		    	inc = 1.0;
+		    }
+		    
+		    Structure scalarArrayStructure = fieldCreate.createStructure("uri:ev4:nt/2012/pwd:NTScalarArray",
+		    		new String[] { "value" },
+		    		new Field[] { fieldCreate.createScalarArray(ScalarType.pvDouble) } );
+		    
+			retVal = new PVTopStructure(pvDataCreate.createPVStructure(scalarArrayStructure));
+			PVDoubleArray pvArray = (PVDoubleArray)retVal.getPVStructure().getSubField("value");
+			pvArray.setCapacity(length);
+			pvArray.setLength(length);
+			
+			double v = 0.0; int ix = 0; int ARRAY_SIZE = 1024; int stage = 0;
+			double[] array = new double[ARRAY_SIZE];
+			while (ix < length)
+			{
+				int toFill = length - ix;
+				stage = Math.min(toFill,ARRAY_SIZE);
+				for (int i = 0; i < stage; i++)
+				{
+					array[i] = v; v += inc;
+				}
+				pvArray.put(ix, stage, array, 0);
+				ix += stage;
+			}
+		}
+		// else if (channelName.startsWith("test"))	// double scalar
 		else
 		{
 			// default

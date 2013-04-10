@@ -31,6 +31,11 @@ public class PVTopStructure implements Lockable
 	private final PVStructure pvStructure;
 	private final ArrayList<PVTopStructureListener> listeners = new ArrayList<PVTopStructureListener>();
 	
+	public PVTopStructure(PVStructure pvStructure)
+	{
+		this.pvStructure = pvStructure;
+	}
+	
 	public PVTopStructure(Field valueType)
 	{
 		if (valueType instanceof Scalar)
