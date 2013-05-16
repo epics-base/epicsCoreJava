@@ -42,7 +42,7 @@ import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.Structure;
 
 /**
- * CA monitor request.
+ * PVA monitor request.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */

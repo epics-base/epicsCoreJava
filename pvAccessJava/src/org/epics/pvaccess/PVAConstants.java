@@ -15,46 +15,46 @@
 package org.epics.pvaccess;
 
 /**
- * CA constants.
+ * PVA constants.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public interface CAConstants {
+public interface PVAConstants {
 
 	/**
-	 * CA protocol magic.
+	 * PVA protocol magic.
 	 */
-	public static final byte CA_MAGIC = (byte)0xCA;
+	public static final byte PVA_MAGIC = (byte)0xCA;
 
 	/**
-	 * CA protocol revision (implemented by this library).
+	 * PVA protocol revision (implemented by this library).
 	 */
-	public static final byte CA_PROTOCOL_REVISION = 0;
+	public static final byte PVA_PROTOCOL_REVISION = 0;
 
 	/**
-	 * CA version signature used to report this implementation version in header.
+	 * PVA version signature used to report this implementation version in header.
 	 */
-	public static final byte CA_VERSION = CA_PROTOCOL_REVISION;
+	public static final byte PVA_VERSION = PVA_PROTOCOL_REVISION;
 
 	/**
-	 * Default CA server port.
+	 * Default PVA server port.
 	 */
-	public static final int CA_SERVER_PORT = 5075;
+	public static final int PVA_SERVER_PORT = 5075;
 
 	/**
-	 * Default CA beacon port.
+	 * Default PVA beacon port.
 	 */
-	public static final int CA_BROADCAST_PORT = 5076;
+	public static final int PVA_BROADCAST_PORT = 5076;
 
 	/**
-	 * CA protocol message header size.
+	 * PVA protocol message header size.
 	 */
-	public static final short CA_MESSAGE_HEADER_SIZE = 8;
+	public static final short PVA_MESSAGE_HEADER_SIZE = 8;
 
     /**
      * All messages must be aligned to 8-bytes (64-bit).
      */
-    public static final int CA_ALIGNMENT = 1;	// TODO
+    public static final int PVA_ALIGNMENT = 1;	// TODO
 
     /**
 	 * UDP maximum send message size (for sending search requests).
@@ -82,7 +82,7 @@ public interface CAConstants {
 	/**
 	 * Default priority.
 	 */
-	public static final short CA_DEFAULT_PRIORITY = 0;
+	public static final short PVA_DEFAULT_PRIORITY = 0;
 	
 	/**
 	 * Max channel name length.
@@ -92,15 +92,15 @@ public interface CAConstants {
     /**
      * Invalid IOID.
      */
-    public static final int CA_INVALID_IOID = 0;
+    public static final int PVA_INVALID_IOID = 0;
     
     /**
-     * Default CA provider name.
+     * Default PVA provider name.
      */
-    public static final String CA_DEFAULT_PROVIDER = "local";
+    public static final String PVA_DEFAULT_PROVIDER = "local";
 
     /**
      * String value of the JVM property key to turn on debugging. 
      */
-    public static final String PVACCESS_DEBUG = "PVACCESS_DEBUG";
+    public static final String PVACCESS_DEBUG = "EPICS_PVA_DEBUG";
 }

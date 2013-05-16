@@ -29,7 +29,7 @@ import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.StatusCreate;
 
 /**
- * CA get field request.
+ * PVA get field request.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */

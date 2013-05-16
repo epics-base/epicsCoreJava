@@ -9,7 +9,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.util.Mailbox;
@@ -60,14 +60,14 @@ public abstract class AbstractCodec
 		if (receiveBuffer.capacity() < 2*MAX_ENSURE_SIZE)
 			throw new IllegalArgumentException("receiveBuffer.capacity() < 2*MAX_ENSURE_SIZE");
 		// require aligned buffer size (not condition, but simplifies alignment code)
-		if (receiveBuffer.capacity() % CAConstants.CA_ALIGNMENT != 0)
-			throw new IllegalArgumentException("receiveBuffer.capacity() % CAConstants.CA_ALIGNMENT != 0");
+		if (receiveBuffer.capacity() % PVAConstants.PVA_ALIGNMENT != 0)
+			throw new IllegalArgumentException("receiveBuffer.capacity() % PVAConstants.PVA_ALIGNMENT != 0");
 		
 		if (sendBuffer.capacity() < 2*MAX_ENSURE_SIZE)
 			throw new IllegalArgumentException("sendBuffer() < 2*MAX_ENSURE_SIZE");
 		// require aligned buffer size (not condition, but simplifies alignment code)
-		if (sendBuffer.capacity() % CAConstants.CA_ALIGNMENT != 0)
-			throw new IllegalArgumentException("sendBuffer() % CAConstants.CA_ALIGNMENT != 0");
+		if (sendBuffer.capacity() % PVAConstants.PVA_ALIGNMENT != 0)
+			throw new IllegalArgumentException("sendBuffer() % PVAConstants.PVA_ALIGNMENT != 0");
 
 		this.socketBuffer = receiveBuffer;
 		this.sendBuffer = sendBuffer;
@@ -79,7 +79,7 @@ public abstract class AbstractCodec
 		// clear send
 		sendBuffer.clear();
 		
-		this.maxSendPayloadSize = sendBuffer.capacity() - 2*CAConstants.CA_MESSAGE_HEADER_SIZE;	// start msg + control
+		this.maxSendPayloadSize = sendBuffer.capacity() - 2*PVAConstants.PVA_MESSAGE_HEADER_SIZE;	// start msg + control
 		this.socketSendBufferSize = socketSendBufferSize;
 		this.blockingProcessQueue = blockingProcessQueue;
 		this.logger = logger;
@@ -131,7 +131,7 @@ public abstract class AbstractCodec
 		payloadSize = socketBuffer.getInt();
 
 		// check magic code
-		if (magicCode != CAConstants.CA_MAGIC)
+		if (magicCode != PVAConstants.PVA_MAGIC)
 		{
 			logger.warning("Invalid header received from client " + getLastReadBufferSocketAddress() + ", disconnecting...");
 			invalidDataStreamHandler();
@@ -148,7 +148,7 @@ public abstract class AbstractCodec
 			{
 				// read as much as available, but at least for a header
 				// readFromSocket checks if reading from socket is really necessary
-				if (!readToBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE, false))
+				if (!readToBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE, false))
 					return;
 	
 				// read header fields
@@ -195,7 +195,7 @@ public abstract class AbstractCodec
 						//while (isOpen())
 						{
 							// set position as whole message was read (in case code haven't done so)
-							int newPosition = alignedValue(storedPosition + storedPayloadSize, CAConstants.CA_ALIGNMENT);
+							int newPosition = alignedValue(storedPosition + storedPayloadSize, PVAConstants.PVA_ALIGNMENT);
 							// aligned buffer size ensures that there is enough space in buffer,
 							// however data might not be fully read
 							
@@ -206,7 +206,7 @@ public abstract class AbstractCodec
 	
 								// we only handle unused alignment bytes
 								int bytesNotRead = newPosition - socketBuffer.position(); 
-								if (bytesNotRead < CAConstants.CA_ALIGNMENT)
+								if (bytesNotRead < PVAConstants.PVA_ALIGNMENT)
 								{
 									// make alignment bytes as real payload to enable SPLIT
 									// no end-of-socket or segmented scenario can happen
@@ -248,7 +248,7 @@ public abstract class AbstractCodec
 		{
 			// read as much as available, but at least for a header
 			// readFromSocket checks if reading from socket is really necessary
-			readToBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE, true);
+			readToBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE, true);
 
 			// read header fields
 			processHeader();
@@ -298,7 +298,7 @@ public abstract class AbstractCodec
 			return true;
 		
 		// assumption: remainingBytes < MAX_ENSURE_DATA_BUFFER_SIZE &&
-		//			   requiredBytes < (socketBuffer.capacity() - CA_ALIGNMENT)
+		//			   requiredBytes < (socketBuffer.capacity() - PVA_ALIGNMENT)
 
 		//
 		// copy unread part to the beginning of the buffer
@@ -307,7 +307,7 @@ public abstract class AbstractCodec
 		//
 		
 		// a new start position, we are careful to preserve alignment
-		startPosition = MAX_ENSURE_SIZE + socketBuffer.position() % CAConstants.CA_ALIGNMENT;
+		startPosition = MAX_ENSURE_SIZE + socketBuffer.position() % PVAConstants.PVA_ALIGNMENT;
 		final int endPosition = startPosition + remainingBytes;
 		for (int i = startPosition; i < endPosition; i++)
 			socketBuffer.put(i, socketBuffer.get());
@@ -407,12 +407,12 @@ public abstract class AbstractCodec
 				socketBuffer.limit(storedLimit);
 	
 				// remember alignment offset of end of the message (to be restored)
-				int storedAlignmentOffset = socketBuffer.position() % CAConstants.CA_ALIGNMENT;
+				int storedAlignmentOffset = socketBuffer.position() % PVAConstants.PVA_ALIGNMENT;
 	
 				// skip post-message alignment bytes
 				if (storedAlignmentOffset > 0)
 				{
-					int toSkip = CAConstants.CA_ALIGNMENT - storedAlignmentOffset;
+					int toSkip = PVAConstants.PVA_ALIGNMENT - storedAlignmentOffset;
 					readToBuffer(toSkip, true);
 					int currentPos = socketBuffer.position();
 					socketBuffer.position(currentPos + toSkip);
@@ -513,7 +513,7 @@ public abstract class AbstractCodec
 	/**
 	 * Remote side transport socket receive buffer size.
 	 */
-	protected int remoteTransportSocketReceiveBufferSize = CAConstants.MAX_TCP_RECV;
+	protected int remoteTransportSocketReceiveBufferSize = PVAConstants.MAX_TCP_RECV;
 
 	/**
 	 * Total bytes sent.
@@ -543,7 +543,7 @@ public abstract class AbstractCodec
 			return;
 		
 		// there is always enough of space
-		// since sendBuffer capacity % CA_ALIGNMENT == 0
+		// since sendBuffer capacity % PVA_ALIGNMENT == 0
 		sendBuffer.position(newpos);
 	}
 
@@ -553,10 +553,10 @@ public abstract class AbstractCodec
 	@Override
 	public final void startMessage(byte command, int ensureCapacity) {
 		lastMessageStartPosition = -1;		// TODO revise this
-		ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE + ensureCapacity + nextMessagePayloadOffset);
+		ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE + ensureCapacity + nextMessagePayloadOffset);
 		lastMessageStartPosition = sendBuffer.position();
-		sendBuffer.put(CAConstants.CA_MAGIC);
-		sendBuffer.put(CAConstants.CA_VERSION);
+		sendBuffer.put(PVAConstants.PVA_MAGIC);
+		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)(lastSegmentedMessageType | byteOrderFlag));	// data + endian
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
@@ -568,9 +568,9 @@ public abstract class AbstractCodec
 
 	public final void putControlMessage(byte command, int data) {
 		lastMessageStartPosition = -1;		// TODO revise this
-		ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE);
-		sendBuffer.put(CAConstants.CA_MAGIC);
-		sendBuffer.put(CAConstants.CA_VERSION);
+		ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+		sendBuffer.put(PVAConstants.PVA_MAGIC);
+		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)(0x01 | byteOrderFlag));	// control + endian
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(data);		// data
@@ -590,11 +590,11 @@ public abstract class AbstractCodec
 			final int lastPayloadBytePosition = sendBuffer.position();
 			
 			// align
-			alignBuffer(CAConstants.CA_ALIGNMENT);
+			alignBuffer(PVAConstants.PVA_ALIGNMENT);
 			
 			// set paylaod size (non-aligned)
 			final int payloadSize = lastPayloadBytePosition - lastMessageStartPosition -
-									CAConstants.CA_MESSAGE_HEADER_SIZE;
+									PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 			sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2),
 							  payloadSize); 
 			
@@ -611,7 +611,7 @@ public abstract class AbstractCodec
 					lastSegmentedMessageType = (byte)(type | 0x30);
 					lastSegmentedMessageCommand = sendBuffer.get(flagsPosition + 1);
 				}
-				nextMessagePayloadOffset = lastPayloadBytePosition % CAConstants.CA_ALIGNMENT;
+				nextMessagePayloadOffset = lastPayloadBytePosition % PVAConstants.PVA_ALIGNMENT;
 			}
 			else
 			{
@@ -631,13 +631,13 @@ public abstract class AbstractCodec
 			// manage markers
 			final int position = sendBuffer.position();
 			final int bytesLeft = sendBuffer.remaining();
-			if (position >= nextMarkerPosition && bytesLeft >= CAConstants.CA_MESSAGE_HEADER_SIZE)
+			if (position >= nextMarkerPosition && bytesLeft >= PVAConstants.PVA_MESSAGE_HEADER_SIZE)
 			{
-				sendBuffer.put(CAConstants.CA_MAGIC);
-				sendBuffer.put(CAConstants.CA_VERSION);
+				sendBuffer.put(PVAConstants.PVA_MAGIC);
+				sendBuffer.put(PVAConstants.PVA_VERSION);
 				sendBuffer.put((byte)(0x01 | byteOrderFlag));	// control data
 				sendBuffer.put((byte)0);	// marker
-				sendBuffer.putInt((int)(totalBytesSent + position + CAConstants.CA_MESSAGE_HEADER_SIZE));
+				sendBuffer.putInt((int)(totalBytesSent + position + PVAConstants.PVA_MESSAGE_HEADER_SIZE));
 				nextMarkerPosition = position + markerPeriodBytes;
 			}
 			*/

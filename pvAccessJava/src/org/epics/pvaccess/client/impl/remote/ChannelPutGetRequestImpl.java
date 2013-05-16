@@ -30,7 +30,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 
 /**
- * CA putGet request.
+ * PVA putGet request.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -154,7 +154,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			// notify
 			callback.channelPutGetConnect(status, this, putData, getData);
 		} catch (Throwable th) {
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
@@ -225,7 +225,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				callback.putGetDone(status);
 			}
 		} catch (Throwable th) {
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);

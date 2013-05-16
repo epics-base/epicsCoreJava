@@ -102,7 +102,7 @@ public class BlockingTCPConnector implements Connector {
 		Transport transport = context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
 		if (transport != null)
 		{
-			context.getLogger().finer("Reusing existant connection to CA server: " + address);
+			context.getLogger().finer("Reusing existant connection to PVA server: " + address);
 			if (transport.acquire(client))
 				return transport;
 		}
@@ -116,12 +116,12 @@ public class BlockingTCPConnector implements Connector {
 				transport = context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
 				if (transport != null)
 				{
-					context.getLogger().finer("Reusing existant connection to CA server: " + address);
+					context.getLogger().finer("Reusing existant connection to PVA server: " + address);
 					if (transport.acquire(client))
 						return transport;
 				}
 				     
-				context.getLogger().finer("Connecting to CA server: " + address);
+				context.getLogger().finer("Connecting to PVA server: " + address);
 				
 				socket = tryConnect(address, 3);
 
@@ -144,14 +144,14 @@ public class BlockingTCPConnector implements Connector {
 				// verify
 				if (!transport.verify(VERIFICATION_TIMEOUT))
 				{
-					context.getLogger().finer("Connection to CA client " + address + " failed to be validated, closing it.");
+					context.getLogger().finer("Connection to PVA client " + address + " failed to be validated, closing it.");
                 	transport.close();
 					throw new ConnectionException("Failed to verify connection to '" + address + "'.", address, ProtocolType.TCP.name(), null);
 				}
 				
 				// TODO send security token
 				
-				context.getLogger().finer("Connected to CA server: " + address);
+				context.getLogger().finer("Connected to PVA server: " + address);
 	
 				return transport;
 			}
@@ -202,7 +202,7 @@ public class BlockingTCPConnector implements Connector {
 				} catch (InterruptedException ie) {}
 			}
 
-			context.getLogger().finest("Openning socket to CA server " + address + ", attempt " + (tryCount+1) + ".");
+			context.getLogger().finest("Openning socket to PVA server " + address + ", attempt " + (tryCount+1) + ".");
 
 			try
 			{

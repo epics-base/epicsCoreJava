@@ -20,6 +20,8 @@ import org.epics.pvdata.pv.StandardField;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.StatusCreate;
+import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.StructureArray;
 
 public class SerializationExamples {
 
@@ -209,13 +211,48 @@ public class SerializationExamples {
 		System.out.println();
 	}
 
+	static void structureAbbotExample()
+	{
+		FieldCreate fieldCreate = PVFactory.getFieldCreate();
+		//PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+		
+		ByteBuffer bb = ByteBuffer.allocate(10240);
+			
+        Structure blahStructure = 
+        		fieldCreate.createStructure(
+        				"blah", 
+        				new String[] {
+        						"x",
+        						"y"
+        				},
+        				new Field[] {
+        						fieldCreate.createScalar(ScalarType.pvFloat),
+        						fieldCreate.createScalar(ScalarType.pvFloat)
+        				}
+        			);
+        
+        StructureArray blahStructureArray = fieldCreate.createStructureArray(blahStructure);
+        
+			
+		control.cachedSerialize(blahStructure, bb);
+
+		HexDump.hexDump("blah Structure", bb.array(), bb.position());
+		System.out.println();
+		bb.clear();
+		
+		control.cachedSerialize(blahStructureArray, bb);
+		HexDump.hexDump("blah[] Structure", bb.array(), bb.position());
+		System.out.println();
+	}
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		//bitSetExamples();
 		//statusExamples();
-		structureExample();
+		//structureExample();
+		structureAbbotExample();
 	}
 
 }

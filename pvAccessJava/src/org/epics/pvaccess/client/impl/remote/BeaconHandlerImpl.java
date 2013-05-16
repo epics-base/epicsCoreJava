@@ -23,7 +23,7 @@ import org.epics.pvdata.pv.PVField;
 
 
 /**
- * CA beacon handler.
+ * PVA beacon handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */

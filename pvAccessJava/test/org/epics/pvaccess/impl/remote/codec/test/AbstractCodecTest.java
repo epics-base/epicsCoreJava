@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
@@ -31,14 +31,14 @@ public class AbstractCodecTest extends TestCase {
 		super(methodName);
 	}
 	
-	static class CAMessage {
+	static class PVAMessage {
 		byte version;
 		byte flags;
 		byte command;
 		int payloadSize;
 		ByteBuffer payload;
 		
-		public CAMessage(byte version, byte flags, byte command, int payloadSize) {
+		public PVAMessage(byte version, byte flags, byte command, int payloadSize) {
 			this.version = version;
 			this.flags = flags;
 			this.command = command;
@@ -72,8 +72,8 @@ public class AbstractCodecTest extends TestCase {
 		ReadPollOneCallback readPollOneCallback = null;
 		WritePollOneCallback writePollOneCallback = null;
 		
-		final ArrayList<CAMessage> receivedAppMessages = new ArrayList<CAMessage>();
-		final ArrayList<CAMessage> receivedControlMessages = new ArrayList<CAMessage>();
+		final ArrayList<PVAMessage> receivedAppMessages = new ArrayList<PVAMessage>();
+		final ArrayList<PVAMessage> receivedControlMessages = new ArrayList<PVAMessage>();
 		
 		boolean readPayload = false;
 		boolean disconnected = false;
@@ -201,19 +201,19 @@ public class AbstractCodecTest extends TestCase {
 		@Override
 		public void processControlMessage() {
 			// alignment check
-			if (socketBuffer.position() % CAConstants.CA_ALIGNMENT != 0)
+			if (socketBuffer.position() % PVAConstants.PVA_ALIGNMENT != 0)
 				throw new IllegalStateException("message not aligned");
 
-			receivedControlMessages.add(new CAMessage(version, flags, command, payloadSize));
+			receivedControlMessages.add(new PVAMessage(version, flags, command, payloadSize));
 		}
 
 		@Override
 		public void processApplicationMessage() throws IOException {
 			// alignment check
-		 	if (socketBuffer.position() % CAConstants.CA_ALIGNMENT != 0)
+		 	if (socketBuffer.position() % PVAConstants.PVA_ALIGNMENT != 0)
 				throw new IllegalStateException("message not aligned");
 				
-			CAMessage caMessage = new CAMessage(version, flags, command, payloadSize);
+			PVAMessage caMessage = new PVAMessage(version, flags, command, payloadSize);
 			if (readPayload && payloadSize > 0)
 			{
 				// no fragmentation supported by this implementation
@@ -296,8 +296,8 @@ public class AbstractCodecTest extends TestCase {
 	public void testHeaderProcess() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x01);
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
@@ -309,8 +309,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
-		CAMessage header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedControlMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, 0x01);
 		assertEquals(header.command, 0x23);
 		assertEquals(header.payloadSize, 0x456789AB);
@@ -318,14 +318,14 @@ public class AbstractCodecTest extends TestCase {
 		codec.reset();
 		
 		// two at the time, app and control
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x00);
 		codec.readBuffer.put((byte)0x20);
 		codec.readBuffer.putInt(0x00000000);
 		
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x81);
 		codec.readBuffer.put((byte)0xEE);
 		codec.readBuffer.putInt(0xDDCCBBAA);
@@ -340,14 +340,14 @@ public class AbstractCodecTest extends TestCase {
 		
 		// app, no payload
 		header = codec.receivedAppMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x00);
 		assertEquals(header.command, (byte)0x20);
 		assertEquals(header.payloadSize, 0x00000000);
 
 		// control
 		header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
@@ -357,7 +357,7 @@ public class AbstractCodecTest extends TestCase {
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readBuffer.put((byte)00);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x01);
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
@@ -377,8 +377,8 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < invalidFlagsValues.length; i++)
 		{
 			TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-			codec.readBuffer.put(CAConstants.CA_MAGIC);
-			codec.readBuffer.put(CAConstants.CA_VERSION);
+			codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+			codec.readBuffer.put(PVAConstants.PVA_VERSION);
 			codec.readBuffer.put(invalidFlagsValues[i]);
 			codec.readBuffer.put((byte)0x23);
 			codec.readBuffer.putInt(0);
@@ -396,8 +396,8 @@ public class AbstractCodecTest extends TestCase {
 	public void testInvalidHeaderPayloadNotRead() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
@@ -414,8 +414,8 @@ public class AbstractCodecTest extends TestCase {
 	public void testHeaderSplitRead() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x01);
 		codec.readBuffer.flip();
 		
@@ -440,8 +440,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.receivedAppMessages.size());
 		
 		// app, no payload
-		CAMessage header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedControlMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x01);
 		assertEquals(header.command, (byte)0x23);
 		assertEquals(header.payloadSize, 0x456789AB);
@@ -453,12 +453,12 @@ public class AbstractCodecTest extends TestCase {
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
 		codec.readBuffer.put((byte)0x23);
-		codec.readBuffer.putInt(CAConstants.CA_ALIGNMENT);
-		for (int i = 0; i < CAConstants.CA_ALIGNMENT; i++)
+		codec.readBuffer.putInt(PVAConstants.PVA_ALIGNMENT);
+		for (int i = 0; i < PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)i);
 		codec.readBuffer.flip();
 		
@@ -470,10 +470,10 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 
 		// app, no payload
-		CAMessage header = codec.receivedAppMessages.get(0);
+		PVAMessage header = codec.receivedAppMessages.get(0);
 		assertNotNull(header.payload);
 		header.payload.flip();
-		assertEquals(CAConstants.CA_ALIGNMENT, header.payload.limit());
+		assertEquals(PVAConstants.PVA_ALIGNMENT, header.payload.limit());
 	}
 	
 	public void testNormalAlignment() throws Throwable
@@ -481,29 +481,29 @@ public class AbstractCodecTest extends TestCase {
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
 		codec.readBuffer.put((byte)0x23);
-		int payloadSize1 = CAConstants.CA_ALIGNMENT+1;
+		int payloadSize1 = PVAConstants.PVA_ALIGNMENT+1;
 		codec.readBuffer.putInt(payloadSize1);
 		for (int i = 0; i < payloadSize1; i++)
 			codec.readBuffer.put((byte)i);
 		// align
-		int aligned = AbstractCodec.alignedValue(payloadSize1, CAConstants.CA_ALIGNMENT);
+		int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize1; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
 		
 
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
 		codec.readBuffer.put((byte)0x45);
-		int payloadSize2 = 2*CAConstants.CA_ALIGNMENT-1;
+		int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT-1;
 		codec.readBuffer.putInt(payloadSize2);
 		for (int i = 0; i < payloadSize2; i++)
 			codec.readBuffer.put((byte)i);
-		aligned = AbstractCodec.alignedValue(payloadSize2, CAConstants.CA_ALIGNMENT);
+		aligned = AbstractCodec.alignedValue(payloadSize2, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize2; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
 	
@@ -515,7 +515,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(2, codec.receivedAppMessages.size());
 
-		CAMessage msg = codec.receivedAppMessages.get(0);
+		PVAMessage msg = codec.receivedAppMessages.get(0);
 		assertEquals(msg.payloadSize, payloadSize1);
 		assertNotNull(msg.payload);
 		msg.payload.flip();
@@ -535,7 +535,7 @@ public class AbstractCodecTest extends TestCase {
 	public void testSplitAlignment() throws Throwable
 	{
 		// "<=" used instead of "==" to suppress compiler warning
-		if (CAConstants.CA_ALIGNMENT <= 1)
+		if (PVAConstants.PVA_ALIGNMENT <= 1)
 			return;
 		
 		// used to suppress dead code
@@ -543,16 +543,16 @@ public class AbstractCodecTest extends TestCase {
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
 		codec.readBuffer.put((byte)0x23);
-		final int payloadSize1 = CAConstants.CA_ALIGNMENT+1;
+		final int payloadSize1 = PVAConstants.PVA_ALIGNMENT+1;
 		codec.readBuffer.putInt(payloadSize1);
 		for (int i = 0; i < payloadSize1-2; i++)
 			codec.readBuffer.put((byte)i);
 		
-		final int payloadSize2 = 2*CAConstants.CA_ALIGNMENT-1;
+		final int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT-1;
 
 		ReadPollOneCallback pollCB = new ReadPollOneCallback() {
 			
@@ -565,13 +565,13 @@ public class AbstractCodecTest extends TestCase {
 					for (int i = payloadSize1-2; i < payloadSize1; i++)
 						codec.readBuffer.put((byte)i);
 					// align
-					int aligned = AbstractCodec.alignedValue(payloadSize1, CAConstants.CA_ALIGNMENT);
+					int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 					for (int i = payloadSize1; i < aligned; i++)
 						codec.readBuffer.put((byte)0xFF);
 					
 	
-					codec.readBuffer.put(CAConstants.CA_MAGIC);
-					codec.readBuffer.put(CAConstants.CA_VERSION);
+					codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+					codec.readBuffer.put(PVAConstants.PVA_VERSION);
 					codec.readBuffer.put((byte)0x80);
 					codec.readBuffer.put((byte)0x45);
 					codec.readBuffer.putInt(payloadSize2);
@@ -584,7 +584,7 @@ public class AbstractCodecTest extends TestCase {
 				else if (codec.readPollOneCount == 2)
 				{
 					codec.readBuffer.clear();
-					int aligned = AbstractCodec.alignedValue(payloadSize2, CAConstants.CA_ALIGNMENT);
+					int aligned = AbstractCodec.alignedValue(payloadSize2, PVAConstants.PVA_ALIGNMENT);
 					for (int i = payloadSize2; i < aligned; i++)
 						codec.readBuffer.put((byte)0xFF);
 					codec.readBuffer.flip();
@@ -605,7 +605,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(2, codec.receivedAppMessages.size());
 		assertEquals(2, codec.readPollOneCount);
 
-		CAMessage msg = codec.receivedAppMessages.get(0);
+		PVAMessage msg = codec.receivedAppMessages.get(0);
 		assertEquals(msg.payloadSize, payloadSize1);
 		assertNotNull(msg.payload);
 		msg.payload.flip();
@@ -629,49 +629,49 @@ public class AbstractCodecTest extends TestCase {
 		codec.readPayload = true;
 		
 		// 1st
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x90);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize1 = CAConstants.CA_ALIGNMENT;
+		final int payloadSize1 = PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize1);
 		int c = 0;
 		for (int i = 0; i < payloadSize1; i++)
 			codec.readBuffer.put((byte)(c++));
 		
 		// 2nd
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xB0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize2 = 2*CAConstants.CA_ALIGNMENT;
+		final int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize2);
 		for (int i = 0; i < payloadSize2; i++)
 			codec.readBuffer.put((byte)(c++));
 		
 		// control in between
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x81);
 		codec.readBuffer.put((byte)0xEE);
 		codec.readBuffer.putInt(0xDDCCBBAA);
 
 		// 3rd
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xB0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize3 = CAConstants.CA_ALIGNMENT;
+		final int payloadSize3 = PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize3);
 		for (int i = 0; i < payloadSize3; i++)
 			codec.readBuffer.put((byte)(c++));
 		
 		// 4t (last)
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xA0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize4 = 2*CAConstants.CA_ALIGNMENT;
+		final int payloadSize4 = 2*PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize4);
 		for (int i = 0; i < payloadSize4; i++)
 			codec.readBuffer.put((byte)(c++));
@@ -689,7 +689,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		assertEquals(0, codec.readPollOneCount);
 
-		CAMessage msg = codec.receivedAppMessages.get(0);
+		PVAMessage msg = codec.receivedAppMessages.get(0);
 		assertNotNull(msg.payload);
 		msg.payload.flip();
 		assertEquals(payloadSizeSum, msg.payload.limit());
@@ -698,7 +698,7 @@ public class AbstractCodecTest extends TestCase {
 
 		// control
 		msg = codec.receivedControlMessages.get(0);
-		assertEquals(msg.version, CAConstants.CA_VERSION);
+		assertEquals(msg.version, PVAConstants.PVA_VERSION);
 		assertEquals(msg.flags, (byte)0x81);
 		assertEquals(msg.command, (byte)0xEE);
 		assertEquals(msg.payloadSize, 0xDDCCBBAA);
@@ -711,49 +711,49 @@ public class AbstractCodecTest extends TestCase {
 		codec.readPayload = true;
 		
 		// 1st
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x90);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize1 = CAConstants.CA_ALIGNMENT;
+		final int payloadSize1 = PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize1);
 		int c = 0;
 		for (int i = 0; i < payloadSize1; i++)
 			codec.readBuffer.put((byte)(c++));
 		
 		// 2nd
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x90);	// invalid flag, should be 0xB0
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize2 = 2*CAConstants.CA_ALIGNMENT;
+		final int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize2);
 		for (int i = 0; i < payloadSize2; i++)
 			codec.readBuffer.put((byte)(c++));
 		
 		// control in between
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x81);
 		codec.readBuffer.put((byte)0xEE);
 		codec.readBuffer.putInt(0xDDCCBBAA);
 
 		// 3rd
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xB0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize3 = CAConstants.CA_ALIGNMENT;
+		final int payloadSize3 = PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize3);
 		for (int i = 0; i < payloadSize3; i++)
 			codec.readBuffer.put((byte)(c++));
 		
 		// 4t (last)
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xA0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize4 = 2*CAConstants.CA_ALIGNMENT;
+		final int payloadSize4 = 2*PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize4);
 		for (int i = 0; i < payloadSize4; i++)
 			codec.readBuffer.put((byte)(c++));
@@ -777,74 +777,74 @@ public class AbstractCodecTest extends TestCase {
 		codec.readPayload = true;
 		
 		// 1st
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x90);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize1 = CAConstants.CA_ALIGNMENT+1;
+		final int payloadSize1 = PVAConstants.PVA_ALIGNMENT+1;
 		codec.readBuffer.putInt(payloadSize1);
 		int c = 0;
 		for (int i = 0; i < payloadSize1; i++)
 			codec.readBuffer.put((byte)(c++));
-		int aligned = AbstractCodec.alignedValue(payloadSize1, CAConstants.CA_ALIGNMENT);
+		int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize1; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
 		
 		
 		// 2nd
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xB0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize2 = 2*CAConstants.CA_ALIGNMENT-1;
-		final int payloadSize2Real = payloadSize2 + payloadSize1 % CAConstants.CA_ALIGNMENT;
+		final int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT-1;
+		final int payloadSize2Real = payloadSize2 + payloadSize1 % PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize2Real);
 
 		// pre-message padding 
-		for (int i = 0; i < payloadSize1 % CAConstants.CA_ALIGNMENT; i++)
+		for (int i = 0; i < payloadSize1 % PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)0xEE);
 		
 		for (int i = 0; i < payloadSize2; i++)
 			codec.readBuffer.put((byte)(c++));
-		aligned = AbstractCodec.alignedValue(payloadSize2Real, CAConstants.CA_ALIGNMENT);
+		aligned = AbstractCodec.alignedValue(payloadSize2Real, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize2Real; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
 		
 		// 3rd
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xB0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize3 = CAConstants.CA_ALIGNMENT+2;
-		final int payloadSize3Real = payloadSize3 + payloadSize2Real % CAConstants.CA_ALIGNMENT;
+		final int payloadSize3 = PVAConstants.PVA_ALIGNMENT+2;
+		final int payloadSize3Real = payloadSize3 + payloadSize2Real % PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize3Real);
 
 		// pre-message padding required
-		for (int i = 0; i < payloadSize2Real % CAConstants.CA_ALIGNMENT; i++)
+		for (int i = 0; i < payloadSize2Real % PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)0xEE);
 		
 		for (int i = 0; i < payloadSize3; i++)
 			codec.readBuffer.put((byte)(c++));
-		aligned = AbstractCodec.alignedValue(payloadSize3Real, CAConstants.CA_ALIGNMENT);
+		aligned = AbstractCodec.alignedValue(payloadSize3Real, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize3Real; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
 		
 		// 4t (last)
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0xA0);
 		codec.readBuffer.put((byte)0x01);
-		final int payloadSize4 = 2*CAConstants.CA_ALIGNMENT+3;
-		final int payloadSize4Real = payloadSize4 + payloadSize3Real % CAConstants.CA_ALIGNMENT;
+		final int payloadSize4 = 2*PVAConstants.PVA_ALIGNMENT+3;
+		final int payloadSize4Real = payloadSize4 + payloadSize3Real % PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize4Real);
 
 		// pre-message padding required
-		for (int i = 0; i < payloadSize3Real % CAConstants.CA_ALIGNMENT; i++)
+		for (int i = 0; i < payloadSize3Real % PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)0xEE);
 		
 		for (int i = 0; i < payloadSize4; i++)
 			codec.readBuffer.put((byte)(c++));
-		aligned = AbstractCodec.alignedValue(payloadSize4Real, CAConstants.CA_ALIGNMENT);
+		aligned = AbstractCodec.alignedValue(payloadSize4Real, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize4Real; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
 		
@@ -861,7 +861,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		assertEquals(0, codec.readPollOneCount);
 
-		CAMessage msg = codec.receivedAppMessages.get(0);
+		PVAMessage msg = codec.receivedAppMessages.get(0);
 		assertNotNull(msg.payload);
 		msg.payload.flip();
 		assertEquals(payloadSizeSum, msg.payload.limit());
@@ -872,15 +872,15 @@ public class AbstractCodecTest extends TestCase {
 	public void testSegmentedSplitMessage() throws Throwable
 	{
 		for (int firstMessagePayloadSize = 1;	// cannot be zero
-		firstMessagePayloadSize <= 3*CAConstants.CA_ALIGNMENT;
+		firstMessagePayloadSize <= 3*PVAConstants.PVA_ALIGNMENT;
 		firstMessagePayloadSize++)
 		{
 			for (int secondMessagePayloadSize = 0;
-					secondMessagePayloadSize <= 2*CAConstants.CA_ALIGNMENT;
+					secondMessagePayloadSize <= 2*PVAConstants.PVA_ALIGNMENT;
 					secondMessagePayloadSize++)
 			{
 				for (int thirdMessagePayloadSize = 1;		// cannot be zero
-					thirdMessagePayloadSize <= 2*CAConstants.CA_ALIGNMENT;
+					thirdMessagePayloadSize <= 2*PVAConstants.PVA_ALIGNMENT;
 					thirdMessagePayloadSize++)
 				{
 					//System.out.println(firstMessagePayloadSize + " / " + secondMessagePayloadSize + "  / " + thirdMessagePayloadSize);
@@ -891,8 +891,8 @@ public class AbstractCodecTest extends TestCase {
 						codec.readPayload = true;
 						
 						// 1st
-						codec.readBuffer.put(CAConstants.CA_MAGIC);
-						codec.readBuffer.put(CAConstants.CA_VERSION);
+						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+						codec.readBuffer.put(PVAConstants.PVA_VERSION);
 						codec.readBuffer.put((byte)0x90);
 						codec.readBuffer.put((byte)0x01);
 						final int payloadSize1 = firstMessagePayloadSize;
@@ -900,45 +900,45 @@ public class AbstractCodecTest extends TestCase {
 						int c = 0;
 						for (int i = 0; i < payloadSize1; i++)
 							codec.readBuffer.put((byte)(c++));
-						int aligned = AbstractCodec.alignedValue(payloadSize1, CAConstants.CA_ALIGNMENT);
+						int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize1; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
 						
 						// 2nd
-						codec.readBuffer.put(CAConstants.CA_MAGIC);
-						codec.readBuffer.put(CAConstants.CA_VERSION);
+						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+						codec.readBuffer.put(PVAConstants.PVA_VERSION);
 						codec.readBuffer.put((byte)0xB0);
 						codec.readBuffer.put((byte)0x01);
 						final int payloadSize2 = secondMessagePayloadSize;
-						final int payloadSize2Real = payloadSize2 + payloadSize1 % CAConstants.CA_ALIGNMENT;
+						final int payloadSize2Real = payloadSize2 + payloadSize1 % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize2Real);
 				
 						// pre-message padding 
-						for (int i = 0; i < payloadSize1 % CAConstants.CA_ALIGNMENT; i++)
+						for (int i = 0; i < payloadSize1 % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
 						
 						for (int i = 0; i < payloadSize2; i++)
 							codec.readBuffer.put((byte)(c++));
-						aligned = AbstractCodec.alignedValue(payloadSize2Real, CAConstants.CA_ALIGNMENT);
+						aligned = AbstractCodec.alignedValue(payloadSize2Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize2Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
 						
 						// 3rd
-						codec.readBuffer.put(CAConstants.CA_MAGIC);
-						codec.readBuffer.put(CAConstants.CA_VERSION);
+						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+						codec.readBuffer.put(PVAConstants.PVA_VERSION);
 						codec.readBuffer.put((byte)0xA0);
 						codec.readBuffer.put((byte)0x01);
 						final int payloadSize3 = thirdMessagePayloadSize;
-						final int payloadSize3Real = payloadSize3 + payloadSize2Real % CAConstants.CA_ALIGNMENT;
+						final int payloadSize3Real = payloadSize3 + payloadSize2Real % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize3Real);
 				
 						// pre-message padding required
-						for (int i = 0; i < payloadSize2Real % CAConstants.CA_ALIGNMENT; i++)
+						for (int i = 0; i < payloadSize2Real % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
 						
 						for (int i = 0; i < payloadSize3; i++)
 							codec.readBuffer.put((byte)(c++));
-						aligned = AbstractCodec.alignedValue(payloadSize3Real, CAConstants.CA_ALIGNMENT);
+						aligned = AbstractCodec.alignedValue(payloadSize3Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize3Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
 						
@@ -988,7 +988,7 @@ public class AbstractCodecTest extends TestCase {
 						else
 							assertEquals(1, codec.readPollOneCount);
 				
-						CAMessage msg = codec.receivedAppMessages.get(0);
+						PVAMessage msg = codec.receivedAppMessages.get(0);
 						assertNotNull(msg.payload);
 						msg.payload.flip();
 						assertEquals(payloadSizeSum, msg.payload.limit());
@@ -1013,8 +1013,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
-		CAMessage header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedControlMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, 0x23);
 		assertEquals(header.payloadSize, 0x456789AB);
@@ -1040,14 +1040,14 @@ public class AbstractCodecTest extends TestCase {
 		
 		// app, no payload
 		header = codec.receivedAppMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x00);
 		assertEquals(header.command, (byte)0x20);
 		assertEquals(header.payloadSize, 0x00000000);
 
 		// control
 		header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
@@ -1059,8 +1059,8 @@ public class AbstractCodecTest extends TestCase {
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		codec.startMessage((byte)0x23, 0);
-		codec.ensureBuffer(CAConstants.CA_ALIGNMENT);
-		for (int i = 0; i < CAConstants.CA_ALIGNMENT; i++)
+		codec.ensureBuffer(PVAConstants.PVA_ALIGNMENT);
+		for (int i = 0; i < PVAConstants.PVA_ALIGNMENT; i++)
 			codec.getSendBuffer().put((byte)i);
 		codec.endMessage();
 		
@@ -1074,10 +1074,10 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 
 		// app, no payload
-		CAMessage header = codec.receivedAppMessages.get(0);
+		PVAMessage header = codec.receivedAppMessages.get(0);
 		assertNotNull(header.payload);
 		header.payload.flip();
-		assertEquals(CAConstants.CA_ALIGNMENT, header.payload.limit());
+		assertEquals(PVAConstants.PVA_ALIGNMENT, header.payload.limit());
 	}
 
 	public void testStartMessageNormalAlignment() throws Throwable
@@ -1086,14 +1086,14 @@ public class AbstractCodecTest extends TestCase {
 		codec.readPayload = true;
 		
 		codec.startMessage((byte)0x23, 0);
-		int payloadSize1 = CAConstants.CA_ALIGNMENT+1;
+		int payloadSize1 = PVAConstants.PVA_ALIGNMENT+1;
 		codec.ensureBuffer(payloadSize1);
 		for (int i = 0; i < payloadSize1; i++)
 			codec.getSendBuffer().put((byte)i);
 		codec.endMessage();
 		
 		codec.startMessage((byte)0x45, 0);
-		int payloadSize2 = 2*CAConstants.CA_ALIGNMENT-1;
+		int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT-1;
 		codec.ensureBuffer(payloadSize2);
 		for (int i = 0; i < payloadSize2; i++)
 			codec.getSendBuffer().put((byte)i);
@@ -1108,7 +1108,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(2, codec.receivedAppMessages.size());
 
-		CAMessage msg = codec.receivedAppMessages.get(0);
+		PVAMessage msg = codec.receivedAppMessages.get(0);
 		assertEquals(msg.payloadSize, payloadSize1);
 		assertNotNull(msg.payload);
 		msg.payload.flip();
@@ -1135,22 +1135,22 @@ public class AbstractCodecTest extends TestCase {
 		
 		int c = 0;
 		
-		final int payloadSize1 = CAConstants.CA_ALIGNMENT;
+		final int payloadSize1 = PVAConstants.PVA_ALIGNMENT;
 		for (int i = 0; i < payloadSize1; i++)
 			codec.getSendBuffer().put((byte)(c++));
 		codec.flush(false);
 		
-		final int payloadSize2 = 2*CAConstants.CA_ALIGNMENT;
+		final int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT;
 		for (int i = 0; i < payloadSize2; i++)
 			codec.getSendBuffer().put((byte)(c++));
 		codec.flush(false);
 
-		final int payloadSize3 = CAConstants.CA_ALIGNMENT;
+		final int payloadSize3 = PVAConstants.PVA_ALIGNMENT;
 		for (int i = 0; i < payloadSize3; i++)
 			codec.getSendBuffer().put((byte)(c++));
 		codec.flush(false);
 		
-		final int payloadSize4 = 2*CAConstants.CA_ALIGNMENT;
+		final int payloadSize4 = 2*PVAConstants.PVA_ALIGNMENT;
 		for (int i = 0; i < payloadSize4; i++)
 			codec.getSendBuffer().put((byte)(c++));
 		codec.endMessage();
@@ -1168,7 +1168,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		assertEquals(0, codec.readPollOneCount);
 
-		CAMessage msg = codec.receivedAppMessages.get(0);
+		PVAMessage msg = codec.receivedAppMessages.get(0);
 		assertNotNull(msg.payload);
 		msg.payload.flip();
 		assertEquals(payloadSizeSum, msg.payload.limit());
@@ -1179,19 +1179,19 @@ public class AbstractCodecTest extends TestCase {
 	public void testStartMessageSegmentedMessageAlignment() throws Throwable
 	{
 		for (int firstMessagePayloadSize = 1;	// cannot be zero
-			firstMessagePayloadSize <= 3*CAConstants.CA_ALIGNMENT;
+			firstMessagePayloadSize <= 3*PVAConstants.PVA_ALIGNMENT;
 			firstMessagePayloadSize++)
 		{
 			for (int secondMessagePayloadSize = 0;
-					secondMessagePayloadSize <= 2*CAConstants.CA_ALIGNMENT;
+					secondMessagePayloadSize <= 2*PVAConstants.PVA_ALIGNMENT;
 					secondMessagePayloadSize++)
 			{
 				for (int thirdMessagePayloadSize = 1;		// cannot be zero
-					thirdMessagePayloadSize <= 2*CAConstants.CA_ALIGNMENT;
+					thirdMessagePayloadSize <= 2*PVAConstants.PVA_ALIGNMENT;
 					thirdMessagePayloadSize++)
 				{
 					for (int fourthMessagePayloadSize = 1;		// cannot be zero
-					fourthMessagePayloadSize <= 2*CAConstants.CA_ALIGNMENT;
+					fourthMessagePayloadSize <= 2*PVAConstants.PVA_ALIGNMENT;
 					fourthMessagePayloadSize++)
 					{
 						final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
@@ -1234,7 +1234,7 @@ public class AbstractCodecTest extends TestCase {
 						assertEquals(1, codec.receivedAppMessages.size());
 						assertEquals(0, codec.readPollOneCount);
 				
-						CAMessage msg = codec.receivedAppMessages.get(0);
+						PVAMessage msg = codec.receivedAppMessages.get(0);
 						assertNotNull(msg.payload);
 						msg.payload.flip();
 						assertEquals(payloadSizeSum, msg.payload.limit());
@@ -1252,8 +1252,8 @@ public class AbstractCodecTest extends TestCase {
 		codec.readPayload = true;
 		codec.disconnected = true;
 		
-		codec.readBuffer.put(CAConstants.CA_MAGIC);
-		codec.readBuffer.put(CAConstants.CA_VERSION);
+		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x01);
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
@@ -1270,15 +1270,15 @@ public class AbstractCodecTest extends TestCase {
 	public void testSegmentedSplitConnectionLoss() throws Throwable
 	{
 		for (int firstMessagePayloadSize = 1;	// cannot be zero
-		firstMessagePayloadSize <= 3*CAConstants.CA_ALIGNMENT;
+		firstMessagePayloadSize <= 3*PVAConstants.PVA_ALIGNMENT;
 		firstMessagePayloadSize++)
 		{
 			for (int secondMessagePayloadSize = 0;
-					secondMessagePayloadSize <= 2*CAConstants.CA_ALIGNMENT;
+					secondMessagePayloadSize <= 2*PVAConstants.PVA_ALIGNMENT;
 					secondMessagePayloadSize++)
 			{
 				for (int thirdMessagePayloadSize = 1;		// cannot be zero
-					thirdMessagePayloadSize <= 2*CAConstants.CA_ALIGNMENT;
+					thirdMessagePayloadSize <= 2*PVAConstants.PVA_ALIGNMENT;
 					thirdMessagePayloadSize++)
 				{
 					//System.out.println(firstMessagePayloadSize + " / " + secondMessagePayloadSize + "  / " + thirdMessagePayloadSize);
@@ -1289,8 +1289,8 @@ public class AbstractCodecTest extends TestCase {
 						codec.readPayload = true;
 						
 						// 1st
-						codec.readBuffer.put(CAConstants.CA_MAGIC);
-						codec.readBuffer.put(CAConstants.CA_VERSION);
+						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+						codec.readBuffer.put(PVAConstants.PVA_VERSION);
 						codec.readBuffer.put((byte)0x90);
 						codec.readBuffer.put((byte)0x01);
 						final int payloadSize1 = firstMessagePayloadSize;
@@ -1298,45 +1298,45 @@ public class AbstractCodecTest extends TestCase {
 						int c = 0;
 						for (int i = 0; i < payloadSize1; i++)
 							codec.readBuffer.put((byte)(c++));
-						int aligned = AbstractCodec.alignedValue(payloadSize1, CAConstants.CA_ALIGNMENT);
+						int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize1; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
 						
 						// 2nd
-						codec.readBuffer.put(CAConstants.CA_MAGIC);
-						codec.readBuffer.put(CAConstants.CA_VERSION);
+						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+						codec.readBuffer.put(PVAConstants.PVA_VERSION);
 						codec.readBuffer.put((byte)0xB0);
 						codec.readBuffer.put((byte)0x01);
 						final int payloadSize2 = secondMessagePayloadSize;
-						final int payloadSize2Real = payloadSize2 + payloadSize1 % CAConstants.CA_ALIGNMENT;
+						final int payloadSize2Real = payloadSize2 + payloadSize1 % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize2Real);
 				
 						// pre-message padding 
-						for (int i = 0; i < payloadSize1 % CAConstants.CA_ALIGNMENT; i++)
+						for (int i = 0; i < payloadSize1 % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
 						
 						for (int i = 0; i < payloadSize2; i++)
 							codec.readBuffer.put((byte)(c++));
-						aligned = AbstractCodec.alignedValue(payloadSize2Real, CAConstants.CA_ALIGNMENT);
+						aligned = AbstractCodec.alignedValue(payloadSize2Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize2Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
 						
 						// 3rd
-						codec.readBuffer.put(CAConstants.CA_MAGIC);
-						codec.readBuffer.put(CAConstants.CA_VERSION);
+						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+						codec.readBuffer.put(PVAConstants.PVA_VERSION);
 						codec.readBuffer.put((byte)0xA0);
 						codec.readBuffer.put((byte)0x01);
 						final int payloadSize3 = thirdMessagePayloadSize;
-						final int payloadSize3Real = payloadSize3 + payloadSize2Real % CAConstants.CA_ALIGNMENT;
+						final int payloadSize3Real = payloadSize3 + payloadSize2Real % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize3Real);
 				
 						// pre-message padding required
-						for (int i = 0; i < payloadSize2Real % CAConstants.CA_ALIGNMENT; i++)
+						for (int i = 0; i < payloadSize2Real % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
 						
 						for (int i = 0; i < payloadSize3; i++)
 							codec.readBuffer.put((byte)(c++));
-						aligned = AbstractCodec.alignedValue(payloadSize3Real, CAConstants.CA_ALIGNMENT);
+						aligned = AbstractCodec.alignedValue(payloadSize3Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize3Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
 						
@@ -1382,8 +1382,8 @@ public class AbstractCodecTest extends TestCase {
 						/*
 						assertEquals(0, codec.receivedControlMessages.size());
 						boolean splitAtLastMessagePadding = splitAt != realReadBufferEnd &&
-															AbstractCodec.alignedValue(splitAt, CAConstants.CA_ALIGNMENT) ==
-															AbstractCodec.alignedValue(realReadBufferEnd, CAConstants.CA_ALIGNMENT);
+															AbstractCodec.alignedValue(splitAt, PVAConstants.PVA_ALIGNMENT) ==
+															AbstractCodec.alignedValue(realReadBufferEnd, PVAConstants.PVA_ALIGNMENT);
 						assertEquals(splitAtLastMessagePadding ? 1 : 0, codec.receivedAppMessages.size());
 						*/
 					}
@@ -1464,15 +1464,15 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		
 		// app, no payload
-		CAMessage header = codec.receivedAppMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedAppMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x80);
 		assertEquals(header.command, (byte)0x20);
 		assertEquals(header.payloadSize, 0x00000000);
 
 		// control
 		header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
@@ -1516,14 +1516,14 @@ public class AbstractCodecTest extends TestCase {
 		};
 
 		// thread not right
-		codec.enqueueSendRequest(sender, CAConstants.CA_MESSAGE_HEADER_SIZE);
+		codec.enqueueSendRequest(sender, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 		assertEquals(1, codec.scheduleSendCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
 
 		codec.setSenderThread();
 		// not empty queue
-		codec.enqueueSendRequest(sender2, CAConstants.CA_MESSAGE_HEADER_SIZE);
+		codec.enqueueSendRequest(sender2, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 		assertEquals(2, codec.scheduleSendCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
@@ -1543,15 +1543,15 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		
 		// app, no payload
-		CAMessage header = codec.receivedAppMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedAppMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x80);
 		assertEquals(header.command, (byte)0x20);
 		assertEquals(header.payloadSize, 0x00000000);
 
 		// control
 		header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
@@ -1559,8 +1559,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.getSendBuffer().position());
 		
 		// now queue is empty and thread is right
-		codec.enqueueSendRequest(sender2, CAConstants.CA_MESSAGE_HEADER_SIZE);
-		assertEquals(CAConstants.CA_MESSAGE_HEADER_SIZE, codec.getSendBuffer().position());
+		codec.enqueueSendRequest(sender2, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+		assertEquals(PVAConstants.PVA_MESSAGE_HEADER_SIZE, codec.getSendBuffer().position());
 		assertEquals(3, codec.scheduleSendCount);
 		assertEquals(1, codec.sendCompletedCount);
 		codec.processWrite();
@@ -1571,7 +1571,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		
 		header = codec.receivedControlMessages.get(1);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
@@ -1579,7 +1579,7 @@ public class AbstractCodecTest extends TestCase {
 	
 	public void testSendPerPartes() throws Throwable
 	{
-		final int bytesToSent = DEFAULT_BUFFER_SIZE - 2*CAConstants.CA_MESSAGE_HEADER_SIZE;
+		final int bytesToSent = DEFAULT_BUFFER_SIZE - 2*PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		
@@ -1616,8 +1616,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		
 		// app
-		CAMessage header = codec.receivedAppMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedAppMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x80);
 		assertEquals(header.command, (byte)0x12);
 		assertEquals(header.payloadSize, bytesToSent);
@@ -1734,8 +1734,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.receivedAppMessages.size());
 		
 		// app
-		CAMessage header = codec.receivedAppMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedAppMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)(0x80 | 0x10));	// segmented
 		assertEquals(header.command, (byte)0x12);
 		//assertEquals(header.payloadSize, bytesToSent);	payloadSize contains only first message payload size
@@ -1804,7 +1804,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.writeBuffer.position());
 	}
 	
-	// used to suppress "if (CAConstants.CA_ALIGNMENT > 1)" dead code
+	// used to suppress "if (PVAConstants.PVA_ALIGNMENT > 1)" dead code
 	@SuppressWarnings("unused")
 	public void testInvalidArguments() throws Throwable
 	{
@@ -1826,7 +1826,7 @@ public class AbstractCodecTest extends TestCase {
 			// OK
 		}
 
-		if (CAConstants.CA_ALIGNMENT > 1)
+		if (PVAConstants.PVA_ALIGNMENT > 1)
 		{
 			try
 			{
@@ -1934,8 +1934,8 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(0, codec.receivedAppMessages.size());
 		/*
 		// control must go through
-		CAMessage header = codec.receivedControlMessages.get(0);
-		assertEquals(header.version, CAConstants.CA_VERSION);
+		PVAMessage header = codec.receivedControlMessages.get(0);
+		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
@@ -1992,7 +1992,7 @@ public class AbstractCodecTest extends TestCase {
 		
 		Thread.sleep(3000);
 
-		assertEquals(CAConstants.CA_MESSAGE_HEADER_SIZE, codec.writeBuffer.position());
+		assertEquals(PVAConstants.PVA_MESSAGE_HEADER_SIZE, codec.writeBuffer.position());
 		assertEquals(true, processTreadExited.get());
 		
 	}

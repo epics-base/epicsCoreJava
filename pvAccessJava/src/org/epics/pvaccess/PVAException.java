@@ -15,10 +15,10 @@
 package org.epics.pvaccess;
 
 /**
- * Base CA exception.
+ * Base PVA exception.
  * @author msekoranja
  */
-public class CAException extends Exception {
+public class PVAException extends Exception {
 
 	/**
 	 * Serializartion version ID.
@@ -28,20 +28,20 @@ public class CAException extends Exception {
 	/**
 	 * Default constructor.
 	 */
-	protected CAException() {
+	protected PVAException() {
 	}
 
 	/**
 	 * @param message
 	 */
-	public CAException(String message) {
+	public PVAException(String message) {
 		super(message);
 	}
 
 	/**
 	 * @param cause
 	 */
-	public CAException(Throwable cause) {
+	public PVAException(Throwable cause) {
 		super(cause);
 	}
 
@@ -49,7 +49,7 @@ public class CAException extends Exception {
 	 * @param message
 	 * @param cause
 	 */
-	public CAException(String message, Throwable cause) {
+	public PVAException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

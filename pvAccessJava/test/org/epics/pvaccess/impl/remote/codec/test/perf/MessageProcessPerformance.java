@@ -4,7 +4,7 @@
 package org.epics.pvaccess.impl.remote.codec.test.perf;
 
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
 
 import com.sun.japex.Constants;
@@ -18,8 +18,8 @@ import com.sun.japex.TestCase;
 public class MessageProcessPerformance extends JapexDriverBase {
 
 	private static int MAX_MESSAGES_IN_BUFFER = 1000;
-	private static int DEFAULT_BUFFER_SIZE = (CAConstants.CA_MESSAGE_HEADER_SIZE+64)*MAX_MESSAGES_IN_BUFFER+AbstractCodec.MAX_ENSURE_SIZE;
-	static int MAX_PAYLOAD_SIZE = DEFAULT_BUFFER_SIZE/MAX_MESSAGES_IN_BUFFER-CAConstants.CA_MESSAGE_HEADER_SIZE;
+	private static int DEFAULT_BUFFER_SIZE = (PVAConstants.PVA_MESSAGE_HEADER_SIZE+64)*MAX_MESSAGES_IN_BUFFER+AbstractCodec.MAX_ENSURE_SIZE;
+	static int MAX_PAYLOAD_SIZE = DEFAULT_BUFFER_SIZE/MAX_MESSAGES_IN_BUFFER-PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 	
 	private TestCodec codec;
 	
@@ -56,15 +56,15 @@ public class MessageProcessPerformance extends JapexDriverBase {
 		if (payloadSize > MAX_PAYLOAD_SIZE)
 			throw new IllegalArgumentException("payloadSize > MAX_PAYLOAD_SIZE");
 
-		int alignedPayloadSize = AbstractCodec.alignedValue(payloadSize, CAConstants.CA_ALIGNMENT);
-		bufferLimit = messagesInBuffer * (CAConstants.CA_MESSAGE_HEADER_SIZE+alignedPayloadSize);
+		int alignedPayloadSize = AbstractCodec.alignedValue(payloadSize, PVAConstants.PVA_ALIGNMENT);
+		bufferLimit = messagesInBuffer * (PVAConstants.PVA_MESSAGE_HEADER_SIZE+alignedPayloadSize);
 
 		codec.reset();
 		byte flags = applicationMessage ? (byte)0x80 : (byte)0x81; 
 		for (int i = 0; i < messagesInBuffer; i++)
 		{
-			codec.readBuffer.put(CAConstants.CA_MAGIC);
-			codec.readBuffer.put(CAConstants.CA_VERSION);
+			codec.readBuffer.put(PVAConstants.PVA_MAGIC);
+			codec.readBuffer.put(PVAConstants.PVA_VERSION);
 			codec.readBuffer.put(flags);
 			codec.readBuffer.put((byte)0x23);
 			codec.readBuffer.putInt(payloadSize);

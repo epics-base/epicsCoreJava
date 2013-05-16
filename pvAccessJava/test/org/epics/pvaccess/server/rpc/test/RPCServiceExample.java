@@ -1,6 +1,6 @@
 package org.epics.pvaccess.server.rpc.test;
 
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvaccess.server.rpc.RPCServer;
 import org.epics.pvaccess.server.rpc.RPCService;
@@ -38,7 +38,7 @@ public class RPCServiceExample {
 		}
 	}
 	
-	public static void main(String[] args) throws CAException
+	public static void main(String[] args) throws PVAException
 	{
 
 		RPCServer server = new RPCServer();

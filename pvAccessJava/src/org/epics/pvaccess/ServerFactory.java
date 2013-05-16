@@ -49,9 +49,9 @@ public class ServerFactory {
         
         /**
          * Initialize JCA context.
-         * @throws CAException	throws on any failure.
+         * @throws PVAException	throws on any failure.
          */
-        private void initialize() throws CAException {
+        private void initialize() throws PVAException {
             
     		// Create a context with default configuration values.
     		context = new ServerContextImpl();

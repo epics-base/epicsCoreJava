@@ -76,7 +76,7 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 	}
 
 	/**
-     * CA context.
+     * PVA context.
      */
     protected ClientContextImpl context = null;
     

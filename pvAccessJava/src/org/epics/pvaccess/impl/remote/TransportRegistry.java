@@ -23,7 +23,7 @@ import org.epics.pvaccess.util.IntHashMap;
 
 
 /**
- * Class to cache CA transports (connections to other hosts).
+ * Class to cache PVA transports (connections to other hosts).
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */

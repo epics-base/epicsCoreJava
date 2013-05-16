@@ -18,7 +18,7 @@ import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.client.impl.remote.BeaconHandler;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvdata.property.TimeStamp;
@@ -88,15 +88,15 @@ public class ServerStatusMonitor implements BeaconHandler {
 
 
     /**
-     * CA context.
+     * PVA context.
      */
     private BeaconMonitorContextImpl context = null;
     
     /**
      * Initialize JCA context.
-     * @throws CAException	throws on any failure.
+     * @throws PVAException	throws on any failure.
      */
-    private void initialize() throws CAException {
+    private void initialize() throws PVAException {
         
 		// Create a context with default configuration values.
 		context = new BeaconMonitorContextImpl(this);

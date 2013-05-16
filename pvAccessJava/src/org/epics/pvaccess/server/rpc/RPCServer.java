@@ -4,7 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.server.impl.remote.plugins.DefaultBeaconServerDataProvider;
 import org.epics.pvaccess.server.rpc.impl.RPCChannelProvider;
@@ -77,18 +77,18 @@ public class RPCServer {
 	/**
 	 * Run the server for a given amount of time.
 	 * @param seconds time (in seconds) to run the server, if <code>0</code> server is run until destroyed.
-	 * @throws CAException exception thrown in case of an unexpected error.
+	 * @throws PVAException exception thrown in case of an unexpected error.
 	 */
-	public void run(int seconds) throws CAException
+	public void run(int seconds) throws PVAException
 	{
 		serverContext.run(seconds);
 	}
 	
 	/**
 	 * Destroy (shutdown) the server.
-	 * @throws CAException exception thrown in case of an unexpected error.
+	 * @throws PVAException exception thrown in case of an unexpected error.
 	 */
-	public void destroy() throws CAException
+	public void destroy() throws PVAException
 	{
 		if (threadPoll == null)
 			serverContext.destroy();

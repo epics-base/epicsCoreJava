@@ -33,7 +33,7 @@ import org.epics.pvaccess.util.HexDump;
 
 
 /**
- * CA response handler - main handler which dispatches responses to appripriate handlers.
+ * PVA response handler - main handler which dispatches responses to appripriate handlers.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -99,7 +99,7 @@ public class ClientResponseHandler implements ResponseHandler {
 		{
 			context.getLogger().fine("Invalid (or unsupported) command: " + command + ".");
 			// TODO remove debug output
-			HexDump.hexDump("Invalid CA header " + command + " + , its payload buffer", payloadBuffer.array(), payloadBuffer.position(), payloadSize);
+			HexDump.hexDump("Invalid PVA header " + command + " + , its payload buffer", payloadBuffer.array(), payloadBuffer.position(), payloadSize);
 			return;
 		}
 		

@@ -150,7 +150,7 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				buffer.putShort((short)context.getServerPort());
 				
 				/*
-				if (count > CAConstants.MAX_SEARCH_BATCH_COUNT)
+				if (count > PVAConstants.MAX_SEARCH_BATCH_COUNT)
 					throw new IllegalArgumentException("too many search responses in a batch message");
 				*/
 				buffer.putShort((short)count);

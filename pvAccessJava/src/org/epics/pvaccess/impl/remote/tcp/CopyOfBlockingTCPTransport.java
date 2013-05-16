@@ -24,7 +24,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.ProtocolType;
 import org.epics.pvaccess.impl.remote.Transport;
@@ -87,12 +87,12 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	/**
 	 * Remote side transport receive buffer size.
 	 */
-	protected int remoteTransportReceiveBufferSize = CAConstants.MAX_TCP_RECV;
+	protected int remoteTransportReceiveBufferSize = PVAConstants.MAX_TCP_RECV;
 
 	/**
 	 * Remote side transport socket receive buffer size.
 	 */
-	protected int remoteTransportSocketReceiveBufferSize = CAConstants.MAX_TCP_RECV;
+	protected int remoteTransportSocketReceiveBufferSize = PVAConstants.MAX_TCP_RECV;
 
 	/**
 	 * Priority.
@@ -102,7 +102,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	// TODO to be implemeneted 
 	
 	/**
-	 * CAS response handler.
+	 * PVAS response handler.
 	 */
 	protected final ResponseHandler responseHandler;
 
@@ -175,7 +175,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	 * TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socket channel.
-	 * @param responseHandler response handler used to process CA headers.
+	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
 	 * @param priority transport priority.
 	 */
@@ -190,19 +190,19 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 		this.remoteTransportRevision = 0;
 		this.priority = priority;
 
-		socketBuffer = ByteBuffer.allocate(Math.max(CAConstants.MAX_TCP_RECV + MAX_ENSURE_DATA_BUFFER_SIZE, receiveBufferSize));
+		socketBuffer = ByteBuffer.allocate(Math.max(PVAConstants.MAX_TCP_RECV + MAX_ENSURE_DATA_BUFFER_SIZE, receiveBufferSize));
 		socketBuffer.position(socketBuffer.limit());
 		startPosition = socketBuffer.position();
 		
 		// allocate buffer
 		sendBuffer = ByteBuffer.allocate(socketBuffer.capacity());
-		maxPayloadSize = sendBuffer.capacity() - 2*CAConstants.CA_MESSAGE_HEADER_SIZE; // one for header, one for flow control
+		maxPayloadSize = sendBuffer.capacity() - 2*PVAConstants.PVA_MESSAGE_HEADER_SIZE; // one for header, one for flow control
 		
 		// get send buffer size
         try {
 			socketSendBufferSize = channel.socket().getSendBufferSize();
 		} catch (SocketException e) {
-			socketSendBufferSize = CAConstants.MAX_TCP_RECV;
+			socketSendBufferSize = PVAConstants.MAX_TCP_RECV;
 			context.getLogger().log(Level.WARNING, "Unable to retrieve socket send buffer size.", e);
 		}
 		
@@ -224,7 +224,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 			
 			@Override
 			public void run() {
-				while (!closed) processReadCached(false, null, CAConstants.CA_MESSAGE_HEADER_SIZE);
+				while (!closed) processReadCached(false, null, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 			}
 		}, "TCP-receive " + socketAddress);
 		//rcvThread.setPriority(Thread.MIN_PRIORITY);
@@ -345,7 +345,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	 * @see org.epics.pvaccess.impl.remote.Transport#getRevision()
 	 */
 	public byte getRevision() {
-		return CAConstants.CA_PROTOCOL_REVISION;
+		return PVAConstants.PVA_PROTOCOL_REVISION;
 	}
 
 	/**
@@ -386,7 +386,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 
 					// preserve alignment
 					final int currentStartPosition = startPosition = 
-						MAX_ENSURE_DATA_BUFFER_SIZE; // "TODO uncomment align" + currentPosition % CAConstants.CA_ALIGNMENT;
+						MAX_ENSURE_DATA_BUFFER_SIZE; // "TODO uncomment align" + currentPosition % PVAConstants.PVA_ALIGNMENT;
 					
 					// copy remaining bytes, if any
 					final int remainingBytes = socketBuffer.remaining();
@@ -428,16 +428,16 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 
 				if (stage == ReceiveStage.PROCESS_HEADER)
 				{
-					// ensure CAConstants.CA_MESSAGE_HEADER_SIZE bytes of data
-					if (socketBuffer.remaining() < CAConstants.CA_MESSAGE_HEADER_SIZE)
-						processReadCached(true, ReceiveStage.PROCESS_HEADER, CAConstants.CA_MESSAGE_HEADER_SIZE);
+					// ensure PVAConstants.PVA_MESSAGE_HEADER_SIZE bytes of data
+					if (socketBuffer.remaining() < PVAConstants.PVA_MESSAGE_HEADER_SIZE)
+						processReadCached(true, ReceiveStage.PROCESS_HEADER, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 
-					// first byte is CA_MAGIC
+					// first byte is PVA_MAGIC
 					// second byte version - major/minor nibble 
 					// check only major version for compatibility
 					final byte magic = socketBuffer.get();
 					version = socketBuffer.get(); 
-					if ((magic != CAConstants.CA_MAGIC) ||
+					if ((magic != PVAConstants.PVA_MAGIC) ||
 						((version >> 4) != 5))
 					{
 						// error... disconnect
@@ -474,7 +474,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 						// marker received back
 						else if (command == 1)
 						{
-							int difference = (int)totalBytesSent - payloadSize + CAConstants.CA_MESSAGE_HEADER_SIZE;
+							int difference = (int)totalBytesSent - payloadSize + PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 							// overrun check
 							if (difference < 0)
 								difference += Integer.MAX_VALUE;
@@ -775,7 +775,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 			// if not set skip marker otherwise set it
 			final int markerValue = markerToSend.getAndSet(0);
 			if (markerValue == 0)
-				sendBufferSentPosition = CAConstants.CA_MESSAGE_HEADER_SIZE;
+				sendBufferSentPosition = PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 			else
 				sendBuffer.putInt(4, markerValue);
 		}
@@ -831,7 +831,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
     	// NOTE: take care that nextMarkerPosition is set right
 		// fix position to be correct when buffer is cleared
     	// do not include pre-buffered flow control message; not 100% correct, but OK
-		nextMarkerPosition -= sendBuffer.position() - CAConstants.CA_MESSAGE_HEADER_SIZE;
+		nextMarkerPosition -= sendBuffer.position() - PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 		synchronized (sendQueue) {
 			flushRequested = false;
 		}
@@ -840,8 +840,8 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
     	sendPending = false;
 		
 		// prepare ACK marker
-		sendBuffer.put(CAConstants.CA_MAGIC);
-		sendBuffer.put(CAConstants.CA_VERSION);
+		sendBuffer.put(PVAConstants.PVA_MAGIC);
+		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)(0x01 | byteOrderFlag));	// control data
 		sendBuffer.put((byte)1);	// marker ACK
 		sendBuffer.putInt(0);
@@ -970,8 +970,8 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 							if (delay > 0) sendQueue.wait(delay);
 							if (sendQueue.size() == 0)
 							{
-//								if (hasMonitors || sendBuffer.position() > CAConstants.CA_MESSAGE_HEADER_SIZE)
-								if (sendBuffer.position() > CAConstants.CA_MESSAGE_HEADER_SIZE)
+//								if (hasMonitors || sendBuffer.position() > PVAConstants.PVA_MESSAGE_HEADER_SIZE)
+								if (sendBuffer.position() > PVAConstants.PVA_MESSAGE_HEADER_SIZE)
 									flushRequested = true;
 								else
 									sendQueue.wait();
@@ -1133,10 +1133,10 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	@Override
 	public final void startMessage(byte command, int ensureCapacity) {
 		lastMessageStartPosition = -1;
-		ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE + ensureCapacity);
+		ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE + ensureCapacity);
 		lastMessageStartPosition = sendBuffer.position();
-		sendBuffer.put(CAConstants.CA_MAGIC);
-		sendBuffer.put(CAConstants.CA_VERSION);
+		sendBuffer.put(PVAConstants.PVA_MAGIC);
+		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)(lastSegmentedMessageType | byteOrderFlag));	// data + endian
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
@@ -1161,10 +1161,10 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 		if (lastMessageStartPosition >= 0)
 		{
 			// align
-		//	alignBuffer(CAConstants.CA_ALIGNMENT);
+		//	alignBuffer(PVAConstants.PVA_ALIGNMENT);
 			
 			// set paylaod size
-			sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2), sendBuffer.position() - lastMessageStartPosition - CAConstants.CA_MESSAGE_HEADER_SIZE); 
+			sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2), sendBuffer.position() - lastMessageStartPosition - PVAConstants.PVA_MESSAGE_HEADER_SIZE); 
 			
 			// set segmented bit
 			if (hasMoreSegments) {
@@ -1195,13 +1195,13 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 			// manage markers
 			final int position = sendBuffer.position();
 			final int bytesLeft = sendBuffer.remaining();
-			if (position >= nextMarkerPosition && bytesLeft >= CAConstants.CA_MESSAGE_HEADER_SIZE)
+			if (position >= nextMarkerPosition && bytesLeft >= PVAConstants.PVA_MESSAGE_HEADER_SIZE)
 			{
-				sendBuffer.put(CAConstants.CA_MAGIC);
-				sendBuffer.put(CAConstants.CA_VERSION);
+				sendBuffer.put(PVAConstants.PVA_MAGIC);
+				sendBuffer.put(PVAConstants.PVA_VERSION);
 				sendBuffer.put((byte)(0x01 | byteOrderFlag));	// control data
 				sendBuffer.put((byte)0);	// marker
-				sendBuffer.putInt((int)(totalBytesSent + position + CAConstants.CA_MESSAGE_HEADER_SIZE));
+				sendBuffer.putInt((int)(totalBytesSent + position + PVAConstants.PVA_MESSAGE_HEADER_SIZE));
 				nextMarkerPosition = position + markerPeriodBytes;
 			}
 		}
@@ -1244,7 +1244,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 				
 				if (sender == null) {
 					control.ensureBuffer(Integer.SIZE/Byte.SIZE);
-					buffer.putInt(CAConstants.CA_INVALID_IOID);
+					buffer.putInt(PVAConstants.PVA_INVALID_IOID);
 					break;
 				}
 				

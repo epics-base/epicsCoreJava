@@ -30,7 +30,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 
 /**
- * CA process request.
+ * PVA process request.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -110,7 +110,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 		try {
 			callback.processDone(status);
 		} catch (Throwable th) {
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
@@ -126,7 +126,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 		try {
 			callback.channelProcessConnect(status, this);
 		} catch (Throwable th) {
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
@@ -142,7 +142,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 		try {
 			callback.processDone(status);
 		} catch (Throwable th) {
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);

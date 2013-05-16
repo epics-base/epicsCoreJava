@@ -33,7 +33,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 
 /**
- * CA get request.
+ * PVA get request.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -180,7 +180,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		}
 		catch (Throwable th)
 		{
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
@@ -223,7 +223,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		} 
 		catch (Throwable th)
 		{
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);

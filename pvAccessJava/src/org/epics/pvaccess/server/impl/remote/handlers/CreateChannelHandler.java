@@ -19,7 +19,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
@@ -74,7 +74,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			disconnect(transport);
 			return;
 		}
-		else if (channelName.length() > CAConstants.MAX_CHANNEL_NAME_LENGTH)
+		else if (channelName.length() > PVAConstants.MAX_CHANNEL_NAME_LENGTH)
 		{
 			context.getLogger().warning("Unreasonable channel name length, disconnecting client: " + transport.getRemoteAddress());
 			disconnect(transport);

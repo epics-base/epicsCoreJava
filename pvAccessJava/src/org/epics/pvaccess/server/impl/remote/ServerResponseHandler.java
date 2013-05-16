@@ -39,7 +39,7 @@ import org.epics.pvaccess.server.impl.remote.handlers.SearchHandler;
 import org.epics.pvaccess.util.HexDump;
 
 /**
- * CAS request handler - main handler which dispatches requests to appropriate handlers.
+ * PVAS request handler - main handler which dispatches requests to appropriate handlers.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -105,7 +105,7 @@ public final class ServerResponseHandler implements ResponseHandler {
 		{
 			context.getLogger().fine("Invalid (or unsupported) command: " + command + ".");
 			// TODO remove debug output
-			HexDump.hexDump("Invalid CA header " + command + " + , its payload buffer", payloadBuffer.array(), payloadBuffer.position(), payloadSize);
+			HexDump.hexDump("Invalid PVA header " + command + " + , its payload buffer", payloadBuffer.array(), payloadBuffer.position(), payloadSize);
 			return;
 		}
 		

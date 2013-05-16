@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.SocketChannel;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.IntrospectionRegistry;
 import org.epics.pvaccess.impl.remote.ProtocolType;
@@ -52,7 +52,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	// TODO to be implemeneted 
 	
 	/**
-	 * CAS response handler.
+	 * PVAS response handler.
 	 */
 	protected final ResponseHandler responseHandler;
 
@@ -80,7 +80,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	 * TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socket channel.
-	 * @param responseHandler response handler used to process CA headers.
+	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
 	 * @param priority transport priority.
 	 */
@@ -90,8 +90,8 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 					   int receiveBufferSize,
 					   short priority) throws SocketException {
 		super(channel, 
-				ByteBuffer.allocate(Math.max(CAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
-				ByteBuffer.allocate(Math.max(CAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
+				ByteBuffer.allocate(Math.max(PVAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
+				ByteBuffer.allocate(Math.max(PVAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
 				context.getLogger());
 		this.context = context;
 		this.responseHandler = responseHandler;
@@ -154,7 +154,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	 */
 	@Override
 	public byte getRevision() {
-		return CAConstants.CA_PROTOCOL_REVISION;
+		return PVAConstants.PVA_PROTOCOL_REVISION;
 	}
 
 	/* (non-Javadoc)
@@ -241,7 +241,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 		// marker received back
 		else if (command == 1)
 		{
-			int difference = (int)totalBytesSent - payloadSize + CAConstants.CA_MESSAGE_HEADER_SIZE;
+			int difference = (int)totalBytesSent - payloadSize + PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 			// overrun check
 			if (difference < 0)
 				difference += Integer.MAX_VALUE;

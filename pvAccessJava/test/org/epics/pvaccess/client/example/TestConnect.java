@@ -7,7 +7,7 @@ package org.epics.pvaccess.client.example;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelAccess;
 import org.epics.pvaccess.client.ChannelAccessFactory;
@@ -28,7 +28,7 @@ public class TestConnect {
      * main.
      * @param  args is a sequence of flags and filenames.
      */
-    public static void main(String[] args) throws CAException {
+    public static void main(String[] args) throws PVAException {
         org.epics.pvaccess.ClientFactory.start();
         Client client = new Client();
         client.waitUntilDone(1000000);

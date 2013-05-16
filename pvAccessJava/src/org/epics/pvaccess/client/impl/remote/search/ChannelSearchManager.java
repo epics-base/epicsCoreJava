@@ -45,7 +45,7 @@ public interface ChannelSearchManager {
 	 * Search response from server (channel found).
 	 * @param cid	client channel ID.
 	 * @param seqNo	search sequence number.
-	 * @param minorRevision	server minor CA revision.
+	 * @param minorRevision	server minor PVA revision.
 	 * @param serverAddress	server address.
 	 */
 	public void searchResponse(int cid, int seqNo, byte minorRevision, InetSocketAddress serverAddress);

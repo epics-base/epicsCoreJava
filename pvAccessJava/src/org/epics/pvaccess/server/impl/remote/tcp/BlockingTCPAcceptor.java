@@ -24,7 +24,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
@@ -67,9 +67,9 @@ public class BlockingTCPAcceptor {
 	 * @param context
 	 * @param port
 	 * @param receiveBufferSize
-	 * @throws CAException
+	 * @throws PVAException
 	 */
-	public BlockingTCPAcceptor(Context context, int port, int receiveBufferSize) throws CAException {
+	public BlockingTCPAcceptor(Context context, int port, int receiveBufferSize) throws PVAException {
 		this.context = context;
 		this.receiveBufferSize = receiveBufferSize;
 
@@ -100,7 +100,7 @@ public class BlockingTCPAcceptor {
 				SocketChannel socket = serverSocketChannel.accept();
 
 				SocketAddress address = socket.socket().getRemoteSocketAddress();
-				context.getLogger().finer("Accepted connection from CA client: " + address);
+				context.getLogger().finer("Accepted connection from PVA client: " + address);
 				
 				// enable TCP_NODELAY (disable Nagle's algorithm)
 				socket.socket().setTcpNoDelay(true);
@@ -121,11 +121,11 @@ public class BlockingTCPAcceptor {
 				if (!validateConnection(transport, address))
 				{
 					transport.close();
-					context.getLogger().finer("Connection to CA client " + address + " failed to be validated, closing it.");
+					context.getLogger().finer("Connection to PVA client " + address + " failed to be validated, closing it.");
 					return;
 				}
 				
-				context.getLogger().finer("Serving to CA client: " + address);
+				context.getLogger().finer("Serving to PVA client: " + address);
 	
 			} 
 			catch (AsynchronousCloseException ace)
@@ -162,7 +162,7 @@ public class BlockingTCPAcceptor {
 	 * Initialize connection acception. 
 	 * @return port where server is listening
 	 */
-	private int initialize(int port) throws CAException
+	private int initialize(int port) throws PVAException
 	{
 		// specified bind address
 		bindAddress = new InetSocketAddress(port);
@@ -209,12 +209,12 @@ public class BlockingTCPAcceptor {
 				}
 				else
 				{
-					throw new CAException("Failed to create acceptor to " + bindAddress, be);
+					throw new PVAException("Failed to create acceptor to " + bindAddress, be);
 				}				
 			}
 			catch (Throwable th)
 			{
-				throw new CAException("Failed to create acceptor to " + bindAddress, th);
+				throw new PVAException("Failed to create acceptor to " + bindAddress, th);
 			}
 		}
 		

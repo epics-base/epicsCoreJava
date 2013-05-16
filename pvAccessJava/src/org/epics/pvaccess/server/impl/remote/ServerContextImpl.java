@@ -22,8 +22,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.epics.pvaccess.CAConstants;
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAConstants;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.Version;
 import org.epics.pvaccess.client.ChannelAccess;
 import org.epics.pvaccess.client.ChannelProvider;
@@ -153,17 +153,17 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Broadcast port number to listen to.
 	 */
-	protected int broadcastPort = CAConstants.CA_BROADCAST_PORT;
+	protected int broadcastPort = PVAConstants.PVA_BROADCAST_PORT;
 	
 	/**
 	 * Port number for the server to listen to.
 	 */
-	protected int serverPort = CAConstants.CA_SERVER_PORT;
+	protected int serverPort = PVAConstants.PVA_SERVER_PORT;
 	
 	/**
-	 * Length in bytes of the maximum buffer (payload) size that may pass through CA.
+	 * Length in bytes of the maximum buffer (payload) size that may pass through PVA.
 	 */
-	protected int receiveBufferSize = CAConstants.MAX_TCP_RECV;
+	protected int receiveBufferSize = PVAConstants.MAX_TCP_RECV;
 
 	/**
 	 * Timer.
@@ -192,14 +192,14 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected BeaconEmitter beaconEmitter = null;
 
 	/**
-	 * CAS acceptor (accepts CA virtual circuit).
+	 * PVAS acceptor (accepts PVA virtual circuit).
 	 */
 //	protected TCPAcceptor acceptor = null;
 	protected BlockingTCPAcceptor acceptor = null;
 
 	/**
-	 * CA transport (virtual circuit) registry.
-	 * This registry contains all active transports - connections to CA servers. 
+	 * PVA transport (virtual circuit) registry.
+	 * This registry contains all active transports - connections to PVA servers. 
 	 */
 	protected TransportRegistry transportRegistry = null;
 
@@ -211,7 +211,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Channel provider name.
 	 */
-	protected String channelProviderName = CAConstants.CA_DEFAULT_PROVIDER;
+	protected String channelProviderName = PVAConstants.PVA_DEFAULT_PROVIDER;
 	
 	/**
 	 * Channel provider.
@@ -257,7 +257,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected void initializeLogger()
 	{
 		logger = Logger.getLogger(this.getClass().getName());
-		if (System.getProperties().containsKey(CAConstants.PVACCESS_DEBUG))
+		if (System.getProperties().containsKey(PVAConstants.PVACCESS_DEBUG))
 		{
 			logger.setLevel(Level.ALL);
 			boolean found = false;
@@ -291,35 +291,35 @@ public class ServerContextImpl implements ServerContext, Context {
 	{
 		final Configuration config = getConfiguration();
 		
-		beaconAddressList = config.getPropertyAsString("EPICS4_CA_ADDR_LIST", beaconAddressList);
-		beaconAddressList = config.getPropertyAsString("EPICS4_CAS_BEACON_ADDR_LIST", beaconAddressList);
+		beaconAddressList = config.getPropertyAsString("EPICS_PVA_ADDR_LIST", beaconAddressList);
+		beaconAddressList = config.getPropertyAsString("EPICS_PVAS_BEACON_ADDR_LIST", beaconAddressList);
 		
-		autoBeaconAddressList = config.getPropertyAsBoolean("EPICS4_CA_AUTO_ADDR_LIST", autoBeaconAddressList);
-		autoBeaconAddressList = config.getPropertyAsBoolean("EPICS4_CAS_AUTO_BEACON_ADDR_LIST", autoBeaconAddressList);
+		autoBeaconAddressList = config.getPropertyAsBoolean("EPICS_PVA_AUTO_ADDR_LIST", autoBeaconAddressList);
+		autoBeaconAddressList = config.getPropertyAsBoolean("EPICS_PVAS_AUTO_BEACON_ADDR_LIST", autoBeaconAddressList);
 		
-		beaconPeriod = config.getPropertyAsFloat("EPICS4_CA_BEACON_PERIOD", beaconPeriod);
-		beaconPeriod = config.getPropertyAsFloat("EPICS4_CAS_BEACON_PERIOD", beaconPeriod);
+		beaconPeriod = config.getPropertyAsFloat("EPICS_PVA_BEACON_PERIOD", beaconPeriod);
+		beaconPeriod = config.getPropertyAsFloat("EPICS_PVAS_BEACON_PERIOD", beaconPeriod);
 		
-		serverPort = config.getPropertyAsInteger("EPICS4_CA_SERVER_PORT", serverPort);
-		serverPort = config.getPropertyAsInteger("EPICS4_CAS_SERVER_PORT", serverPort);
+		serverPort = config.getPropertyAsInteger("EPICS_PVA_SERVER_PORT", serverPort);
+		serverPort = config.getPropertyAsInteger("EPICS_PVAS_SERVER_PORT", serverPort);
 		
-		broadcastPort = config.getPropertyAsInteger("EPICS4_CA_BROADCAST_PORT", broadcastPort);
-		broadcastPort = config.getPropertyAsInteger("EPICS4_CAS_BROADCAST_PORT", broadcastPort);
+		broadcastPort = config.getPropertyAsInteger("EPICS_PVA_BROADCAST_PORT", broadcastPort);
+		broadcastPort = config.getPropertyAsInteger("EPICS_PVAS_BROADCAST_PORT", broadcastPort);
 		
-		receiveBufferSize = config.getPropertyAsInteger("EPICS4_CA_MAX_ARRAY_BYTES", receiveBufferSize);
-		receiveBufferSize = config.getPropertyAsInteger("EPICS4_CAS_MAX_ARRAY_BYTES", receiveBufferSize);
+		receiveBufferSize = config.getPropertyAsInteger("EPICS_PVA_MAX_ARRAY_BYTES", receiveBufferSize);
+		receiveBufferSize = config.getPropertyAsInteger("EPICS_PVAS_MAX_ARRAY_BYTES", receiveBufferSize);
 		
-		channelProviderName = config.getPropertyAsString("EPICS4_CA_PROVIDER_NAME", channelProviderName);
-		channelProviderName = config.getPropertyAsString("EPICS4_CAS_PROVIDER_NAME", channelProviderName);
+		channelProviderName = config.getPropertyAsString("EPICS_PVA_PROVIDER_NAME", channelProviderName);
+		channelProviderName = config.getPropertyAsString("EPICS_PVAS_PROVIDER_NAME", channelProviderName);
 		
 	}
 
 	/**
 	 * Check context state and tries to establish necessary state.
-	 * @throws CAException
+	 * @throws PVAException
 	 * @throws IllegalStateException
 	 */
-	protected final void checkState() throws CAException, IllegalStateException {
+	protected final void checkState() throws PVAException, IllegalStateException {
 		if (state == State.DESTROYED)
 			throw new IllegalStateException("Context destroyed.");
 	}
@@ -327,7 +327,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.server.ServerContext#initialize(org.epics.pvaccess.client.ChannelAccess)
 	 */
-	public synchronized void initialize(ChannelAccess channelAccess) throws CAException, IllegalStateException
+	public synchronized void initialize(ChannelAccess channelAccess) throws PVAException, IllegalStateException
 	{
 		if (channelAccess == null)
 			throw new IllegalArgumentException("non-null channelAccess expected");
@@ -352,7 +352,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	 * @see org.epics.pvaccess.server.ServerContext#initialize(org.epics.pvaccess.client.ChannelProvider)
 	 */
 	@Override
-	public synchronized void initialize(ChannelProvider channelProvider) throws CAException, IllegalStateException {
+	public synchronized void initialize(ChannelProvider channelProvider) throws PVAException, IllegalStateException {
 		if (channelProvider == null)
 			throw new IllegalArgumentException("non-null channelProvider expected");
 		
@@ -370,9 +370,9 @@ public class ServerContextImpl implements ServerContext, Context {
 	}
 
 	/**
-	 * @throws CAException
+	 * @throws PVAException
 	 */
-	private void internalInitialize() throws CAException {
+	private void internalInitialize() throws PVAException {
 
 		timer = TimerFactory.create("pvAccess-server timer", ThreadPriority.lower);
 		transportRegistry = new TransportRegistry();
@@ -418,7 +418,7 @@ public class ServerContextImpl implements ServerContext, Context {
 		}
 		catch (IOException ioex)
 		{
-			throw new CAException("Failed to initialize reactor.", ioex); 
+			throw new PVAException("Failed to initialize reactor.", ioex); 
 		}
 		*/
 		// setup broadcast UDP transport
@@ -434,7 +434,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Initialized broadcast DP transport (broadcast socket and repeater connection).
 	 */
-	private void initializeBroadcastTransport() throws CAException {
+	private void initializeBroadcastTransport() throws PVAException {
 		
 		// setup UDP transport
 		try
@@ -451,8 +451,8 @@ public class ServerContextImpl implements ServerContext, Context {
 			broadcastTransport = (BlockingUDPTransport)broadcastConnector.connect(
 //			broadcastTransport = (UDPTransport)broadcastConnector.connect(
 										null, new ServerResponseHandler(this),
-										listenLocalAddress, CAConstants.CA_PROTOCOL_REVISION,
-										CAConstants.CA_DEFAULT_PRIORITY);
+										listenLocalAddress, PVAConstants.PVA_PROTOCOL_REVISION,
+										PVAConstants.PVA_DEFAULT_PRIORITY);
 
 			// set ignore address list
 			if (ignoreAddressList != null && ignoreAddressList.length() > 0)
@@ -479,7 +479,7 @@ public class ServerContextImpl implements ServerContext, Context {
 		}
 		catch (ConnectionException ce)
 		{
-			throw new CAException("Failed to initialize broadcast UDP transport", ce);
+			throw new PVAException("Failed to initialize broadcast UDP transport", ce);
 		}
 
 	}
@@ -491,9 +491,9 @@ public class ServerContextImpl implements ServerContext, Context {
 	 * @param	seconds	time in seconds the server will process events (method will block), if <code>0</code>
 	 * 				the method would block until <code>destory()</code> is called.
 	 * @throws IllegalStateException	if server is already destroyed.
-	 * @throws CAException
+	 * @throws PVAException
 	 */
-	public void run(int seconds) throws CAException, IllegalStateException
+	public void run(int seconds) throws PVAException, IllegalStateException
 	{
 		if (seconds < 0)
 			throw new IllegalArgumentException("seconds cannot be negative.");
@@ -539,7 +539,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.server.ServerContext#shutdown()
 	 */
-	public synchronized void shutdown() throws CAException, IllegalStateException {
+	public synchronized void shutdown() throws PVAException, IllegalStateException {
 
 		if (state == State.DESTROYED)
 			throw new IllegalStateException("Context already destroyed.");
@@ -555,7 +555,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.server.ServerContext#destroy()
 	 */
-	public synchronized void destroy() throws CAException, IllegalStateException {
+	public synchronized void destroy() throws PVAException, IllegalStateException {
 
 		if (state == State.DESTROYED)
 			throw new IllegalStateException("Context already destroyed.");
@@ -571,9 +571,9 @@ public class ServerContextImpl implements ServerContext, Context {
 	}
 
 	/**
-	 * @throws CAException
+	 * @throws PVAException
 	 */
-	private void internalDestroy() throws CAException {
+	private void internalDestroy() throws PVAException {
 
 		// stop responding to search requests
 		if (broadcastTransport != null) 
@@ -815,8 +815,8 @@ public class ServerContextImpl implements ServerContext, Context {
 	}
 
 	/**
-	 * Get CA transport (virtual circuit) registry.
-	 * @return CA transport (virtual circuit) registry.
+	 * Get PVA transport (virtual circuit) registry.
+	 * @return PVA transport (virtual circuit) registry.
 	 */
 	public TransportRegistry getTransportRegistry() {
 		return transportRegistry;

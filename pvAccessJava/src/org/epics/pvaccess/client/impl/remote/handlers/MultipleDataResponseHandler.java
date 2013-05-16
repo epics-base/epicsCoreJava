@@ -17,7 +17,7 @@ package org.epics.pvaccess.client.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.request.DataResponse;
@@ -46,7 +46,7 @@ public class MultipleDataResponseHandler extends AbstractClientResponseHandler {
 		{
 			transport.ensureData(Integer.SIZE/Byte.SIZE);
 			final int ioid = payloadBuffer.getInt();
-			if (ioid == CAConstants.CA_INVALID_IOID)
+			if (ioid == PVAConstants.PVA_INVALID_IOID)
 				return;
 			final DataResponse nrr = (DataResponse)context.getResponseRequest(ioid);
 			if (nrr == null) {

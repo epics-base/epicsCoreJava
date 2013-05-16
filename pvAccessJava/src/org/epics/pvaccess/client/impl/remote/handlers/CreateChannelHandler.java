@@ -25,7 +25,7 @@ import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.StatusCreate;
 
 /**
- * CA create channel response.
+ * PVA create channel response.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $id$
  */

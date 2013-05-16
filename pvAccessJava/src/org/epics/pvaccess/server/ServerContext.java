@@ -16,14 +16,14 @@ package org.epics.pvaccess.server;
 
 import java.io.PrintStream;
 
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.Version;
 import org.epics.pvaccess.client.ChannelAccess;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.server.plugins.BeaconServerStatusProvider;
 
 /**
- * The class representing a CA Server context.
+ * The class representing a PVA Server context.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -40,35 +40,35 @@ public interface ServerContext {
 	 * Served <code>ChannelProvider</code>(s) is read from configuration.
 	 * @param channelAccess implementation of channel access to be served.
 	 */
-	public void initialize(ChannelAccess channelAccess) throws CAException, IllegalStateException;
+	public void initialize(ChannelAccess channelAccess) throws PVAException, IllegalStateException;
  
 	/**
 	 * Set <code>ChannelProvider</code> implementation and initialize server.
 	 * @param channelProvider implementation of channel access to be served.
 	 */
-	public void initialize(ChannelProvider channelProvider) throws CAException, IllegalStateException;
+	public void initialize(ChannelProvider channelProvider) throws PVAException, IllegalStateException;
 
 	/**
 	 * Run server (process events).
 	 * @param	seconds	time in seconds the server will process events (method will block), if <code>0</code>
 	 * 				the method would block until <code>destroy()</code> is called.
 	 * @throws IllegalStateException	if server is already destroyed.
-	 * @throws CAException
+	 * @throws PVAException
 	 */
-	public void run(int seconds) throws CAException, IllegalStateException;
+	public void run(int seconds) throws PVAException, IllegalStateException;
   
 	/**
 	 * Shutdown (stop executing run() method) of this context.
 	 * After shutdown Context cannot be rerun again, destroy() has to be called to clear all used resources.
 	 * @throws IllegalStateException if the context has been destroyed.
 	 */
-	public void shutdown() throws CAException, IllegalStateException;
+	public void shutdown() throws PVAException, IllegalStateException;
 
 	/**
 	 * Clear all resources attached to this context.
 	 * @throws IllegalStateException if the context has been destroyed.
 	 */
-	public void destroy() throws CAException, IllegalStateException;
+	public void destroy() throws PVAException, IllegalStateException;
 
 	/**
 	 * Prints detailed information about the context to the standard output stream.

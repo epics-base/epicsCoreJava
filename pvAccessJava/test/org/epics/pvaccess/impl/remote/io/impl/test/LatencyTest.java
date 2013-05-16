@@ -11,7 +11,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Logger;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
@@ -153,9 +153,9 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 				avg = 0;
 			}
 			lastTime = t;
-			control.ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE);
-			buffer.put(CAConstants.CA_MAGIC);
-			buffer.put(CAConstants.CA_VERSION);
+			control.ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+			buffer.put(PVAConstants.PVA_MAGIC);
+			buffer.put(PVAConstants.PVA_VERSION);
 			buffer.put((byte)0x81);		
 			buffer.put((byte)0);		
 			buffer.putInt(0);		
@@ -166,7 +166,7 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 	@Override
 	public void processControlMessage() {
 		//System.out.println("processControlMessage():" + command);
-		enqueueSendRequest(sender, CAConstants.CA_MESSAGE_HEADER_SIZE);
+		enqueueSendRequest(sender, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 	}
 
 	@Override
@@ -249,7 +249,7 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		}
 
 		/**
-		 * CA connection validation request.
+		 * PVA connection validation request.
 		 * A server sends a validate connection message when it receives a new connection.
 		 * The message indicates that the server is ready to receive requests; the client must 
 		 * not send any messages on the connection until it has received the validate connection message
@@ -271,9 +271,9 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 		
-			control.ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE);
-			buffer.put(CAConstants.CA_MAGIC);
-			buffer.put(CAConstants.CA_VERSION);
+			control.ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+			buffer.put(PVAConstants.PVA_MAGIC);
+			buffer.put(PVAConstants.PVA_VERSION);
 			buffer.put((byte)0x81);		
 			buffer.put((byte)0);		
 			buffer.putInt(0);		
@@ -299,7 +299,7 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		@Override
 		public void ready(AbstractCodec codec) {
 			codec.setSenderThread();
-			codec.enqueueSendRequest(this, CAConstants.CA_MESSAGE_HEADER_SIZE);
+			codec.enqueueSendRequest(this, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 		}
 		
 	};

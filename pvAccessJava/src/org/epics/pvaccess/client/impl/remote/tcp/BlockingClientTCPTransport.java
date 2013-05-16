@@ -68,7 +68,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	 * Client TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socker channel.
-	 * @param responseHandler response handler used to process CA headers.
+	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
 	 * @param client transport client (owner, requestor).
 	 * @param remoteTransportRevision remote transport revision.
@@ -336,7 +336,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport implements 
 	private boolean verifyOrEcho = true;
 	
 	/**
-	 * CA connection validation response
+	 * PVA connection validation response
 	 */
 	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {

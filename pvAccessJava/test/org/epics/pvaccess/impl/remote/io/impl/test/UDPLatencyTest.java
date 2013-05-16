@@ -10,7 +10,7 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Logger;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
@@ -169,9 +169,9 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 				avg = 0;
 			}
 			lastTime = t;
-			control.ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE);
-			buffer.put(CAConstants.CA_MAGIC);
-			buffer.put(CAConstants.CA_VERSION);
+			control.ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+			buffer.put(PVAConstants.PVA_MAGIC);
+			buffer.put(PVAConstants.PVA_VERSION);
 			buffer.put((byte)0x81);		
 			buffer.put((byte)0);		
 			buffer.putInt(0);		
@@ -183,7 +183,7 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 	public void processControlMessage() {
 		//System.out.println("processControlMessage():" + command);
 		//if (channel.isConnected() || sendTo != null)
-		enqueueSendRequest(sender,CAConstants.CA_MESSAGE_HEADER_SIZE);
+		enqueueSendRequest(sender,PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 	}
 
 	@Override
@@ -250,7 +250,7 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		poller.add(clientSocket, ult, SelectionKey.OP_READ);
 		clientSocket.connect(new InetSocketAddress("192.168.1.102", 1234));
 		Thread.sleep(1000);
-		ult.enqueueSendRequest(sender, CAConstants.CA_MESSAGE_HEADER_SIZE);
+		ult.enqueueSendRequest(sender, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 	}
 
 }

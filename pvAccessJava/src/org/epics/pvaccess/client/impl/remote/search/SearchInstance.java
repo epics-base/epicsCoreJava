@@ -25,7 +25,7 @@ public interface SearchInstance {
 
 	/**
 	 * Search response from server (channel found).
-	 * @param minorRevision	server minor CA revision.
+	 * @param minorRevision	server minor PVA revision.
 	 * @param serverAddress	server address.
 	 */
 	// TODO make InetSocketAddress an URI or similar

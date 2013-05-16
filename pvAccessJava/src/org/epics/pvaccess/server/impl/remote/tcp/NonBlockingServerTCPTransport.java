@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.TransportClient;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
@@ -53,7 +53,7 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport imple
 	 * Server TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socket channel.
-	 * @param responseHandler response handler used to process CA headers.
+	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
 	 */
 	public NonBlockingServerTCPTransport(Context context, 
@@ -62,7 +62,7 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport imple
 			   SocketChannel channel,
 			   ResponseHandler responseHandler,
 			   int receiveBufferSize) throws SocketException {
-		super(context, poller, channel, responseHandler, receiveBufferSize, CAConstants.CA_DEFAULT_PRIORITY);
+		super(context, poller, channel, responseHandler, receiveBufferSize, PVAConstants.PVA_DEFAULT_PRIORITY);
 		// NOTE: priority not yet known, default priority is used to register/unregister
 		// TODO implement priorities in Reactor... not that user will change it.. still getPriority() must return "registered" priority!
 		
@@ -210,7 +210,7 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport imple
 	}
 
 	/**
-	 * CA connection validation request.
+	 * PVA connection validation request.
 	 * A server sends a validate connection message when it receives a new connection.
 	 * The message indicates that the server is ready to receive requests; the client must 
 	 * not send any messages on the connection until it has received the validate connection message
@@ -236,9 +236,9 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport imple
 		// set byte order control message 
 		//
 		
-		ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE);
-		sendBuffer.put(CAConstants.CA_MAGIC);
-		sendBuffer.put(CAConstants.CA_VERSION);
+		ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+		sendBuffer.put(PVAConstants.PVA_MAGIC);
+		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)0x81);		// control + big endian
 		sendBuffer.put((byte)2);		// set byte order
 		sendBuffer.putInt(0);		

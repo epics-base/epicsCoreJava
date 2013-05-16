@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.epics.pvaccess.CAConstants;
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAConstants;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.AccessRights;
 import org.epics.pvaccess.client.Channel;
@@ -62,7 +62,7 @@ import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.StatusCreate;
 
 /**
- * Implementation of CAJ JCA <code>Channel</code>.
+ * Implementation of PVAJ JCA <code>Channel</code>.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -125,7 +125,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	protected int references = 1;
 
 	/* ****************** */
-	/* CA protocol fields */ 
+	/* PVA protocol fields */ 
 	/* ****************** */
 
 	/**
@@ -150,10 +150,10 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	 * @param context
 	 * @param name
 	 * @param listener
-	 * @throws CAException
+	 * @throws PVAException
 	 */
 	protected ChannelImpl(ClientContextImpl context, int channelID, String name,
-			ChannelRequester requester, short priority, InetSocketAddress[] addresses) throws CAException
+			ChannelRequester requester, short priority, InetSocketAddress[] addresses) throws PVAException
 	{
 		this.context = context;
 		this.channelID = channelID;
@@ -255,10 +255,10 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 
 	/**
 	 * @param force force destruction regardless of reference count
-	 * @throws CAException
+	 * @throws PVAException
 	 * @throws IllegalStateException
 	 */
-	public synchronized void destroy(boolean force) throws CAException, IllegalStateException {
+	public synchronized void destroy(boolean force) throws PVAException, IllegalStateException {
 		
 		if (connectionState == ConnectionState.DESTROYED)
 			throw new IllegalStateException("Channel already destroyed.");
@@ -278,11 +278,11 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	/**
 	 * Actual destroy method, to be called <code>CAJContext</code>.
 	 * @param force force destruction regardless of reference count
-	 * @throws CAException
+	 * @throws PVAException
 	 * @throws IllegalStateException
 	 * @throws IOException
 	 */
-	public synchronized void destroyChannel(boolean force) throws CAException, IllegalStateException, IOException {
+	public synchronized void destroyChannel(boolean force) throws PVAException, IllegalStateException, IOException {
 
 		if (connectionState == ConnectionState.DESTROYED)
 			throw new IllegalStateException("Channel already destroyed.");
@@ -379,7 +379,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			// TODO not only first
 			// TODO minor version
 			// TODO what to do if there is no channel, do not search in a loop!!! do this in other thread...!
-			searchResponse(CAConstants.CA_PROTOCOL_REVISION, addresses[0]);
+			searchResponse(PVAConstants.PVA_PROTOCOL_REVISION, addresses[0]);
 	}
 
 	/* (non-Javadoc)
@@ -485,7 +485,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			}
 			catch (Throwable th)
 			{
-				// guard CA code from exceptions
+				// guard PVA code from exceptions
 				Writer writer = new StringWriter();
 				PrintWriter printWriter = new PrintWriter(writer);
 				th.printStackTrace(printWriter);

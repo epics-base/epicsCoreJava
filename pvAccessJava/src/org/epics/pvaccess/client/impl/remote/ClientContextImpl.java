@@ -27,8 +27,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.epics.pvaccess.CAConstants;
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAConstants;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.Version;
 import org.epics.pvaccess.client.Channel;
@@ -68,7 +68,7 @@ import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.StatusCreate;
 
 /**
- * Implementation of CAJ JCA <code>Context</code>. 
+ * Implementation of PVAJ JCA <code>Context</code>. 
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -164,12 +164,12 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	/**
 	 * Broadcast (beacon, search) port number to listen to.
 	 */
-	protected int broadcastPort = CAConstants.CA_BROADCAST_PORT;
+	protected int broadcastPort = PVAConstants.PVA_BROADCAST_PORT;
 	
 	/**
 	 * Receive buffer size (max size of payload).
 	 */
-	protected int receiveBufferSize = CAConstants.MAX_TCP_RECV;
+	protected int receiveBufferSize = PVAConstants.MAX_TCP_RECV;
 	
 	/**
 	 * Timer.
@@ -199,14 +199,14 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	protected BlockingUDPTransport searchTransport = null;
 
 	/**
-	 * CA connector (creates CA virtual circuit).
+	 * PVA connector (creates PVA virtual circuit).
 	 */
 	protected BlockingTCPConnector connector = null;
 //	protected TCPConnector connector = null;
 
 	/**
-	 * CA transport (virtual circuit) registry.
-	 * This registry contains all active transports - connections to CA servers. 
+	 * PVA transport (virtual circuit) registry.
+	 * This registry contains all active transports - connections to PVA servers. 
 	 */
 	protected TransportRegistry transportRegistry = null;
 
@@ -290,7 +290,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		String loggerName = thisClassName;
 		logger = Logger.getLogger(loggerName);
 		
-		if (System.getProperties().containsKey(CAConstants.PVACCESS_DEBUG))
+		if (System.getProperties().containsKey(PVAConstants.PVACCESS_DEBUG))
 		{
 			logger.setLevel(Level.ALL);
 			boolean found = false;
@@ -324,20 +324,20 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	{
 		final Configuration config = getConfiguration();
 		
-		addressList = config.getPropertyAsString("EPICS4_CA_ADDR_LIST", addressList);
-		autoAddressList = config.getPropertyAsBoolean("EPICS4_CA_AUTO_ADDR_LIST", autoAddressList);
-		connectionTimeout = config.getPropertyAsFloat("EPICS4_CA_CONN_TMO", connectionTimeout);
-		beaconPeriod = config.getPropertyAsFloat("EPICS4_CA_BEACON_PERIOD", beaconPeriod);
-		broadcastPort = config.getPropertyAsInteger("EPICS4_CA_BROADCAST_PORT", broadcastPort);
-		receiveBufferSize = config.getPropertyAsInteger("EPICS4_CA_MAX_ARRAY_BYTES", receiveBufferSize);
+		addressList = config.getPropertyAsString("EPICS_PVA_ADDR_LIST", addressList);
+		autoAddressList = config.getPropertyAsBoolean("EPICS_PVA_AUTO_ADDR_LIST", autoAddressList);
+		connectionTimeout = config.getPropertyAsFloat("EPICS_PVA_CONN_TMO", connectionTimeout);
+		beaconPeriod = config.getPropertyAsFloat("EPICS_PVA_BEACON_PERIOD", beaconPeriod);
+		broadcastPort = config.getPropertyAsInteger("EPICS_PVA_BROADCAST_PORT", broadcastPort);
+		receiveBufferSize = config.getPropertyAsInteger("EPICS_PVA_MAX_ARRAY_BYTES", receiveBufferSize);
 	}
 
 	/**
 	 * Check context state and tries to establish necessary state.
-	 * @throws CAException
+	 * @throws PVAException
 	 * @throws IllegalStateException
 	 */
-	protected void checkState() throws CAException, IllegalStateException {
+	protected void checkState() throws PVAException, IllegalStateException {
 		if (state == State.DESTROYED)
 			throw new IllegalStateException("Context destroyed.");
 		else if (state == State.NOT_INITIALIZED)
@@ -354,7 +354,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ClientContext#initialize()
 	 */
-	public synchronized void initialize() throws CAException {
+	public synchronized void initialize() throws PVAException {
 		
 		if (state == State.DESTROYED)
 			throw new IllegalStateException("Context destroyed.");
@@ -374,9 +374,9 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	PollerImpl poller;
 	
 	/**
-	 * @throws CAException
+	 * @throws PVAException
 	 */
-	private void internalInitialize() throws CAException {
+	private void internalInitialize() throws PVAException {
 		
 		timer = TimerFactory.create("pvAccess-client timer", ThreadPriority.lower);
 //		connector = new TCPConnector(this, receiveBufferSize, beaconPeriod);
@@ -465,7 +465,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		}
 		catch (IOException ioex)
 		{
-			throw new CAException("Failed to initialize reactor.", ioex); 
+			throw new PVAException("Failed to initialize reactor.", ioex); 
 		}
 		*/
 		
@@ -497,8 +497,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			broadcastTransport = (BlockingUDPTransport)broadcastConnector.connect(
 //			broadcastTransport = (UDPTransport)broadcastConnector.connect(
 						null, new ClientResponseHandler(this),
-						listenLocalAddress, CAConstants.CA_PROTOCOL_REVISION,
-						CAConstants.CA_DEFAULT_PRIORITY);
+						listenLocalAddress, PVAConstants.PVA_PROTOCOL_REVISION,
+						PVAConstants.PVA_DEFAULT_PRIORITY);
 
 //			UDPConnector searchConnector = new UDPConnector(this, false, broadcastAddresses, true);
 			BlockingUDPConnector searchConnector = new BlockingUDPConnector(this, false, broadcastAddresses, true);
@@ -506,8 +506,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			searchTransport = (BlockingUDPTransport)searchConnector.connect(
 //			searchTransport = (UDPTransport)searchConnector.connect(
 										null, new ClientResponseHandler(this),
-										new InetSocketAddress(0), CAConstants.CA_PROTOCOL_REVISION,
-										CAConstants.CA_DEFAULT_PRIORITY);
+										new InetSocketAddress(0), PVAConstants.PVA_PROTOCOL_REVISION,
+										PVAConstants.PVA_DEFAULT_PRIORITY);
 
 			// set broadcast address list
 			if (addressList != null && addressList.length() > 0)
@@ -550,7 +550,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	}
 
 	/**
-	 * @throws CAException
+	 * @throws PVAException
 	 */
 	private void internalDestroy() {
 
@@ -566,7 +566,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		// cleanup
 		//
 		
-		// this will also close all CA transports
+		// this will also close all PVA transports
 		destroyAllChannels();
 		
 		// close broadcast transport
@@ -646,7 +646,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	private final void checkChannelName(String name) throws IllegalArgumentException {
 		if (name == null || name.length() == 0)
 			throw new IllegalArgumentException("null or empty channel name");
-		else if (name.length() > CAConstants.MAX_CHANNEL_NAME_LENGTH)
+		else if (name.length() > PVAConstants.MAX_CHANNEL_NAME_LENGTH)
 			throw new IllegalArgumentException("name too long");
 	}
 	/**
@@ -655,7 +655,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	// TODO no minor version with the addresses
 	// TODO what if there is an channel with the same name, but on different host!
 	public Channel createChannelInternal(String name, ChannelRequester requester, short priority,
-			InetSocketAddress[] addresses) throws CAException {
+			InetSocketAddress[] addresses) throws PVAException {
 		checkState();
 		checkChannelName(name);
 
@@ -701,7 +701,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		}
 		else
 		{     
-			throw new CAException("Failed to obtain synchronization lock for '" + name + "', possible deadlock.", null);
+			throw new PVAException("Failed to obtain synchronization lock for '" + name + "', possible deadlock.", null);
 		}
 	}
 	
@@ -709,11 +709,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	 * Destroy channel.
 	 * @param channel
 	 * @param force
-	 * @throws CAException
+	 * @throws PVAException
 	 * @throws IllegalStateException
 	 */
 	public void destroyChannel(ChannelImpl channel, boolean force)
-		throws CAException, IllegalStateException {
+		throws PVAException, IllegalStateException {
 			
 		boolean lockAcquired = namedLocker.acquireSynchronizationObject(channel.getChannelName(), LOCK_TIMEOUT);
 		if (lockAcquired)
@@ -725,7 +725,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			catch (IOException ioex)
 			{
 				logger.log(Level.SEVERE, "Failed to cleanly destroy channel.", ioex);
-				throw new CAException("Failed to cleanly destroy channel.", ioex);
+				throw new PVAException("Failed to cleanly destroy channel.", ioex);
 			}
 			finally
 			{
@@ -734,7 +734,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		}
 		else
 		{     
-			throw new CAException("Failed to obtain synchronization lock for '" + channel.getChannelName() + "', possible deadlock.", null);
+			throw new PVAException("Failed to obtain synchronization lock for '" + channel.getChannelName() + "', possible deadlock.", null);
 		}
 	}
 
@@ -785,7 +785,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	 *
 	private final String getUniqueChannelName(String name, short priority)
 	{
-		// this name is illegal for CA, so this function is unique
+		// this name is illegal for PVA, so this function is unique
 		return name + '\0' + priority;
 	}*/
 	
@@ -956,8 +956,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	}
 
 	/**
-	 * Get CA transport (virtual circuit) registry.
-	 * @return CA transport (virtual circuit) registry.
+	 * Get PVA transport (virtual circuit) registry.
+	 * @return PVA transport (virtual circuit) registry.
 	 */
 	public TransportRegistry getTransportRegistry() {
 		return transportRegistry;
@@ -1094,7 +1094,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		synchronized (pendingResponseRequests)
 		{
 			// search first free (theoretically possible loop of death)
-			while (pendingResponseRequests.get(++lastIOID) != null || lastIOID == CAConstants.CA_INVALID_IOID);
+			while (pendingResponseRequests.get(++lastIOID) != null || lastIOID == PVAConstants.PVA_INVALID_IOID);
 			// reserve IOID
 			pendingResponseRequests.put(lastIOID, null);
 			return lastIOID;
@@ -1238,7 +1238,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		    Channel channel;
 			try {
 				// TODO configurable
-				short defaultPort = CAConstants.CA_SERVER_PORT;
+				short defaultPort = PVAConstants.PVA_SERVER_PORT;
 				InetSocketAddress[] addressList = (address == null) ? null : InetAddressUtil.getSocketAddressList(address, defaultPort);
 				channel = createChannelInternal(channelName, channelRequester, priority, addressList);
 			} catch (IllegalArgumentException iae) {

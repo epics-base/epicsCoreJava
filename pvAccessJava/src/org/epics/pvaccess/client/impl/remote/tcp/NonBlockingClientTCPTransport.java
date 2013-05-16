@@ -69,7 +69,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 	 * Client TCP transport constructor.
 	 * @param context context where transport lives in.
 	 * @param channel used socker channel.
-	 * @param responseHandler response handler used to process CA headers.
+	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
 	 * @param client transport client (owner, requestor).
 	 * @param remoteTransportRevision remote transport revision.
@@ -337,7 +337,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 	private boolean verifyOrEcho = true;
 	
 	/**
-	 * CA connection validation response
+	 * PVA connection validation response
 	 */
 	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {

@@ -16,7 +16,7 @@ package org.epics.pvaccess.client.test;
 
 import junit.framework.TestCase;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.Channel.ConnectionState;
@@ -31,7 +31,7 @@ import org.epics.pvdata.pv.Status;
 public class ConnectedDisconnectIT extends TestCase {
 
 	/**
-     * CA context.
+     * PVA context.
      */
     protected ClientContextImpl context = null;
     
@@ -131,7 +131,7 @@ public class ConnectedDisconnectIT extends TestCase {
     	{
     		//System.out.println("testing #" + i);
     		ConnectionListener cl = new ConnectionListener();
-    	    Channel ch = context.getProvider().createChannel("valueOnly", cl, CAConstants.CA_DEFAULT_PRIORITY);
+    	    Channel ch = context.getProvider().createChannel("valueOnly", cl, PVAConstants.PVA_DEFAULT_PRIORITY);
     		cl.waitAndCheck();
     		if ((i % 100)==0) { 
     			System.out.println("done #" + i);

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
@@ -80,7 +80,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		this.context = context;
 
 		// create and initialize send buffer
-		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_UNFRAGMENTED_SEND);
+		sendBuffer = ByteBuffer.allocate(PVAConstants.MAX_UDP_UNFRAGMENTED_SEND);
 		initializeSendBuffer();
 		
 		// add some jitter so that all the clients do not send at the same time
@@ -156,8 +156,8 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	{
 		// new buffer
 		sendBuffer.clear();
-		sendBuffer.put(CAConstants.CA_MAGIC);
-		sendBuffer.put(CAConstants.CA_VERSION);
+		sendBuffer.put(PVAConstants.PVA_MAGIC);
+		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)0x80);	// data + big endian
 		sendBuffer.put((byte)3);	// search
 		sendBuffer.putInt(Integer.SIZE/Byte.SIZE + 1);		// "zero" payload
@@ -220,7 +220,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		
 	};
 	
-	private final static int DATA_COUNT_POSITION = CAConstants.CA_MESSAGE_HEADER_SIZE + Integer.SIZE/Byte.SIZE + 1;
+	private final static int DATA_COUNT_POSITION = PVAConstants.PVA_MESSAGE_HEADER_SIZE + Integer.SIZE/Byte.SIZE + 1;
     private final static int PAYLOAD_POSITION = Short.SIZE/Byte.SIZE + 2;
 
     /**
@@ -232,7 +232,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	    short dataCount = requestMessage.getShort(DATA_COUNT_POSITION);
 		
 		dataCount++;
-		if (dataCount >= CAConstants.MAX_SEARCH_BATCH_COUNT)
+		if (dataCount >= PVAConstants.MAX_SEARCH_BATCH_COUNT)
 			return false;
 		
 		final String name = si.getChannelName();
@@ -245,7 +245,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		requestMessage.putInt(si.getChannelID());
 		SerializeHelper.serializeString(name, requestMessage, control);
 
-		requestMessage.putInt(PAYLOAD_POSITION, requestMessage.position() - CAConstants.CA_MESSAGE_HEADER_SIZE);
+		requestMessage.putInt(PAYLOAD_POSITION, requestMessage.position() - PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 		requestMessage.putShort(DATA_COUNT_POSITION, dataCount);
 
 		return true;
@@ -329,7 +329,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	 * Search response from server (channel found).
 	 * @param cid	client channel ID.
 	 * @param seqNo	search sequence number.
-	 * @param minorRevision	server minor CA revision.
+	 * @param minorRevision	server minor PVA revision.
 	 * @param serverAddress	server address.
 	 */
 	public void searchResponse(int cid, int seqNo, byte minorRevision, InetSocketAddress serverAddress)

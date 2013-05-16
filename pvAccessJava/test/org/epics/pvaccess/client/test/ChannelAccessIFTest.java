@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.AccessRights;
 import org.epics.pvaccess.client.Channel;
@@ -93,7 +93,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	public abstract long getTimeoutMs();
 
 	/**
-	 * Is local CA implementation.
+	 * Is local PVA implementation.
 	 * @return local or not.
 	 */
 	public abstract boolean isLocal();
@@ -277,7 +277,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			assertEquals(1, crcti.createdCount);
 		}
 		
-		// local CA does not recreate provider, so we don't want to destroy it
+		// local PVA does not recreate provider, so we don't want to destroy it
 		if (isLocal())
 			return;
 		
@@ -377,7 +377,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			
 			// 2 possible scenarios
 	
-			// 1. immediate response (local CA)
+			// 1. immediate response (local PVA)
 			count = cfrti.findCount;
 			if (count == 1)
 			{
@@ -409,7 +409,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			assertEquals(count, cfrti.findCount);
 		}
 		
-		// local CA does not recreate provider, so we don't want to destroy it
+		// local PVA does not recreate provider, so we don't want to destroy it
 		if (isLocal())
 			return;
 
@@ -677,7 +677,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	protected Channel syncCreateChannel(String name, boolean waitForConnectEvent) throws Throwable
 	{
 		ConnectionListener cl = new ConnectionListener();
-	    Channel ch = getChannelProvider().createChannel(name, cl, CAConstants.CA_DEFAULT_PRIORITY);
+	    Channel ch = getChannelProvider().createChannel(name, cl, PVAConstants.PVA_DEFAULT_PRIORITY);
 	    registerChannelForDestruction(ch);
 	    if (waitForConnectEvent) cl.waitAndCheck();
 		return ch;

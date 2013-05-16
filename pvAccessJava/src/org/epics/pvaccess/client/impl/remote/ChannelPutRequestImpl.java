@@ -31,7 +31,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 
 /**
- * CA put request.
+ * PVA put request.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -127,7 +127,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		try {
 			callback.putDone(status);
 		} catch (Throwable th) {
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
@@ -162,7 +162,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		}
 		catch (Throwable th)
 		{
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
@@ -201,7 +201,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		}
 		catch (Throwable th)
 		{
-			// guard CA code from exceptions
+			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);

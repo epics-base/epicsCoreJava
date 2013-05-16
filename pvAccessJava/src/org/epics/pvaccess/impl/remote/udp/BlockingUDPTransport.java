@@ -26,7 +26,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.util.logging.Level;
 
-import org.epics.pvaccess.CAConstants;
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.ProtocolType;
@@ -40,7 +40,7 @@ import org.epics.pvdata.pv.FieldCreate;
 
 
 /**
- * CA UDP transport implementation.
+ * PVA UDP transport implementation.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -116,10 +116,10 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		socketAddress = bindAddress;
 
 		// allocate receive buffer
-		receiveBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_PACKET);
+		receiveBuffer = ByteBuffer.allocate(PVAConstants.MAX_UDP_PACKET);
 		
 		// allocate send buffer and non-reentrant lock
-		sendBuffer = ByteBuffer.allocate(CAConstants.MAX_UDP_UNFRAGMENTED_SEND);
+		sendBuffer = ByteBuffer.allocate(PVAConstants.MAX_UDP_UNFRAGMENTED_SEND);
 	}
 	
 	/**
@@ -262,15 +262,15 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	private final boolean processBuffer(final InetSocketAddress fromAddress, final ByteBuffer receiveBuffer) {
 		
 		// handle response(s)				
-		while (receiveBuffer.remaining() >= CAConstants.CA_MESSAGE_HEADER_SIZE)
+		while (receiveBuffer.remaining() >= PVAConstants.PVA_MESSAGE_HEADER_SIZE)
 		{
 			//
 			// read header
 			//
 	
-			// first byte is CA_MAGIC
+			// first byte is PVA_MAGIC
 			final byte magic = receiveBuffer.get();
-			if (magic != CAConstants.CA_MAGIC)
+			if (magic != PVAConstants.PVA_MAGIC)
 				return false;
 			
 			// second byte version - major/minor nibble 
@@ -381,7 +381,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 * @see org.epics.pvaccess.impl.remote.Transport#getRevision()
 	 */
 	public byte getRevision() {
-		return CAConstants.CA_PROTOCOL_REVISION;
+		return PVAConstants.PVA_PROTOCOL_REVISION;
 	}
 
 	/**
@@ -410,7 +410,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 * @see org.epics.pvaccess.impl.remote.Transport#getPriority()
 	 */
 	public short getPriority() {
-		return CAConstants.CA_DEFAULT_PRIORITY;
+		return PVAConstants.PVA_DEFAULT_PRIORITY;
 	}
 
 	/**
@@ -489,14 +489,14 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 * @see org.epics.pvaccess.impl.remote.Transport#setRemoteTransportReceiveBufferSize(int)
 	 */
 	public void setRemoteTransportReceiveBufferSize(int receiveBufferSize) {
-		// noop for UDP (limited by 64k; CAConstants.MAX_UDP_SEND for CA)
+		// noop for UDP (limited by 64k; PVAConstants.MAX_UDP_SEND for PVA)
 	}
 
 	/**
 	 * @see org.epics.pvaccess.impl.remote.Transport#setRemoteTransportSocketReceiveBufferSize(int)
 	 */
 	public void setRemoteTransportSocketReceiveBufferSize(int socketReceiveBufferSize) {
-		// noop for UDP (limited by 64k; CAConstants.MAX_UDP_SEND for CA)
+		// noop for UDP (limited by 64k; PVAConstants.MAX_UDP_SEND for PVA)
 	}
 
 	/**
@@ -580,10 +580,10 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 */
 	@Override
 	public final void startMessage(byte command, int ensureCapacity) {
-		//ensureBuffer(CAConstants.CA_MESSAGE_HEADER_SIZE + ensureCapacity);
+		//ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE + ensureCapacity);
 		lastMessageStartPosition = sendBuffer.position();
-		sendBuffer.put(CAConstants.CA_MAGIC);
-		sendBuffer.put(CAConstants.CA_VERSION);
+		sendBuffer.put(PVAConstants.PVA_MAGIC);
+		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)0x80);	// data + big endian
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
@@ -595,8 +595,8 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	@Override
 	public final void endMessage() {
 		//we always (for now) send by packet, so no need for this here...
-		//alignBuffer(CAConstants.CA_ALIGNMENT);
-		sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2), sendBuffer.position() - lastMessageStartPosition - CAConstants.CA_MESSAGE_HEADER_SIZE); 
+		//alignBuffer(PVAConstants.PVA_ALIGNMENT);
+		sendBuffer.putInt(lastMessageStartPosition + (Short.SIZE/Byte.SIZE + 2), sendBuffer.position() - lastMessageStartPosition - PVAConstants.PVA_MESSAGE_HEADER_SIZE); 
 	}
 
 	/* (non-Javadoc)

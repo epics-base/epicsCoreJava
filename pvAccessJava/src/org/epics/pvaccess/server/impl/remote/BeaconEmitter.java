@@ -42,14 +42,14 @@ import org.epics.pvdata.pv.PVField;
 public class BeaconEmitter implements TimerCallback, TransportSender {
 
 	/**
-	 * Minimal (initial) CA beacon period (in seconds).
+	 * Minimal (initial) PVA beacon period (in seconds).
 	 */
-	protected static final float EPICS_CA_MIN_BEACON_PERIOD = 1.0f;
+	protected static final float EPICS_PVA_MIN_BEACON_PERIOD = 1.0f;
 	
 	/**
-	 * Minimal CA beacon count limit.
+	 * Minimal PVA beacon count limit.
 	 */
-	protected static final float EPICS_CA_MIN_BEACON_COUNT_LIMIT = 3;
+	protected static final float EPICS_PVA_MIN_BEACON_COUNT_LIMIT = 3;
 
 	/**
 	 * Timer.
@@ -115,7 +115,7 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	/**
 	 * Constructor.
 	 * @param transport	transport to be used to send beacons.
-	 * @param context CA context.
+	 * @param context PVA context.
 	 */
 	public BeaconEmitter(Transport transport, ServerContextImpl context)
 	{
@@ -125,9 +125,9 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 		this.serverAddress = context.getServerInetAddress();
 		this.serverPort = context.getServerPort();
 		this.serverStatusProvider = context.getBeaconServerStatusProvider();
-		this.fastBeaconPeriod = Math.max(context.getBeaconPeriod(), EPICS_CA_MIN_BEACON_PERIOD);
+		this.fastBeaconPeriod = Math.max(context.getBeaconPeriod(), EPICS_PVA_MIN_BEACON_PERIOD);
 		this.slowBeaconPeriod = Math.max(180.0, fastBeaconPeriod);	// TODO configurable
-		this.beaconCountLimit = (short)Math.max(10, EPICS_CA_MIN_BEACON_COUNT_LIMIT);	// TODO configurable
+		this.beaconCountLimit = (short)Math.max(10, EPICS_PVA_MIN_BEACON_COUNT_LIMIT);	// TODO configurable
 		this.startupTime = TimeStampFactory.create();
 		startupTime.getCurrentTime();
 		this.timerNode = TimerFactory.createNode(this);

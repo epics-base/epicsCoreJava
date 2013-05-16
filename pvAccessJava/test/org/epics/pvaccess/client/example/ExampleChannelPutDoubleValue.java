@@ -5,7 +5,7 @@
  */
 package org.epics.pvaccess.client.example;
 
-import org.epics.pvaccess.CAException;
+import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelAccess;
@@ -36,7 +36,7 @@ public class ExampleChannelPutDoubleValue {
      * main.
      * @param  args is a sequence of flags and filenames.
      */
-    public static void main(String[] args) throws CAException {
+    public static void main(String[] args) throws PVAException {
         org.epics.pvaccess.ClientFactory.start();
         int len = args.length;
         if(len<1 || len>2 || (len==1 && args[0].equals("?"))) {
