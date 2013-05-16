@@ -37,18 +37,20 @@ public class BitSetUtilFactory {
         }
         
         private boolean checkBitSetPVField(PVField pvField,BitSet bitSet,int initialOffset) {
-            boolean atLeastOneBitSet = false;
-            boolean allBitsSet = true;
             int offset = initialOffset;
             int nbits = pvField.getNumberFields();
             if(nbits==1) return bitSet.get(offset);
             int nextSetBit = bitSet.nextSetBit(offset);
             if(nextSetBit>=(offset+nbits)) return false;
+            if(nextSetBit<0) return false;
             if(bitSet.get(offset)) {
                 if(nbits>1) bitSet.clear(offset+1, offset+nbits);
                 return true;
             }
+            boolean atLeastOneBitSet = false;
+            boolean allBitsSet = true;
             PVStructure pvStructure = (PVStructure)pvField;
+            offset = pvStructure.getFieldOffset() + 1;
             while(offset<initialOffset + nbits) {
                 PVField pvSubField = pvStructure.getSubField(offset);
                 int nbitsNow = pvSubField.getNumberFields();
@@ -60,21 +62,17 @@ public class BitSetUtilFactory {
                     }
                     offset++;
                 } else {
-                    offset++;
-                    PVStructure pvSubStructure = (PVStructure)pvField;
-                    PVField[] pvSubStructureFields = pvSubStructure.getPVFields();
-                    for(PVField pvSubSubField: pvSubStructureFields) {
-                        boolean result = checkBitSetPVField(pvSubSubField,bitSet,offset);
-                        if(result) {
-                            atLeastOneBitSet = true;
-                            if(!bitSet.get(offset)) {
-                                allBitsSet = false;
-                            }
-                        } else {
+                    boolean result = checkBitSetPVField(pvSubField,bitSet,offset);
+                    if(result) {
+                        atLeastOneBitSet = true;
+                        if(!bitSet.get(offset)) {
                             allBitsSet = false;
                         }
-                        offset += pvSubSubField.getNumberFields();
+                    } else {
+                        allBitsSet = false;
                     }
+                    offset += pvSubField.getNumberFields();
+
                 }
             }
             if(allBitsSet) {

@@ -112,7 +112,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     @Override
     public PVField getSubField(int fieldOffset) {
         if(fieldOffset<=getFieldOffset()) {
-            if(fieldOffset==getFieldOffset()) return this;
             return null;
         }
         if(fieldOffset>getNextFieldOffset()) return null;
