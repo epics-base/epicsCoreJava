@@ -182,9 +182,10 @@ public final class StandardFieldFactory {
 	    Structure valueAlarm = null;
 	    Type type= field.getType();
 	    while(gotValueAlarm) {
-	        if(type==Type.scalar) {
-	           Scalar scalar = (Scalar)(field);
-	           ScalarType scalarType = scalar.getScalarType();
+	        if(type==Type.scalar || type==Type.scalarArray) {
+	           ScalarType scalarType = (type==Type.scalar) ?
+	        		   		((Scalar)field).getScalarType() :
+	        		   		((ScalarArray)field).getElementType();
 	           switch(scalarType) {
 	               case pvBoolean: valueAlarm = booleanAlarmField; break;
 	               case pvByte: valueAlarm = byteAlarmField; break;
