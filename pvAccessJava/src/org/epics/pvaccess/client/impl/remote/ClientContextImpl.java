@@ -82,12 +82,12 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     /**
      * Major version.
      */
-    private static final int VERSION_MAJOR = 1;
+    private static final int VERSION_MAJOR = 4;
     
     /**
      * Minor version.
      */
-    private static final int VERSION_MINOR = 2;
+    private static final int VERSION_MINOR = 3;
 
     /**
      * Maintenance version.
@@ -97,7 +97,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     /**
      * Development version.
      */
-    private static final boolean VERSION_DEVELOPMENT = true;
+    private static final boolean VERSION_DEVELOPMENT = false;
 
     /**
      * Version.

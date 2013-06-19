@@ -86,11 +86,10 @@ public class Version {
                 + " v"
                 + getMajorVersion()
                 + "."
-                + getMinorVersion();
+                + getMinorVersion()
+		        + "."
+		        + getMaintenanceVersion();
     	
-        if (getMaintenanceVersion() > 0)
-        	version += "." + getMaintenanceVersion();
-        
         if (isDevelopmentVersion())
         	version += "-SNAPSHOT";
         
