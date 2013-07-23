@@ -8,6 +8,7 @@ package org.epics.pvdata;
 
 import junit.framework.TestCase;
 
+import org.epics.pvdata.factory.BaseUnion;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
@@ -17,6 +18,7 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.Union;
 
 /**
  * JUnit test for BitSet.
@@ -96,5 +98,23 @@ public class IntrospectionTest extends TestCase {
 		fieldNames[1] = "structureArrayValue";
 		structure = fieldCreate.createStructure(fieldNames, fields);
 		System.out.println(structure);
+		
+		Union variant = fieldCreate.createVariantUnion();
+		assertNotNull(variant);
+		assertEquals(variant.getID(), BaseUnion.ANY_ID);
+		assertEquals(variant.getFieldNames().length, 0);
+		assertEquals(variant.getFields().length, 0);
+		System.out.println(variant);
+		
+		fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
+		fields[1] = fieldCreate.createScalarArray(ScalarType.pvDouble);
+		fieldNames = new String[2];
+		fieldNames[0] = "scalarValue";
+		fieldNames[1] = "arrayValue";
+		Union union = fieldCreate.createUnion(fieldNames, fields);
+		System.out.println(union);
+		
+		union = fieldCreate.createUnion("scalarOrArray", fieldNames, fields);
+		System.out.println(union);
 	}
 }

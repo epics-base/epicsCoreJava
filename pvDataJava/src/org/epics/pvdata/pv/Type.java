@@ -26,5 +26,10 @@ public enum Type {
     /**
      * The type is an array of structures.
      */
-    structureArray;
+    structureArray,
+    /**
+     * The type is an union.
+     */
+    union;
+    
 }

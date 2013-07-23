@@ -70,6 +70,26 @@ public interface FieldCreate {
      */
     Structure createStructure(Structure structToClone);
     /**
+     * Create a variant <i>Union</i> (aka any type) field.
+     * @return a <i>Union</i> interface for the newly created object.
+     */
+    Union createVariantUnion();
+    /**
+     * Create an <i>Union</i> field.
+     * @param fieldNames The array of field names for the union.
+     * @param fields The array of fields for the union.
+     * @return a <i>Union</i> interface for the newly created object.
+     */
+    Union createUnion(String[] fieldNames, Field[] fields);
+    /**
+     * Create an <i>Union</i> field with an identification.
+     * @param id The identification string for the union.
+     * @param fieldNames The array of field names for the union.
+     * @param fields The array of fields for the union.
+     * @return a <i>Union</i> interface for the newly created object.
+     */
+    Union createUnion(String id, String[] fieldNames, Field[] fields);
+    /**
      * Deserialize <i>Field</i> instance from given byte buffer.
      * @param buffer Buffer containing serialized <i>Field</i> instance. 
      * @param control Deserialization control instance.

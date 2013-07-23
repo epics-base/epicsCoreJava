@@ -36,7 +36,7 @@ public interface Structure extends Field{
     /**
      * Get a sub fields by index.
      * @param fieldIndex The field index.
-     * @return The field of null if index out of bounds.
+     * @return The field at specified index.
      */
     Field getField(int fieldIndex);
     /**
@@ -47,7 +47,7 @@ public interface Structure extends Field{
     /**
      * Get the name of the subfield by index.
      * @param fieldIndex The field index.
-     * @return The name of the field or an empty string if index is out of bounds.
+     * @return The name of the field.
      */
     String getFieldName(int fieldIndex);
 }

@@ -15,6 +15,7 @@ import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
+import org.epics.pvdata.pv.Union;
 
 /**
  * FieldFactory creates Field instances.
@@ -31,6 +32,7 @@ public final class FieldFactory {
     private static FieldCreateImpl singleImplementation = null;
     private static Scalar[] scalars = null;
     private static ScalarArray[] scalarArrays = null;
+    private static Union variantUnion = null;
     /**
      * Get the FieldCreate interface.
      * @return The interface for creating introspection objects.
@@ -44,6 +46,7 @@ public final class FieldFactory {
             for(int i = 0; i<num; i++) scalars[i] = new BaseScalar(scalarTypes[i]);
             scalarArrays = new ScalarArray[num];
             for(int i = 0; i<num; i++) scalarArrays[i] = new BaseScalarArray(scalarTypes[i]);
+            variantUnion = new BaseUnion();
         }
         return singleImplementation;
     }
@@ -141,10 +144,23 @@ public final class FieldFactory {
             return createStructure(oldID,newNames,newFields);
         }
         
-        
-        
-        
-    	static final ScalarType integerLUT[] =
+    	@Override
+		public Union createVariantUnion() {
+			return variantUnion;
+		}
+		@Override
+		public Union createUnion(String[] fieldNames, Field[] fields) {
+			return new BaseUnion(fieldNames, fields);
+		}
+		@Override
+		public Union createUnion(String id, String[] fieldNames, Field[] fields) {
+			return new BaseUnion(id, fieldNames, fields);
+		}
+
+
+
+
+		static final ScalarType integerLUT[] =
     	{
     		ScalarType.pvByte,  // 8-bits
     		ScalarType.pvShort, // 16-bits
@@ -217,12 +233,22 @@ public final class FieldFactory {
     				ScalarType scalarType = decodeScalar(code);
     				if (scalarType == null)
     					throw new IllegalArgumentException("invalid scalar type encoding");
-    				return new BaseScalar(scalarType);
+    				return scalars[scalarType.ordinal()];
     			}
     			else if (typeCode == 0x80)
     			{
     				// Type type = Type.structure;
     				return BaseStructure.deserializeStructureField(buffer, control);
+    			}
+    			else if (typeCode == 0x81)
+    			{
+    				// Type type = union;
+    				return BaseUnion.deserializeUnionField(buffer, control);
+    			}
+    			else if (typeCode == 0x82)
+    			{
+    				// Type type = union; variant union (aka any type)
+    				return variantUnion;
     			}
     			else
     				throw new IllegalArgumentException("invalid type encoding");
@@ -245,6 +271,7 @@ public final class FieldFactory {
     			}
     			else
     				throw new IllegalArgumentException("invalid type encoding");
+    			// TODO support union arrays
     		}
 		}  
         

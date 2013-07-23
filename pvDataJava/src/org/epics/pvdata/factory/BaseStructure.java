@@ -31,7 +31,6 @@ public class BaseStructure extends BaseField implements Structure {
      * Constructor for a structure field.
      * @param fieldNames The field names for the subfields
      * @param fields The array of nodes definitions for the nodes of the structure.
-     * @throws IllegalArgumentException if structureName is null;
      */
     public BaseStructure(String[] fieldNames,Field[] fields)
     {
@@ -43,7 +42,7 @@ public class BaseStructure extends BaseField implements Structure {
      * @param id The identification string for the structure.
      * @param fieldNames The field names for the subfields
      * @param fields The array of nodes definitions for the nodes of the structure.
-     * @throws IllegalArgumentException if structureName is null;
+     * @throws IllegalArgumentException if id is null or empty.
      */
     public BaseStructure(String id, String[] fieldNames,Field[] fields)
     {
@@ -173,9 +172,9 @@ public class BaseStructure extends BaseField implements Structure {
     @Override
     public void toString(StringBuilder buf, int indentLevel) {
         buf.append(getID());
-        toStringCommon(buf,indentLevel+1);
+        toStringCommon(buf, indentLevel + 1);
     }
-    private void toStringCommon(StringBuilder buf, int indentLevel) {
+    void toStringCommon(StringBuilder buf, int indentLevel) {
     	convert.newLine(buf,indentLevel);
         int length = fields.length;
         for(int i=0; i<length; i++) {
@@ -193,6 +192,10 @@ public class BaseStructure extends BaseField implements Structure {
         	case structureArray:
         		convert.newLine(buf,indentLevel+1);
         		field.toString(buf, indentLevel+1);
+        		break;
+        	case union:
+        		BaseUnion union = (BaseUnion)field;
+        		union.toStringCommon(buf, indentLevel + 1);
         		break;
         	}
         	if(i<length-1) convert.newLine(buf,indentLevel);
