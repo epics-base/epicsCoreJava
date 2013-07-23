@@ -47,6 +47,7 @@ import org.epics.pvdata.pv.PVULong;
 import org.epics.pvdata.pv.PVULongArray;
 import org.epics.pvdata.pv.PVUShort;
 import org.epics.pvdata.pv.PVUShortArray;
+import org.epics.pvdata.pv.PVUnion;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
@@ -5507,6 +5508,10 @@ public final class ConvertFactory {
                 convertStructureArray(builder,(PVStructureArray) pv, indentLevel);
                 return;
             }
+            if (type == Type.union) {
+                convertUnion(builder,(PVUnion) pv, indentLevel);
+                return;
+            }
             PVScalar pvScalar = (PVScalar) pv;
             Scalar scalar = pvScalar.getScalar();
             ScalarType scalarType = scalar.getScalarType();
@@ -5609,6 +5614,15 @@ public final class ConvertFactory {
                     fieldField.toString(buffer,indentLevel + 1);
                 }
             }
+        }
+
+        private void convertUnion(StringBuilder buffer,PVUnion data, int indentLevel) {
+            String id = data.getUnion().getID();
+            if (!id.isEmpty()) buffer.append(id).append(' ');
+            buffer.append(data.getFieldName());
+            newLine(buffer, indentLevel + 1);
+            PVField fieldField = data.get();
+            fieldField.toString(buffer,indentLevel + 1);
         }
 
         private void convertArray(StringBuilder builder,PVScalarArray pv, int indentLevel) {

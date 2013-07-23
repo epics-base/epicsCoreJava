@@ -25,6 +25,7 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.Union;
 
 /**
  * Factory to create default implementations for PVField objects.
@@ -59,10 +60,11 @@ public class PVDataFactory {
         @Override
 		public PVField createPVField(Field field) {
 			switch(field.getType()) {
-			case scalar: 	  return createPVScalar((Scalar)field); 
-			case scalarArray: return createPVScalarArray((ScalarArray)field); 
-			case structure:   return new BasePVStructure((Structure)field);
+			case scalar: 	     return createPVScalar((Scalar)field); 
+			case scalarArray:    return createPVScalarArray((ScalarArray)field); 
+			case structure:      return new BasePVStructure((Structure)field);
 			case structureArray: return new BasePVStructureArray((StructureArray)field);
+			case union: 	     return new BasePVUnion((Union)field);
 			}
             throw new IllegalArgumentException("Illegal Type");
 		}
