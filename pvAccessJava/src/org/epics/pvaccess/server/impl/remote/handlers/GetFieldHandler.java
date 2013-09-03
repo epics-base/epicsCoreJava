@@ -90,7 +90,8 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 			buffer.putInt(ioid);
 			synchronized (this) {
 				status.serialize(buffer, control);
-				control.cachedSerialize(field, buffer);
+				if (status.isSuccess())
+					control.cachedSerialize(field, buffer);
 			}
 		}
 

@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.PVAException;
+import org.epics.pvaccess.PVAVersion;
 import org.epics.pvaccess.Version;
 import org.epics.pvaccess.client.ChannelAccess;
 import org.epics.pvaccess.client.ChannelProvider;
@@ -60,32 +61,12 @@ public class ServerContextImpl implements ServerContext, Context {
 	}
 
     /**
-     * Major version.
-     */
-    private static final int VERSION_MAJOR = 4;
-    
-    /**
-     * Minor version.
-     */
-    private static final int VERSION_MINOR = 3;
-
-    /**
-     * Maintenance version.
-     */
-    private static final int VERSION_MAINTENANCE = 0;
-
-    /**
-     * Development version.
-     */
-    private static final boolean VERSION_DEVELOPMENT = false;
-
-    /**
      * Version.
      */
     public static final Version VERSION = new Version(
             "pvAccess Server", "Java",
-            VERSION_MAJOR, VERSION_MINOR,
-            VERSION_MAINTENANCE, VERSION_DEVELOPMENT);
+            PVAVersion.VERSION_MAJOR, PVAVersion.VERSION_MINOR,
+            PVAVersion.VERSION_MAINTENANCE, PVAVersion.VERSION_DEVELOPMENT);
 	  
    
     /**
