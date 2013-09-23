@@ -55,7 +55,7 @@ public class ExampleChannelPutDoubleValue {
         System.exit(0);
     }
     
-    private static final String providerName = "pvAccess";
+    private static final String providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
     private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
     private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
     

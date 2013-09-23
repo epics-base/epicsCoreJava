@@ -78,7 +78,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	/**
 	 * Name if the provider this context provides.
 	 */
-	public static final String PROVIDER_NAME = "pvAccess";
+	public static final String PROVIDER_NAME = "pva";
 	
     /**
      * Version.
