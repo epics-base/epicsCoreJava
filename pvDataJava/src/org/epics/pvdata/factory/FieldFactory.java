@@ -223,7 +223,7 @@ public final class FieldFactory {
     		if (code == (byte)-1)
     			return null;
     		
-    		final int typeCode = code & 0xE0;
+    		final int typeCode = code & 0xEF;
     		final boolean notArray = ((code & 0x10) == 0);
     		if (notArray)
     		{			

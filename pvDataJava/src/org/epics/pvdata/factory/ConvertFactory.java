@@ -5622,7 +5622,10 @@ public final class ConvertFactory {
             buffer.append(data.getFieldName());
             newLine(buffer, indentLevel + 1);
             PVField fieldField = data.get();
-            fieldField.toString(buffer,indentLevel + 1);
+            if (fieldField == null)
+            	buffer.append("(no data)");
+            else
+            	fieldField.toString(buffer,indentLevel + 1);
         }
 
         private void convertArray(StringBuilder builder,PVScalarArray pv, int indentLevel) {

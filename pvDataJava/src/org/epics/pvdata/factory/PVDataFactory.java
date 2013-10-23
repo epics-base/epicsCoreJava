@@ -19,6 +19,7 @@ import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVScalarArray;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
+import org.epics.pvdata.pv.PVUnion;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
@@ -87,6 +88,8 @@ public class PVDataFactory {
             	    convert.copyStructureArray(from, to);
             	    return to;
                 }
+            case union:
+                return createPVUnion((PVUnion)fieldToClone);
             }
             throw new IllegalArgumentException("Illegal Type");
         }
@@ -236,7 +239,25 @@ public class PVDataFactory {
         	}
         	return pvStructure;
         }
-        /* (non-Javadoc)
+        @Override
+		public PVUnion createPVUnion(Union union) {
+        	return new BasePVUnion(union);
+		}
+		@Override
+		public PVUnion createPVVariantUnion() {
+			return new BasePVUnion(fieldCreate.createVariantUnion());
+		}
+		@Override
+		public PVUnion createPVUnion(PVUnion unionToClone) {
+            if (unionToClone==null)
+                throw new IllegalArgumentException("unionToClone is null");
+     
+			PVUnion union = new BasePVUnion(unionToClone.getUnion());
+			// set cloned value
+			union.set(unionToClone.getSelectedIndex(), createPVField(unionToClone.get()));
+			return union;
+		}
+		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.PVDataCreate#flattenPVStructure(org.epics.pvdata.pv.PVStructure)
          */
         @Override

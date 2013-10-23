@@ -6,6 +6,8 @@
 package org.epics.pvdata;
 
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
 import org.epics.pvdata.factory.BaseUnion;
@@ -112,9 +114,20 @@ public class IntrospectionTest extends TestCase {
 		fieldNames[0] = "scalarValue";
 		fieldNames[1] = "arrayValue";
 		Union union = fieldCreate.createUnion(fieldNames, fields);
+		assertNotNull(union);
+		assertEquals(union.getID(), BaseUnion.DEFAULT_ID);
+		assertEquals(union.getFieldNames().length, 2);
+		assertEquals(union.getFields().length, 2);
+		assertTrue(Arrays.equals(union.getFieldNames(), fieldNames));
 		System.out.println(union);
 		
-		union = fieldCreate.createUnion("scalarOrArray", fieldNames, fields);
+		final String TEST_ID = "scalarOrArray";
+		union = fieldCreate.createUnion(TEST_ID, fieldNames, fields);
+		assertNotNull(union);
+		assertEquals(union.getID(), TEST_ID);
+		assertEquals(union.getFieldNames().length, 2);
+		assertEquals(union.getFields().length, 2);
+		assertTrue(Arrays.equals(union.getFieldNames(), fieldNames));
 		System.out.println(union);
 	}
 }

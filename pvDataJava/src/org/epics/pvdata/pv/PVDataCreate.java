@@ -77,6 +77,12 @@ public interface PVDataCreate {
      */
     PVStructure createPVStructure(Structure structure);
     /**
+     * Create implementation for PVUnion.
+     * @param union The introspection interface.
+     * @return The PVUnion implementation
+     */
+    PVUnion createPVUnion(Union union);
+    /**
      * Create implementation.
      * @param fieldNames The array of fieldNames.
      * @param pvFields The array of PVField.
@@ -84,11 +90,22 @@ public interface PVDataCreate {
      */
     PVStructure createPVStructure(String[] fieldNames,PVField[] pvFields);
     /**
+     * Create implementation.
+     * @return The variant PVUnion implementation. 
+     */
+    PVUnion createPVVariantUnion();
+    /**
      * Create implementation for PVStructure.
      * @param structToClone A structure. Each subfield and any auxInfo is cloned and added to the newly created structure.
      * @return The PVStructure implementation.
      */
     PVStructure createPVStructure(PVStructure structToClone);
+    /**
+     * Create implementation for PVUnion.
+     * @param unionToClone A structure.
+     * @return The PVUnion implementation.
+     */
+    PVUnion createPVUnion(PVUnion unionToClone);
     /**
      * Get a PVField[] that has all field of pvStructure in offset order.
      * @param pvStructure The structure.

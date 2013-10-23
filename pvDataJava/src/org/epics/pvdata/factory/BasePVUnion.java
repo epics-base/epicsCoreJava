@@ -27,11 +27,11 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 
     private final Union union;
-    // TODO if not initialized?!!!
 	private int selector = UNDEFINED_INDEX;
 	private PVField value = null;
 	private final boolean variant;
-    /**
+
+	/**
      * Constructor.
      * @param union the reflection interface for the PVUnion data.
      */
@@ -58,39 +58,79 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 
 	@Override
 	public String getSelectedFieldName() {
-		return union.getFieldName(selector);
+		if (selector == UNDEFINED_INDEX)
+			return null;
+		else
+			return union.getFieldName(selector);
 	}
 
 	@Override
 	public PVField select(int index) {
+		if (selector == index)
+			return value;
+			
+		if (index == UNDEFINED_INDEX)
+		{
+			selector = UNDEFINED_INDEX;
+			value = null;
+			return null;
+		}
+		else if (variant)
+			throw new IllegalArgumentException("index out of bounds");
+		else if (index < 0 || index > union.getFields().length)
+			throw new IllegalArgumentException("index out of bounds");
+		
 		Field field = union.getField(index);
-		
-		this.selector = index;
-		
-		// different introspection interface -> create new instance of PVField
-		if (value == null || value.getField().equals(field))
-			value = pvDataCreate.createPVField(field);
+		selector = index;
+		value = pvDataCreate.createPVField(field);
 
 		return value;
 	}
 
 	@Override
 	public PVField select(String fieldName) {
-		return select(union.getFieldIndex(fieldName));
+		int index = variant ? -1 : union.getFieldIndex(fieldName);
+		if (index == -1)
+			throw new IllegalArgumentException("no such fieldName");
+
+		return select(index);
 	}
 
 	@Override
-	public void put(int index, PVField value) {
-		// TODO variant 
-		if (!variant && !value.getField().equals(union.getField(index)))
-			throw new IllegalArgumentException("selected field and its introspection data do not match");
+	public void set(PVField value) {
+		set(selector, value);
+	}
+
+	@Override
+	public void set(int index, PVField value) {
+		if (variant && index != UNDEFINED_INDEX)
+			throw new IllegalArgumentException("index out of bounds");
+		else if (!variant)
+		{
+			if (index == UNDEFINED_INDEX)
+			{
+				if (value != null)
+					throw new IllegalArgumentException("non-null value for index == UNDEFINED_INDEX");
+			}
+			else if (index < 0 || index > union.getFields().length)
+				throw new IllegalArgumentException("index out of bounds");
+
+			// value type must match
+			if (!value.getField().equals(union.getField(index)))
+				throw new IllegalArgumentException("selected field and its introspection data do not match");
+		}
+		
 		this.selector = index;
 		this.value = value;
 	}
 
 	@Override
-	public void put(String fieldName, PVField value) {
-		put(union.getFieldIndex(fieldName), value);
+	public void set(String fieldName, PVField value) {
+		int index = variant ? -1 : union.getFieldIndex(fieldName);
+		if (index == -1)
+			throw new IllegalArgumentException("no such fieldName");
+
+		set(index, value);
 	}
 
 	/* (non-Javadoc)
@@ -99,13 +139,18 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 		if (variant)
 		{
-			flusher.cachedSerialize(value.getField(), buffer);
+			if (selector == UNDEFINED_INDEX)
+				buffer.put((byte)-1);
+			else
+				flusher.cachedSerialize(value.getField(), buffer);
 		}
 		else
 		{
 			SerializeHelper.writeSize(selector, buffer, flusher);
 		}
-		value.serialize(buffer, flusher);
+		
+		if (value != null)
+			value.serialize(buffer, flusher);
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
@@ -118,28 +163,25 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		}
 		else
 		{
-			// TODO if not initialized?!!!
 			selector = SerializeHelper.readSize(buffer, control);
-			field = union.getField(selector);
+			field = (selector == UNDEFINED_INDEX) ? null : union.getField(selector);
 		}
 		
-		// different introspection interface -> create new instance of PVField
-		if (value == null || value.getField().equals(field))
-			value = pvDataCreate.createPVField(field);
+		value = (field == null) ? null : pvDataCreate.createPVField(field);
 		
-		value.deserialize(buffer, control);
+		if (value != null)
+			value.deserialize(buffer, control);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		// TODO anything else?
 		if (obj instanceof PVUnion) {
 			PVUnion b = (PVUnion)obj;
 			if (selector == b.getSelectedIndex())
 			{
-				if (value.equals(b.get()))
+				if (selector == UNDEFINED_INDEX || value.equals(b.get()))
 					return true;
 				else
 					return false;
