@@ -31,6 +31,7 @@ public class NumberFormatTest extends TestCase {
 	}
 	
 	static class NumberFormatDouble extends NumberFormat {
+		private static final long serialVersionUID = -609491739577318372L;
 		private final String format;
 		
 		private NumberFormatDouble (String format) {

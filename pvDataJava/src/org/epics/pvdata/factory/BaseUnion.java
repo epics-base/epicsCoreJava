@@ -13,50 +13,67 @@ import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.SerializableControl;
-import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.Union;
 
 /**
- * Base interface for a Structure.
+ * Base class for implementing an union.
  * It is also a complete implementation.
- * @author mrk
+ * @author mse
  *
  */
-public class BaseStructure extends BaseField implements Structure {
+public class BaseUnion extends BaseField implements Union {
     private static Convert convert = ConvertFactory.getConvert();
     private final String id;
-    private Field[] fields;
+    private final Field[] fields;
     private String[] fieldNames;
+
     /**
-     * Constructor for a structure field.
+	 * Default unrestricted union (aka any type) ID.
+	 */
+    public static final String ANY_ID = "any";
+    private static final String[] ANY_FIELD_NAMES = new String[0];
+    private static final Field[] ANY_FIELDS = new Field[0];
+    
+    /**
+     * Constructor for a variant union (aka any type).
+     */
+    public BaseUnion() {
+    	this(ANY_ID, ANY_FIELD_NAMES, ANY_FIELDS);
+    }
+
+    /**
+     * Constructor for an union field.
      * @param fieldNames The field names for the subfields
      * @param fields The array of nodes definitions for the nodes of the structure.
      */
-    public BaseStructure(String[] fieldNames,Field[] fields)
+    public BaseUnion(String[] fieldNames, Field[] fields)
     {
     	this(DEFAULT_ID, fieldNames, fields);
     }
-    
+
     /**
-     * Constructor for a structure field.
-     * @param id The identification string for the structure.
+     * Constructor for an union field.
+     * @param id The identification string for the union.
      * @param fieldNames The field names for the subfields
-     * @param fields The array of nodes definitions for the nodes of the structure.
+     * @param fields The union fields (members).
      * @throws IllegalArgumentException if id is null or empty.
      */
-    public BaseStructure(String id, String[] fieldNames,Field[] fields)
-    {
-    	super(Type.structure);
-    	
-    	if(id == null)
+    public BaseUnion(String id, String[] fieldNames, Field[] fields) {
+        super(Type.union);
+
+        if(id == null)
     		throw new IllegalArgumentException("id == null");
     	
     	if(id.isEmpty())
     		throw new IllegalArgumentException("id is empty");
-
+        
     	if(fieldNames.length != fields.length)
     		throw new IllegalArgumentException("fieldNames has different length than fields");
     	
+    	if (fields.length == 0 && id != ANY_ID)
+    		throw new IllegalArgumentException("no fields but id is different than " + ANY_ID);
+        
     	this.id = id;
     	this.fields = fields;
     	this.fieldNames = fieldNames;
@@ -81,39 +98,14 @@ public class BaseStructure extends BaseField implements Structure {
     		}
     	}
     }
-    /* (non-Javadoc)
+
+	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Field#getID()
 	 */
 	@Override
 	public String getID() {
 		return id;
 	}
-	/**
-     * Called by FieldFactory
-     * @param newFields new fields
-     * @param newFieldNames new names
-     */
-    void clone(Field[] fields,String[] fieldNames) {
-        this.fields = fields;
-        this.fieldNames = fieldNames;
-        int n = fieldNames.length;
-        for(int i=0; i<n; i++) {
-            if(fields[i].getType()==Type.structure) {
-                BaseStructure sub = (BaseStructure)fields[i];
-                String[] subNames = sub.getFieldNames();
-                Field[] subFields = sub.getFields();
-                int m = subNames.length;
-                String[] newNames = new String[m];
-                Field[] newFields = new Field[m];
-                for(int j=0; j<m; j++) {
-                    newNames[j] = subNames[j];
-                    newFields[j] = subFields[j];
-                }
-                sub.clone(newFields, newNames);
-            }
-        }
-        
-    }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Structure#getField(java.lang.String)
      */
@@ -175,8 +167,10 @@ public class BaseStructure extends BaseField implements Structure {
         toStringCommon(buf, indentLevel + 1);
     }
     void toStringCommon(StringBuilder buf, int indentLevel) {
-    	convert.newLine(buf,indentLevel);
         int length = fields.length;
+        if (length == 0)	// variant support
+        	return;
+    	convert.newLine(buf,indentLevel);
         for(int i=0; i<length; i++) {
         	Field field = fields[i];
         	buf.append(field.getID() + " " + fieldNames[i]);
@@ -206,7 +200,7 @@ public class BaseStructure extends BaseField implements Structure {
 	 */
 	@Override
 	public int hashCode() {
-		final int PRIME = 31;
+		final int PRIME = 37;
 		return id.hashCode() + PRIME *
 			(PRIME * Arrays.hashCode(fieldNames) + Arrays.hashCode(fields));
 	}
@@ -219,7 +213,7 @@ public class BaseStructure extends BaseField implements Structure {
 			return true;
 		if (getClass() != obj.getClass())
 			return false;
-		final BaseStructure other = (BaseStructure) obj;
+		final BaseUnion other = (BaseUnion) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -238,23 +232,31 @@ public class BaseStructure extends BaseField implements Structure {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		buffer.put((byte)0x80);
-		serializeStructureField(this, buffer, control);
+		if (fields.length == 0)
+		{
+			// unrestricted/variant union
+			buffer.put((byte)0x82);
+		}
+		else
+		{
+			buffer.put((byte)0x81);
+			serializeUnionField(this, buffer, control);
+		}
 	}
 
 	private static final String EMPTY_ID = "";
 		
-	static void serializeStructureField(final Structure structure, ByteBuffer buffer, 
+	static void serializeUnionField(final Union union, ByteBuffer buffer, 
 			SerializableControl control) {
 		
 		// to optimize default (non-empty) IDs optimization (yes, by ref. string comparison)
 		// empty IDs are not allowed
-		final String id = structure.getID();
+		final String id = union.getID();
 		final String idToSerialize = (id == DEFAULT_ID) ? EMPTY_ID : id;
 		SerializeHelper.serializeString(idToSerialize, buffer, control);
 		
-		final Field[] fields = structure.getFields();
-		final String[] fieldNames = structure.getFieldNames();
+		final Field[] fields = union.getFields();
+		final String[] fieldNames = union.getFieldNames();
 		SerializeHelper.writeSize(fields.length, buffer, control);
 		for (int i = 0; i < fields.length; i++)
 		{
@@ -263,7 +265,7 @@ public class BaseStructure extends BaseField implements Structure {
 		}
 	}
 	
-	static final Structure deserializeStructureField(ByteBuffer buffer, DeserializableControl control) {
+	static final Union deserializeUnionField(ByteBuffer buffer, DeserializableControl control) {
 		final String id = SerializeHelper.deserializeString(buffer, control);
 		final int size = SerializeHelper.readSize(buffer, control);
 		final Field[] fields = new Field[size];
@@ -275,9 +277,9 @@ public class BaseStructure extends BaseField implements Structure {
 		}
 		
 		if (id == null || id.isEmpty())
-			return new BaseStructure(fieldNames, fields);
+			return new BaseUnion(fieldNames, fields);
 		else
-			return new BaseStructure(id, fieldNames, fields);
+			return new BaseUnion(id, fieldNames, fields);
 	}
 
 	/* (non-Javadoc)

@@ -19,12 +19,16 @@ import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVScalarArray;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
+import org.epics.pvdata.pv.PVUnion;
+import org.epics.pvdata.pv.PVUnionArray;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.UnionArray;
 
 /**
  * Factory to create default implementations for PVField objects.
@@ -59,10 +63,12 @@ public class PVDataFactory {
         @Override
 		public PVField createPVField(Field field) {
 			switch(field.getType()) {
-			case scalar: 	  return createPVScalar((Scalar)field); 
-			case scalarArray: return createPVScalarArray((ScalarArray)field); 
-			case structure:   return new BasePVStructure((Structure)field);
+			case scalar: 	     return createPVScalar((Scalar)field); 
+			case scalarArray:    return createPVScalarArray((ScalarArray)field); 
+			case structure:      return new BasePVStructure((Structure)field);
 			case structureArray: return new BasePVStructureArray((StructureArray)field);
+			case union: 	     return new BasePVUnion((Union)field);
+			case unionArray:     return new BasePVUnionArray((UnionArray)field);
 			}
             throw new IllegalArgumentException("Illegal Type");
 		}
@@ -85,6 +91,15 @@ public class PVDataFactory {
             	    convert.copyStructureArray(from, to);
             	    return to;
                 }
+            case union:
+                return createPVUnion((PVUnion)fieldToClone);
+            case unionArray:
+            {
+            	PVUnionArray from =(PVUnionArray)fieldToClone;
+            	PVUnionArray to = createPVUnionArray(from.getUnionArray());
+        	    convert.copyUnionArray(from, to);
+        	    return to;
+            }
             }
             throw new IllegalArgumentException("Illegal Type");
         }
@@ -194,6 +209,13 @@ public class PVDataFactory {
 			return new BasePVStructureArray(structureArray);
 		}
 		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVUnionArray(org.epics.pvdata.pv.UnionArray)
+		 */
+		@Override
+		public PVUnionArray createPVUnionArray(UnionArray unionArray) {
+			return new BasePVUnionArray(unionArray);
+		}
+		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.PVDataCreate#createPVStructure(org.epics.pvdata.pv.PVStructure, org.epics.pvdata.pv.Structure)
          */
         @Override
@@ -234,7 +256,29 @@ public class PVDataFactory {
         	}
         	return pvStructure;
         }
-        /* (non-Javadoc)
+        @Override
+		public PVUnion createPVUnion(Union union) {
+        	return new BasePVUnion(union);
+		}
+		@Override
+		public PVUnion createPVVariantUnion() {
+			return new BasePVUnion(fieldCreate.createVariantUnion());
+		}
+		@Override
+		public PVUnion createPVUnion(PVUnion unionToClone) {
+            if (unionToClone==null)
+                throw new IllegalArgumentException("unionToClone is null");
+     
+			PVUnion union = new BasePVUnion(unionToClone.getUnion());
+			// set cloned value
+			union.set(unionToClone.getSelectedIndex(), createPVField(unionToClone.get()));
+			return union;
+		}
+		@Override
+		public PVUnionArray createPVVariantUnionArray() {
+			return new BasePVUnionArray(fieldCreate.createVariantUnionArray());
+		}
+		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.PVDataCreate#flattenPVStructure(org.epics.pvdata.pv.PVStructure)
          */
         @Override

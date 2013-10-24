@@ -6,15 +6,15 @@
 package org.epics.pvdata.pv;
 
 /**
- * Reflection interface for structure field.
- * @author mrk
+ * Reflection interface for an union field.
+ * @author mse
  *
  */
-public interface Structure extends Field{
+public interface Union extends Field{
 	/**
-	 * Default structure ID.
+	 * Default union ID.
 	 */
-    public static final String DEFAULT_ID = "structure";
+    public static final String DEFAULT_ID = "union";
     /**
      * Get the Field for the specified fieldName
      * @param fieldName The name of the field.
@@ -24,13 +24,12 @@ public interface Structure extends Field{
     /**
      * Get the index of the specified field.
      * @param fieldName The name of the field.
-     * @return The index or -1 if fieldName is not a field in the structure.
+     * @return The index or -1 if fieldName is not a field in the union.
      */
     int getFieldIndex(String fieldName);
     /**
-     * Get all the subfields of the structure.
-     * @return An array of Field that describes
-     * each of the subfields in the structure.
+     * Get a list of union fields (members).
+     * @return an array of fields (can be empty), non-<code>null</code>.
      */
     Field[] getFields();
     /**

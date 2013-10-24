@@ -33,6 +33,17 @@ public interface FieldCreate {
      */
     StructureArray createStructureArray(Structure elementStructure);
     /**
+     * Create an <i>Array</i> field that is has element type <i>Union</i>
+     * @param elementUnion The <i>Union</i> for each array element.
+     * @return An <i>Array</i> Interface for the newly created object.
+     */
+    UnionArray createUnionArray(Union elementUnion);
+    /**
+     * Create a variant <i>UnionArray</i> (aka any type) field.
+     * @return a <i>UnionArray</i> interface for the newly created object.
+     */
+    UnionArray createVariantUnionArray();
+    /**
      * Create a <i>Structure</i> field.
      * @param fieldNames The array of field names for the structure.
      * @param fields The array of fields for the structure.
@@ -69,6 +80,26 @@ public interface FieldCreate {
      * @return a <i>Structure</i> interface for the newly created object.
      */
     Structure createStructure(Structure structToClone);
+    /**
+     * Create a variant <i>Union</i> (aka any type) field.
+     * @return a <i>Union</i> interface for the newly created object.
+     */
+    Union createVariantUnion();
+    /**
+     * Create an <i>Union</i> field.
+     * @param fieldNames The array of field names for the union.
+     * @param fields The array of fields for the union.
+     * @return a <i>Union</i> interface for the newly created object.
+     */
+    Union createUnion(String[] fieldNames, Field[] fields);
+    /**
+     * Create an <i>Union</i> field with an identification.
+     * @param id The identification string for the union.
+     * @param fieldNames The array of field names for the union.
+     * @param fields The array of fields for the union.
+     * @return a <i>Union</i> interface for the newly created object.
+     */
+    Union createUnion(String id, String[] fieldNames, Field[] fields);
     /**
      * Deserialize <i>Field</i> instance from given byte buffer.
      * @param buffer Buffer containing serialized <i>Field</i> instance. 

@@ -41,6 +41,8 @@ import org.epics.pvdata.pv.PVUByte;
 import org.epics.pvdata.pv.PVUInt;
 import org.epics.pvdata.pv.PVULong;
 import org.epics.pvdata.pv.PVUShort;
+import org.epics.pvdata.pv.PVUnion;
+import org.epics.pvdata.pv.PVUnionArray;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
@@ -48,6 +50,9 @@ import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.StructureArrayData;
+import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.UnionArray;
+import org.epics.pvdata.pv.UnionArrayData;
 
 /**
  * JUnit test for PVData serialization.
@@ -141,7 +146,9 @@ public class SerializationTest extends TestCase {
 		deserializedField.deserialize(buffer, control);
 	
 		// must equal
-		assertEquals(field.toString(), field, deserializedField);
+		assertEquals("equals test", field, deserializedField);
+		assertEquals("toString equals test", field.toString(), deserializedField.toString());
+		assertEquals("deserialization did not read entire serialization buffer", buffer.limit(), buffer.position());
 	}
 
 	public void testScalarNonInitialized()
@@ -514,11 +521,11 @@ public class SerializationTest extends TestCase {
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
         StructureArray sarray = fieldCreate.createStructureArray(StandardFieldFactory.getStandardField().timeStamp());
         PVStructureArray pvStructureArray = (PVStructureArray)pvDataCreate.createPVField(sarray);
-        pvStructureArray.setCapacity(3);
+        pvStructureArray.setLength(4);
         StructureArrayData sad = new StructureArrayData();
-        pvStructureArray.get(0, 3, sad);
+        pvStructureArray.get(0, 3, sad);	// leave one null
         
-        for (int i = 0; i < sad.data.length; i++)
+        for (int i = 0; i < 3; i++)
         {
         	PVStructure pvStructure = pvDataCreate.createPVStructure(sarray.getStructure());
         	pvStructure.getLongField("secondsPastEpoch").put(123*i);
@@ -528,6 +535,231 @@ public class SerializationTest extends TestCase {
         
 		serializatioTest(pvStructureArray);
 		serializatioTest(pvStructureArray.getStructureArray());
+	}
+
+	public void testVariantUnion()
+	{
+        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
+
+        // null variant union test
+        PVUnion variant = pvDataCreate.createPVVariantUnion();
+        assertNull(variant.get());
+        assertEquals(PVUnion.UNDEFINED_INDEX, variant.getSelectedIndex());
+        assertNull(variant.getSelectedFieldName());
+        serializatioTest(variant.getUnion());
+        serializatioTest(variant);
+        
+        PVDouble doubleValue = (PVDouble)pvDataCreate.createPVScalar(ScalarType.pvDouble);
+        PVInt intValue = (PVInt)pvDataCreate.createPVScalar(ScalarType.pvInt);
+        
+        //
+        // variant union tests
+        //
+        
+        variant.set(doubleValue);
+        assertSame(doubleValue, variant.get());
+        assertEquals(PVUnion.UNDEFINED_INDEX, variant.getSelectedIndex());
+        assertNull(variant.getSelectedFieldName());
+        serializatioTest(variant.getUnion());
+        serializatioTest(variant);
+
+        variant.set(intValue);
+        assertSame(intValue, variant.get());
+        assertEquals(PVUnion.UNDEFINED_INDEX, variant.getSelectedIndex());
+        assertNull(variant.getSelectedFieldName());
+        serializatioTest(variant.getUnion());
+        serializatioTest(variant);
+
+        variant.set(PVUnion.UNDEFINED_INDEX, doubleValue);
+        assertSame(doubleValue, variant.get());
+        assertEquals(PVUnion.UNDEFINED_INDEX, variant.getSelectedIndex());
+
+        variant.set(null);
+        assertNull(variant.get());
+        serializatioTest(variant.getUnion());
+        serializatioTest(variant);
+	}
+
+	public void testVariantUnionArray()
+	{
+        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
+
+        // null variant union array test
+        PVUnionArray variantArray = pvDataCreate.createPVVariantUnionArray();
+        serializatioTest(variantArray.getUnionArray());
+        serializatioTest(variantArray);
+        
+        variantArray.setLength(6);
+        UnionArrayData uad = new UnionArrayData();
+        variantArray.get(0, 5, uad);	// we leave one undefined
+        
+        for (int i = 0; i < 5; i++)
+        {
+        	PVUnion union = pvDataCreate.createPVVariantUnion();
+        	if (i % 3 == 0)
+        	{
+        		// noop (null variant union test)
+        	}
+        	else
+        	{
+            	PVStructure pvStructure;
+	        	if (i % 3 == 1)
+	        	{
+		        	pvStructure = pvDataCreate.createPVStructure(StandardFieldFactory.getStandardField().timeStamp());
+	        	}
+	        	else 
+	        	{
+		        	pvStructure = pvDataCreate.createPVStructure(StandardFieldFactory.getStandardField().control());
+	        	}
+	        	
+	        	union.set(pvStructure);
+        	}
+        	
+        	uad.data[i] = union;
+        }
+        
+        serializatioTest(variantArray);
+        
+        System.out.println(variantArray);
+	}
+
+	public void testUnion()
+	{
+        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
+
+        Field[] fields = new Field[2];
+		fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
+		fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
+		String[] fieldNames = new String[2];
+		fieldNames[0] = "doubleValue";
+		fieldNames[1] = "intValue";
+		PVUnion union = pvDataCreate.createPVUnion(fieldCreate.createUnion(fieldNames, fields));
+		assertNotNull(union);
+
+		// null union test
+        assertNull(union.get());
+        assertEquals(PVUnion.UNDEFINED_INDEX, union.getSelectedIndex());
+        assertNull(union.getSelectedFieldName());
+        serializatioTest(union.getUnion());
+        serializatioTest(union);
+        
+        ((PVDouble)union.select(fieldNames[0])).put(12.3);
+        assertEquals(12.3, ((PVDouble)union.get()).get());
+        assertEquals(0, union.getSelectedIndex());
+        assertEquals(fieldNames[0], union.getSelectedFieldName());
+        serializatioTest(union);
+        
+        ((PVInt)union.select(fieldNames[1])).put(543);
+        assertEquals(543, ((PVInt)union.get()).get());
+        assertEquals(1, union.getSelectedIndex());
+        assertEquals(fieldNames[1], union.getSelectedFieldName());
+        serializatioTest(union);
+
+        ((PVInt)union.select(1)).put(5432);
+        assertEquals(5432, ((PVInt)union.get()).get());
+        serializatioTest(union);
+
+        assertNull(union.select(PVUnion.UNDEFINED_INDEX));
+        assertNull(union.get());
+        assertEquals(PVUnion.UNDEFINED_INDEX, union.getSelectedIndex());
+        assertNull(union.getSelectedFieldName());
+        serializatioTest(union);
+        
+        PVDouble doubleValue = (PVDouble)pvDataCreate.createPVScalar(ScalarType.pvDouble);
+        union.set(0, doubleValue);
+        assertSame(doubleValue, union.get());
+        assertEquals(0, union.getSelectedIndex());
+        
+        try
+        {
+        	union.set(1, doubleValue);
+        	fail("field type does not match, but set allowed");
+        }
+        catch (IllegalArgumentException iae)
+        {
+        	// expected
+        }
+
+        try
+        {
+        	union.select(120);
+        	fail("index out of bounds allowed");
+        }
+        catch (IllegalArgumentException iae)
+        {
+        	// expected
+        }
+
+        try
+        {
+        	union.select(-2);
+        	fail("index out of bounds allowed");
+        }
+        catch (IllegalArgumentException iae)
+        {
+        	// expected
+        }
+
+        try
+        {
+        	union.set(120, doubleValue);
+        	fail("index out of bounds allowed");
+        }
+        catch (IllegalArgumentException iae)
+        {
+        	// expected
+        }
+	}
+	
+	public void testUnionArray()
+	{
+        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+        PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
+
+        Field[] fields = new Field[2];
+		fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
+		fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
+		String[] fieldNames = new String[2];
+		fieldNames[0] = "doubleValue";
+		fieldNames[1] = "intValue";
+		Union union = fieldCreate.createUnion(fieldNames, fields);
+		UnionArray unionArray = fieldCreate.createUnionArray(union);
+		
+        // null union array test
+        PVUnionArray pvUnionArray = pvDataCreate.createPVUnionArray(unionArray);
+        serializatioTest(pvUnionArray.getUnionArray());
+        serializatioTest(pvUnionArray);
+        
+        pvUnionArray.setLength(6);
+        UnionArrayData uad = new UnionArrayData();
+        pvUnionArray.get(0, 5, uad);	// we leave one undefined
+		
+		
+        for (int i = 0; i < 5; i++)
+        {
+        	PVUnion pvUnion = pvDataCreate.createPVUnion(union);
+
+        	if (i % 3 == 0)
+        	{
+        		// noop (null union test)
+        	}
+        	else
+        	{
+	        	if (i % 3 == 1)
+	        	{
+	        		((PVDouble)pvUnion.select(0)).put(i + 0.1);
+	        	}
+	        	else 
+	        	{
+	        		((PVInt)pvUnion.select(1)).put(i);
+	        	}
+        	}
+        	
+        	uad.data[i] = pvUnion;
+        }
+        
+        serializatioTest(pvUnionArray);
 	}
 
 	private void serializatioTest(Field field)
@@ -543,6 +775,8 @@ public class SerializationTest extends TestCase {
 	
 		// must equal
 		assertEquals("field " + field.toString() + " serialization broken", field, deserializedField);
+		assertEquals("field " + field.toString() + " equals test", field.toString(), deserializedField.toString());
+		assertEquals("deserialization did not read entire serialization buffer", buffer.limit(), buffer.position());
 	}
 	
 }

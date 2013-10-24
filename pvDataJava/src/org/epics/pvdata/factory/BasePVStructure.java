@@ -26,6 +26,7 @@ import org.epics.pvdata.pv.PVShort;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
+import org.epics.pvdata.pv.PVUnion;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
@@ -350,6 +351,16 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
                 MessageType.error);
         return null;
     }
+    
+	public <T> T getSubField(Class<T> c, String fieldName)
+	{
+		PVField pv = findSubField(fieldName, this);
+		if (c.isInstance(pv))
+			return c.cast(pv);
+		else
+			return null;
+	}
+	
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getLongField(java.lang.String)
      */
@@ -450,6 +461,26 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             return null;
         }
         return (PVStructure)pvField;
+    }
+	/* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructure#getUnionField(java.lang.String)
+     */
+    @Override
+    public PVUnion getUnionField(String fieldName) {
+        PVField pvField = findSubField(fieldName,this);
+        if(pvField==null) {
+        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
+        	return null;
+        }
+        Field field = pvField.getField();
+        Type type = field.getType();
+        if(type!=Type.union) {
+            super.message(
+                "fieldName " + fieldName + " does not have type union ",
+                MessageType.error);
+            return null;
+        }
+        return (PVUnion)pvField;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getArrayField(java.lang.String, org.epics.pvdata.pv.ScalarType)

@@ -6,8 +6,11 @@
 package org.epics.pvdata;
 
 
+import java.util.Arrays;
+
 import junit.framework.TestCase;
 
+import org.epics.pvdata.factory.BaseUnion;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
@@ -17,6 +20,8 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.UnionArray;
 
 /**
  * JUnit test for BitSet.
@@ -96,5 +101,42 @@ public class IntrospectionTest extends TestCase {
 		fieldNames[1] = "structureArrayValue";
 		structure = fieldCreate.createStructure(fieldNames, fields);
 		System.out.println(structure);
+		
+		Union variant = fieldCreate.createVariantUnion();
+		assertNotNull(variant);
+		assertEquals(variant.getID(), BaseUnion.ANY_ID);
+		assertEquals(variant.getFieldNames().length, 0);
+		assertEquals(variant.getFields().length, 0);
+		System.out.println(variant);
+		
+		fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
+		fields[1] = fieldCreate.createScalarArray(ScalarType.pvDouble);
+		fieldNames = new String[2];
+		fieldNames[0] = "scalarValue";
+		fieldNames[1] = "arrayValue";
+		Union union = fieldCreate.createUnion(fieldNames, fields);
+		assertNotNull(union);
+		assertEquals(union.getID(), BaseUnion.DEFAULT_ID);
+		assertEquals(union.getFieldNames().length, 2);
+		assertEquals(union.getFields().length, 2);
+		assertTrue(Arrays.equals(union.getFieldNames(), fieldNames));
+		System.out.println(union);
+		
+		final String TEST_ID = "scalarOrArray";
+		union = fieldCreate.createUnion(TEST_ID, fieldNames, fields);
+		assertNotNull(union);
+		assertEquals(union.getID(), TEST_ID);
+		assertEquals(union.getFieldNames().length, 2);
+		assertEquals(union.getFields().length, 2);
+		assertTrue(Arrays.equals(union.getFieldNames(), fieldNames));
+		System.out.println(union);
+		
+		UnionArray unionArray = fieldCreate.createUnionArray(union);
+		assertSame(union, unionArray.getUnion());
+		System.out.println(unionArray);
+		
+		UnionArray variantUnionArray = fieldCreate.createVariantUnionArray();
+		assertEquals(variant, variantUnionArray.getUnion());
+		System.out.println(variantUnionArray);
 	}
 }
