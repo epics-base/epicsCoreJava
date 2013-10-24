@@ -469,7 +469,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 					// TODO this does not work perfectly... uncompressed bitSets should be used!!!
 					overrunBitSet.or_and(changedBitSet, bitSet1);
 
-					// OR remove change
+					// OR remote change
 					changedBitSet.or(bitSet1);
 
 					// OR remote overrun

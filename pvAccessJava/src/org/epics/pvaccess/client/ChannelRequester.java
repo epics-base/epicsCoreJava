@@ -19,7 +19,7 @@ public interface ChannelRequester extends Requester {
      * @param status Completion status.
      * @param channel The channel.
      */
-    void channelCreated(Status status,Channel channel);
+    void channelCreated(Status status, Channel channel);
     /**
      * A channel connection state change has occurred.
      * @param channel The channel.
