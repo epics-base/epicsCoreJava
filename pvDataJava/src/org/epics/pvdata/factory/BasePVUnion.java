@@ -17,8 +17,6 @@ import org.epics.pvdata.pv.PVUnion;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Union;
 
-import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
-
 /**
  * Base class for a PVUnion.
  * @author mse
