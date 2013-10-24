@@ -30,6 +30,9 @@ public enum Type {
     /**
      * The type is an union.
      */
-    union;
-    
+    union,
+    /**
+     * The type is an array of unions.
+     */
+    unionArray;    
 }

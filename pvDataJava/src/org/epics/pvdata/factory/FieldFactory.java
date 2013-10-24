@@ -16,6 +16,7 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.UnionArray;
 
 /**
  * FieldFactory creates Field instances.
@@ -33,6 +34,7 @@ public final class FieldFactory {
     private static Scalar[] scalars = null;
     private static ScalarArray[] scalarArrays = null;
     private static Union variantUnion = null;
+    private static UnionArray variantUnionArray = null;
     /**
      * Get the FieldCreate interface.
      * @return The interface for creating introspection objects.
@@ -47,6 +49,7 @@ public final class FieldFactory {
             scalarArrays = new ScalarArray[num];
             for(int i = 0; i<num; i++) scalarArrays[i] = new BaseScalarArray(scalarTypes[i]);
             variantUnion = new BaseUnion();
+            variantUnionArray = new BaseUnionArray(variantUnion);
         }
         return singleImplementation;
     }
@@ -74,6 +77,20 @@ public final class FieldFactory {
 		public StructureArray createStructureArray(Structure elementStructure)
         {
 			return new BaseStructureArray(elementStructure);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.FieldCreate#createUnionArray(org.epics.pvdata.pv.Union)
+		 */
+		@Override
+		public UnionArray createUnionArray(Union elementUnion) {
+			return new BaseUnionArray(elementUnion);
+		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.FieldCreate#createVariantUnionArray()
+		 */
+		@Override
+		public UnionArray createVariantUnionArray() {
+			return variantUnionArray;
 		}
 		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#createStructure(java.lang.String, org.epics.pvdata.pv.Field[])
@@ -269,9 +286,19 @@ public final class FieldFactory {
     				final Structure elementStructure = (Structure)control.cachedDeserialize(buffer);
     				return new BaseStructureArray(elementStructure);
     			}
+    			else if (typeCode == 0x81)
+    			{
+    				// Type type = unionArray;
+    				final Union elementUnion = (Union)control.cachedDeserialize(buffer);
+    				return new BaseUnionArray(elementUnion);
+    			}
+    			else if (typeCode == 0x82)
+    			{
+    				// Type type = unionArray; variant union (aka any type)
+    				return variantUnionArray;
+    			}
     			else
     				throw new IllegalArgumentException("invalid type encoding");
-    			// TODO support union arrays
     		}
 		}  
         

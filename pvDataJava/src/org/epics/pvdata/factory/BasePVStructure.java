@@ -351,6 +351,16 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
                 MessageType.error);
         return null;
     }
+    
+	public <T> T getSubField(Class<T> c, String fieldName)
+	{
+		PVField pv = findSubField(fieldName, this);
+		if (c.isInstance(pv))
+			return c.cast(pv);
+		else
+			return null;
+	}
+	
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getLongField(java.lang.String)
      */

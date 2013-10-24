@@ -17,6 +17,8 @@ import org.epics.pvdata.pv.PVUnion;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Union;
 
+import com.sun.org.apache.xml.internal.serializer.SerializationHandler;
+
 /**
  * Base class for a PVUnion.
  * @author mse
@@ -58,6 +60,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 
 	@Override
 	public String getSelectedFieldName() {
+		// no name for undefined and for variant unions
 		if (selector == UNDEFINED_INDEX)
 			return null;
 		else
@@ -66,6 +69,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 
 	@Override
 	public PVField select(int index) {
+		// no change
 		if (selector == index)
 			return value;
 			
@@ -109,6 +113,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		{
 			if (index == UNDEFINED_INDEX)
 			{
+				// for undefined index we accept only null values
 				if (value != null)
 					throw new IllegalArgumentException("non-null value for index == UNDEFINED_INDEX");
 			}
@@ -139,38 +144,52 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 		if (variant)
 		{
-			if (selector == UNDEFINED_INDEX)
+			// write introspection data
+			if (value == null)
 				buffer.put((byte)-1);
 			else
+			{
 				flusher.cachedSerialize(value.getField(), buffer);
+				value.serialize(buffer, flusher);
+			}
 		}
 		else
 		{
+			// write selector value
 			SerializeHelper.writeSize(selector, buffer, flusher);
+			// write value, no value for UNDEFINED_INDEX
+			if (selector != UNDEFINED_INDEX) 
+				value.serialize(buffer, flusher);
+
 		}
-		
-		if (value != null)
-			value.serialize(buffer, flusher);
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		Field field;
 		if (variant)
 		{
-			field = fieldCreate.deserialize(buffer, control);
+			Field field = fieldCreate.deserialize(buffer, control);
+			if (field != null)
+			{
+				value = pvDataCreate.createPVField(field);
+				value.deserialize(buffer, control);
+			}
+			else
+				value = null;
 		}
 		else
 		{
 			selector = SerializeHelper.readSize(buffer, control);
-			field = (selector == UNDEFINED_INDEX) ? null : union.getField(selector);
+			if (selector != UNDEFINED_INDEX)
+			{
+				Field field = union.getField(selector);
+				value = pvDataCreate.createPVField(field);
+				value.deserialize(buffer, control);
+			}
+			else
+				value = null;
 		}
-		
-		value = (field == null) ? null : pvDataCreate.createPVField(field);
-		
-		if (value != null)
-			value.deserialize(buffer, control);
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)

@@ -172,6 +172,21 @@ public interface Convert {
      */
     void copyStructure(PVStructure from, PVStructure to);
     /**
+     * Are from and to valid arguments for copyUnion.
+     * They are only compatible if they have the same Union description.
+     * @param from from union.
+     * @param to union.
+     * @return (false,true) If the arguments (are not, are) compatible.
+     */
+    boolean isCopyUnionCompatible(Union from, Union to);
+    /**
+     * Copy from a union pv to another union pv.
+     * @param from The source.
+     * @param to The destination.
+     * @throws IllegalArgumentException if the arguments are not compatible.
+     */
+    void copyUnion(PVUnion from, PVUnion to);
+    /**
      * Are from and to valid for copyStructureArray.
      * @param from The from StructureArray.
      * @param to The to StructureArray.
@@ -179,11 +194,24 @@ public interface Convert {
      */
     boolean isCopyStructureArrayCompatible(StructureArray from, StructureArray to);
     /**
+     * Are from and to valid for copyUnionArray.
+     * @param from The from UnionArray.
+     * @param to The to UnionArray.
+     * @return (false,true) If the arguments (are not, are) compatible.
+     */
+    boolean isCopyUnionArrayCompatible(UnionArray from, UnionArray to);
+    /**
      * Copy from a structure array to another structure array.
      * @param from The source array.
      * @param to The destination array.
      */
     void copyStructureArray(PVStructureArray from, PVStructureArray to);
+    /**
+     * Copy from a union array to another union array.
+     * @param from The source array.
+     * @param to The destination array.
+     */
+    void copyUnionArray(PVUnionArray from, PVUnionArray to);
     /**
      * Convert a PV to a <byte>.
      * @param pv a PV

@@ -48,6 +48,7 @@ import org.epics.pvdata.pv.PVULongArray;
 import org.epics.pvdata.pv.PVUShort;
 import org.epics.pvdata.pv.PVUShortArray;
 import org.epics.pvdata.pv.PVUnion;
+import org.epics.pvdata.pv.PVUnionArray;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
@@ -57,11 +58,14 @@ import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.StructureArrayData;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.UnionArray;
+import org.epics.pvdata.pv.UnionArrayData;
 
 /**
  * Factory to obtain the implementation of <i>Convert</i>
  * 
- * @author mrktestByteArrayCopy
+ * @author mrk
  * 
  */
 public final class ConvertFactory {
@@ -98,6 +102,7 @@ public final class ConvertFactory {
         private static final DoubleArrayData doubleArrayData = new DoubleArrayData();
         private static final StringArrayData stringArrayData = new StringArrayData();
         private static final StructureArrayData structureArrayData = new StructureArrayData();
+        private static final UnionArrayData unionArrayData = new UnionArrayData();
 
         // Guarantee that ImplementConvert can only be created via getConvert
         private ImplementConvert()
@@ -283,6 +288,12 @@ public final class ConvertFactory {
             case structureArray:
                 return isCopyStructureArrayCompatible((StructureArray) from,
                         (StructureArray) to);
+            case union:
+                return isCopyUnionCompatible((Union) from,
+                        (Union) to);
+            case unionArray:
+                return isCopyUnionArrayCompatible((UnionArray) from,
+                        (UnionArray) to);
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -316,6 +327,15 @@ public final class ConvertFactory {
                 PVStructureArray fromArray = (PVStructureArray) from;
                 PVStructureArray toArray = (PVStructureArray) to;
                 copyStructureArray(fromArray, toArray);
+                return;
+            }
+            case union:
+                copyUnion((PVUnion) from, (PVUnion) to);
+                return;
+            case unionArray: {
+                PVUnionArray fromArray = (PVUnionArray) from;
+                PVUnionArray toArray = (PVUnionArray) to;
+                copyUnionArray(fromArray, toArray);
                 return;
             }
             }
@@ -643,12 +663,31 @@ public final class ConvertFactory {
                             (StructureArray) to))
                         return false;
                     break;
+                case union:
+                    if (!isCopyUnionCompatible((Union) from,
+                            (Union) to))
+                        return false;
+                    break;
+                case unionArray:
+                    if (!isCopyUnionArrayCompatible((UnionArray) from,
+                            (UnionArray) to))
+                        return false;
+                    break;
                 }
             }
             return true;
         }
+        
+        
 
-        /*
+        /* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.Convert#isCopyUnionCompatible(org.epics.pvdata.pv.Union, org.epics.pvdata.pv.Union)
+		 */
+		@Override
+		public boolean isCopyUnionCompatible(Union from, Union to) {
+			return from.equals(to);
+		}
+		/*
          * (non-Javadoc)
          * 
          * @see
@@ -717,10 +756,44 @@ public final class ConvertFactory {
                     copyStructureArray(fromArray, toArray);
                     break;
                 }
+                case union:
+                    copyUnion((PVUnion) fromData, (PVUnion) toData);
+                    break;
+                case unionArray: {
+                    PVUnionArray fromArray = (PVUnionArray) fromData;
+                    PVUnionArray toArray = (PVUnionArray) toData;
+                    copyUnionArray(fromArray, toArray);
+                    break;
+                }
                 }
             }
         }
 
+		/*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.epics.pvdata.pv.Convert#copyUnion(org.epics.pvdata.pv.PVUnion
+         * , org.epics.pvdata.pv.PVUnion)
+         */
+        @Override
+        public void copyUnion(PVUnion from, PVUnion to) {
+            if (to.isImmutable()) {
+                if (from.equals(to))
+                    return;
+                throw new IllegalArgumentException(
+                        "Convert.copyUnion destination is immutable");
+            }
+            
+            if (from == to)
+                return;
+            
+            if (!isCopyUnionCompatible(from.getUnion(), to.getUnion())) {
+                throw new IllegalArgumentException("Illegal copyUnion");
+            }
+            
+            copy(from.get(), to.select(from.getSelectedIndex()));
+        }
         /*
          * (non-Javadoc)
          * 
@@ -735,6 +808,20 @@ public final class ConvertFactory {
                     .getStructure());
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.epics.pvdata.pv.Convert#isCopyUnionArrayCompatible(org.epics
+         * .pvData.pv.UnionArray, org.epics.pvdata.pv.UnionArray)
+         */
+        @Override
+        public boolean isCopyUnionArrayCompatible(UnionArray from,
+                UnionArray to) {
+            return isCopyUnionCompatible(from.getUnion(), to
+                    .getUnion());
+        }
+        
         /*
          * (non-Javadoc)
          * 
@@ -784,6 +871,57 @@ public final class ConvertFactory {
             to.setLength(length);
             to.postPut();
         }
+        
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * org.epics.pvdata.pv.Convert#copyUnionArray(org.epics.pvdata.pv
+         * .PVUnionArray, org.epics.pvdata.pv.PVUnionArray)
+         */
+        @Override
+        public void copyUnionArray(PVUnionArray from,
+                PVUnionArray to) {
+            if (to.isImmutable()) {
+                if (from.equals(to))
+                    return;
+                throw new IllegalArgumentException(
+                        "Convert.copyUnionArray destination is immutable");
+            }
+            if (!isCopyUnionCompatible(from.getUnionArray()
+                    .getUnion(), to.getUnionArray().getUnion())) {
+                throw new IllegalArgumentException(
+                        "Convert.copyUnionArray from and to are not compatible");
+            }
+            PVUnion[] fromArray = null;
+            int length = from.getLength();
+            synchronized (unionArrayData) {
+                from.get(0, length, unionArrayData);
+                fromArray = unionArrayData.data;
+            }
+            PVUnion[] toArray = null;
+            if (to.getCapacity() < length)
+                to.setCapacity(length);
+            synchronized (unionArrayData) {
+                to.get(0, length, unionArrayData);
+                toArray = unionArrayData.data;
+            }
+            for (int i = 0; i < length; i++) {
+                if (fromArray[i] == null) {
+                    toArray[i] = null;
+                } else {
+                    if (toArray[i] == null) {
+                        Union union = to.getUnionArray()
+                                .getUnion();
+                        toArray[i] = pvDataCreate.createPVUnion(union);
+                    }
+                    copyUnion(fromArray[i], toArray[i]);
+                }
+            }
+            to.setLength(length);
+            to.postPut();
+        }
+        
         /*
          * (non-Javadoc)
          * 
@@ -5512,6 +5650,10 @@ public final class ConvertFactory {
                 convertUnion(builder,(PVUnion) pv, indentLevel);
                 return;
             }
+            if (type == Type.unionArray) {
+                convertUnionArray(builder,(PVUnionArray) pv, indentLevel);
+                return;
+            }
             PVScalar pvScalar = (PVScalar) pv;
             Scalar scalar = pvScalar.getScalar();
             ScalarType scalarType = scalar.getScalarType();
@@ -6001,6 +6143,25 @@ public final class ConvertFactory {
                     builder.append("null");
                 } else {
                     pvStructure.toString(builder, indentLevel+1);
+                }
+            }
+        }
+
+        private void convertUnionArray(StringBuilder builder,PVUnionArray pvdata,int indentLevel) {
+            builder.append(pvdata.getUnionArray().getID() + " " + pvdata.getFieldName() + " ");
+            int length = pvdata.getLength();
+            if(length<=0) {
+                return;
+            }
+            UnionArrayData data = new UnionArrayData();
+            pvdata.get(0, pvdata.getLength(), data);
+            for (int i = 0; i < pvdata.getLength(); i++) {
+                newLine(builder, indentLevel + 1);
+                PVUnion pvUnion = data.data[i];
+                if (pvUnion == null) {
+                    builder.append("null");
+                } else {
+                    pvUnion.toString(builder, indentLevel+1);
                 }
             }
         }

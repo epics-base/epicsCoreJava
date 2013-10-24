@@ -21,6 +21,7 @@ import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
 import org.epics.pvdata.pv.Type;
 import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.UnionArray;
 
 /**
  * JUnit test for BitSet.
@@ -129,5 +130,13 @@ public class IntrospectionTest extends TestCase {
 		assertEquals(union.getFields().length, 2);
 		assertTrue(Arrays.equals(union.getFieldNames(), fieldNames));
 		System.out.println(union);
+		
+		UnionArray unionArray = fieldCreate.createUnionArray(union);
+		assertSame(union, unionArray.getUnion());
+		System.out.println(unionArray);
+		
+		UnionArray variantUnionArray = fieldCreate.createVariantUnionArray();
+		assertEquals(variant, variantUnionArray.getUnion());
+		System.out.println(variantUnionArray);
 	}
 }
