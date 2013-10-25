@@ -60,11 +60,13 @@ public final class  StandardPVFieldFactory {
 		{
 		    Structure field = standardField.enumerated();
 		    PVStructure pvStructure = pvDataCreate.createPVStructure(field);
-		    PVStringArray pvChoices = (PVStringArray)pvStructure.getSubField(1);
-		    if(choices!=null && choices.length>0) {
-		        pvChoices.put(0,choices.length, choices, 0);
-		        pvChoices.setImmutable();
+		    PVScalarArray pvScalarArray = pvStructure.getScalarArrayField("choices",ScalarType.pvString);
+		    if(pvScalarArray==null) {
+		        throw new IllegalStateException("logic error");
 		    }
+		    PVStringArray pvChoices = (PVStringArray)pvScalarArray;
+		    pvChoices.put(0,choices.length,choices,0);
+		    pvChoices.setImmutable();
 		    return pvStructure;
 		}
 		@Override
@@ -78,6 +80,7 @@ public final class  StandardPVFieldFactory {
 		    }
 		    PVStringArray pvChoices = (PVStringArray)pvScalarArray;
 		    pvChoices.put(0,choices.length,choices,0);
+		    pvChoices.setImmutable();
 		    return pvStructure;
 		}
 	}
