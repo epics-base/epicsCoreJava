@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.epics.pvaccess.server.test.helpers.ChangingVariantUnionTopStructure;
 import org.epics.pvaccess.server.test.helpers.CounterTopStructure;
 import org.epics.pvaccess.server.test.helpers.Mapper;
 import org.epics.pvaccess.server.test.helpers.PVRequestUtils;
@@ -266,7 +267,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			public void topStructureChanged(BitSet changedBitSet) {
 				lock();
 				activeBitSet.or(changedBitSet);
-
+				
 				// add to queue, trigger
 				lock();
 				pvTopStructure.lock();
@@ -1094,7 +1095,8 @@ public class TestChannelProviderImpl implements ChannelProvider
 			"simpleCounter",
 			"valueOnly",
 			"arrayDouble",
-			"sum"
+			"sum",
+			"testAny"
 	};
 	
 	private static Set<String> HOSTED_CHANNELS_SET = 
@@ -1179,6 +1181,11 @@ public class TestChannelProviderImpl implements ChannelProvider
 				pvArray.put(ix, stage, array, 0);
 				ix += stage;
 			}
+		}
+		// 1Hz changing union
+		else if (channelName.equals("testAny"))
+		{
+			retVal = new ChangingVariantUnionTopStructure(1.0, timer);
 		}
 		// else if (channelName.startsWith("test"))	// double scalar
 		else
