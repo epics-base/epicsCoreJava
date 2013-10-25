@@ -49,4 +49,9 @@ public interface Union extends Field{
      * @return The name of the field.
      */
     String getFieldName(int fieldIndex);
+    /**
+     * Check if this union is variant union (aka any type).
+     * @return <code>true</code> if this union is variant union, otherwise <code>false</code>.
+     */
+    boolean isVariant();
 }

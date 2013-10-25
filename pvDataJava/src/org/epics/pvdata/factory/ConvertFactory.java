@@ -792,7 +792,23 @@ public final class ConvertFactory {
                 throw new IllegalArgumentException("Illegal copyUnion");
             }
             
-            copy(from.get(), to.select(from.getSelectedIndex()));
+            // variant
+            PVField fromValue = from.get();
+            if (from.getUnion().isVariant())
+            {
+            	if (fromValue == null)
+            		to.set(null);
+            	else
+            		to.set(pvDataCreate.createPVField(from.get()));	// clone value
+            }
+            else
+            {
+            	if (fromValue == null)
+            		to.select(PVUnion.UNDEFINED_INDEX);
+            	else
+            		copy(from.get(), to.select(from.getSelectedIndex()));
+            }
+            
         }
         /*
          * (non-Javadoc)

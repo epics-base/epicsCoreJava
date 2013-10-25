@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVUnion;
@@ -24,7 +23,6 @@ import org.epics.pvdata.pv.Union;
 public class BasePVUnion extends AbstractPVField implements PVUnion
 {
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 
     private final Union union;
 	private int selector = UNDEFINED_INDEX;
@@ -38,7 +36,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
     public BasePVUnion(Union union) {
         super(union);
         this.union = union;
-        variant = (union.getFields().length == 0);
+        variant = union.isVariant();
     }
 
 	@Override
@@ -167,7 +165,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 		if (variant)
 		{
-			Field field = fieldCreate.deserialize(buffer, control);
+			Field field = control.cachedDeserialize(buffer);
 			if (field != null)
 			{
 				value = pvDataCreate.createPVField(field);
@@ -196,12 +194,27 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	public boolean equals(Object obj) {
 		if (obj instanceof PVUnion) {
 			PVUnion b = (PVUnion)obj;
-			if (selector == b.getSelectedIndex())
+			if (union.equals(b.getUnion()))
 			{
-				if (selector == UNDEFINED_INDEX || value.equals(b.get()))
-					return true;
+				if (union.isVariant())
+				{
+					if (value == null)
+						return b.get() == null;
+					else
+						return value.equals(b.get());
+				}
 				else
-					return false;
+				{
+					if (selector == b.getSelectedIndex())
+					{
+						if (selector == UNDEFINED_INDEX || value.equals(b.get()))
+							return true;
+						else
+							return false;
+					}
+					else
+						return false;
+				}
 			}
 			else
 				return false;

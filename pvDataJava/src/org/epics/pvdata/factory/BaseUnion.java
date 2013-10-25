@@ -158,7 +158,16 @@ public class BaseUnion extends BaseField implements Union {
     public Field[] getFields() {
         return fields;
     }
+    
     /* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Union#isVariant()
+	 */
+	@Override
+	public boolean isVariant() {
+		return fields.length == 0;
+	}
+
+	/* (non-Javadoc)
      * @see org.epics.pvdata.factory.BaseField#toString(java.lang.StringBuilder, int)
      */
     @Override
@@ -190,6 +199,10 @@ public class BaseUnion extends BaseField implements Union {
         	case union:
         		BaseUnion union = (BaseUnion)field;
         		union.toStringCommon(buf, indentLevel + 1);
+        		break;
+        	case unionArray:
+        		convert.newLine(buf,indentLevel+1);
+        		field.toString(buf, indentLevel+1);
         		break;
         	}
         	if(i<length-1) convert.newLine(buf,indentLevel);

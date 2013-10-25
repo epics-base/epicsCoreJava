@@ -197,6 +197,10 @@ public class BaseStructure extends BaseField implements Structure {
         		BaseUnion union = (BaseUnion)field;
         		union.toStringCommon(buf, indentLevel + 1);
         		break;
+        	case unionArray:
+        		convert.newLine(buf,indentLevel+1);
+        		field.toString(buf, indentLevel+1);
+        		break;
         	}
         	if(i<length-1) convert.newLine(buf,indentLevel);
         }
