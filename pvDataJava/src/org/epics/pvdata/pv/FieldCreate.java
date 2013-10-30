@@ -13,6 +13,13 @@ import java.nio.ByteBuffer;
  *
  */
 public interface FieldCreate {
+	
+	/**
+	 * Create a new instance of in-line <code>Field</code> builder.
+	 * @return a new instance of a <code>FieldBuilder</code>.
+	 */
+	FieldBuilder createFieldBuilder();
+	
     /**
      * Create a <i>ScalarField</i>.
      * @param scalarType The scalar type.

@@ -15,6 +15,12 @@ public interface Union extends Field{
 	 * Default union ID.
 	 */
     public static final String DEFAULT_ID = "union";
+    
+    /**
+     * Default variant union ID.
+     */
+    public static final String ANY_ID = "any";
+    
     /**
      * Get the Field for the specified fieldName
      * @param fieldName The name of the field.

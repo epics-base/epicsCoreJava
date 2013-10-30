@@ -31,7 +31,6 @@ public class BaseUnion extends BaseField implements Union {
     /**
 	 * Default unrestricted union (aka any type) ID.
 	 */
-    public static final String ANY_ID = "any";
     private static final String[] ANY_FIELD_NAMES = new String[0];
     private static final Field[] ANY_FIELDS = new Field[0];
     
@@ -49,7 +48,7 @@ public class BaseUnion extends BaseField implements Union {
      */
     public BaseUnion(String[] fieldNames, Field[] fields)
     {
-    	this(DEFAULT_ID, fieldNames, fields);
+    	this(fieldNames.length > 0 ? DEFAULT_ID : ANY_ID, fieldNames, fields);
     }
 
     /**

@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.FieldBuilder;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
@@ -56,6 +57,13 @@ public final class FieldFactory {
     
     private static final class FieldCreateImpl implements FieldCreate{
         /* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.FieldCreate#createFieldBuilder()
+		 */
+		@Override
+		public FieldBuilder createFieldBuilder() {
+			return new BaseFieldBuilder();
+		}
+		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#createScalar(org.epics.pvdata.pv.ScalarType)
          */
         @Override
