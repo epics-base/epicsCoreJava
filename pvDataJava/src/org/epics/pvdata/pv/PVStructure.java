@@ -149,6 +149,13 @@ public interface PVStructure extends PVField, BitSetSerializable {
      */
     PVUnion getUnionField(String fieldName);
     /**
+     * Find a unionArray subfield with the specified fieldName.
+     * The fieldName is of the form name.name...
+     * @param fieldName The field name to find.
+     * @return The interface if the field of the correct type is found or null if not found.
+     */
+    PVUnionArray getUnionArrayField(String fieldName);
+    /**
      * Get the name of structure that this structure extends.
      * @return The name or null if this structure does not extend a structure.
      */

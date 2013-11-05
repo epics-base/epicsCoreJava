@@ -27,6 +27,7 @@ import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
 import org.epics.pvdata.pv.PVUnion;
+import org.epics.pvdata.pv.PVUnionArray;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
@@ -524,11 +525,31 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         Type type = field.getType();
         if(type!=Type.structureArray) {
             super.message(
-                "fieldName " + fieldName + " does not have type array ",
+                "fieldName " + fieldName + " does not have type structureArray ",
                 MessageType.error);
             return null;
         }
         return (PVStructureArray)pvField;
+	}
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructure#getUnionArrayField(java.lang.String)
+     */
+    @Override
+	public PVUnionArray getUnionArrayField(String fieldName) {
+    	PVField pvField = findSubField(fieldName,this);
+        if(pvField==null) {
+        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
+        	return null;
+        }
+        Field field = pvField.getField();
+        Type type = field.getType();
+        if(type!=Type.unionArray) {
+            super.message(
+                "fieldName " + fieldName + " does not have type unionArray ",
+                MessageType.error);
+            return null;
+        }
+        return (PVUnionArray)pvField;
 	}
 
 	/* (non-Javadoc)
