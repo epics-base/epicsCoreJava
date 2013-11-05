@@ -306,7 +306,10 @@ public abstract class AbstractPVField implements PVField{
             Field field = pvField.getField();
             switch(field.getType()) {
             case scalar:
-            case scalarArray: {
+            case scalarArray:
+            case union:
+            case unionArray:
+            {
                 AbstractPVField pv = (AbstractPVField)pvField;
                 nextOffset++;
                 pv.fieldOffset = offset;
