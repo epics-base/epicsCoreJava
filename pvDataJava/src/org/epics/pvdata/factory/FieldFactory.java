@@ -286,7 +286,7 @@ public final class FieldFactory {
     				ScalarType scalarType = decodeScalar(code);
     				if (scalarType == null)
     					throw new IllegalArgumentException("invalid scalarArray type encoding");
-    				return new BaseScalarArray(scalarType);
+    				return scalarArrays[scalarType.ordinal()];
     			}
     			else if (typeCode == 0x80)
     			{

@@ -82,7 +82,7 @@ public class BaseUnionArray extends BaseField implements UnionArray {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		if (union.getFields().length == 0)
+		if (union.isVariant())
 		{
 			// unrestricted/variant union
 			buffer.put((byte)0x92);
