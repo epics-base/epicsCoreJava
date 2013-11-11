@@ -149,12 +149,12 @@ public class BaseFieldBuilder implements FieldBuilder {
 	}
 
 	@Override
-	public FieldBuilder addStructure(String name) {
+	public FieldBuilder addNestedStructure(String name) {
 		return new BaseFieldBuilder(this, name, Structure.class, false);
 	}
 
 	@Override
-	public FieldBuilder addUnion(String name) {
+	public FieldBuilder addNestedUnion(String name) {
 		return new BaseFieldBuilder(this, name, Union.class, false);
 	}
 
@@ -169,7 +169,7 @@ public class BaseFieldBuilder implements FieldBuilder {
 	}
 
 	@Override
-	public FieldBuilder createNested() {
+	public FieldBuilder endNested() {
 		if (parentBuilder == null)
 			throw new IllegalStateException("this method can only be called to create nested fields");
 		

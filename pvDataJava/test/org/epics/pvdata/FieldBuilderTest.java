@@ -142,11 +142,11 @@ public class FieldBuilderTest extends TestCase {
 		String NESTED_ID = "nestedID";
 		Structure s = fieldCreate.createFieldBuilder().
 		 				add("double", ScalarType.pvDouble).
-		 				addStructure("nested").
+		 				addNestedStructure("nested").
 		 					setId(NESTED_ID).
 		 					add("short", ScalarType.pvShort).
 		 					add("long", ScalarType.pvLong).
-		 					createNested().
+		 					endNested().
 		 				addArray("intArray", ScalarType.pvInt).
 		 				createStructure();
 		assertNotNull(s);
@@ -193,7 +193,7 @@ public class FieldBuilderTest extends TestCase {
 		 					setId(NESTED_ID).
 		 					add("short", ScalarType.pvShort).
 		 					add("long", ScalarType.pvLong).
-		 					createNested().
+		 					endNested().
 		 				addArray("intArray", ScalarType.pvInt).
 		 				createStructure();
 		assertNotNull(s);
@@ -236,11 +236,11 @@ public class FieldBuilderTest extends TestCase {
 		String NESTED_ID = "nestedID";
 		Union u = fieldCreate.createFieldBuilder().
 		 				add("double", ScalarType.pvDouble).
-		 				addUnion("nested").
+		 				addNestedUnion("nested").
 		 					setId(NESTED_ID).
 		 					add("short", ScalarType.pvShort).
 		 					add("long", ScalarType.pvLong).
-		 					createNested().
+		 					endNested().
 		 				addArray("intArray", ScalarType.pvInt).
 		 				createUnion();
 		assertNotNull(u);
@@ -287,7 +287,7 @@ public class FieldBuilderTest extends TestCase {
 		 					setId(NESTED_ID).
 		 					add("short", ScalarType.pvShort).
 		 					add("long", ScalarType.pvLong).
-		 					createNested().
+		 					endNested().
 		 				addArray("intArray", ScalarType.pvInt).
 		 				createUnion();
 		assertNotNull(u);
@@ -331,7 +331,7 @@ public class FieldBuilderTest extends TestCase {
 		{
 			fieldCreate.createFieldBuilder()
 				.add("f1", ScalarType.pvByte)
-				.createNested();
+				.endNested();
 			fail("createNested() allowed in non-nested FieldBuilder");
 		} catch (IllegalStateException ise) {
 			// ok
@@ -341,7 +341,7 @@ public class FieldBuilderTest extends TestCase {
 		{
 			fieldCreate.createFieldBuilder()
 				.add("f1", ScalarType.pvByte)
-				.addStructure("nested")
+				.addNestedStructure("nested")
 					.add("n1", ScalarType.pvUInt)
 					.createStructure();
 			fail("createStructure() allowed in nested FieldBuilder");

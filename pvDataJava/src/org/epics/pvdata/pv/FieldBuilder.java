@@ -72,9 +72,9 @@ public interface FieldBuilder
      * to complete creation of the nested <code>Structure</code>.
      * @param name nested structure name.
      * @return a new instance of a <code>FieldBuilder</code> is returned.
-     * @see #createNested()
+     * @see #endNested()
      */
-    FieldBuilder addStructure(String name); 
+    FieldBuilder addNestedStructure(String name); 
     
     /**
      * Add new nested <code>Union</code>.
@@ -82,9 +82,9 @@ public interface FieldBuilder
      * to complete creation of the nested <code>Union</code>.
      * @param name nested union name.
      * @return a new instance of a <code>FieldBuilder</code> is returned.
-     * @see #createNested()
+     * @see #endNested()
      */
-    FieldBuilder addUnion(String name);
+    FieldBuilder addNestedUnion(String name);
     
     /**
      * Add new nested <code>Structure[]</code>.
@@ -92,7 +92,7 @@ public interface FieldBuilder
      * to complete creation of the nested <code>Structure</code>.
      * @param name nested structure name.
      * @return a new instance of a <code>FieldBuilder</code> is returned.
-     * @see #createNested()
+     * @see #endNested()
      */
     FieldBuilder addStructureArray(String name); 
     
@@ -102,15 +102,15 @@ public interface FieldBuilder
      * to complete creation of the nested <code>Union</code>.
      * @param name nested union name.
      * @return a new instance of a <code>FieldBuilder</code> is returned.
-     * @see #createNested()
+     * @see #endNested()
      */
     FieldBuilder addUnionArray(String name);
 
     /**
      * Complete the creation of a nested object.
-     * @see #addStructure(String)
-     * @see #addUnion(String)
+     * @see #addNestedStructure(String)
+     * @see #addNestedUnion(String)
      * @return a previous (parent) <code>FieldBuilder</code>.
      */
-    FieldBuilder createNested();
+    FieldBuilder endNested();
 }
