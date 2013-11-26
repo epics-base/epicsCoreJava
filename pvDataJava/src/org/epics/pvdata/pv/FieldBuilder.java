@@ -94,7 +94,7 @@ public interface FieldBuilder
      * @return a new instance of a <code>FieldBuilder</code> is returned.
      * @see #endNested()
      */
-    FieldBuilder addStructureArray(String name); 
+    FieldBuilder addNestedStructureArray(String name); 
     
     /**
      * Add new nested <code>Union[]</code>.
@@ -104,7 +104,7 @@ public interface FieldBuilder
      * @return a new instance of a <code>FieldBuilder</code> is returned.
      * @see #endNested()
      */
-    FieldBuilder addUnionArray(String name);
+    FieldBuilder addNestedUnionArray(String name);
 
     /**
      * Complete the creation of a nested object.

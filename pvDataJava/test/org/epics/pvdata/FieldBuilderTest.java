@@ -189,7 +189,7 @@ public class FieldBuilderTest extends TestCase {
 		String NESTED_ID = "nestedID";
 		Structure s = fieldCreate.createFieldBuilder().
 		 				add("double", ScalarType.pvDouble).
-		 				addStructureArray("nested").
+		 				addNestedStructureArray("nested").
 		 					setId(NESTED_ID).
 		 					add("short", ScalarType.pvShort).
 		 					add("long", ScalarType.pvLong).
@@ -283,7 +283,7 @@ public class FieldBuilderTest extends TestCase {
 		String NESTED_ID = "nestedID";
 		Union u = fieldCreate.createFieldBuilder().
 		 				add("double", ScalarType.pvDouble).
-		 				addUnionArray("nested").
+		 				addNestedUnionArray("nested").
 		 					setId(NESTED_ID).
 		 					add("short", ScalarType.pvShort).
 		 					add("long", ScalarType.pvLong).

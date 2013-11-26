@@ -159,12 +159,12 @@ public class BaseFieldBuilder implements FieldBuilder {
 	}
 
 	@Override
-	public FieldBuilder addStructureArray(String name) {
+	public FieldBuilder addNestedStructureArray(String name) {
 		return new BaseFieldBuilder(this, name, Structure.class, true);
 	}
 
 	@Override
-	public FieldBuilder addUnionArray(String name) {
+	public FieldBuilder addNestedUnionArray(String name) {
 		return new BaseFieldBuilder(this, name, Union.class, true);
 	}
 
