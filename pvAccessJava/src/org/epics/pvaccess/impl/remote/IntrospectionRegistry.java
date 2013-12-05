@@ -121,8 +121,11 @@ public final class IntrospectionRegistry {
 		}
 		else
 		{ 
-			// only structures registry check
-			if (field.getType() == Type.structure)
+			// do not cache scalars, scalarArrays
+			// ... and (array of) variant unions - not worth the complex condition,
+			// unless bool Field.cache() would exist
+			if (field.getType() != Type.scalar &&
+				field.getType() != Type.scalarArray)
 			{
 				BooleanHolder existing = new BooleanHolder();
 				final short key = registerIntrospectionInterface(field, existing);
