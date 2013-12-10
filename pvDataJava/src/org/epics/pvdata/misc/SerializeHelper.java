@@ -63,6 +63,26 @@ public final class SerializeHelper {
 	}
 
 	/**
+	 * Deserialize array size.
+	 * @param buffer deserialization buffer.
+	 * @return array size.
+	 */
+	public final static int readSize(ByteBuffer buffer)
+	{
+		final byte b = buffer.get();
+		if (b == -1)
+			return -1;
+		else if (b == -2) {
+			final int s = buffer.getInt();
+			if (s < 0)
+				throw new RuntimeException("negative array size");
+			return s;
+		}
+		else
+			return (int)(b < 0 ? b + 256 : b);
+	}
+
+	/**
 	 * String serialization helper method.
 	 */
 	public final static void serializeString(final String value, ByteBuffer buffer, SerializableControl flusher) {
@@ -81,6 +101,19 @@ public final class SerializeHelper {
 				else
 					break;
 			}
+		}
+	}
+
+	/**
+	 * String serialization helper method.
+	 */
+	public final static void serializeString(final String value, ByteBuffer buffer) {
+		if (value == null)
+			writeSize(-1, buffer);
+		else {
+			final int len = value.length(); 
+			writeSize(len, buffer);
+			buffer.put(value.getBytes());	// UTF-8
 		}
 	}
 
@@ -107,7 +140,7 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * String serializaton helper method.
+	 * String deserializaton helper method.
 	 */
 	public final static String deserializeString(ByteBuffer buffer, DeserializableControl control) {
 		int size = SerializeHelper.readSize(buffer, control);
@@ -130,4 +163,17 @@ public final class SerializeHelper {
 			return null;
 	}
 
+	/**
+	 * String deserializaton helper method.
+	 */
+	public final static String deserializeString(ByteBuffer buffer) {
+		int size = SerializeHelper.readSize(buffer);
+		if (size >= 0) {
+			byte[] bytes = new byte[size];
+			buffer.get(bytes, 0, size);		// UTF-8
+			return new String(bytes);
+		}
+		else
+			return null;
+	}
 }
