@@ -198,31 +198,34 @@ UDT control types used by PVMS:
 	protected void handleControlPacket(ByteBuffer buffer,
 			InetSocketAddress socketAddress, int typeReserved, int additionalInfo, long id)
 	{
-		switch (typeReserved)
+		int type = (typeReserved & 0x7FFFFFFF) >> 16; 
+		switch (type)
 		{
-		case 1:	handleKeepAlive(socketAddress, id, additionalInfo); break;
+		case 1: handleKeepAlive(socketAddress, id, additionalInfo); break;
 		case 5: handleShutdown(socketAddress, id); break;
-		case 0x7FFFCACA: 
+		case 0x7FFF:
+			if (typeReserved == 0x7FFFCACA)
 			{
 				String topicId = SerializeHelper.deserializeString(buffer);
 				handleSubscribe(socketAddress, id, additionalInfo, topicId);
 				break;
 			}
-		default: throw new IllegalStateException("unsupported control message");
+		default:
+			throw new IllegalStateException("unsupported control message: 0x" + Integer.toHexString(typeReserved));
 		}
 	}
 
-	protected void handleKeepAlive(InetSocketAddress sockerAddress, long id, int expirationTimeSec)
+	protected void handleKeepAlive(InetSocketAddress socketAddress, long id, int expirationTimeSec)
 	{
 		// noop
 	}
 
-	protected void handleShutdown(InetSocketAddress sockerAddress, long id)
+	protected void handleShutdown(InetSocketAddress socketAddress, long id)
 	{
 		// noop
 	}
 
-	protected void handleSubscribe(InetSocketAddress sockerAddress, long id, int expirationTimeSec, String topicId)
+	protected void handleSubscribe(InetSocketAddress socketAddress, long id, int expirationTimeSec, String topicId)
 	{
 		// noop
 	}
