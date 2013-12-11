@@ -12,7 +12,7 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.pvaccess.client.pms;
+package org.epics.pvaccess.client.pvms;
 
 import java.nio.ByteBuffer;
 

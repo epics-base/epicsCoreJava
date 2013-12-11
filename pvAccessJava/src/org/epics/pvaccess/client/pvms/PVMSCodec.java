@@ -1,4 +1,4 @@
-package org.epics.pvaccess.client.pms;
+package org.epics.pvaccess.client.pvms;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.pvdata.misc.SerializeHelper;
 
-public class PMSCodec {
+public class PVMSCodec {
 
 	private final AtomicInteger packetSequenceNumber = new AtomicInteger(0);
 	private final AtomicInteger messageSequenceNumber = new AtomicInteger(0);
@@ -105,7 +105,7 @@ The Destination ID is used for UDP multiplexer. Multiple UDT socket
 can be bound on the same UDP port and this UDT socket ID is used to 
 differentiate the UDT connections.
 
-PMS sends 64-bit time stamp (sender startup time, in ms, since Unix epoch) instead of 
+PVMS sends 64-bit time stamp (sender startup time, in ms, since Unix epoch) instead of 
 (Time Stamp, Destination Socket ID). This time stamp must be globaly unique for
 given socket address (IP, port number). This implies that Destination Socket ID
 contains valid data from UDT structure point of view. Note that UDT Time Stamp field
@@ -160,7 +160,7 @@ following fields depend on the packet type. The first 128 bits must
 exist in the packet header, whereas there may be an empty control 
 information field, depending on the packet type. 
 
-UDT control types used by PMS:
+UDT control types used by PVMS:
 - 1: Keep-alive (expiration time in seconds (0 means never), no control info)
 - 5: Shutdown (undefined additional info, no control info)
 - 0x7FFF, 0xCACA: Subscribe (expiration time in seconds (0 means never), topic ID string as control info)
