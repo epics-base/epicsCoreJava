@@ -36,6 +36,22 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @return The PVField or null if the offset is not part of this structure.
      */
     PVField getSubField(int fieldOffset);
+    
+    /**
+     * Get the PVField subfield with name fieldName.
+     * The fieldName is of the form name.name...
+     * @param fieldName The fieldName.
+     * @return The PVField or null if the subfield does not exist, or the field is not of <code>c</code> type.
+     */
+    <T> T getSubField(Class<T> c, String fieldName);
+
+    /**
+     * Get the PVField with the specified offset.
+     * @param fieldOffset The offset.
+     * @return The PVField or null if the offset is not part of this structure, or the field is not of <code>c</code> type.
+     */
+    <T> T getSubField(Class<T> c, int fieldOffset);
+
     /**
      * Append a new PVField to this structure.
      * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.

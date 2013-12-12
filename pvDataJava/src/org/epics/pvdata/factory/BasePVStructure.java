@@ -353,6 +353,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         return null;
     }
     
+    @Override
 	public <T> T getSubField(Class<T> c, String fieldName)
 	{
 		PVField pv = findSubField(fieldName, this);
@@ -362,6 +363,16 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 			return null;
 	}
 	
+    @Override
+	public <T> T getSubField(Class<T> c, int fieldOffset)
+	{
+		PVField pv = getSubField(fieldOffset);
+		if (c.isInstance(pv))
+			return c.cast(pv);
+		else
+			return null;
+	}
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getLongField(java.lang.String)
      */
