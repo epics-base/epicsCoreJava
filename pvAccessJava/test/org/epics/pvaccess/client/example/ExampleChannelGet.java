@@ -17,7 +17,7 @@ import org.epics.pvaccess.client.ChannelGet;
 import org.epics.pvaccess.client.ChannelGetRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.CreateRequestFactory;
+import org.epics.pvaccess.client.CreateRequest;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.misc.BitSet;
@@ -65,16 +65,19 @@ public class ExampleChannelGet {
         Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
         
         ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, channel, doneSignal);
-		channel.createChannelGet(
-				channelGetRequester,
-				CreateRequestFactory.createRequest(pvRequestString, channelGetRequester)
-				);
+        CreateRequest createRequest = CreateRequest.create();
+        PVStructure pvRequest = createRequest.createRequest(pvRequestString);
+        if(pvRequest==null) {
+        	String message = "createRequest failed " + createRequest.getMessage();
+        	logger.info(message);
+        } else {
+        	channel.createChannelGet(channelGetRequester,pvRequest);
 
-		// wait up-to 3 seconds for completion
-		if (!doneSignal.await(3, TimeUnit.SECONDS))
-			logger.info("Failed to get value (timeout condition).");
-        
-		// stop pvAccess client
+        	// wait up-to 3 seconds for completion
+        	if (!doneSignal.await(3, TimeUnit.SECONDS))
+        		logger.info("Failed to get value (timeout condition).");
+        }
+        // stop pvAccess client
         org.epics.pvaccess.ClientFactory.stop();
     }
     

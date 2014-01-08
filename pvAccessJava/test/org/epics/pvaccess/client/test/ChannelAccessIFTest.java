@@ -25,6 +25,7 @@ import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.AccessRights;
 import org.epics.pvaccess.client.Channel;
+import org.epics.pvaccess.client.Channel.ConnectionState;
 import org.epics.pvaccess.client.ChannelArray;
 import org.epics.pvaccess.client.ChannelArrayRequester;
 import org.epics.pvaccess.client.ChannelFind;
@@ -41,9 +42,8 @@ import org.epics.pvaccess.client.ChannelPutRequester;
 import org.epics.pvaccess.client.ChannelRPC;
 import org.epics.pvaccess.client.ChannelRPCRequester;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.CreateRequestFactory;
+import org.epics.pvaccess.client.CreateRequest;
 import org.epics.pvaccess.client.GetFieldRequester;
-import org.epics.pvaccess.client.Channel.ConnectionState;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.monitor.Monitor;
@@ -64,7 +64,6 @@ import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
-import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Status;
@@ -1654,8 +1653,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelGetTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
-
+		CreateRequest createRequest = CreateRequest.create();
+		String request = "field(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
     	try 
         {
         	ch.createChannelGet(null, pvRequest);
@@ -1685,8 +1689,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelGetTestNoConnection(Channel ch, boolean disconnect) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "field(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
 		channelGetRequester.waitAndCheckConnect(disconnect);
@@ -1700,7 +1709,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelGetTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "field(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
@@ -1728,7 +1743,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelGetTestIntProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[process=true]field(timeStamp,value)",ch);
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "record[process=true]field(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
@@ -1796,8 +1817,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelPutTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "field(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
         try 
         {
         	ch.createChannelPut(null, pvRequest);
@@ -1827,8 +1853,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutTestNoConnection(Channel ch, boolean disconnect) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(timeStamp,value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "field(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
 		channelPutRequester.waitAndCheckConnect(disconnect);
@@ -1842,8 +1873,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelPutTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "field(value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
 		channelPutRequester.waitAndCheckConnect();
@@ -1892,8 +1928,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutTestIntProcess(Channel ch, boolean share) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[process=true]field(value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "record[process=true]field(value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
 		channelPutRequester.waitAndCheckConnect();
@@ -1970,8 +2011,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    Channel ch = syncCreateChannel("simpleCounter");
 
 		// create get to check processing
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "field(value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
 		channelGetRequester.waitAndCheckConnect();
@@ -2127,8 +2173,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelPutGetTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
-		
+       	CreateRequest createRequest = CreateRequest.create();
+		String request = "putField(value)getField(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
         try 
         {
         	ch.createChannelPutGet(null, pvRequest);
@@ -2157,8 +2208,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutGetTestNoConnection(Channel ch, boolean disconnect) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "putField(value)getField(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 		ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
 		channelPutGetRequester.waitAndCheckConnect(disconnect);
@@ -2174,9 +2230,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutGetTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
-		// TODO share
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("putField(value)getField(timeStamp,value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "putField(value)getField(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
         ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
 		channelPutGetRequester.waitAndCheckConnect();
@@ -2220,9 +2280,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelPutGetTestIntProcess(Channel ch, boolean share) throws Throwable
 	{
-		// TODO share
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[process=true]putField(value)getField(timeStamp,value)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "record[process=true]putField(value)getField(timeStamp,value)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
         ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
 		channelPutGetRequester.waitAndCheckConnect();
@@ -2289,8 +2353,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	
 	private void channelRPCTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("",ch);
-		
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
         try 
         {
         	ch.createChannelRPC(null, pvRequest);
@@ -2375,8 +2444,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	private void channelArrayTestParameters(Channel ch) throws Throwable
 	{
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
-		
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "value";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
         try 
         {
         	ch.createChannelArray(null, pvRequest);
@@ -2413,12 +2487,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	    // TODO !!
 //    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)",ch);
-	    Structure requestStructure = 
-	    	fieldCreate.createStructure(new String[] { "field" } , new Field[] { fieldCreate.createScalar(ScalarType.pvString) });
-    	PVStructure pvRequest = pvDataCreate.createPVStructure(requestStructure);
-    	PVString pvFieldName = pvRequest.getStringField("field");
-    	pvFieldName.put("value");
-
+	    CreateRequest createRequest = CreateRequest.create();
+		String request = "value";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
     	
     	ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
 	    ch.createChannelArray(channelArrayRequester, pvRequest);
@@ -2510,11 +2585,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
 
 		//    	PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)", channelArrayRequester);
-	    Structure requestStructure = 
-	    	fieldCreate.createStructure(new String[] { "field" } , new Field[] { fieldCreate.createScalar(ScalarType.pvString) });
-    	PVStructure pvRequest = pvDataCreate.createPVStructure(requestStructure);
-    	PVString pvFieldName = pvRequest.getStringField("field");
-    	pvFieldName.put("value");
+		CreateRequest createRequest = CreateRequest.create();
+		String request = "value";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
 
     	ch.createChannelArray(channelArrayRequester, pvRequest);
 		channelArrayRequester.waitAndCheckConnect(disconnect);
@@ -2533,9 +2610,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	public void testChannelMonitors() throws Throwable
 	{
         Channel ch = syncCreateChannel("counter");
-
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=3]field(timeStamp)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "record[queueSize=3]field(timeStamp)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
         // null requester test
         try 
         {
@@ -2583,10 +2664,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	public void channelMonitorTest(int queueSize) throws Throwable
 	{
         Channel ch = syncCreateChannel("counter");
-		
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=" + queueSize + "]field(timeStamp,value)",ch);
+    	String request = "record[queueSize=" + queueSize + "]field(timeStamp,value)";
     	// TODO algorithm
-
+    	CreateRequest createRequest = CreateRequest.create();
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
     	ChannelMonitorRequesterImpl channelMonitorRequester = new ChannelMonitorRequesterImpl();
 	    ch.createMonitor(channelMonitorRequester, pvRequest);
 	    channelMonitorRequester.waitAndCheckConnect();
@@ -2659,8 +2744,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
     	for (int i = 1; i <= COUNT; i++)
     	{
     		ChannelGetRequesterImpl channelGetRequesterImpl = new ChannelGetRequesterImpl();
-    		PVStructure pvRequest = CreateRequestFactory.createRequest("field(value)", channelGetRequesterImpl);
-
+    		CreateRequest createRequest = CreateRequest.create();
+    		String request = "field(value)";
+        	PVStructure pvRequest = createRequest.createRequest(request);
+        	if(pvRequest==null) {
+        		String message ="createRequest failed " + createRequest.getMessage();
+        		throw new IllegalArgumentException(message);
+        	}
     		Channel channel = syncCreateChannel("valueOnly", false);
     		channel.createChannelGet(channelGetRequesterImpl, pvRequest);
     		channelGetRequesterImpl.waitAndCheckConnect();
@@ -2674,8 +2764,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
     {
         Channel ch = syncCreateChannel("simpleCounter");
 		
-    	PVStructure pvRequest = CreateRequestFactory.createRequest("record[queueSize=3]field(timeStamp,value,alarm.severity.choices)",ch);
-
+    	CreateRequest createRequest = CreateRequest.create();
+		String request = "record[queueSize=3]field(timeStamp,value,alarm.severity.choices)";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		String message ="createRequest failed " + createRequest.getMessage();
+    		throw new IllegalArgumentException(message);
+    	}
     	ChannelMonitorRequesterImpl channelMonitorRequester = new ChannelMonitorRequesterImpl();
 	    ch.createMonitor(channelMonitorRequester, pvRequest);
 	    channelMonitorRequester.waitAndCheckConnect();

@@ -14,13 +14,14 @@ import org.epics.pvaccess.client.Channel.ConnectionState;
 import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.CreateRequestFactory;
+import org.epics.pvaccess.client.CreateRequest;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorElement;
 import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 
@@ -30,42 +31,47 @@ import org.epics.pvdata.pv.Structure;
  */
 public class ExampleChannelMonitor {
 
-    public static void main(String[] args) throws Throwable {
+	public static void main(String[] args) throws Throwable {
 
-    	int len = args.length;
-        if (len == 0 || len > 2)
-        {
-            System.out.println("Usage: <channelName> <pvRequest>");
-            return;
-        }
-        
-        
-        final String channelName = args[0];
-        final String pvRequestString = args[1];
-        
-        ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
-        Logger logger = Logger.getLogger(ExampleChannelMonitor.class.getName());
-        logger.setLevel(Level.ALL);
+		int len = args.length;
+		if (len == 0 || len > 2)
+		{
+			System.out.println("Usage: <channelName> <pvRequest>");
+			return;
+		}
 
-        org.epics.pvaccess.ClientFactory.start();
-        
-        ChannelProvider channelProvider =
-        	ChannelAccessFactory.getChannelAccess()
-        		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
-        
-        CountDownLatch doneSignal = new CountDownLatch(1);
 
-        ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
-        Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
-        
-        MonitorRequesterImpl monitorRequester = new MonitorRequesterImpl(logger, channel, doneSignal);
-        channel.createMonitor(
-        		monitorRequester,
-        		CreateRequestFactory.createRequest(pvRequestString, monitorRequester)
-        		);
+		final String channelName = args[0];
+		final String pvRequestString = args[1];
 
-        // wait forever
-        doneSignal.await();
+		ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
+		Logger logger = Logger.getLogger(ExampleChannelMonitor.class.getName());
+		logger.setLevel(Level.ALL);
+
+		org.epics.pvaccess.ClientFactory.start();
+
+		ChannelProvider channelProvider =
+				ChannelAccessFactory.getChannelAccess()
+				.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
+
+		CountDownLatch doneSignal = new CountDownLatch(1);
+
+		ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
+		Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
+
+		MonitorRequesterImpl monitorRequester = new MonitorRequesterImpl(logger, channel, doneSignal);
+		CreateRequest createRequest = CreateRequest.create();
+		PVStructure pvRequest = createRequest.createRequest(pvRequestString);
+		if(pvRequest==null) {
+			monitorRequester.message(createRequest.getMessage(), MessageType.error);
+		} else {
+			channel.createMonitor(
+					monitorRequester,
+					createRequest.createRequest(pvRequestString)
+					);
+			// wait forever
+			doneSignal.await();
+		}
         
         org.epics.pvaccess.ClientFactory.stop();
     }

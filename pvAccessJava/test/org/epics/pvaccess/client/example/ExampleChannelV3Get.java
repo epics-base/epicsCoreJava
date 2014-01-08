@@ -17,7 +17,7 @@ import org.epics.pvaccess.client.ChannelGet;
 import org.epics.pvaccess.client.ChannelGetRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.CreateRequestFactory;
+import org.epics.pvaccess.client.CreateRequest;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.misc.BitSet;
@@ -41,7 +41,7 @@ public class ExampleChannelV3Get {
         }
         
         final String channelName = args[0];
-        final String pvRequestString = args[1];
+        final String request = args[1];
         
         ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
         Logger logger = Logger.getLogger(ExampleChannelGet.class.getName());
@@ -59,9 +59,15 @@ public class ExampleChannelV3Get {
         Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
         
         ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, channel, doneSignal);
+        CreateRequest createRequest = CreateRequest.create();
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		System.out.println("createRequest failed " + createRequest.getMessage());
+    		return;
+    	}
 		channel.createChannelGet(
 				channelGetRequester,
-				CreateRequestFactory.createRequest(pvRequestString, channelGetRequester)
+				pvRequest
 				);
 
 		if (!doneSignal.await(3, TimeUnit.SECONDS))

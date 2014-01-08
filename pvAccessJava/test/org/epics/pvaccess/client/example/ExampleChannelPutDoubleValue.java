@@ -6,21 +6,17 @@
 package org.epics.pvaccess.client.example;
 
 import org.epics.pvaccess.PVAException;
-import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.Channel;
+import org.epics.pvaccess.client.Channel.ConnectionState;
 import org.epics.pvaccess.client.ChannelAccess;
 import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelPut;
 import org.epics.pvaccess.client.ChannelPutRequester;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.CreateRequestFactory;
-import org.epics.pvaccess.client.Channel.ConnectionState;
-import org.epics.pvdata.factory.FieldFactory;
+import org.epics.pvaccess.client.CreateRequest;
 import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.MessageType;
-import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
@@ -48,8 +44,14 @@ public class ExampleChannelPutDoubleValue {
         if(len==2) {
             request = args[1];
         }
-        
-        Client client = new Client(channelName,request);
+        CreateRequest createRequest = CreateRequest.create();
+    	if(request==null) request = "";
+    	PVStructure pvRequest = createRequest.createRequest(request);
+    	if(pvRequest==null) {
+    		System.out.println("createRequest failed " + createRequest.getMessage());
+    		return;
+    	}
+        Client client = new Client(channelName,pvRequest);
         client.waitUntilDone(10000);
         org.epics.pvaccess.ClientFactory.stop();
         System.exit(0);
@@ -57,7 +59,6 @@ public class ExampleChannelPutDoubleValue {
     
     private static final String providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
     private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
-    private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
     
     private static class Client implements ChannelRequester, ChannelPutRequester {
         
@@ -69,12 +70,8 @@ public class ExampleChannelPutDoubleValue {
         private PVStructure pvStructure = null;
         private BitSet bitSet = null;
 
-        Client(String channelName,String request) {
-            if(request==null) {
-                pvRequest = pvDataCreate.createPVStructure(FieldFactory.getFieldCreate().createStructure(new String[0], new Field[0]));
-            } else {
-                pvRequest = CreateRequestFactory.createRequest(request, this);
-            }
+        Client(String channelName,PVStructure pvRequest) {
+        	this.pvRequest = pvRequest;
             channelProvider = channelAccess.getProvider(providerName);
             channel = channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
         }

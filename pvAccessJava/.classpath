@@ -8,6 +8,6 @@
 	<classpathentry kind="var" path="M2_REPO/epics/caj/1.1.10/caj-1.1.10.jar"/>
 	<classpathentry kind="var" path="M2_REPO/epics/jca/2.3.6/jca-2.3.6.jar"/>
 	<classpathentry kind="var" path="M2_REPO"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.launching.macosx.MacOSXType/JVM 1.7.0"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

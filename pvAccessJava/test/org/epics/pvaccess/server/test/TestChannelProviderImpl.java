@@ -1027,19 +1027,25 @@ public class TestChannelProviderImpl implements ChannelProvider
 				channelArrayRequester.channelArrayConnect(destroyedStatus, null, null);
 				return null;
 			}
-
-            PVField pvField = pvRequest.getSubField("field");
-            if(pvField==null || pvField.getField().getType()!=Type.scalar) {
-            	channelArrayRequester.channelArrayConnect(subFieldNotDefinedStatus, null, null);
+			PVField[] pvFields = pvRequest.getPVFields();
+            if(pvFields.length!=1) {
+                channelArrayRequester.channelArrayConnect(illegalRequestStatus, null, null);
                 return null;
             }
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()!=ScalarType.pvString) {
-            	channelArrayRequester.channelArrayConnect(subFieldNotDefinedStatus, null, null);
-                return null;
+            PVField pvField = pvFields[0];
+            String fieldName = "";
+            while(pvField!=null) {
+                String name = pvField.getFieldName();
+                if(name!=null && name.length()>0) {
+                    if(fieldName.length()>0) fieldName += '.';
+                    fieldName += name;
+                }
+                PVStructure pvs = (PVStructure)pvField;
+                pvFields = pvs.getPVFields();
+                if(pvFields.length!=1) break;
+                pvField = pvFields[0];
             }
-            PVString pvString = (PVString)pvField;
-    		pvField = pvTopStructure.getPVStructure().getSubField(pvString.get());
+            pvField = pvTopStructure.getPVStructure().getSubField(fieldName);
             if(pvField==null) {
             	channelArrayRequester.channelArrayConnect(subFieldDoesNotExistStatus, null, null);
                 return null;
