@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 
-import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVLong;
 import org.epics.pvdata.pv.PVString;
@@ -104,12 +103,12 @@ public class PVMSLoggerSubscriber {
 			public void run() {
 				try
 				{
-					PVField data = null;
+					PVMSSubscriber.PVMSMessage message = new PVMSSubscriber.PVMSMessage(PVMSLogger.TOPIC_ID, null, null);
 					while (true)
 					{
-						data = subscriber.receive(data);
+						subscriber.receive(message);
 
-						System.out.println(formatNTLogRecord((PVStructure)data));
+						System.out.println(formatNTLogRecord((PVStructure)message.data));
 					}
 				} catch (SocketException se) {
 					// noop for socket closed

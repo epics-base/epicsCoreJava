@@ -7,7 +7,6 @@ import java.util.Arrays;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
@@ -27,6 +26,8 @@ public class PVMSDetectorExample {
 	 */
 	public static void main(String[] args) throws Throwable
 	{
+		final String topicId = "DAQ";
+		final String[] tags = new String[] { "detector01" };
 		final InetAddress address = InetAddress.getByName("224.0.0.1");
 		final int port = 5678;
 
@@ -38,12 +39,14 @@ public class PVMSDetectorExample {
 			public void run() {
 				try
 				{
-					PVField data = null;
+					PVMSSubscriber.PVMSMessage message = new PVMSSubscriber.PVMSMessage(topicId, null, null);
 					while (true)
 					{
-						data = subscriber.receive(data);
+						subscriber.receive(message);
 
-						System.out.println(data);
+						System.out.println(message.topicId);
+						System.out.println(Arrays.toString(message.tags));
+						System.out.println(message.data);
 						System.out.println("-------");
 					}
 				} catch (SocketException se) {
@@ -93,7 +96,7 @@ public class PVMSDetectorExample {
 				// gen some data
 				Arrays.fill(dataArray, (byte)(frameSeq % 255));
 				
-				publisher.publishData("detector01", data);
+				publisher.publishData(topicId, tags, data);
 			}
 			
 			Thread.sleep(1000);

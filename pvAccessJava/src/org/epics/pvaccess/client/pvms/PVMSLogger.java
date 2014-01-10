@@ -1,6 +1,8 @@
 package org.epics.pvaccess.client.pvms;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +27,8 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 
 public class PVMSLogger {
+
+	public final static String TOPIC_ID = "log";
 
 	public static final Structure timeStructure =
 		FieldFactory.getFieldCreate().createFieldBuilder().
@@ -117,6 +121,11 @@ public class PVMSLogger {
 
 		private final PVMSPublisher publisher;
 		
+		private final String[] tags;
+	
+		private final StringWriter stackTraceWriter = new StringWriter();
+		private final PrintWriter stackTracePrinter = new PrintWriter(stackTraceWriter);
+		
 		public PVMSLogingHandler(InetAddress sendAddress, int port) throws IOException
 		{
 			publisher = new PVMSPublisher(sendAddress, port);
@@ -134,6 +143,11 @@ public class PVMSLogger {
 			if (pos > 0)
 				cmdLine = cmdLine.substring(0, pos);
 			log.getSubField(PVString.class, "process").put(cmdLine);
+			
+			// tags that allow filtering (before data is actually parsed)
+			// hostname, process
+			tags = new String[] { getHostName(), cmdLine };
+			
 		}
 		
 		@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -169,7 +183,13 @@ public class PVMSLogger {
 				
 				Throwable th = record.getThrown();
 				if (th != null)
-					stackTrace.put(th.toString());
+				{
+					th.printStackTrace(stackTracePrinter);
+					stackTrace.put(stackTraceWriter.toString());
+					
+					// clear, so that the instance can be reused
+					stackTraceWriter.getBuffer().setLength(0);
+				}
 				else
 					stackTrace.put(null);
 	
@@ -198,7 +218,7 @@ public class PVMSLogger {
 					properties.setLength(0);
 				
 				try {
-					publisher.publishData("LOG", log);
+					publisher.publishData(TOPIC_ID, tags, log);
 				} catch (IOException e) {
 					// noop
 				}
@@ -283,7 +303,8 @@ public class PVMSLogger {
 		props.put("uuid", "31");
 		logger.log(Level.SEVERE, "ups, I did it again", new Object[] { props } );
 		
-		logger.log(Level.WARNING, "wow, error", new RuntimeException("rte 2"));
+		logger.log(Level.WARNING, "wow, first error", new RuntimeException("rte 1"));
+		logger.log(Level.WARNING, "wow, second error", new RuntimeException("rte 2"));
 		
 	}
 

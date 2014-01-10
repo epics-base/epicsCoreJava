@@ -158,10 +158,27 @@ class PVMSSubscriber extends PVMSCodec implements DeserializableControl
 		return activeRegistry.deserialize(buffer, this);
 	}
 
+	public static class PVMSMessage
+	{
+		public String topicId;
+		public String[] tags;
+		public PVField data;
+		/**
+		 * @param topicId
+		 * @param tags
+		 * @param data
+		 */
+		public PVMSMessage(String topicId, String[] tags, PVField data) {
+			this.topicId = topicId;
+			this.tags = tags;
+			this.data = data;
+		}
+		
+	}
 	
 	private PVMSSubscriber.PublisherInfo cachedPI = new PublisherInfo();
 
-	public PVField receive(PVField data) throws IOException
+	public void receive(PVMSMessage message) throws IOException
 	{
 		while (true)
 		{
@@ -200,7 +217,7 @@ class PVMSSubscriber extends PVMSCodec implements DeserializableControl
 			if (positionFlags != PacketPosition.SOLO.getMaskValue())
 			{
 				// we support only solo-s for now
-				return null; // TODO
+				continue; // TODO
 			}
 			
 			
@@ -219,21 +236,43 @@ class PVMSSubscriber extends PVMSCodec implements DeserializableControl
 				}
 			}
 			
-			// TODO return
-			/*String topicId =*/ SerializeHelper.deserializeString(buffer, this);
+			// string topicID
+			String topicId = SerializeHelper.deserializeString(buffer, this);
+			
+			// filter on topicID
+			if (message.topicId != null)
+			{
+				if (!message.topicId.equals(topicId))
+					continue;
+			}
+			else
+				message.topicId = topicId;
+			
+			// string[] tags
+			int tagsCount = SerializeHelper.readSize(buffer, this);
+			// TODO do not allocate tags over and over again
+			String[] tags = tagsCount > 0 ? new String[tagsCount] : null;	
+			for (int i = 0; i < tagsCount; i++)
+				tags[i] = SerializeHelper.deserializeString(buffer, this);
+			
+			//System.out.println(Arrays.toString(tags));
+			// TODO filtering on tags
+			message.tags = tags;
 			
 			final Field field = this.cachedDeserialize(buffer);
 			if (field == null)
-				return null;
+			{
+				message.data = null;
+				return;
+			}
 			else
 			{
 				// create new PVField or reuse
-				if (data == null || !data.getField().equals(field))
-					data = pvDataCreate.createPVField(field);
+				if (message.data == null || !message.data.getField().equals(field))
+					message.data = pvDataCreate.createPVField(field);
 
-				data.deserialize(buffer, this);
-				
-				return data;
+				message.data.deserialize(buffer, this);
+				return;
 			}
 		}
 		

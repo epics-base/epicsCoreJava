@@ -152,14 +152,26 @@ class PVMSPublisher extends PVMSCodec implements SerializableControl
 		socket.send(packet);
 	}
 
-	private void pmsDataMessage(ByteBuffer buffer, String topicId, PVField data)
+	private void pmsDataMessage(ByteBuffer buffer, String topicId, String[] tags, PVField data)
 	{
 		int messageSeqNo = incrementMessageSeqNum();
 		
 		udtDataHeader(buffer, messageSeqNo, PacketPosition.SOLO);
 		
-		SerializeHelper.serializeString(topicId, buffer, this); 
+		// string topicID
+		SerializeHelper.serializeString(topicId, buffer, this);
 		
+		// string[] tags
+		if (tags.length == 0)
+			SerializeHelper.writeSize(0, buffer, this);
+		else
+		{
+			SerializeHelper.writeSize(tags.length, buffer, this);
+			for (String tag : tags)
+				SerializeHelper.serializeString(tag, buffer, this); 
+		}
+		
+		// Field + PVData
 		if (data == null)
 			SerializationHelper.serializeNullField(buffer, this);
 		else
@@ -169,11 +181,11 @@ class PVMSPublisher extends PVMSCodec implements SerializableControl
 		}
 	}
 
-	protected synchronized void sendData(String topicId, PVField data) throws IOException
+	protected synchronized void sendData(String topicId, String[] tags, PVField data) throws IOException
 	{
 		buffer.clear();
 		
-		pmsDataMessage(buffer, topicId, data);
+		pmsDataMessage(buffer, topicId, tags, data);
 		
 		packet.setLength(buffer.position());
 		
@@ -184,7 +196,7 @@ class PVMSPublisher extends PVMSCodec implements SerializableControl
 	// TODO cleanup
 	// private final Map<String, Long> subscriptions = new HashMap<String, Long>();
 	
-	public void publishData(String topicId, PVField data) throws IOException
+	public void publishData(String topicId, String[] tags, PVField data) throws IOException
 	{
 	/*
 		synchronized (subscriptions) {
@@ -193,7 +205,7 @@ class PVMSPublisher extends PVMSCodec implements SerializableControl
 				return;
 		}
 	 */
-		sendData(topicId, data);
+		sendData(topicId, tags, data);
 	}
 	/*
 	// TODO this would requires publisher to listen (another socket, another thread)
