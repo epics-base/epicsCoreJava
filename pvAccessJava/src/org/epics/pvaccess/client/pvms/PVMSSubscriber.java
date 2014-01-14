@@ -178,7 +178,7 @@ class PVMSSubscriber extends PVMSCodec implements DeserializableControl
 	
 	private PVMSSubscriber.PublisherInfo cachedPI = new PublisherInfo();
 
-	public void receive(PVMSMessage message) throws IOException
+	public void receive(PVMSMessage message, String[] filterTags) throws IOException
 	{
 		while (true)
 		{
@@ -254,9 +254,30 @@ class PVMSSubscriber extends PVMSCodec implements DeserializableControl
 			String[] tags = tagsCount > 0 ? new String[tagsCount] : null;	
 			for (int i = 0; i < tagsCount; i++)
 				tags[i] = SerializeHelper.deserializeString(buffer, this);
-			
-			//System.out.println(Arrays.toString(tags));
-			// TODO filtering on tags
+
+			// filtering, avoids unnecessary deserialization
+			// message is accepted if message.tags (filter) is a subset of tags (received message tags)
+			if (filterTags != null && filterTags.length > 0)
+			{
+				// can not be a subset, if element count is lower
+				if (tags.length < filterTags.length)
+					continue;
+
+				boolean notSubSet = false;
+				HashSet<String> hashSet = new HashSet<String>();
+		        for (String tag : tags)
+		        	hashSet.add(tag);
+				
+		        for (String tag : filterTags)
+		            if (!hashSet.contains(tag))
+		            {
+		            	notSubSet = true;
+		            	break;
+		            }
+		        
+		        if (notSubSet)
+		        	continue;
+			}
 			message.tags = tags;
 			
 			final Field field = this.cachedDeserialize(buffer);

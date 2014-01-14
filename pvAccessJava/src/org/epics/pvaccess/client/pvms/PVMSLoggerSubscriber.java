@@ -103,10 +103,12 @@ public class PVMSLoggerSubscriber {
 			public void run() {
 				try
 				{
+					String[] filterTags = new String[] {};
+					
 					PVMSSubscriber.PVMSMessage message = new PVMSSubscriber.PVMSMessage(PVMSLogger.TOPIC_ID, null, null);
 					while (true)
 					{
-						subscriber.receive(message);
+						subscriber.receive(message, filterTags);
 
 						System.out.println(formatNTLogRecord((PVStructure)message.data));
 					}

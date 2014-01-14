@@ -42,7 +42,8 @@ public class PVMSDetectorExample {
 					PVMSSubscriber.PVMSMessage message = new PVMSSubscriber.PVMSMessage(topicId, null, null);
 					while (true)
 					{
-						subscriber.receive(message);
+						// receive with no filtering
+						subscriber.receive(message, null);
 
 						System.out.println(message.topicId);
 						System.out.println(Arrays.toString(message.tags));
