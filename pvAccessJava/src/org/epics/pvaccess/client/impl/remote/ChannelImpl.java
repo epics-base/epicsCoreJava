@@ -52,6 +52,9 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.ResponseRequest;
 import org.epics.pvaccess.impl.remote.request.SubscriptionRequest;
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.misc.TimerFactory;
+import org.epics.pvdata.misc.Timer.TimerCallback;
+import org.epics.pvdata.misc.Timer.TimerNode;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
@@ -66,7 +69,7 @@ import org.epics.pvdata.pv.StatusCreate;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class ChannelImpl implements Channel, SearchInstance, TransportClient, TransportSender {
+public class ChannelImpl implements Channel, SearchInstance, TransportClient, TransportSender, TimerCallback {
 	
 	/**
 	 * Client channel ID.
@@ -241,6 +244,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			// store data
 			this.serverChannelID = sid;
 			//setAccessRights(rights);
+			
+			addressIndex = 0;	// reset
 
 			// TODO think what to call first
 			resubscribeSubscriptions();
@@ -376,10 +381,33 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		if (addresses == null)
 			context.getChannelSearchManager().register(this);
 		else
-			// TODO not only first
-			// TODO minor version
-			// TODO what to do if there is no channel, do not search in a loop!!! do this in other thread...!
-			searchResponse(PVAConstants.PVA_PROTOCOL_REVISION, addresses[0]);
+		{
+			context.getTimer().scheduleAfterDelay(timerNode,
+					(addressIndex / addresses.length)*STATIC_SEARCH_BASE_DELAY_SEC);	
+		}
+	}
+
+	private int addressIndex = 0;
+	private final TimerNode timerNode = TimerFactory.createNode(this);
+	private final static int STATIC_SEARCH_BASE_DELAY_SEC = 5;
+	private final static int STATIC_SEARCH_MAX_MULTIPLIER = 10;
+	
+	@Override
+	public void callback() {
+		// TODO not in this timer thread !!!
+		// TODO boost when a server (from address list) is started!!! IP vs address !!!
+		int ix = addressIndex % addresses.length;
+		addressIndex++;
+		if (addressIndex >= (addresses.length*(STATIC_SEARCH_MAX_MULTIPLIER+1)))
+			addressIndex = addresses.length*STATIC_SEARCH_MAX_MULTIPLIER;
+		
+		// NOTE: calls channelConnectFailed() on failure
+		searchResponse(PVAConstants.PVA_PROTOCOL_REVISION, addresses[ix]);
+	}
+
+	@Override
+	public void timerStopped() {
+		// noop
 	}
 
 	/* (non-Javadoc)

@@ -42,14 +42,11 @@ import org.epics.pvdata.pv.Status.StatusType;
  */
 public class CreateChannelHandler extends AbstractServerResponseHandler {
 
-	private final ChannelProvider provider;
-
 	/**
 	 * @param context
 	 */
 	public CreateChannelHandler(ServerContextImpl context) {
 		super(context, "Create channel request");
-		provider = context.getChannelProvider();
 	}
 
 	/* (non-Javadoc)
@@ -80,7 +77,8 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			disconnect(transport);
 			return;
 		}
-
+		
+		final ChannelProvider provider = context.getChannelProvider();
 		final ChannelRequester cr = new ChannelRequesterImpl(transport, channelName, cid);
 		provider.createChannel(channelName, cr, transport.getPriority());
 	}

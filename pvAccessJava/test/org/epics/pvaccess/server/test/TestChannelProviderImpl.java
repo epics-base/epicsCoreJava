@@ -24,13 +24,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.epics.pvaccess.server.test.helpers.ChangingVariantUnionTopStructure;
-import org.epics.pvaccess.server.test.helpers.CounterTopStructure;
-import org.epics.pvaccess.server.test.helpers.Mapper;
-import org.epics.pvaccess.server.test.helpers.PVRequestUtils;
-import org.epics.pvaccess.server.test.helpers.PVTopStructure;
-import org.epics.pvaccess.server.test.helpers.PVTopStructure.PVTopStructureListener;
-import org.epics.pvaccess.server.test.helpers.RPCTopStructure;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.AccessRights;
 import org.epics.pvaccess.client.Channel;
@@ -52,6 +45,13 @@ import org.epics.pvaccess.client.ChannelRPCRequester;
 import org.epics.pvaccess.client.ChannelRequest;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.GetFieldRequester;
+import org.epics.pvaccess.server.test.helpers.ChangingVariantUnionTopStructure;
+import org.epics.pvaccess.server.test.helpers.CounterTopStructure;
+import org.epics.pvaccess.server.test.helpers.Mapper;
+import org.epics.pvaccess.server.test.helpers.PVRequestUtils;
+import org.epics.pvaccess.server.test.helpers.PVTopStructure;
+import org.epics.pvaccess.server.test.helpers.PVTopStructure.PVTopStructureListener;
+import org.epics.pvaccess.server.test.helpers.RPCTopStructure;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.misc.ThreadPriority;
@@ -68,9 +68,7 @@ import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVScalarArray;
-import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -100,8 +98,8 @@ public class TestChannelProviderImpl implements ChannelProvider
     	statusCreate.createStatus(StatusType.ERROR, "capacity is immutable", null);
     private static final Status subFieldDoesNotExistStatus =
     	statusCreate.createStatus(StatusType.ERROR, "subField does not exist", null);
-    private static final Status subFieldNotDefinedStatus =
-    	statusCreate.createStatus(StatusType.ERROR, "subField not defined", null);
+    //private static final Status subFieldNotDefinedStatus =
+    //	statusCreate.createStatus(StatusType.ERROR, "subField not defined", null);
     private static final Status subFieldNotArrayStatus =
     	statusCreate.createStatus(StatusType.ERROR, "subField is not an array", null);
 

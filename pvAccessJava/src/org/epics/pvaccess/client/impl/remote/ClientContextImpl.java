@@ -241,6 +241,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	protected final Map<InetSocketAddress, BeaconHandlerImpl> beaconHandlers = new HashMap<InetSocketAddress, BeaconHandlerImpl>();
 
 	/**
+	 * Response handler.
+	 */
+	private final ResponseHandler clientResponseHandler;
+	
+	/**
 	 * Provider implementation.
 	 */
 	protected ChannelProvider channelProvider = new ChannelProviderImpl();
@@ -252,6 +257,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	{
 		initializeLogger();
 		loadConfiguration();
+		
+		clientResponseHandler = new ClientResponseHandler(this);
 	}
 	
     /* (non-Javadoc)
@@ -979,6 +986,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	
 	/**
 	 * Get, or create if necessary, transport of given server address.
+	 * Note that this method might block (creating TCP connection, verifying it).
 	 * @param serverAddress	required transport address
 	 * @param priority process priority.
 	 * @return transport for given address
@@ -987,8 +995,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	{
 		try
 		{
-			// TODO singleton for ClientResponseHandler
-			return connector.connect(client, new ClientResponseHandler(this), serverAddress, minorRevision, priority);
+			return connector.connect(client, clientResponseHandler, serverAddress, minorRevision, priority);
 		}
 		catch (ConnectionException cex)
 		{

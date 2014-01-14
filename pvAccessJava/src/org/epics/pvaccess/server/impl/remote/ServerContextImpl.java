@@ -32,6 +32,7 @@ import org.epics.pvaccess.impl.remote.ConnectionException;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportRegistry;
+import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPConnector;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport;
 import org.epics.pvaccess.server.ServerContext;
@@ -200,6 +201,11 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected ChannelProvider channelProvider = null;
 	
 	/**
+	 * Response handler.
+	 */
+	private final ResponseHandler serverResponseHandler;
+	
+	/**
 	 * Run lock.
 	 */
 	protected Object runLock = new Object();
@@ -209,8 +215,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	 */
 	public ServerContextImpl()
 	{
-		initializeLogger();
-		loadConfiguration();
+		this(null);
 	}
 	
 	/**
@@ -219,9 +224,10 @@ public class ServerContextImpl implements ServerContext, Context {
 	 */
 	public ServerContextImpl(ChannelProvider channelProvider)
 	{
-		this.channelProvider = channelProvider;
 		initializeLogger();
 		loadConfiguration();
+		this.channelProvider = channelProvider;
+		this.serverResponseHandler = new ServerResponseHandler(this);
 	}
 
 	/* (non-Javadoc)
@@ -431,7 +437,7 @@ public class ServerContextImpl implements ServerContext, Context {
 			
 			broadcastTransport = (BlockingUDPTransport)broadcastConnector.connect(
 //			broadcastTransport = (UDPTransport)broadcastConnector.connect(
-										null, new ServerResponseHandler(this),
+										null, serverResponseHandler,
 										listenLocalAddress, PVAConstants.PVA_PROTOCOL_REVISION,
 										PVAConstants.PVA_DEFAULT_PRIORITY);
 
@@ -842,5 +848,14 @@ public class ServerContextImpl implements ServerContext, Context {
 	public ChannelProvider getChannelProvider() {
 		return channelProvider;
 	}
+
+	/**
+	 * Get server response handler.
+	 * @return server response handler.
+	 */
+	public ResponseHandler getServerResponseHandler() {
+		return serverResponseHandler;
+	}
+	
 
 }

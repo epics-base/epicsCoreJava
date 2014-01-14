@@ -37,7 +37,6 @@ import org.epics.pvdata.pv.Status;
  */
 public class SearchHandler extends AbstractServerResponseHandler {
 
-	private final ChannelProvider provider;
 	private final ChannelFindRequesterImplObjectPool objectPool = new ChannelFindRequesterImplObjectPool();
 	
 	/**
@@ -45,7 +44,6 @@ public class SearchHandler extends AbstractServerResponseHandler {
 	 */
 	public SearchHandler(ServerContextImpl context) {
 		super(context, "Search request");
-		provider = context.getChannelProvider();
 	}
 
 	/* (non-Javadoc)
@@ -61,6 +59,8 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		final int count = payloadBuffer.getShort() & 0xFFFF;
 		final boolean responseRequired = QoS.REPLY_REQUIRED.isSet(qosCode);
 		
+		ChannelProvider provider = context.getChannelProvider();
+
 		for (int i = 0; i < count; i++) {
 			transport.ensureData(Integer.SIZE/Byte.SIZE);
 			final int cid = payloadBuffer.getInt();

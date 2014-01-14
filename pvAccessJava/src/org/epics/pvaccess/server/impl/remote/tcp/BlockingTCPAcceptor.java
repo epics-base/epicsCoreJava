@@ -28,7 +28,6 @@ import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
-import org.epics.pvaccess.server.impl.remote.ServerResponseHandler;
 
 /**
  * Channel Access Server TCP acceptor.
@@ -113,9 +112,8 @@ public class BlockingTCPAcceptor {
 				//socket.socket().setSendBufferSize();
 				
 				// create transport
-				// each transport should have its own response handler since it is not "shareable" // TODO not anymore, make it sahreable
-				final Transport transport = new BlockingServerTCPTransport(context, socket, new ServerResponseHandler((ServerContextImpl)context), receiveBufferSize);
-				//final Transport transport = new NonBlockingServerTCPTransport(context, poller, socket, new ServerResponseHandler((ServerContextImpl)context), receiveBufferSize);
+				final Transport transport = new BlockingServerTCPTransport(context, socket, ((ServerContextImpl)context).getServerResponseHandler(), receiveBufferSize);
+				//final Transport transport = new NonBlockingServerTCPTransport(context, poller, socket, ((ServerContextImpl)context).getServerResponseHandler(), receiveBufferSize);
 	
 				// validate connection
 				if (!validateConnection(transport, address))
