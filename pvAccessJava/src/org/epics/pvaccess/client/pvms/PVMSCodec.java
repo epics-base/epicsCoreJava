@@ -106,9 +106,9 @@ can be bound on the same UDP port and this UDT socket ID is used to
 differentiate the UDT connections.
 
 PVMS sends 64-bit time stamp (sender startup time, in ms, since Unix epoch) instead of 
-(Time Stamp, Destination Socket ID). This time stamp must be globaly unique for
+(Time Stamp, Destination Socket ID). This time stamp must be globally unique for
 given socket address (IP, port number). This implies that Destination Socket ID
-contains valid data from UDT structure point of view. Note that UDT Time Stamp field
+matched UDT structure definition. Note that UDT Time Stamp field
 is not required by the UDT.   
 */
     
