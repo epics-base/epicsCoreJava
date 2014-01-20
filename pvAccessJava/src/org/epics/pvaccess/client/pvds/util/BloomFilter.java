@@ -1,9 +1,7 @@
 /**
  * 
  */
-package org.epics.pvaccess.client.pvms.util;
-
-import java.nio.charset.Charset;
+package org.epics.pvaccess.client.pvds.util;
 
 import org.epics.pvdata.misc.BitSet;
 
@@ -14,8 +12,9 @@ import org.epics.pvdata.misc.BitSet;
  * Read http://en.wikipedia.org/wiki/Bloom_filter for more details.
  * @author msekoranja
  */
-public class StringBloomFilter {
+public class BloomFilter<T> {
 
+	private final ToByteArraySerializator<T> serializator;
 	private final BitSet bitSet;
 	private final int k;
 	private final int m;
@@ -26,23 +25,24 @@ public class StringBloomFilter {
 	private static final double LN2 = Math.log(2);
 	private static final double LN2_SQR = Math.pow(Math.log(2), 2);
 
-	public StringBloomFilter(int c, int n) {
+	public BloomFilter(ToByteArraySerializator<T> serializator, int c, int n) {
 		k = (int) Math.floor(c * LN2); // optimal k = c * ln(2)
 		m = ((((c * n) - 1) / 64) + 1) * 64; // round to 64-bit 
 		bitSet = new BitSet(m);
+		this.serializator = serializator;
 	}
 
-	public StringBloomFilter(double p, int n) {
-		this((int) Math.ceil(-Math.log(p) / LN2_SQR), n); // c = -ln(p)/ln(2)^2
+	public BloomFilter(ToByteArraySerializator<T> serializator, double p, int n) {
+		this(serializator, (int) Math.ceil(-Math.log(p) / LN2_SQR), n); // c = -ln(p)/ln(2)^2
 	}
 
 	/**
 	 * See "Less Hashing, Same Performance: Building a Better Bloom Filter" by Adam Kirsch and
 	 * Michael Mitzenmacher on how to use (enhanced) double hashing on Bloom filters.
 	 */
-	public void add(String str) {
+	public void add(T object) {
 		
-		byte[] byteArray = getBytes(str);
+		byte[] byteArray = serializator.toBytes(object);
 		long hash64 = CityHash64.cityHash64(byteArray, 0, byteArray.length);
 		
 		int h1 = (int) hash64;
@@ -62,16 +62,9 @@ public class StringBloomFilter {
 		elements++;
 	}
 	
-	private static final Charset utf8Charset = Charset.forName("UTF-8");
-
-    private byte[] getBytes(String str)
-    {
-    	return str.getBytes(utf8Charset);
-    }
-    
-	public boolean contains(String str) {
+	public boolean contains(T object) {
 		
-		byte[] byteArray = getBytes(str);
+		byte[] byteArray = serializator.toBytes(object);
 		long hash64 = CityHash64.cityHash64(byteArray, 0, byteArray.length);
 		
 		int h1 = (int) hash64;

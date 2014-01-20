@@ -1,34 +1,35 @@
-package org.epics.pvaccess.client.pvms.util.test;
+package org.epics.pvaccess.client.pvds.util.test;
 
 import junit.framework.TestCase;
 
-import org.epics.pvaccess.client.pvms.util.StringBloomFilter;
+import org.epics.pvaccess.client.pvds.util.BloomFilter;
+import org.epics.pvaccess.client.pvds.util.StringToByteArraySerializator;
 
-public class StringBloomFilterTest extends TestCase {
+public class BloomFilterTest extends TestCase {
 
 	/**
 	 * @param name
 	 */
-	public StringBloomFilterTest(String name) {
+	public BloomFilterTest(String name) {
 		super(name);
 	}
 	
 	public void testCalculations()
 	{
-		StringBloomFilter f;
-		f = new StringBloomFilter(0.1, 100);
+		BloomFilter<String> f;
+		f = new BloomFilter<String>(StringToByteArraySerializator.INSTANCE, 0.1, 100);
 		assertEquals(3, f.k());
 		assertEquals(512, f.m());
 
-		f = new StringBloomFilter(0.03, 1000);
+		f = new BloomFilter<String>(StringToByteArraySerializator.INSTANCE, 0.03, 1000);
 		assertEquals(5, f.k());
 		assertEquals(8000, f.m());
 
-		f = new StringBloomFilter(0.01, 123457);
+		f = new BloomFilter<String>(StringToByteArraySerializator.INSTANCE, 0.01, 123457);
 		assertEquals(6, f.k());
 		assertEquals(1234624, f.m());
 
-		f = new StringBloomFilter(0.005, 1000001);
+		f = new BloomFilter<String>(StringToByteArraySerializator.INSTANCE, 0.005, 1000001);
 		assertEquals(8, f.k());
 		assertEquals(12000064, f.m());
 	}
@@ -37,7 +38,8 @@ public class StringBloomFilterTest extends TestCase {
 	{
 		final double p = 0.001;
 		final int COUNT = 100000;
-		StringBloomFilter f = new StringBloomFilter(p, COUNT);
+		BloomFilter<String> f =
+			new BloomFilter<String>(StringToByteArraySerializator.INSTANCE, p, COUNT);
 		
 		for (int i = 0; i < COUNT; i++)
 			f.add(String.valueOf(i));
@@ -63,7 +65,8 @@ public class StringBloomFilterTest extends TestCase {
 	{
 		final double p = 0.1;
 		final int COUNT = 10;
-		StringBloomFilter f = new StringBloomFilter(p, COUNT);
+		BloomFilter<String> f =
+			new BloomFilter<String>(StringToByteArraySerializator.INSTANCE, p, COUNT);
 
 		assertEquals(f.elements(), 0);
 		assertEquals(f.bitSet().cardinality(), 0);
@@ -82,7 +85,8 @@ public class StringBloomFilterTest extends TestCase {
 	
 	public void testToString()
 	{
-		StringBloomFilter f = new StringBloomFilter(0.3, 100);
+		BloomFilter<String> f =
+			new BloomFilter<String>(StringToByteArraySerializator.INSTANCE, 0.3, 100);
 		assertNotNull(f.toString());
 		assertFalse(f.toString().isEmpty());
 	}

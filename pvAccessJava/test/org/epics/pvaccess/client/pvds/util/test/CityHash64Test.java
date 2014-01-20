@@ -1,6 +1,6 @@
-package org.epics.pvaccess.client.pvms.util.test;
+package org.epics.pvaccess.client.pvds.util.test;
 
-import org.epics.pvaccess.client.pvms.util.CityHash64;
+import org.epics.pvaccess.client.pvds.util.CityHash64;
 
 import junit.framework.TestCase;
 

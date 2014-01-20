@@ -1,4 +1,4 @@
-package org.epics.pvaccess.client.pvms.util;
+package org.epics.pvaccess.client.pvds.util;
 
 import java.lang.reflect.Field;
 import java.nio.ByteOrder;

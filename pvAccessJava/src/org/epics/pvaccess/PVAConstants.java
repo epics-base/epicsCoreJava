@@ -58,7 +58,7 @@ public interface PVAConstants {
 
     /**
 	 * UDP maximum send message size (for sending search requests).
-	 * MAX_UDP: 1500 (max of ethernet and 802.{2,3} MTU) - 20/40(IPv4/IPv6) - 8(UDP) - some reserve 
+	 * MAX_UDP: 1500 (max of ethernet and 802.{2,3} MTU) - 20/40(IPv4/IPv6) - 8(UDP) - some reserve (e.g. IPSEC)
 	 * (the MTU of Ethernet is currently independent of its speed variant)
 	 */
 	public static final int MAX_UDP_UNFRAGMENTED_SEND = 1440;

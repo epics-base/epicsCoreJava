@@ -12,7 +12,7 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.pvaccess.client.pvms.util.test;
+package org.epics.pvaccess.client.pvds.util.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -29,7 +29,7 @@ public class AllTests {
                 "Test for " + AllTests.class.getPackage().getName());
         //$JUnit-BEGIN$
         suite.addTestSuite(CityHash64Test.class);
-        suite.addTestSuite(StringBloomFilterTest.class);
+        suite.addTestSuite(BloomFilterTest.class);
         //$JUnit-END$
         return suite;
     }
