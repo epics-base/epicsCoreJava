@@ -619,15 +619,13 @@ public class SerializationTest extends TestCase {
         }
         
         serializatioTest(variantArray);
-        
-        System.out.println(variantArray);
 	}
-
+	
 	public void testUnion()
 	{
         FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
-
+        
         Field[] fields = new Field[2];
 		fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
 		fields[1] = fieldCreate.createScalar(ScalarType.pvInt);

@@ -40,17 +40,19 @@ public interface PVStructure extends PVField, BitSetSerializable {
     /**
      * Get the PVField subfield with name fieldName.
      * The fieldName is of the form name.name...
+     * @param c expected class of a requested field.
      * @param fieldName The fieldName.
      * @return The PVField or null if the subfield does not exist, or the field is not of <code>c</code> type.
      */
-    <T> T getSubField(Class<T> c, String fieldName);
+    <T extends PVField> T getSubField(Class<T> c, String fieldName);
 
     /**
      * Get the PVField with the specified offset.
+     * @param c expected class of a requested field.
      * @param fieldOffset The offset.
      * @return The PVField or null if the offset is not part of this structure, or the field is not of <code>c</code> type.
      */
-    <T> T getSubField(Class<T> c, int fieldOffset);
+    <T extends PVField> T getSubField(Class<T> c, int fieldOffset);
 
     /**
      * Append a new PVField to this structure.
@@ -86,6 +88,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVBoolean getBooleanField(String fieldName);
     /**
      * Find a byte subfield with the specified fieldName.
@@ -93,6 +96,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVByte getByteField(String fieldName);
     /**
      * Find a short subfield with the specified fieldName.
@@ -100,6 +104,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVShort getShortField(String fieldName);
     /**
      * Find an int subfield with the specified fieldName.
@@ -107,6 +112,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVInt getIntField(String fieldName);
     /**
      * Find a long subfield with the specified fieldName.
@@ -114,6 +120,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVLong getLongField(String fieldName);
     /**
      * Find a float subfield with the specified fieldName.
@@ -121,6 +128,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVFloat getFloatField(String fieldName);
     /**
      * Find a double subfield with the specified fieldName.
@@ -128,6 +136,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVDouble getDoubleField(String fieldName);
     /**
      * Find a string subfield with the specified fieldName.
@@ -135,6 +144,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVString getStringField(String fieldName);
     /**
      * Find a structure subfield with the specified fieldName
@@ -142,6 +152,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVStructure getStructureField(String fieldName);
     /**
      * Find an array subfield with the specified fieldName and elementType.
@@ -149,6 +160,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVScalarArray getScalarArrayField(String fieldName,ScalarType elementType);
     /**
      * Find a structureArray subfield with the specified fieldName.
@@ -156,6 +168,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVStructureArray getStructureArrayField(String fieldName);
     /**
      * Find a unon subfield with the specified fieldName.
@@ -163,6 +176,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVUnion getUnionField(String fieldName);
     /**
      * Find a unionArray subfield with the specified fieldName.
@@ -170,6 +184,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
      */
+    //@Deprecated
     PVUnionArray getUnionArrayField(String fieldName);
     /**
      * Get the name of structure that this structure extends.

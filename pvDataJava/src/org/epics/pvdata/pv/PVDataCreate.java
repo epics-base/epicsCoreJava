@@ -6,6 +6,7 @@
 package org.epics.pvdata.pv;
 
 
+
 /**
  * Create PVField field implementations.
  * @author mrk
@@ -124,4 +125,12 @@ public interface PVDataCreate {
      * @return The array of PVField in offset order.
      */
     PVField[] flattenPVStructure(PVStructure pvStructure);
+    
+    
+	<T extends PVScalar, TA extends PVScalarArray> T createPVScalar(PVScalarType<T, TA> scalarType);
+	<T extends PVScalar, TA extends PVScalarArray> TA createPVScalarArray(PVScalarType<T, TA> elementType);
+	
+    PVStructureArray createPVStructureArray(Structure structure);
+    PVUnionArray createPVUnionArray(Union union);
+
 }

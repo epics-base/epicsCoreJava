@@ -17,6 +17,7 @@ import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVScalarArray;
+import org.epics.pvdata.pv.PVScalarType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
 import org.epics.pvdata.pv.PVUnion;
@@ -277,6 +278,24 @@ public class PVDataFactory {
 		@Override
 		public PVUnionArray createPVVariantUnionArray() {
 			return new BasePVUnionArray(fieldCreate.createVariantUnionArray());
+		}
+		@Override
+		public <T extends PVScalar, TA extends PVScalarArray> T createPVScalar(
+				PVScalarType<T, TA> scalarType) {
+			return scalarType.getPVFieldClass().cast(createPVScalar(scalarType.getScalarType()));
+		}
+		@Override
+		public <T extends PVScalar, TA extends PVScalarArray> TA createPVScalarArray(
+				PVScalarType<T, TA> elementType) {
+			return elementType.getPVFieldArrayClass().cast(createPVScalarArray(elementType.getScalarType()));
+		}
+		@Override
+		public PVStructureArray createPVStructureArray(Structure structure) {
+			return createPVStructureArray(fieldCreate.createStructureArray(structure));
+		}
+		@Override
+		public PVUnionArray createPVUnionArray(Union union) {
+			return createPVUnionArray(fieldCreate.createUnionArray(union));
 		}
 		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.PVDataCreate#flattenPVStructure(org.epics.pvdata.pv.PVStructure)

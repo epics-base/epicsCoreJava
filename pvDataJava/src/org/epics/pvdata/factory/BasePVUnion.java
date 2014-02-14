@@ -49,6 +49,15 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		return value;
 	}
 
+    @Override
+	public <T extends PVField> T get(Class<T> c)
+	{
+		if (c.isInstance(value))
+			return c.cast(value);
+		else
+			return null;
+	}
+	
 	@Override
 	public int getSelectedIndex() {
 		return selector;
@@ -94,6 +103,25 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			throw new IllegalArgumentException("no such fieldName");
 
 		return select(index);
+	}
+
+
+	@Override
+	public <T extends PVField> T select(Class<T> c, int index) {
+		PVField pv = select(index);
+		if (c.isInstance(pv))
+			return c.cast(pv);
+		else
+			return null;
+	}
+
+	@Override
+	public <T extends PVField> T select(Class<T> c, String fieldName) {
+		PVField pv = select(fieldName);
+		if (c.isInstance(pv))
+			return c.cast(pv);
+		else
+			return null;
 	}
 
 	@Override

@@ -12,7 +12,6 @@ import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVBoolean;
 import org.epics.pvdata.pv.PVByte;
 import org.epics.pvdata.pv.PVDataCreate;
@@ -28,7 +27,6 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
 import org.epics.pvdata.pv.PVUnion;
 import org.epics.pvdata.pv.PVUnionArray;
-import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.SerializableControl;
@@ -218,7 +216,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     public void removePVField(String fieldName) {
         PVField pvField = getSubField(fieldName);
         if(pvField==null) {
-            super.message("removePVField " + fieldName + " does not exist", MessageType.error);
+            //super.message("removePVField " + fieldName + " does not exist", MessageType.error);
             return;
         }
         int origLength = pvFields.length;
@@ -276,85 +274,37 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      * @see org.epics.pvdata.pv.PVStructure#getBooleanField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVBoolean getBooleanField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvBoolean) {
-                return (PVBoolean)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type boolean ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVBoolean.class, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getByteField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVByte getByteField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvByte) {
-                return (PVByte)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type byte ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVByte.class, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getShortField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVShort getShortField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvShort) {
-                return (PVShort)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type short ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVShort.class, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getIntField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVInt getIntField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvInt) {
-                return (PVInt)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type int ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVInt.class, fieldName);
     }
     
     @Override
-	public <T> T getSubField(Class<T> c, String fieldName)
+	public <T extends PVField> T getSubField(Class<T> c, String fieldName)
 	{
 		PVField pv = findSubField(fieldName, this);
 		if (c.isInstance(pv))
@@ -364,7 +314,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 	}
 	
     @Override
-	public <T> T getSubField(Class<T> c, int fieldOffset)
+	public <T extends PVField> T getSubField(Class<T> c, int fieldOffset)
 	{
 		PVField pv = getSubField(fieldOffset);
 		if (c.isInstance(pv))
@@ -377,148 +327,68 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      * @see org.epics.pvdata.pv.PVStructure#getLongField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVLong getLongField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvLong) {
-                return (PVLong)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type long ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVLong.class, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getFloatField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVFloat getFloatField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvFloat) {
-                return (PVFloat)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type float ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVFloat.class, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getDoubleField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVDouble getDoubleField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvDouble) {
-                return (PVDouble)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type double ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVDouble.class, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getStringField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVString getStringField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-            super.message("fieldName " + fieldName + " does not exist ",
-                    MessageType.error);
-            return null;
-        }
-        if(pvField.getField().getType()==Type.scalar) {
-            Scalar scalar = (Scalar)pvField.getField();
-            if(scalar.getScalarType()==ScalarType.pvString) {
-                return (PVString)pvField;
-            }
-        }
-        super.message("fieldName " + fieldName + " does not have type string ",
-                MessageType.error);
-        return null;
+    	return getSubField(PVString.class, fieldName);
     }
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getStructureField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVStructure getStructureField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        Field field = pvField.getField();
-        Type type = field.getType();
-        if(type!=Type.structure) {
-            super.message(
-                "fieldName " + fieldName + " does not have type structure ",
-                MessageType.error);
-            return null;
-        }
-        return (PVStructure)pvField;
+    	return getSubField(PVStructure.class, fieldName);
     }
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getUnionField(java.lang.String)
      */
     @Override
+    //@Deprecated
     public PVUnion getUnionField(String fieldName) {
-        PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        Field field = pvField.getField();
-        Type type = field.getType();
-        if(type!=Type.union) {
-            super.message(
-                "fieldName " + fieldName + " does not have type union ",
-                MessageType.error);
-            return null;
-        }
-        return (PVUnion)pvField;
+    	return getSubField(PVUnion.class, fieldName);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getArrayField(java.lang.String, org.epics.pvdata.pv.ScalarType)
      */
     @Override
+    //@Deprecated
     public PVScalarArray getScalarArrayField(String fieldName, ScalarType elementType) {
         PVField pvField = findSubField(fieldName,this);
         if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
         	return null;
         }
         Field field = pvField.getField();
         Type type = field.getType();
         if(type!=Type.scalarArray) {
-            super.message(
-                "fieldName " + fieldName + " does not have type array ",
-                MessageType.error);
             return null;
         }
         ScalarArray array = (ScalarArray)field;
         if(array.getElementType()!=elementType) {
-            super.message(
-                    "fieldName "
-                    + fieldName + " is array but does not have elementType " + elementType.toString(),
-                    MessageType.error);
-                return null;
+            return null;
         }
         return (PVScalarArray)pvField;
     }
@@ -526,41 +396,17 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
      * @see org.epics.pvdata.pv.PVStructure#getStructureArrayField(java.lang.String)
      */
     @Override
+    //@Deprecated
 	public PVStructureArray getStructureArrayField(String fieldName) {
-    	PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        Field field = pvField.getField();
-        Type type = field.getType();
-        if(type!=Type.structureArray) {
-            super.message(
-                "fieldName " + fieldName + " does not have type structureArray ",
-                MessageType.error);
-            return null;
-        }
-        return (PVStructureArray)pvField;
+    	return getSubField(PVStructureArray.class, fieldName);
 	}
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getUnionArrayField(java.lang.String)
      */
     @Override
+    //@Deprecated
 	public PVUnionArray getUnionArrayField(String fieldName) {
-    	PVField pvField = findSubField(fieldName,this);
-        if(pvField==null) {
-        	super.message("fieldName " + fieldName + " does not exist",MessageType.error);
-        	return null;
-        }
-        Field field = pvField.getField();
-        Type type = field.getType();
-        if(type!=Type.unionArray) {
-            super.message(
-                "fieldName " + fieldName + " does not have type unionArray ",
-                MessageType.error);
-            return null;
-        }
-        return (PVUnionArray)pvField;
+    	return getSubField(PVUnionArray.class, fieldName);
 	}
 
 	/* (non-Javadoc)

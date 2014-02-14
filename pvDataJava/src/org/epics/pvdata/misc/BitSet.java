@@ -1215,6 +1215,14 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         return b.toString();
     }
     
+    /**
+     * Get long[] that represents this BitSet.
+     * @return long[] that represts this BitSet.
+     */
+    public long[] getBitArray()
+    {
+    	return words;
+    }
     
     /**
      * NOTE: word is atomic unit here; some bytes might be saved, but it's not worth it. 
