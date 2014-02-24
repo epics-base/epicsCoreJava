@@ -147,9 +147,9 @@ provided.</p>
     org.epics.pvaccess.server.ChannelServer.</li>
   <li>A gateway between pvAccess and other systems can be implemented. For
     example projects pvAccessJava and pvIOCJava provide gateway code between
-    caV3 and pvAccess. pvAccessJava (see package <b>org.epics.caV3</b>) allows
-    pvAccess client to talk to a caV3 server, pvIOCJava (see package
-    <b>org.epics.pvioc.caV3</b>) allows caV3 client to talk to a pvAccess
+    CA and pvAccess. pvAccessJava (see package <b>org.epics.ca</b>) allows
+    pvAccess client to talk to a CA server, pvIOCJava (see package
+    <b>org.epics.pvioc.caV3</b>) allows CA client to talk to a pvAccess
     server.</li>
 </ol>
 
@@ -199,7 +199,7 @@ channel and how to register monitor algoritms and channel providers.</p>
 <p>This package defines the interfaces a client uses to comnmunicate with a
 pvAccess server. This project fully implements all the interfaces. If a server
 is implemented for other systems, it is OK to implement a subset of the
-interfaces. For example the caV3 server implemented by the pvIOCJava does not
+interfaces. For example the CA server implemented by the pvIOCJava does not
 support ChannelPutGet because an EPICS V3 IOC does not provide an equivalent
 facility.</p>
 
@@ -254,8 +254,8 @@ overview for details.</p>
 
 <h3>Access Security</h3>
 
-<p>Something like how csV3 implements access security is required. A
-complication is that for caV3 a client attaches to a single scalar or array
+<p>Something like how CA implements access security is required. A
+complication is that for CA a client attaches to a single scalar or array
 field. For pvAccess a client attaches to an arbirary set of fields in a record.
 Takes some thought to decide what to do.</p>
 
