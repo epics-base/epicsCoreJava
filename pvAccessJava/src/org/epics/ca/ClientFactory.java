@@ -2,7 +2,7 @@
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
-package org.epics.caV3;
+package org.epics.ca;
 
 import gov.aps.jca.CAException;
 import gov.aps.jca.Context;
@@ -37,7 +37,7 @@ public class ClientFactory  {
     private static final ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
 	private static ChannelProviderFactoryImpl factory = null; 
 
-    public static final String PROVIDER_NAME = "caV3";
+    public static final String PROVIDER_NAME = "ca";
 
     private static class ChannelProviderFactoryImpl implements ChannelProviderFactory
     {
@@ -121,7 +121,7 @@ public class ClientFactory  {
             try {
                 context.addContextExceptionListener(this);
                 context.addContextMessageListener(this);
-                t = new CAThread("cav3",ThreadPriority.getJavaPriority(ThreadPriority.low), context);
+                t = new CAThread("ca",ThreadPriority.getJavaPriority(ThreadPriority.low), context);
             } catch (Throwable e) {
                 e.printStackTrace();
                 caThread = null;
@@ -168,7 +168,7 @@ public class ClientFactory  {
 				ChannelRequester channelRequester, short priority,
 				String address) {
         	if (address != null)
-        		throw new IllegalArgumentException("address not allowed for caV3 implementation");
+        		throw new IllegalArgumentException("address not allowed for CA implementation");
 			return createChannel(channelName, channelRequester, priority);
 		}
 		/* (non-Javadoc)

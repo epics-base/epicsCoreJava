@@ -3,7 +3,7 @@
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
-package org.epics.caV3;
+package org.epics.ca;
 
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelGet;
