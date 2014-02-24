@@ -47,11 +47,11 @@ public class ExampleChannelV3Get {
         Logger logger = Logger.getLogger(ExampleChannelGet.class.getName());
         logger.setLevel(Level.ALL);
 
-        org.epics.caV3.ClientFactory.start();
+        org.epics.ca.ClientFactory.start();
         
         ChannelProvider channelProvider =
         	ChannelAccessFactory.getChannelAccess()
-        		.getProvider(org.epics.caV3.ClientFactory.PROVIDER_NAME);
+        		.getProvider(org.epics.ca.ClientFactory.PROVIDER_NAME);
         
         CountDownLatch doneSignal = new CountDownLatch(1);
 
@@ -73,7 +73,7 @@ public class ExampleChannelV3Get {
 		if (!doneSignal.await(3, TimeUnit.SECONDS))
 			logger.info("Failed to get value (timeout condition).");
         
-        org.epics.caV3.ClientFactory.stop();
+        org.epics.ca.ClientFactory.stop();
     }
     
     static class ChannelRequesterImpl implements ChannelRequester
