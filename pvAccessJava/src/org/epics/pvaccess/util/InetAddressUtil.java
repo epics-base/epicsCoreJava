@@ -51,21 +51,28 @@ public class InetAddressUtil {
 
 		ArrayList<InetSocketAddress> list = new ArrayList<InetSocketAddress>(10);
 
-			while (nets.hasMoreElements())
+		while (nets.hasMoreElements())
+		{
+			NetworkInterface net = nets.nextElement();
+			try
 			{
-				NetworkInterface net = nets.nextElement();
-				//if (net.isUp())
+				if (net.isUp())
 				{
 					List<InterfaceAddress> interfaceAddresses = net.getInterfaceAddresses();
-					for (InterfaceAddress addr : interfaceAddresses)
-						if (addr.getBroadcast() != null)
-						{
-							InetSocketAddress isa = new InetSocketAddress(addr.getBroadcast(), port);
-							if (!list.contains(isa))
-								list.add(isa);
-						}
+					if (interfaceAddresses != null)
+						for (InterfaceAddress addr : interfaceAddresses)
+							if (addr.getBroadcast() != null)
+							{
+								InetSocketAddress isa = new InetSocketAddress(addr.getBroadcast(), port);
+								if (!list.contains(isa))
+									list.add(isa);
+							}
 				}
+			} catch (Throwable th) {
+				// some methods throw exceptions, some return null (and they shouldn't)
+				// noop, skip that interface
 			}
+		}
 		
 		InetSocketAddress[] retVal = new InetSocketAddress[list.size()];
 		list.toArray(retVal);
