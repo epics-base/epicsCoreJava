@@ -408,12 +408,13 @@ public class ServerContextImpl implements ServerContext, Context {
 			throw new PVAException("Failed to initialize reactor.", ioex); 
 		}
 		*/
-		// setup broadcast UDP transport
-		initializeBroadcastTransport();
 		
 //		acceptor = new TCPAcceptor(this, serverPort, receiveBufferSize);
 		acceptor = new BlockingTCPAcceptor(this, serverPort, receiveBufferSize);
 		serverPort = acceptor.getBindAddress().getPort();
+
+		// setup broadcast UDP transport
+		initializeBroadcastTransport();
 
 		beaconEmitter = new BeaconEmitter(broadcastTransport, this);
 	}
