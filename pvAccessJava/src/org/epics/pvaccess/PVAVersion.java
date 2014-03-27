@@ -34,11 +34,11 @@ public interface PVAVersion {
     /**
      * Maintenance version.
      */
-    public static final int VERSION_MAINTENANCE = 5;
+    public static final int VERSION_MAINTENANCE = 6;
 
     /**
      * Development version.
      */
-    public static final boolean VERSION_DEVELOPMENT = false;
+    public static final boolean VERSION_DEVELOPMENT = true;
 
 }
