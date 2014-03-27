@@ -163,6 +163,10 @@ public abstract class AbstractCodec
 					final boolean notFirstSegment = (flags & 0x20) != 0;
 					if (notFirstSegment)
 					{
+						// zero payload message is "kind of" valid
+						if (payloadSize == 0)
+							continue;
+
 						logger.warning("Not-a-frst segmented message received in normal mode from client " + getLastReadBufferSocketAddress() + ", disconnecting...");
 						invalidDataStreamHandler();
 						throw new InvalidDataStreamException("not-a-first segmented message received in normal mode");
