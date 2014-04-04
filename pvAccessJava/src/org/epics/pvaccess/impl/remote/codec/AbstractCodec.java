@@ -875,7 +875,7 @@ public abstract class AbstractCodec
 			endMessage(false);
 		}
 		catch (Throwable th) {
-			logger.log(Level.WARNING, "exception caught while processing send message", th);
+			logger.log(Level.FINE, "exception caught while processing send message", th);
 
 			try {
 				close();
