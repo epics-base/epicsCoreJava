@@ -381,12 +381,14 @@ public class AbstractCodecTest extends TestCase {
 			codec.readBuffer.put(PVAConstants.PVA_VERSION);
 			codec.readBuffer.put(invalidFlagsValues[i]);
 			codec.readBuffer.put((byte)0x23);
-			codec.readBuffer.putInt(0);
+			//codec.readBuffer.putInt(0);
+			codec.readBuffer.putInt(i);   // to check zero-payload
 			codec.readBuffer.flip();
 			
 			codec.processRead();
 			
-			assertEquals(1, codec.invalidDataStreamCount);
+			//assertEquals(1, codec.invalidDataStreamCount);
+			assertEquals(i != 0 ? 1 : 0, codec.invalidDataStreamCount);
 			assertEquals(0, codec.closedCount);
 			assertEquals(0, codec.receivedControlMessages.size());
 			assertEquals(0, codec.receivedAppMessages.size());
