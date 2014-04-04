@@ -86,7 +86,7 @@ public abstract class AbstractCodec
 	}
 	
 
-	public final void processRead() throws IOException
+	public final void processRead() throws IOException, ConnectionClosedException, InvalidDataStreamException
 	{
 		//System.out.println("processRead");
 		switch (readMode)
@@ -705,10 +705,9 @@ public abstract class AbstractCodec
 	protected WriteMode writeMode = WriteMode.PROCESS_SEND_QUEUE;
 	protected boolean writeOpReady = false;
 	
-	public final void processWrite() throws IOException
+	public final void processWrite() throws IOException, ConnectionClosedException
 	{
 		//System.out.println("processWrite");
-		// TODO catch ConnectionClosedException, InvalidStreamException?
 		switch (writeMode)
 		{
 			case PROCESS_SEND_QUEUE:

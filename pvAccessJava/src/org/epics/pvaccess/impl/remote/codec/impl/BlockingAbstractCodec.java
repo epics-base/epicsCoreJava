@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
+import org.epics.pvaccess.impl.remote.codec.ConnectionClosedException;
 
 // TODO send thread is not terminated!!!
 
@@ -110,9 +111,10 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 		{
 			try {
 				processRead();
+			} catch (ConnectionClosedException cce) {
+				// noop
 			} catch (IOException e) {
 				// TODO
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -125,9 +127,10 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 		{
 			try {
 				processWrite();
+			} catch (ConnectionClosedException cce) {
+				// noop
 			} catch (IOException e) {
 				// TODO
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

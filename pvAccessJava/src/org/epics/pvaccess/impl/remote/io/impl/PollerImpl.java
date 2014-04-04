@@ -30,7 +30,6 @@ public class PollerImpl implements Poller, Runnable {
 	 */
 	public PollerImpl() throws IOException {
 		selector = Selector.open();
-		System.out.println(selector);
 	}
 
 	public void start() {
