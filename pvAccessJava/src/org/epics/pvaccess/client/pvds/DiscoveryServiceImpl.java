@@ -17,6 +17,9 @@ import org.epics.pvaccess.client.pvds.util.ToByteArraySerializator;
  */
 public class DiscoveryServiceImpl<T> extends TimerTask {
 
+	// SocketInetAddress unicastDiscoverySocketAddress
+	// List<Locator> endpoints;
+	
 	private final long announcePeriod;
 	private final long minAnnouncePeriod;
 	private final DiscoveryDataSet<T> dataSet;
@@ -37,6 +40,7 @@ public class DiscoveryServiceImpl<T> extends TimerTask {
 		if (announcePeriod < minAnnouncePeriod)
 			throw new IllegalArgumentException("announcePeriod < minAnnouncePeriod");
 		
+		// TODO apply some jitter... or not
 		this.announcePeriod = announcePeriod;
 		this.minAnnouncePeriod = minAnnouncePeriod;
 		this.dataSet = dataSet;
@@ -51,8 +55,12 @@ public class DiscoveryServiceImpl<T> extends TimerTask {
 	// (GUID, unicast discovery endpoint, service endpoint(s), changed status id, 
 	//  # discoverable entities (-1 for explicit discovery only), bloom filter 
 
-	// subscribers announce themselves too, with changed status id
+	// subscribers announce themselves too, with changed status id (new subscription?)
+	// a flag that indicates whether it wants to get all server reliable unicasts 
+	  
+	 
 	// publishers send to unicast discovery address their annoincements (reliable)
+	
 
 	// this implies that all the entities are available on shared enpoints,
 	// i.e. no separate enpoints per entity (an entity must become a discovery service in this case)
@@ -65,6 +73,11 @@ public class DiscoveryServiceImpl<T> extends TimerTask {
 	
 	// an admin GUI can get list of active (connected) entities from the publishers/subscribers
 	// via unicast discovery port: ( endpoint, entity[]  )[]
+	 
+	//
+	// if client fins a match in bloom filter it sends an reliable unicast request
+	// and require response (on timeout) 
+	
 */	
 	// sends out updated announce multicast, rate limited
 	// send is scheduled after rate limit period

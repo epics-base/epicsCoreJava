@@ -3,6 +3,10 @@
  */
 package org.epics.pvaccess.client.pvds;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
@@ -19,10 +23,11 @@ public interface Protocol {
 	 */
 	static class ProtocolId {
 		// octet[4]
-		//public static final byte[] VALUE = { 70, 76, 44, 53 }; 	// pvDS
-		//public static final byte[] RTPS_VALUE = { 52, 54, 50, 53 }; 	// RTPS
+		//public static final byte[] VALUE = { 0x70, 0x76, 0x44, 0x53 }; 	// pvDS
+		//public static final byte[] RTPS_VALUE = { 0x52, 0x54, 0x50, 0x53 }; 	// RTPS
 
 		public static final int VALUE = 0x70764453; 	// pvDS
+		public static final int RTPS_VALUE = 0x52545053; 	// RTPS
 	}
 	
 	/**
@@ -53,7 +58,7 @@ public interface Protocol {
 	 */
 	static class GUIDPrefix {
 		// octet[12]
-		private final byte[] value;
+		public final byte[] value;
 		
 		public static final byte[] GUIDPREFIX_UNKNOWN_VALUE = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 		
@@ -169,6 +174,62 @@ In case octetsToNextHeader==0 and the kind of Submessage is NOT PAD or INFO_TS, 
 In case the octetsToNextHeader==0 and the kind of Submessage is PAD or INFO_TS, the next Submessage header starts immediately after the current Submessage header OR the PAD or INFO_TS is the last Submessage in the Message.
 */
 	
+	static class Locator
+	{
+		static final public int LOCATOR_ADDRESS_SIZE = 16;
+		
+		int kind;
+		int port;	// unsigned
+		byte[] address;
+
+		static final byte[] LOCATOR_ADDRESS_INVALID = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+		
+		static final int LOCATOR_PORT_INVALID = 0;
+		
+		static final int LOCATOR_KIND_INVALID = -1;
+		static final int LOCATOR_KIND_RESERVED = 0;
+		static final int LOCATOR_KIND_UDPv4 = 1;
+		static final int LOCATOR_KIND_UDPv6 = 2;
+		
+		private Locator(int kind, int port, byte[] address)
+		{
+			this.kind = kind;
+			this.port = port;
+			if (address.length != LOCATOR_ADDRESS_SIZE)
+				throw new IllegalArgumentException("address.length != " + LOCATOR_ADDRESS_SIZE);
+			this.address = address;
+		}
+		
+		private static final byte[] IPv6Prefix =  { 0,0,0,0,0,0,0,0,0,0,(byte)0xff,(byte)0xff };
+		public static Locator generateUDPLocator(InetSocketAddress socketAddress)
+		{
+			int kind;
+			InetAddress address = socketAddress.getAddress();
+			if  (address instanceof Inet4Address)
+				kind = LOCATOR_KIND_UDPv4;
+			else if (address instanceof Inet6Address)
+				kind = LOCATOR_KIND_UDPv6;
+			else
+				throw new IllegalArgumentException("unsupported InetAddress type: " + address.getClass());
+			
+			byte[] byteAddress = new byte[LOCATOR_ADDRESS_SIZE];
+			System.arraycopy(IPv6Prefix, 0, byteAddress, 0, IPv6Prefix.length);	// TODO is it OK to add prefix
+			System.arraycopy(address.getAddress(), 0, byteAddress, LOCATOR_ADDRESS_SIZE - 4, 4);
+			
+			return new Locator(kind, socketAddress.getPort(), byteAddress);
+		}
+
+		public static final Locator LOCATOR_INVALID =
+			new Locator(LOCATOR_KIND_INVALID, LOCATOR_PORT_INVALID, LOCATOR_ADDRESS_INVALID);
+		
+		public void serialize(ByteBuffer buffer)
+		{
+			buffer.putInt(kind);
+			buffer.putInt(port);	// unsigned, well we do not expect ports above 65535 limit
+			buffer.put(address);	// TODO is this fixed to 16-bytes!!! yet it is
+		}
+		
+	}
 	
 
 }
