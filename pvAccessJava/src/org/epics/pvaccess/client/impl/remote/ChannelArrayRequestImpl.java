@@ -49,8 +49,8 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	protected int offset = 0;
 	protected int count = 0;
 	
-	protected int length = -1;
-	protected int capacity = -1;
+	protected int length = 0;
+	protected int capacity = 0;
 
 	public static ChannelArrayRequestImpl create(ChannelImpl channel,
 			ChannelArrayRequester callback,
@@ -132,7 +132,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			lock();
 			try {
 				SerializeHelper.writeSize(offset, buffer, control);
-				data.serialize(buffer, control, 0, count);	// put from 0 offset; TODO count out-of-bounds check?!
+				data.serialize(buffer, control, 0, count != 0 ? count : data.getLength());	// put from 0 offset
 			} finally {
 				unlock();
 			}
@@ -236,6 +236,12 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	@Override
 	public void getArray(boolean lastRequest, int offset, int count) {
+		
+		if (offset < 0)
+			throw new IllegalArgumentException("offset < 0");
+		if (count < 0)
+			throw new IllegalArgumentException("count < 0");
+		
 		if (destroyed) {
 			callback.getArrayDone(destroyedStatus);
 			return;
@@ -264,6 +270,12 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	@Override
 	public void putArray(boolean lastRequest, int offset, int count) {
+
+		if (offset < 0)
+			throw new IllegalArgumentException("offset < 0");
+		if (count < 0)
+			throw new IllegalArgumentException("count < 0");
+
 		if (destroyed) {
 			callback.putArrayDone(destroyedStatus);
 			return;
@@ -292,6 +304,12 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	@Override
 	public void setLength(boolean lastRequest, int length, int capacity) {
+		
+		if (length < 0)
+			throw new IllegalArgumentException("length < 0");
+		if (capacity < 0)
+			throw new IllegalArgumentException("capacity < 0");
+
 		if (destroyed) {
 			callback.putArrayDone(destroyedStatus);
 			return;

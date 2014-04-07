@@ -23,14 +23,14 @@ public interface ChannelArray extends ChannelRequest{
      * get from the remote array.
      * @param lastRequest Is this the last request.
      * @param offset The offset in the remote array, i.e. the PVArray returned by ChannelArrayRequester.channelArrayConnect.
-     * @param count The number of elements to get.
+     * @param count The number of elements to get. 0 means "till the end of array".
      */
     void getArray(boolean lastRequest, int offset, int count);
     /**
      * Set the length and/or the capacity.
      * @param lastRequest Is this the last request.
-     * @param length The new length. -1 means do not change.
-     * @param capacity The new capacity. -1 means do not change.
+     * @param length The new length.
+     * @param capacity The new capacity. 0 means do not change.
      */
     void setLength(boolean lastRequest, int length, int capacity);
 }

@@ -2524,15 +2524,15 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    PVDoubleArray doubleArray = (PVDoubleArray)channelArrayRequester.pvArray;
 	    final double[] ARRAY_VALUE = new double[] { 1.1, 2.2, 3.3, 4.4, 5.5 }; 
 	    doubleArray.put(0, ARRAY_VALUE.length, ARRAY_VALUE, 0);
-	    channelArrayRequester.syncPut(false, 0, -1);
-	    channelArrayRequester.syncGet(false, 0, ARRAY_VALUE.length /*-1*/); // this allows multiple runs on the same JavaIOC
+	    channelArrayRequester.syncPut(false, 0, 0);
+	    channelArrayRequester.syncGet(false, 0, ARRAY_VALUE.length /*0*/); // this allows multiple runs on the same JavaIOC
 	    DoubleArrayData doubleData = new DoubleArrayData();
 	    count = doubleArray.get(0, 100, doubleData);
 	    assertEquals(ARRAY_VALUE.length, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 	    
-	    channelArrayRequester.syncPut(false, 4, -1);	// result: 1.1, 2.2, 3.3, 4.4, 1.1, 2.2, 3.3, 4.4, 5.5
+	    channelArrayRequester.syncPut(false, 4, 0);	// result: 1.1, 2.2, 3.3, 4.4, 1.1, 2.2, 3.3, 4.4, 5.5
 	    channelArrayRequester.syncGet(false, 3, 3);
 	    count = doubleArray.get(0, 3, doubleData);
 	    assertEquals(3, count);
@@ -2540,16 +2540,17 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(EXPECTED_VAL[i], doubleData.data[i]);
 	    
-	    channelArrayRequester.syncSetLength(false, 3, -1);  // result: 1.1, 2.2, 3.3
-	    channelArrayRequester.syncGet(false, 0, -1);
+	    channelArrayRequester.syncSetLength(false, 3, 0);  // result: 1.1, 2.2, 3.3
+	    channelArrayRequester.syncGet(false, 0, 0);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(3, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 	    
+	    final int OLD_LEN = 3;
 	    final int NEW_CAP = 2;
-	    channelArrayRequester.syncSetLength(false, -1, NEW_CAP);	// result: 1.1, 2.2
-	    channelArrayRequester.syncGet(false, 0, -1);
+	    channelArrayRequester.syncSetLength(false, OLD_LEN, NEW_CAP);	// result: 1.1, 2.2
+	    channelArrayRequester.syncGet(false, 0, 0);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(2, count);
 	    for (int i = 0; i < count; i++)
@@ -2558,7 +2559,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    // big array test
 	    final int BIG_CAPACITY = 10000;
 	    channelArrayRequester.syncSetLength(false, BIG_CAPACITY, BIG_CAPACITY);
-	    channelArrayRequester.syncGet(false, 0, -1);
+	    channelArrayRequester.syncGet(false, 0, 0);
 	    count = doubleArray.get(0, 10000, doubleData);
 	    assertEquals(10000, count);
 	    for (int i = 0; i < NEW_CAP; i++)

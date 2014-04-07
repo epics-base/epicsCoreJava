@@ -585,7 +585,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					//if (process)
 					//	pvTopStructure.process();
 
-	                if(count<=0) count = pvArray.getLength() - offset;
+	                if(count == 0) count = pvArray.getLength() - offset;
                     int len = convert.copyScalarArray(pvArray, offset, pvCopy, 0, count);
                     if(!pvCopy.isImmutable()) pvCopy.setLength(len);
 				}
@@ -622,10 +622,9 @@ public class TestChannelProviderImpl implements ChannelProvider
 						return;
 					}
 
-					if(length>=0) {
-                    	if(pvArray.getLength()!=length) pvArray.setLength(length);
-                    }
-                    if(capacity>=0) {
+                	if(pvArray.getLength()!=length) pvArray.setLength(length);
+                	
+                    if(capacity > 0) {
                     	if(pvArray.getCapacity()!=capacity) pvArray.setCapacity(capacity);
                     }
 				}
