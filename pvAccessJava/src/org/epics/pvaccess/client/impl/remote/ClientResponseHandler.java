@@ -74,13 +74,13 @@ public class ClientResponseHandler implements ResponseHandler {
 				dataResponse, /* 12 - put-get response */
 				dataResponse, /* 13 - monitor response */
 				dataResponse, /* 14 - array response */
-				badResponse, /* 15 - cancel request */
+				badResponse, /* 15 - destroy request */
 				dataResponse, /* 16 - process response */
 				dataResponse, /* 17 - get field response */
 				new MessageHandler(context), /* 18 - message to Requester */
 				new MultipleDataResponseHandler(context), /* 19 - grouped monitors */
 				dataResponse, /* 20 - RPC response */
-				badResponse, /* 21 */
+				badResponse, /* 21 - cancel request */
 				badResponse, /* 22 */
 				badResponse, /* 23 */
 				badResponse, /* 24 */

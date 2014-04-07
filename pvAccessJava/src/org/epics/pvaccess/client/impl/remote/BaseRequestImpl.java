@@ -329,7 +329,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		}
 		else if (qos == PURE_CANCEL_REQUEST)
 		{
-			control.startMessage((byte)31, 2*Integer.SIZE/Byte.SIZE);
+			control.startMessage((byte)21, 2*Integer.SIZE/Byte.SIZE);
 			buffer.putInt(channel.getServerChannelID());
 			buffer.putInt(ioid);
 		}

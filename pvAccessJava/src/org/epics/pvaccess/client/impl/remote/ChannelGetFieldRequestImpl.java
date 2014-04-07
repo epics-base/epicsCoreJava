@@ -189,6 +189,7 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	 */
 	public void cancel() {
 		// TODO
+		// noop
 	}
 
 	/* (non-Javadoc)
