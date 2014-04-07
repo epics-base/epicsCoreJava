@@ -180,4 +180,10 @@ implements ChannelGet,GetListener,ConnectionListener
 	public void unlock() {
 		lock.unlock();
 	}
+
+	@Override
+	public void cancel() {
+		// noop, not supported
+	}
+	
 }

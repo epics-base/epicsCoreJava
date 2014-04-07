@@ -148,6 +148,11 @@ public class TestChannelProviderImpl implements ChannelProvider
 				// noop
 			}
 
+			@Override
+			public void cancel() {
+				// noop, not supported
+			}
+			
 		}
 
 		class TestChannelGetImpl extends TestBasicChannelRequest implements ChannelGet, PVTopStructureListener

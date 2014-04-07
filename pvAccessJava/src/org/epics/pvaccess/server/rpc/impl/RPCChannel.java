@@ -210,6 +210,11 @@ public class RPCChannel implements Channel {
 		public void unlock() {
 			// noop
 		}
+
+		@Override
+		public void cancel() {
+			// TODO do we need to extend API?
+		}
 	}
 	
 	@Override

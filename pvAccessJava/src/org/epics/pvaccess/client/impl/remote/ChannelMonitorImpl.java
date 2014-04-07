@@ -331,7 +331,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	 * @see org.epics.pvaccess.core.DataResponse#response(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer)
 	 */
 	public void response(Transport transport, byte version, ByteBuffer payloadBuffer) {
-		boolean cancel = false;
+		boolean destroy = false;
 		try
 		{	
 			transport.ensureData(1);
@@ -349,7 +349,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			{
 				final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
 				remotelyDestroyed = true;
-				cancel = true;
+				destroy = true;
 
 				destroyResponse(transport, version, payloadBuffer, qos, status);
 			}
@@ -361,9 +361,8 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		}
 		finally
 		{
-			// always cancel request
-			if (cancel)
-				cancel();
+			if (destroy)
+				destroy();
 		}
 	}
 

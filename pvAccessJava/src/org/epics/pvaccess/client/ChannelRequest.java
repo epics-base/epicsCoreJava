@@ -12,4 +12,13 @@ import org.epics.pvdata.misc.Destroyable;
  * @author mse
  */
 public interface ChannelRequest extends Lockable, Destroyable {
+	/**
+	 * Cancel any pending request.
+	 * Completion will be notified via request's response callback:
+	 * <ul>
+	 *   <li>if cancel() request is issue after the request was already complete, success/failure completion will be reported.</li>
+	 *   <li>if request was actually canceled, cancellation completion will be reported.</li>
+	 * </ul>
+	 */
+	void cancel();
 }

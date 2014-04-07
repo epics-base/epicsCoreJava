@@ -179,8 +179,8 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 		}
 		finally
 		{
-			// always cancel request
-			cancel();
+			// always destroy
+			destroy();
 		}
 	}
 
@@ -188,7 +188,7 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	 * @see org.epics.pvaccess.core.ResponseRequest#cancel()
 	 */
 	public void cancel() {
-		destroy();
+		// TODO
 	}
 
 	/* (non-Javadoc)

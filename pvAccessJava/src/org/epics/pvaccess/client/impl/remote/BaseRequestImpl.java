@@ -89,6 +89,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	/* negative... */
 	protected static final int NULL_REQUEST = -1;
 	protected static final int PURE_DESTROY_REQUEST = -2;
+	protected static final int PURE_CANCEL_REQUEST = -2;
 	
 	protected final ReentrantLock lock = new ReentrantLock();
 	
@@ -120,8 +121,8 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 
 	public final boolean startRequest(int qos) {
 		synchronized (this) {
-			// we allow pure destroy...
-			if (pendingRequest != NULL_REQUEST && qos != PURE_DESTROY_REQUEST)
+			// we allow pure destroy and cancel...
+			if (pendingRequest != NULL_REQUEST && qos != PURE_DESTROY_REQUEST && qos != PURE_CANCEL_REQUEST)
 				return false;
 			
 			pendingRequest = qos;
@@ -132,6 +133,11 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		if (qos == PURE_DESTROY_REQUEST)
 		{
 			pendingRequest.set(PURE_DESTROY_REQUEST);
+			return true;
+		}
+		else if (qos == PURE_CANCEL_REQUEST)
+		{
+			pendingRequest.set(PURE_CANCEL_REQUEST);
 			return true;
 		}
 		else
@@ -176,7 +182,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	 * @see org.epics.pvaccess.core.DataResponse#response(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer)
 	 */
 	public void response(Transport transport, byte version, ByteBuffer payloadBuffer) {
-		boolean cancel = false;
+		boolean destroy = false;
 		try
 		{	
 			transport.ensureData(1);
@@ -190,7 +196,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 			else if (QoS.DESTROY.isSet(qos))
 			{
 				remotelyDestroyed = true;
-				cancel = true;
+				destroy = true;
 
 				destroyResponse(transport, version, payloadBuffer, qos, status);
 			}
@@ -201,9 +207,8 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		}
 		finally
 		{
-			// always cancel request
-			if (cancel)
-				cancel();
+			if (destroy)
+				destroy();
 		}
 	}
 
@@ -211,7 +216,34 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	 * @see org.epics.pvaccess.core.ResponseRequest#cancel()
 	 */
 	public void cancel() {
-		destroy();
+
+		if (destroyed)
+			return;
+
+		/*
+		boolean canceledBeforeRequestSent = false;
+		synchronized (this) {
+			if (pendingRequest > 0)
+			{
+				canceledBeforeRequestSent = true;
+				stopRequest();
+			}
+			else
+				startRequest(PURE_CANCEL_REQUEST);
+		}
+		
+		if (canceledBeforeRequestSent)
+		{
+			reportCancellation();
+			return;
+		}
+		*/
+		startRequest(PURE_CANCEL_REQUEST);
+		try {
+			channel.checkAndGetTransport().enqueueSendRequest(this);
+		} catch (IllegalStateException ise) {
+			// noop, we are just not connected
+		}
 	}
 
 	/**
@@ -292,6 +324,12 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		else if (qos == PURE_DESTROY_REQUEST)
 		{
 			control.startMessage((byte)15, 2*Integer.SIZE/Byte.SIZE);
+			buffer.putInt(channel.getServerChannelID());
+			buffer.putInt(ioid);
+		}
+		else if (qos == PURE_CANCEL_REQUEST)
+		{
+			control.startMessage((byte)31, 2*Integer.SIZE/Byte.SIZE);
 			buffer.putInt(channel.getServerChannelID());
 			buffer.putInt(ioid);
 		}
