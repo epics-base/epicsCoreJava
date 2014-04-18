@@ -5,9 +5,11 @@
  */
 package org.epics.pvaccess.client;
 
+import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Requester;
 import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * Requester for ChannelPutGet.
@@ -20,24 +22,33 @@ public interface ChannelPutGetRequester extends Requester
      * The client and server have both completed the createChannelPutGet request.
      * @param status Completion status.
      * @param channelPutGet The channelPutGet interface or null if the request failed.
-     * @param pvPutStructure The PVStructure that holds the putData.
-     * @param pvGetStructure The PVStructure that holds the getData.
+     * @param putStructure The put structure introspection data or <code>null</code> if the request failed.
+     * @param getStructure The get structure introspection data or <code>null</code> if the request failed.
      */
-    void channelPutGetConnect(Status status,ChannelPutGet channelPutGet,
-            PVStructure pvPutStructure,PVStructure pvGetStructure);
+    void channelPutGetConnect(Status status, ChannelPutGet channelPutGet,
+    		Structure putStructure, Structure getStructure);
     /**
      * The putGet request is done. This is always called with no locks held.
      * @param status Completion status.
+     * @param channelPutGet The channelPutGet interface.
+     * @param pvGetStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
+     * @param putBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
      */
-    void putGetDone(Status status);
+    void putGetDone(Status status, ChannelPutGet channelPutGet, PVStructure getPVStructure, BitSet getBitSet);
     /**
      * The getPut request is done. This is always called with no locks held.
      * @param status Completion status.
+     * @param channelPutGet The channelPutGet interface.
+     * @param pvPutStructure The PVStructure that holds the putData or <code>null</code> if the request failed.
+     * @param putBitSet putPVStructure changed bit-set or <code>null</code> if the request failed.
      */
-    void getPutDone(Status status);
+    void getPutDone(Status status, ChannelPutGet channelPutGet, PVStructure putPVStructure, BitSet putBitSet);
     /**
      * The getGet request is done. This is always called with no locks held.
      * @param status Completion status.
+     * @param channelPutGet The channelPutGet interface.
+     * @param pvGetStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
+     * @param putBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
      */
-    void getGetDone(Status status);
+    void getGetDone(Status status, ChannelPutGet channelPutGet, PVStructure getPVStructure, BitSet getBitSet);
 }

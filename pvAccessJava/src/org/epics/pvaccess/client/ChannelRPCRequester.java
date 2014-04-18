@@ -20,11 +20,12 @@ public interface ChannelRPCRequester extends Requester {
      * @param status Completion status.
      * @param channelRPC The channelRPC interface or null if the request failed.
      */
-    void channelRPCConnect(Status status,ChannelRPC channelRPC);
+    void channelRPCConnect(Status status, ChannelRPC channelRPC);
     /**
      * The request is done. This is always called with no locks held.
      * @param status Completion status.
-     * @param pvResponse The response data for the RPC request.
+     * @param channelRPC The channelRPC interface.
+     * @param pvResponse The response data for the RPC request or <code>null</code> if the request failed.
      */
-    void requestDone(Status status,PVStructure pvResponse);
+    void requestDone(Status status, ChannelRPC channelRPC, PVStructure pvResponse);
 }
