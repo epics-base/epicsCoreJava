@@ -71,11 +71,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     	Field[] fields = structure.getFields();
     	pvFields = new PVField[fields.length];
     	for(int i=0; i < pvFields.length; i++) {
-    	    if(fields[i].getType()==Type.structure) {
-    	        pvFields[i] = new BasePVStructure((Structure)fields[i]);
-    	    } else {
-    		    pvFields[i] = pvDataCreate.createPVField(fields[i]);
-    	    }
+    	    pvFields[i] = pvDataCreate.createPVField(fields[i]);
     	}
     	setParentAndName();
     }
