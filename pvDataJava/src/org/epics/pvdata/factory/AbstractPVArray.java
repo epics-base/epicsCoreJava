@@ -7,6 +7,7 @@ package org.epics.pvdata.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVArray;
@@ -38,6 +39,10 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     protected AbstractPVArray(Field field) {
         super(field);
     }
+	@Override
+	public Array getArray() {
+		return (Array)getField();
+	}
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#setCapacity(int)
      */
