@@ -27,9 +27,11 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
+import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * Put-get handler.
@@ -49,10 +51,15 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 	private static class ChannelPutGetRequesterImpl extends BaseChannelRequester implements ChannelPutGetRequester, TransportSender {
 		
 		private volatile ChannelPutGet channelPutGet;
-		private volatile PVStructure pvPutStructure;
-		private volatile PVStructure pvGetStructure;
-		private Status status;
-		
+		//private volatile PVStructure pvPutStructure;
+		//private volatile BitSet pvPutBitSet;
+		//private volatile PVStructure pvGetStructure;
+		//private volatile BitSet pvGetBitSet;
+		private volatile Status status;
+
+		private volatile Structure putStructure;
+		private volatile Structure getStructure;
+
 		public ChannelPutGetRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
@@ -70,18 +77,15 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelPutGetRequester#channelPutGetConnect(org.epics.pvaccess.client.ChannelPutGet, org.epics.pvdata.pv.PVStructure, org.epics.pvdata.pv.PVStructure)
-		 */
 		@Override
 		public void channelPutGetConnect(Status status, ChannelPutGet channelPutGet,
-				PVStructure pvPutStructure, PVStructure pvGetStructure) {
-			synchronized (this) {
-				this.pvPutStructure = pvPutStructure;
-				this.pvGetStructure = pvGetStructure;
-				this.status = status;
-				this.channelPutGet = channelPutGet;
-			}
+				Structure putStructure, Structure getStructure) {
+
+			this.status = status;
+			this.channelPutGet = channelPutGet;
+			this.putStructure = putStructure;
+			this.getStructure = getStructure;
+			
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -90,9 +94,6 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelPutGetRequester#getGetDone(Status)
-		 */
 		@Override
 		public void getGetDone(Status status) {
 			synchronized (this)
@@ -102,9 +103,6 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			transport.enqueueSendRequest(this);
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelPutGetRequester#getPutDone(Status)
-		 */
 		@Override
 		public void getPutDone(Status status) {
 			synchronized (this)
@@ -114,9 +112,6 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			transport.enqueueSendRequest(this);
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelPutGetRequester#putGetDone(Status)
-		 */
 		@Override
 		public void putGetDone(Status status) {
 			synchronized (this)
@@ -184,8 +179,8 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			{
 				if (QoS.INIT.isSet(request))
 				{
-					control.cachedSerialize(pvPutStructure != null ? pvPutStructure.getField() : null, buffer);
-					control.cachedSerialize(pvGetStructure != null ? pvGetStructure.getField() : null, buffer);
+					control.cachedSerialize(putStructure, buffer);
+					control.cachedSerialize(getStructure, buffer);
 				}
 				else if (QoS.GET.isSet(request))
 				{

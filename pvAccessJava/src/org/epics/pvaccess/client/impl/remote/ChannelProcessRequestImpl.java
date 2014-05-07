@@ -108,7 +108,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	@Override
 	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
 		try {
-			callback.processDone(status);
+			callback.processDone(status, this);
 		} catch (Throwable th) {
 			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
@@ -140,7 +140,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	@Override
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
 		try {
-			callback.processDone(status);
+			callback.processDone(status, this);
 		} catch (Throwable th) {
 			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
@@ -151,17 +151,17 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelProcess#process(boolean)
+	 * @see org.epics.pvaccess.client.ChannelProcess#process()
 	 */
 	@Override
-	public void process(boolean lastRequest) {
+	public void process() {
 		if (destroyed) {
-			callback.processDone(destroyedStatus);
+			callback.processDone(destroyedStatus, this);
 			return;
 		}
 		
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
-			callback.processDone(otherRequestPendingStatus);
+			callback.processDone(otherRequestPendingStatus, this);
 			return;
 		}
 		
@@ -169,7 +169,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.processDone(channelNotConnected);
+			callback.processDone(channelNotConnected, this);
 		}
 	}
 	

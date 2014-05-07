@@ -37,7 +37,7 @@ import org.epics.pvdata.pv.StatusCreate;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, TransportSender {
+public abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, TransportSender {
 
     protected static final StatusCreate statusCreate = PVFactory.getStatusCreate();
     protected static final Status okStatus = statusCreate.getStatusOK();
@@ -45,6 +45,9 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
     protected static final Status channelNotConnected = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
     protected static final Status channelDestroyed = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
     protected static final Status otherRequestPendingStatus = statusCreate.createStatus(StatusType.ERROR, "other request pending", null);
+    protected static final Status invalidPutStructureStatus = statusCreate.createStatus(StatusType.ERROR, "incompatible put structure", null);
+    protected static final Status invalidPutArrayStatus = statusCreate.createStatus(StatusType.ERROR, "incompatible put array", null);
+    protected static final Status invalidBitSetLengthStatus = statusCreate.createStatus(StatusType.ERROR, "invalid bit-set length", null);
     protected static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
     /**
@@ -73,13 +76,20 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	protected final PVStructure pvRequest;
 	
 	/**
+	 * Last request flag.
+	 */
+	protected volatile boolean lastRequest = false;
+
+	/**
 	 * Destroyed flag.
 	 */
 	protected volatile boolean destroyed = false;
+	
 	/**
 	 * Remote instance destroyed.
 	 */
 	protected volatile boolean remotelyDestroyed = false;
+	
 	/**
 	 * Initialized flag.
 	 */
@@ -378,5 +388,8 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	public void updateSubscription() {
 		// default is noop
 	}
-	
+
+	public void lastRequest() {
+		lastRequest = true;
+	}
 }

@@ -15,7 +15,6 @@ public interface ChannelGet extends ChannelRequest {
      * Get data from the channel.
      * This fails if the request can not be satisfied.
      * If it fails ChannelGetRequester.getDone is called before get returns.
-     * @param lastRequest Is this the last request?
      */
-    void get(boolean lastRequest);
+    void get();
 }

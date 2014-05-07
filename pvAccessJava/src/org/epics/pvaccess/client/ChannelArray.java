@@ -5,41 +5,39 @@
  */
 package org.epics.pvaccess.client;
 
+import org.epics.pvdata.pv.PVArray;
+
 /**
  * Request to put and get Array Data.
  * The data is either taken from or put in the PVArray returned by ChannelArrayRequester.channelArrayConnect.
  * @author mrk
- *
  */
 public interface ChannelArray extends ChannelRequest{
     /**
      * put to the remote array.
+     * @param putArray array to put.
      * @param offset The offset in the remote array, i.e. the PVArray returned by ChannelArrayRequester.channelArrayConnect.
      * @param count The number of elements to put.
      * @param stride 1 means all the elements from offset to count, 2 means every other, 3 means every third, etc.
-     * @param lastRequest Is this the last request.
      */
-    void putArray(int offset, int count, int stride, boolean lastRequest);
+    void putArray(PVArray putArray, int offset, int count, int stride);
     /**
      * get from the remote array.
      * @param offset The offset in the remote array, i.e. the PVArray returned by ChannelArrayRequester.channelArrayConnect.
      * @param count The number of elements to get. 0 means "till the end of array".
      * @param stride 1 means all the elements from offset to count, 2 means every other, 3 means every third, etc.
-     * @param lastRequest Is this the last request.
      */
-    void getArray(int offset, int count, int stride, boolean lastRequest);
+    void getArray(int offset, int count, int stride);
     
     /**
      * Get the length and the capacity.
-     * @param lastRequest Is this the last request.
      */
-    void getLength(boolean lastRequest);
+    void getLength();
     
     /**
      * Set the length and/or the capacity.
      * @param length The new length.
      * @param capacity The new capacity. 0 means do not change.
-     * @param lastRequest Is this the last request.
      */
-    void setLength(int length, int capacity, boolean lastRequest);
+    void setLength(int length, int capacity);
 }

@@ -123,6 +123,7 @@ public class RPCChannel implements Channel {
 	private class ChannelRPCImpl implements ChannelRPC
 	{
 		private final ChannelRPCRequester channelRPCRequester;
+		private volatile boolean lastRequest = false;
 
 		
 		public ChannelRPCImpl(ChannelRPCRequester channelRPCRequester) {
@@ -133,8 +134,13 @@ public class RPCChannel implements Channel {
 				channelRPCRequests.add(this);
 			}
 		}
+		
+		public void lastRequest()
+		{
+			lastRequest = true;
+		}
 
-		private void processRequest(PVStructure pvArgument, boolean lastRequest)
+		private void processRequest(PVStructure pvArgument)
 		{
 			PVStructure result = null;
 			Status status = okStatus;
@@ -172,22 +178,22 @@ public class RPCChannel implements Channel {
 							null);
 			}
 			
-			channelRPCRequester.requestDone(status, result);
+			channelRPCRequester.requestDone(status, this, result);
 			
 			if (lastRequest)
 				destroy();
 		}
 		
 		@Override
-		public void request(final PVStructure pvArgument, final boolean lastRequest) {
+		public void request(final PVStructure pvArgument) {
 			if (threadPool == null)
-				processRequest(pvArgument, lastRequest);
+				processRequest(pvArgument);
 			else
 			{
 				threadPool.execute(new Runnable() {
 					@Override
 					public void run() {
-						processRequest(pvArgument, lastRequest);
+						processRequest(pvArgument);
 					}
 				});
 			}
@@ -260,14 +266,14 @@ public class RPCChannel implements Channel {
 	@Override
 	public ChannelGet createChannelGet(ChannelGetRequester channelGetRequester,
 			PVStructure pvRequest) {
-		channelGetRequester.channelGetConnect(notSupportedStatus, null, null, null);
+		channelGetRequester.channelGetConnect(notSupportedStatus, null, null);
 		return null;
 	}
 
 	@Override
 	public ChannelPut createChannelPut(ChannelPutRequester channelPutRequester,
 			PVStructure pvRequest) {
-		channelPutRequester.channelPutConnect(notSupportedStatus, null, null, null);
+		channelPutRequester.channelPutConnect(notSupportedStatus, null, null);
 		return null;
 	}
 

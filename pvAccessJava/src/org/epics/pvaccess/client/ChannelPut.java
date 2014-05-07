@@ -22,12 +22,10 @@ public interface ChannelPut extends ChannelRequest {
      * If it fails ChannelPutRequester.putDone is called before put returns.
      * @param pvPutStructure The PVStructure that holds the putData.
      * @param putBitSet putPVStructure bit-set (selects what fields to put).
-     * @param lastRequest Is this the last request?
      */
-    void put(PVStructure pvPutStructure, BitSet bitSet, boolean lastRequest);
+    void put(PVStructure pvPutStructure, BitSet bitSet);
     /**
      * Get the current data.
-     * @param lastRequest Is this the last request?
      */
-    void get(boolean lastRequest);
+    void get();
 }

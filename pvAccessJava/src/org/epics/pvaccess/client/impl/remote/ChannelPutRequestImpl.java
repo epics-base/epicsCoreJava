@@ -45,6 +45,9 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	protected PVStructure data = null;
 	protected BitSet bitSet = null;
 	
+	protected PVStructure pvPutStructure = null;
+	protected BitSet putBitSet = null;
+
 	public static ChannelPutRequestImpl create(ChannelImpl channel,
 			ChannelPutRequester callback,
             PVStructure pvRequest)
@@ -76,7 +79,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelPutConnect(channelDestroyed, this, null, null);
+			callback.channelPutConnect(channelDestroyed, this, null);
 			destroy(true);
 		}
 	}
@@ -109,9 +112,13 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			try {
 				// put
 				// serialize only what has been changed
-				bitSet.serialize(buffer, control);
-				data.serialize(buffer, control, bitSet);
+				putBitSet.serialize(buffer, control);
+				pvPutStructure.serialize(buffer, control, bitSet);
 			}  finally {
+				// release references
+				putBitSet = null;
+				pvPutStructure = null;
+
 				unlock();
 			}
 		}
@@ -124,15 +131,9 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	 */
 	@Override
 	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		try {
-			callback.putDone(status);
-		} catch (Throwable th) {
-			// guard PVA code from exceptions
-			Writer writer = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(writer);
-			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught while calling a callback: " + writer, MessageType.fatalError);
-		}
+		// data (or at least completion status) available
+		if (QoS.GET.isSet(qos) || QoS.DEFAULT.isSet(qos))
+			normalResponse(transport, version, payloadBuffer, qos, status);
 	}
 
 	/* (non-Javadoc)
@@ -144,7 +145,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		{
 			if (!status.isSuccess())
 			{
-				callback.channelPutConnect(status, this, null, null);
+				callback.channelPutConnect(status, this, null);
 				return;
 			}
 			
@@ -158,7 +159,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			}
 			
 			// notify
-			callback.channelPutConnect(status, this, data, bitSet);
+			callback.channelPutConnect(status, this, data.getStructure());
 		}
 		catch (Throwable th)
 		{
@@ -181,22 +182,27 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			{
 				if (!status.isSuccess())
 				{
-					callback.getDone(status);
+					callback.getDone(status, this, null, null);
 					return;
 				}
 				
 				lock();
 				try {
+					/*
+					// !!! TODO deserialize bitSet and data
+					bitSet.deserialize(payloadBuffer, transport);
+					data.deserialize(payloadBuffer, transport, bitSet);
+					 */
 					data.deserialize(payloadBuffer, transport);
 				} finally {
 					unlock();
 				}		
 
-				callback.getDone(status);
+				callback.getDone(status, this, data, bitSet);
 			}
 			else
 			{
-				callback.putDone(status);
+				callback.putDone(status, this);
 			}
 		}
 		catch (Throwable th)
@@ -215,12 +221,12 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	@Override
 	public void get() {
 		if (destroyed) {
-			callback.getDone(destroyedStatus);
+			callback.getDone(destroyedStatus, this, null, null);
 			return;
 		}
 		
-		if (!startRequest(QoS.GET.getMaskValue())) {
-			callback.getDone(otherRequestPendingStatus);
+		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET.getMaskValue() : QoS.GET.getMaskValue())) {
+			callback.getDone(otherRequestPendingStatus, this, null, null);
 			return;
 		}
 		
@@ -228,30 +234,45 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.getDone(channelNotConnected);
+			callback.getDone(channelNotConnected, this, null, null);
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelPut#put(boolean)
-	 */
 	@Override
-	public void put(boolean lastRequest) {
+	public void put(PVStructure pvPutStructure, BitSet bitSet) {
 		if (destroyed) {
-			callback.putDone(destroyedStatus);
+			callback.putDone(destroyedStatus, this);
+			return;
+		}
+		
+		// TODO do we need to check for null or just let NPE happens
+		
+		if (!data.getStructure().equals(pvPutStructure.getStructure()))
+		{
+			callback.putDone(invalidPutStructureStatus, this);
+			return;
+		}
+		
+		if (bitSet.length() != data.getNumberFields())
+		{
+			callback.putDone(invalidBitSetLengthStatus, this);
 			return;
 		}
 		
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
-			callback.putDone(otherRequestPendingStatus);
+			callback.putDone(otherRequestPendingStatus, this);
 			return;
 		}
 		
 		try {
+			lock();
+			this.pvPutStructure = pvPutStructure;
+			this.putBitSet = bitSet;
+			unlock();
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.putDone(channelNotConnected);
+			callback.putDone(channelNotConnected, this);
 		}
 	}
 	

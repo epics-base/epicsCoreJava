@@ -22,6 +22,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.epics.pvaccess.client.ChannelPut;
 import org.epics.pvaccess.client.ChannelPutRequester;
 import org.epics.pvdata.factory.StatusFactory;
+import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.ByteArrayData;
 import org.epics.pvdata.pv.DoubleArrayData;
 import org.epics.pvdata.pv.FloatArrayData;
@@ -72,6 +73,8 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     private final ReentrantLock lock = new ReentrantLock();
 
     private volatile boolean isDestroyed = false;
+    private volatile boolean lastRequest = false;
+
     private volatile PVField pvField;
     private volatile PVInt pvIndex; // only if nativeDBRType.isENUM()
     private final ByteArrayData byteArrayData = new ByteArrayData();
@@ -106,7 +109,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
             jcaChannel.addConnectionListener(this);
         } catch (Throwable th) {
             elementCount = 1; pvField = null; pvIndex = null;
-            channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", th),null,null,null);
+            channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", th),this,null);
             destroy();
             return;
         }
@@ -120,7 +123,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     {
         if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
             elementCount = 1; pvField = null; pvIndex = null;
-            channelPutRequester.channelPutConnect(createChannelStructureStatus,null,null,null);
+            channelPutRequester.channelPutConnect(createChannelStructureStatus,this,null);
             destroy();
             return;
         }
@@ -131,7 +134,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         if(nativeDBRType.isENUM()) {
             if(elementCount!=1) {
                 pvIndex = null;
-                channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "array of ENUM not supported", null),null,null,null);
+                channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "array of ENUM not supported", null),this,null);
                 destroy();
                 return;
             }
@@ -141,7 +144,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         else
         	pvIndex = null;
         channelPutRequester.channelPutConnect(okStatus,this,
-            v3ChannelStructure.getPVStructure(),v3ChannelStructure.getBitSet());
+            v3ChannelStructure.getPVStructure().getStructure());
     }
     /* (non-Javadoc)
      * @see org.epics.ioc.ca.ChannelPut#destroy()
@@ -198,14 +201,12 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     }
     private void getDone(Status success) {
     	if (!isGetActive.getAndSet(false)) return;
-        channelPutRequester.getDone(success);
+        if (lastRequest) destroy();
+        channelPutRequester.getDone(success, this, v3ChannelStructure.getPVStructure(), v3ChannelStructure.getBitSet());
     }
     
-    /* (non-Javadoc)
-     * @see org.epics.pvaccess.client.ChannelPut#put(boolean)
-     */
     @Override
-    public void put(boolean lastRequest) {
+    public void put(PVStructure pvPutStructure, BitSet bitSet) {
         if(isDestroyed) {
     		putDone(channelDestroyedStatus);
             return;
@@ -214,6 +215,9 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     		putDone(channelNotConnectedStatus);
         	return;
         };
+        
+        /// TODO !!!! use pvPutStructure, bitSet
+        
         DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
         isActive.set(true);
         try {
@@ -311,7 +315,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
      * @see gov.aps.jca.event.PutListener#putCompleted(gov.aps.jca.event.PutEvent)
      */
     public void putCompleted(PutEvent event) {
-    	CAStatus caStatus = event.getStatus();
+        CAStatus caStatus = event.getStatus();
         if(!caStatus.isSuccessful()) {
             putDone(statusCreate.createStatus(StatusType.ERROR, caStatus.toString(), null));
             return;
@@ -347,7 +351,8 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     
     private void putDone(Status success) {
         if(!isActive.getAndSet(false)) return;
-        channelPutRequester.putDone(success);
+        if(lastRequest) destroy();
+        channelPutRequester.putDone(success,this);
     }
 
     @Override
@@ -364,5 +369,10 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
 	public void cancel() {
 		// noop, not supported
 	}
-	
+
+	@Override
+	public void lastRequest() {
+		lastRequest = true;
+	}
+
 }

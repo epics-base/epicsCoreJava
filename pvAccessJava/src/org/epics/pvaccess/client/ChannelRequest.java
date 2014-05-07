@@ -21,4 +21,10 @@ public interface ChannelRequest extends Lockable, Destroyable {
 	 * </ul>
 	 */
 	void cancel();
+	
+	/**
+	 * Announce next request as last request.
+	 * When last request will be completed (regardless of completion status) the remote and local instance will be destroyed.
+	 */
+	void lastRequest();
 }

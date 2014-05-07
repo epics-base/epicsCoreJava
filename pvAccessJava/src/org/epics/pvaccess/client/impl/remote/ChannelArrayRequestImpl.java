@@ -46,8 +46,11 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 
 	protected PVArray data;
 	
+	protected PVArray putData;
+	
 	protected int offset = 0;
 	protected int count = 0;
+	protected int stride = 0;
 	
 	protected int length = 0;
 	protected int capacity = 0;
@@ -106,16 +109,19 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			// pvRequest
 			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		}
+		// get
 		else if (QoS.GET.isSet(pendingRequest))
 		{
 			lock();
 			try {
 				SerializeHelper.writeSize(offset, buffer, control);
 				SerializeHelper.writeSize(count, buffer, control);
+				// TODO !!! SerializeHelper.writeSize(stride, buffer, control);
 			} finally {
 				unlock();
 			}
 		}
+		// setLength
 		else if (QoS.GET_PUT.isSet(pendingRequest))
 		{
 			lock();
@@ -126,14 +132,23 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 				unlock();
 			}
 		}
+		// getLength
+		else if (QoS.PROCESS.isSet(pendingRequest))
+		{
+			// no data
+		}
 		// put
 		else
 		{
 			lock();
 			try {
 				SerializeHelper.writeSize(offset, buffer, control);
-				data.serialize(buffer, control, 0, count != 0 ? count : data.getLength());	// put from 0 offset
+				// TODO !!! SerializeHelper.writeSize(stride, buffer, control);
+				putData.serialize(buffer, control, 0, count != 0 ? count : putData.getLength());	// put from 0 offset
 			} finally {
+				// release reference
+				putData = null;
+				
 				unlock();
 			}
 		}
@@ -146,8 +161,8 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	@Override
 	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data available (get with destroy)
-		if (QoS.GET.isSet(qos))
+		// data available (action with destroy)
+		// if (QoS.GET.isSet(qos))			// TODO !!! check
 			normalResponse(transport, version, payloadBuffer, qos, status);
 	}
 
@@ -175,7 +190,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			}
 		
 			// notify
-			callback.channelArrayConnect(status, this, data);
+			callback.channelArrayConnect(status, this, data.getArray());
 			
 		}
 		catch (Throwable th)
@@ -199,7 +214,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			{
 				if (!status.isSuccess())
 				{
-					callback.getArrayDone(status);
+					callback.getArrayDone(status, this, null);
 					return;
 				}
 					
@@ -209,16 +224,25 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 				} finally {
 					unlock();
 				}
-	
-				callback.getArrayDone(okStatus);
+				
+				
+				// do I need to allocate, to I need to hold data for ever?
+				callback.getArrayDone(okStatus, this, data);
 			}
 			else if (QoS.GET_PUT.isSet(qos))
 			{
-				callback.setLengthDone(status);
+				callback.setLengthDone(status, this);
+			}
+			else if (QoS.PROCESS.isSet(pendingRequest))
+			{
+				int length = SerializeHelper.readSize(payloadBuffer, transport);
+				int capacity = SerializeHelper.readSize(payloadBuffer, transport);
+
+				callback.getLengthDone(status, this, length, capacity);
 			}
 			else
 			{
-				callback.putArrayDone(status);
+				callback.putArrayDone(status, this);
 			}
 		} 
 		catch (Throwable th)
@@ -232,23 +256,25 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelArray#getArray(boolean, int, int)
+	 * @see org.epics.pvaccess.client.ChannelArray#getArray(int, int)
 	 */
 	@Override
-	public void getArray(boolean lastRequest, int offset, int count) {
+	public void getArray(int offset, int count, int stride) {
 		
 		if (offset < 0)
 			throw new IllegalArgumentException("offset < 0");
 		if (count < 0)
 			throw new IllegalArgumentException("count < 0");
+		if (stride < 0)
+			throw new IllegalArgumentException("stride < 0");
 		
 		if (destroyed) {
-			callback.getArrayDone(destroyedStatus);
+			callback.getArrayDone(destroyedStatus, this, null);
 			return;
 		}
 
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET.getMaskValue() : QoS.GET.getMaskValue())) {
-			callback.getArrayDone(otherRequestPendingStatus);
+			callback.getArrayDone(otherRequestPendingStatus, this, null);
 			return;
 		}
 		
@@ -256,54 +282,65 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			lock();
 			this.offset = offset;
 			this.count = count;
+			this.stride = stride;
 			unlock();
 
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.getArrayDone(channelNotConnected);
+			callback.getArrayDone(channelNotConnected, this, null);
 		}
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelArray#putArray(boolean, int, int)
+	 * @see org.epics.pvaccess.client.ChannelArray#putArray(PVArray, int, int, int)
 	 */
 	@Override
-	public void putArray(boolean lastRequest, int offset, int count) {
+	public void putArray(PVArray putArray, int offset, int count, int stride) {
 
 		if (offset < 0)
 			throw new IllegalArgumentException("offset < 0");
 		if (count < 0)
 			throw new IllegalArgumentException("count < 0");
+		if (stride < 0)
+			throw new IllegalArgumentException("stride < 0");
 
 		if (destroyed) {
-			callback.putArrayDone(destroyedStatus);
+			callback.putArrayDone(destroyedStatus, this);
+			return;
+		}
+
+		if (!putArray.getArray().equals(data.getArray()))
+		{
+			callback.putArrayDone(invalidPutArrayStatus, this);
 			return;
 		}
 
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
-			callback.putArrayDone(otherRequestPendingStatus);
+			callback.putArrayDone(otherRequestPendingStatus, this);
 			return;
 		}
 		
 		try {
 			lock();
+			this.putData = putArray;
 			this.offset = offset;
 			this.count = count;
+			this.stride = stride;
 			unlock();
 			
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.putArrayDone(channelNotConnected);
+			callback.putArrayDone(channelNotConnected, this);
 		}
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelArray#setLength(boolean, int, int)
+	 * @see org.epics.pvaccess.client.ChannelArray#setLength(int, int)
 	 */
 	@Override
-	public void setLength(boolean lastRequest, int length, int capacity) {
+	public void setLength(int length, int capacity) {
 		
 		if (length < 0)
 			throw new IllegalArgumentException("length < 0");
@@ -311,12 +348,12 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			throw new IllegalArgumentException("capacity < 0");
 
 		if (destroyed) {
-			callback.putArrayDone(destroyedStatus);
+			callback.putArrayDone(destroyedStatus, this);
 			return;
 		}
 
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET_PUT.getMaskValue() : QoS.GET_PUT.getMaskValue())) {
-			callback.setLengthDone(otherRequestPendingStatus);
+			callback.setLengthDone(otherRequestPendingStatus, this);
 			return;
 		}
 		
@@ -328,8 +365,29 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.setLengthDone(channelNotConnected);
+			callback.setLengthDone(channelNotConnected, this);
 		}
 	}
 
+	@Override
+	public void getLength() {
+		if (destroyed) {
+			callback.getLengthDone(destroyedStatus, this, 0, 0);
+			return;
+		}
+
+		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.PROCESS.getMaskValue() : QoS.PROCESS.getMaskValue())) {
+			callback.getLengthDone(otherRequestPendingStatus, this, 0, 0);
+			return;
+		}
+		
+		try {
+			channel.checkAndGetTransport().enqueueSendRequest(this);
+		} catch (IllegalStateException ise) {
+			stopRequest();
+			callback.getLengthDone(channelNotConnected, this, 0, 0);
+		}
+	}
+
+	
 }

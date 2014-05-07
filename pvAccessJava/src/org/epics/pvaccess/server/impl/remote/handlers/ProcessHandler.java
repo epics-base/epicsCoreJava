@@ -48,7 +48,7 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 	private static class ChannelProcessRequesterImpl extends BaseChannelRequester implements ChannelProcessRequester, TransportSender {
 		
 		private volatile ChannelProcess channelProcess;
-		private Status status;
+		private volatile Status status;
 		
 		public ChannelProcessRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				PVStructure pvRequest) {
@@ -70,10 +70,9 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 
 		@Override
 		public void channelProcessConnect(Status status, ChannelProcess channelProcess) {
-			synchronized (this) {
-				this.status = status;
-				this.channelProcess = channelProcess;
-			}
+			this.status = status;
+			this.channelProcess = channelProcess;
+
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -83,10 +82,8 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 		}
 		
 		@Override
-		public void processDone(Status status) {
-			synchronized (this) {
-				this.status = status;
-			}
+		public void processDone(Status status, ChannelProcess channelProcess) {
+			this.status = status;
 			transport.enqueueSendRequest(this);
 		}
 		
@@ -133,9 +130,7 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)16, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			synchronized (this) {
-				status.serialize(buffer, control);
-			}
+			status.serialize(buffer, control);
 
 			stopRequest();
 
@@ -203,7 +198,12 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 				return;
 			}
 			*/
-			request.getChannelProcess().process(lastRequest);
+			ChannelProcess channelProcess = request.getChannelProcess();
+			
+			if (lastRequest)
+				channelProcess.lastRequest();
+
+			channelProcess.process();
 		}
 		
 	}

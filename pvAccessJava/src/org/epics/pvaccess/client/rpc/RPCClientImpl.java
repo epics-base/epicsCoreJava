@@ -150,11 +150,12 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 		}
 		
 		try {
-			rpc.request(pvArgument, false);
+			rpc.request(pvArgument);
 		} catch (Throwable th) {
 			requestDone(
 					StatusFactory.getStatusCreate().createStatus(
 							StatusType.ERROR, "failed to send a RPC request", th),
+							rpc,
 							null
 						);
 		}
@@ -208,6 +209,7 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 			requestDone(
 					StatusFactory.getStatusCreate().createStatus(
 							StatusType.ERROR, "channel " + connectionState, null),
+							channelRPC,
 							null
 							);
 	}
@@ -230,7 +232,7 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 	}
 
 	@Override
-	public void requestDone(Status status, PVStructure result) {
+	public void requestDone(Status status, ChannelRPC channelRPC, PVStructure result) {
 		logger.finer("requestDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
 
 		requestPending.set(false);

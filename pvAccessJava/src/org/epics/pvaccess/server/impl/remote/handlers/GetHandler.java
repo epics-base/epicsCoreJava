@@ -31,6 +31,7 @@ import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * Get request handler.
@@ -51,7 +52,8 @@ public class GetHandler extends AbstractServerResponseHandler {
 		private volatile ChannelGet channelGet;
 		private volatile BitSet bitSet;
 		private volatile PVStructure pvStructure;
-		private Status status;
+		private volatile Structure structure;
+		private volatile Status status;
 		
 		public ChannelGetRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				 PVStructure pvRequest) {
@@ -71,14 +73,12 @@ public class GetHandler extends AbstractServerResponseHandler {
 		}
 		
 		@Override
-		public void channelGetConnect(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
-			synchronized (this)
-			{
-				this.bitSet = bitSet;
-				this.pvStructure = pvStructure;
-				this.status = status;
-				this.channelGet = channelGet;
-			}
+		public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
+			// will JVM optimize subsequent volatile sets?
+			this.status = status;
+			this.channelGet = channelGet;
+			this.structure = structure;
+			
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -88,11 +88,12 @@ public class GetHandler extends AbstractServerResponseHandler {
 		}
 
 		@Override
-		public void getDone(Status status) {
-			synchronized (this)
-			{
-				this.status = status;
-			}
+		public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
+			// will JVM optimize subsequent volatile sets?
+			this.status = status;
+			this.pvStructure = pvStructure;
+			this.bitSet = bitSet;
+			
 			transport.enqueueSendRequest(this);
 		}
 
@@ -139,17 +140,13 @@ public class GetHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)10, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			synchronized (this) {
-				status.serialize(buffer, control);
-			}
+			status.serialize(buffer, control);
 
 			if (status.isSuccess())
 			{
 				if (QoS.INIT.isSet(request))
 				{
-					synchronized (this) {
-						control.cachedSerialize(pvStructure != null ? pvStructure.getField() : null, buffer);
-					}
+					control.cachedSerialize(structure, buffer);
 				}
 				else
 				{
@@ -232,7 +229,12 @@ public class GetHandler extends AbstractServerResponseHandler {
 				return;
 			}
 			 */
-			request.getChannelGet().get(lastRequest);
+			ChannelGet channelGet = request.getChannelGet();
+			
+			if (lastRequest)
+				channelGet.lastRequest();
+			
+			channelGet.get();
 		}
 	}
 
