@@ -18,6 +18,12 @@ public interface PVField extends Requester,Serializable {
      */
     String getFieldName();
     /**
+     * Fully expand the name of this field using the
+     * names of its parent fields with a dot '.' separating
+     * each name.
+     */
+    String getFullName();
+    /**
      * Register the message requester.
      * At most one requester can be registered.
      * @param requester The requester.
