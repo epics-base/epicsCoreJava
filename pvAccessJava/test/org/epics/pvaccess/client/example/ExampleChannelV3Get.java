@@ -24,6 +24,7 @@ import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * ChannelGet example
@@ -58,7 +59,7 @@ public class ExampleChannelV3Get {
         ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
         Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
         
-        ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, channel, doneSignal);
+        ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, doneSignal);
         CreateRequest createRequest = CreateRequest.create();
     	PVStructure pvRequest = createRequest.createRequest(request);
     	if(pvRequest==null) {
@@ -109,15 +110,11 @@ public class ExampleChannelV3Get {
     static class ChannelGetRequesterImpl implements ChannelGetRequester
     {
     	private final Logger logger;
-    	private final Channel channel;
     	private final CountDownLatch doneSignaler;
     	
-		private volatile PVStructure pvStructure = null;
-   	
-    	public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler)
+    	public ChannelGetRequesterImpl(Logger logger, CountDownLatch doneSignaler)
     	{
     		this.logger = logger;
-    		this.channel = channel;
     		this.doneSignaler = doneSignaler;
     	}
 
@@ -133,20 +130,21 @@ public class ExampleChannelV3Get {
 		
 		@Override
 		public void channelGetConnect(Status status, ChannelGet channelGet,
-				PVStructure pvStructure, BitSet bitSet) {
-			logger.info("ChannelGet for '" + channel.getChannelName() + "' connected with status: " + status + ".");
+				Structure structure) {
+			logger.info("ChannelGet for '" + channelGet.getChannel().getChannelName() + "' connected with status: " + status + ".");
 			if (status.isSuccess())
 			{
-				this.pvStructure = pvStructure;
-				channelGet.get(true);
+				channelGet.lastRequest();
+				channelGet.get();
 			}
 			else
 				doneSignaler.countDown();
 		}
 
 		@Override
-		public void getDone(Status status) {
-			logger.info("getDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
+		public void getDone(Status status, ChannelGet channelGet,
+				PVStructure pvStructure, BitSet changedBitSet) {
+			logger.info("getDone for '" + channelGet.getChannel().getChannelName() + "' called with status: " + status + ".");
 
 			if (status.isSuccess())
 			{

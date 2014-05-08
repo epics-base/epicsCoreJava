@@ -193,4 +193,9 @@ implements ChannelGet,GetListener,ConnectionListener
 		lastRequest = true;
 	}
 	
+	@Override
+	public org.epics.pvaccess.client.Channel getChannel() {
+		return v3Channel;
+	}
+	
 }

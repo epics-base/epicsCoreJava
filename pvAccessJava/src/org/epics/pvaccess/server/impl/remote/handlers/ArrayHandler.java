@@ -17,6 +17,7 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.ChannelArray;
 import org.epics.pvaccess.client.ChannelArrayRequester;
 import org.epics.pvaccess.impl.remote.QoS;
@@ -28,7 +29,9 @@ import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.PVArray;
+import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -52,8 +55,13 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		private volatile ChannelArray channelArray;
 		
 		private volatile PVArray pvArray;
-		private Status status;
-		
+		private volatile int length;
+		private volatile int capacity;
+		private volatile Status status;
+
+		private volatile PVArray pvPutArray;
+		private volatile Array array;
+
 		public ChannelArrayRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 										 PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
@@ -71,16 +79,19 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			}
 		}
 		
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelArrayRequester#channelArrayConnect(Status, org.epics.pvaccess.client.ChannelArray, org.epics.pvdata.pv.PVArray)
+		/**
+		 * PVField factory.
 		 */
+		private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+
 		@Override
-		public void channelArrayConnect(Status status, ChannelArray channelArray, PVArray pvArray) {
-			synchronized (this) {
-				this.status = status;
-				this.pvArray = pvArray;
-				this.channelArray = channelArray;
-			}
+		public void channelArrayConnect(Status status, ChannelArray channelArray, Array array) {
+			this.status = status;
+			this.channelArray = channelArray;
+			this.array = array;
+			
+			pvPutArray = (PVArray)pvDataCreate.createPVField(array);
+
 			transport.enqueueSendRequest(this);
 			
 			// self-destruction
@@ -89,36 +100,31 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelArrayRequester#getArrayDone(Status)
-		 */
 		@Override
-		public void getArrayDone(Status status) {
-			synchronized (this) {
-				this.status = status;
-			}
+		public void getArrayDone(Status status, ChannelArray channelArray, PVArray pvArray) {
+			this.status = status;
+			this.pvArray = pvArray;
 			transport.enqueueSendRequest(this);
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelArrayRequester#putArrayDone(Status)
-		 */
 		@Override
-		public void putArrayDone(Status status) {
-			synchronized (this) {
-				this.status = status;
-			}
+		public void putArrayDone(Status status, ChannelArray channelArray) {
+			this.status = status;
 			transport.enqueueSendRequest(this);
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelArrayRequester#setLengthDone(org.epics.pvdata.pv.Status)
-		 */
 		@Override
-		public void setLengthDone(Status status) {
-			synchronized (this) {
-				this.status = status;
-			}
+		public void setLengthDone(Status status, ChannelArray channelArray) {
+			this.status = status;
+			transport.enqueueSendRequest(this);
+		}
+
+		@Override
+		public void getLengthDone(Status status, ChannelArray channelArray,
+				int length, int capacity) {
+			this.status = status;
+			this.length = length;
+			this.capacity = capacity;
 			transport.enqueueSendRequest(this);
 		}
 
@@ -143,7 +149,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		 * @return the pvArray
 		 */
 		public PVArray getPVArray() {
-			return pvArray;
+			return pvPutArray;
 		}
 		
 		/* (non-Javadoc)
@@ -172,9 +178,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)14, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			synchronized (this) {
-				status.serialize(buffer, control);
-			}
+			status.serialize(buffer, control);
 
 			if (status.isSuccess())
 			{
@@ -182,9 +186,14 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				{
 					pvArray.serialize(buffer, control);
 				}
+				else if (QoS.PROCESS.isSet(request))
+				{
+					SerializeHelper.writeSize(length, buffer, control);
+					SerializeHelper.writeSize(capacity, buffer, control);
+				}
 				else if (QoS.INIT.isSet(request))
 				{
-					control.cachedSerialize(pvArray != null ? pvArray.getField() : null, buffer);
+					control.cachedSerialize(array, buffer);
 				}
 			}
 			
@@ -233,6 +242,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			final boolean lastRequest = QoS.DESTROY.isSet(qosCode);
 			final boolean get = QoS.GET.isSet(qosCode);
 			final boolean setLength = QoS.GET_PUT.isSet(qosCode);
+			final boolean getLength = QoS.PROCESS.isSet(qosCode);
 			
 			ChannelArrayRequesterImpl request = (ChannelArrayRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
@@ -245,26 +255,36 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				return;
 			}
 	
+			ChannelArray channelArray = request.getChannelArray();
+			if (lastRequest)
+				channelArray.lastRequest();
 
 			if (get)
 			{
 				final int offset = SerializeHelper.readSize(payloadBuffer, transport);
 				final int count = SerializeHelper.readSize(payloadBuffer, transport);
-				request.getChannelArray().getArray(lastRequest, offset, count);
+				final int stride = 1; // TODO !!! SerializeHelper.readSize(payloadBuffer, transport);
+				channelArray.getArray(offset, count, stride);
 			}
 			else if (setLength)
 			{
 				final int length = SerializeHelper.readSize(payloadBuffer, transport);
 				final int capacity = SerializeHelper.readSize(payloadBuffer, transport);
-				request.getChannelArray().setLength(lastRequest, length, capacity);
+				channelArray.setLength(length, capacity);
+			}
+			else if (getLength)
+			{
+				channelArray.getLength();
 			}
 			else
 			{
 				// deserialize data to put
 				final int offset = SerializeHelper.readSize(payloadBuffer, transport);
+				final int stride = 1; // TODO !!! SerializeHelper.readSize(payloadBuffer, transport);
+				// no count, we do not want to send extra data
 				final PVArray array = request.getPVArray();
 				array.deserialize(payloadBuffer, transport);
-				request.getChannelArray().putArray(lastRequest, offset, array.getLength());
+				channelArray.putArray(array, offset, array.getLength(), stride);
 			}
 		}
 	}

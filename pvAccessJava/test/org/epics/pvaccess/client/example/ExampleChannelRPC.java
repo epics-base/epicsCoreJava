@@ -59,7 +59,7 @@ public class ExampleChannelRPC {
         ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
         Channel channel = channelProvider.createChannel("sum", channelRequester, ChannelProvider.PRIORITY_DEFAULT);
         
-        ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl(logger, channel);
+        ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl(logger);
 		channel.createChannelRPC(
 				channelRPCRequester,
 				null
@@ -113,17 +113,15 @@ public class ExampleChannelRPC {
     static class ChannelRPCRequesterImpl implements ChannelRPCRequester
     {
     	private final Logger logger;
-    	private final Channel channel;
     	private final CountDownLatch connectedSignaler = new CountDownLatch(1);
     	private final Semaphore doneSemaphore = new Semaphore(0);
     	
     	private volatile ChannelRPC channelRPC = null;
     	private volatile PVStructure result = null;
     	
-    	public ChannelRPCRequesterImpl(Logger logger, Channel channel)
+    	public ChannelRPCRequesterImpl(Logger logger)
     	{
     		this.logger = logger;
-    		this.channel = channel;
    	}
 
 		@Override
@@ -138,7 +136,7 @@ public class ExampleChannelRPC {
 		
 		@Override
 		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
-			logger.info("ChannelRPC for '" + channel.getChannelName() + "' connected with status: " + status + ".");
+			logger.info("ChannelRPC for '" + channelRPC.getChannel().getChannelName() + "' connected with status: " + status + ".");
 			boolean reconnect = (this.channelRPC != null);
 			this.channelRPC = channelRPC;
 
@@ -165,8 +163,8 @@ public class ExampleChannelRPC {
 		}
 		
 		@Override
-		public void requestDone(Status status, PVStructure result) {
-			logger.info("requestDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
+		public void requestDone(Status status, ChannelRPC channelRPC, PVStructure result) {
+			logger.info("requestDone for '" + channelRPC.getChannel().getChannelName() + "' called with status: " + status + ".");
 
 			this.result = result;
 			doneSemaphore.release();
@@ -184,7 +182,7 @@ public class ExampleChannelRPC {
 			if (rpc == null)
 				throw new IllegalStateException("ChannelRPC never connected.");
 
-			rpc.request(pvArgument, false);
+			rpc.request(pvArgument);
 			// use tryAcquire if you need timeout support
 			doneSemaphore.acquire(1);
 			return result;

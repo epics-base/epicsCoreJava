@@ -12,6 +12,13 @@ import org.epics.pvdata.misc.Destroyable;
  * @author mse
  */
 public interface ChannelRequest extends Lockable, Destroyable {
+	
+	/**
+	 * Get a channel instance this request belongs to.
+	 * @return the channel instance.
+	 */
+	Channel getChannel();
+	
 	/**
 	 * Cancel any pending request.
 	 * Completion will be reported via request's response callback:

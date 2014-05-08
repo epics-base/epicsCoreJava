@@ -15,11 +15,13 @@ import org.epics.pvaccess.client.ChannelPut;
 import org.epics.pvaccess.client.ChannelPutRequester;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.CreateRequest;
+import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * TODO cleanup
@@ -66,17 +68,12 @@ public class ExampleChannelPutDoubleValue {
         private final ChannelProvider channelProvider;
         private final Channel channel;
         private boolean done = false;
-        private ChannelPut channelPut = null;
-        private PVStructure pvStructure = null;
-        private BitSet bitSet = null;
 
         Client(String channelName,PVStructure pvRequest) {
         	this.pvRequest = pvRequest;
             channelProvider = channelAccess.getProvider(providerName);
             channel = channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
         }
-        
-        
       
         public void waitUntilDone(long timeoutMs) {
         	System.out.println("waiting");
@@ -127,36 +124,27 @@ public class ExampleChannelPutDoubleValue {
 		 */
 		@Override
 		public void channelPutConnect(Status status, ChannelPut channelPut,
-				PVStructure pvStructure, BitSet bitSet) {
+				Structure structure) {
             if(!status.isSuccess()) {
                 message("channelPutConnect " + status.getMessage(),MessageType.error);
                 done();
                 return;
             }
-            synchronized(this) {
-                this.channelPut = channelPut;
-                this.pvStructure = pvStructure;
-                this.bitSet = bitSet;
-            }
             
-            PVDouble val = this.pvStructure.getDoubleField("value");
-            channelPut.lock();
-            try {
-	            this.bitSet.set(val.getFieldOffset());
-	            val.put(Math.random()*10);
-            } finally {
-            	channelPut.unlock();
-            }
-            this.channelPut.put(true);
+            
+            PVStructure pvStructure = PVDataFactory.getPVDataCreate().createPVStructure(structure);
+            BitSet bitSet = new BitSet(pvStructure.getNumberFields());
+            
+            PVDouble val = pvStructure.getDoubleField("value");
+            bitSet.set(val.getFieldOffset());
+            val.put(Math.random()*10);
+            
+            channelPut.lastRequest();
+            channelPut.put(pvStructure, bitSet);
 		}
 
-
-
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelPutRequester#putDone(org.epics.pvdata.pv.Status)
-		 */
 		@Override
-		public void putDone(Status status) {
+		public void putDone(Status status, ChannelPut channelPut) {
             if(!status.isSuccess()) {
                 message("putDone " + status.getMessage(),MessageType.error);
                 done();
@@ -184,9 +172,12 @@ public class ExampleChannelPutDoubleValue {
             }
         }
 
+
+
 		@Override
-		public void getDone(Status status) {
-			// TODO Auto-generated method stub
+		public void getDone(Status status, ChannelPut channelPut,
+				PVStructure pvStructure, BitSet bitSet) {
+			// not used
 		}
         
     }

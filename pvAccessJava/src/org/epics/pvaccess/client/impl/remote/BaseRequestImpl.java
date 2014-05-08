@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.epics.pvaccess.PVFactory;
+import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
@@ -391,5 +392,9 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 
 	public void lastRequest() {
 		lastRequest = true;
+	}
+
+	public Channel getChannel() {
+		return channel;
 	}
 }

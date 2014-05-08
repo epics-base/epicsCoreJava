@@ -24,6 +24,7 @@ import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * ChannelGet example
@@ -117,8 +118,6 @@ public class ExampleChannelGet {
     	private final Channel channel;
     	private final CountDownLatch doneSignaler;
     	
-		private volatile PVStructure pvStructure = null;
-   	
     	public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler)
     	{
     		this.logger = logger;
@@ -137,20 +136,19 @@ public class ExampleChannelGet {
 		}
 		
 		@Override
-		public void channelGetConnect(Status status, ChannelGet channelGet,
-				PVStructure pvStructure, BitSet bitSet) {
+		public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
 			logger.info("ChannelGet for '" + channel.getChannelName() + "' connected with status: " + status + ".");
 			if (status.isSuccess())
 			{
-				this.pvStructure = pvStructure;
-				channelGet.get(true);
+				channelGet.lastRequest();
+				channelGet.get();
 			}
 			else
 				doneSignaler.countDown();
 		}
 
 		@Override
-		public void getDone(Status status) {
+		public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet changedBitSet) {
 			logger.info("getDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
 
 			if (status.isSuccess())

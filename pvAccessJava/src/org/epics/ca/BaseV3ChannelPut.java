@@ -374,5 +374,10 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
 	public void lastRequest() {
 		lastRequest = true;
 	}
+	
+	@Override
+	public org.epics.pvaccess.client.Channel getChannel() {
+		return v3Channel;
+	}
 
 }

@@ -123,10 +123,12 @@ public class RPCChannel implements Channel {
 	private class ChannelRPCImpl implements ChannelRPC
 	{
 		private final ChannelRPCRequester channelRPCRequester;
+		private final Channel channel;
 		private volatile boolean lastRequest = false;
 
 		
-		public ChannelRPCImpl(ChannelRPCRequester channelRPCRequester) {
+		public ChannelRPCImpl(Channel channel, ChannelRPCRequester channelRPCRequester) {
+			this.channel = channel;
 			this.channelRPCRequester = channelRPCRequester;
 			
 			// add to the list, careful: "this" in the constructor
@@ -138,6 +140,11 @@ public class RPCChannel implements Channel {
 		public void lastRequest()
 		{
 			lastRequest = true;
+		}
+		
+		public Channel getChannel()
+		{
+			return channel;
 		}
 
 		private void processRequest(PVStructure pvArgument)
@@ -238,7 +245,7 @@ public class RPCChannel implements Channel {
 			return null;
 		}
 		
-		ChannelRPCImpl channelRPCImpl = new ChannelRPCImpl(channelRPCRequester);
+		ChannelRPCImpl channelRPCImpl = new ChannelRPCImpl(this, channelRPCRequester);
 		channelRPCRequester.channelRPCConnect(okStatus, channelRPCImpl);
 		return channelRPCImpl;
 	}

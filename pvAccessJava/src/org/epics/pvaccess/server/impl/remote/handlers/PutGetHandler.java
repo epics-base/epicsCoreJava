@@ -17,8 +17,10 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.ChannelPutGet;
 import org.epics.pvaccess.client.ChannelPutGetRequester;
+import org.epics.pvaccess.client.impl.remote.BaseRequestImpl;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
@@ -28,6 +30,7 @@ import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -51,11 +54,14 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 	private static class ChannelPutGetRequesterImpl extends BaseChannelRequester implements ChannelPutGetRequester, TransportSender {
 		
 		private volatile ChannelPutGet channelPutGet;
-		//private volatile PVStructure pvPutStructure;
-		//private volatile BitSet pvPutBitSet;
-		//private volatile PVStructure pvGetStructure;
-		//private volatile BitSet pvGetBitSet;
+		private volatile PVStructure pvPutStructure;
+		private volatile BitSet pvPutBitSet;
+		private volatile PVStructure pvGetStructure;
+		private volatile BitSet pvGetBitSet;
 		private volatile Status status;
+
+		private volatile PVStructure pvPutGetStructure;
+		private volatile BitSet pvPutGetBitSet;
 
 		private volatile Structure putStructure;
 		private volatile Structure getStructure;
@@ -77,6 +83,11 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			}
 		}
 
+		/**
+		 * PVField factory.
+		 */
+		private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+
 		@Override
 		public void channelPutGetConnect(Status status, ChannelPutGet channelPutGet,
 				Structure putStructure, Structure getStructure) {
@@ -85,6 +96,9 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			this.channelPutGet = channelPutGet;
 			this.putStructure = putStructure;
 			this.getStructure = getStructure;
+			
+			this.pvPutGetStructure = pvDataCreate.createPVStructure(putStructure);
+			this.pvPutGetBitSet = BaseRequestImpl.createBitSetFor(pvPutGetStructure, pvPutGetBitSet);
 			
 			transport.enqueueSendRequest(this);
 
@@ -95,29 +109,29 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		}
 
 		@Override
-		public void getGetDone(Status status) {
-			synchronized (this)
-			{
-				this.status = status;
-			}
+		public void getGetDone(Status status, ChannelPutGet channelPutGet,
+				PVStructure pvGetStructure, BitSet pvGetBitSet) {
+			this.status = status;
+			this.pvGetStructure = pvGetStructure;
+			this.pvGetBitSet = pvGetBitSet;
 			transport.enqueueSendRequest(this);
 		}
 
 		@Override
-		public void getPutDone(Status status) {
-			synchronized (this)
-			{
-				this.status = status;
-			}
+		public void getPutDone(Status status, ChannelPutGet channelPutGet,
+				PVStructure pvPutStructure, BitSet pvPutBitSet) {
+			this.status = status;
+			this.pvPutStructure = pvPutStructure;
+			this.pvPutBitSet = pvPutBitSet;
 			transport.enqueueSendRequest(this);
 		}
 
 		@Override
-		public void putGetDone(Status status) {
-			synchronized (this)
-			{
-				this.status = status;
-			}
+		public void putGetDone(Status status, ChannelPutGet channelPutGet,
+				PVStructure pvGetStructure, BitSet pvGetBitSet) {
+			this.status = status;
+			this.pvGetStructure = pvGetStructure;
+			this.pvGetBitSet = pvGetBitSet;
 			transport.enqueueSendRequest(this);
 		}
 
@@ -138,13 +152,14 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			return channelPutGet;
 		}
 
-		/**
-		 * @return the pvPutStructure
-		 */
 		public PVStructure getPVPutStructure() {
-			return pvPutStructure;
+			return pvPutGetStructure;
 		}
 		
+		public BitSet getPVPutBitSet() {
+			return pvPutGetBitSet;
+		}
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
@@ -171,9 +186,7 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)12, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			synchronized (this) {
-				status.serialize(buffer, control);
-			}
+			status.serialize(buffer, control);
 
 			if (status.isSuccess())
 			{
@@ -184,14 +197,20 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 				}
 				else if (QoS.GET.isSet(request))
 				{
+					// TODO !! pvGetBitSet.serialize(buffer, control);
+					// pvGetStructure.serialize(buffer, control, pvGetBitSet);
 					pvGetStructure.serialize(buffer, control);
 				}
 				else if (QoS.GET_PUT.isSet(request))
 				{
+					// TODO !! pvPutBitSet.serialize(buffer, control);
+					//pvPutStructure.serialize(buffer, control, pvPutBitSet);
 					pvPutStructure.serialize(buffer, control);
 				}
 				else
 				{
+					// TODO !! pvGetBitSet.serialize(buffer, control);
+					// pvGetStructure.serialize(buffer, control, pvGetBitSet);
 					pvGetStructure.serialize(buffer, control);
 				}
 			}
@@ -283,20 +302,28 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 				return;
 			}
 			*/
-
+			
+			ChannelPutGet channelPutGet = request.getChannelPutGet();
+			if (lastRequest)
+				channelPutGet.lastRequest();
+			
 			if (getGet)
 			{
-				request.getChannelPutGet().getGet();
+				channelPutGet.getGet();
 			}
 			else if (getPut)
 			{
-				request.getChannelPutGet().getPut();
+				channelPutGet.getPut();
 			}
 			else
 			{
 				// deserialize put data
-				request.getPVPutStructure().deserialize(payloadBuffer, transport);
-				request.getChannelPutGet().putGet(lastRequest);
+				final BitSet bitSet = request.getPVPutBitSet();
+				final PVStructure pvStructure = request.getPVPutStructure();
+				// TODO !!!bitSet.deserialize(payloadBuffer, transport);
+				//pvStructure.deserialize(payloadBuffer, transport, bitSet);
+				pvStructure.deserialize(payloadBuffer, transport);
+				channelPutGet.putGet(pvStructure, bitSet);
 			}
 		}
 	}
