@@ -695,7 +695,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelGet channelGet;
 		BitSet bitSet;
 		PVStructure pvStructure;
-
+		Structure structure;
+		
 		private Boolean connected = null;
 		private Boolean success = null;
 		
@@ -703,6 +704,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
 			synchronized (this) {
 				this.channelGet = channelGet;
+				this.structure = structure;
 
 				connected = new Boolean(status.isOK());
 				this.notify();
@@ -729,8 +731,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				assertNotNull("channel get connect timeout", connected);
 				if (expectedSuccess) {
 					assertTrue("channel get failed to connect", connected.booleanValue());
-					assertNotNull(pvStructure);
-					assertNotNull(bitSet);
+					assertNotNull(channelGet);
+					assertNotNull(structure);
 				}
 				else {
 					assertFalse("channel get has not failed to connect", connected.booleanValue());
@@ -795,6 +797,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	{
 		ChannelPut channelPut;
 		PVStructure pvStructure;
+		Structure structure;
 		BitSet bitSet;
 
 		private Boolean connected = null;
@@ -804,7 +807,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
 			synchronized (this) {
 				this.channelPut = channelPut;
-				// TODO store and test structure
+				this.structure = structure;
 				
 				connected = new Boolean(status.isOK());
 				this.notify();
@@ -831,8 +834,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				assertNotNull("channel put connect timeout", connected);
 				if (expectedSuccess) {
 					assertTrue("channel put failed to connect", connected.booleanValue());
-					assertNotNull(pvStructure);
-					assertNotNull(bitSet);
+					assertNotNull(channelPut);
+					assertNotNull(structure);
 				}
 				else {
 					assertFalse("channel put has not failed to connect", connected.booleanValue());
@@ -871,12 +874,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 		
-		public void syncPut(boolean lastRequest)
+		public void syncPut(boolean lastRequest, PVStructure pvPutStructure, BitSet pvPutBitSet)
 		{
-			syncPut(lastRequest, true);
+			syncPut(lastRequest, pvPutStructure, pvPutBitSet, true);
 		}
 		
-		public void syncPut(boolean lastRequest, boolean expectedSuccess)
+		public void syncPut(boolean lastRequest, PVStructure pvPutStructure, BitSet pvPutBitSet, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
@@ -885,7 +888,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				success = null;
 				if (lastRequest)
 					channelPut.lastRequest();
-				channelPut.put();
+				channelPut.put(pvPutStructure, pvPutBitSet);
 				
 				try {
 					if (success == null)
@@ -927,6 +930,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelPutGet channelPutGet;
 		PVStructure pvPutStructure;
 		PVStructure pvGetStructure;
+		// TODO
+		//BitSet pvPutBitSet;
+		//BitSet pvGetBitSet;
+
+		Structure putStructure;
+		Structure getStructure;
 
 		private Boolean connected = null;
 		private Boolean success = null;
@@ -942,8 +951,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			synchronized (this)
 			{
 				this.channelPutGet = channelPutGet;
-				//this.putStructure = putStructure;
-				//this.getStructure = getStructure;
+				this.putStructure = putStructure;
+				this.getStructure = getStructure;
 
 				connected = new Boolean(status.isOK());
 				this.notify();
@@ -971,8 +980,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				assertNotNull("channel put-get connect timeout", connected);
 				if (expectedSuccess) {
 					assertTrue("channel put-get failed to connect", connected.booleanValue());
-					assertNotNull(pvPutStructure);
-					assertNotNull(pvGetStructure);
+					assertNotNull(channelPutGet);
+					assertNotNull(putStructure);
+					assertNotNull(getStructure);
 				} else {
 					assertFalse("channel put-get has not failed to connect", connected.booleanValue());
 					assertNull(pvPutStructure);
@@ -981,12 +991,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
-		public void syncPutGet(boolean lastRequest)
+		public void syncPutGet(boolean lastRequest, PVStructure pvPutGetStructure, BitSet pvPutGetBitSet)
 		{
-			syncPutGet(lastRequest, true);
+			syncPutGet(lastRequest, pvPutGetStructure, pvPutGetBitSet, true);
 		}
 		
-		public void syncPutGet(boolean lastRequest, boolean expectedSuccess)
+		public void syncPutGet(boolean lastRequest,
+				PVStructure pvPutGetStructure, BitSet pvPutGetBitSet, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
@@ -995,7 +1006,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				success = null;
 				if (lastRequest)
 					channelPutGet.lastRequest();
-				channelPutGet.putGet();
+				channelPutGet.putGet(pvPutGetStructure, pvPutGetBitSet);
 				
 				try {
 					if (success == null)
@@ -1384,6 +1395,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 		ChannelArray channelArray;
 		PVArray pvArray;
+		Array array;
 		
 		int length = -1;
 		int capacity = -1;
@@ -1396,6 +1408,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			synchronized (this)
 			{
 				this.channelArray = channelArray;
+				this.array = array;
 				connected = new Boolean(status.isOK());
 				this.notify();
 			}
@@ -1422,7 +1435,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				if (expectedSuccess)
 				{
 					assertTrue("channel array failed to connect", connected.booleanValue());
-					assertNotNull(pvArray);
+					assertNotNull(channelArray);
+					assertNotNull(array);
 				}
 				else
 				{
@@ -1441,12 +1455,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
-		public void syncGet(boolean lastRequest, int offset, int count)
+		public void syncGet(boolean lastRequest, int offset, int count, int stride)
 		{
-			syncGet(lastRequest, offset, count, true);
+			syncGet(lastRequest, offset, count, stride, true);
 		}
 		
-		public void syncGet(boolean lastRequest, int offset, int count, boolean expectedSuccess)
+		public void syncGet(boolean lastRequest, int offset, int count, int stride, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
@@ -1456,7 +1470,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				if (lastRequest)
 					channelArray.lastRequest();
 				// TODO stride
-				channelArray.getArray(offset, count, 1);
+				channelArray.getArray(offset, count, stride);
 				
 				try {
 					if (success == null)
@@ -1481,12 +1495,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
-		public void syncPut(boolean lastRequest, int offset, int count)
+		public void syncPut(boolean lastRequest, PVArray pvArray, int offset, int count, int stride)
 		{
-			syncPut(lastRequest, offset, count, true);
+			syncPut(lastRequest, pvArray, offset, count, stride, true);
 		}
 
-		public void syncPut(boolean lastRequest, int offset, int count, boolean expectedSuccess)
+		public void syncPut(boolean lastRequest, PVArray pvArray, int offset, int count, int stride, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
@@ -1495,7 +1509,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				success = null;
 				if (lastRequest)
 					channelArray.lastRequest();
-				channelArray.putArray(offset, count);
+				channelArray.putArray(pvArray, offset, count, stride);
 				
 				try {
 					if (success == null)
@@ -1787,11 +1801,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelGetRequester.waitAndCheckConnect();
 		
 		//assertEquals("get-test", channelGetRequester.pvStructure.getFullName());
+		channelGetRequester.syncGet(false);
 		PVInt value = channelGetRequester.pvStructure.getIntField("value");
 		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
 		assertTrue(pvTimeStamp.attach(channelGetRequester.pvStructure.getStructureField("timeStamp")));
 		TimeStamp timestamp = TimeStampFactory.create();
-		channelGetRequester.syncGet(false);
 		pvTimeStamp.get(timestamp);
 		// only first bit must be set
 		assertEquals(1, channelGetRequester.bitSet.cardinality());
@@ -1898,7 +1912,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			//ch.disconnect();
 			ch.destroy();
-			channelPutRequester.syncPut(false, false);
+			channelPutRequester.syncPut(false, null, null, false);
 		}
 	}
 	
@@ -1917,6 +1931,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		//assertEquals("put-test", channelPutRequester.pvStructure.getFullName());
 
+		channelPutRequester.syncGet();
+		
 		// set and get test
 		PVDouble value = channelPutRequester.pvStructure.getDoubleField("value");
 		assertNotNull(value);
@@ -1924,7 +1940,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		value.put(INIT_VAL);
 		channelPutRequester.bitSet.set(value.getFieldOffset());
 		
-		channelPutRequester.syncPut(false);
+		channelPutRequester.syncPut(false, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 		// TODO should put bitSet be reset here
 		//assertEquals(0, channelPutRequester.bitSet.cardinality());
 		channelPutRequester.syncGet();
@@ -1935,7 +1951,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// unless it is shared and local
 		value.put(INIT_VAL+2);
 		channelPutRequester.bitSet.clear();
-		channelPutRequester.syncPut(false);
+		channelPutRequester.syncPut(false, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 		channelPutRequester.syncGet();
 		if (share && isLocal())
 			assertEquals(INIT_VAL+2, value.get());
@@ -1945,16 +1961,16 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// now should change
 		value.put(INIT_VAL+1);
 		channelPutRequester.bitSet.set(value.getFieldOffset());
-		channelPutRequester.syncPut(false);
+		channelPutRequester.syncPut(false, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 		channelPutRequester.syncGet();
 		assertEquals(INIT_VAL+1, value.get());
 
 		// destroy
-		channelPutRequester.syncPut(true);
+		channelPutRequester.syncPut(true, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 
 		channelPutRequester.channelPut.destroy();
 		// this must fail (callback with unsuccessful completion status)
-		channelPutRequester.syncPut(true, false);
+		channelPutRequester.syncPut(true, channelPutRequester.pvStructure, channelPutRequester.bitSet, false);
 	}
 
 	private void channelPutTestIntProcess(Channel ch, boolean share) throws Throwable
@@ -1972,6 +1988,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		
 		//assertEquals("put-test", channelPutRequester.pvStructure.getFullName());
 
+		channelPutRequester.syncGet();
+		
 		// set and get test
 		PVInt value = channelPutRequester.pvStructure.getIntField("value");
 		assertNotNull(value);
@@ -1979,7 +1997,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		value.put(INIT_VAL);
 		channelPutRequester.bitSet.set(value.getFieldOffset());
 		
-		channelPutRequester.syncPut(false);
+		channelPutRequester.syncPut(false, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 		// TODO should put bitSet be reset here
 		//assertEquals(0, channelPutRequester.bitSet.cardinality());
 		channelPutRequester.syncGet();
@@ -1989,7 +2007,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// value should change only due to process
 		value.put(INIT_VAL+3);
 		channelPutRequester.bitSet.clear();
-		channelPutRequester.syncPut(false);
+		channelPutRequester.syncPut(false, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 		channelPutRequester.syncGet();
 		if (share && isLocal())
 			assertEquals(INIT_VAL+4, value.get());
@@ -1997,11 +2015,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			assertEquals(INIT_VAL+2, value.get());
 		
 		// destroy
-		channelPutRequester.syncPut(true);
+		channelPutRequester.syncPut(true, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 
 		channelPutRequester.channelPut.destroy();
 		// this must fail (callback with unsuccessful completion status)
-		channelPutRequester.syncPut(true, false);
+		channelPutRequester.syncPut(true, channelPutRequester.pvStructure, channelPutRequester.bitSet, false);
 	}
 
 	public void testChannelGetField() throws Throwable
@@ -2253,7 +2271,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			//ch.disconnect();
 			ch.destroy();
-			channelPutGetRequester.syncPutGet(false, false);
+			channelPutGetRequester.syncPutGet(false, null, null, false);
 			channelPutGetRequester.syncGetGet(false);
 			channelPutGetRequester.syncGetPut(false);
 		}
@@ -2275,6 +2293,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		//assertEquals("put-test", channelPutGetRequester.pvPutStructure.getFullName());
 		//assertEquals("get-test", channelPutGetRequester.pvGetStructure.getFullName());
 
+		channelPutGetRequester.syncGetPut();
+		channelPutGetRequester.syncGetGet();
+		
 		// set and get test
 		PVDouble putValue = channelPutGetRequester.pvPutStructure.getDoubleField("value");
 		assertNotNull(putValue);
@@ -2284,13 +2305,15 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		PVDouble getValue = channelPutGetRequester.pvGetStructure.getDoubleField("value");
 		assertNotNull(getValue);
 
-		
-		channelPutGetRequester.syncPutGet(false);
+		BitSet entireStructure = new BitSet(channelPutGetRequester.pvPutStructure.getNumberFields());
+		entireStructure.set(0);
+			
+		channelPutGetRequester.syncPutGet(false, channelPutGetRequester.pvPutStructure, entireStructure);
 		assertEquals(INIT_VAL, getValue.get());
 
 		// again
 		putValue.put(INIT_VAL+1);
-		channelPutGetRequester.syncPutGet(false);
+		channelPutGetRequester.syncPutGet(false, channelPutGetRequester.pvPutStructure, entireStructure);
 		assertEquals(INIT_VAL+1, getValue.get());
 
 		// test get-put
@@ -2302,11 +2325,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// TODO
 		
 		// destroy
-		channelPutGetRequester.syncPutGet(true);
+		channelPutGetRequester.syncPutGet(true, channelPutGetRequester.pvPutStructure, entireStructure);
 
 		channelPutGetRequester.channelPutGet.destroy();
 		// this must fail (callback with unsuccessful completion status)
-		channelPutGetRequester.syncPutGet(true, false);
+		channelPutGetRequester.syncPutGet(true, channelPutGetRequester.pvPutStructure, entireStructure, false);
 	}
 
 	private void channelPutGetTestIntProcess(Channel ch, boolean share) throws Throwable
@@ -2325,6 +2348,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		//assertEquals("put-test", channelPutGetRequester.pvPutStructure.getFullName());
 		//assertEquals("get-test", channelPutGetRequester.pvGetStructure.getFullName());
 
+		channelPutGetRequester.syncGetPut();
+		channelPutGetRequester.syncGetGet();
+
+		BitSet entireStructure = new BitSet(channelPutGetRequester.pvPutStructure.getNumberFields());
+		entireStructure.set(0);
+
+		
 		// set and get test
 		PVInt putValue = channelPutGetRequester.pvPutStructure.getIntField("value");
 		assertNotNull(putValue);
@@ -2352,7 +2382,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			// 2 seconds to have different timestamps
 			Thread.sleep(1500);
 			
-			channelPutGetRequester.syncPutGet(i == TIMES);
+			channelPutGetRequester.syncPutGet(i == TIMES, channelPutGetRequester.pvPutStructure, entireStructure);
 	        pvTimeStamp.get(timestamp);
 
 	        // changes of value and timeStamp; something is not right here...
@@ -2362,7 +2392,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 		channelPutGetRequester.channelPutGet.destroy();
 		// this must fail (callback with unsuccessful completion status)
-		channelPutGetRequester.syncPutGet(true, false);
+		channelPutGetRequester.syncPutGet(true, channelPutGetRequester.pvPutStructure, entireStructure, false);
 	}
 	
 	public void testChannelRPC() throws Throwable
@@ -2531,9 +2561,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    channelArrayRequester.waitAndCheckConnect();
 	    
 	    // test get
+	    channelArrayRequester.syncGet(true, 1, 2, 1);
 	    PVDoubleArray array = (PVDoubleArray)channelArrayRequester.pvArray;
 	    DoubleArrayData data = new DoubleArrayData();
-	    channelArrayRequester.syncGet(true, 1, 2);
 	    int count = array.get(0, 100, data);
 	    assertEquals(2, count);
 	    assertEquals(2.2, data.data[0]);
@@ -2543,7 +2573,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 		channelArrayRequester.channelArray.destroy();
 		// this must fail (callback with unsuccessful completion status)
-		channelArrayRequester.syncGet(true, 1, 2, false);
+		channelArrayRequester.syncGet(true, 1, 2, 1, false);
 	    
     	//pvFieldName.put("value");
 	    ch = syncCreateChannel("arrayDouble");
@@ -2552,19 +2582,20 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    channelArrayRequester.waitAndCheckConnect();
 	    
 	    // test put
-	    PVDoubleArray doubleArray = (PVDoubleArray)channelArrayRequester.pvArray;
 	    final double[] ARRAY_VALUE = new double[] { 1.1, 2.2, 3.3, 4.4, 5.5 }; 
+	    channelArrayRequester.syncGet(false, 0, ARRAY_VALUE.length /*0*/, 1); // this allows multiple runs on the same JavaIOC
+	    PVDoubleArray doubleArray = (PVDoubleArray)channelArrayRequester.pvArray;
 	    doubleArray.put(0, ARRAY_VALUE.length, ARRAY_VALUE, 0);
-	    channelArrayRequester.syncPut(false, 0, 0);
-	    channelArrayRequester.syncGet(false, 0, ARRAY_VALUE.length /*0*/); // this allows multiple runs on the same JavaIOC
+	    channelArrayRequester.syncPut(false, channelArrayRequester.pvArray, 0, 0, 1);
+	    channelArrayRequester.syncGet(false, 0, ARRAY_VALUE.length /*0*/, 1); // this allows multiple runs on the same JavaIOC
 	    DoubleArrayData doubleData = new DoubleArrayData();
 	    count = doubleArray.get(0, 100, doubleData);
 	    assertEquals(ARRAY_VALUE.length, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 	    
-	    channelArrayRequester.syncPut(false, 4, 0);	// result: 1.1, 2.2, 3.3, 4.4, 1.1, 2.2, 3.3, 4.4, 5.5
-	    channelArrayRequester.syncGet(false, 3, 3);
+	    channelArrayRequester.syncPut(false, channelArrayRequester.pvArray, 4, 0, 1);	// result: 1.1, 2.2, 3.3, 4.4, 1.1, 2.2, 3.3, 4.4, 5.5
+	    channelArrayRequester.syncGet(false, 3, 3, 1);
 	    count = doubleArray.get(0, 3, doubleData);
 	    assertEquals(3, count);
 	    final double[] EXPECTED_VAL = new double[] { 4.4, 1.1, 2.2 };
@@ -2572,7 +2603,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    	assertEquals(EXPECTED_VAL[i], doubleData.data[i]);
 	    
 	    channelArrayRequester.syncSetLength(false, 3, 0);  // result: 1.1, 2.2, 3.3
-	    channelArrayRequester.syncGet(false, 0, 0);
+	    channelArrayRequester.syncGet(false, 0, 0, 1);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(3, count);
 	    for (int i = 0; i < count; i++)
@@ -2581,7 +2612,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    final int OLD_LEN = 3;
 	    final int NEW_CAP = 2;
 	    channelArrayRequester.syncSetLength(false, OLD_LEN, NEW_CAP);	// result: 1.1, 2.2
-	    channelArrayRequester.syncGet(false, 0, 0);
+	    channelArrayRequester.syncGet(false, 0, 0, 1);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(2, count);
 	    for (int i = 0; i < count; i++)
@@ -2590,7 +2621,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    // big array test
 	    final int BIG_CAPACITY = 10000;
 	    channelArrayRequester.syncSetLength(false, BIG_CAPACITY, BIG_CAPACITY);
-	    channelArrayRequester.syncGet(false, 0, 0);
+	    channelArrayRequester.syncGet(false, 0, 0, 1);
 	    count = doubleArray.get(0, 10000, doubleData);
 	    assertEquals(10000, count);
 	    for (int i = 0; i < NEW_CAP; i++)
@@ -2631,8 +2662,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			//ch.disconnect();
 			ch.destroy();
-			channelArrayRequester.syncGet(false, 1, 2, false);
-			channelArrayRequester.syncPut(false, 1, 2, false);
+			channelArrayRequester.syncGet(false, 1, 2, 1, false);
+			channelArrayRequester.syncPut(false, channelArrayRequester.pvArray, 1, 2, 1, false);
 			channelArrayRequester.syncSetLength(false, 1, 2, false);
 		}
 	}

@@ -157,6 +157,38 @@ public class Mapper
 		}
 	}
 
+	public void updateOriginStructure(PVStructure copyStructure, BitSet copyStructureBitSet)
+	{
+		if (!this.copyStructure.getStructure().equals(copyStructure.getStructure()))
+			throw new IllegalArgumentException("put structure does not match");
+		
+		if (copyStructureBitSet.size() < this.copyStructure.getNumberFields())
+			throw new IllegalArgumentException("put bit-set does not match");
+			
+		boolean doAll = copyStructureBitSet == null || copyStructureBitSet.get(0);
+		if (doAll)
+		{
+			for (int i = 1; i < toOriginStructure.length;)
+			{
+				final PVField copyField = copyStructure.getSubField(i);
+				final PVField originField = originStructure.getSubField(toOriginStructure[i]);
+				convert.copy(copyField, originField);
+				i = copyField.getNextFieldOffset();
+			}
+		}
+		else
+		{
+			int i = copyStructureBitSet.nextSetBit(1);
+			while (i != -1)
+			{
+				final PVField copyField = copyStructure.getSubField(i);
+				final PVField originField = originStructure.getSubField(toOriginStructure[i]);
+				convert.copy(copyField, originField);
+				i = copyStructureBitSet.nextSetBit(copyField.getNextFieldOffset());
+			}
+		}
+	}
+
 	public void updateCopyStructureOriginBitSet(BitSet originStructureBitSet, BitSet copyBitSet)
 	{
 		copyBitSet.clear();

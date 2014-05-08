@@ -477,7 +477,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			}
 
 			@Override
-			public void put() {
+			public void put(PVStructure pvStructure, BitSet pvBitSet) {
 				if (destroyed.get())
 				{
 					channelPutRequester.putDone(destroyedStatus, this);
@@ -488,7 +488,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				pvTopStructure.lock();
 				try
 				{
-					mapper.updateOriginStructure(bitSet);
+					mapper.updateOriginStructure(pvStructure, pvBitSet);
 
 					if (process)
 						pvTopStructure.process();
@@ -524,7 +524,10 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelPutRequester.getDone(okStatus);
+				// TODO
+				bitSet.clear();
+				bitSet.set(0);
+				channelPutRequester.getDone(okStatus, this, pvPutStructure, bitSet);
 			}
 
 		}
@@ -551,7 +554,8 @@ public class TestChannelProviderImpl implements ChannelProvider
 			}
 
 			@Override
-			public void putArray(PVArray pvArray, int offset, int count, int stride) {
+			public void putArray(PVArray pvCopyArray, int offset, int count, int stride) {
+				PVScalarArray pvCopy = (PVScalarArray)pvCopyArray;
 				if (destroyed.get())
 				{
 					channelArrayRequester.putArrayDone(destroyedStatus, this);
@@ -610,7 +614,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelArrayRequester.getArrayDone(okStatus, this, pvArray);
+				channelArrayRequester.getArrayDone(okStatus, this, pvCopy);
 
 				if (lastRequest)
 					destroy();
@@ -651,6 +655,37 @@ public class TestChannelProviderImpl implements ChannelProvider
 				if (lastRequest)
 					destroy();
 			}
+
+			@Override
+			public void getLength() {
+				if (destroyed.get())
+				{
+					channelArrayRequester.getLengthDone(destroyedStatus, this, 0, 0);
+					return;
+				}
+				
+				int length;
+				int capacity;
+				
+                lock();
+				pvTopStructure.lock();
+				try
+				{
+					length = pvArray.getLength();
+					capacity = pvArray.getCapacity();
+				}
+				finally {
+					pvTopStructure.unlock();
+					unlock();
+				}
+
+				channelArrayRequester.getLengthDone(okStatus, this, length, capacity);
+
+				if (lastRequest)
+					destroy();
+			}
+			
+			
 
 		}
 
@@ -695,6 +730,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				pvPutStructure = putMapper.getCopyStructure();
 				pvGetStructure = getMapper.getCopyStructure();
 				
+				// TODO
 				pvPutBitSet = new BitSet(pvPutStructure.getNumberFields());
 				pvPutBitSet.set(0);
 				pvGetBitSet = new BitSet(pvGetStructure.getNumberFields());
@@ -713,13 +749,12 @@ public class TestChannelProviderImpl implements ChannelProvider
 					channelPutGetRequester.putGetDone(destroyedStatus, this, null, null);
 					return;
 				}
-				// TODO !!!!!
 
 				lock();
 				pvTopStructure.lock();
 				try
 				{
-					putMapper.updateOriginStructure(null);
+					putMapper.updateOriginStructure(pvPutStructure, pvPutBitSet);
 					if (process)
 						pvTopStructure.process();
 					getMapper.updateCopyStructure(null);
@@ -729,7 +764,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelPutGetRequester.getPutDone(okStatus);
+				channelPutGetRequester.putGetDone(okStatus, this, pvGetStructure, pvGetBitSet);
 				
 				if (lastRequest)
 					destroy();
@@ -757,7 +792,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelPutGetRequester.getPutDone(okStatus);
+				channelPutGetRequester.getPutDone(okStatus, this, pvPutStructure, pvPutBitSet);
 			}
 
 			/* (non-Javadoc)
@@ -767,7 +802,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			public void getGet() {
 				if (destroyed.get())
 				{
-					channelPutGetRequester.getGetDone(destroyedStatus);
+					channelPutGetRequester.getGetDone(destroyedStatus, this, null, null);
 					return;
 				}
 
@@ -782,7 +817,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelPutGetRequester.getGetDone(okStatus);
+				channelPutGetRequester.getGetDone(okStatus, this, pvGetStructure, pvGetBitSet);
 			}
 
 		}
