@@ -75,6 +75,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		@Override
 		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
 			this.status = status;
+			this.channelRPC = channelRPC;
 
 			transport.enqueueSendRequest(this);
 
@@ -88,6 +89,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		public void requestDone(Status status, ChannelRPC channelRPC, PVStructure pvResponse) {
 			this.status = status;
 			this.pvResponse = pvResponse;
+			
 			transport.enqueueSendRequest(this);
 		}
 
@@ -113,7 +115,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		 */
 		@Override
 		public void lock() {
-			// TODO
+			// noop
 		}
 
 		/* (non-Javadoc)
@@ -121,7 +123,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		 */
 		@Override
 		public void unlock() {
-			// TODO
+			// noop
 		}
 
 		/* (non-Javadoc)

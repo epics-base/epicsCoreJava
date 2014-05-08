@@ -53,6 +53,7 @@ import org.epics.pvdata.property.PVTimeStamp;
 import org.epics.pvdata.property.PVTimeStampFactory;
 import org.epics.pvdata.property.TimeStamp;
 import org.epics.pvdata.property.TimeStampFactory;
+import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.DoubleArrayData;
 import org.epics.pvdata.pv.Field;
@@ -699,11 +700,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		private Boolean success = null;
 		
 		@Override
-		public void channelGetConnect(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
+		public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
 			synchronized (this) {
 				this.channelGet = channelGet;
-				this.pvStructure = pvStructure;
-				this.bitSet = bitSet;
 
 				connected = new Boolean(status.isOK());
 				this.notify();
@@ -751,7 +750,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertNotNull("channel get not connected", connected);
 					
 				success = null;
-				channelGet.get(lastRequest);
+				if (lastRequest)
+					channelGet.lastRequest();
+				channelGet.get();
 				
 				try {
 					if (success == null)
@@ -769,9 +770,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 		
 		@Override
-		public void getDone(Status success) {
+		public void getDone(Status success, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
+				this.bitSet = bitSet;
+				this.pvStructure = pvStructure;
 				this.notify();
 			}
 		}
@@ -798,12 +801,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		private Boolean success = null;
 
 		@Override
-		public void channelPutConnect(Status status, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
+		public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
 			synchronized (this) {
 				this.channelPut = channelPut;
-				this.pvStructure = pvStructure;
-				this.bitSet = bitSet;
-
+				// TODO store and test structure
+				
 				connected = new Boolean(status.isOK());
 				this.notify();
 			}
@@ -860,9 +862,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 		
 		@Override
-		public void getDone(Status success) {
+		public void getDone(Status success, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
+				this.pvStructure = pvStructure;
+				this.bitSet = bitSet;
 				this.notify();
 			}
 		}
@@ -879,7 +883,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertNotNull("channel put not connected", connected);
 					
 				success = null;
-				channelPut.put(lastRequest);
+				if (lastRequest)
+					channelPut.lastRequest();
+				channelPut.put();
 				
 				try {
 					if (success == null)
@@ -897,7 +903,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 		
 		@Override
-		public void putDone(Status success) {
+		public void putDone(Status success, ChannelPut channelPut) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
 				this.notify();
@@ -932,12 +938,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		public void channelPutGetConnect(
 				Status status,
 				ChannelPutGet channelPutGet,
-				PVStructure pvPutStructure, PVStructure pvGetStructure) {
+				Structure putStructure, Structure getStructure) {
 			synchronized (this)
 			{
 				this.channelPutGet = channelPutGet;
-				this.pvPutStructure = pvPutStructure;
-				this.pvGetStructure = pvGetStructure;
+				//this.putStructure = putStructure;
+				//this.getStructure = getStructure;
 
 				connected = new Boolean(status.isOK());
 				this.notify();
@@ -987,7 +993,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertNotNull("channel put-get not connected", connected);
 					
 				success = null;
-				channelPutGet.putGet(lastRequest);
+				if (lastRequest)
+					channelPutGet.lastRequest();
+				channelPutGet.putGet();
 				
 				try {
 					if (success == null)
@@ -1005,9 +1013,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 	
 		@Override
-		public void putGetDone(Status success) {
+		public void putGetDone(Status success, ChannelPutGet channelPutGet, PVStructure pvGetStructure, BitSet pvGetBitSet) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
+				this.pvGetStructure = pvGetStructure;
 				this.notify();
 			}
 		}
@@ -1042,9 +1051,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 	
 		@Override
-		public void getGetDone(Status success) {
+		public void getGetDone(Status success, ChannelPutGet channelPutGet, PVStructure pvGetStructure, BitSet pvGetBitSet) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
+				this.pvGetStructure = pvGetStructure;
 				this.notify();
 			}
 		}
@@ -1078,9 +1088,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 
 		@Override
-		public void getPutDone(Status success) {
+		public void getPutDone(Status success, ChannelPutGet channelPutGet, PVStructure pvPutStructure, BitSet pvPutBitSet) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
+				this.pvPutStructure = pvPutStructure;
 				this.notify();
 			}
 		}
@@ -1118,7 +1129,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 
 		@Override
-		public void requestDone(Status status, PVStructure pvResponse) {
+		public void requestDone(Status status, ChannelRPC channelRPC, PVStructure pvResponse) {
 			synchronized (this) {
 				this.success = new Boolean(status.isOK());
 				this.result = pvResponse;
@@ -1165,7 +1176,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					
 				success = null;
 				result = null;
-				channelRPC.request(arguments, lastRequest);
+				if (lastRequest)
+					channelRPC.lastRequest();
+				channelRPC.request(arguments);
 				
 				try {
 					if (success == null)
@@ -1197,17 +1210,15 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	ChannelProcessRequester channelProcessRequester = new ChannelProcessRequester() {
 		
-		volatile ChannelProcess channelProcess;
-		
 		@Override
-		public void processDone(Status success) {
-			channelProcess.process(true);
+		public void processDone(Status success, ChannelProcess channelProcess) {
+			channelProcess.lastRequest();
+			channelProcess.process();
 		}
 		
 		@Override
 		public void channelProcessConnect(Status status, ChannelProcess channelProcess) {
-			this.channelProcess = channelProcess;
-			channelProcess.process(false);
+			channelProcess.process();
 		}
 		
 		@Override
@@ -1283,7 +1294,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		private Boolean connected;
 		
 		@Override
-		public void processDone(Status success) {
+		public void processDone(Status success, ChannelProcess channelProcess) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
 				this.notify();
@@ -1337,7 +1348,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertNotNull("channel process not connected", connected);
 					
 				success = null;
-				channelProcess.process(lastRequest);
+				if (lastRequest)
+					channelProcess.lastRequest();
+				channelProcess.process();
 				
 				try {
 					if (success == null)
@@ -1372,15 +1385,17 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelArray channelArray;
 		PVArray pvArray;
 		
+		int length = -1;
+		int capacity = -1;
+		
 		private Boolean connected = null;
 		private Boolean success = null;
 
 		@Override
-		public void channelArrayConnect(Status status, ChannelArray channelArray, PVArray pvArray) {
+		public void channelArrayConnect(Status status, ChannelArray channelArray, Array array) {
 			synchronized (this)
 			{
 				this.channelArray = channelArray;
-				this.pvArray = pvArray;
 				connected = new Boolean(status.isOK());
 				this.notify();
 			}
@@ -1418,9 +1433,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 
 		@Override
-		public void getArrayDone(Status success) {
+		public void getArrayDone(Status success, ChannelArray channelArray, PVArray pvArray) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
+				this.pvArray = pvArray;
 				this.notify();
 			}
 		}
@@ -1437,7 +1453,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertNotNull("channel array not connected", connected);
 					
 				success = null;
-				channelArray.getArray(lastRequest, offset, count);
+				if (lastRequest)
+					channelArray.lastRequest();
+				// TODO stride
+				channelArray.getArray(offset, count, 1);
 				
 				try {
 					if (success == null)
@@ -1455,7 +1474,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 
 		@Override
-		public void putArrayDone(Status success) {
+		public void putArrayDone(Status success, ChannelArray channelArray) {
 			synchronized (this) {
 				this.success = new Boolean(success.isOK());
 				this.notify();
@@ -1474,7 +1493,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertNotNull("channel array not connected", connected);
 					
 				success = null;
-				channelArray.putArray(lastRequest, offset, count);
+				if (lastRequest)
+					channelArray.lastRequest();
+				channelArray.putArray(offset, count);
 				
 				try {
 					if (success == null)
@@ -1503,7 +1524,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertNotNull("channel array not connected", connected);
 					
 				success = null;
-				channelArray.setLength(lastRequest, length, capacity);
+				if (lastRequest)
+					channelArray.lastRequest();
+				channelArray.setLength(length, capacity);
 				
 				try {
 					if (success == null)
@@ -1520,13 +1543,21 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelArrayRequester#setLengthDone(org.epics.pvdata.pv.Status)
-		 */
 		@Override
-		public void setLengthDone(Status status) {
+		public void setLengthDone(Status status, ChannelArray channelArray) {
 			synchronized (this) {
 				this.success = new Boolean(status.isOK());
+				this.notify();
+			}
+		}
+
+		@Override
+		public void getLengthDone(Status status, ChannelArray channelArray,
+				int length, int capacity) {
+			synchronized (this) {
+				this.success = new Boolean(status.isOK());
+				this.length = length;
+				this.capacity = capacity;
 				this.notify();
 			}
 		}

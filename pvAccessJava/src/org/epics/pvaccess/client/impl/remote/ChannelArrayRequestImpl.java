@@ -44,8 +44,10 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	protected final ChannelArrayRequester callback;
 
+	// data conitainer (for get)
 	protected PVArray data;
 	
+	// reference store (for put)
 	protected PVArray putData;
 	
 	protected int offset = 0;
@@ -116,7 +118,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			try {
 				SerializeHelper.writeSize(offset, buffer, control);
 				SerializeHelper.writeSize(count, buffer, control);
-				// TODO !!! SerializeHelper.writeSize(stride, buffer, control);
+				SerializeHelper.writeSize(stride, buffer, control);
 			} finally {
 				unlock();
 			}
@@ -143,7 +145,8 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			lock();
 			try {
 				SerializeHelper.writeSize(offset, buffer, control);
-				// TODO !!! SerializeHelper.writeSize(stride, buffer, control);
+				SerializeHelper.writeSize(stride, buffer, control);
+				// TODO what about count sanity check?
 				putData.serialize(buffer, control, 0, count != 0 ? count : putData.getLength());	// put from 0 offset
 			} finally {
 				// release reference
@@ -154,16 +157,6 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		}
 		
 		stopRequest();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data available (action with destroy)
-		// if (QoS.GET.isSet(qos))			// TODO !!! check
-			normalResponse(transport, version, payloadBuffer, qos, status);
 	}
 
 	/* (non-Javadoc)
@@ -225,8 +218,6 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 					unlock();
 				}
 				
-				
-				// do I need to allocate, to I need to hold data for ever?
 				callback.getArrayDone(okStatus, this, data);
 			}
 			else if (QoS.GET_PUT.isSet(qos))

@@ -119,7 +119,7 @@ public class GetHandler extends AbstractServerResponseHandler {
 		 */
 		@Override
 		public void lock() {
-			// TODO
+			// noop
 		}
 
 		/* (non-Javadoc)
@@ -127,7 +127,7 @@ public class GetHandler extends AbstractServerResponseHandler {
 		 */
 		@Override
 		public void unlock() {
-			// TODO
+			// noop
 		}
 
 		/* (non-Javadoc)

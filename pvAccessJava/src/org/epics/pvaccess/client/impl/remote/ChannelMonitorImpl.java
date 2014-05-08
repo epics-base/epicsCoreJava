@@ -282,18 +282,6 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte qos, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data available
-		// TODO if (QoS.GET.isSet(qos))
-		{
-			normalResponse(transport, version, payloadBuffer, qos, status);
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#initResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
 	@Override
@@ -351,7 +339,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 				remotelyDestroyed = true;
 				destroy = true;
 
-				destroyResponse(transport, version, payloadBuffer, qos, status);
+				normalResponse(transport, version, payloadBuffer, qos, status);
 			}
 			else
 			{

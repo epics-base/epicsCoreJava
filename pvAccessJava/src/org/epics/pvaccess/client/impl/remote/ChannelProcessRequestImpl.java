@@ -103,22 +103,6 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		try {
-			callback.processDone(status, this);
-		} catch (Throwable th) {
-			// guard PVA code from exceptions
-			Writer writer = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(writer);
-			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught while calling a callback: " + writer, MessageType.fatalError);
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#initResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
 	@Override

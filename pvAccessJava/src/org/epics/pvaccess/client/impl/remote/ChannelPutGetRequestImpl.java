@@ -42,11 +42,16 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	 */
 	protected final ChannelPutGetRequester callback;
 
+	// TODO !!! give access to it, or lazy initialize
+	// put data container
 	protected PVStructure putData = null;
 	protected BitSet putDataBitSet = null;
+	
+	// get data container
 	protected PVStructure getData = null;
 	protected BitSet getDataBitSet = null;
 	
+	// putGet reference store
 	protected PVStructure putPutData = null;
 	protected BitSet putPutDataBitSet = null;
 	
@@ -115,6 +120,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		{
 			lock();
 			try {
+				putPutDataBitSet.serialize(buffer, control);
 				putPutData.serialize(buffer, control, putPutDataBitSet);
 			} finally {
 				// release references
@@ -126,18 +132,6 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		}
 		
 		stopRequest();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data available
-		// TODO we need a flag here?...
-		{
-			normalResponse(transport, version, payloadBuffer, qos, status);
-		}
 	}
 
 	/* (non-Javadoc)
@@ -193,9 +187,8 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				lock();
 				try {
 					// deserialize get data
-					// TODO !! getDataBitSet.deserialize(payloadBuffer, transport);
-					//getData.deserialize(payloadBuffer, transport, getDataBitSet);
-					getData.deserialize(payloadBuffer, transport);
+					getDataBitSet.deserialize(payloadBuffer, transport);
+					getData.deserialize(payloadBuffer, transport, getDataBitSet);
 				} finally {
 					unlock();
 				}
@@ -213,9 +206,8 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				lock();
 				try {
 					// deserialize put data
-					// TODO !! putDataBitSet.deserialize(payloadBuffer, transport);
-					//putData(payloadBuffer, transport, putDataBitSet);
-					putData.deserialize(payloadBuffer, transport);
+					putDataBitSet.deserialize(payloadBuffer, transport);
+					putData.deserialize(payloadBuffer, transport, putDataBitSet);
 				} finally {
 					unlock();
 				}
@@ -233,9 +225,8 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				lock();
 				try {
 					// deserialize data
-					// TODO !! getDataBitSet.deserialize(payloadBuffer, transport);
-					//getData.deserialize(payloadBuffer, transport, getDataBitSet);
-					getData.deserialize(payloadBuffer, transport);
+					getDataBitSet.deserialize(payloadBuffer, transport);
+					getData.deserialize(payloadBuffer, transport, getDataBitSet);
 				} finally {
 					unlock();
 				}

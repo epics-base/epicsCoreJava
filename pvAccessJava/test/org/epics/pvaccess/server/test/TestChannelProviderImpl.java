@@ -64,6 +64,7 @@ import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVArray;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVField;
@@ -108,12 +109,15 @@ public class TestChannelProviderImpl implements ChannelProvider
 		
 		class TestBasicChannelRequest implements ChannelRequest
 		{
+			protected final Channel channel;
 			protected final PVTopStructure pvTopStructure;
 			protected final AtomicBoolean destroyed = new AtomicBoolean();
 			protected final Mapper mapper;
 			protected final ReentrantLock lock = new ReentrantLock();
+			protected volatile boolean lastRequest = false;
 			
-			public TestBasicChannelRequest(PVTopStructure pvTopStructure, PVStructure pvRequest) {
+			public TestBasicChannelRequest(Channel channel, PVTopStructure pvTopStructure, PVStructure pvRequest) {
+				this.channel = channel;
 				this.pvTopStructure = pvTopStructure;
 				
 				if (pvRequest != null)
@@ -152,6 +156,16 @@ public class TestChannelProviderImpl implements ChannelProvider
 			public void cancel() {
 				// noop, not supported
 			}
+
+			@Override
+			public Channel getChannel() {
+				return channel;
+			}
+
+			@Override
+			public void lastRequest() {
+				lastRequest = true;
+			}
 			
 		}
 
@@ -166,7 +180,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			public TestChannelGetImpl(PVTopStructure pvTopStructure, ChannelGetRequester channelGetRequester, PVStructure pvRequest)
 			{
-				super(pvTopStructure, pvRequest);
+				super(TestChannelImpl.this, pvTopStructure, pvRequest);
 				
 				this.channelGetRequester = channelGetRequester;
 			
@@ -178,14 +192,14 @@ public class TestChannelProviderImpl implements ChannelProvider
 
 				bitSet = new BitSet(pvGetStructure.getNumberFields());
 				
-				channelGetRequester.channelGetConnect(okStatus, this, pvGetStructure, bitSet);
+				channelGetRequester.channelGetConnect(okStatus, this, pvGetStructure.getStructure());
 			}
 
 			@Override
-			public void get(boolean lastRequest) {
+			public void get() {
 				if (destroyed.get())
 				{
-					channelGetRequester.getDone(destroyedStatus);
+					channelGetRequester.getDone(destroyedStatus, this, null, null);
 					return;
 				}
 
@@ -206,7 +220,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 
-				channelGetRequester.getDone(okStatus);
+				channelGetRequester.getDone(okStatus, this, pvGetStructure, bitSet);
 				
 				if (lastRequest)
 					destroy();
@@ -243,7 +257,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			public TestChannelMonitorImpl(PVTopStructure pvTopStructure, MonitorRequester monitorRequester, PVStructure pvRequest)
 			{
-				super(pvTopStructure, pvRequest);
+				super(TestChannelImpl.this, pvTopStructure, pvRequest);
 				
 				this.monitorRequester = monitorRequester;
 			
@@ -361,7 +375,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			public TestChannelProcessImpl(PVTopStructure pvTopStructure, ChannelProcessRequester channelProcessRequester, PVStructure pvRequest)
 			{
-				super(pvTopStructure, pvRequest);
+				super(TestChannelImpl.this, pvTopStructure, pvRequest);
 				
 				this.channelProcessRequester = channelProcessRequester;
 			
@@ -372,10 +386,10 @@ public class TestChannelProviderImpl implements ChannelProvider
 			 * @see org.epics.pvaccess.client.ChannelProcess#process(boolean)
 			 */
 			@Override
-			public void process(boolean lastRequest) {
+			public void process() {
 				if (destroyed.get())
 				{
-					channelProcessRequester.processDone(destroyedStatus);
+					channelProcessRequester.processDone(destroyedStatus, this);
 					return;
 				}
 
@@ -388,7 +402,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					pvTopStructure.unlock();
 				}
 
-				channelProcessRequester.processDone(okStatus);
+				channelProcessRequester.processDone(okStatus, this);
 				
 				if (lastRequest)
 					destroy();
@@ -402,21 +416,18 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			public TestChannelRPCImpl(PVTopStructure pvTopStructure, ChannelRPCRequester channelRPCRequester, PVStructure pvRequest)
 			{
-				super(pvTopStructure, pvRequest);
+				super(TestChannelImpl.this, pvTopStructure, pvRequest);
 				
 				this.channelRPCRequester = channelRPCRequester;
 			
 				channelRPCRequester.channelRPCConnect(okStatus, this);
 			}
 
-			/* (non-Javadoc)
-			 * @see org.epics.pvaccess.client.ChannelRPC#request(org.epics.pvdata.pv.PVStructure, boolean)
-			 */
 			@Override
-			public void request(PVStructure pvArgument, boolean lastRequest) {
+			public void request(PVStructure pvArgument) {
 				if (destroyed.get())
 				{
-					channelRPCRequester.requestDone(destroyedStatus, null);
+					channelRPCRequester.requestDone(destroyedStatus, this, null);
 					return;
 				}
 
@@ -436,7 +447,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					pvTopStructure.unlock();
 				}
 
-				channelRPCRequester.requestDone(status, result);
+				channelRPCRequester.requestDone(status, this, result);
 				
 				if (lastRequest)
 					destroy();
@@ -453,7 +464,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			public TestChannelPutImpl(PVTopStructure pvTopStructure, ChannelPutRequester channelPutRequester, PVStructure pvRequest)
 			{
-				super(pvTopStructure, pvRequest);
+				super(TestChannelImpl.this, pvTopStructure, pvRequest);
 				
 				this.channelPutRequester = channelPutRequester;
 			
@@ -462,14 +473,14 @@ public class TestChannelProviderImpl implements ChannelProvider
 				pvPutStructure = mapper.getCopyStructure();
 				bitSet = new BitSet(pvPutStructure.getNumberFields());
 				
-				channelPutRequester.channelPutConnect(okStatus, this, pvPutStructure, bitSet);
+				channelPutRequester.channelPutConnect(okStatus, this, pvPutStructure.getStructure());
 			}
 
 			@Override
-			public void put(boolean lastRequest) {
+			public void put() {
 				if (destroyed.get())
 				{
-					channelPutRequester.putDone(destroyedStatus);
+					channelPutRequester.putDone(destroyedStatus, this);
 					return;
 				}
 
@@ -488,7 +499,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelPutRequester.putDone(okStatus);
+				channelPutRequester.putDone(okStatus, this);
 
 				if (lastRequest)
 					destroy();
@@ -498,7 +509,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			public void get() {
 				if (destroyed.get())
 				{
-					channelPutRequester.putDone(destroyedStatus);
+					channelPutRequester.getDone(destroyedStatus, this, null, null);
 					return;
 				}
 
@@ -528,7 +539,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			public TestChannelScalarArrayImpl(PVTopStructure pvTopStructure, ChannelArrayRequester channelArrayRequester, PVScalarArray array, PVStructure pvRequest)
 			{
-				super(pvTopStructure, null);
+				super(TestChannelImpl.this, pvTopStructure, null);
 				
 				this.channelArrayRequester = channelArrayRequester;
 				this.pvArray = array;
@@ -536,26 +547,26 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 				process = false; // TODO PVRequestUtils.getProcess(pvRequest);
 				
-				channelArrayRequester.channelArrayConnect(okStatus, this, pvCopy);
+				channelArrayRequester.channelArrayConnect(okStatus, this, pvCopy.getArray());
 			}
 
-			/* (non-Javadoc)
-			 * @see org.epics.pvaccess.client.ChannelArray#putArray(boolean, int, int)
-			 */
 			@Override
-			public void putArray(boolean lastRequest, int offset, int count) {
+			public void putArray(PVArray pvArray, int offset, int count, int stride) {
 				if (destroyed.get())
 				{
-					channelArrayRequester.putArrayDone(destroyedStatus);
+					channelArrayRequester.putArrayDone(destroyedStatus, this);
 					return;
 				}
+				
+				if (stride != 1)
+					throw new UnsupportedOperationException("stride != 1");
 
                 lock();
 				pvTopStructure.lock();
 				try
 				{
 	                if(count<=0) count = pvCopy.getLength();
-                    convert.copyScalarArray(pvCopy, 0, pvArray, offset, count);
+                    convert.copyScalarArray(pvCopy, 0, (PVScalarArray)pvArray, offset, count);
 
 					if (process)
 						pvTopStructure.process();
@@ -566,22 +577,22 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelArrayRequester.putArrayDone(okStatus);
+				channelArrayRequester.putArrayDone(okStatus, this);
 
 				if (lastRequest)
 					destroy();
 			}
 
-			/* (non-Javadoc)
-			 * @see org.epics.pvaccess.client.ChannelArray#getArray(boolean, int, int)
-			 */
 			@Override
-			public void getArray(boolean lastRequest, int offset, int count) {
+			public void getArray(int offset, int count, int stride) {
 				if (destroyed.get())
 				{
-					channelArrayRequester.getArrayDone(destroyedStatus);
+					channelArrayRequester.getArrayDone(destroyedStatus, this, null);
 					return;
 				}
+				
+				if (stride != 1)
+					throw new UnsupportedOperationException("stride != 1");
 				
                 lock();
 				pvTopStructure.lock();
@@ -599,20 +610,17 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelArrayRequester.getArrayDone(okStatus);
+				channelArrayRequester.getArrayDone(okStatus, this, pvArray);
 
 				if (lastRequest)
 					destroy();
 			}
 
-			/* (non-Javadoc)
-			 * @see org.epics.pvaccess.client.ChannelArray#setLength(boolean, int, int)
-			 */
 			@Override
-			public void setLength(boolean lastRequest, int length, int capacity) {
+			public void setLength(int length, int capacity) {
 				if (destroyed.get())
 				{
-					channelArrayRequester.putArrayDone(destroyedStatus);
+					channelArrayRequester.setLengthDone(destroyedStatus, this);
 					return;
 				}
 
@@ -623,7 +631,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				try
 				{
 					if(capacity>=0 && !pvArray.isCapacityMutable()) {
-						channelArrayRequester.setLengthDone(capacityImmutableStatus);
+						channelArrayRequester.setLengthDone(capacityImmutableStatus, this);
 						return;
 					}
 
@@ -638,7 +646,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 					unlock();
 				}
 				
-				channelArrayRequester.setLengthDone(okStatus);
+				channelArrayRequester.setLengthDone(okStatus, this);
 
 				if (lastRequest)
 					destroy();
@@ -651,13 +659,15 @@ public class TestChannelProviderImpl implements ChannelProvider
 			private final ChannelPutGetRequester channelPutGetRequester;
 			private PVStructure pvGetStructure;
 			private PVStructure pvPutStructure;
+			private BitSet pvGetBitSet;
+			private BitSet pvPutBitSet;
 			private Mapper putMapper;
 			private Mapper getMapper;
 			private boolean process;
 			
 			public TestChannelPutGetImpl(PVTopStructure pvTopStructure, ChannelPutGetRequester channelPutGetRequester, PVStructure pvRequest)
 			{
-				super(pvTopStructure, null);
+				super(TestChannelImpl.this, pvTopStructure, null);
 				
 				this.channelPutGetRequester = channelPutGetRequester;
 			
@@ -685,19 +695,25 @@ public class TestChannelProviderImpl implements ChannelProvider
 				pvPutStructure = putMapper.getCopyStructure();
 				pvGetStructure = getMapper.getCopyStructure();
 				
-				channelPutGetRequester.channelPutGetConnect(okStatus, this, pvPutStructure, pvGetStructure);
+				pvPutBitSet = new BitSet(pvPutStructure.getNumberFields());
+				pvPutBitSet.set(0);
+				pvGetBitSet = new BitSet(pvGetStructure.getNumberFields());
+				pvGetBitSet.set(0);
+				
+				channelPutGetRequester.channelPutGetConnect(okStatus, this, pvPutStructure.getStructure(), pvGetStructure.getStructure());
 			}
 
 			/* (non-Javadoc)
 			 * @see org.epics.pvaccess.client.ChannelPutGet#putGet(boolean)
 			 */
 			@Override
-			public void putGet(boolean lastRequest) {
+			public void putGet(PVStructure pvPutStructure, BitSet pvPutBitSet) {
 				if (destroyed.get())
 				{
-					channelPutGetRequester.getPutDone(destroyedStatus);
+					channelPutGetRequester.putGetDone(destroyedStatus, this, null, null);
 					return;
 				}
+				// TODO !!!!!
 
 				lock();
 				pvTopStructure.lock();
@@ -726,7 +742,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			public void getPut() {
 				if (destroyed.get())
 				{
-					channelPutGetRequester.getPutDone(destroyedStatus);
+					channelPutGetRequester.getPutDone(destroyedStatus, this, null, null);
 					return;
 				}
 
@@ -927,7 +943,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			if (destroyed.get())
 			{
-				channelGetRequester.channelGetConnect(destroyedStatus, null, null, null);
+				channelGetRequester.channelGetConnect(destroyedStatus, null, null);
 				return null;
 			}
 
@@ -946,7 +962,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			
 			if (destroyed.get())
 			{
-				channelPutRequester.channelPutConnect(destroyedStatus, null, null, null);
+				channelPutRequester.channelPutConnect(destroyedStatus, null, null);
 				return null;
 			}
 

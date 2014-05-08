@@ -42,9 +42,11 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	 */
 	protected final ChannelPutRequester callback;
 
+	// get container
 	protected PVStructure data = null;
 	protected BitSet bitSet = null;
 	
+	// put reference store
 	protected PVStructure pvPutStructure = null;
 	protected BitSet putBitSet = null;
 
@@ -127,16 +129,6 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data (or at least completion status) available
-		if (QoS.GET.isSet(qos) || QoS.DEFAULT.isSet(qos))
-			normalResponse(transport, version, payloadBuffer, qos, status);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#initResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
 	@Override
@@ -151,7 +143,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			
 			lock();
 			try {
-				// create data and its bitSet
+				// create data (for get) and its bitSet
 				data = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport, data);
 				bitSet = createBitSetFor(data, bitSet);
 			} finally {
@@ -188,12 +180,8 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 				
 				lock();
 				try {
-					/*
-					// !!! TODO deserialize bitSet and data
 					bitSet.deserialize(payloadBuffer, transport);
 					data.deserialize(payloadBuffer, transport, bitSet);
-					 */
-					data.deserialize(payloadBuffer, transport);
 				} finally {
 					unlock();
 				}		

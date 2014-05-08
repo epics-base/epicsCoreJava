@@ -17,9 +17,9 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.ChannelArray;
 import org.epics.pvaccess.client.ChannelArrayRequester;
+import org.epics.pvaccess.client.impl.remote.BaseRequestImpl;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
@@ -31,7 +31,6 @@ import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.PVArray;
-import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -79,18 +78,13 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			}
 		}
 		
-		/**
-		 * PVField factory.
-		 */
-		private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-
 		@Override
 		public void channelArrayConnect(Status status, ChannelArray channelArray, Array array) {
 			this.status = status;
 			this.channelArray = channelArray;
 			this.array = array;
 			
-			pvPutArray = (PVArray)pvDataCreate.createPVField(array);
+			pvPutArray = (PVArray)BaseRequestImpl.reuseOrCreatePVField(array, pvPutArray);
 
 			transport.enqueueSendRequest(this);
 			
@@ -104,18 +98,21 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		public void getArrayDone(Status status, ChannelArray channelArray, PVArray pvArray) {
 			this.status = status;
 			this.pvArray = pvArray;
+			
 			transport.enqueueSendRequest(this);
 		}
 
 		@Override
 		public void putArrayDone(Status status, ChannelArray channelArray) {
 			this.status = status;
+			
 			transport.enqueueSendRequest(this);
 		}
 
 		@Override
 		public void setLengthDone(Status status, ChannelArray channelArray) {
 			this.status = status;
+			
 			transport.enqueueSendRequest(this);
 		}
 
@@ -125,6 +122,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			this.status = status;
 			this.length = length;
 			this.capacity = capacity;
+			
 			transport.enqueueSendRequest(this);
 		}
 
@@ -263,7 +261,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			{
 				final int offset = SerializeHelper.readSize(payloadBuffer, transport);
 				final int count = SerializeHelper.readSize(payloadBuffer, transport);
-				final int stride = 1; // TODO !!! SerializeHelper.readSize(payloadBuffer, transport);
+				final int stride = SerializeHelper.readSize(payloadBuffer, transport);
 				channelArray.getArray(offset, count, stride);
 			}
 			else if (setLength)
@@ -280,7 +278,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			{
 				// deserialize data to put
 				final int offset = SerializeHelper.readSize(payloadBuffer, transport);
-				final int stride = 1; // TODO !!! SerializeHelper.readSize(payloadBuffer, transport);
+				final int stride = SerializeHelper.readSize(payloadBuffer, transport);
 				// no count, we do not want to send extra data
 				final PVArray array = request.getPVArray();
 				array.deserialize(payloadBuffer, transport);

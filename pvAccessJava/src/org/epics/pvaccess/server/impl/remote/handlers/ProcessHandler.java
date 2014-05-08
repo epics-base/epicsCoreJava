@@ -72,7 +72,7 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 		public void channelProcessConnect(Status status, ChannelProcess channelProcess) {
 			this.status = status;
 			this.channelProcess = channelProcess;
-
+			
 			transport.enqueueSendRequest(this);
 
 			// self-destruction

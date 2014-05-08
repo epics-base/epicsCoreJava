@@ -17,7 +17,6 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.ChannelPut;
 import org.epics.pvaccess.client.ChannelPutRequester;
 import org.epics.pvaccess.client.impl.remote.BaseRequestImpl;
@@ -30,7 +29,6 @@ import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -57,9 +55,11 @@ public class PutHandler extends AbstractServerResponseHandler {
 		
 		private volatile Structure structure;
 
+		// reference store for get
 		private volatile PVStructure pvStructure;
 		private volatile BitSet bitSet;
 
+		// put container
 		private volatile PVStructure putPVStructure;
 		private volatile BitSet putBitSet;
 
@@ -80,11 +80,6 @@ public class PutHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		/**
-		 * PVField factory.
-		 */
-		private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-
 		@Override
 		public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
 			// will JVM optimize subsequent volatile sets?
@@ -92,7 +87,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 			this.channelPut = channelPut;
 			this.structure = structure;
 			
-			this.putPVStructure = pvDataCreate.createPVStructure(structure);
+			this.putPVStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(structure, putPVStructure);
 			this.putBitSet = BaseRequestImpl.createBitSetFor(putPVStructure, putBitSet);
 			
 			transport.enqueueSendRequest(this);
@@ -106,6 +101,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 		@Override
 		public void putDone(Status status, ChannelPut channelPut) {
 			this.status = status;
+			
 			transport.enqueueSendRequest(this);
 		}
 
@@ -114,6 +110,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 			this.status = status;
 			this.pvStructure = pvStructure;
 			this.bitSet = bitSet;
+			
 			transport.enqueueSendRequest(this);
 		}
 
@@ -184,9 +181,8 @@ public class PutHandler extends AbstractServerResponseHandler {
 				}
 				else if (QoS.GET.isSet(request))
 				{
-					// TODO !!! bitSet
-					//pvStructure.serialize(buffer, control, bitSet);
-					pvStructure.serialize(buffer, control);
+					bitSet.serialize(buffer, control);
+					pvStructure.serialize(buffer, control, bitSet);
 				}
 			}
 			

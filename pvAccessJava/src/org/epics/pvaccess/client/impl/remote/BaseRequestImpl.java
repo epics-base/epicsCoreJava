@@ -26,7 +26,9 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.DataResponse;
 import org.epics.pvaccess.impl.remote.request.SubscriptionRequest;
 import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Requester;
 import org.epics.pvdata.pv.Status;
@@ -186,7 +188,6 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	}
 
 	abstract void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
-	abstract void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
 	abstract void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
 	
 	/* (non-Javadoc)
@@ -204,15 +205,14 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 			{
 				initResponse(transport, version, payloadBuffer, qos, status);
 			}
-			else if (QoS.DESTROY.isSet(qos))
-			{
-				remotelyDestroyed = true;
-				destroy = true;
-
-				destroyResponse(transport, version, payloadBuffer, qos, status);
-			}
 			else
 			{
+				if (QoS.DESTROY.isSet(qos))
+				{
+					remotelyDestroyed = true;
+					destroy = true;
+				}
+				
 				normalResponse(transport, version, payloadBuffer, qos, status);
 			}
 		}
@@ -367,6 +367,14 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 		}
 		else
 			return new BitSet(pvStructureSize);
+	}
+	
+	public static final PVField reuseOrCreatePVField(Field field, PVField existingPVField)
+	{
+		if (existingPVField != null && field.equals(existingPVField.getField()))
+			return existingPVField;
+		else
+			return pvDataCreate.createPVField(field);
 	}
 	
 	/* Called on server restart...

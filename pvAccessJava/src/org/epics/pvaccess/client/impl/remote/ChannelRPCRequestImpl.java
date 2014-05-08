@@ -119,16 +119,6 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data available
-		// TODO we need a flag here...
-		normalResponse(transport, version, payloadBuffer, qos, status);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#initResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
 	@Override
@@ -187,7 +177,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	@Override
 	public void request(PVStructure pvArgument) {
 		if (destroyed) {
-			callback.requestDone(destroyedStatus, this,null);
+			callback.requestDone(destroyedStatus, this, null);
 			return;
 		}
 		
