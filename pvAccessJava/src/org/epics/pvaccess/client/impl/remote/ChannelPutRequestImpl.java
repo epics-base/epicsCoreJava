@@ -241,7 +241,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			return;
 		}
 		
-		if (bitSet.length() != data.getNumberFields())
+		if (bitSet.size() < data.getNumberFields())
 		{
 			callback.putDone(invalidBitSetLengthStatus, this);
 			return;

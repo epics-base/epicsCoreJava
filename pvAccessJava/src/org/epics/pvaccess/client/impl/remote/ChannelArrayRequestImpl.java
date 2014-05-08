@@ -224,7 +224,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			{
 				callback.setLengthDone(status, this);
 			}
-			else if (QoS.PROCESS.isSet(pendingRequest))
+			else if (QoS.PROCESS.isSet(qos))
 			{
 				int length = SerializeHelper.readSize(payloadBuffer, transport);
 				int capacity = SerializeHelper.readSize(payloadBuffer, transport);

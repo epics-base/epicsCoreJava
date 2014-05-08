@@ -252,7 +252,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			return;
 		}
 		
-		if (putData.getStructure().equals(pvPutStructure.getStructure()))
+		if (!putData.getStructure().equals(pvPutStructure.getStructure()))
 		{
 			callback.putGetDone(invalidPutStructureStatus, this, null, null);
 			return;
