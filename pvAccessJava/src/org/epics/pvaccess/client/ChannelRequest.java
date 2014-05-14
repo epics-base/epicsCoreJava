@@ -23,8 +23,8 @@ public interface ChannelRequest extends Lockable, Destroyable {
 	 * Cancel any pending request.
 	 * Completion will be reported via request's response callback:
 	 * <ul>
-	 *   <li>if cancel() request is issue after the request was already complete, success/failure completion will be reported.</li>
-	 *   <li>if request was actually canceled, cancellation completion will be reported.</li>
+	 *   <li>if cancel() request is issued after the request was already complete, request success/failure completion will be reported and cancel() request ignored.</li>
+	 *   <li>if the request was actually canceled, cancellation completion is reported.</li>
 	 * </ul>
 	 */
 	void cancel();

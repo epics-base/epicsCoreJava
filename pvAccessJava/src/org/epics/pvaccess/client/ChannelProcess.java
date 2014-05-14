@@ -14,8 +14,7 @@ package org.epics.pvaccess.client;
 public interface ChannelProcess extends ChannelRequest {
     /**
      * Issue a process request.
-     * This fails if the request can not be satisfied.
-     * If it fails the channelProcessRequester.processDone is called before process returns.
+     * Completion status is reported by calling ChannelProcessRequester.processDone() callback.
      */
     void process();
 }

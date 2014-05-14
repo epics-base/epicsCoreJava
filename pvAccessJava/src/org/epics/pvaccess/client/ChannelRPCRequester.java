@@ -18,7 +18,7 @@ public interface ChannelRPCRequester extends Requester {
     /**
      * The client and server have both completed the createChannelGet request.
      * @param status Completion status.
-     * @param channelRPC The channelRPC interface or null if the request failed.
+     * @param channelRPC The channelRPC interface or <code>null</code> if the request failed.
      */
     void channelRPCConnect(Status status, ChannelRPC channelRPC);
     /**

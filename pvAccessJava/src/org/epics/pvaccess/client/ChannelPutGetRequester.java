@@ -32,7 +32,7 @@ public interface ChannelPutGetRequester extends Requester
      * @param status Completion status.
      * @param channelPutGet The channelPutGet interface.
      * @param pvGetStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
-     * @param putBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
+     * @param getBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
      */
     void putGetDone(Status status, ChannelPutGet channelPutGet, PVStructure getPVStructure, BitSet getBitSet);
     /**
@@ -48,7 +48,7 @@ public interface ChannelPutGetRequester extends Requester
      * @param status Completion status.
      * @param channelPutGet The channelPutGet interface.
      * @param pvGetStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
-     * @param putBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
+     * @param getBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
      */
     void getGetDone(Status status, ChannelPutGet channelPutGet, PVStructure getPVStructure, BitSet getBitSet);
 }

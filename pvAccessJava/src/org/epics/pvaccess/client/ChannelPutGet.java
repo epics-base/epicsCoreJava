@@ -18,18 +18,19 @@ import org.epics.pvdata.pv.PVStructure;
 public interface ChannelPutGet extends ChannelRequest {
     /**
      * Issue a put/get request. If process was requested when the ChannelPutGet was created this is a put, process, get.
-     * This fails if the request can not be satisfied.
-     * If it fails ChannelPutGetRequester.putDone is called before putGet returns.
+     * Completion status is reported by calling ChannelPutGetRequester.putGetDone() callback.
      * @param pvPutStructure The PVStructure that holds the putData.
      * @param putBitSet putPVStructure bit-set (selects what fields to put).
      */
-    void putGet(PVStructure pvPutStructure, BitSet bitSet);
+    void putGet(PVStructure pvPutStructure, BitSet putBitSet);
     /**
      * Get the put PVStructure. The record will not be processed.
+     * Completion status is reported by calling ChannelPutGetRequester.getPutDone() callback.
      */
     void getPut();
     /**
      * Get the get PVStructure. The record will not be processed.
+     * Completion status is reported by calling ChannelPutGetRequester.getGetDone() callback.
      */
     void getGet();
 }
