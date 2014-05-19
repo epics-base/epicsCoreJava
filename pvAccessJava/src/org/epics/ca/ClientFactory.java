@@ -14,7 +14,7 @@ import gov.aps.jca.event.ContextMessageListener;
 import gov.aps.jca.event.ContextVirtualCircuitExceptionEvent;
 
 import org.epics.pvaccess.client.Channel;
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelFind;
 import org.epics.pvaccess.client.ChannelFindRequester;
 import org.epics.pvaccess.client.ChannelProvider;
@@ -85,7 +85,7 @@ public class ClientFactory  {
     public static synchronized void start() {
         if (factory != null) return;
         factory = new ChannelProviderFactoryImpl();
-        ChannelAccessFactory.registerChannelProviderFactory(factory);
+        ChannelProviderRegistryFactory.registerChannelProviderFactory(factory);
     }
     
     /**
@@ -94,7 +94,7 @@ public class ClientFactory  {
     public static synchronized void stop() {
     	if (factory != null)
     	{
-    		ChannelAccessFactory.unregisterChannelProviderFactory(factory);
+    		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
     		factory.destroySharedInstance();
     	}
     }

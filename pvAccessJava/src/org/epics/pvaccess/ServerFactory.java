@@ -14,7 +14,7 @@
 
 package org.epics.pvaccess;
 
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.server.impl.remote.plugins.DefaultBeaconServerDataProvider;
 import org.epics.pvdata.misc.RunnableReady;
@@ -57,7 +57,7 @@ public class ServerFactory {
     		context = new ServerContextImpl();
     		context.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(context));
     		
-    		context.initialize(ChannelAccessFactory.getChannelAccess());
+    		context.initialize(ChannelProviderRegistryFactory.getChannelProviderRegistry());
 
     		// Display basic information about the context.
             System.out.println(context.getVersion().getVersionString());

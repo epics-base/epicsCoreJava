@@ -18,7 +18,7 @@ import java.io.PrintStream;
 
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.Version;
-import org.epics.pvaccess.client.ChannelAccess;
+import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.server.plugins.BeaconServerStatusProvider;
 
@@ -40,7 +40,7 @@ public interface ServerContext {
 	 * Served <code>ChannelProvider</code>(s) is read from configuration.
 	 * @param channelAccess implementation of channel access to be served.
 	 */
-	public void initialize(ChannelAccess channelAccess) throws PVAException, IllegalStateException;
+	public void initialize(ChannelProviderRegistry channelAccess) throws PVAException, IllegalStateException;
  
 	/**
 	 * Set <code>ChannelProvider</code> implementation and initialize server.

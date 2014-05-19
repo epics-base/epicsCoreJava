@@ -26,7 +26,7 @@ import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.PVAVersion;
 import org.epics.pvaccess.Version;
-import org.epics.pvaccess.client.ChannelAccess;
+import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.impl.remote.ConnectionException;
 import org.epics.pvaccess.impl.remote.Context;
@@ -188,7 +188,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Channel access.
 	 */
-	protected ChannelAccess channelAccess;
+	protected ChannelProviderRegistry channelAccess;
 
 	/**
 	 * Channel provider name.
@@ -314,7 +314,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.server.ServerContext#initialize(org.epics.pvaccess.client.ChannelAccess)
 	 */
-	public synchronized void initialize(ChannelAccess channelAccess) throws PVAException, IllegalStateException
+	public synchronized void initialize(ChannelProviderRegistry channelAccess) throws PVAException, IllegalStateException
 	{
 		if (channelAccess == null)
 			throw new IllegalArgumentException("non-null channelAccess expected");
@@ -830,7 +830,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	 * Get channel access implementation.
 	 * @return channel access implementation.
 	 */
-	public ChannelAccess getChannelAccess() {
+	public ChannelProviderRegistry getChannelAccess() {
 		return channelAccess;
 	}
 	

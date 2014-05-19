@@ -8,8 +8,8 @@ package org.epics.pvaccess.client.example;
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.Channel.ConnectionState;
-import org.epics.pvaccess.client.ChannelAccess;
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistry;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelPut;
 import org.epics.pvaccess.client.ChannelPutRequester;
@@ -60,7 +60,7 @@ public class ExampleChannelPutDoubleValue {
     }
     
     private static final String providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
-    private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
+    private static final ChannelProviderRegistry channelAccess = ChannelProviderRegistryFactory.getChannelProviderRegistry();
     
     private static class Client implements ChannelRequester, ChannelPutRequester {
         

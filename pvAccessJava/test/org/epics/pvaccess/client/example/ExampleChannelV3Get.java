@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.Channel.ConnectionState;
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelGet;
 import org.epics.pvaccess.client.ChannelGetRequester;
 import org.epics.pvaccess.client.ChannelProvider;
@@ -51,7 +51,7 @@ public class ExampleChannelV3Get {
         org.epics.ca.ClientFactory.start();
         
         ChannelProvider channelProvider =
-        	ChannelAccessFactory.getChannelAccess()
+        	ChannelProviderRegistryFactory.getChannelProviderRegistry()
         		.getProvider(org.epics.ca.ClientFactory.PROVIDER_NAME);
         
         CountDownLatch doneSignal = new CountDownLatch(1);

@@ -12,16 +12,16 @@ import java.util.TreeMap;
  * @author mrk
  *
  */
-public class ChannelAccessFactory {
+public class ChannelProviderRegistryFactory {
     private static final Map<String,ChannelProviderFactory> channelProviderMap = new TreeMap<String,ChannelProviderFactory>();
-    private static final ChannelAccessImpl channelAccess = new ChannelAccessImpl();
+    private static final ChannelProviderRegistryImpl channelProviderRegistry = new ChannelProviderRegistryImpl();
     
     /**
-     * Get the ChannelAccess interface.
+     * Get the ChannelProviderRegistry interface.
      * @return The interface.
      */
-    public static ChannelAccess getChannelAccess() {
-        return channelAccess;
+    public static ChannelProviderRegistry getChannelProviderRegistry() {
+        return channelProviderRegistry;
     }
     
     public static void registerChannelProviderFactory(ChannelProviderFactory channelProviderFactory) {
@@ -38,7 +38,7 @@ public class ChannelAccessFactory {
         }
     }
 
-    private static class ChannelAccessImpl implements ChannelAccess{
+    private static class ChannelProviderRegistryImpl implements ChannelProviderRegistry{
 
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelAccess#getProvider(java.lang.String)
