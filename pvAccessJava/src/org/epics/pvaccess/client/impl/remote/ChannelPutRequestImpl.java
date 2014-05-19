@@ -115,7 +115,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 				// put
 				// serialize only what has been changed
 				putBitSet.serialize(buffer, control);
-				pvPutStructure.serialize(buffer, control, bitSet);
+				pvPutStructure.serialize(buffer, control, putBitSet);
 			}  finally {
 				// release references
 				putBitSet = null;

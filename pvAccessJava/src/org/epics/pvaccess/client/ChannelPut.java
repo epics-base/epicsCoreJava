@@ -18,8 +18,7 @@ import org.epics.pvdata.pv.PVStructure;
 public interface ChannelPut extends ChannelRequest {
     /**
      * Put data to a channel.
-     * This fails if the request can not be satisfied.
-     * If it fails ChannelPutRequester.putDone is called before put returns.
+     * Completion status is reported by calling ChannelPutRequester.putDone() callback.
      * @param pvPutStructure The PVStructure that holds the putData.
      * @param putBitSet putPVStructure bit-set (selects what fields to put).
      */

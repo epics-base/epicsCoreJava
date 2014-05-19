@@ -13,8 +13,7 @@ package org.epics.pvaccess.client;
 public interface ChannelGet extends ChannelRequest {
     /**
      * Get data from the channel.
-     * This fails if the request can not be satisfied.
-     * If it fails ChannelGetRequester.getDone is called before get returns.
+     * Completion status is reported by calling ChannelGetRequester.getDone() callback.
      */
     void get();
 }
