@@ -53,12 +53,16 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		
 		private volatile ChannelArray channelArray;
 		
-		private volatile PVArray pvArray;
 		private volatile int length;
 		private volatile int capacity;
 		private volatile Status status;
 
+		// data container
 		private volatile PVArray pvPutArray;
+
+		// reference store
+		private volatile PVArray pvArray;
+
 		private volatile Array array;
 
 		public ChannelArrayRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
@@ -183,6 +187,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				if (QoS.GET.isSet(request))
 				{
 					pvArray.serialize(buffer, control);
+					pvArray = null;
 				}
 				else if (QoS.PROCESS.isSet(request))
 				{

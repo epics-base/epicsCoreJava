@@ -198,16 +198,28 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 				{
 					pvGetBitSet.serialize(buffer, control);
 					pvGetStructure.serialize(buffer, control, pvGetBitSet);
+					
+					// release references
+					pvGetStructure = null;
+					pvGetBitSet = null;
 				}
 				else if (QoS.GET_PUT.isSet(request))
 				{
 					pvPutBitSet.serialize(buffer, control);
 					pvPutStructure.serialize(buffer, control, pvPutBitSet);
+
+					// release references
+					pvPutStructure = null;
+					pvPutBitSet = null;
 				}
 				else
 				{
 					pvGetBitSet.serialize(buffer, control);
 					pvGetStructure.serialize(buffer, control, pvGetBitSet);
+
+					// release references
+					pvGetStructure = null;
+					pvGetBitSet = null;
 				}
 			}
 			

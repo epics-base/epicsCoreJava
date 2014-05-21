@@ -183,6 +183,10 @@ public class PutHandler extends AbstractServerResponseHandler {
 				{
 					bitSet.serialize(buffer, control);
 					pvStructure.serialize(buffer, control, bitSet);
+					
+					// release references
+					pvStructure = null;
+					bitSet = null;
 				}
 			}
 			

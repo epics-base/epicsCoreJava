@@ -147,6 +147,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 				else
 				{
 					SerializationHelper.serializeStructureFull(buffer, control, pvResponse);
+					pvResponse = null;
 				}
 			}
 				

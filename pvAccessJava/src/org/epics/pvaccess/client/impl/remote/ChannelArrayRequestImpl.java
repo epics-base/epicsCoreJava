@@ -44,7 +44,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	 */
 	protected final ChannelArrayRequester callback;
 
-	// data conitainer (for get)
+	// data container (for get)
 	protected PVArray data;
 	
 	// reference store (for put)
@@ -256,8 +256,8 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			throw new IllegalArgumentException("offset < 0");
 		if (count < 0)
 			throw new IllegalArgumentException("count < 0");
-		if (stride < 0)
-			throw new IllegalArgumentException("stride < 0");
+		if (stride <= 0)
+			throw new IllegalArgumentException("stride <= 0");
 		
 		if (destroyed) {
 			callback.getArrayDone(destroyedStatus, this, null);
@@ -293,8 +293,8 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			throw new IllegalArgumentException("offset < 0");
 		if (count < 0)
 			throw new IllegalArgumentException("count < 0");
-		if (stride < 0)
-			throw new IllegalArgumentException("stride < 0");
+		if (stride <= 0)
+			throw new IllegalArgumentException("stride <= 0");
 
 		if (destroyed) {
 			callback.putArrayDone(destroyedStatus, this);
