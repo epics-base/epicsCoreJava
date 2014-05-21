@@ -151,6 +151,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		
 		this.selector = index;
 		this.value = value;
+		super.postPut();
 	}
 
 	@Override
