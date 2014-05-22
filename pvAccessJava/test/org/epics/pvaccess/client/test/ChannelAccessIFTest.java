@@ -399,7 +399,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		}
 
 		// cancel...
-		channelFind.cancelChannelFind();
+		channelFind.cancel();
 
 		// no more responses
 		synchronized (cfrti) {

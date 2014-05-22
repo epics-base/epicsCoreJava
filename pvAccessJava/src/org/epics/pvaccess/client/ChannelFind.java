@@ -11,5 +11,5 @@ package org.epics.pvaccess.client;
  */
 public interface ChannelFind {
      ChannelProvider getChannelProvider();
-     void cancelChannelFind();
+     void cancel();
 }

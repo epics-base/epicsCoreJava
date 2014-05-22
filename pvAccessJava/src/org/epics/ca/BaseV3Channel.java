@@ -116,10 +116,10 @@ V3Channel,ConnectionListener
     }
     
     /* (non-Javadoc)
-     * @see org.epics.ioc.channelAccess.ChannelFind#cancelChannelFind()
+     * @see org.epics.ioc.channelAccess.ChannelFind#cancel()
      */
     @Override
-    public void cancelChannelFind() {
+    public void cancel() {
         jcaChannel.dispose();
         jcaChannel = null;
     }

@@ -232,10 +232,10 @@ public class ClientFactory  {
             return v3Channel;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvaccess.client.ChannelFind#cancelChannelFind()
+         * @see org.epics.pvaccess.client.ChannelFind#cancel()
          */
         @Override
-        public void cancelChannelFind() {
+        public void cancel() {
             v3Channel.destroy();
         }
         /* (non-Javadoc)

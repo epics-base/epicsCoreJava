@@ -54,7 +54,7 @@ public class RPCChannelProvider implements ChannelProvider {
 			}
 			
 			@Override
-			public void cancelChannelFind() {
+			public void cancel() {
 				// noop
 			}
 		};

@@ -1143,7 +1143,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 		}
 		
 		@Override
-		public void cancelChannelFind() {
+		public void cancel() {
 			// noop, sync call
 		}
 	};
