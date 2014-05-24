@@ -278,7 +278,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		String loggerName = thisClassName;
 		logger = Logger.getLogger(loggerName);
 		
-		if (System.getProperties().containsKey(PVAConstants.PVACCESS_DEBUG))
+		// TODO use config
+		if (Integer.getInteger(PVAConstants.PVACCESS_DEBUG) > 0)
 		{
 			logger.setLevel(Level.ALL);
 			boolean found = false;

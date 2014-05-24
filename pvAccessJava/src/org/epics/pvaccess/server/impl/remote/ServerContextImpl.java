@@ -244,7 +244,8 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected void initializeLogger()
 	{
 		logger = Logger.getLogger(this.getClass().getName());
-		if (System.getProperties().containsKey(PVAConstants.PVACCESS_DEBUG))
+		// TODO use config
+		if (Integer.getInteger(PVAConstants.PVACCESS_DEBUG) > 0)
 		{
 			logger.setLevel(Level.ALL);
 			boolean found = false;
