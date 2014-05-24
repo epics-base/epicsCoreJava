@@ -111,6 +111,8 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			this.pvGetStructure = pvGetStructure;
 			this.pvGetBitSet = pvGetBitSet;
 			
+			// TODO should we check if pvStructure and bitSet are consistent/valid
+
 			transport.enqueueSendRequest(this);
 		}
 
@@ -121,6 +123,8 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			this.pvPutStructure = pvPutStructure;
 			this.pvPutBitSet = pvPutBitSet;
 			
+			// TODO should we check if pvStructure and bitSet are consistent/valid
+
 			transport.enqueueSendRequest(this);
 		}
 
@@ -131,6 +135,8 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			this.pvGetStructure = pvGetStructure;
 			this.pvGetBitSet = pvGetBitSet;
 			
+			// TODO should we check if pvStructure and bitSet are consistent/valid
+
 			transport.enqueueSendRequest(this);
 		}
 

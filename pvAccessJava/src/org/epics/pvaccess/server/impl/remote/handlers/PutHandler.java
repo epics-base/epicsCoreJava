@@ -111,6 +111,8 @@ public class PutHandler extends AbstractServerResponseHandler {
 			this.pvStructure = pvStructure;
 			this.bitSet = bitSet;
 			
+			// TODO should we check if pvStructure and bitSet are consistent/valid
+
 			transport.enqueueSendRequest(this);
 		}
 
