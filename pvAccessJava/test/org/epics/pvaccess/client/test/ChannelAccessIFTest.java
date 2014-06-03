@@ -1565,6 +1565,37 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
+		public void syncGetLength(boolean lastRequest)
+		{
+			syncGetLength(lastRequest, true);
+		}
+		
+		public void syncGetLength(boolean lastRequest, boolean expectedSuccess)
+		{
+			synchronized (this) {
+				if (connected == null)
+					assertNotNull("channel array not connected", connected);
+					
+				success = null;
+				if (lastRequest)
+					channelArray.lastRequest();
+				channelArray.getLength();
+				
+				try {
+					if (success == null)
+						this.wait(getTimeoutMs());
+				} catch (InterruptedException e) {
+					// noop
+				}
+				
+				assertNotNull("channel array getLength timeout", success);
+				if (expectedSuccess)
+					assertTrue("channel array getLength failed", success.booleanValue());
+				else
+					assertFalse("channel array getLength has not failed", success.booleanValue());
+			}
+		}
+
 		@Override
 		public void getLengthDone(Status status, ChannelArray channelArray,
 				int length, int capacity) {
@@ -2628,6 +2659,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 	    for (int i = NEW_CAP; i < count; i++)
 	    	assertEquals(0.0, doubleData.data[i]);
+
+	    // test setLength with capacity 0 (no change) and getLength
+	    final int NEW_LEN = BIG_CAPACITY/2;
+	    channelArrayRequester.syncSetLength(false, NEW_LEN, 0);	
+	    channelArrayRequester.syncGetLength(false);	
+	    assertEquals(NEW_LEN, channelArrayRequester.length);
+	    assertEquals(BIG_CAPACITY, channelArrayRequester.capacity);
 
 		channelArrayTestNoConnection(ch, true);
 		channelArrayTestNoConnection(ch, false);
