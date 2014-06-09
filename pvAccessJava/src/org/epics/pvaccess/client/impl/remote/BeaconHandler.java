@@ -16,7 +16,6 @@ package org.epics.pvaccess.client.impl.remote;
 
 import java.net.InetSocketAddress;
 
-import org.epics.pvdata.property.TimeStamp;
 import org.epics.pvdata.pv.PVField;
 
 /**
@@ -31,12 +30,14 @@ public interface BeaconHandler  {
 	 * @param from who is notifying.
 	 * @param remoteTransportRevision encoded (major, minor) revision.
 	 * @param timestamp time when beacon was received.
-	 * @param startupTime server (reported) startup time.
+	 * @param guid server GUID.
 	 * @param sequentalID sequential ID (unsigned short).
+	 * @param changeCount change count (unsigned short).
 	 * @param data server status data, can be <code>null</code>.
 	 */
 	public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
-							 long timestamp, TimeStamp startupTime, int sequentalID,
+							 long timestamp, byte[] guid, int sequentalID,
+							 int changeCount,
 							 PVField data);
 
 }

@@ -19,6 +19,7 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channel;
 
 import org.epics.pvdata.pv.DeserializableControl;
+import org.epics.pvdata.pv.Status;
 
 
 
@@ -127,8 +128,9 @@ public interface Transport extends DeserializableControl, Channel {
 	
 	/**
 	 * Acknowledge that transport was verified.
+	 * @param status verification status.
 	 */
-	void verified();
+	void verified(Status status);
 	
 	/**
 	 * Alive notification.

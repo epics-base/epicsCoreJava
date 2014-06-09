@@ -44,6 +44,13 @@ public interface ChannelProvider {
      */
     ChannelFind channelFind(String channelName,ChannelFindRequester channelFindRequester);
     /**
+     * Find a channel.
+     * @param channelName The channel name.
+     * @param channelListRequester The requester.
+     * @return An interface for the find.
+     */
+    ChannelFind channelList(ChannelListRequester channelListRequester);
+    /**
      * Create a channel.
      * @param channelName The name of the channel.
      * @param channelRequester The requester.

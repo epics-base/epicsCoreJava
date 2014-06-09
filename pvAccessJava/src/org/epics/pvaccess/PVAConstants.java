@@ -29,7 +29,7 @@ public interface PVAConstants {
 	/**
 	 * PVA protocol revision (implemented by this library).
 	 */
-	public static final byte PVA_PROTOCOL_REVISION = 0;
+	public static final byte PVA_PROTOCOL_REVISION = 1;
 
 	/**
 	 * PVA version signature used to report this implementation version in header.

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +32,7 @@ import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.impl.remote.ConnectionException;
 import org.epics.pvaccess.impl.remote.Context;
+import org.epics.pvaccess.impl.remote.ProtocolType;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportRegistry;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
@@ -198,7 +201,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Channel provider.
 	 */
-	protected ChannelProvider channelProvider = null;
+	protected ChannelProvider channelProvider;
 	
 	/**
 	 * Response handler.
@@ -208,7 +211,12 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Run lock.
 	 */
-	protected Object runLock = new Object();
+	protected final Object runLock = new Object();
+	
+	/**
+	 * GUID.
+	 */
+	private final byte[] guid = new byte[12];
 	
 	/**
 	 * Constructor.
@@ -224,12 +232,34 @@ public class ServerContextImpl implements ServerContext, Context {
 	 */
 	public ServerContextImpl(ChannelProvider channelProvider)
 	{
+		generateGUID();
 		initializeLogger();
 		loadConfiguration();
 		this.channelProvider = channelProvider;
 		this.serverResponseHandler = new ServerResponseHandler(this);
 	}
 
+	/**
+	 * Generate GUID.
+	 */
+	private void generateGUID()
+	{
+		// put first 12-bytes of UUID into the byte-array
+		UUID uuid4 = UUID.randomUUID();
+		ByteBuffer bb = ByteBuffer.wrap(guid);
+		bb.putLong(uuid4.getMostSignificantBits());
+		bb.putInt((int)(uuid4.getLeastSignificantBits() >>> 32));
+	}
+	
+	/**
+	 * Returns GUID (12-byte array)
+	 * @return GUID.
+	 */
+	public byte[] getGUID()
+	{
+		return guid;
+	}
+	
 	/* (non-Javadoc)
      * @see org.epics.pvaccess.server.ServerContext#getVersion()
      */
@@ -417,7 +447,7 @@ public class ServerContextImpl implements ServerContext, Context {
 		// setup broadcast UDP transport
 		initializeBroadcastTransport();
 
-		beaconEmitter = new BeaconEmitter(broadcastTransport, this);
+		beaconEmitter = new BeaconEmitter(ProtocolType.tcp.name(), broadcastTransport, this);
 	}
 
 	/**
@@ -461,7 +491,7 @@ public class ServerContextImpl implements ServerContext, Context {
 				
 				InetSocketAddress[] list = InetAddressUtil.getSocketAddressList(beaconAddressList, broadcastPort, appendList);
 				if (list != null && list.length > 0)
-					broadcastTransport.setBroadcastAddresses(list);
+					broadcastTransport.setSendAddresses(list);
 			}
 
 			broadcastTransport.start();
@@ -759,7 +789,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	public String getIgnoreAddressList() {
 		return ignoreAddressList;
 	}
-
+	
 	// ************************************************************************** //
 
 	/**

@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.client.impl.remote.search.ChannelSearchManager;
 import org.epics.pvaccess.impl.remote.Transport;
+import org.epics.pvdata.misc.SerializeHelper;
 
 
 /**
@@ -47,13 +48,13 @@ public class SearchResponseHandler extends AbstractClientResponseHandler {
 	public void handleResponse(InetSocketAddress responseFrom, Transport transport, byte version, byte command, int payloadSize, ByteBuffer payloadBuffer) {
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 
-		transport.ensureData(Integer.SIZE/Byte.SIZE+1);
-		final int searchSequenceId = payloadBuffer.getInt();
-		final boolean found = payloadBuffer.get() != 0;
-		if (!found)
-			return;
+		transport.ensureData(12+4+16+2);
+		
+		// 12-byte GUID
+		byte[] guid = new byte[12]; 
+		payloadBuffer.get(guid);
 
-		transport.ensureData((128+2*Short.SIZE)/Byte.SIZE);
+		final int searchSequenceId = payloadBuffer.getInt();
 
 		// 128-bit IPv6 address
 		byte[] byteAddress = new byte[16]; 
@@ -77,12 +78,20 @@ public class SearchResponseHandler extends AbstractClientResponseHandler {
 		else
 			responseFrom = new InetSocketAddress(responseFrom.getAddress(), port);
 
+		// TODO for now we support only one
+		/*final String protocol =*/ SerializeHelper.deserializeString(payloadBuffer, transport);
+		
+		transport.ensureData(1);
+		final boolean found = payloadBuffer.get() != 0;
+		if (!found)
+			return;
+
 		// reads CIDs
 		final ChannelSearchManager csm = context.getChannelSearchManager();
 		final int count = payloadBuffer.getShort() & 0xFFFF;
 		for (int i = 0; i < count; i++)
 		{
-			transport.ensureData(Integer.SIZE/Byte.SIZE);
+			transport.ensureData(4);
 			final int cid = payloadBuffer.getInt();
 			csm.searchResponse(cid, searchSequenceId, version, responseFrom);
 		}

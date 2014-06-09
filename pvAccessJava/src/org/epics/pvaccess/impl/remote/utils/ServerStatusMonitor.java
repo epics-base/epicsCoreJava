@@ -16,12 +16,12 @@ package org.epics.pvaccess.impl.remote.utils;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.client.impl.remote.BeaconHandler;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
-import org.epics.pvdata.property.TimeStamp;
 import org.epics.pvdata.pv.PVField;
 
 /**
@@ -50,11 +50,8 @@ public class ServerStatusMonitor implements BeaconHandler {
 			this.beaconHandler = beaconHandler;
 		}
 
-		/**
-		 * @see org.epics.pvaccess.client.impl.remote.ClientContextImpl#getBeaconHandler(java.net.InetSocketAddress)
-		 */
 		@Override
-		public BeaconHandler getBeaconHandler(InetSocketAddress responseFrom) {
+		public BeaconHandler getBeaconHandler(String protocol, InetSocketAddress responseFrom) {
 			return beaconHandler;
 		}
 		
@@ -65,22 +62,21 @@ public class ServerStatusMonitor implements BeaconHandler {
 	 */
 	private static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.BeaconHandler#beaconNotify(InetSocketAddress, byte, long, TimeStamp, int, PVField)
-	 */
+	@Override
 	public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
-							 long timestamp, TimeStamp startupTime, int sequentalID,
-							 PVField data) {
+							 long timestamp, byte[] guid, int sequentalID,
+							 int changeCount, PVField data) {
 		// sync timeFormatter and System.out
 		synchronized(timeFormatter)
 		{
 			final byte major = (byte)(remoteTransportRevision >> 4); 
 			final byte minor = (byte)(remoteTransportRevision & 0x0F);
-			System.out.printf("[%s] %s: seqID %d, version %d.%d, startup %s\n",
+			System.out.printf("[%s] %s: seqID %d, version %d.%d, guid %s, change %d\n",
 					timeFormatter.format(new Date(timestamp)),
 					from,
 					sequentalID, major, minor,
-					timeFormatter.format(new Date(startupTime.getMilliSeconds())));
+					Arrays.toString(guid),
+					changeCount);
 			if (data != null)
 				System.out.println(data);
 		}

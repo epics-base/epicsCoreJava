@@ -29,7 +29,10 @@ import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.impl.remote.server.ServerChannel;
 import org.epics.pvaccess.impl.remote.tcp.BlockingTCPTransport;
 import org.epics.pvaccess.util.IntHashMap;
+import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Status.StatusType;
 
 /**
  * Server TCP transport implementation.
@@ -206,6 +209,9 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 		// noop
 	}
 
+	// always called from the same thread, therefore no sync needed
+	private boolean verifyOrVerified = false;
+	
 	/**
 	 * PVA connection validation request.
 	 * A server sends a validate connection message when it receives a new connection.
@@ -229,32 +235,55 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {
 
-		//
-		// set byte order control message 
-		//
-		
-		ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
-		sendBuffer.put(PVAConstants.PVA_MAGIC);
-		sendBuffer.put(PVAConstants.PVA_VERSION);
-		sendBuffer.put((byte)0x81);		// control + big endian
-		sendBuffer.put((byte)2);		// set byte order
-		sendBuffer.putInt(0);		
-
-		
-		//
-		// send verification message
-		//
-		
-		control.startMessage((byte)1, 2*Integer.SIZE/Byte.SIZE);
-		
-		// receive buffer size
-		buffer.putInt(getReceiveBufferSize());
+		if (!verifyOrVerified)
+		{
+			verifyOrVerified = true;
 			
-		// socket receive buffer size
-		buffer.putInt(getSocketReceiveBufferSize());
-		
-		// send immediately
-		control.flush(true);
+			//
+			// set byte order control message 
+			//
+			
+			ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+			sendBuffer.put(PVAConstants.PVA_MAGIC);
+			sendBuffer.put(PVAConstants.PVA_VERSION);
+			sendBuffer.put((byte)0x81);		// control + big endian
+			sendBuffer.put((byte)2);		// set byte order
+			sendBuffer.putInt(0);		
+	
+			
+			//
+			// send verification message
+			//
+			
+			control.startMessage((byte)1, 4+2);
+			
+			// receive buffer size
+			buffer.putInt(getReceiveBufferSize());
+				
+			// server introspection registry max size
+			// TODO
+			buffer.putShort(Short.MAX_VALUE);
+			
+			// list of authNZ plugin names
+			// TODO
+			buffer.put((byte)0);
+			
+			// send immediately
+			control.flush(true);
+		}
+		else
+		{
+			//
+			// send verified message
+			//
+			
+			control.startMessage((byte)9, 0);
+			
+			verificationStatus.serialize(buffer, control);
+			
+			// send immediately
+			control.flush(true);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -273,22 +302,25 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	public void release(TransportClient client) {
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.impl.remote.Transport#verified()
-	 */
+	private volatile Status verificationStatus = 
+		StatusFactory.getStatusCreate()
+			.createStatus(StatusType.ERROR, "server-side valiation timeout", null);
+
 	@Override
-	public void verified() {
+	public void verified(Status status) {
+		verificationStatus = status;
+		super.verified(status);
 	}
 	
-	/**
-     * Verify transport. Server side is self-verified.
-	 * @see org.epics.pvaccess.impl.remote.Transport#verify(long)
-	 */
 	@Override
 	public boolean verify(long timeoutMs) {
 		enqueueSendRequest(this);
-		verified();
-		return true;
+		
+		boolean verified = super.verify(timeoutMs);
+		
+		enqueueSendRequest(this);
+
+		return verified;
 	}
 	
 	/* (non-Javadoc)

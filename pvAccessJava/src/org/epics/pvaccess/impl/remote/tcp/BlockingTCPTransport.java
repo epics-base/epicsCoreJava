@@ -30,6 +30,7 @@ import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
 import org.epics.pvaccess.impl.remote.codec.impl.BlockingSocketAbstractCodec;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Status;
 
 
 /**
@@ -130,7 +131,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	 */
 	@Override
 	public String getType() {
-		return ProtocolType.TCP.name();
+		return ProtocolType.tcp.name();
 	}
 
 	/* (non-Javadoc)
@@ -280,4 +281,43 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	public void cachedSerialize(Field field, ByteBuffer buffer) {
 		outgoingIR.serialize(field, buffer, this);
 	}
+	
+	protected boolean verified = false;
+	private Object verifiedMonitor = new Object();
+	
+	@Override
+	public void verified(Status status) {
+		synchronized (verifiedMonitor) {
+			
+			if (!status.isOK())
+			{
+				String logMessage ="Failed to verify connection to " + socketAddress + ": " + status.getMessage();
+				String stackDump = status.getStackDump();
+				if (stackDump != null && !stackDump.isEmpty())
+					logMessage += "\n" + stackDump;
+				context.getLogger().fine(logMessage);
+			}
+			
+			verified = status.isSuccess();
+			verifiedMonitor.notifyAll();
+		}
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.epics.pvaccess.impl.remote.Transport#verify(long)
+	 */
+	@Override
+	public boolean verify(long timeoutMs) {
+		synchronized (verifiedMonitor) {
+			try {
+				final long start = System.currentTimeMillis();
+				while (!verified && (System.currentTimeMillis() - start) < timeoutMs)
+						verifiedMonitor.wait(timeoutMs);
+			} catch (InterruptedException e) {
+				// noop
+			}
+			return verified;
+		}
+	}
+	
 }

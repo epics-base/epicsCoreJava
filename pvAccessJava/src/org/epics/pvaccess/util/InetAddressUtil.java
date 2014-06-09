@@ -25,7 +25,9 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
@@ -77,6 +79,52 @@ public class InetAddressUtil {
 		InetSocketAddress[] retVal = new InetSocketAddress[list.size()];
 		list.toArray(retVal);
 		return retVal;
+	}
+
+	/**
+	 * Get a set of broadcast addresses.
+	 * @return set of broadcast addresses.
+	 */
+	public static Set<InetAddress> getBroadcastAddresses() {
+
+		Set<InetAddress> set = new HashSet<InetAddress>(10);
+
+		Enumeration<NetworkInterface> nets;
+		try {
+			nets = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException se) {
+			// fallback
+			try {
+				set.add(InetAddress.getByAddress(new byte[] { (byte)255, (byte)255, (byte)255, (byte)255 }));
+			} catch (UnknownHostException e) {
+				// noop
+			}
+			return set;
+		}
+
+		while (nets.hasMoreElements())
+		{
+			NetworkInterface net = nets.nextElement();
+			try
+			{
+				if (net.isUp())
+				{
+					List<InterfaceAddress> interfaceAddresses = net.getInterfaceAddresses();
+					if (interfaceAddresses != null)
+						for (InterfaceAddress addr : interfaceAddresses)
+						{
+							InetAddress ba = addr.getBroadcast();
+							if (ba != null)		// Set class takes care of duplicates
+								set.add(ba);
+						}
+				}
+			} catch (Throwable th) {
+				// some methods throw exceptions, some return null (and they shouldn't)
+				// noop, skip that interface
+			}
+		}
+		
+		return set;
 	}
 
 	/**

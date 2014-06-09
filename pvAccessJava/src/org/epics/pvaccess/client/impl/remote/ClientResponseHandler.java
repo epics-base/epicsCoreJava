@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvaccess.client.impl.remote.handlers.BadResponse;
 import org.epics.pvaccess.client.impl.remote.handlers.BeaconHandler;
+import org.epics.pvaccess.client.impl.remote.handlers.ConnectionValidatedHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.ConnectionValidationHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.CreateChannelHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.DataResponseHandler;
@@ -68,7 +69,7 @@ public class ClientResponseHandler implements ResponseHandler {
 				dataResponse, /*  6 - introspection search */
 				new CreateChannelHandler(context), /*  7 */
 				new NoopResponse(context, "Destroy channel"), /*  8 */ // TODO it might be useful to implement this...
-				badResponse, /*  9 */
+				new ConnectionValidatedHandler(context), /*  9 */
 				dataResponse, /* 10 - get response */
 				dataResponse, /* 11 - put response */
 				dataResponse, /* 12 - put-get response */

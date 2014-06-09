@@ -29,6 +29,7 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.io.Poller;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvaccess.impl.remote.tcp.NonBlockingTCPTransport;
+import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.misc.Timer.TimerCallback;
 import org.epics.pvdata.misc.Timer.TimerNode;
 import org.epics.pvdata.misc.TimerFactory;
@@ -348,16 +349,21 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 			// send verification response message
 			//
 			
-			control.startMessage((byte)1, (2*Integer.SIZE+Short.SIZE)/Byte.SIZE);
+			control.startMessage((byte)1, 4+2+2);
 	
 			// receive buffer size
 			buffer.putInt(getReceiveBufferSize());
 	
-			// socket receive buffer size
-			buffer.putInt(getSocketReceiveBufferSize());
+			// max introspection registry size
+			// TODO
+			buffer.putShort(Short.MAX_VALUE);
 			
-			// connection priority
+			// QoS (aka connection priority(
 			buffer.putShort(getPriority());
+			
+			// list of authNZ plugin name
+			// TODO
+			SerializeHelper.serializeString("", buffer, control);
 			
 			// send immediately
 			control.flush(true);
@@ -372,37 +378,6 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 		}
 	}
 	
-	protected boolean verified = false;
-	private Object verifiedMonitor = new Object();
-	
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.impl.remote.Transport#verified()
-	 */
-	@Override
-	public void verified() {
-		synchronized (verifiedMonitor) {
-			verified = true;
-			verifiedMonitor.notifyAll();
-		}
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.impl.remote.Transport#verify(long)
-	 */
-	@Override
-	public boolean verify(long timeoutMs) {
-		synchronized (verifiedMonitor) {
-			try {
-				final long start = System.currentTimeMillis();
-				while (!verified && (System.currentTimeMillis() - start) < timeoutMs)
-						verifiedMonitor.wait(timeoutMs);
-			} catch (InterruptedException e) {
-				// noop
-			}
-			return verified;
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.codec.impl.NonBlockingAbstractCodec#ready()
 	 */

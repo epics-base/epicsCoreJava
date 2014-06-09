@@ -35,6 +35,7 @@ import org.epics.pvaccess.Version;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelFind;
 import org.epics.pvaccess.client.ChannelFindRequester;
+import org.epics.pvaccess.client.ChannelListRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.impl.remote.search.ChannelSearchManager;
@@ -46,6 +47,7 @@ import org.epics.pvaccess.client.impl.remote.tcp.BlockingTCPConnector.TransportF
 import org.epics.pvaccess.client.impl.remote.tcp.NonBlockingClientTCPTransport;
 import org.epics.pvaccess.impl.remote.ConnectionException;
 import org.epics.pvaccess.impl.remote.Context;
+import org.epics.pvaccess.impl.remote.ProtocolType;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportClient;
 import org.epics.pvaccess.impl.remote.TransportRegistry;
@@ -61,6 +63,7 @@ import org.epics.pvaccess.util.configuration.ConfigurationProvider;
 import org.epics.pvaccess.util.configuration.impl.ConfigurationFactory;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import org.epics.pvaccess.util.sync.NamedLockPattern;
+import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.ThreadPriority;
 import org.epics.pvdata.misc.Timer;
 import org.epics.pvdata.misc.TimerFactory;
@@ -238,7 +241,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	/**
 	 * Beacon handler map.
 	 */
-	protected final Map<InetSocketAddress, BeaconHandlerImpl> beaconHandlers = new HashMap<InetSocketAddress, BeaconHandlerImpl>();
+	protected final Map<String, Map<InetSocketAddress, BeaconHandlerImpl>> beaconHandlers = new HashMap<String, Map<InetSocketAddress, BeaconHandlerImpl>>();
 
 	/**
 	 * Response handler.
@@ -508,8 +511,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 				
 				InetSocketAddress[] list = InetAddressUtil.getSocketAddressList(addressList, broadcastPort, appendList);
 				if (list != null && list.length > 0) {
-					broadcastTransport.setBroadcastAddresses(list);
-					searchTransport.setBroadcastAddresses(list);
+					broadcastTransport.setSendAddresses(list);
+					searchTransport.setSendAddresses(list);
 				}
 			}
 			
@@ -1092,17 +1095,30 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 
 	/**
 	 * Get (and if necessary create) beacon handler.
+	 * @param protocol protocol used.
 	 * @param responseFrom remote source address of received beacon.	
 	 * @return beacon handler for particular server.
 	 */
-	public BeaconHandler getBeaconHandler(InetSocketAddress responseFrom)
+	public BeaconHandler getBeaconHandler(String protocol, InetSocketAddress responseFrom)
 	{
+		// TODO for now we monitor only TCP responses
+		if (!protocol.equals(ProtocolType.tcp.name()))
+			return null;
+		
 		synchronized (beaconHandlers) {
-			BeaconHandlerImpl handler = beaconHandlers.get(responseFrom);
+			Map<InetSocketAddress, BeaconHandlerImpl> protocolBeaconHandlersMap = 
+				beaconHandlers.get(protocol);
+			if (protocolBeaconHandlersMap == null)
+			{
+				protocolBeaconHandlersMap = new HashMap<InetSocketAddress, BeaconHandlerImpl>();
+				beaconHandlers.get(protocolBeaconHandlersMap);
+			}
+			
+			BeaconHandlerImpl handler = protocolBeaconHandlersMap.get(responseFrom);
 			if (handler == null)
 			{
-				handler = new BeaconHandlerImpl(this, responseFrom);
-				beaconHandlers.put(responseFrom, handler);
+				handler = new BeaconHandlerImpl(this, protocol, responseFrom);
+				protocolBeaconHandlersMap.put(responseFrom, handler);
 			}
 			return handler;
 		}
@@ -1114,6 +1130,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 
 	private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
     private static final Status okStatus = statusCreate.getStatusOK();
+
+    private static final Status listNotSupported = 
+    	StatusFactory.getStatusCreate()
+    		.createStatus(StatusType.ERROR, "channelList not supported", null);
+
 
     private class ChannelProviderImpl implements ChannelProvider
 	{
@@ -1208,7 +1229,17 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			}
 		}
 	
-		/* (non-Javadoc)
+        @Override
+		public ChannelFind channelList(ChannelListRequester channelListRequester) {
+
+        	if (channelListRequester == null)
+				throw new IllegalArgumentException("null requester");
+
+			channelListRequester.channelListResult(listNotSupported, null, null, false);
+			return null;
+		}
+
+        /* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short)
 		 */
 		@Override

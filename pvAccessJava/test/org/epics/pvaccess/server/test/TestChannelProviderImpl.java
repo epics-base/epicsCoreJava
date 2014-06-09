@@ -33,6 +33,7 @@ import org.epics.pvaccess.client.ChannelFind;
 import org.epics.pvaccess.client.ChannelFindRequester;
 import org.epics.pvaccess.client.ChannelGet;
 import org.epics.pvaccess.client.ChannelGetRequester;
+import org.epics.pvaccess.client.ChannelListRequester;
 import org.epics.pvaccess.client.ChannelProcess;
 import org.epics.pvaccess.client.ChannelProcessRequester;
 import org.epics.pvaccess.client.ChannelProvider;
@@ -1279,7 +1280,17 @@ public class TestChannelProviderImpl implements ChannelProvider
 		return channelFind;
 	}
 
-	private static final Status channelNotFoundStatus =
+    @Override
+	public ChannelFind channelList(ChannelListRequester channelListRequester) {
+
+    	if (channelListRequester == null)
+			throw new IllegalArgumentException("null requester");
+
+		channelListRequester.channelListResult(okStatus, channelFind, HOSTED_CHANNELS_SET, true);
+		return channelFind;
+	}
+
+    private static final Status channelNotFoundStatus =
 		statusCreate.createStatus(StatusType.ERROR, "channel not found", null);
 
 	@Override

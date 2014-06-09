@@ -353,7 +353,7 @@ public abstract class CopyOfBlockingTCPTransport implements Transport, Transport
 	 * @see org.epics.pvaccess.impl.remote.Transport#getType()
 	 */
 	public String getType() {
-		return ProtocolType.TCP.name();
+		return ProtocolType.tcp.name();
 	}
 
 	enum ReceiveStage { READ_FROM_SOCKET, PROCESS_HEADER, PROCESS_PAYLOAD };

@@ -107,9 +107,7 @@ public class BlockingTCPAcceptor {
 				// enable TCP_KEEPALIVE
 				socket.socket().setKeepAlive(true);
 
-				// TODO tune buffer sizes?!
-				//socket.socket().setReceiveBufferSize();
-				//socket.socket().setSendBufferSize();
+				// do NOT tune socket buffer sizes, this will disable auto-tuning
 				
 				// create transport
 				final Transport transport = new BlockingServerTCPTransport(context, socket, ((ServerContextImpl)context).getServerResponseHandler(), receiveBufferSize);
@@ -146,7 +144,8 @@ public class BlockingTCPAcceptor {
 	private boolean validateConnection(Transport transport, SocketAddress address)
 	{
 		try {
-			transport.verify(0);
+			// TODO constant
+			transport.verify(5000);
 			return true;
 		}
 		catch (Throwable th) {
@@ -157,12 +156,13 @@ public class BlockingTCPAcceptor {
 	}
 	
 	/**
-	 * Initialize connection acception. 
+	 * Initialize connection acceptance. 
 	 * @return port where server is listening
 	 */
 	private int initialize(int port) throws PVAException
 	{
 		// specified bind address
+		// TODO EPICS_PVAS_INTF_ADDR_LIST, same as EPICS_CAS_INTF_ADDR_LIST
 		bindAddress = new InetSocketAddress(port);
 
 		int tryCount = 0;
