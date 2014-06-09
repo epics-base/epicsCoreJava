@@ -78,6 +78,13 @@ import org.epics.pvdata.pv.StatusCreate;
  */
 public class ClientContextImpl implements Context/*, Configurable*/ {
 
+	static
+	{
+		// force only IPv4 sockets, since EPICS does not work right with IPv6 sockets
+		// see http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
+		System.setProperty("java.net.preferIPv4Stack", "true");
+	}
+	
 	/**
 	 * Name if the provider this context provides.
 	 */
