@@ -10,7 +10,7 @@ package org.epics.pvaccess.client;
  * @author mrk
  *
  */
-public interface ChannelAccess {
+public interface ChannelProviderRegistry {
     /**
      * Get a shared instance of the provider with the specified name.
      * @param providerName The name of the provider.

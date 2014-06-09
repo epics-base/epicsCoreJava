@@ -19,11 +19,13 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.SocketException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.epics.pvaccess.PVAConstants;
@@ -35,8 +37,10 @@ import org.epics.pvaccess.impl.remote.TransportClient;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
+import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.Status;
 
 
 /**
@@ -70,6 +74,11 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 * Send addresses.
 	 */
 	private InetSocketAddress[] sendAddresses;
+
+	/**
+	 * Send addresses.
+	 */
+	private boolean[] isSendAddressUnicast;
 
 	/**
 	 * Ignore addresses.
@@ -111,10 +120,15 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		this.responseHandler = responseHandler;
 		this.channel = channel;
 		this.bindAddress = bindAddress;
-		this.sendAddresses = sendAddresses;
+		setSendAddresses(sendAddresses);
 
-		socketAddress = bindAddress;
-
+		try {
+			this.socketAddress = (InetSocketAddress)channel.socket().getLocalSocketAddress();
+		}
+		catch (Throwable th) {
+			context.getLogger().log(Level.FINER, "Failed to obtain local socket address.", th);
+		}
+		
 		// allocate receive buffer
 		receiveBuffer = ByteBuffer.allocate(PVAConstants.MAX_UDP_PACKET);
 		
@@ -317,11 +331,17 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	}
 
 	/**
+	 * InetAddress type.
+	 */
+	public enum InetAddressType { ALL, UNICAST, BROADCAST_MULTICAST };
+	
+	/**
 	 * Send a buffer through the transport.
 	 * @param buffer	buffer to send. 
+	 * @param target 	filter (selector) of what addresses to use when sending.
 	 * @return success status.
 	 */
-	public boolean send(ByteBuffer buffer) 
+	public boolean send(ByteBuffer buffer, InetAddressType target) 
 	{
 		// noop check
 		if (sendAddresses == null)
@@ -329,6 +349,12 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 			
 		for (int i = 0; i < sendAddresses.length; i++)
 		{
+			// filter
+			if (target != InetAddressType.ALL)
+				if ((target == InetAddressType.UNICAST && !isSendAddressUnicast[i]) ||
+					(target == InetAddressType.BROADCAST_MULTICAST && isSendAddressUnicast[i]))
+					continue;
+				
 			try
 			{
 				// prepare buffer
@@ -341,7 +367,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 			catch (NoRouteToHostException nrthe)
 			{
 				context.getLogger().log(Level.FINER, "No route to host exception caught when sending to: " + sendAddresses[i] + ".", nrthe);
-				return false;
+				continue;
 			}
 			catch (Throwable ex) 
 			{
@@ -352,7 +378,17 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		
 		return true;
 	}
-	
+
+	/**
+	 * Send a buffer through the transport.
+	 * @param buffer	buffer to send. 
+	 * @return success status.
+	 */
+	public boolean send(ByteBuffer buffer) 
+	{
+		return send(buffer, InetAddressType.ALL);
+	}
+
 	/**
 	 * Send a buffer through the transport immediately. 
 	 * @param buffer	buffer to send. 
@@ -389,7 +425,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 * @see org.epics.pvaccess.impl.remote.Transport#getType()
 	 */
 	public String getType() {
-		return ProtocolType.UDP.name();
+		return ProtocolType.udp.name();
 	}
 
 	/**
@@ -459,8 +495,19 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 * Set list of send addresses.
 	 * @param addresses list of send addresses, non-<code>null</code>.
 	 */
-	public void setBroadcastAddresses(InetSocketAddress[] addresses) {
+	public void setSendAddresses(InetSocketAddress[] addresses) {
 		sendAddresses = addresses;
+		
+		isSendAddressUnicast = new boolean[sendAddresses.length];
+		Set<InetAddress> broadcastAddresses = InetAddressUtil.getBroadcastAddresses();
+		for (int i = 0; i < sendAddresses.length; i++)
+		{
+			InetAddress address = sendAddresses[i].getAddress();
+			// unicast = not broadcast and not multicast
+			isSendAddressUnicast[i] =
+						!broadcastAddresses.contains(address) && 
+						!address.isMulticastAddress();
+		}
 	}
 
 	/**
@@ -612,7 +659,8 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	 */
 	@Override
 	public void ensureData(int size) {
-		// noop for UDP (packet based)
+		if (receiveBuffer.remaining() < size)
+			throw new BufferUnderflowException();
 	}
 
 	
@@ -669,11 +717,8 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.impl.remote.Transport#verified()
-	 */
 	@Override
-	public void verified() {
+	public void verified(Status status) {
 		// noop
 	}
 

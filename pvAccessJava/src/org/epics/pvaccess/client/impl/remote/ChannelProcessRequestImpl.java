@@ -103,22 +103,6 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		try {
-			callback.processDone(status);
-		} catch (Throwable th) {
-			// guard PVA code from exceptions
-			Writer writer = new StringWriter();
-			PrintWriter printWriter = new PrintWriter(writer);
-			th.printStackTrace(printWriter);
-			requester.message("Unexpected exception caught while calling a callback: " + writer, MessageType.fatalError);
-		}
-	}
-
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#initResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
 	@Override
@@ -140,7 +124,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	@Override
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
 		try {
-			callback.processDone(status);
+			callback.processDone(status, this);
 		} catch (Throwable th) {
 			// guard PVA code from exceptions
 			Writer writer = new StringWriter();
@@ -151,17 +135,17 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelProcess#process(boolean)
+	 * @see org.epics.pvaccess.client.ChannelProcess#process()
 	 */
 	@Override
-	public void process(boolean lastRequest) {
+	public void process() {
 		if (destroyed) {
-			callback.processDone(destroyedStatus);
+			callback.processDone(destroyedStatus, this);
 			return;
 		}
 		
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
-			callback.processDone(otherRequestPendingStatus);
+			callback.processDone(otherRequestPendingStatus, this);
 			return;
 		}
 		
@@ -169,7 +153,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.processDone(channelNotConnected);
+			callback.processDone(channelNotConnected, this);
 		}
 	}
 	

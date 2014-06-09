@@ -14,7 +14,7 @@
 package org.epics.pvaccess.client.test;
 
 import org.epics.pvaccess.server.test.TestChannelProviderImpl;
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderFactory;
 
@@ -48,7 +48,7 @@ public class ChannelAccessIFLocalTest extends ChannelAccessIFTest {
 			}
 		};
 		
-		ChannelAccessFactory.registerChannelProviderFactory(channelProviderImplFactory);
+		ChannelProviderRegistryFactory.registerChannelProviderFactory(channelProviderImplFactory);
 	}
 
 	/* (non-Javadoc)
@@ -56,7 +56,8 @@ public class ChannelAccessIFLocalTest extends ChannelAccessIFTest {
 	 */
 	@Override
 	public ChannelProvider getChannelProvider() {
-		return ChannelAccessFactory.getChannelAccess().getProvider(TestChannelProviderImpl.PROVIDER_NAME);
+		return ChannelProviderRegistryFactory.getChannelProviderRegistry()
+					.getProvider(TestChannelProviderImpl.PROVIDER_NAME);
 	}
 
 	/* (non-Javadoc)

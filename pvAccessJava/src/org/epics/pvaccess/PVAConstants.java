@@ -29,7 +29,7 @@ public interface PVAConstants {
 	/**
 	 * PVA protocol revision (implemented by this library).
 	 */
-	public static final byte PVA_PROTOCOL_REVISION = 0;
+	public static final byte PVA_PROTOCOL_REVISION = 1;
 
 	/**
 	 * PVA version signature used to report this implementation version in header.
@@ -54,7 +54,7 @@ public interface PVAConstants {
     /**
      * All messages must be aligned to 8-bytes (64-bit).
      */
-    public static final int PVA_ALIGNMENT = 1;	// TODO
+    public static final int PVA_ALIGNMENT = 1;    // TODO !!!
 
     /**
 	 * UDP maximum send message size (for sending search requests).

@@ -99,7 +99,7 @@ public class BlockingTCPConnector implements Connector {
 		SocketChannel socket = null;
 		
 		// first try to check cache w/o named lock...
-		Transport transport = context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
+		Transport transport = context.getTransportRegistry().get(ProtocolType.tcp.name(), address, priority);
 		if (transport != null)
 		{
 			context.getLogger().finer("Reusing existant connection to PVA server: " + address);
@@ -113,7 +113,7 @@ public class BlockingTCPConnector implements Connector {
 			try
 			{   
 				// ... transport created during waiting in lock 
-				transport = context.getTransportRegistry().get(ProtocolType.TCP.name(), address, priority);
+				transport = context.getTransportRegistry().get(ProtocolType.tcp.name(), address, priority);
 				if (transport != null)
 				{
 					context.getLogger().finer("Reusing existant connection to PVA server: " + address);
@@ -134,9 +134,7 @@ public class BlockingTCPConnector implements Connector {
 				// enable TCP_KEEPALIVE
 				socket.socket().setKeepAlive(true);
 			
-				// TODO tune buffer sizes?! Win32 defaults are 8k, which is OK
-				//socket.socket().setReceiveBufferSize();
-				//socket.socket().setSendBufferSize();
+				// do NOT tune socket buffer sizes, this will disable auto-tuning
 	
 				// create transport
 				transport = transportFactory.create(context, socket, responseHandler, receiveBufferSize, client, transportRevision, heartbeatInterval, priority);
@@ -146,7 +144,7 @@ public class BlockingTCPConnector implements Connector {
 				{
 					context.getLogger().finer("Connection to PVA client " + address + " failed to be validated, closing it.");
                 	transport.close();
-					throw new ConnectionException("Failed to verify connection to '" + address + "'.", address, ProtocolType.TCP.name(), null);
+					throw new ConnectionException("Failed to verify connection to '" + address + "'.", address, ProtocolType.tcp.name(), null);
 				}
 				
 				// TODO send security token
@@ -165,7 +163,7 @@ public class BlockingTCPConnector implements Connector {
 				}
 				catch (Throwable t) { /* noop */ }
 	
-				throw new ConnectionException("Failed to connect to '" + address + "'.", address, ProtocolType.TCP.name(), th);
+				throw new ConnectionException("Failed to connect to '" + address + "'.", address, ProtocolType.tcp.name(), th);
 			}
 			finally
 			{
@@ -174,7 +172,7 @@ public class BlockingTCPConnector implements Connector {
 		}
 		else
 		{     
-			throw new ConnectionException("Failed to obtain synchronization lock for '" + address + "', possible deadlock.", address, ProtocolType.TCP.name(), null);
+			throw new ConnectionException("Failed to obtain synchronization lock for '" + address + "', possible deadlock.", address, ProtocolType.tcp.name(), null);
 		}
 	}
 

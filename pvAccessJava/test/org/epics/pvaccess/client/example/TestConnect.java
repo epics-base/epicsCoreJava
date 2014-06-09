@@ -9,8 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.client.Channel;
-import org.epics.pvaccess.client.ChannelAccess;
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistry;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.Channel.ConnectionState;
@@ -37,7 +37,7 @@ public class TestConnect {
     }
     
     private static final String providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
-    private static final ChannelAccess channelAccess = ChannelAccessFactory.getChannelAccess();
+    private static final ChannelProviderRegistry channelAccess = ChannelProviderRegistryFactory.getChannelProviderRegistry();
     //private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
     
     private static class Client implements ChannelRequester {

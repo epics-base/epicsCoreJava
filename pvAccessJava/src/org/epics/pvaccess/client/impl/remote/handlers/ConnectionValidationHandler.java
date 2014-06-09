@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportSender;
+import org.epics.pvdata.misc.SerializeHelper;
 
 
 /**
@@ -43,14 +44,19 @@ public class ConnectionValidationHandler extends AbstractClientResponseHandler {
 	public void handleResponse(InetSocketAddress responseFrom, Transport transport, byte version, byte command, int payloadSize, ByteBuffer payloadBuffer) {
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 
-		transport.ensureData(2*Integer.SIZE/Byte.SIZE);
-		transport.setRemoteTransportReceiveBufferSize(payloadBuffer.getInt());
-		transport.setRemoteTransportSocketReceiveBufferSize(payloadBuffer.getInt());
-
 		transport.setRemoteRevision(version);
-		
+
+		transport.ensureData(4+2);
+		transport.setRemoteTransportReceiveBufferSize(payloadBuffer.getInt());
+		// TODO
+		// TODO serverIntrospectionRegistryMaxSize
+		/*int serverIntrospectionRegistryMaxSize = */ payloadBuffer.getShort(); // & 0x0000FFFF;
+		// TODO authNZ
+		int size = SerializeHelper.readSize(payloadBuffer, transport);
+		for (int i = 0; i < size; i++)
+			SerializeHelper.deserializeString(payloadBuffer, transport);
+
 		transport.enqueueSendRequest((TransportSender)transport);
-		transport.verified();
 	}
 
 }

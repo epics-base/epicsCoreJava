@@ -23,8 +23,7 @@ import java.util.logging.Level;
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.Transport;
-import org.epics.pvdata.property.TimeStamp;
-import org.epics.pvdata.property.TimeStampFactory;
+import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
@@ -66,12 +65,13 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 		
-		transport.ensureData((Short.SIZE +Long.SIZE + Integer.SIZE+128+Short.SIZE)/Byte.SIZE);
+		transport.ensureData(12+2+2+16+2);
+		
+		final byte[] guid = new byte[12];
+		payloadBuffer.get(guid);
+		
 		final int sequentalID = payloadBuffer.getShort() & 0x0000FFFF;
-		final TimeStamp startupTimestamp = TimeStampFactory.create();
-		long secs = payloadBuffer.getLong();
-		int nano = payloadBuffer.getInt();
-		startupTimestamp.put(secs,nano);
+		final int changeCount = payloadBuffer.getShort() & 0x0000FFFF;
 		
 		// 128-bit IPv6 address
 		byte[] byteAddress = new byte[16]; 
@@ -94,11 +94,8 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 			responseFrom = new InetSocketAddress(addr, port);
 		else
 			responseFrom = new InetSocketAddress(responseFrom.getAddress(), port);
-
-		org.epics.pvaccess.client.impl.remote.BeaconHandler beaconHandler = context.getBeaconHandler(responseFrom);
-		// currently we care only for servers used by this context  
-		if (beaconHandler == null)
-			return;
+		
+		final String protocol = SerializeHelper.deserializeString(payloadBuffer, transport);
 
 		// extra data
 		PVField data = null;
@@ -109,8 +106,13 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 			data.deserialize(payloadBuffer, transport);
 		}
 		
+		org.epics.pvaccess.client.impl.remote.BeaconHandler beaconHandler = context.getBeaconHandler(protocol, responseFrom);
+		// currently we care only for servers used by this context  
+		if (beaconHandler == null)
+			return;
+
 		// notify beacon handler
-		beaconHandler.beaconNotify(responseFrom, version, timestamp, startupTimestamp, sequentalID, data);
+		beaconHandler.beaconNotify(responseFrom, version, timestamp, guid, sequentalID, changeCount, data);
 	}
 
 }

@@ -94,7 +94,7 @@ public class BlockingUDPConnector implements Connector {
 				socket.socket().setReuseAddress(true);
 			
 			socket.socket().bind(bindAddress);
-
+			
 			// create transport
 			return new BlockingUDPTransport(context, responseHandler, socket,
 											bindAddress, sendAddresses, transportRevision);
@@ -109,7 +109,7 @@ public class BlockingUDPConnector implements Connector {
 			}
 			catch (Throwable t) { /* noop */ }
 
-			throw new ConnectionException("Failed to bind to '" + bindAddress + "'.", bindAddress, ProtocolType.UDP.name(), th);
+			throw new ConnectionException("Failed to bind to '" + bindAddress + "'.", bindAddress, ProtocolType.udp.name(), th);
 		}
             
 	}

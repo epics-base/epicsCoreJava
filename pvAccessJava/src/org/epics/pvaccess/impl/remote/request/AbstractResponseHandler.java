@@ -43,7 +43,9 @@ public abstract class AbstractResponseHandler implements ResponseHandler {
 	 */
 	public AbstractResponseHandler(String description) {
 		this.description = description;
-		debug = System.getProperties().containsKey(PVAConstants.PVACCESS_DEBUG);
+		// TODO use config (0 - none, 1 - debug, 2 - more debug, 3 - dump messages)
+		// dump messages flag
+		debug = Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) >= 3;
 	}
 
 	/* (non-Javadoc)

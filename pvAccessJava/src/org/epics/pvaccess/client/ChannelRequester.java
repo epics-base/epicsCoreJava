@@ -17,7 +17,7 @@ public interface ChannelRequester extends Requester {
     /**
      * A channel has been created. This may be called multiple times if there are multiple providers.
      * @param status Completion status.
-     * @param channel The channel.
+     * @param channel The channel or <code>null</code> if the request failed.
      */
     void channelCreated(Status status, Channel channel);
     /**

@@ -5,6 +5,9 @@
  */
 package org.epics.pvaccess.client;
 
+import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.pv.PVStructure;
+
 
 
 /**
@@ -12,14 +15,14 @@ package org.epics.pvaccess.client;
  * @author mrk
  *
  */
-public interface ChannelPut  extends ChannelRequest {
+public interface ChannelPut extends ChannelRequest {
     /**
      * Put data to a channel.
-     * This fails if the request can not be satisfied.
-     * If it fails ChannelPutRequester.putDone is called before put returns.
-     * @param lastRequest Is this the last request?
+     * Completion status is reported by calling ChannelPutRequester.putDone() callback.
+     * @param pvPutStructure The PVStructure that holds the putData.
+     * @param putBitSet putPVStructure bit-set (selects what fields to put).
      */
-    void put(boolean lastRequest);
+    void put(PVStructure pvPutStructure, BitSet bitSet);
     /**
      * Get the current data.
      */

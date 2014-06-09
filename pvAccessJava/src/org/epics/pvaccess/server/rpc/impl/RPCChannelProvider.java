@@ -9,6 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.ChannelFind;
 import org.epics.pvaccess.client.ChannelFindRequester;
+import org.epics.pvaccess.client.ChannelListRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.server.rpc.RPCService;
@@ -54,7 +55,7 @@ public class RPCChannelProvider implements ChannelProvider {
 			}
 			
 			@Override
-			public void cancelChannelFind() {
+			public void cancel() {
 				// noop
 			}
 		};
@@ -69,6 +70,12 @@ public class RPCChannelProvider implements ChannelProvider {
 			found = services.containsKey(channelName);
 		}
 		channelFindRequester.channelFindResult(okStatus, channelFind, found);
+		return channelFind;
+	}
+
+	@Override
+	public ChannelFind channelList(ChannelListRequester channelListRequester) {
+		channelListRequester.channelListResult(okStatus, channelFind, services.keySet(), false);
 		return channelFind;
 	}
 

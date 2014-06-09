@@ -49,8 +49,8 @@ public class RPCHandler extends AbstractServerResponseHandler {
 	private static class ChannelRPCRequesterImpl extends BaseChannelRequester implements ChannelRPCRequester, TransportSender {
 		
 		private volatile ChannelRPC channelRPC;
-		private PVStructure pvResponse;
-		private Status status;
+		private volatile PVStructure pvResponse;
+		private volatile Status status;
 		
 		public ChannelRPCRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				PVStructure pvRequest) {
@@ -74,9 +74,9 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		 */
 		@Override
 		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
-			synchronized (this) {
-				this.status = status;
-			}
+			this.status = status;
+			this.channelRPC = channelRPC;
+
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -85,17 +85,11 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		
-		/* (non-Javadoc)
-		 * @see org.epics.pvaccess.client.ChannelRPCRequester#requestDone(org.epics.pvdata.pv.Status, org.epics.pvdata.pv.PVStructure)
-		 */
 		@Override
-		public void requestDone(Status status, PVStructure pvResponse) {
-			synchronized (this)
-			{
-				this.status = status;
-				this.pvResponse = pvResponse;
-			}
+		public void requestDone(Status status, ChannelRPC channelRPC, PVStructure pvResponse) {
+			this.status = status;
+			this.pvResponse = pvResponse;
+			
 			transport.enqueueSendRequest(this);
 		}
 
@@ -121,7 +115,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		 */
 		@Override
 		public void lock() {
-			// TODO
+			// noop
 		}
 
 		/* (non-Javadoc)
@@ -129,7 +123,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		 */
 		@Override
 		public void unlock() {
-			// TODO
+			// noop
 		}
 
 		/* (non-Javadoc)
@@ -142,9 +136,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)20, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			synchronized (this) {
-				status.serialize(buffer, control);
-			}
+			status.serialize(buffer, control);
 
 			if (status.isSuccess())
 			{
@@ -155,6 +147,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 				else
 				{
 					SerializationHelper.serializeStructureFull(buffer, control, pvResponse);
+					pvResponse = null;
 				}
 			}
 				
@@ -246,7 +239,13 @@ public class RPCHandler extends AbstractServerResponseHandler {
 
 			// deserialize put data
 			final PVStructure pvArgument = SerializationHelper.deserializeStructureFull(payloadBuffer, transport);
-			request.getChannelRPC().request(pvArgument, lastRequest);
+			
+			ChannelRPC channelRPC = request.getChannelRPC();
+			
+			if (lastRequest)
+				channelRPC.lastRequest();
+			
+			channelRPC.request(pvArgument);
 		}
 	}
 }

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.Channel.ConnectionState;
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRPC;
 import org.epics.pvaccess.client.ChannelRPCRequester;
@@ -54,7 +54,7 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 		org.epics.pvaccess.ClientFactory.start();
         
         ChannelProvider channelProvider =
-        	ChannelAccessFactory.getChannelAccess()
+        	ChannelProviderRegistryFactory.getChannelProviderRegistry()
         		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
  
         this.channel = channelProvider.createChannel(serviceName, this, ChannelProvider.PRIORITY_DEFAULT);
@@ -150,11 +150,12 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 		}
 		
 		try {
-			rpc.request(pvArgument, false);
+			rpc.request(pvArgument);
 		} catch (Throwable th) {
 			requestDone(
 					StatusFactory.getStatusCreate().createStatus(
 							StatusType.ERROR, "failed to send a RPC request", th),
+							rpc,
 							null
 						);
 		}
@@ -208,6 +209,7 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 			requestDone(
 					StatusFactory.getStatusCreate().createStatus(
 							StatusType.ERROR, "channel " + connectionState, null),
+							channelRPC,
 							null
 							);
 	}
@@ -230,7 +232,7 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 	}
 
 	@Override
-	public void requestDone(Status status, PVStructure result) {
+	public void requestDone(Status status, ChannelRPC channelRPC, PVStructure result) {
 		logger.finer("requestDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
 
 		requestPending.set(false);

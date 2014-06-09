@@ -12,31 +12,32 @@
  * OR REDISTRIBUTION OF THIS SOFTWARE.
  */
 
-package org.epics.pvaccess.server.impl.remote.handlers;
+package org.epics.pvaccess.client.impl.remote.handlers;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.epics.pvaccess.PVFactory;
+import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.Transport;
-import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
+import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.StatusCreate;
+
 
 /**
- * Introspection search request handler.
+ * Connection validation message handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class IntrospectionSearchHandler extends AbstractServerResponseHandler {
+public class ConnectionValidatedHandler extends AbstractClientResponseHandler {
 
-	/**
-	 * PVField factory.
-	 */
-	//private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
+    protected static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 
-	/**
+    /**
 	 * @param context
 	 */
-	public IntrospectionSearchHandler(ServerContextImpl context) {
-		super(context, "Introspection search request");
+	public ConnectionValidatedHandler(ClientContextImpl context) {
+		super(context, "Connection validated");
 	}
 
 	/* (non-Javadoc)
@@ -46,16 +47,8 @@ public class IntrospectionSearchHandler extends AbstractServerResponseHandler {
 	public void handleResponse(InetSocketAddress responseFrom, Transport transport, byte version, byte command, int payloadSize, ByteBuffer payloadBuffer) {
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 
-		throw new RuntimeException("not implemented");
-		/*
-		// IOID
-		final int ioid = payloadBuffer.getInt();
-
-		// search data (non-null)
-		final Field field = IntrospectionRegistry.deserializeFull(payloadBuffer);
-		final PVField searchData = pvDataCreate.createPVField(null, field);
-		searchData.deserialize(payloadBuffer);
-		}*/
+		final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
+		transport.verified(status);
 	}
 
 }

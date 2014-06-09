@@ -51,6 +51,7 @@ implements ChannelGet,GetListener,ConnectionListener
     private final gov.aps.jca.Channel jcaChannel;
     
     private volatile boolean isDestroyed = false;
+    private volatile boolean lastRequest = false;
     
     private final ReentrantLock lock = new ReentrantLock();
     
@@ -76,7 +77,7 @@ implements ChannelGet,GetListener,ConnectionListener
     	try {
 			jcaChannel.addConnectionListener(this);
 		} catch (Throwable th) {
-            channelGetRequester.channelGetConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", th), null, null,null);
+            channelGetRequester.channelGetConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", th), this, null);
             destroy();
             return;
 		}
@@ -98,10 +99,10 @@ implements ChannelGet,GetListener,ConnectionListener
 		}
     }
     /* (non-Javadoc)
-     * @see org.epics.pvaccess.client.ChannelGet#get(boolean)
+     * @see org.epics.pvaccess.client.ChannelGet#get()
      */
     @Override
-    public void get(boolean lastRequest) {
+    public void get() {
         if(isDestroyed) {
             getDone(channelDestroyedStatus);
             return;
@@ -158,17 +159,18 @@ implements ChannelGet,GetListener,ConnectionListener
         else
         {
             if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
-                channelGetRequester.channelGetConnect(createChannelStructureStatus,null,null,null);
+                channelGetRequester.channelGetConnect(createChannelStructureStatus,this,null);
                 destroy();
             } else {
-                channelGetRequester.channelGetConnect(okStatus, this, v3ChannelStructure.getPVStructure(), v3ChannelStructure.getBitSet());
+                channelGetRequester.channelGetConnect(okStatus, this, v3ChannelStructure.getPVStructure().getStructure());
             }
         }
     }
     
     private void getDone(Status success) {
         if(!isActive.getAndSet(false)) return;
-        channelGetRequester.getDone(success);
+        if (lastRequest) destroy();
+        channelGetRequester.getDone(success, this, v3ChannelStructure.getPVStructure(), v3ChannelStructure.getBitSet());
     }
     
 	@Override
@@ -180,4 +182,20 @@ implements ChannelGet,GetListener,ConnectionListener
 	public void unlock() {
 		lock.unlock();
 	}
+
+	@Override
+	public void cancel() {
+		// noop, not supported
+	}
+	
+	@Override
+	public void lastRequest() {
+		lastRequest = true;
+	}
+	
+	@Override
+	public org.epics.pvaccess.client.Channel getChannel() {
+		return v3Channel;
+	}
+	
 }

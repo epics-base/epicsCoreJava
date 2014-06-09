@@ -14,7 +14,7 @@
 
 package org.epics.pvaccess;
 
-import org.epics.pvaccess.client.ChannelAccessFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderFactory;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
@@ -85,7 +85,7 @@ public class ClientFactory {
     public static synchronized void start() {
         if (factory != null) return;
         factory = new ChannelProviderFactoryImpl();
-        ChannelAccessFactory.registerChannelProviderFactory(factory);
+        ChannelProviderRegistryFactory.registerChannelProviderFactory(factory);
     }
     
     /**
@@ -94,7 +94,7 @@ public class ClientFactory {
     public static synchronized void stop() {
     	if (factory != null)
     	{
-    		ChannelAccessFactory.unregisterChannelProviderFactory(factory);
+    		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
     		factory.destroySharedInstance();
     	}
     }

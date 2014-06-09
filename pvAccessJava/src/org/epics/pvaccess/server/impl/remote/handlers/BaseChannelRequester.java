@@ -45,6 +45,7 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
     public static final Status noWriteACLStatus = statusCreate.createStatus(StatusType.ERROR, "no write access", null);
     public static final Status noProcessACLStatus = statusCreate.createStatus(StatusType.ERROR, "no process access", null);
     public static final Status otherRequestPendingStatus = statusCreate.createStatus(StatusType.ERROR, "other request pending", null);
+    public static final Status notAChannelRequest = statusCreate.createStatus(StatusType.ERROR, "not a channel request", null);
     
 
 	protected final ServerContextImpl context;

@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.epics.pvaccess.PVFactory;
+import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
@@ -25,7 +26,9 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.DataResponse;
 import org.epics.pvaccess.impl.remote.request.SubscriptionRequest;
 import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Requester;
 import org.epics.pvdata.pv.Status;
@@ -37,7 +40,7 @@ import org.epics.pvdata.pv.StatusCreate;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, TransportSender {
+public abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, TransportSender {
 
     protected static final StatusCreate statusCreate = PVFactory.getStatusCreate();
     protected static final Status okStatus = statusCreate.getStatusOK();
@@ -45,6 +48,9 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
     protected static final Status channelNotConnected = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
     protected static final Status channelDestroyed = statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
     protected static final Status otherRequestPendingStatus = statusCreate.createStatus(StatusType.ERROR, "other request pending", null);
+    protected static final Status invalidPutStructureStatus = statusCreate.createStatus(StatusType.ERROR, "incompatible put structure", null);
+    protected static final Status invalidPutArrayStatus = statusCreate.createStatus(StatusType.ERROR, "incompatible put array", null);
+    protected static final Status invalidBitSetLengthStatus = statusCreate.createStatus(StatusType.ERROR, "invalid bit-set length", null);
     protected static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
 
     /**
@@ -73,13 +79,20 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	protected final PVStructure pvRequest;
 	
 	/**
+	 * Last request flag.
+	 */
+	protected volatile boolean lastRequest = false;
+
+	/**
 	 * Destroyed flag.
 	 */
 	protected volatile boolean destroyed = false;
+	
 	/**
 	 * Remote instance destroyed.
 	 */
 	protected volatile boolean remotelyDestroyed = false;
+	
 	/**
 	 * Initialized flag.
 	 */
@@ -89,6 +102,7 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	/* negative... */
 	protected static final int NULL_REQUEST = -1;
 	protected static final int PURE_DESTROY_REQUEST = -2;
+	protected static final int PURE_CANCEL_REQUEST = -2;
 	
 	protected final ReentrantLock lock = new ReentrantLock();
 	
@@ -120,8 +134,8 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 
 	public final boolean startRequest(int qos) {
 		synchronized (this) {
-			// we allow pure destroy...
-			if (pendingRequest != NULL_REQUEST && qos != PURE_DESTROY_REQUEST)
+			// we allow pure destroy and cancel...
+			if (pendingRequest != NULL_REQUEST && qos != PURE_DESTROY_REQUEST && qos != PURE_CANCEL_REQUEST)
 				return false;
 			
 			pendingRequest = qos;
@@ -132,6 +146,11 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 		if (qos == PURE_DESTROY_REQUEST)
 		{
 			pendingRequest.set(PURE_DESTROY_REQUEST);
+			return true;
+		}
+		else if (qos == PURE_CANCEL_REQUEST)
+		{
+			pendingRequest.set(PURE_CANCEL_REQUEST);
 			return true;
 		}
 		else
@@ -169,14 +188,13 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	}
 
 	abstract void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
-	abstract void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
 	abstract void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
 	
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.core.DataResponse#response(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer)
 	 */
 	public void response(Transport transport, byte version, ByteBuffer payloadBuffer) {
-		boolean cancel = false;
+		boolean destroy = false;
 		try
 		{	
 			transport.ensureData(1);
@@ -187,23 +205,21 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 			{
 				initResponse(transport, version, payloadBuffer, qos, status);
 			}
-			else if (QoS.DESTROY.isSet(qos))
-			{
-				remotelyDestroyed = true;
-				cancel = true;
-
-				destroyResponse(transport, version, payloadBuffer, qos, status);
-			}
 			else
 			{
+				if (QoS.DESTROY.isSet(qos))
+				{
+					remotelyDestroyed = true;
+					destroy = true;
+				}
+				
 				normalResponse(transport, version, payloadBuffer, qos, status);
 			}
 		}
 		finally
 		{
-			// always cancel request
-			if (cancel)
-				cancel();
+			if (destroy)
+				destroy();
 		}
 	}
 
@@ -211,7 +227,34 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	 * @see org.epics.pvaccess.core.ResponseRequest#cancel()
 	 */
 	public void cancel() {
-		destroy();
+
+		if (destroyed)
+			return;
+
+		/*
+		boolean canceledBeforeRequestSent = false;
+		synchronized (this) {
+			if (pendingRequest > 0)
+			{
+				canceledBeforeRequestSent = true;
+				stopRequest();
+			}
+			else
+				startRequest(PURE_CANCEL_REQUEST);
+		}
+		
+		if (canceledBeforeRequestSent)
+		{
+			reportCancellation();
+			return;
+		}
+		*/
+		startRequest(PURE_CANCEL_REQUEST);
+		try {
+			channel.checkAndGetTransport().enqueueSendRequest(this);
+		} catch (IllegalStateException ise) {
+			// noop, we are just not connected
+		}
 	}
 
 	/**
@@ -295,6 +338,12 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 			buffer.putInt(channel.getServerChannelID());
 			buffer.putInt(ioid);
 		}
+		else if (qos == PURE_CANCEL_REQUEST)
+		{
+			control.startMessage((byte)21, 2*Integer.SIZE/Byte.SIZE);
+			buffer.putInt(channel.getServerChannelID());
+			buffer.putInt(ioid);
+		}
 		stopRequest();
 	}
 
@@ -320,6 +369,14 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 			return new BitSet(pvStructureSize);
 	}
 	
+	public static final PVField reuseOrCreatePVField(Field field, PVField existingPVField)
+	{
+		if (existingPVField != null && field.equals(existingPVField.getField()))
+			return existingPVField;
+		else
+			return pvDataCreate.createPVField(field);
+	}
+	
 	/* Called on server restart...
 	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
 	 */
@@ -340,5 +397,12 @@ abstract class BaseRequestImpl implements DataResponse, SubscriptionRequest, Tra
 	public void updateSubscription() {
 		// default is noop
 	}
-	
+
+	public void lastRequest() {
+		lastRequest = true;
+	}
+
+	public Channel getChannel() {
+		return channel;
+	}
 }

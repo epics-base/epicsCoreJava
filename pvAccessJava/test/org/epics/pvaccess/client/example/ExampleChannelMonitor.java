@@ -11,12 +11,12 @@ import java.util.logging.Logger;
 
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.client.Channel.ConnectionState;
-import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.CreateRequest;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import org.epics.pvaccess.util.logging.LoggingUtils;
+import org.epics.pvdata.copy.CreateRequest;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorElement;
 import org.epics.pvdata.monitor.MonitorRequester;
@@ -51,7 +51,7 @@ public class ExampleChannelMonitor {
 		org.epics.pvaccess.ClientFactory.start();
 
 		ChannelProvider channelProvider =
-				ChannelAccessFactory.getChannelAccess()
+				ChannelProviderRegistryFactory.getChannelProviderRegistry()
 				.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
 
 		CountDownLatch doneSignal = new CountDownLatch(1);

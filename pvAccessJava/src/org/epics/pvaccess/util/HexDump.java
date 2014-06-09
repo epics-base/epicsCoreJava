@@ -91,7 +91,7 @@ public class HexDump {
 	
 				chars.append( toAscii( bs[i] ));
 	
-				out.append( toHex( bs[i] ));
+				out.append( toHexAndSpace( bs[i] ));
 	
 				if( ((i-start) % 4) == 3 ) 
 				{ 
@@ -133,7 +133,7 @@ public class HexDump {
 	 * @param b
 	 * @return string hex representation of byte.
 	 */
-	private static final String toHex( byte b )
+	private static final String toHexAndSpace( byte b )
 	{
 		StringBuilder sb = new StringBuilder();
 	
@@ -149,11 +149,29 @@ public class HexDump {
 	}
 
 	/**
+	 * Get hex representation of byte.
+	 * @param b
+	 * @return string hex representation of byte.
+	 */
+	public static final String toHex( byte b )
+	{
+		StringBuilder sb = new StringBuilder();
+	
+		int upper = (b >> 4) & 0x0F;
+		sb.append( lookup[upper] );
+	
+		int lower = b & 0x0F;
+		sb.append( lookup[lower] );
+	    
+		return sb.toString();
+	}
+
+	/**
 	 * Get ASCII representation of byte, dot if non-readable.
 	 * @param b
 	 * @return ASCII representation of byte, dot if non-readable.
 	 */
-	private static final char toAscii(byte b)
+	public static final char toAscii(byte b)
 	{
 		if( b > (byte) 31 && 
 			b < (byte) 127) 

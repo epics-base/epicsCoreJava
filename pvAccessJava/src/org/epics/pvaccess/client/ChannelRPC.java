@@ -16,9 +16,8 @@ import org.epics.pvdata.pv.PVStructure;
 public interface ChannelRPC extends ChannelRequest {
     /**
      * Issue an RPC request to the channel.
-     * This fails if the request can not be satisfied.
+     * Completion status is reported by calling ChannelRPCRequester.requestDone() callback.
      * @param pvArgument The argument structure for an RPC request.
-     * @param lastRequest Is this the last request?
      */
-    void request(PVStructure pvArgument,boolean lastRequest);
+    void request(PVStructure pvArgument);
 }

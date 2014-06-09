@@ -25,12 +25,11 @@ import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.server.plugins.BeaconServerStatusProvider;
 import org.epics.pvaccess.util.InetAddressUtil;
+import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.misc.Timer;
 import org.epics.pvdata.misc.Timer.TimerCallback;
 import org.epics.pvdata.misc.Timer.TimerNode;
 import org.epics.pvdata.misc.TimerFactory;
-import org.epics.pvdata.property.TimeStamp;
-import org.epics.pvdata.property.TimeStampFactory;
 import org.epics.pvdata.pv.PVField;
 
 
@@ -54,17 +53,22 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	/**
 	 * Timer.
 	 */
-	protected Timer timer;
+	protected final Timer timer;
 	
 	/**
 	 * Logger.
 	 */
-	protected Logger logger;
+	protected final Logger logger;
 
+	/**
+	 * Protocol.
+	 */
+	protected final String protocol;
+	
 	/**
 	 * Transport.
 	 */
-	protected Transport transport;
+	protected final Transport transport;
 
 	/**
 	 * Beacon sequence ID.
@@ -72,44 +76,44 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	protected short beaconSequenceID = 0;
 
 	/**
-	 * Startup timestamp (when clients detect a change, they will consider server restarted).
-	 */
-	protected TimeStamp startupTime;
-	
-	/**
 	 * Fast (at startup) beacon period (in sec).
 	 */
-	protected double fastBeaconPeriod;
+	protected final double fastBeaconPeriod;
 
 	/**
 	 * Slow (after beaconCountLimit is reached) beacon period (in sec).
 	 */
-	protected double slowBeaconPeriod;
+	protected final double slowBeaconPeriod;
 
 	/**
 	 * Limit on number of beacons issued.
 	 */
-	protected short beaconCountLimit;
+	protected final short beaconCountLimit;
+
+	/**
+	 * Server GUID.
+	 */
+	protected final byte[] guid;
 
 	/**
 	 * Server address.
 	 */
-	protected InetAddress serverAddress;
+	protected final InetAddress serverAddress;
 	
 	/**
 	 * Server port.
 	 */
-	protected int serverPort;
+	protected final int serverPort;
 	
 	/**
 	 * Server status provider implementation (optional).
 	 */
-	private BeaconServerStatusProvider serverStatusProvider;
+	private final BeaconServerStatusProvider serverStatusProvider;
 
 	/**
 	 * Timer task node.
 	 */
-	private TimerNode timerNode;
+	private final TimerNode timerNode;
 
 	
 	/**
@@ -117,19 +121,19 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	 * @param transport	transport to be used to send beacons.
 	 * @param context PVA context.
 	 */
-	public BeaconEmitter(Transport transport, ServerContextImpl context)
+	public BeaconEmitter(String protocol, Transport transport, ServerContextImpl context)
 	{
+		this.protocol = protocol;
 		this.transport = transport;
 		this.timer = context.getTimer();
 		this.logger = context.getLogger();
+		this.guid = context.getGUID();
 		this.serverAddress = context.getServerInetAddress();
 		this.serverPort = context.getServerPort();
 		this.serverStatusProvider = context.getBeaconServerStatusProvider();
 		this.fastBeaconPeriod = Math.max(context.getBeaconPeriod(), EPICS_PVA_MIN_BEACON_PERIOD);
 		this.slowBeaconPeriod = Math.max(180.0, fastBeaconPeriod);	// TODO configurable
 		this.beaconCountLimit = (short)Math.max(10, EPICS_PVA_MIN_BEACON_COUNT_LIMIT);	// TODO configurable
-		this.startupTime = TimeStampFactory.create();
-		startupTime.getCurrentTime();
 		this.timerNode = TimerFactory.createNode(this);
 
 	}
@@ -188,15 +192,19 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 		}
 		
 		// send beacon
-		control.startMessage((byte)0, (Short.SIZE +Long.SIZE + Integer.SIZE+128+Short.SIZE)/Byte.SIZE);
+		control.startMessage((byte)0, 12+2+2+16+2);
 		
+		buffer.put(guid);
 		buffer.putShort(beaconSequenceID);
-		buffer.putLong(startupTime.getSecondsPastEpoch());
-		buffer.putInt((int)startupTime.getNanoSeconds());
-			
+		
+		// TODO for now fixed changeCount
+		buffer.putShort((short)0);
+
 		// NOTE: is it possible (very likely) that address is any local address ::ffff:0.0.0.0
 		InetAddressUtil.encodeAsIPv6Address(buffer, serverAddress);
 		buffer.putShort((short)serverPort);
+		
+		SerializeHelper.serializeString(protocol, buffer, control);
 
 		if (serverStatus != null)
 		{

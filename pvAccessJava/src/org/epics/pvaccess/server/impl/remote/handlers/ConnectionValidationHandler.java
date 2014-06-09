@@ -19,6 +19,8 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
+import org.epics.pvdata.factory.StatusFactory;
+import org.epics.pvdata.misc.SerializeHelper;
 
 
 /**
@@ -42,12 +44,19 @@ public class ConnectionValidationHandler extends AbstractServerResponseHandler {
 	public void handleResponse(InetSocketAddress responseFrom, Transport transport, byte version, byte command, int payloadSize, ByteBuffer payloadBuffer) {
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 
-		transport.ensureData((2*Integer.SIZE+Short.SIZE)/Byte.SIZE);
-		transport.setRemoteTransportReceiveBufferSize(payloadBuffer.getInt());
-		transport.setRemoteTransportSocketReceiveBufferSize(payloadBuffer.getInt());
 		transport.setRemoteRevision(version);
-		payloadBuffer.getShort();
-		//transport.setPriority(payloadBuffer.getShort());
+
+		transport.ensureData(4+2+2);
+		transport.setRemoteTransportReceiveBufferSize(payloadBuffer.getInt());
+		// TODO clientIntrospectionRegistryMaxSize
+		/*int clientIntrospectionRegistryMaxSize = */ payloadBuffer.getShort(); // & 0x0000FFFF;
+		// TODO connectionQos
+		/*short connectionQos =*/ payloadBuffer.getShort();
+		// TODO authNZ
+		/*String authNZ = */ SerializeHelper.deserializeString(payloadBuffer, transport);
+		
+		// TODO call this after authNZ has done their work
+		transport.verified(StatusFactory.getStatusCreate().getStatusOK());
 	}
 	
 }

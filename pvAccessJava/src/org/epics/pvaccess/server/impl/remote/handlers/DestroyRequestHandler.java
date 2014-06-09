@@ -17,7 +17,6 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.client.ChannelRequest;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
@@ -27,17 +26,17 @@ import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.Status;
 
 /**
- * Cancel request handler.
+ * Destroy request handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class CancelRequestHandler extends AbstractServerResponseHandler {
+public class DestroyRequestHandler extends AbstractServerResponseHandler {
 
 	/**
 	 * @param context
 	 */
-	public CancelRequestHandler(ServerContextImpl context) {
-		super(context, "Cancel request");
+	public DestroyRequestHandler(ServerContextImpl context) {
+		super(context, "Destroy request");
 	}
 
 	/* (non-Javadoc)
@@ -65,14 +64,12 @@ public class CancelRequestHandler extends AbstractServerResponseHandler {
 			failureResponse(transport, ioid, BaseChannelRequester.badIOIDStatus);
 			return;
 		}
-		else if (!(request instanceof ChannelRequest)) {
-			failureResponse(transport, ioid, BaseChannelRequester.notAChannelRequest);
-			return;
-		}
 		
-		// cancel
-		((ChannelRequest)request).cancel();
+		// destroy
+		request.destroy();
 		
+		// ... and remove from channel
+		channel.unregisterRequest(ioid);
 	}
 
 	/**

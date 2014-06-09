@@ -76,7 +76,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
 		} catch (IllegalStateException ise) {
-			callback.channelGetConnect(channelDestroyed, this, null, null);
+			callback.channelGetConnect(channelDestroyed, this, null);
 			destroy(true);
 		}
 	}
@@ -108,16 +108,6 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data available
-		if (QoS.GET.isSet(qos))
-			normalResponse(transport, version, payloadBuffer,qos, status);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#initResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
 	@Override
@@ -126,7 +116,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		{
 			if (!status.isSuccess())
 			{
-				callback.channelGetConnect(status, this, null, null);
+				callback.channelGetConnect(status, this, null);
 				return;
 			}
 		
@@ -140,7 +130,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 			}
 		
 			// notify
-			callback.channelGetConnect(status, this, data, bitSet);
+			callback.channelGetConnect(status, this, data.getStructure());
 		}
 		catch (Throwable th)
 		{
@@ -161,7 +151,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 		{
 			if (!status.isSuccess())
 			{
-				callback.getDone(status);
+				callback.getDone(status, this, data, bitSet);
 				return;
 			}
 
@@ -174,7 +164,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 				unlock();
 			}
 			
-			callback.getDone(status);
+			callback.getDone(status, this, data, bitSet);
 		}
 		catch (Throwable th)
 		{
@@ -187,17 +177,17 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelGet#get(boolean)
+	 * @see org.epics.pvaccess.client.ChannelGet#get()
 	 */
 	@Override
-	public synchronized void get(boolean lastRequest) {
+	public synchronized void get() {
 		if (destroyed) {
-			callback.getDone(destroyedStatus);
+			callback.getDone(destroyedStatus, this, null, null);
 			return;
 		}
 
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
-			callback.getDone(otherRequestPendingStatus);
+			callback.getDone(otherRequestPendingStatus, this, null, null);
 			return;
 		}
 		
@@ -205,7 +195,7 @@ public class ChannelGetRequestImpl extends BaseRequestImpl implements ChannelGet
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.getDone(channelNotConnected);
+			callback.getDone(channelNotConnected, this, null, null);
 		}
 	}
 	

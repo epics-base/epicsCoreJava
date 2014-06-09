@@ -119,16 +119,6 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#destroyResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
-	 */
-	@Override
-	void destroyResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
-		// data available
-		// TODO we need a flag here...
-		normalResponse(transport, version, payloadBuffer, qos, status);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#initResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
 	@Override
@@ -163,13 +153,13 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		{
 			if (!status.isSuccess())
 			{
-				callback.requestDone(status, null);
+				callback.requestDone(status, this, null);
 				return;
 			}
 			
 			// deserialize data
 			final PVStructure retVal = SerializationHelper.deserializeStructureFull(payloadBuffer, transport);
-			callback.requestDone(status, retVal);
+			callback.requestDone(status, this, retVal);
 		}
 		catch (Throwable th)
 		{
@@ -182,17 +172,17 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelRPC#request(org.epics.pvdata.pv.PVStructure, boolean)
+	 * @see org.epics.pvaccess.client.ChannelRPC#request(org.epics.pvdata.pv.PVStructure)
 	 */
 	@Override
-	public void request(PVStructure pvArgument,boolean lastRequest) {
+	public void request(PVStructure pvArgument) {
 		if (destroyed) {
-			callback.requestDone(destroyedStatus, null);
+			callback.requestDone(destroyedStatus, this, null);
 			return;
 		}
 		
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
-			callback.requestDone(otherRequestPendingStatus, null);
+			callback.requestDone(otherRequestPendingStatus, this, null);
 			return;
 		}
 		
@@ -203,7 +193,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.requestDone(channelNotConnected, null);
+			callback.requestDone(channelNotConnected, this, null);
 		}
 	}
 

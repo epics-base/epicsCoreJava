@@ -15,10 +15,9 @@
 package org.epics.pvaccess.client.impl.remote;
 
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 
-import org.epics.pvaccess.impl.remote.ProtocolType;
 import org.epics.pvaccess.impl.remote.Transport;
-import org.epics.pvdata.property.TimeStamp;
 import org.epics.pvdata.pv.PVField;
 
 
@@ -35,58 +34,61 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	private final ClientContextImpl context;
 
 	/**
+	 * The procotol (transport), "tcp" for pvAccess TCP/IP.
+	 */
+	private final String protocol;
+	
+	/**
 	 * Remote address.
 	 */
 	private final InetSocketAddress responseFrom;
 
 	/**
-	 * Server startup timestamp.
+	 * Server GUID.
 	 */
-	private TimeStamp serverStartupTime = null;
+	private byte[] serverGUID = null;
+
+	/**
+	 * Server change count.
+	 */
+	private int serverChangeCount;
 
 	/**
 	 * Constructor.
 	 * @param context context ot handle.
 	 * @param responseFrom server to handle.
 	 */
-	public BeaconHandlerImpl(ClientContextImpl context, InetSocketAddress responseFrom)
+	public BeaconHandlerImpl(ClientContextImpl context, String protocol, InetSocketAddress responseFrom)
 	{
 		this.context = context;
+		this.protocol = protocol;
 		this.responseFrom = responseFrom;
 	}
 	
 	/**
-	 * Update beacon period and do analitical checks (server restared, routing problems, etc.)
-	 * @param from who is notifying.
-	 * @param remoteTransportRevision encoded (major, minor) revision.
-	 * @param timestamp timewhen beacon was received.
-	 * @param startupTime server (reported) startup time.
-	 * @param sequentalID sequential ID (unsigned short).
-	 * @param data server status data, can be <code>null</code>.
+	 * Update beacon period and do analytical checks (server restared, routing problems, etc.)
 	 */
+	@Override
 	public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
-							 long timestamp, TimeStamp startupTime, int sequentalID,
-							 PVField data)
+							 long timestamp, byte[] guid, int sequentalID,
+							 int changeCount, PVField data)
 	{
-		boolean networkChanged = updateBeacon(remoteTransportRevision, timestamp, startupTime, sequentalID);
+		boolean networkChanged = updateBeacon(remoteTransportRevision, timestamp, guid, sequentalID, changeCount);
 		if (networkChanged)
 			changedTransport();
 	}
 
 	/**
 	 * Update beacon.
-	 * @param remoteTransportRevision
-	 * @param timestamp
-	 * @param sequentalID
-	 * @return	network change (server restarted) detected.
 	 */
 	private synchronized boolean updateBeacon(byte remoteTransportRevision, long timestamp,
-											  TimeStamp startupTime, int sequentalID) {
+											  byte[] guid, int sequentalID, int changeCount) {
 		
 		// first beacon notification check
-		if (serverStartupTime == null)
+		if (serverGUID == null)
 		{
-			serverStartupTime = startupTime;
+			serverGUID = guid;
+			serverChangeCount = changeCount;
 			
 			// new server up...
 			context.newServerDetected();
@@ -94,12 +96,23 @@ public class BeaconHandlerImpl implements BeaconHandler {
 			return false;
 		}
 
-		final boolean networkChange = !serverStartupTime.equals(startupTime);
+		final boolean networkChange = Arrays.equals(serverGUID, guid);
 		if (networkChange)
 		{
-			// update startup time
-			serverStartupTime = startupTime;
+			// update startup time and change count 
+			serverGUID = guid;
+			serverChangeCount = changeCount;
 
+			context.newServerDetected();
+			
+			return true;
+		}
+		else if (serverChangeCount != changeCount)
+		{
+			//  change count 
+			serverChangeCount = changeCount;
+
+			// TODO be more specific (possible optimizations)
 			context.newServerDetected();
 			
 			return true;
@@ -113,8 +126,7 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	 */
 	private void changedTransport()
 	{
-		// TODO why only TCP, actually TCP does not need this
-		Transport[] transports = context.getTransportRegistry().get(ProtocolType.TCP.name(), responseFrom);
+		Transport[] transports = context.getTransportRegistry().get(protocol, responseFrom);
 		if (transports == null)
 			return;
 

@@ -14,6 +14,7 @@
 
 package org.epics.pvaccess.client.impl.remote.search;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -22,8 +23,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
-import org.epics.pvaccess.impl.remote.QoS;
+import org.epics.pvaccess.impl.remote.ProtocolType;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
+import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport.InetAddressType;
+import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvaccess.util.IntHashMap;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.misc.Timer.TimerCallback;
@@ -70,7 +73,11 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
     // 225ms +/- 25ms random
     private static final double ATOMIC_PERIOD = 0.225;
     private static final int PERIOD_JITTER_MS = 25;
+
     
+	private final short responsePort;
+	private final InetAddress responseAddress;
+
     /**
 	 * Constructor.
 	 * @param context
@@ -79,6 +86,11 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	{
 		this.context = context;
 
+		// set search response address
+		InetSocketAddress responseSocketAddress = context.getSearchTransport().getRemoteAddress();
+		responsePort = (short)responseSocketAddress.getPort();
+		responseAddress = responseSocketAddress.getAddress();
+		
 		// create and initialize send buffer
 		sendBuffer = ByteBuffer.allocate(PVAConstants.MAX_UDP_UNFRAGMENTED_SEND);
 		initializeSendBuffer();
@@ -149,7 +161,11 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		timerNode.cancel();
 	}
 
-	/**
+	private final static int DATA_COUNT_POSITION = PVAConstants.PVA_MESSAGE_HEADER_SIZE + 4+1+3+16+2+1+4;
+	private final static int CAST_POSITION = PVAConstants.PVA_MESSAGE_HEADER_SIZE + 4;
+    private final static int PAYLOAD_POSITION = 4;
+
+    /**
 	 * Initialize send buffer.
 	 */
 	private void initializeSendBuffer()
@@ -160,15 +176,24 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)0x80);	// data + big endian
 		sendBuffer.put((byte)3);	// search
-		sendBuffer.putInt(Integer.SIZE/Byte.SIZE + 1);		// "zero" payload
+		sendBuffer.putInt(4+1+3+16+2+1);		// "zero" payload
 		sendBuffer.putInt(sequenceNumber.incrementAndGet());
 
-		/*
-		final boolean REQUIRE_REPLY = false;
-		sendBuffer.put(REQUIRE_REPLY ? (byte)QoS.REPLY_REQUIRED.getMaskValue() : (byte)QoS.DEFAULT.getMaskValue());
-		*/
+		// multicast vs unicast mask
+		sendBuffer.put((byte)0x00);	
 		
-		sendBuffer.put((byte)QoS.DEFAULT.getMaskValue());
+		// reserved part
+		sendBuffer.put((byte)0);
+		sendBuffer.putShort((short)0);
+		
+		// NOTE: is it possible (very likely) that address is any local address ::ffff:0.0.0.0
+		InetAddressUtil.encodeAsIPv6Address(sendBuffer, responseAddress);
+		sendBuffer.putShort((short)responsePort);
+		
+		// TODO now not only TCP supported
+		// note: this affects DATA_COUNT_POSITION
+		sendBuffer.put((byte)1);
+		SerializeHelper.serializeString(ProtocolType.tcp.name(), sendBuffer);
 		sendBuffer.putShort((short)0);	// count
 	}
 	
@@ -177,7 +202,13 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	 */
 	private synchronized void flushSendBuffer()
 	{
-		context.getSearchTransport().send(sendBuffer);
+		
+		sendBuffer.put(CAST_POSITION, (byte)0x80);	// unicast, no reply required
+		context.getSearchTransport().send(sendBuffer, InetAddressType.UNICAST);
+		
+		sendBuffer.put(CAST_POSITION, (byte)0x00);	// b/m-cast, no reply required
+		context.getSearchTransport().send(sendBuffer, InetAddressType.BROADCAST_MULTICAST);
+		
 		initializeSendBuffer();
 	}
 	
@@ -220,9 +251,6 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		
 	};
 	
-	private final static int DATA_COUNT_POSITION = PVAConstants.PVA_MESSAGE_HEADER_SIZE + Integer.SIZE/Byte.SIZE + 1;
-    private final static int PAYLOAD_POSITION = Short.SIZE/Byte.SIZE + 2;
-
     /**
 	 * Send search message.
 	 * @return success status.  

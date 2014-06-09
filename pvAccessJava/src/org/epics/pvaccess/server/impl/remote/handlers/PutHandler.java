@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvaccess.client.ChannelPut;
 import org.epics.pvaccess.client.ChannelPutRequester;
+import org.epics.pvaccess.client.impl.remote.BaseRequestImpl;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
@@ -31,6 +32,7 @@ import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
+import org.epics.pvdata.pv.Structure;
 
 /**
  * Put request handler.
@@ -49,10 +51,18 @@ public class PutHandler extends AbstractServerResponseHandler {
 	private static class ChannelPutRequesterImpl extends BaseChannelRequester implements ChannelPutRequester, TransportSender {
 		
 		private volatile ChannelPut channelPut;
-		private volatile BitSet bitSet;
-		private volatile PVStructure pvStructure;
-		private Status status;
+		private volatile Status status;
 		
+		private volatile Structure structure;
+
+		// reference store for get
+		private volatile PVStructure pvStructure;
+		private volatile BitSet bitSet;
+
+		// put container
+		private volatile PVStructure putPVStructure;
+		private volatile BitSet putBitSet;
+
 		public ChannelPutRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				 PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
@@ -71,13 +81,15 @@ public class PutHandler extends AbstractServerResponseHandler {
 		}
 
 		@Override
-		public void channelPutConnect(Status status, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
-			synchronized (this) {
-				this.bitSet = bitSet;
-				this.pvStructure = pvStructure;
-				this.status = status;
-				this.channelPut = channelPut;
-			}
+		public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
+			// will JVM optimize subsequent volatile sets?
+			this.status = status;
+			this.channelPut = channelPut;
+			this.structure = structure;
+			
+			this.putPVStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(structure, putPVStructure);
+			this.putBitSet = BaseRequestImpl.createBitSetFor(putPVStructure, putBitSet);
+			
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -87,20 +99,20 @@ public class PutHandler extends AbstractServerResponseHandler {
 		}
 
 		@Override
-		public void putDone(Status status) {
-			synchronized (this)
-			{
-				this.status = status;
-			}
+		public void putDone(Status status, ChannelPut channelPut) {
+			this.status = status;
+			
 			transport.enqueueSendRequest(this);
 		}
 
 		@Override
-		public void getDone(Status status) {
-			synchronized (this)
-			{
-				this.status = status;
-			}
+		public void getDone(Status status, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
+			this.status = status;
+			this.pvStructure = pvStructure;
+			this.bitSet = bitSet;
+			
+			// TODO should we check if pvStructure and bitSet are consistent/valid
+
 			transport.enqueueSendRequest(this);
 		}
 
@@ -124,15 +136,15 @@ public class PutHandler extends AbstractServerResponseHandler {
 		/**
 		 * @return the bitSet
 		 */
-		public BitSet getBitSet() {
-			return bitSet;
+		public BitSet getPutBitSet() {
+			return putBitSet;
 		}
 
 		/**
 		 * @return the pvStructure
 		 */
-		public PVStructure getPVStructure() {
-			return pvStructure;
+		public PVStructure getPutPVStructure() {
+			return putPVStructure;
 		}
 
 		/* (non-Javadoc)
@@ -161,19 +173,22 @@ public class PutHandler extends AbstractServerResponseHandler {
 			control.startMessage((byte)11, Integer.SIZE/Byte.SIZE + 1);
 			buffer.putInt(ioid);
 			buffer.put((byte)request);
-			synchronized (this) {
-				status.serialize(buffer, control);
-			}
+			status.serialize(buffer, control);
 
 			if (status.isSuccess())
 			{
 				if (QoS.INIT.isSet(request))
 				{
-					control.cachedSerialize(pvStructure != null ? pvStructure.getField() : null, buffer);
+					control.cachedSerialize(structure, buffer);
 				}
 				else if (QoS.GET.isSet(request))
 				{
-					pvStructure.serialize(buffer, control);
+					bitSet.serialize(buffer, control);
+					pvStructure.serialize(buffer, control, bitSet);
+					
+					// release references
+					pvStructure = null;
+					bitSet = null;
 				}
 			}
 			
@@ -241,7 +256,12 @@ public class PutHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, qosCode, BaseChannelRequester.otherRequestPendingStatus);
 				return;
 			}
+			
+			ChannelPut channelPut = request.getChannelPut();
 
+			if (lastRequest)
+				channelPut.lastRequest();
+			
 			if (get)
 			{
 				/*
@@ -255,8 +275,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 				}
 				*/
 
-				// no destroy w/ get
-				request.getChannelPut().get();
+				channelPut.get();
 			}
 			else
 			{
@@ -272,10 +291,11 @@ public class PutHandler extends AbstractServerResponseHandler {
 				*/
 				
 				// deserialize bitSet and do a put
-				final BitSet putBitSet = request.getBitSet();
+				final BitSet putBitSet = request.getPutBitSet();
+				final PVStructure putPVStructure = request.getPutPVStructure();
 				putBitSet.deserialize(payloadBuffer, transport);
-				request.getPVStructure().deserialize(payloadBuffer, transport, putBitSet);
-				request.getChannelPut().put(lastRequest);
+				putPVStructure.deserialize(payloadBuffer, transport, putBitSet);
+				channelPut.put(putPVStructure, putBitSet);
 			}
 		}
 	}

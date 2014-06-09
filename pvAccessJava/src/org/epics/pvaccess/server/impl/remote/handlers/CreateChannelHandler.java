@@ -30,6 +30,9 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
+import org.epics.pvaccess.server.impl.remote.rpc.ServerRPCService;
+import org.epics.pvaccess.server.rpc.impl.RPCChannel;
+import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.Status;
@@ -41,6 +44,8 @@ import org.epics.pvdata.pv.Status.StatusType;
  * @version $Id$
  */
 public class CreateChannelHandler extends AbstractServerResponseHandler {
+
+	private static final String SERVER_CHANNEL_NAME = "server";
 
 	/**
 	 * @param context
@@ -80,7 +85,20 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		
 		final ChannelProvider provider = context.getChannelProvider();
 		final ChannelRequester cr = new ChannelRequesterImpl(transport, channelName, cid);
-		provider.createChannel(channelName, cr, transport.getPriority());
+		
+		if (channelName.equals(SERVER_CHANNEL_NAME))
+		{
+			RPCChannel serverChannel =
+				new RPCChannel(
+					null,			// no provider
+					SERVER_CHANNEL_NAME,
+					cr,
+					new ServerRPCService(context),
+					null);
+			cr.channelCreated(StatusFactory.getStatusCreate().getStatusOK(), serverChannel);
+		}
+		else
+			provider.createChannel(channelName, cr, transport.getPriority());
 	}
 
 	/**

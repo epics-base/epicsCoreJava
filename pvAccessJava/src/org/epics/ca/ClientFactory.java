@@ -14,18 +14,21 @@ import gov.aps.jca.event.ContextMessageListener;
 import gov.aps.jca.event.ContextVirtualCircuitExceptionEvent;
 
 import org.epics.pvaccess.client.Channel;
-import org.epics.pvaccess.client.ChannelAccessFactory;
 import org.epics.pvaccess.client.ChannelFind;
 import org.epics.pvaccess.client.ChannelFindRequester;
+import org.epics.pvaccess.client.ChannelListRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderFactory;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelRequester;
+import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.RunnableReady;
 import org.epics.pvdata.misc.ThreadCreate;
 import org.epics.pvdata.misc.ThreadCreateFactory;
 import org.epics.pvdata.misc.ThreadPriority;
 import org.epics.pvdata.misc.ThreadReady;
 import org.epics.pvdata.pv.Status;
+import org.epics.pvdata.pv.Status.StatusType;
 
 /**
  * Factory and implementation of Channel Access V3 client.
@@ -85,7 +88,7 @@ public class ClientFactory  {
     public static synchronized void start() {
         if (factory != null) return;
         factory = new ChannelProviderFactoryImpl();
-        ChannelAccessFactory.registerChannelProviderFactory(factory);
+        ChannelProviderRegistryFactory.registerChannelProviderFactory(factory);
     }
     
     /**
@@ -94,7 +97,7 @@ public class ClientFactory  {
     public static synchronized void stop() {
     	if (factory != null)
     	{
-    		ChannelAccessFactory.unregisterChannelProviderFactory(factory);
+    		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
     		factory.destroySharedInstance();
     	}
     }
@@ -150,7 +153,32 @@ public class ClientFactory  {
             locateFind.find(channelFindRequester);
             return locateFind;
         }
-        /* (non-Javadoc)
+        
+        private static final Status listNotSupported = 
+        	StatusFactory.getStatusCreate()
+        		.createStatus(StatusType.ERROR, "channelList not supported", null);
+
+    	private ChannelFind channelFind =
+    		new ChannelFind() {
+    			
+    			@Override
+    			public ChannelProvider getChannelProvider() {
+    				return ChannelProviderImpl.this;
+    			}
+    			
+    			@Override
+    			public void cancel() {
+    				// noop
+    			}
+    		};
+
+    		@Override
+		public ChannelFind channelList(ChannelListRequester channelListRequester) {
+        	channelListRequester.channelListResult(listNotSupported, channelFind, null, false);
+			return channelFind;
+		}
+        
+		/* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short)
          */
         @Override
@@ -232,10 +260,10 @@ public class ClientFactory  {
             return v3Channel;
         }
         /* (non-Javadoc)
-         * @see org.epics.pvaccess.client.ChannelFind#cancelChannelFind()
+         * @see org.epics.pvaccess.client.ChannelFind#cancel()
          */
         @Override
-        public void cancelChannelFind() {
+        public void cancel() {
             v3Channel.destroy();
         }
         /* (non-Javadoc)

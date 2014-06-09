@@ -38,7 +38,7 @@ public interface ResponseRequest {
 	public void timeout();
 
 	/**
-	 * Cancel response request (always to be called to complete/destroy).
+	 * Cancel response request.
 	 */
 	public void cancel();
 	

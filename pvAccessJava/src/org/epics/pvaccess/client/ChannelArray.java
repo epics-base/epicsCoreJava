@@ -5,32 +5,39 @@
  */
 package org.epics.pvaccess.client;
 
+import org.epics.pvdata.pv.PVArray;
+
 /**
  * Request to put and get Array Data.
  * The data is either taken from or put in the PVArray returned by ChannelArrayRequester.channelArrayConnect.
  * @author mrk
- *
  */
 public interface ChannelArray extends ChannelRequest{
     /**
      * put to the remote array.
-     * @param lastRequest Is this the last request.
+     * @param putArray array to put.
      * @param offset The offset in the remote array, i.e. the PVArray returned by ChannelArrayRequester.channelArrayConnect.
-     * @param count The number of elements to put.
+     * @param count The number of elements to put, 0 means "entire array".
+     * @param stride 1 means all the elements from offset to count, 2 means every other, 3 means every third, etc.
      */
-    void putArray(boolean lastRequest, int offset, int count);
+    void putArray(PVArray putArray, int offset, int count, int stride);
     /**
      * get from the remote array.
-     * @param lastRequest Is this the last request.
      * @param offset The offset in the remote array, i.e. the PVArray returned by ChannelArrayRequester.channelArrayConnect.
-     * @param count The number of elements to get.
+     * @param count The number of elements to get, 0 means "till the end of array".
+     * @param stride 1 means all the elements from offset to count, 2 means every other, 3 means every third, etc.
      */
-    void getArray(boolean lastRequest, int offset, int count);
+    void getArray(int offset, int count, int stride);
+    
+    /**
+     * Get the length and the capacity.
+     */
+    void getLength();
+    
     /**
      * Set the length and/or the capacity.
-     * @param lastRequest Is this the last request.
-     * @param length The new length. -1 means do not change.
-     * @param capacity The new capacity. -1 means do not change.
+     * @param length The new length.
+     * @param capacity The new capacity, 0 means do not change.
      */
-    void setLength(boolean lastRequest, int length, int capacity);
+    void setLength(int length, int capacity);
 }

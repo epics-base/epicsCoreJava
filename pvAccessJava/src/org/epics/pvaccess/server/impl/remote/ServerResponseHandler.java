@@ -25,10 +25,10 @@ import org.epics.pvaccess.server.impl.remote.handlers.CancelRequestHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.ConnectionValidationHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.CreateChannelHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.DestroyChannelHandler;
+import org.epics.pvaccess.server.impl.remote.handlers.DestroyRequestHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.EchoHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.GetFieldHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.GetHandler;
-import org.epics.pvaccess.server.impl.remote.handlers.IntrospectionSearchHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.MonitorHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.NoopResponse;
 import org.epics.pvaccess.server.impl.remote.handlers.ProcessHandler;
@@ -70,7 +70,7 @@ public final class ServerResponseHandler implements ResponseHandler {
 				new EchoHandler(context), /*  2 */
 				new SearchHandler(context), /*  3 */
 				badResponse, /*  4 */
-				new IntrospectionSearchHandler(context), /*  5 */
+				badResponse, /*  5 */
 				badResponse, /*  6 */
 				new CreateChannelHandler(context), /*  7 */
 				new DestroyChannelHandler(context), /*  8 */
@@ -80,13 +80,13 @@ public final class ServerResponseHandler implements ResponseHandler {
 				new PutGetHandler(context), /* 12 */
 				new MonitorHandler(context), /* 13 */
 				new ArrayHandler(context), /* 14 */
-				new CancelRequestHandler(context), /* 15 */
+				new DestroyRequestHandler(context), /* 15 */
 				new ProcessHandler(context), /* 16 */
 				new GetFieldHandler(context), /* 17 */
 				badResponse, /* 18 */
 				badResponse, /* 19 */
 				new RPCHandler(context), /* 20 */
-				badResponse, /* 21 */
+				new CancelRequestHandler(context), /* 21 */
 				badResponse, /* 22 */
 				badResponse, /* 23 */
 				badResponse, /* 24 */

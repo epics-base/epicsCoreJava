@@ -15,6 +15,8 @@ import org.epics.pvdata.pv.Status;
 public interface ChannelFindRequester {
     /**
      * @param status Completion status.
+     * @param channelFind The ChannelFind instance.
+     * @param wasFound true if the channel was found, otherwise false.
      */
-    void channelFindResult(Status status,ChannelFind channelFind,boolean wasFound);
+    void channelFindResult(Status status, ChannelFind channelFind, boolean wasFound);
 }
