@@ -803,10 +803,11 @@ public final class ConvertFactory {
             }
             else
             {
-            	if (fromValue == null)
+            	if (fromValue == null) {
             		to.select(PVUnion.UNDEFINED_INDEX);
-            	else
-            		copy(from.get(), to.select(from.getSelectedIndex()));
+            	} else {
+             	    to.set(from.getSelectedFieldName(),from.get());
+            	}
             }
             
         }

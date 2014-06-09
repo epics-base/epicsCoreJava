@@ -10,7 +10,7 @@ package org.epics.pvdata.pv;
  * @author mse
  *
  */
-public interface UnionArray extends Field{
+public interface UnionArray extends Array {
     /**
      * Get the union interface for an array element.
      * @return The interface.

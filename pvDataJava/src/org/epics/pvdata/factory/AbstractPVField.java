@@ -75,6 +75,19 @@ public abstract class AbstractPVField implements PVField{
         throw new IllegalStateException("logic error");
     }
     /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVField#getFullName()
+     */
+    public String getFullName()
+    {
+        String ret = fieldName;
+        for(PVField fld = getParent(); fld!=null; fld = fld.getParent()) 
+        {
+            if(fld.getFieldName().length()==0) break;
+            ret = fld.getFieldName() + '.' + ret;
+        }
+        return ret;
+    }
+    /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Requester#getRequesterName()
      */
     @Override

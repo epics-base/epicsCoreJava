@@ -10,7 +10,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface ScalarArray extends Field{
+public interface ScalarArray extends Array {
     /**
      * Get the element type for the array.
      * @return The element ScalarType, non-<code>null</code>.

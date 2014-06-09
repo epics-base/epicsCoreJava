@@ -10,7 +10,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface StructureArray extends Field{
+public interface StructureArray extends Array {
     /**
      * Get the structure interface for an array element.
      * @return The interface.

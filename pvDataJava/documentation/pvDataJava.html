@@ -35,7 +35,7 @@
 <h1>EPICS pvDataJava</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 03-Sep-2012</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 06-May-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -73,7 +73,7 @@ V4 control system programming environment:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 03-Sep-2012 version of the Java implementation of pvData.  This
+<p>This is the 06-May-2014 version of the Java implementation of pvData.  This
 version is a general edit and regularizes the header boilerplate. </p>
 
 <p> The text describes software which is a complete implementation of pvData as
@@ -133,19 +133,63 @@ store, access, and communicate memory resident data structures.</p>
   <dt>memory resident</dt>
     <dd>pvData only defines memory resident data.</dd>
   <dt>structured data</dt>
-    <dd>pvData has four types: scalar, scalarArray, structure, and structureArray.
-      A scalar has one of the following scalarTypes : pvBoolean, pvByte, pvShort, pvInt, pvLong,
-      pvUByte, pvUShort, pvUInt, pvULong, pvFloat, pvDouble, and
-      pvString. A scalarArray is a one dimensional array with the element type being any of the scalarTypes.
+    <dd>pvData defines data as structures with subfields
+      where each eah subfield has a name and type.
+      The types are defined next.</dd>
+</dl>
+<p>The pvData types are:</p>
+<dl>
+   <dt>scalar</dt>
+   <dd>
+      A scalar has one of the following scalarTypes:
+      <dl>
+         <dt>pvBoolean</dt>
+           <dd><b>false</b> or <b>true</b>.</dd>
+         <dt>pvByte, pvShort, pvInt, pvLong</dt>
+            <dd>Signed integers of size 8,16,32,64 bits.</dd>
+         <dt>pvUByte, pvUShort, pvUInt, pvULong</dt>
+            <dd> Unsigned integers of size 8,16,32,64 bits.</dd>
+         <dt>pvFloat, pvDouble</dt>
+            <dd><b>IEEE</b> floating point numbers  of size 32 and 64 bits.</dd>
+         <dt>pvString</dt>
+            <dd>In Java a String and in C++ std::string</dd>
+      </dl>
+    </dd>
+    <dt>scalarArray</dt>
+    <dd>
+      A scalarArray is a one dimensional array with the element
+      has the same scalarType.
+    </dd>
+    <dt>structure</dt>
+    <dd>
       A structure is an ordered set of fields where each field has a
       name and type.
-      are supported.A structureArray is an array of structures where each element has the same intrspection interface.
       Since a field can have type structure complex structures can be created
-      that simulate types.</dd>
+      that simulate types.
+     </dd>
+     <dt>structureArray</dt>
+     <dd>
+      A structureArray is an array of structures where each element
+      has the same structure introspection interface.
+     </dd>
+     <dt>union</dt>
+     <dd>
+      A union has a single sub-field with a variable type.
+      A variant union allows the type to be any type.
+      A regular union allows only a fixed set of types.
+      </dd>
+      <dt>unionArray</dt>
+      <dd>
+      A union array is an array of union fields where each element
+      has the same introspection interface. Different elements can
+      have different types but each must have a type determined by the
+      union interface.
+      </dd>
 </dl>
 
-<p>The pvIOCJava implements a Process Variable (PV) Database, which is a memory
-resident database holding pvData, has the following features:</p>
+<p>Project <b>pvIOCJava</b> implements a Process Variable (PV) Database,
+which is a memory resident database holding pvData,
+has the following features:</p>
 <ul>
   <li>A database has records.</li>
   <li>Each record has a unique record name.</li>
@@ -155,18 +199,20 @@ resident database holding pvData, has the following features:</p>
 
 <p>pvData was initially created to support the javaIOC and was part of the
 javaIOC project.
-The original javaIOC project has been broken up into many projects, e. g. pvDataJava, pvAccessJava,
-pvIOCJava, pvServiceJava. In addition there are C++ implementation of each of these projects.
-pvData is intended for use by 1) channel access
+The original javaIOC project has been broken up into many projects,
+e. g. pvDataJava, pvAccessJava, pvIOCJava, pvServiceJava.
+In addition there are C++ implementation of each of these projects.
+pvData is intended for use by 1) pvAccess
 clients, 2) Interface between client and network, 3) Interface between network
-and channel access server, 4) Interface between server and IOC database. Since
-it is an interface to data, it could also be used by other systems, e.g. TANGO,
-TINE, etc. A high level Physics application can hold data as pvData. By
-starting a channel access server, the data can made available to network
+and pvAccess server, 4) Interface between server and IOC database.
+Since it is an interface to data, it could also be used by other systems,
+e.g. TANGO, TINE, etc.
+A high level Physics application can hold data as pvData.
+By starting a pvAccess server, the data can made available to network
 clients.</p>
 
-<p>pvData contains everything required to support Channel Access and Channel
-Access clients and servers. </p>
+<p>pvData contains everything required to support pvAccess and 
+pvAccess clients and servers. </p>
 
 <h2 >PVData Meta Language</h2>
 
@@ -239,44 +285,91 @@ rest of the line is a comment. </p>
     </dd>
   <dt>structure</dt>
     <dd>A structure field has the definition: 
-      <pre>     structure fieldName
-         fieldDef
-         ...
+      <pre>
+structure fieldName
+    fieldDef
+    ...
       </pre>
       or 
-      <pre>     xxx_t fieldName
-         // if data object then following appear
-         fieldDef
-         ...
+      <pre>
+xxx_t fieldName
+    // if data object then following appear
+    fieldDef
+    ...
       </pre>
-      For <span>structure fieldName</span> each
-      <span>fieldDef</span> must have a unique
-      <span>fieldName</span> within the <span
-     >structure</span> For <span
-     >"xxx_t fieldName"</span> xxx_t must be a
+      For <b>structure fieldName</b> each
+      <b>fieldDef</b> must have a unique
+      <b>fieldName</b> within the <b>structure</b>
+      For <b>"xxx_t fieldName"</b> xxx_t must be a
       previously structure definition of the form: 
-      <pre>    structure xxx_t
-        ...</pre>
+      <pre>
+structure xxx_t
+    ...
+      </pre>
     </dd>
   <dt>structureArray</dt>
     <dd>A structureArray field has the definition: 
-      <pre>     structure[] fieldName
-          structureDef
-          ...
-          </pre>
+      <pre>
+structure[] fieldName
+    structureDef
+    ...
+      </pre>
       <p>or</p>
-      <pre>    xxx_t[] fieldName</pre>
-      <pre>      </pre>
+      <pre>
+xxx_t[] fieldName
+      </pre>
       <p>Thus a structure array is an array where each element is a structure
       but all elements have the same introspection interface. For introspection
       the structureDef appears once without any data valuies.</p>
     </dd>
+   <dt>union</dt>
+      <dd>
+       This has two flavors: a varient union or a union of a fixed set
+       of types.
+       A varient union has a single sub-field that can be of any type
+       and has the name <b>any</b>.
+       A regular union has a single sub-field has a type that is from
+      a fixed set of types and a name associated with the type.
+       The union introspection interface has a field array
+       that has the types and a string array that has the names.<br />
+      A varient union has the form:
+      <pre>
+union fieldName
+    any any
+      </pre>
+      The following is an example of a regular union that can
+      have one of three possible types: pvDouble, pvInt, or pvStructure
+      where the structure is a timeStamp:
+      <pre>
+union value
+    double doubleValue
+    int intValue
+    timeStamp timeStamp
+        long secondsPastEpoch
+        int nanoSeconds
+        int userTag
+      </pre>
+      </dd>
+   <dt>UnionArray</dt>
+       <dd>
+        This is an array of unions.
+        Each element has the same interspection interface
+         but the subifield of each element can have a different type.
+       The following is an example of a union array:
+       <pre>
+any[]
+    any
+</pre>
+       </dd>
 </dl>
 
 <p>The above is used to describe introspection objects. Data objects are
 describe in a similar way but each scalar field and each array field has data
 values. The definition of the data values depends on the type. For scalars the
-data value is whatever is valid for the type. </p>
+data value is whatever is valid for the type.
+For union only a single subfield will appear.
+For a union array a single subfield will appear for each element.
+</p>
 <dl>
   <dt>boolean</dt>
     <dd>The value must be <span>true</span> or
@@ -410,7 +503,9 @@ description of each method.</p>
     scalar,
     scalarArray,
     structure,
-    structureArray;
+    structureArray,
+    union_t,
+    unionArray;
 }</pre>
 
 <p>where</p>
@@ -424,6 +519,18 @@ description of each method.</p>
   <dt>structureArray</dt>
     <dd>A field that is an array of structures where each element has the same
       introspection interface, i.e. each element has the same structure.</dd>
+  <dt>union</dt>
+    <dd>A union has a single sub-field with a variable type.
+     A variant union allows the type to be any type.
+     A regular union allows only a fixed set of types
+    </dd>
+   <dt>unionArray</dt>
+    <dd>
+    A union array is an array of union fields where each element
+    has the same introspection interface.
+    Different elements can have different types but each must have
+    a type determined by the union interface.
+    </dd>
 </dl>
 <pre>enum ScalarType {
     pvBoolean,
@@ -504,7 +611,24 @@ interface Structure extends Field {
 
 interface StructureArray extends Field {
     Structure getStructure();
-}</pre>
+}
+
+public interface Union extends Field{
+    public static final String DEFAULT_ID = "union";
+    public static final String ANY_ID = "any";
+    Field getField(String fieldName);
+    int getFieldIndex(String fieldName);
+    Field[] getFields();
+    Field getField(int fieldIndex);
+    String[] getFieldNames();
+    String getFieldName(int fieldIndex);
+    boolean isVariant();
+}
+
+public interface UnionArray extends Field{
+    Union getUnion();
+}
+</pre>
 
 <p>The introspection interfaces provide access to immutable objects. This
 allows introspection interfaces to be freely shared between data objects. For
@@ -520,17 +644,18 @@ containing two fields, can be shared by every record that has a time stamp.</p>
     int getFieldOffset();
     int getNextFieldOffset();
     int getNumberFields();
-    PVAuxInfo getPVAuxInfo();
     boolean isImmutable();
     void setImmutable();
     Field getField();
     PVStructure getParent();
-    void renameField(String newName);
-    void postPut(); // calls PVRecordField.postPut if this is a field of a record
+    void postPut();
     void setPostHandler(PostHandler postHandler);
     void toString(StringBuilder buf);
     void toString(StringBuilder buf,int indentLevel);
     String toString();
+    // The following should go away.
+    PVAuxInfo getPVAuxInfo();
+    void renameField(String newName);
 }</pre>
 
 <p>Each scalar type has an associated data interface: PVBoolean,
@@ -593,11 +718,10 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVField[] getPVFields();
     PVField getSubField(String fieldName);
     PVField getSubField(int fieldOffset);
-    void appendPVField(String fieldName,PVField pvField);
-    void appendPVFields(String[] fieldNames,PVField[] pvFields);
-    void removePVField(String fieldName);
-    void replacePVField(PVField oldPVField,PVField newPVField);
+    &lt;T extends PVField&gt; T getSubField(Class&lt;T&gt; c, String fieldName);
+    &lt;T extends PVField&gt; T getSubField(Class&lt;T&gt; c, int fieldOffset);
     // The following are convenience methods
+    // Note that they are no longer needed because of above generic methods
     PVBoolean getBooleanField(String fieldName);
     PVByte getByteField(String fieldName);
     PVShort getShortField(String fieldName);
@@ -610,6 +734,13 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVStructureArray getStructureArrayField(String fieldName);
     PVStructure getStructureField(String fieldName);
     PVArray getArrayField(String fieldName,ScalarType elementType);
+    PVUnion getUnionField(String fieldName);
+    PVUnionArray getUnionArrayField(String fieldName);
+    //the following should go aeay
+    void appendPVField(String fieldName,PVField pvField);
+    void appendPVFields(String[] fieldNames,PVField[] pvFields);
+    void removePVField(String fieldName);
+    void replacePVField(PVField oldPVField,PVField newPVField);
     String getExtendsStructureName();
     boolean putExtendsStructureName(String extendsStructureName);
     public boolean checkValid();
@@ -619,17 +750,41 @@ interface PVStructure extends PVField , BitSetSerializable{
 
 <p>The following interface creates introspection instances:</p>
 <pre>public interface FieldCreate {
+    FieldBuilder createFieldBuilder();
     Scalar createScalar(ScalarType scalarType);
     ScalarArray createScalarArray(ScalarType elementType);
     StructureArray createStructureArray(Structure elementStructure);
+    UnionArray createUnionArray(Union elementUnion);
+    UnionArray createVariantUnionArray();
     Structure createStructure(String[] fieldNames, Field[] field);
     Structure createStructure(String id,String[] fieldNames, Field[] field);
     Structure appendField(Structure structure,String fieldName, Field field);
     Structure appendFields(Structure structure,String[] fieldNames, Field[] fields);
     Structure createStructure(Structure structToClone);
+    Union createVariantUnion();
+    Union createUnion(String[] fieldNames, Field[] fields);
+    Union createUnion(String id, String[] fieldNames, Field[] fields);
     Field deserialize(ByteBuffer buffer, DeserializableControl control);
 }</pre>
 
+<p>The following is a convenience class for creating introspection objects:</p>
+<pre>
+public interface FieldBuilder
+{
+    public FieldBuilder setId(String id);
+    public FieldBuilder add(String name, ScalarType scalarType);
+    public FieldBuilder add(String name, Field field);
+    public FieldBuilder addArray(String name, ScalarType scalarType);
+    public FieldBuilder addArray(String name, Field element);
+    public Structure createStructure();
+    public Union createUnion();
+    FieldBuilder addNestedStructure(String name); 
+    FieldBuilder addNestedUnion(String name);
+    FieldBuilder addNestedStructureArray(String name); 
+    FieldBuilder addNestedUnionArray(String name);
+    FieldBuilder endNested();
+}
+</pre>
 <p>The following interface creates data instances:</p>
 <pre>public interface PVDataCreate {
     PVField createPVField(Field field);
@@ -641,9 +796,21 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVScalarArray createPVScalarArray(ScalarType elementType);
     PVScalarArray createPVScalarArray(PVScalarArray arrayToClone;
     PVStructureArray createPVStructureArray(StructureArray structureArray);
+    PVUnionArray createPVUnionArray(UnionArray unionArray);
+    PVUnionArray createPVVariantUnionArray();
     PVStructure createPVStructure(Structure structure);
     PVStructure createPVStructure(String[] fieldNames,Field[] fields);
     PVStructure createPVStructure(PVStructure structToClone);
+    PVUnion createPVUnion(Union union);
+    PVUnion createPVVariantUnion();
+    PVUnion createPVUnion(PVUnion unionToClone);
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; T createPVScalar(
+        PVScalarType&lt;T, TA&gt; scalarType);
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; TA createPVScalarArray(
+        PVScalarType&lt;T, TA&gt; elementType);
+	
+    PVStructureArray createPVStructureArray(Structure structure);
+    PVUnionArray createPVUnionArray(Union union);
     PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
 
@@ -762,7 +929,9 @@ enum Type {
     scalar,
     scalarArray,
     structure,
-    structureArray;
+    structureArray,
+    union,
+    unionArrray;
 }
 
 enum ScalarType {
@@ -971,6 +1140,48 @@ where
    <dt>getStructure</dt>
      <dd>Return the introspection interface for the array elements.</dd>
 </dl>
+<h5>Union</h5>
+<pre>
+public interface Union extends Field{
+    public static final String DEFAULT_ID = "union";
+    public static final String ANY_ID = "any";
+    Field getField(String fieldName);
+    int getFieldIndex(String fieldName);
+    Field[] getFields();
+    Field getField(int fieldIndex);
+    String[] getFieldNames();
+    String getFieldName(int fieldIndex);
+    boolean isVariant();
+}
+</pre>
+where
+<dl>
+   <dt>getField</dt>
+     <dd>Given a name or an index the type is returned.
+      <b>null</b> is returned if not found.
+     </dd>
+   <dt>getFieldIndex</dt>
+      <dd>Get the index for name. -1 is returned if not found.
+   <dt>getFields</dt>
+       <dd>Get the array of types.</dd>
+   <dt>getFieldNames</dt>
+       <dd>Get the array of names.</dd>
+   <dt>getFieldName</dt>
+       <dd>Get the name for the specified index.</dd>
+   <dt>isVariant</dt>
+      <dd>returns <b>true</b> if this is varient array and <b>false</b> otherwise.
+</dl>
+<h5>UnionArray</h5>
+<pre>
+public interface UnionArray extends Field{
+    Union getUnion();
+}
+</pre>
+where
+<dl>
+   <dt>getUnion</dt>
+     <dd>Get the union interface for each element.</dd>
+</dl>
 <h5>FieldCreate</h5>
 <p><b>Syntax for fieldName and id.</b>
 <p>A <b>fieldName</b> must begin with a letter and must be a sequence of letters
@@ -981,21 +1192,27 @@ Unicode character that denotes a digit in a language.
 Note that this is the same as the Java syntax for variable names.</p>
 <p>The syntax for <b>id</b> is the same except the '.' is also allowed
 after the initial letter.</p>
-<pre>
-interface FieldCreate {
+<pre>public interface FieldCreate {
+    FieldBuilder createFieldBuilder();
     Scalar createScalar(ScalarType scalarType);
     ScalarArray createScalarArray(ScalarType elementType);
     StructureArray createStructureArray(Structure elementStructure);
-    Structure createStructure(String[] fieldNames, Field[] fields);
-    Structure createStructure(String id,String[] fieldNames, Field[] fields);
+    UnionArray createUnionArray(Union elementUnion);
+    UnionArray createVariantUnionArray();
+    Structure createStructure(String[] fieldNames, Field[] field);
+    Structure createStructure(String id,String[] fieldNames, Field[] field);
     Structure appendField(Structure structure,String fieldName, Field field);
     Structure appendFields(Structure structure,String[] fieldNames, Field[] fields);
     Structure createStructure(Structure structToClone);
+    Union createVariantUnion();
+    Union createUnion(String[] fieldNames, Field[] fields);
+    Union createUnion(String id, String[] fieldNames, Field[] fields);
     Field deserialize(ByteBuffer buffer, DeserializableControl control);
-}
-</pre>
+}</pre>
 where
 <dl>
+   <dt>createFieldBuilder</dt>
+    <dd>Create an instance of FieldBuilder, which is desribed next.</dd>
    <dt>createScalar</dt>
      <dd>Return the Scalar with the specified scalarType.
        Note that the implementation creates a single instance for
@@ -1009,14 +1226,112 @@ where
      interface for each array element.</dd>
    <dt>createStructure</dt>
      <dd>Return a Structure. There are two methods.
-     The first creates a structure with an empty ID.
+     The first creates a structure with an empty ID which results in an id of <b>structure</b>.
      </dd>
    <dt>appendField</dt>
      <dd>Append a field to a structure.</dd>
    <dt>appendFields</dt>
      <dd>Append an array of fields to a structure.</dd>
+   <dt>createVariantUnion</dt>
+      <dd>Create a varient union, i. e. a union where the subfield can be any valid type.</dd>
+   <dt>createUnion</dt>
+      <dd>Create a union where the sub-field can have any of the types an names defined
+      by the arguments and the associated names.
+      The default id is <b>union</b> for regular unions and <b>any</b> for variant unions.
+     </dd>
    <dt>deserialize</dt>
      <dd>Deserialize a field from the the buffer.</dd>
+</dl>
+<h5>FieldBuilder</h5>
+<p>FieldBuilder is a convenience class for creating introspection interfaces.
+An example is:</p>
+<pre>
+FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+Structure s = fieldCreate.createFieldBuilder().
+    add("double", ScalarType.pvDouble).
+    addNestedStructure("nested").
+        add("short", ScalarType.pvShort).
+        add("long", ScalarType.pvLong).
+        endNested().
+    addArray("intArray", ScalarType.pvInt).
+    createStructure();
+System.out.println(s);
+</pre>
+This produces:
+<pre>
+structure
+    double double
+    structure nested
+        short short
+        long long
+    int[] intArray
+</pre>
+
+<p>The Java interface is:</p>
+<pre>
+public interface FieldBuilder
+{
+    public FieldBuilder setId(String id);
+    public FieldBuilder add(String name, ScalarType scalarType);
+    public FieldBuilder add(String name, Field field);
+    public FieldBuilder addArray(String name, ScalarType scalarType);
+    public FieldBuilder addArray(String name, Field element);
+    public Structure createStructure();
+    public Union createUnion();
+    FieldBuilder addNestedStructure(String name); 
+    FieldBuilder addNestedUnion(String name);
+    FieldBuilder addNestedStructureArray(String name); 
+    FieldBuilder addNestedUnionArray(String name);
+    FieldBuilder endNested();
+}
+</pre>
+<dl>
+  <dt>setId</dt>
+     <dd>
+      Specfy the id for the next createStructure or createUnion call.
+     </dd>
+  <dt>add</dt>
+     <dd>
+     Add a name and field for then next call to createStructure or createUnion.
+     There are two forms: one for an existing field and the other for a scalar field.
+     </dd>
+  <dt>addArray</dt>
+     <dd>
+     Add a name and array field for then next call to createStructure or createUnion.
+     There are two forms: one for an existing field and the other for a scalar field.
+      Note that for an existing field this specifies the element type.
+     </dd>
+  <dt>createStructure</dt>
+     <dd>
+       Create a Structure from the precious add and addArray methods.
+     </dd>
+  <dt>createUnion</dt>
+     <dd>
+       Create a Union from the precious add and addArray methods.
+     </dd>
+  <dt>addNestedStructure</dt>
+     <dd>
+      Start a nested structure.
+      This is followed by calls to other methods and ended by a call to endNested.
+     </dd>
+  <dt>addNestedUnion</dt>
+     <dd>
+      Start a nested union.
+      This is followed by calls to other methods and ended by a call to endNested.
+     </dd>
+  <dt>addNestedStructureArray</dt>
+     <dd>
+      Start a nested structure array.
+      This is followed by calls to other methods and ended by a call to endNested.
+     </dd>
+  <dt>addNestedUnionArray</dt>
+     <dd>
+      Start a nested union array.
+      This is followed by calls to other methods and ended by a call to endNested.
+     </dd>
+  <dt>endNested</dt>
+     <dd>
+     </dd>
 </dl>
 
 
@@ -1082,26 +1397,25 @@ a top level PVStructure.</p>
 top level PVStructure has a PVField associated with it.
 This includes the top level structure itself.
 </p>
-<pre>
-interface PVField extends Serializable, Requester {
+<pre>interface PVField extends Requester, Serializable {
     String getFieldName();
     void setRequester(Requester requester);
     int getFieldOffset();
     int getNextFieldOffset();
     int getNumberFields();
-    PVAuxInfo getPVAuxInfo();
     boolean isImmutable();
     void setImmutable();
     Field getField();
     PVStructure getParent();
-    void renameField(String newName);
     void postPut();
     void setPostHandler(PostHandler postHandler);
-    String toString();
     void toString(StringBuilder buf);
     void toString(StringBuilder buf,int indentLevel);
-}
-</pre>
+    String toString();
+    // The following should go away.
+    PVAuxInfo getPVAuxInfo();
+    void renameField(String newName);
+}</pre>
 
 <p>where</p>
 <dl>
@@ -1126,8 +1440,6 @@ interface PVField extends Serializable, Requester {
   <dt>getNumberFields</dt>
     <dd>Get the total number of fields in this field. This is nextFieldOffset -
       fieldOffset. </dd>
-  <dt>getPVAuxInfo</dt>
-    <dd>Get the PVAuxInfo for this field. PVAuxInfo is described below.</dd>
   <dt>isImmutable</dt>
     <dd>Is the field immutable?</dd>
   <dt>setImmutable</dt>
@@ -1140,8 +1452,6 @@ interface PVField extends Serializable, Requester {
   <dt>getParent</dt>
     <dd>Get the interface for the parent or null if this is the top level
       PVStructure.</dd>
-  <dt>renameField</dt>
-    <dd>Rename the field name.</dd>
   <dt>postPut</dt>
     <dd>If this field is a field of a record pvRecordField.postPut() is called.
       If not a field of a record nothing happens.</dd>
@@ -1153,8 +1463,15 @@ interface PVField extends Serializable, Requester {
       project overview.
       <b>Note:</b> The actual conversion is done by the Convert facility. </dd>
 </dl>
+<p><b>NOTE:</b> that AuxInfo should go away and so should renameField.
+The xml parser and install in pvIOCJava must be rewriten first.</p>
 
 <h4>Requester</h4>
+
+<p><b>NOTE:</b> PVField extends Requester.
+In pvDataCPP this is no longer true.
+pvDataJava should also no longer extend Requester.
+pvIOCJava needs to  be modified before this is done.</p>
 
 <p>A PVField extends Requester. Requester is present so that when database
 errors are found there is someplace to send a message.</p>
@@ -1192,6 +1509,7 @@ interface Requester {
 </dl>
 
 <h4>PVAuxInfo</h4>
+<p><b>NOTE:</b> PVAuxInfo should go away.</p>
 
 <p>AuxInfo (Auxillary Information) is information about a field that is
 application specific. It will not be available outside the application that
@@ -1535,13 +1853,25 @@ interface PVStructureArray extends PVArray {
     int put(int offset,int length, PVStructure[] from, int fromOffset);
     void shareData(PVStructure[] from);
 }
+
+public class UnionArrayData {
+    public PVUnion[] data;
+    public int offset;
+}
+
+interface PVUnionArray extends PVArray{
+    UnionArray getUnionArray();
+    int get(int offset, int length, UnionArrayData data);
+    int put(int offset,int length, PVUnion[] from, int fromOffset);
+    void shareData(PVUnion[] from);
+}
 </pre>
 <p><b>NOTES:</b></p>
 <dl>
    <dt>Unsigned types</dt>
      <dd>The implementation for each unsigned integer is the same as for the same signed type.
      This is because Java does not implement unsigned primitive types.</dd>
-   <dt>PVStructureArray</dt>
+   <dt>PVStructureArray and PVUnionArray</dt>
      <dd>A client can only access the data in the
        elements of the array via the get and put methods, i.e. it is not possible to
        access subfields indirectly. PVStructureArray.getNumberFields() returns 1, i.e.
@@ -1552,16 +1882,15 @@ interface PVStructureArray extends PVArray {
 
 <p>The interface for a structure is:</p>
 <pre>
-interface PVStructure extends PVField, BitSetSerializable {
+interface PVStructure extends PVField , BitSetSerializable{
     Structure getStructure();
     PVField[] getPVFields();
     PVField getSubField(String fieldName);
     PVField getSubField(int fieldOffset);
-    void appendPVField(PVField pvField);
-    void appendPVFields(PVField[] pvFields);
-    void removePVField(String fieldName);
-    void replacePVField(PVField oldPVField,PVField newPVField);
-    // the following are convenience methods
+    &lt;T extends PVField&gt; T getSubField(Class&lt;T&gt; c, String fieldName);
+    &lt;T extends PVField&gt; T getSubField(Class&lt;T&gt; c, int fieldOffset);
+    // The following are convenience methods
+    // Note that they are no longer needed because of above generic methods
     PVBoolean getBooleanField(String fieldName);
     PVByte getByteField(String fieldName);
     PVShort getShortField(String fieldName);
@@ -1570,13 +1899,21 @@ interface PVStructure extends PVField, BitSetSerializable {
     PVFloat getFloatField(String fieldName);
     PVDouble getDoubleField(String fieldName);
     PVString getStringField(String fieldName);
-    PVStructure getStructureField(String fieldName);
-    PVScalarArray getScalarArrayField(String fieldName,ScalarType elementType);
+    PVScalarArray getScalarArrayField(String fieldName);
     PVStructureArray getStructureArrayField(String fieldName);
+    PVStructure getStructureField(String fieldName);
+    PVArray getArrayField(String fieldName,ScalarType elementType);
+    PVUnion getUnionField(String fieldName);
+    PVUnionArray getUnionArrayField(String fieldName);
+    //the following should go aeay
+    void appendPVField(String fieldName,PVField pvField);
+    void appendPVFields(String[] fieldNames,PVField[] pvFields);
+    void removePVField(String fieldName);
+    void replacePVField(PVField oldPVField,PVField newPVField);
     String getExtendsStructureName();
     boolean putExtendsStructureName(String extendsStructureName);
-}
-</pre>
+    public boolean checkValid();
+}</pre>
 
 <p>where</p>
 <dl>
@@ -1593,59 +1930,12 @@ interface PVStructure extends PVField, BitSetSerializable {
     <dd>Get the field located a fieldOffset, where fieldOffset is relative to
       the top level structure. This returns null if the specified field is not
       located within this PVStructure.</dd>
-  <dt>appendPVField</dt>
-    <dd>Append pvField to the end of this PVStructure. This should NOT be
-      called if any code is attached to any of the fields in the top level
-      structure.</dd>
-  <dt>appendPVFields</dt>
-    <dd>Append an array of pvFields to the end of this structure. Note that if
-      the original number of fields is 0 than pvFields replaces the original.
-      Thus the caller must NOT reuse pvFields after calling this method. This
-      should NOT be called if any code is attached to any of the fields in the
-      top level structure</dd>
-  <dt>removePVField</dt>
-    <dd>Remove the specified field from this structure. This should NOT be
-      called if any code is attached to any of the fields in the top level
-      structure.</dd>
-  <dt>replacePVField</dt>
-     <dd>Replace a field with a new field.</dd>
-  <dt>getBooleanField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface. This and the following methods are convenience methods that
-      allow a user to get the interface to a subfield without requiring
-      introspection. fieldName can be of the form name.name...</dd>
-  <dt>getByteField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getShortField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getIntField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getLongField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getFloatField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getDoubleField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getStringField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getScalarArrayField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getStructureArrayField</dt>
-    <dd>Look for fieldName. If found and it has the correct type return the
-      interface.</dd>
-  <dt>getExtendsStructureName</dt>
-    <dd>Get the name of structure that this structure extends.</dd>
-  <dt>putExtendsStructureName</dt>
-    <dd>Specify the structure that this structure extends.</dd>
+   <dt>getSubField - generic versions</dt>
+     <dd>These are the methods to that get a subfield and convert it to the proper type.
+    These two methods replace all the type specific methods, which ae no longer required
+    and should not be used.</dd>
 </dl>
+<p>The other methods should go away.</p>
 
 <h4>PVDataCreate</h4>
 
@@ -1659,11 +1949,23 @@ interfaces. A factory is provided that creates PVDataCreate.</p>
     PVScalar createPVScalar(PVScalar scalarToClone);
     PVScalarArray createPVScalarArray(ScalarArray array);
     PVScalarArray createPVScalarArray(ScalarType elementType);
-    PVScalarArray createPVScalarArray(PVScalarArray arrayToClone);
+    PVScalarArray createPVScalarArray(PVScalarArray arrayToClone;
     PVStructureArray createPVStructureArray(StructureArray structureArray);
+    PVUnionArray createPVUnionArray(UnionArray unionArray);
+    PVUnionArray createPVVariantUnionArray();
     PVStructure createPVStructure(Structure structure);
-    PVStructure createPVStructure(String[] fieldNames,PVField[] pvFields);
+    PVStructure createPVStructure(String[] fieldNames,Field[] fields);
     PVStructure createPVStructure(PVStructure structToClone);
+    PVUnion createPVUnion(Union union);
+    PVUnion createPVVariantUnion();
+    PVUnion createPVUnion(PVUnion unionToClone);
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; T createPVScalar(
+        PVScalarType&lt;T, TA&gt; scalarType);
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; TA createPVScalarArray(
+        PVScalarType&lt;T, TA&gt; elementType);
+	
+    PVStructureArray createPVStructureArray(Structure structure);
+    PVUnionArray createPVUnionArray(Union union);
     PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
 where 
@@ -1677,17 +1979,29 @@ where
       first is passed an introspection interface. The second provides the field
       name and the scalarType. The last provides a field name and a PVScalar to
       clone. The newly created PVScalar will have the same auxInfos as the
-      original.</dd>
+      original.
+      A generic version is available.
+      </dd>
   <dt>createPVScalarArray</dt>
     <dd>Create an instance of a PVArray. Three versions are supplied. The first
       is passed an introspection interface. The second provides the field name
       and the elementType. The last provides a field name and a PVArray to
       clone. The newly created PVArray will have the same auxInfos as the
-      original.</dd>
+      original.
+      A generic version is available.
+      </dd>
   <dt>createPVStructureArray</dt>
     <dd>Create a PVStructureArray. It must be passed a structureToClone. This
       will become the Structure interface for ALL elements of the
       PVStructureArray. It MUST be used to create any new array elements.</dd>
+   <dt>createPVUnionArray</dt>
+    <dd>Create a PVUnionArray. It must be passed a union. This
+      will become the union interface for ALL elements of the
+      PVUnionArray.. It MUST be used to create any new array elements.</dd>
+   <dt>createPVVariantUnionArray</dt>
+      <dd>Create a variant PVUnionArray.
+       Each array element can have any type.
+       </dd>
   <dt>createPVStructure</dt>
     <dd>Create an instance of a PVStructure. Three methods are provided. The
       first method uses a previously created structure introspection interface.
@@ -1696,6 +2010,14 @@ where
       structToClone. The newly created sub-fields will have the same values and
       auxInfos as the original. If structToClone is null then the new structure
       is initialized to have 0 sub-fields.</dd>
+   <dt>createPVUnion</dt>
+    <dd>Create a PVUnion. It must be passed a union. This
+      will become the union interface for the single sub-field.
+      </dd>
+   <dt>createPVVariantUnion</dt>
+      <dd>Create a variant PVUnion.
+       The sub-field can have any type.
+       </dd>
   <dt>flattenPVStructure</dt>
     <dd>Create an array of PVFields for the fields in the PVStructure. The
       order is according to fieldOffset.</dd>
@@ -1758,8 +2080,12 @@ interface Convert {
          PVScalarArray to, int toOffset, int len);
     boolean isCopyStructureCompatible(Structure from, Structure to);
     void copyStructure(PVStructure from, PVStructure to);
+    boolean isCopyUnionCompatible(Union from, Union to);
+    void copyUnion(PVUnion from, PVUnion to);
     boolean isCopyStructureArrayCompatible(StructureArray from, StructureArray to);
     void copyStructureArray(PVStructureArray from, PVStructureArray to);
+    boolean isCopyUnionArrayCompatible(UnionArray from, UnionArray to);
+    void copyUnionArray(PVUnionArray from, PVUnionArray to);
     // For the following the pv Type must be PVByte, ...., PVDouble
     byte toByte(PVField pv);
     short toShort(PVField pv);
@@ -2040,7 +2366,18 @@ PVStructure create() {
 }
 </pre>
 
-<p>StandardPVField provides and easy way to create fields. For example:</p>
+<p>FieldBuilder provides an easier way to accomplish the previous:</p>
+<pre>
+PVStructure create() {
+   return pvDataCreate.createPVStructure(
+        fieldCreate.createFieldBuilder()
+          .add("a",ScalarType.pvLong)
+          .add("b",ScalarType.pvInt)
+          .createStructure());
+}
+</pre>
+
+<p>StandardPVField also provides an easy way to create fields. For example:</p>
 <pre>
 StandardPVField standardPVField = StandardPVFieldFactory.getStandardPVField();
 PVStructure pvStructure = standardPVField.scalar(
@@ -2050,375 +2387,10 @@ PVStructure pvStructure = standardPVField.scalar(
 
 <h2 >Package org.epics.pvdata.factory</h2>
 
-<h3>Overview</h3>
-
 <p>This package provides factories and classes to implement everything defined
-in package org.epics.pvdata.pv</p>
-
-<h3>Factory</h3>
-
-<h4>FieldFactory</h4>
-<pre>
-public final class FieldFactory {
-    public static FieldCreate getFieldCreate();
-}
-</pre>
-
-<p>FieldFactory automatically creates a single instance of FieldCreate and
-provides a method to get the interface.</p>
-
-<h4>PVDataFactory</h4>
-<pre>
-public class PVDataFactory {
-    public static PVDataCreate getPVDataCreate();
-}
-</pre>
-
-<p>PVDataFactory automatically creates a single instance of PVDataCreate and
-provides a method to get the interface.</p>
-
-<h4>ConvertFactory</h4>
-<pre>
-public final class ConvertFactory {
-    public static Convert getConvert();
-}
-</pre>
-
-<p>ConvertFactory automatically creates a single instance of Convert and
-provides a method to get the interface.</p>
-
-<h4>StatusFactory</h4>
-<pre>
-public final class StatusFactory {
-    public static StatusCreate getStatusCreate();
-}
-</pre>
-
-<p>This provides a singleton that implements StatusCreate.</p>
-
-<h4>StandardFieldFactory</h4>
-<pre>
-public final class StandardFieldFactory {
-    public static StandardField getStandardField();
-}
-</pre>
-<p>This provides a singleton that implements StandardField.</p>
-
-<h4>StandardPVFieldFactory</h4>
-<pre>
-public final class StandardPVFieldFactory {
-    public static StandardPVField getStandardPVField();
-}
-</pre>
-<p>This provides a singleton that implements StandardPVField.</p>
-
-<h3>Base Introspection Classes</h3>
-
-<p>This section describes base classes for implementing Field instances , i.e.
-introspection instances. For many applications they provide a complete
-introspection implementation but they could be extended if necessary. </p>
-<h4>BaseField</h4>
-<pre>    
-    public class BaseField implements Field {
-        public BaseField(String fieldName, Type type);
-        // all Field methods
-    }
-</pre>
-<h4>BaseScalar</h4>
-<pre>
-    public class BaseScalar extends BaseField implements Scalar {
-        public BaseScalar(String fieldName,ScalarType scalarType);
-        // all Scalar methods
-    }
-</pre>
-<h4>BaseStructure</h4>
-<pre>
-    public class BaseStructure extends BaseField implements Structure {
-        public BaseStructure(String fieldName,Field[] field);
-        // all Structure methods
-    }
-</pre>
-<h4>BaseScalarArray</h4>
-<pre>
-    public class BaseScalarArray extends BaseField implements ScalarArray {
-        public BaseScalarArray(String fieldName,ScalarType elementType);
-        // all ScalarArray methods  
-    }
-</pre>
-<h4>BaseStructureArray</h4>
-<pre>
-    public class BaseStructureArray extends BaseArray implements StructureArray {
-        public BaseStructureArray(String fieldName,Field[] fields);
-        // all StructureArray methods
-    }
-}</pre>
-
-<h3>Abstract and Base Classes for PVField</h3>
-
-<h4>BasePVAuxInfo</h4>
-
-<p>This is a complete implementation of PVAuxInfo.</p>
-<pre>public class BasePVAuxInfo implements PVAuxInfo {
-    public BasePVAuxInfo(PVField pvField);
-    // All PVAuxInfo methods
-}</pre>
-
-<h4>AbstractPVField</h4>
-
-<p>This is an abstract base class for implementing PVField interfaces. It MUST
-be the base class for any class that extends PVField. </p>
-<pre>public abstract class AbstractPVField implements PVField{
-    protected static Convert convert = ConvertFactory.getConvert();
-    protected AbstractPVField(Field field);
-    // All public methods of PVField
-}</pre>
-
-<p>The public methods are described in package org.epics.pvdata.pv. The
-protected methods are: </p>
-<dl>
-  <dt>convert</dt>
-    <dd>A convenience for derived classes since implementations often need
-      access to the conversion facility.</dd>
-  <dt>AbstractPVField</dt>
-    <dd>The constructor which must be called by any derived class.</dd>
-</dl>
-
-<h3>Classes For PVStructure</h3>
-
-<h4>BasePVStructure</h4>
-
-<p>The following is a base class for any code that implements PVStructure. Any
-code that implements PVStructure MUST extend this class.</p>
-<pre>public class BasePVStructure extends AbstractPVField implements PVStructure
-    public BasePVStructure(Structure structure);
-    // all public methods of PVStructure
-}</pre>
-
-<h3>Classes For PVScalar</h3>
-
-<h4>AbstractPVScalar</h4>
-
-<p>The following is an abstract base class for implementing PVScalar. It MUST
-be the base class for any code that implements an extension of PVScalar.</p>
-<pre>public class AbstractPVScalar extends AbstractPVField implements PVScalar {
-    protected AbstractPVScalar(Scalar scalar);
-    public Scalar getScalar();
-}</pre>
-
-<h4>BasePVBoolean</h4>
-<pre>public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
-{
-    protected boolean value = false;
-    public BasePVBoolean(Scalar scalar);
-    // public methods of PVBoolean
-}</pre>
-
-<h4>BasePVByte</h4>
-<pre>public class BasePVByte extends AbstractPVScalar implements PVByte
-{
-    protected byte value;
-    public BasePVByte(Scalar scalar);
-    // public methods of PVByte
-}</pre>
-
-<h4>BasePVShort</h4>
-<pre>public class BasePVShort extends AbstractPVScalar implements PVShort
-{
-    protected short value;
-    public BasePVShort(Scalar scalar);
-    // public methods of PVShort
-}</pre>
-
-<h4>BasePVInt</h4>
-<pre>public class BasePVInt extends AbstractPVScalar implements PVInt
-{
-    protected int value;
-    public BasePVInt(Scalar scalar);
-    // public methods of PVInt
-}</pre>
-
-<h4>BasePVLong</h4>
-<pre>public class BasePVLong extends AbstractPVScalar implements PVLong
-{
-    protected long value;
-    public BasePVLong(Scalar scalar);
-    // public methods of PVLong
-}</pre>
-<h4>BasePVBUyte</h4>
-<pre>public class BasePVUyte extends AbstractPVScalar implements PVUyte
-{
-    protected byte value;
-    public BasePVUyte(Scalar scalar);
-    // public methods of PVUyte
-}</pre>
-
-<h4>BasePVUShort</h4>
-<pre>public class BasePVUhort extends AbstractPVScalar implements PVUhort
-{
-    protected short value;
-    public BasePVUhort(Scalar scalar);
-    // public methods of PVUhort
-}</pre>
-
-<h4>BasePVUInt</h4>
-<pre>public class BasePVUnt extends AbstractPVScalar implements PVUnt
-{
-    protected int value;
-    public BasePVUnt(Scalar scalar);
-    // public methods of PVUnt
-}</pre>
-
-<h4>BasePVULong</h4>
-<pre>public class BasePVUong extends AbstractPVScalar implements PVUong
-{
-    protected long value;
-    public BasePVUong(Scalar scalar);
-    // public methods of PVUong
-}</pre>
-
-<h4>BasePVFloat</h4>
-<pre>public class BasePVFloat extends AbstractPVScalar implements PVFloat
-{
-    protected float value;
-    public BasePVFloat(Scalar scalar);
-    // public methods of PVFloat
-}</pre>
-
-<h4>BasePVDouble</h4>
-<pre>public class BasePVDouble extends AbstractPVScalar implements PVDouble
-{
-    protected double value;
-    public BasePVDouble(Scalar scalar);
-    // public methods of PVDouble
-}</pre>
-
-<h4>BasePVString</h4>
-<pre>public class BasePVString extends AbstractPVScalar implements PVString
-{
-    protected String value;
-    public BasePVString(Scalar scalar);
-    // public methods of PVString
-}</pre>
-
-<h3>Classes for PVArray</h3>
-
-<h4>AbstractPVArray</h4>
-
-<p>The following is a abstract class for creating array fields. Any code that
-implements any extension of PVArray must extend this class.</p>
-<pre>public abstract class AbstractPVArray extends AbstractPVField implements PVArray{
-    protected int length = 0;
-    protected int capacity;
-    protected boolean capacityMutable = true;
-    
-    protected AbstractPVArray(Array array);
-    abstract public void setCapacity(int capacity);
-    // public methods of PVArray
-}</pre>
-
-<h4>AbstractPVScalarArray</h4>
-<p>The following is an abstract class for creating scalar arrays.
-All implementations of scalar arrays should extend this class.</p>
-<pre>
-public abstract class AbstractPVScalarArray
-   extends AbstractPVArray implements PVScalarArray
-{
-    protected AbstractPVScalarArray(ScalarArray array);
-    public ScalarArray getScalarArray();
-}
-</pre>
-<p>For each ScalarType there is a base class for implementing the corresponding
-array type. For most uses it is not necessary to extend these classes.</p>
-
-<h4>BasePVBooleanArray</h4>
-<pre>public class BasePVBooleanArray extends AbstractPVArray implements PVBooleanArray
-{
-    protected boolean[] value;
-    // implements all PVBooleanArray methods
-}</pre>
-
-<h4>BasePVByteArray</h4>
-<pre>public class BasePVByteArray extends AbstractPVArray implements PVByteArray
-{
-    protected byte[] value;
-    // implements all PVByteArray methods
-}</pre>
-
-<h4>BasePVShortArray</h4>
-<pre>public class BasePVShortArray extends AbstractPVArray implements PVShortArray
-{
-    protected short[] value;
-    // implements all PVShortArray methods
-}</pre>
-
-<h4>BasePVIntArray</h4>
-<pre>public class BasePVIntArray extends AbstractPVArray implements PVIntArray
-{
-    protected int[] value;
-    // implements all PVIntArray methods
-}</pre>
-
-<h4>BasePVLongArray</h4>
-<pre>public class BasePVLongArray extends AbstractPVArray implements PVLongArray
-{
-    protected long[] value;
-    // implements all PVLongArray methods
-}</pre>
-
-<h4>BasePVUByteArray</h4>
-<pre>public class BasePVUByteArray extends AbstractPVArray implements PVUByteArray
-{
-    protected byte[] value;
-    // implements all PVUByteArray methods
-}</pre>
-
-<h4>BasePVUShortArray</h4>
-<pre>public class BasePVUShortArray extends AbstractPVArray implements PVUShortArray
-{
-    protected short[] value;
-    // implements all PVUShortArray methods
-}</pre>
-
-<h4>BasePVUIntArray</h4>
-<pre>public class BasePVUIntArray extends AbstractPVArray implements PVUIntArray
-{
-    protected int[] value;
-    // implements all PVUIntArray methods
-}</pre>
-
-<h4>BasePVULongArray</h4>
-<pre>public class BasePVULongArray extends AbstractPVArray implements PVULongArray
-{
-    protected long[] value;
-    // implements all PVULongArray methods
-}</pre>
-
-<h4>BasePVFloatArray</h4>
-<pre>public class BasePVFloatArray extends AbstractPVArray implements PVFloatArray
-{
-    protected float[] value;
-    // implements all PVFloatArray methods
-}</pre>
-
-<h4>BasePVDoubleArray</h4>
-<pre>public class BasePVDoubleArray extends AbstractPVArray implements PVDoubleArray
-{
-    protected double[] value;
-    // implements all PVDoubleArray methods
-}</pre>
-
-<h4>BasePVStringArray</h4>
-<pre>public class BasePVStringArray extends AbstractPVArray implements PVStringArray
-{
-    protected String[] value;
-    // implements all PVStringArray methods
-}</pre>
-
-<h4>BasePVStructureArray</h4>
-<pre>public class BasePVStructureArray  extends AbstractPVArray implements PVStructureArray
-{
-   // implements all PVStructureArray methods
-}</pre>
+in package org.epics.pvdata.pv
+Look at the code for details.
+</p>
 
 <h2 >Package org.epics.pvdata.property</h2>
 
@@ -3702,397 +3674,640 @@ receiving pvData over the nerwork.</p>
     <dd>Deserialize a string.</dd>
 </dl>
 
-<h2 >Package org.epics.pvdata.monitor</h2>
+<h2>support for copy and monitor</h2>
+<p><b>copy</b> and <b>monitor</b> are not used in this project.
+They are intended for use by pvAccess and by pvAccess servers.
+They are provided with this project because the code depends only on
+pvData itself.
+</p>
+<p>This document describes C++ specific code.
+<a href="http://epics-pvdata.sourceforge.net/informative/pvRequest.html">
+pvRequest.html</a>
+provides a language independent overview of <b>copy</b> and <b>monitor</b>.
+</p>
+<p>
+<b>NOTE:pvRequest.html</b> must be updated since it is based on an earlier version of pvCopy that
+had knowlege of PVRecord. The C++ version was implemented in pvDatabaseCPP
+and the Java version on pvIOCJava.
+At present only the C++ version of the new API for pvCopy is implemented.
+</p>
+<p>Copy provides:
+<dl>
+   <dt>createRequest</dt>
+     <dd>
+      The Channel create methods in pvAccess all have an argument
+      <b>PVStructure pvRequest</b>.<br />
+      Given an ascii string createRequest creates a PVStructure that provides
+      a pvData representation of the information from the ascii string.
+      It is this structure that can be passed to the channel create methods.<br />
+      The information in a pvRequest selects an arbitrarary subset of the
+      fields in a top level structure that resides in the server.
+      In addition options can be specified. Both global and field specific
+      options can be specified.
+      </dd>
+   <dt>pvCopy</dt>
+     <dd>This is a faculity used by channel providers.
+     It provides client specific code that manages a copy of an arbitrary
+     subset of the fields in a top level structure that resides in the
+     provider. It also allows provider access to options specified
+     by the client.
+     </dd>
+</dl>
+Monitor provides:
+<dl>
+  <dt>monitor</dt>
+    <dd>This is support code for channel providers that implement channel
+    monitor. It, together with the queue facility, provides support for
+    monitor queues.
+    </dd>
+  <dt>monitorPlugin</dt>
+    <dd>This is support for implementing monitor plugins.
+     A monitor plugin can be developed that has no knowledge
+     of pvAccess but only pvData.
+    </dd>
+</dl>
+</p>
 
-<h3>Overview</h3>
+<h2>support for copy</h2>
+<p><b>copy</b> provides the ability to create a structure that has 
+a copy of an arbitrary subset of the fields in an existing top level
+structure. In addition it allows global options and field specific options.
+It has two main components: <b>createRequest</b> and <b>pvCopy</b>.
+Given a string createRequest creates a pvRequest, which is a PVStructure
+that has the format expected by <b>pvCopy</b>.
+</p>
 
-<p>Project javaIOC provides the ability to monitor changes to an arbitrary
-subset of the fields in a record. The next section describes how a client
-specifies monitor options. The rest of this package description is of interest
-to developers. Although this package does not implement monitors it does
-describe what the client and what pvAccess needs to know about monitors. </p>
-
-<p>A client can monitor an arbitrary subset of the fields in a record instance.
-Each field has an associated monitor algorithm which decides if changes to that
-field should cause a monitor. The algorithms defined by this package are:
-onPut, onChange, and deadband. The set of algorithms is extensible.</p>
-
-<p>The basic interface for monitoring is interface Monitor, which has four
-methods: start, stop, poll, and release. Code that implements the client side
-for monitors has code like the following:</p>
+<h3>createRequest</h3>
+<p>This is mainly used by pvAccess clients. Given a request string it creates
+a pvRequest structure that can be passed to the pvAccess create methods.
+In turn pvAccess passes the pvRequest to a local channel provider which 
+then passes it to pvCopy.
+</p>
+<p>The definition of the public members is:</p>
 <pre>
-    //somewhere the following request is issued
-    monitor.start();
-    //somewhere the following is done:
-    while(true) {
-       MonitorElement monitorElement = monitor.poll();
-       if(monitorElement==null) {
-          // no elements in the queue. Do something.
-       } else {
-          // got a monitor. Handle the element and then
-          monitor.release(monitorElement);
-       }
-    }</pre>
-
-<p>This package provides the following support for monitors:</p>
-<ol>
-  <li>How a client specifies monitor options<br />
-  </li>
-  <li>Implementing new monitoring algorithms.</li>
-  <li>Monitor Queues<br />
-    This package provides a complete implementation of montor queues for
-    pvData. </li>
-</ol>
-
-<p>Developers who need to understand or implement monitor algorithms will be
-interested in this package. For example it is used by pvAccess to implement
-monitors. The interfaces can be implemented by other servers, for example the
-javaIOC (org.epics.ioc.caV3) implements a version of interface Monitor that
-links to a version 3 EPICS IOC.</p>
-
-<p>This package defines the following monitor algorithms:</p>
-<dl>
-  <dt>onPut</dt>
-    <dd>A monitor is issued whenever a put is issued to the field. This is the
-      default unless the record defines deadbands for a field. An exception is
-      the top level timeStamp which by default is made onChange and monitor
-      will not be raised.</dd>
-  <dt>onChange</dt>
-    <dd>This provides two options: 1) A monitor is raised whenever a field
-      changes value, and 2) A monitor will never be raised for the field.</dd>
-  <dt>deadband</dt>
-    <dd>The field must be a numeric scalar. Whenever the absolute or percentage
-      value of the field changes by more than a deadband a monitor is issued.
-      The record instance can also define deadbands.</dd>
-  <dt>periodic</dt>
-    <dd>A monitor is issued at a periodic rate if a put was issued to any field
-      being monitored.</dd>
-</dl>
-
-<p>The monitor queue implementation provides support for the following queue
-sizes greater than or equal to two.</p>
-
-<h3>Standard Monitor Requests</h3>
-
-<p>This section describes that monitor support provided by project javaIOC. Two
-issues are discussed: record options and field options.</p>
-
-<h4>Record Options</h4>
-
-<p>The options that apply to an entire record are:</p>
-<dl>
-  <dt>periodic</dt>
-    <dd>A record can ask to be monitored periodically by specifying a periodic
-      rate. A monitor will be issued no faster that the rate specified. A
-      periodic monitor does not use a monitor queue. </dd>
-  <dt>queueSize</dt>
-    <dd>Queue size can be specified to be &gt;=1. A size of 1 means no queue
-      but just keep a single copy of the data. A size of 2 is the default.</dd>
-</dl>
-
-<h4>Field Options</h4>
-
-<p>The following options are supported for all fields:</p>
-<dl>
-  <dt>shareData</dt>
-    <dd>Has a value of true or false and specifies if the server just transfer
-      data from the record keep a copy. This option can save memory for array
-      fields. Note that it is implemented by PVCopy.</dd>
-</dl>
-
-<p>For each field the following monitor algorithms are supported:</p>
-<dl>
-  <dt>onPut</dt>
-    <dd>A monitor is issued when a put is issued to the field. This is the
-      default if no algorithm is specified and the field is not the top level
-      timeStamp.</dd>
-  <dt>onChange</dt>
-    <dd>This has two features depending on the value of causeMonitor. If
-      causeMomitor is true (the default) then a monitor is raised only if the
-      value has changed since the last monitor. If causeMonitor is false then
-      this field will never cause a monitor. An example is a top level
-      timeStamp field. If a client monitors the top level timeStamp then unless
-      the client requests causeMonitor to be false, if the only change is to
-      the timeStamp field no monitior will be issued.</dd>
-  <dt>deadband</dt>
-    <dd>This can only be specified for a numeric scalar field. Details
-    follow:</dd>
-</dl>
-
-<h4>Monitor Request Options</h4>
-
-<p>The examples will use the syntax supported by calling:</p>
-<pre>   PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
-
-<p>The request string has the following:</p>
-<pre>   "record[option=value,...]field(fieldDef,...)"</pre>
-
-<p>The standard record options are:</p>
-<dl>
-  <dt>queueSize</dt>
-    <dd>The value must be &gt;=1.</dd>
-  <dt>periodicRate</dt>
-    <dd>The value is the maximum rate in seconds for monitors.</dd>
-</dl>
-
-<p>Each fieldDef is either of the form:</p>
-<pre>    fullRecordName</pre>
-
-<p>Where fullRecordName is the full name of the field in the record. The name
-in the structure the client will get is the field name from the record. Or
-fieldDef has the form:</p>
-<pre>    fieldName{fieldDef,...}
-    </pre>
-
-<p>Each fieldDef is of the form:</p>
-<pre>    fullFieldName[option=value,...]</pre>
-
-<p>where <span style="font-family: Courier">fullFieldName</span> is of the full
-field name of the record field and the options define the monitor options.</p>
-
-<p>Monitor options are identified via the following option.</p>
-<pre>    algorithm=name
-    </pre>
-
-<p>where <span style="font-family: Courier">name</span> is the algorithm name.
-For the algorithms implemented by pvData this is one of: <span
-style="font-family: Courier">onPut, onChange, or deadband.</span> </p>
-
-<p><span style="font-family: Courier">onPut</span> is the default so it does
-not have to be specified.</p>
-
-<p><span style="font-family: Courier">onChange</span> accepts one additional
-option:</p>
-<pre>    causeMonitor=value</pre>
-
-<p>where value must be "true" or "false". The default is true.</p>
-
-<p><span style="font-family: Courier">deadband</span> accepts the following
-additional options:</p>
-<pre>    deadband=deadbandValue
-    type=typeValue
-    isPercent=isPercentValue</pre>
-
-<p>where</p>
-<dl>
-  <dt>deadbandValue</dt>
-    <dd>The change in value (or percentage change) that causes a monitor. If
-      not specified the deadband is taken from the record if the record defines
-      it. If specified and the record also defines it the minimum value is
-      taken. </dd>
-  <dt>typeValue</dt>
-    <dd>Must be "display" or "archive". This says if the record deadband is
-      taken from display or from archive. The default is display.</dd>
-  <dt>isPercentValue</dt>
-    <dd>Must be true or false. The default is false. If true the deadband is a
-      percentage change otherwise it is an absolute change.</dd>
-</dl>
-
-<h4>Record Deadband</h4>
-
-<p>NOTE: This applys to records in a javaIOC.</p>
-
-<p>Any numeric scalar field in a record instance can optionally have an
-associated deadband structure, which is defined as follows:</p>
-<pre>&lt;structure structureName = "deadband"&gt;
-    &lt;structure name = "display"&gt;
-         &lt;scalar name = "isPercent" scalarType = "boolean"/&gt;
-         &lt;!-- if true than percentage change. If false than absolute change --&gt;
-         &lt;scalar name = "value" scalarType = "double"/&gt;
-         &lt;!-- the deadband for display --&gt;
-    &lt;/structure&gt;
-    &lt;structure name = "archive"&gt;
-         &lt;scalar name = "isPercent" scalarType = "boolean"/&gt;
-         &lt;!-- if true than percentage change. If false than absolute change --&gt;
-         &lt;scalar name = "value" scalarType = "double"/&gt;
-         &lt;!-- the deadband for archive --&gt;
-    &lt;/structure&gt;
-&lt;/structure&gt;</pre>
-
-<p>As an example:</p>
-<pre>&lt;record name = "example"&gt;
-    &lt;scalar name = "value" scalarType = "double"&gt;
-    &lt;structure name = "deadband" extends = "deadband"&gt;
-       &lt;structure name = "display"&gt;
-          &lt;deadband&gt;.1&lt;/deadband&gt;
-       &lt;/structure&gt;
-       &lt;structure name = "archive"&gt;
-          &lt;deadband&gt;.3&lt;/deadband&gt;
-       &lt;/structure
-    &lt;/structure&gt;
-    &lt;!-- other stuff --&gt;
-&lt;/record&gt;</pre>
-
-<p>NOTE: If an algorithm is not defined by the user for a field and a deadband
-is defined for the record than the algorithm is made to be deadband and the
-display deadband is used as the deadband.</p>
-
-<h4>Examples</h4>
-
-<p>The following:</p>
-<pre>    String request = "alarm,timeStamp,power.value";
-    PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
-
-<p>Creates a pvRequest that monitors the alarm, timeStamp, and power.value
-fields of a record. The client will receive a structure with the fields named
-alarm,timeStamp, and value. Since the client has not specified any options the
-defaults will be used. This means:</p>
-<ul>
-  <li>Any change in alarm will cause a monitor.</li>
-  <li>A change in time stamp will NOT cause a monitor because a top level
-    timeStamp is a special case.</li>
-  <li>If power.value has an associated deadband structure than the display
-    deadband will be used and the algorithm will be deadband. If power.value
-    does not have an associated deadband than any put to power.value will cause
-    a monitor.</li>
-</ul>
-
-<p>The following:</p>
-<pre>    String request = "timeStamp[algorithm=onChange,causeMonitor=true]";
-    PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
-
-<p>Will cause monitior whenever the timeStamp is changed. This is a way to be
-notified whenever a javaIOC record is processed because this is normally the
-only time the timeStamp is changed.</p>
-
-<p>The following:</p>
-<pre>    String request =
-        "alarm,timeStamp,value{power.value[algortithm=deadband,isPercent=true,deadband=1.0}";
-    PVStructure pvRequest = org.epics.ca.client.CreateRequestFactory.createRequest(request);</pre>
-
-<p>This requests a monitor whenever and alarm is raised or when the power.value
-changes by at least 1 percent.</p>
-
-<h3>Monitor Interfaces</h3>
-
-<h4>Monitor</h4>
-
-<p>This is the interface implemented by a factory that implements a monitoring
-algorithm</p>
-<pre>interface Monitor extends Destroyable {
-    void start();
-    void stop();
-    MonitorElement poll();
-    void release(MonitorElement monitorElement);
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>destroy</dt>
-    <dd>destroy the monitor, i.e. release whatever resources are used by the
-      implementation.</dd>
-  <dt>start</dt>
-    <dd>Start monitoring. An initial monitor with all data modified must be
-      generated.</dd>
-  <dt>stop</dt>
-    <dd>Stop monitoring.</dd>
-  <dt>poll</dt>
-    <dd>Called to get modified data. If no data has been modified since the
-      last poll null is returned. </dd>
-  <dt>release</dt>
-    <dd>release the element returned by the most recent poll request.</dd>
-</dl>
-
-<h4>MonitorElement</h4>
-
-<p>This is the interface returned by a call to poll.</p>
-<pre>interface MonitorElement  {
-    PVStructure getPVStructure();
-    BitSet getChangedBitSet();
-    BitSet getOverrunBitSet();
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>getPVStructure</dt>
-    <dd>The data structure.</dd>
-  <dt>getChangedBitSet</dt>
-    <dd>The bitSet showing which fields of the PVStructure have changed since
-      the previous poll request.</dd>
-  <dt>getOverrunBitSet</dt>
-    <dd>the bitSey which shows which fields have been modified more than once
-      since the last poll request.</dd>
-</dl>
-
-<h4>MonitorRequester</h4>
-
-<p>This is the interface implemented by the code that request a monitor.</p>
-<pre>interface MonitorRequester extends Requester {
-    void monitorConnect(Monitor monitor, Structure structure);
-    void monitorEvent(Monitor monitor);
-    void unlisten();
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>monitorConnect</dt>
-    <dd>The monitor has connected to a PVRecord.</dd>
-  <dt>monitorEvent</dt>
-    <dd>A monitor event has occured. Monitor.poll is called to get the
-    data.</dd>
-  <dt>unlisten</dt>
-    <dd>The server has been told to disconnect from the record. The
-      MonitorRequster can no longer issue any requests except destroy until
-      monitorConnect is again called.</dd>
-</dl>
-
-<h4>MonitorAlgorithm</h4>
-
-<p>The following are implemented by code that implements a monitor
-algorithm.</p>
-<pre>interface MonitorAlgorithm  {
-    String getAlgorithmName();
-    boolean causeMonitor();
-    void monitorIssued();
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>getAlgorithmName</dt>
-    <dd>return the name of the algorithm.</dd>
-  <dt>causeMonitor</dt>
-    <dd>Called to see if a change to this field should cause a monitor</dd>
-  <dt>monitorIssued</dt>
-    <dd>Called after a monitor has been issued.</dd>
-</dl>
-
-<h4>MonitorQueue</h4>
-
-<p>This is the interface implemented by MonitorQueueFactory.</p>
-<pre>interface MonitorQueue  {
-    void clear();
-    int getNumberFree();
-    int capacity();
-    MonitorElement getFree();
-    void setUsed(MonitorElement monitorElement);
-    MonitorElement getUsed();
-    void releaseUsed(MonitorElement monitorElement);
+class CreateRequest {
+...
+     static CreateRequestPtr create();
+     virtual PVStructurePtr createRequest(String const &amp;request);
+     String getMessage();
+};
+</pre>
+<p>An example of how it is used is:</p>
+<pre>
+CreateRequestPtr createRequest = CreateRequest::create();
+PVStructurePtr pvRequest = createRequest-&gt;createRequest(request);
+if(pvRequest==NULL) {
+    String error = createRequest-&gt;getMessage();
+    // take some action
+} else {
+    //success do something
 }
 </pre>
-<h4>MonitorQueueFactory</h4>
+<h3>pvCopy</h3>
+<p>The definition of the public members is:</p>
 <pre>
-class MonitorQueueFactory {
-    static MonitorQueue create(MonitorElement[] monitorElements);
-}</pre>
+class epicsShareClass PVCopyTraverseMasterCallback
+{
+...
+    virtual void nextMasterPVField(PVFieldPtr const &amp;pvField);
+};
 
-<p>where</p>
+class class epicsShareClass PVCopy
+{
+...
+    static PVCopyPtr create(
+        PVStructurePtr const &amp;pvMaster,
+        PVStructurePtr const &amp;pvRequest,
+        String const &amp; structureName);
+    PVStructurePtr getPVMaster();
+    void traverseMaster(PVCopyTraverseMasterCallbackPtr const &amp; callback);
+    StructureConstPtr getStructure();
+    PVStructurePtr createPVStructure();
+    size_t getCopyOffset(PVFieldPtr const  &amp;masterPVField);
+    size_t getCopyOffset(
+        PVStructurePtr const  &amp;masterPVStructure,
+        PVFieldPtr const  &amp;masterPVField);
+     PVFieldPtr getMasterPVField(std::size_t structureOffset);
+     void initCopy(
+        PVStructurePtr const  &amp;copyPVStructure,
+        BitSetPtr const  &amp;bitSet);
+     void updateCopySetBitSet(
+        PVStructurePtr const  &amp;copyPVStructure,
+        BitSetPtr const  &amp;bitSet);
+    void updateCopyFromBitSet(
+        PVStructurePtr const  &amp;copyPVStructure,
+        BitSetPtr const  &amp;bitSet);
+    void updateMaster(
+        PVStructurePtr const  &amp;copyPVStructure,
+        BitSetPtr const  &amp;bitSet);
+    PVStructurePtr getOptions(std::size_t fieldOffset);
+...
+};
+</pre>
+where
 <dl>
-  <dt>clear</dt>
-    <dd>Set all elements of the queue free.</dd>
-  <dt>getNumberFree</dt>
-    <dd>Get the number of free queue elements.</dd>
-  <dt>capacity</dt>
-    <dd>Get the number of queue elements.</dd>
-  <dt>getFree</dt>
-    <dd>Get a free queue element. If no free elements null is returned.</dd>
-  <dt>setUsed</dt>
-    <dd>Set the latest element returned by getFree to used.</dd>
-  <dt>getUsed</dt>
-    <dd>Get the oldest used element. Null is returned when there are no more
-      used elements.</dd>
-  <dt>releaseUsed</dt>
-    <dd>release the element returned by the latest call to getUsed.</dd>
+   <dt>PVCopyTraverseMasterCallback::nextMasterPVField</dt>
+     <dd>
+       <b>PVCopyTraverseMasterCallback</b> is a callback which must
+       be implemented by the code that uses pvCopy, normally
+       the channel provider. It has the single method <b>nextMasterPVField</b>
+       <br />
+       <b>nextMasterPVField</b> is called for each field in the master
+       as a result of a call to <b>traverseMaster</b>.
+     </dd>
+   <dt>create</dt>
+      <dd>
+        This is the method for creating a PVCopy instance.<br/>
+        <dl>
+           <dt>pvMaster</dt>
+             <dd>the top level sructure managed by the server.</dd>
+          <dt>pvRequest</dt>
+           <dd>selects the set of subfields desired
+         and options for each field.</dd>
+          <dt>structureName</dt>
+            <dd>the name for the top level of any PVStructure created.
+            </dd>
+        </dl>
+      </dd>
+   <dt>getPVMaster</dt>
+      <dd>
+       Gets the top level structure from pvMaster.
+      </dd>
+   <dt>traverseMaster</dt>
+      <dd>
+      Traverse all fields of the top level structure of pvMaster.
+      For each field the callback is called.
+      </dd>
+   <dt>getStructure</dt>
+      <dd>
+       Get the introspection interface for a PVStructure for e copy.
+      </dd>
+   <dt>createPVStructure</dt>
+      <dd>Create a copy instance.
+       Monitors keep a queue of monitor elements.
+     Since each element needs a PVStructure, multiple top level structures
+     will be created.
+      </dd>
+   <dt>getCopyOffset</dt>
+      <dd>Given a field in pvMaster.
+       return the offset in copy for the same field.
+      A value of String::npos means that the copy does not have this field.
+      Two overloaded methods are provided. The first is called if
+      the field of master is not a structure. The second is for
+      subfields of a structure.
+      </dd>
+   <dt>getMasterPVField</dt>
+      <dd>
+       Given a offset in the copy get the corresponding field in pvMaster.
+      </dd>
+   <dt>initCopy</dt>
+      <dd>
+       Initialize the fields in copyPVStructure
+       by giving each field the  value from the corresponding field in pvMaster.
+       bitSet will be set to show that all fields are changed.
+       This means that bit set will have the value <b>{0}</b>.
+      </dd>
+   <dt>updateCopySetBitSet</dt>
+      <dd>
+      Set all fields in copyPVStructure to the value of the corresponding field
+      in pvMaster. Each field that is changed has it's corresponding
+      bit set in bitSet.
+      </dd>
+   <dt>updateCopyFromBitSet</dt>
+      <dd>
+       For each set bit in bitSet set the field in copyPVStructure to the value
+      of the corrseponding field in pvMaster.
+      </dd>
+   <dt>updateMaster</dt>
+      <dd>
+       For each set bit in bitSet set the field in pvMaster to the value
+      of the corrseponding field in copyPVStructure.
+      
+      </dd>
+   <dt>getOptions</dt>
+      <dd>
+       Get the options for the field at the specified offset.
+      A NULL is returned if no options were specified for the field.
+      If options were specified,PVStructurePtr is 
+      a structure with a set of PVString subfields that specify name,value
+      pairs. name is the subField name and value is the subField value.
+      </dd>
 </dl>
+
+
+
+
+<h2>support for monitor</h2>
+<p>This consists of two components:
+<dl>
+   <dt>monitor</dt>
+     <dd>Used by code that implements pvAccess montors.</dd>
+   <dt>monitorPlugin</dt>
+      <dd>Code that provides special semantics for monitors.</dd>
+</dl>
+</p>
+<h3>monitor</h3>
+<pre>
+class MonitorElement {
+    MonitorElement(PVStructurePtr const &amp; pvStructurePtr);
+    PVStructurePtr pvStructurePtr;
+    BitSetPtr changedBitSet;
+    BitSetPtr overrunBitSet;
+};
+
+class Monitor {
+    virtual Status start() = 0;
+    virtual Status stop() = 0;
+    virtual MonitorElementPtr poll() = 0;
+    virtual void release(MonitorElementPtr const &amp; monitorElement) = 0;
+};
+
+class MonitorRequester : public virtual Requester {
+    virtual void monitorConnect(Status const &amp; status,
+        MonitorPtr const &amp; monitor, StructureConstPtr const &amp; structure) = 0;
+    virtual void monitorEvent(MonitorPtr const &amp; monitor) = 0;
+    virtual void unlisten(MonitorPtr const &amp; monitor) = 0;
+};
+</pre>
+<h4>monitorElement</h4>
+<p><b>MonitorElement</b> holds the data for one element of a monitor queue.
+It has the fields:
+<dl>
+  <dt>pvStructurePtr</dt>
+    <dd>A top level structure with data values at the time the monitors occurs.</dd>
+  <dt>changedBitSet</dt>
+     <dd>Shows which fields have changed since the previous monitor.</dd>
+  <dt>overrunBitSet</dt>
+     <dd>Shows which fields have changed more han once since the previous monitor.</dd>
+</dl>
+</p>
+<h4>monitorElement queue</h4>
+<p>
+A queue of monitor elements must be implemented by any channel provider that implements
+<b>Channel::createMonitor</b>.
+For an example implementation look at pvDatabaseCPP.
+It has the following:
+<pre>
+typedef Queue&lt;MonitorElement&gt; MonitorElementQueue;
+typedef std::tr1::shared_ptr&lt;MonitorElementQueue&gt; MonitorElementQueuePtr;
+
+class MultipleElementQueue :
+    public ElementQueue
+{
+public:
+    POINTER_DEFINITIONS(MultipleElementQueue);
+    virtual ~MultipleElementQueue(){}
+    MultipleElementQueue(
+        MonitorLocalPtr const &amp;monitorLocal,
+        MonitorElementQueuePtr const &amp;queue,
+        size_t nfields);
+    virtual void destroy(){}
+    virtual Status start();
+    virtual Status stop();
+    virtual bool dataChanged();
+    virtual MonitorElementPtr poll();
+    virtual void release(MonitorElementPtr const &amp;monitorElement);
+...
+};
+</pre>
+<h4>Monitor</h4>
+<p><b>Monitor</b> must be implemented by any channel provider that implements
+<b>Channel::createMonitor</b>.
+Remote PVAccess also implements Monitor on the client side.
+Note that each client has it's own queue that is not shared with other client.
+</p>
+<p>Monitor has the following methods:</p>
+<dl>
+   <dt>start</dt>
+     <dd>
+      Start monitoring.
+      This will result in a an inital monitor that has the current value
+      of all fields.
+     </dd>
+   <dt>stop</dt>
+     <dd>
+      Stop monitoring.
+     </dd>
+   <dt>poll</dt>
+     <dd>
+      Called to get a monitor element.
+      If no new elemants are available then a null pointer is returned.
+     </dd>
+   <dt>release</dt>
+     <dd>
+      Release the monotor element.
+      The caller owns the monitor element between the calls to poll and release.
+     </dd>
+<dl>
+</dl>
+<h4>MonitorRequester</h4>
+<p>This must be implemented by a pvAccess client.
+It has the methods:</p>
+<dl>
+  <dt>monitorConnect</dt>
+     <dd>
+      A monitor has either connected of disconnected.
+     </dd>
+  <dt>monitorEvent</dt>
+     <dd>
+      A new monitor element is available.
+     </dd>
+  <dt>unlisten</dt>
+     <dd>
+      The channel is going away. The client cam no longer access the monitor.
+     </dd>
+</dl>
+
+<h3>monitorPlugin</h3>
+<pre>
+class MonitorPlugin
+{
+    virtual String const &amp; getName() = 0;
+    virtual bool causeMonitor(
+        PVFieldPtr const &amp;pvField,
+        PVStructurePtr const &amp;pvTop,
+        MonitorElementPtr const &amp;monitorElement) = 0;
+    virtual void monitorDone(
+        MonitorElementPtr const &amp;monitorElement);
+    virtual void startMonitoring();
+    virtual void stopMonitoring();
+    virtual void beginGroupPut();
+    virtual void endGroupPut();
+};
+
+class MonitorPluginCreator
+{
+    virtual MonitorPluginPtr create(
+        FieldConstPtr const &amp;field,
+        StructureConstPtr const &amp;top,
+        PVStructurePtr const &amp;pvFieldOptions) = 0;
+     virtual String const &amp; getName() = 0;
+}
+
+class MonitorPluginManager
+{
+    static MonitorPluginManagerPtr get();
+    bool addPlugin(
+         String const &amp;pluginName,
+         MonitorPluginCreatorPtr const &amp;creator);
+    MonitorPluginCreatorPtr findPlugin(String const &amp;pluginName);
+    void showNames();
+};
+
+</pre>
+<h4>MonitorPlugin</h4>
+<p><b>MonitorPlugin</b> must be implemented by the plugin implementation.
+It has methods:</p>
+<dl>
+   <dt>getName</dt>
+     <dd>Get the name of the plugin.</dd>
+   <dt>causeMonitor</dt>
+     <dd>
+       Should the value of pvField cause a monitor to be raised.
+       pvField and pvTop are fields in the top level structure
+       being monitored. monitorElement has the top level structure
+       for the copy</b>.
+       The implementation should <b>not</b> modify the fields in the structure
+        being monitored.
+        Called with pvTop locked.
+     </dd>
+   <dt>monitorDone</dt>
+     <dd>
+       Called just before monitorElement will be given to client.
+       The plugin can change the data values and bitSets in monitorElement.
+        Called with pvTop unlocked.
+    </dd>
+   <dt>startMonitoring</dt>
+     <dd>
+      Monitoring is starting.
+     </dd>
+   <dt>stopMonitoring</dt>
+     <dd>
+      Monitoring is being stopped.
+     </dd>
+   <dt>beginGroupPut</dt>
+     <dd>
+      A set of puts is starting.
+        Called with pvTop locked.
+     </dd>
+   <dt>endGroupPut</dt>
+     <dd>
+      The set of puts is complete.
+        Called with pvTop locked.
+     </dd>
+</dl>
+<h4>MonitorPluginCreator</h4>
+<p><b>MonitorPluginCreator</b> must also be implemented by the plugin implementation.
+It is called for each field instance that has options of the from
+<b>[plugin=name...]</b> where <b>name</b> is the name of the plugin.
+Note that a plugin instance will belong to a single client.
+It has methods:</p>
+<dl>
+   <dt>getName</dt>
+     <dd>Get the name of the plugin.</dd>
+   <dt>create</dt>
+     <dd>
+     Create a new plugin instance.
+     If the arguments are not compatible with the plugin a NULL shared pointer is
+     returned.<br/>
+    pvFieldOptions is
+      a structure with a set of PVString subfields that specify <b>name,value</b>
+      pairs. name is the subField name and value is the subField value.<br/>
+     Note that a plugin will below to a single client.
+    </dd>
+<dl>
+<h4>MonitorPluginManager</h4>
+<p><b>MonitorPluginManager</b> has the methods:</p>
+<dl>
+   <dt>get</dt>
+     <dd>
+     MonitorPluginManager is a singleton.
+     The first call to get will create the single instance.
+     Further calls will rerurn the single instance.
+     </dd>
+   <dt>addPlugin</dt>
+     <dd>
+     Add a new plugin.
+     </dd>
+   <dt>findPlugin</dt>
+     <dd>
+      Find a plugin. A NULL shared pointer is reurned if it has not been added.
+     </dd>
+   <dt>showNames</dt>
+     <dd>
+      Show the names of all puugins that have been added.
+     </dd>
+</dl>
+<p><b>NOTE:</b>
+Should the method <b>causeMonitor</b> 
+have arguments <b>pvField</b> and <b>pvTop</b>
+be defined so that they can not be modfied.
+This would be posssible if the following was defined:
+<pre>
+typedef std::tr1::shared_ptr&lt;const PVField&gt; PVFieldConstPtr;
+typedef std::tr1::shared_ptr&lt;const PVStructure&gt; PVStructureConstPtr;
+</pre>
+then the definition for causeMonitor could be:
+<pre>
+virtual bool causeMonitor(
+        PVFieldConstPtr const &amp;pvField,
+        PVStructureConstPtr const &amp;pvTop,
+        MonitorElementPtr const &amp;monitorElement) = 0;
+</pre>
+But just adding these definitions is not sufficent.
+In addition all methods defined in pvDataCPP must be checked.
+In particular many of the methods in <b>Convert</b> must have
+their arguments modified.
+Big job.
+</p>
+<h2>monitorPlugin example</h2>
+<h3>Example Plugin Overview</h3>
+<p>This section describes an example plugin that:</p>
+<ul>
+   <li>Only raises monitors when a field changes value.<br />
+     If no plugin is provided
+     the default is to raise a monitor when a put is issued to a field.</li>
+   <li>Optionally a change will not raise a monitor.<br />
+     The change will, however,
+     appear if a put to another field raise a monitor.</li>
+</ul>
+<p>As an example assume that a channel provided by pvAccess has a top level structure
+that represents a power supply.</p>
+<pre>
+structure powerSupply
+    structure alarm
+    structure timeStamp
+    structure power
+       double value
+       structure alarm
+       struvture display
+    structure voltage
+       double value
+       structure alarm
+       struvture display
+    structure current
+       double value
+       structure alarm
+       struvture display
+</pre>
+<p>A pvAccess client wants to create a monitor on the powerSupply as follows:
+The client wants a top level structure that looks like:
+<pre>
+structure powerSupply
+    structure alarm
+    structure timeStamp
+    structure power
+       double value
+    structure voltage
+       double value
+    structure current
+       double value
+</pre>
+In addition the client wants monitors to occur only when one of the monitored
+fields changes value but not just because a put occured.
+Also if only the timeStamp changes value then that should not cause a monitor.
+</p>
+<p>The example monitor plugin implements the semantics the
+client wants. It can be attached to any field via the following options:
+<pre>
+[plugin=onChange,raiseMonitor=value]
+</pre>
+This plugin will trigger a monitor for the field only if the field changes
+value. In addition <b>value</b> equals <b>false</b> means do not raise a monotor
+for changes to this field.
+But if a change to another field does cause a monitor the change to this field
+will be passed to the client.
+</p>
+<p>
+Assume that the client has already connected to the channel.
+The client can then issue the commands:</p>
+<pre>
+String request("field(alarm[plugin=onChange]");
+request += ",timeStamp[plugin=onChange,raiseMonitor=false]";
+request += ",power.value[plugin=onChange";
+request += ",voltage.value[plugin=onChange";
+request += ",current.value[plugin=onChange";
+
+PVStructurePtr pvRequest = createRequest-&gt;createRequest(request);
+
+MonitorPtr monitor = channel-&gt;createMonitor(monitorRequester,pvRequest);
+</pre>
+<h3>Example Plugin Code</h3>
+<p>The header file to create the example has the definition:</p>
+<pre>
+class ExampleMonitorPlugin{
+public:
+    static void create();
+};
+</pre>
+<p>The implementation is:</p>
+<pre>
+class OnChangePlugin : public MonitorPlugin
+{
+public:
+    virtual ~OnChangePlugin(){}
+    OnChangePlugin() {}
+    bool init(
+        FieldConstPtr const &amp;field,
+        StructureConstPtr const &amp;top,
+        PVStructurePtr const &amp;pvFieldOptions)
+   {
+        pvField = getPVDataCreate()-&gt;createPVField(field);
+        raiseMonitor = true;
+        if(pvFieldOptions!=NULL) {
+            PVStringPtr pvString =
+                pvFieldOptions-&gt;getSubField&lt;PVString&gt;("raiseMonitor");
+                if(pvString!=NULL) {
+                    String value = pvString-&gt;get();
+                    if(value.compare("false")==0) raiseMonitor = false;
+                }
+        }
+        return true;
+   }
+   virtual String &amp;getName(){return pluginName;}
+   virtual bool causeMonitor(
+        PVFieldPtr const &amp;pvNew,
+        PVStructurePtr const &amp;pvTop,
+        MonitorElementPtr const &amp;monitorElement)
+   {
+       bool isSame = convert-&gt;equals(pvNew,pvField);
+       if(isSame) return false;
+       convert-&gt;copy(pvNew,pvField);
+       return raiseMonitor;
+   }
+private:
+   PVFieldPtr pvField;
+   bool raiseMonitor;
+};
+class OnChangePluginCreator : public MonitorPluginCreator
+{
+public:
+    virtual String &amp;getName(){return pluginName;}
+    virtual MonitorPluginPtr create(
+        FieldConstPtr const &amp;field,
+        StructureConstPtr const &amp;top,
+        PVStructurePtr const &amp;pvFieldOptions)
+   {
+       OnChangePluginPtr plugin(new OnChangePlugin());
+       bool result = plugin-&gt;init(field,top,pvFieldOptions);
+       if(!result) return MonitorPluginPtr();
+       return plugin;
+   }
+
+};
+
+void ExampleMonitorPlugin::create()
+{
+    static OnChangePluginCreatorPtr plugin;
+    static Mutex mutex;
+    Lock xx(mutex);
+    if(plugin==NULL) {
+        plugin = OnChangePluginCreatorPtr(new OnChangePluginCreator());
+        MonitorPluginManager::get()-&gt;addPlugin(pluginName,plugin);
+    }
+}
+</pre>
+
 
 </div>
 </body>
