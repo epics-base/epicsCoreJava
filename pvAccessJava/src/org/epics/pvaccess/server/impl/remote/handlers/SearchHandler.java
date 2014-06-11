@@ -29,6 +29,7 @@ import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
+import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvdata.factory.StatusFactory;
@@ -62,7 +63,9 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 
 		transport.ensureData(4+1+3+16+2);
-		
+
+		final int startPosition = payloadBuffer.position();
+
 		final int searchSequenceId = payloadBuffer.getInt();
 		final byte qosCode = payloadBuffer.get();
 
@@ -92,6 +95,31 @@ public class SearchHandler extends AbstractServerResponseHandler {
 			responseFrom = new InetSocketAddress(addr, port);
 		else
 			responseFrom = new InetSocketAddress(responseFrom.getAddress(), port);
+
+
+		// 
+		// locally broadcast if unicast (qosCode & 0x80 == 0x80)
+		//
+		if ((qosCode & 0x80) == 0x80)
+		{
+			BlockingUDPTransport bt = context.getLocalMulticastTransport();
+			if (bt != null)
+			{
+				// clear unicast flag
+				payloadBuffer.put(startPosition+4, (byte)(qosCode & ~0x80));
+				
+				// update response address
+				payloadBuffer.position(startPosition+8);
+				InetAddressUtil.encodeAsIPv6Address(payloadBuffer, responseFrom.getAddress());
+				
+				payloadBuffer.position(payloadBuffer.limit());		// send will call flip()
+				
+				bt.send(payloadBuffer);
+				return;
+			}
+		}
+		
+		
 		
 		final int protocolsCount = SerializeHelper.readSize(payloadBuffer, transport);
 		boolean allowed = (protocolsCount == 0);
@@ -108,8 +136,6 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		final int count = payloadBuffer.getShort() & 0xFFFF;
 		
 		final boolean responseRequired = QoS.REPLY_REQUIRED.isSet(qosCode);
-		
-		// TODO locally broadcast if qosCode & 0x80 == 0x80
 		
 		ChannelProvider provider = context.getChannelProvider();
 

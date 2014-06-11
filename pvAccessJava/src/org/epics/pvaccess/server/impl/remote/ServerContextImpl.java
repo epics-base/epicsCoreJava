@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import java.util.logging.Handler;
@@ -28,8 +29,8 @@ import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.PVAVersion;
 import org.epics.pvaccess.Version;
-import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.impl.remote.ConnectionException;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.ProtocolType;
@@ -171,6 +172,13 @@ public class ServerContextImpl implements ServerContext, Context {
 //	protected UDPTransport broadcastTransport = null;
 	protected BlockingUDPTransport broadcastTransport = null;
 	
+	/**
+	 * Local multicast transport needed for unicast
+	 * channel searches to be multicasted locally.
+	 */
+//	protected UDPTransport localMulticastTransport = null;
+	protected BlockingUDPTransport localMulticastTransport = null;
+
 	/**
 	 * Beacon emitter.
 	 */
@@ -445,15 +453,15 @@ public class ServerContextImpl implements ServerContext, Context {
 		serverPort = acceptor.getBindAddress().getPort();
 
 		// setup broadcast UDP transport
-		initializeBroadcastTransport();
+		initializeUDPTransport();
 
 		beaconEmitter = new BeaconEmitter(ProtocolType.tcp.name(), broadcastTransport, this);
 	}
 
 	/**
-	 * Initialized broadcast DP transport (broadcast socket and repeater connection).
+	 * Initialize UDP transport.
 	 */
-	private void initializeBroadcastTransport() throws PVAException {
+	private void initializeUDPTransport() throws PVAException {
 		
 		// setup UDP transport
 		try
@@ -492,6 +500,38 @@ public class ServerContextImpl implements ServerContext, Context {
 				InetSocketAddress[] list = InetAddressUtil.getSocketAddressList(beaconAddressList, broadcastPort, appendList);
 				if (list != null && list.length > 0)
 					broadcastTransport.setSendAddresses(list);
+			}
+			
+			// TODO configurable local NIF, address
+			// setup local broadcasting
+			NetworkInterface localNIF = InetAddressUtil.getLoopbackNIF();
+			if (localNIF != null)
+			{
+				try
+				{
+					InetAddress group = InetAddress.getByName("224.0.0.128");
+					/*MembershipKey key =*/ broadcastTransport.join(group, localNIF);
+				
+					logger.config("Local multicast enabled on " + group + ":" + broadcastPort + " using " + localNIF.getDisplayName() + ".");
+					
+					localMulticastTransport = (BlockingUDPTransport)broadcastConnector.connect(
+//					localMulticastTransport = (UDPTransport)broadcastConnector.connect(
+														null, serverResponseHandler,
+														listenLocalAddress, PVAConstants.PVA_PROTOCOL_REVISION,
+														PVAConstants.PVA_DEFAULT_PRIORITY);
+					localMulticastTransport.setMutlicastNIF(localNIF, true);
+					localMulticastTransport.setSendAddresses(new InetSocketAddress[] {
+							new InetSocketAddress(group, broadcastPort)
+					});
+				}
+				catch (Throwable th) 
+				{
+					logger.log(Level.CONFIG, "Failed to join to a multicast group, local multicast disabled.", th);
+				}
+			}
+			else
+			{
+				logger.config("Failed to detect a loopback network interface, local multicast disabled.");
 			}
 
 			broadcastTransport.start();
@@ -831,6 +871,15 @@ public class ServerContextImpl implements ServerContext, Context {
 	public BlockingUDPTransport getBroadcastTransport() {
 //	public UDPTransport getBroadcastTransport() {
 		return broadcastTransport;
+	}
+
+	/**
+	 * Local multicast transport.
+	 * @return multicast transport.
+	 */
+	public BlockingUDPTransport getLocalMulticastTransport() {
+//	public UDPTransport getLocalMulticastTransport() {
+		return localMulticastTransport;
 	}
 
 	/**

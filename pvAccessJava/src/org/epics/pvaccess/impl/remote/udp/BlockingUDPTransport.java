@@ -17,14 +17,17 @@ package org.epics.pvaccess.impl.remote.udp;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.NoRouteToHostException;
 import java.net.SocketException;
+import java.net.StandardSocketOptions;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.MembershipKey;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -413,6 +416,18 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		}
 	}
 
+	public MembershipKey join(InetAddress group, NetworkInterface nif) throws IOException
+	{
+		return channel.join(group, nif);
+	}
+	
+	// set NIF used to send packets
+	public void setMutlicastNIF(NetworkInterface nif, boolean loopback) throws IOException
+	{
+		channel.setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true);
+		channel.setOption(StandardSocketOptions.IP_MULTICAST_IF, nif);
+	}
+	
 	/**
 	 * @see org.epics.pvaccess.impl.remote.Transport#getRevision()
 	 */

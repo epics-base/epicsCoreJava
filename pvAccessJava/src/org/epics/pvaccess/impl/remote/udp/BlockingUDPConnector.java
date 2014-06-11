@@ -71,7 +71,7 @@ public class BlockingUDPConnector implements Connector {
 	public Transport connect(TransportClient client, ResponseHandler responseHandler, InetSocketAddress bindAddress, byte transportRevision, short priority)
 		throws ConnectionException
 	{
-		context.getLogger().finer("Creating datagram socket to: " + bindAddress);
+		context.getLogger().finer("Creating datagram socket to " + bindAddress + ".");
 		
 		DatagramChannel socket = null;
 		try
