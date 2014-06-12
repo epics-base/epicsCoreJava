@@ -207,11 +207,31 @@ public interface Convert {
      */
     void copyStructureArray(PVStructureArray from, PVStructureArray to);
     /**
+     * Copy from a structure array to a subset of another structure array.
+     * @param from The source array.
+     * @param offset Starting element in the source.
+     * @param to The destination array.
+     * @param toOffset Starting element in the array.
+     * @param length Number of elements to transfer.
+     * @return The number of elements copied.
+     */
+    int  copyStructureArray(PVStructureArray from,int offset, PVStructureArray to,int toOffset,int length);
+    /**
      * Copy from a union array to another union array.
      * @param from The source array.
      * @param to The destination array.
      */
     void copyUnionArray(PVUnionArray from, PVUnionArray to);
+    /**
+     * Copy from a union array to a subset of another union array.
+     * @param from The source array.
+     * @param offset Starting element in the source.
+     * @param to The destination array.
+     * @param toOffset Starting element in the array.
+     * @param length Number of elements to transfer.
+     * @return The number of elements copied.
+     */
+    int  copyUnionArray(PVUnionArray from,int offset, PVUnionArray to,int toOffset,int length);
     /**
      * Convert a PV to a <byte>.
      * @param pv a PV

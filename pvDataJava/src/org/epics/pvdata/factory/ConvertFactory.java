@@ -494,43 +494,53 @@ public final class ConvertFactory {
             return false;
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @seeorg.epics.pvdata.pv.Convert#copyScalarArray(org.epics.pvdata.pv.
-         * PVScalarArray, int, org.epics.pvdata.pv.PVScalarArray, int, int)
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#copyScalarArray(org.epics.pvdata.pv.PVScalarArray, int, org.epics.pvdata.pv.PVScalarArray, int, int)
          */
-        @Override
-        public int copyScalarArray(PVScalarArray from, int offset,
-                PVScalarArray to, int toOffset, int len) {
+        public int copyScalarArray(PVScalarArray from, int offset, PVScalarArray to, int toOffset, int count)
+        {
             if (to.isImmutable()) {
                 if (from.equals(to))
                     return from.getLength();
                 throw new IllegalArgumentException(
                         "Convert.copyArray destination is immutable");
             }
+            if(offset+count > from.getLength()) {
+                throw new IllegalArgumentException(
+                        "Convert.copyUnionArray fromOffset+count > from.getLength()");
+            }
+            if(!to.isCapacityMutable()) {
+                int toCapacity = to.getCapacity();
+                if(toCapacity<count+toOffset) {
+                    count = toCapacity - toOffset;
+                    if(count<=0) return 0;
+                }
+            }
+            if (to.getCapacity() < count + toOffset)
+                to.setCapacity(count+toOffset);
+
             ScalarType fromElementType = from.getScalarArray().getElementType();
             ScalarType toElementType = to.getScalarArray().getElementType();
 
             if (from.isImmutable() && (fromElementType == toElementType)) {
-                if (offset == 0 && toOffset == 0 && len == from.getLength()) {
+                if (offset == 0 && toOffset == 0 && count == from.getLength()) {
                     return copyArrayDataReference(from, to);
                 }
             }
 
             int ncopy = 0;
             if (toElementType.isNumeric() && fromElementType.isNumeric()) {
-                ncopy = copyNumericArray(from, offset, to, toOffset, len);
+                ncopy = copyNumericArray(from, offset, to, toOffset, count);
             } else if (toElementType == ScalarType.pvBoolean
                     && fromElementType == ScalarType.pvBoolean) {
                 PVBooleanArray pvfrom = (PVBooleanArray) from;
                 PVBooleanArray pvto = (PVBooleanArray) to;
-                outer: while (len > 0) {
+                outer: while (count > 0) {
                     int num = 0;
                     boolean[] data = null;
                     int fromOffset = 0;
                     synchronized (booleanArrayData) {
-                        num = pvfrom.get(offset, len, booleanArrayData);
+                        num = pvfrom.get(offset, count, booleanArrayData);
                         data = booleanArrayData.data;
                         fromOffset = booleanArrayData.offset;
                     }
@@ -540,7 +550,7 @@ public final class ConvertFactory {
                         int n = pvto.put(toOffset, num, data, fromOffset);
                         if (n <= 0)
                             break outer;
-                        len -= n;
+                        count -= n;
                         num -= n;
                         ncopy += n;
                         offset += n;
@@ -551,12 +561,12 @@ public final class ConvertFactory {
                     && fromElementType == ScalarType.pvString) {
                 PVStringArray pvfrom = (PVStringArray) from;
                 PVStringArray pvto = (PVStringArray) to;
-                outer: while (len > 0) {
+                outer: while (count > 0) {
                     int num = 0;
                     String[] data = null;
                     int fromOffset = 0;
                     synchronized (stringArrayData) {
-                        num = pvfrom.get(offset, len, stringArrayData);
+                        num = pvfrom.get(offset, count, stringArrayData);
                         data = stringArrayData.data;
                         fromOffset = stringArrayData.offset;
                     }
@@ -566,7 +576,7 @@ public final class ConvertFactory {
                         int n = pvto.put(toOffset, num, data, fromOffset);
                         if (n <= 0)
                             break outer;
-                        len -= n;
+                        count -= n;
                         num -= n;
                         ncopy += n;
                         offset += n;
@@ -576,8 +586,8 @@ public final class ConvertFactory {
             } else if (toElementType == ScalarType.pvString) {
                 PVStringArray pvto = (PVStringArray) to;
                 ncopy = from.getLength();
-                if (ncopy > len)
-                    ncopy = len;
+                if (ncopy > count)
+                    ncopy = count;
                 int num = ncopy;
                 String[] toData = new String[1];
                 while (num > 0) {
@@ -590,12 +600,12 @@ public final class ConvertFactory {
                 }
             } else if (fromElementType == ScalarType.pvString) {
                 PVStringArray pvfrom = (PVStringArray) from;
-                outer: while (len > 0) {
+                outer: while (count > 0) {
                     int num = 0;
                     String[] data = null;
                     int fromOffset = 0;
                     synchronized (stringArrayData) {
-                        num = pvfrom.get(offset, len, stringArrayData);
+                        num = pvfrom.get(offset, count, stringArrayData);
                         data = stringArrayData.data;
                         fromOffset = stringArrayData.offset;
                     }
@@ -606,7 +616,7 @@ public final class ConvertFactory {
                                 fromOffset);
                         if (n <= 0)
                             break outer;
-                        len -= n;
+                        count -= n;
                         num -= n;
                         ncopy += n;
                         offset += n;
@@ -618,6 +628,7 @@ public final class ConvertFactory {
                 		String.format("%s[] can not be converted to %s[]",
                 	        fromElementType, toElementType));
             }
+            if(to.getLength()<count+offset) to.setLength(count+offset);
             return ncopy;
         }
 
@@ -839,19 +850,22 @@ public final class ConvertFactory {
                     .getUnion());
         }
         
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * org.epics.pvdata.pv.Convert#copyStructureArray(org.epics.pvdata.pv
-         * .PVStructureArray, org.epics.pvdata.pv.PVStructureArray)
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#copyStructureArray(org.epics.pvdata.pv.PVStructureArray, org.epics.pvdata.pv.PVStructureArray)
          */
-        @Override
-        public void copyStructureArray(PVStructureArray from,
-                PVStructureArray to) {
+        public void copyStructureArray(PVStructureArray from,PVStructureArray to)
+        {
+            copyStructureArray(from,0,to,0,from.getLength());
+        }
+        
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#copyStructureArray(org.epics.pvdata.pv.PVStructureArray, int, org.epics.pvdata.pv.PVStructureArray, int, int)
+         */
+        public int copyStructureArray(PVStructureArray from, int fromOffset, PVStructureArray to, int toOffset, int count)
+        {
             if (to.isImmutable()) {
                 if (from.equals(to))
-                    return;
+                    return 0;
                 throw new IllegalArgumentException(
                         "Convert.copyStructureArray destination is immutable");
             }
@@ -860,48 +874,63 @@ public final class ConvertFactory {
                 throw new IllegalArgumentException(
                         "Convert.copyStructureArray from and to are not compatible");
             }
+            if(fromOffset+count > from.getLength()) {
+                throw new IllegalArgumentException(
+                        "Convert.copyUnionArray fromOffset+count > from.getLength()");
+            }
+            if(!to.isCapacityMutable()) {
+                int toCapacity = to.getCapacity();
+                if(toCapacity<count+toOffset) {
+                    count = toCapacity - toOffset;
+                    if(count<=0) return 0;
+                }
+            }
+            if (to.getCapacity() < count + toOffset)
+                to.setCapacity(count+toOffset);
+            
             PVStructure[] fromArray = null;
-            int length = from.getLength();
             synchronized (structureArrayData) {
-                from.get(0, length, structureArrayData);
+                from.get(0, count+fromOffset, structureArrayData);
                 fromArray = structureArrayData.data;
             }
             PVStructure[] toArray = null;
-            if (to.getCapacity() < length)
-                to.setCapacity(length);
             synchronized (structureArrayData) {
-                to.get(0, length, structureArrayData);
+                to.get(0, count+toOffset, structureArrayData);
                 toArray = structureArrayData.data;
             }
-            for (int i = 0; i < length; i++) {
-                if (fromArray[i] == null) {
-                    toArray[i] = null;
+            for (int i = 0; i < count; i++) {
+                if (fromArray[i+fromOffset] == null) {
+                    toArray[i+toOffset] = null;
                 } else {
-                    if (toArray[i] == null) {
+                    if (toArray[i+toOffset] == null) {
                         Structure structure = to.getStructureArray()
                                 .getStructure();
-                        toArray[i] = pvDataCreate.createPVStructure(structure);
+                        toArray[i+toOffset] = pvDataCreate.createPVStructure(structure);
                     }
-                    copyStructure(fromArray[i], toArray[i]);
+                    copyStructure(fromArray[i+fromOffset], toArray[i+toOffset]);
                 }
             }
-            to.setLength(length);
+            if(to.getLength()<count+toOffset) to.setLength(count+toOffset);
             to.postPut();
+            return count;
         }
         
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * org.epics.pvdata.pv.Convert#copyUnionArray(org.epics.pvdata.pv
-         * .PVUnionArray, org.epics.pvdata.pv.PVUnionArray)
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#copyUnionArray(org.epics.pvdata.pv.PVUnionArray, org.epics.pvdata.pv.PVUnionArray)
          */
-        @Override
-        public void copyUnionArray(PVUnionArray from,
-                PVUnionArray to) {
+        public void copyUnionArray(PVUnionArray from,PVUnionArray to)
+        {
+            copyUnionArray(from,0,to,0,from.getLength());
+        }
+      
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#copyUnionArray(org.epics.pvdata.pv.PVUnionArray, int, org.epics.pvdata.pv.PVUnionArray, int, int)
+         */
+        public int copyUnionArray(PVUnionArray from, int fromOffset, PVUnionArray to, int toOffset, int count)
+        {
             if (to.isImmutable()) {
                 if (from.equals(to))
-                    return;
+                    return 0;
                 throw new IllegalArgumentException(
                         "Convert.copyUnionArray destination is immutable");
             }
@@ -910,33 +939,44 @@ public final class ConvertFactory {
                 throw new IllegalArgumentException(
                         "Convert.copyUnionArray from and to are not compatible");
             }
+            if(fromOffset+count > from.getLength()) {
+                throw new IllegalArgumentException(
+                        "Convert.copyUnionArray fromOffset+count > from.getLength()");
+            }
+            if(!to.isCapacityMutable()) {
+                int toCapacity = to.getCapacity();
+                if(toCapacity<count+toOffset) {
+                    count = toCapacity - toOffset;
+                    if(count<=0) return 0;
+                }
+            }
+            if (to.getCapacity() < count + toOffset)
+                to.setCapacity(count+toOffset);
             PVUnion[] fromArray = null;
-            int length = from.getLength();
             synchronized (unionArrayData) {
-                from.get(0, length, unionArrayData);
+                from.get(0, count+fromOffset, unionArrayData);
                 fromArray = unionArrayData.data;
             }
             PVUnion[] toArray = null;
-            if (to.getCapacity() < length)
-                to.setCapacity(length);
             synchronized (unionArrayData) {
-                to.get(0, length, unionArrayData);
+                to.get(0, count+ toOffset, unionArrayData);
                 toArray = unionArrayData.data;
             }
-            for (int i = 0; i < length; i++) {
-                if (fromArray[i] == null) {
-                    toArray[i] = null;
+            for (int i = 0; i < count; i++) {
+                if (fromArray[i+ fromOffset] == null) {
+                    toArray[i+toOffset] = null;
                 } else {
-                    if (toArray[i] == null) {
+                    if (toArray[i+toOffset] == null) {
                         Union union = to.getUnionArray()
                                 .getUnion();
-                        toArray[i] = pvDataCreate.createPVUnion(union);
+                        toArray[i+toOffset] = pvDataCreate.createPVUnion(union);
                     }
-                    copyUnion(fromArray[i], toArray[i]);
+                    copyUnion(fromArray[i+fromOffset], toArray[i+toOffset]);
                 }
             }
-            to.setLength(length);
+            if(to.getLength()<count+toOffset) to.setLength(count+toOffset);
             to.postPut();
+            return count;
         }
         
         /*
