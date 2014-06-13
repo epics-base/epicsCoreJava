@@ -326,7 +326,10 @@ public final class ConvertFactory {
             case structureArray: {
                 PVStructureArray fromArray = (PVStructureArray) from;
                 PVStructureArray toArray = (PVStructureArray) to;
-                copyStructureArray(fromArray, toArray);
+                int length = copyStructureArray(fromArray, 0, toArray, 0,
+                        fromArray.getLength());
+                if (toArray.getLength() != length)
+                    toArray.setLength(length);
                 return;
             }
             case union:
@@ -335,7 +338,10 @@ public final class ConvertFactory {
             case unionArray: {
                 PVUnionArray fromArray = (PVUnionArray) from;
                 PVUnionArray toArray = (PVUnionArray) to;
-                copyUnionArray(fromArray, toArray);
+                int length = copyUnionArray(fromArray, 0, toArray, 0,
+                        fromArray.getLength());
+                if (toArray.getLength() != length)
+                    toArray.setLength(length);
                 return;
             }
             }
