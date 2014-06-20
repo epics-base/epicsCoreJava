@@ -147,7 +147,13 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 
 			@Override
 			public void run() {
-				while (!closed) processRead();
+				while (!closed) {
+					try {
+						processRead();
+					} catch (Throwable th) {
+						context.getLogger().log(Level.FINE, "Uncaught exception caught.", th);
+					}
+				}
 			}
 		}, "UDP-receive " + socketAddress).start();
 	}
