@@ -75,8 +75,6 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     private volatile boolean isDestroyed = false;
     private volatile boolean lastRequest = false;
 
-    private volatile PVField pvField;
-    private volatile PVInt pvIndex; // only if nativeDBRType.isENUM()
     private final ByteArrayData byteArrayData = new ByteArrayData();
     private final ShortArrayData shortArrayData = new ShortArrayData();
     private final IntArrayData intArrayData = new IntArrayData();
@@ -108,7 +106,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         try {
             jcaChannel.addConnectionListener(this);
         } catch (Throwable th) {
-            elementCount = 1; pvField = null; pvIndex = null;
+            elementCount = 1;
             channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "addConnectionListener failed", th),this,null);
             destroy();
             return;
@@ -122,27 +120,21 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     protected void initializePut()
     {
         if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
-            elementCount = 1; pvField = null; pvIndex = null;
+            elementCount = 1;
             channelPutRequester.channelPutConnect(createChannelStructureStatus,this,null);
             destroy();
             return;
         }
-        DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
-        PVStructure pvStructure = v3ChannelStructure.getPVStructure();
-        pvField = pvStructure.getSubField("value");
+        
         elementCount = jcaChannel.getElementCount();
-        if(nativeDBRType.isENUM()) {
-            if(elementCount!=1) {
-                pvIndex = null;
-                channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "array of ENUM not supported", null),this,null);
-                destroy();
-                return;
-            }
-            PVStructure pvStruct = (PVStructure)pvField;
-            pvIndex = pvStruct.getIntField("index");
+
+        DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
+        if(nativeDBRType.isENUM() && elementCount != 1) {
+            channelPutRequester.channelPutConnect(statusCreate.createStatus(StatusType.ERROR, "array of ENUM not supported", null),this,null);
+            destroy();
+            return;
         }
-        else
-        	pvIndex = null;
+        
         channelPutRequester.channelPutConnect(okStatus,this,
             v3ChannelStructure.getPVStructure().getStructure());
     }
@@ -216,9 +208,30 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         	return;
         };
         
-        /// TODO !!!! use pvPutStructure, bitSet
-        
         DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
+
+        PVField pvField = pvPutStructure.getSubField("value");
+        if (pvField == null)
+        {
+        	channelPutRequester.putDone(statusCreate.createStatus(StatusType.ERROR, "invalid put structure, value field required", null), this);
+        	return;
+        }
+        
+        PVInt pvIndex;
+        if(nativeDBRType.isENUM())
+            pvIndex = ((PVStructure)pvField).getIntField("index");
+        else
+        	pvIndex = null;
+        
+        // do a simple bitSet check
+        boolean bitSetCheck = bitSet.get(0) || bitSet.get(pvField.getFieldOffset()) ||
+        					  (pvIndex != null && bitSet.get(pvIndex.getFieldOffset()));
+        if (!bitSetCheck)
+        {
+        	channelPutRequester.putDone(statusCreate.createStatus(StatusType.ERROR, "invalid bitSet, only value can be put for CA", null), this);
+        	return;
+        }
+        
         isActive.set(true);
         try {
             if(pvIndex!=null) {
