@@ -17,6 +17,13 @@ The implementation should be changed so that it implements PostHandler.
 Thus when an element is modified it will call postPut for itself.
 
 
+convert
+--------
+
+The array conversion methods must implement stride so that the stride argument of ChannelArray
+can be supported.
+
+
 monitorPlugin
 -------------
 
