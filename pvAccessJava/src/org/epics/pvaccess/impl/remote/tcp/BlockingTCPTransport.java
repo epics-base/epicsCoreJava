@@ -29,6 +29,7 @@ import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
 import org.epics.pvaccess.impl.remote.codec.impl.BlockingSocketAbstractCodec;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
+import org.epics.pvaccess.server.ServerContext;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.Status;
 
@@ -90,7 +91,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 					   ResponseHandler responseHandler,
 					   int receiveBufferSize,
 					   short priority) throws SocketException {
-		super(channel, 
+		super(context instanceof ServerContext, channel, 
 				ByteBuffer.allocate(Math.max(PVAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
 				ByteBuffer.allocate(Math.max(PVAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
 				context.getLogger());

@@ -18,9 +18,9 @@ public abstract class NonBlockingAbstractCodec extends AbstractCodec implements 
 
 	protected volatile SelectionKey key; // TODO sync? no... yes, accessible from outside... make it final?
 
-	public NonBlockingAbstractCodec(Poller poller, ByteBuffer receiveBuffer, ByteBuffer sendBuffer,
+	public NonBlockingAbstractCodec(boolean serverFlag, Poller poller, ByteBuffer receiveBuffer, ByteBuffer sendBuffer,
 			int socketSendBufferSize, Logger logger) {
-		super(receiveBuffer, sendBuffer, socketSendBufferSize, false, logger);
+		super(serverFlag, receiveBuffer, sendBuffer, socketSendBufferSize, false, logger);
 		this.poller = poller;
 	}
 

@@ -96,8 +96,6 @@ public class TestChannelProviderImpl implements ChannelProvider
 		statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
     private static final Status illegalRequestStatus =
     	statusCreate.createStatus(StatusType.ERROR, "illegal pvRequest", null);
-    private static final Status capacityImmutableStatus =
-    	statusCreate.createStatus(StatusType.ERROR, "capacity is immutable", null);
     private static final Status subFieldDoesNotExistStatus =
     	statusCreate.createStatus(StatusType.ERROR, "subField does not exist", null);
     //private static final Status subFieldNotDefinedStatus =
@@ -622,7 +620,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 			}
 
 			@Override
-			public void setLength(int length, int capacity) {
+			public void setLength(int length) {
 				if (destroyed.get())
 				{
 					channelArrayRequester.setLengthDone(destroyedStatus, this);
@@ -635,16 +633,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 				pvTopStructure.lock();
 				try
 				{
-					if(capacity>=0 && !pvArray.isCapacityMutable()) {
-						channelArrayRequester.setLengthDone(capacityImmutableStatus, this);
-						return;
-					}
-
                 	if(pvArray.getLength()!=length) pvArray.setLength(length);
-                	
-                    if(capacity > 0) {
-                    	if(pvArray.getCapacity()!=capacity) pvArray.setCapacity(capacity);
-                    }
 				}
 				finally {
 					pvTopStructure.unlock();
@@ -661,26 +650,24 @@ public class TestChannelProviderImpl implements ChannelProvider
 			public void getLength() {
 				if (destroyed.get())
 				{
-					channelArrayRequester.getLengthDone(destroyedStatus, this, 0, 0);
+					channelArrayRequester.getLengthDone(destroyedStatus, this, 0);
 					return;
 				}
 				
 				int length;
-				int capacity;
 				
                 lock();
 				pvTopStructure.lock();
 				try
 				{
 					length = pvArray.getLength();
-					capacity = pvArray.getCapacity();
 				}
 				finally {
 					pvTopStructure.unlock();
 					unlock();
 				}
 
-				channelArrayRequester.getLengthDone(okStatus, this, length, capacity);
+				channelArrayRequester.getLengthDone(okStatus, this, length);
 
 				if (lastRequest)
 					destroy();

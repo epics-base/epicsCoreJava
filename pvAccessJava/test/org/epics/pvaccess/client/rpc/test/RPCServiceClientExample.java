@@ -19,14 +19,20 @@ import org.epics.pvdata.pv.Structure;
 public class RPCServiceClientExample {
 
 	private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-	
+/*	
 	private final static Structure requestStructure =
 		fieldCreate.createStructure(
 				new String[] { "a", "b" },
 				new Field[] { fieldCreate.createScalar(ScalarType.pvString),
 							  fieldCreate.createScalar(ScalarType.pvString) }
 				);
-	
+*/
+	private final static Structure requestStructure =
+			fieldCreate.createFieldBuilder().
+				add("a", ScalarType.pvString).
+				add("b", ScalarType.pvDouble).
+				createStructure();
+
 	/**
 	 * @param args
 	 */

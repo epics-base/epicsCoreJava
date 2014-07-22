@@ -23,12 +23,13 @@ public abstract class NonBlockingSocketAbstractCodec extends NonBlockingAbstract
 	protected final InetSocketAddress socketAddress;
 	
 	public NonBlockingSocketAbstractCodec(
+			boolean serverFlag,
 			Poller poller,
 			SocketChannel channel,
 			ByteBuffer receiveBuffer,
 			ByteBuffer sendBuffer,
 			Logger logger) throws SocketException {
-		super(poller, receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
+		super(serverFlag, poller, receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
 		this.channel = channel;
 		this.socketAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
 	

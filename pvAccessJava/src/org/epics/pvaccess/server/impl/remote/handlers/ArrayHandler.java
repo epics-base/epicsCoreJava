@@ -54,7 +54,6 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		private volatile ChannelArray channelArray;
 		
 		private volatile int length;
-		private volatile int capacity;
 		private volatile Status status;
 
 		// data container
@@ -122,10 +121,9 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 
 		@Override
 		public void getLengthDone(Status status, ChannelArray channelArray,
-				int length, int capacity) {
+				int length) {
 			this.status = status;
 			this.length = length;
-			this.capacity = capacity;
 			
 			transport.enqueueSendRequest(this);
 		}
@@ -192,7 +190,6 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				else if (QoS.PROCESS.isSet(request))
 				{
 					SerializeHelper.writeSize(length, buffer, control);
-					SerializeHelper.writeSize(capacity, buffer, control);
 				}
 				else if (QoS.INIT.isSet(request))
 				{
@@ -272,8 +269,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			else if (setLength)
 			{
 				final int length = SerializeHelper.readSize(payloadBuffer, transport);
-				final int capacity = SerializeHelper.readSize(payloadBuffer, transport);
-				channelArray.setLength(length, capacity);
+				channelArray.setLength(length);
 			}
 			else if (getLength)
 			{

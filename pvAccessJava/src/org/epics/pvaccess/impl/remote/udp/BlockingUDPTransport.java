@@ -40,6 +40,7 @@ import org.epics.pvaccess.impl.remote.TransportClient;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
+import org.epics.pvaccess.server.ServerContext;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
@@ -114,12 +115,17 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
     private int lastMessageStartPosition = 0;
 
     /**
+     * Client/server flag (including big endian flag).
+     */
+    private final int clientServerWithBigEndianFlag;
+    /**
 	 * @param context
 	 */
 	public BlockingUDPTransport(Context context, ResponseHandler responseHandler, DatagramChannel channel,
 							  InetSocketAddress bindAddress, InetSocketAddress[] sendAddresses, 
 							  short remoteTransportRevision) {
 		this.context = context;
+		this.clientServerWithBigEndianFlag = (context instanceof ServerContext) ? 0xC0 : 0x80;
 		this.responseHandler = responseHandler;
 		this.channel = channel;
 		this.bindAddress = bindAddress;
@@ -652,7 +658,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		lastMessageStartPosition = sendBuffer.position();
 		sendBuffer.put(PVAConstants.PVA_MAGIC);
 		sendBuffer.put(PVAConstants.PVA_VERSION);
-		sendBuffer.put((byte)0x80);	// data + big endian
+		sendBuffer.put((byte)clientServerWithBigEndianFlag);	// data, big endian, client/server
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
 	}

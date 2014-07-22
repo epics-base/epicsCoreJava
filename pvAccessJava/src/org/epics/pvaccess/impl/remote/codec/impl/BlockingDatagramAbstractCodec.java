@@ -20,11 +20,12 @@ public abstract class BlockingDatagramAbstractCodec extends BlockingAbstractCode
 	private final InetSocketAddress socketAddress;
 	
 	public BlockingDatagramAbstractCodec(
+			boolean serverFlag,
 			DatagramChannel channel,
 			ByteBuffer receiveBuffer,
 			ByteBuffer sendBuffer, 
 			Logger logger) throws SocketException {
-		super(receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
+		super(serverFlag, receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
 		this.channel = channel;
 		if (!channel.socket().isConnected())
 			throw new IllegalArgumentException("only connected datagram sockets are allowed");

@@ -1398,7 +1398,6 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		Array array;
 		
 		int length = -1;
-		int capacity = -1;
 		
 		private Boolean connected = null;
 		private Boolean success = null;
@@ -1526,12 +1525,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
-		public void syncSetLength(boolean lastRequest, int length, int capacity)
+		public void syncSetLength(boolean lastRequest, int length)
 		{
-			syncSetLength(lastRequest, length, capacity, true);
+			syncSetLength(lastRequest, length, true);
 		}
 		
-		public void syncSetLength(boolean lastRequest, int length, int capacity, boolean expectedSuccess)
+		public void syncSetLength(boolean lastRequest, int length, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
@@ -1540,7 +1539,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				success = null;
 				if (lastRequest)
 					channelArray.lastRequest();
-				channelArray.setLength(length, capacity);
+				channelArray.setLength(length);
 				
 				try {
 					if (success == null)
@@ -1598,11 +1597,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 		@Override
 		public void getLengthDone(Status status, ChannelArray channelArray,
-				int length, int capacity) {
+				int length) {
 			synchronized (this) {
 				this.success = new Boolean(status.isOK());
 				this.length = length;
-				this.capacity = capacity;
 				this.notify();
 			}
 		}
@@ -2633,39 +2631,29 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(EXPECTED_VAL[i], doubleData.data[i]);
 	    
-	    channelArrayRequester.syncSetLength(false, 3, 0);  // result: 1.1, 2.2, 3.3
+	    channelArrayRequester.syncSetLength(false, 3);  // result: 1.1, 2.2, 3.3
 	    channelArrayRequester.syncGet(false, 0, 0, 1);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(3, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
 	    
-	    final int OLD_LEN = 3;
-	    final int NEW_CAP = 2;
-	    channelArrayRequester.syncSetLength(false, OLD_LEN, NEW_CAP);	// result: 1.1, 2.2
-	    channelArrayRequester.syncGet(false, 0, 0, 1);
-	    count = doubleArray.get(0, 1000, doubleData);
-	    assertEquals(2, count);
-	    for (int i = 0; i < count; i++)
-	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
-
 	    // big array test
 	    final int BIG_CAPACITY = 10000;
-	    channelArrayRequester.syncSetLength(false, BIG_CAPACITY, BIG_CAPACITY);
+	    channelArrayRequester.syncSetLength(false, BIG_CAPACITY);
 	    channelArrayRequester.syncGet(false, 0, 0, 1);
 	    count = doubleArray.get(0, 10000, doubleData);
 	    assertEquals(10000, count);
-	    for (int i = 0; i < NEW_CAP; i++)
+	    for (int i = 0; i < 3; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
-	    for (int i = NEW_CAP; i < count; i++)
+	    for (int i = 3; i < count; i++)
 	    	assertEquals(0.0, doubleData.data[i]);
 
-	    // test setLength with capacity 0 (no change) and getLength
+	    // test setLength and  getLength
 	    final int NEW_LEN = BIG_CAPACITY/2;
-	    channelArrayRequester.syncSetLength(false, NEW_LEN, 0);	
+	    channelArrayRequester.syncSetLength(false, NEW_LEN);	
 	    channelArrayRequester.syncGetLength(false);	
 	    assertEquals(NEW_LEN, channelArrayRequester.length);
-	    assertEquals(BIG_CAPACITY, channelArrayRequester.capacity);
 
 		channelArrayTestNoConnection(ch, true);
 		channelArrayTestNoConnection(ch, false);
@@ -2702,7 +2690,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			ch.destroy();
 			channelArrayRequester.syncGet(false, 1, 2, 1, false);
 			channelArrayRequester.syncPut(false, channelArrayRequester.pvArray, 1, 2, 1, false);
-			channelArrayRequester.syncSetLength(false, 1, 2, false);
+			channelArrayRequester.syncSetLength(false, 1, false);
 		}
 	}
 

@@ -54,7 +54,7 @@ public abstract class AbstractCodec
 
 	private int startPosition;
 	
-	public AbstractCodec(ByteBuffer receiveBuffer, ByteBuffer sendBuffer,
+	public AbstractCodec(boolean serverFlag, ByteBuffer receiveBuffer, ByteBuffer sendBuffer,
 			int socketSendBufferSize, boolean blockingProcessQueue, Logger logger)
 	{
 		if (receiveBuffer.capacity() < 2*MAX_ENSURE_SIZE)
@@ -69,6 +69,7 @@ public abstract class AbstractCodec
 		if (sendBuffer.capacity() % PVAConstants.PVA_ALIGNMENT != 0)
 			throw new IllegalArgumentException("sendBuffer() % PVAConstants.PVA_ALIGNMENT != 0");
 
+		this.clientServerFlag = serverFlag ? 0x40 : 0x00;
 		this.socketBuffer = receiveBuffer;
 		this.sendBuffer = sendBuffer;
 
@@ -510,6 +511,11 @@ public abstract class AbstractCodec
 	private int byteOrderFlag = 0x80;
 
 	/**
+	 * Client/server flag.
+	 */
+	private final int clientServerFlag;
+
+	/**
 	 * Send buffer size.
 	 */ 
 	private final int socketSendBufferSize;
@@ -561,7 +567,7 @@ public abstract class AbstractCodec
 		lastMessageStartPosition = sendBuffer.position();
 		sendBuffer.put(PVAConstants.PVA_MAGIC);
 		sendBuffer.put(PVAConstants.PVA_VERSION);
-		sendBuffer.put((byte)(lastSegmentedMessageType | byteOrderFlag));	// data + endian
+		sendBuffer.put((byte)(lastSegmentedMessageType | byteOrderFlag | clientServerFlag));	// data message
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(0);		// temporary zero payload
 		
@@ -575,7 +581,7 @@ public abstract class AbstractCodec
 		ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 		sendBuffer.put(PVAConstants.PVA_MAGIC);
 		sendBuffer.put(PVAConstants.PVA_VERSION);
-		sendBuffer.put((byte)(0x01 | byteOrderFlag));	// control + endian
+		sendBuffer.put((byte)(0x01 | byteOrderFlag | clientServerFlag));	// control message
 		sendBuffer.put(command);	// command
 		sendBuffer.putInt(data);		// data
 	}

@@ -41,9 +41,8 @@ public interface ChannelArrayRequester extends Requester {
      * @param status Completion status.
      * @param channelArray The channelArray interface.
      * @param length The length of the array, 0 if the request failed. 
-     * @param capacity The capacity of the array, 0 if the request failed. 
      */
-    void getLengthDone(Status status, ChannelArray channelArray, int length, int capacity);
+    void getLengthDone(Status status, ChannelArray channelArray, int length);
     /**
      * The request is done. This is always called with no locks held.
      * @param status Completion status.

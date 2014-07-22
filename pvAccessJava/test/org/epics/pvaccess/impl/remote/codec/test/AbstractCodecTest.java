@@ -89,7 +89,7 @@ public class AbstractCodecTest extends TestCase {
 		}
 		
 		public TestCodec(int receiveBufferSize, int sendBufferSize, boolean blocking) throws IOException {
-			super(ByteBuffer.allocate(receiveBufferSize), ByteBuffer.allocate(sendBufferSize),
+			super(false, ByteBuffer.allocate(receiveBufferSize), ByteBuffer.allocate(sendBufferSize),
 					sendBufferSize/10, blocking, Logger.getLogger("TestCodec"));
 			readBuffer = ByteBuffer.allocate(receiveBufferSize);
 			writeBuffer = ByteBuffer.allocate(sendBufferSize);

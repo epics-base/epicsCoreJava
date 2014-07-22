@@ -20,11 +20,12 @@ public abstract class BlockingSocketAbstractCodec extends BlockingAbstractCodec 
 	protected final InetSocketAddress socketAddress;
 	
 	public BlockingSocketAbstractCodec(
+			boolean serverFlag,
 			SocketChannel channel,
 			ByteBuffer receiveBuffer,
 			ByteBuffer sendBuffer,
 			Logger logger) throws SocketException {
-		super(receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
+		super(serverFlag, receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
 		this.channel = channel;
 		this.socketAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
 	}

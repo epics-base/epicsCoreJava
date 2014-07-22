@@ -38,7 +38,7 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 
 	public LatencyTest(Poller poller, SocketChannel channel, ReadyListener readyListener) throws IOException
 	{
-		super(ByteBuffer.allocateDirect(10240), ByteBuffer.allocateDirect(10240), channel.socket().getSendBufferSize(), false, Logger.getLogger("TestAC"));
+		super(true, ByteBuffer.allocateDirect(10240), ByteBuffer.allocateDirect(10240), channel.socket().getSendBufferSize(), false, Logger.getLogger("TestAC"));
 		// initialize socketBuffer
 		this.poller = poller;
 		this.channel = channel;

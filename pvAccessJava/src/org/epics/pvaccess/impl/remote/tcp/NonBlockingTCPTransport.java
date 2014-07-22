@@ -30,6 +30,7 @@ import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
 import org.epics.pvaccess.impl.remote.codec.impl.NonBlockingSocketAbstractCodec;
 import org.epics.pvaccess.impl.remote.io.Poller;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
+import org.epics.pvaccess.server.ServerContext;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.Status;
 
@@ -94,7 +95,7 @@ public abstract class NonBlockingTCPTransport extends NonBlockingSocketAbstractC
 					   ResponseHandler responseHandler,
 					   int receiveBufferSize,
 					   short priority) throws SocketException {
-		super(poller, channel, 
+		super(context instanceof ServerContext, poller, channel, 
 				ByteBuffer.allocate(Math.max(PVAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
 				ByteBuffer.allocate(Math.max(PVAConstants.MAX_TCP_RECV + AbstractCodec.MAX_ENSURE_DATA_SIZE, receiveBufferSize)),
 				context.getLogger());

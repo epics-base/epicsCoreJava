@@ -55,7 +55,6 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	protected int stride = 0;
 	
 	protected int length = 0;
-	protected int capacity = 0;
 
 	public static ChannelArrayRequestImpl create(ChannelImpl channel,
 			ChannelArrayRequester callback,
@@ -129,7 +128,6 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			lock();
 			try {
 				SerializeHelper.writeSize(length, buffer, control);
-				SerializeHelper.writeSize(capacity, buffer, control);
 			} finally {
 				unlock();
 			}
@@ -227,9 +225,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			else if (QoS.PROCESS.isSet(qos))
 			{
 				int length = SerializeHelper.readSize(payloadBuffer, transport);
-				int capacity = SerializeHelper.readSize(payloadBuffer, transport);
-
-				callback.getLengthDone(status, this, length, capacity);
+				callback.getLengthDone(status, this, length);
 			}
 			else
 			{
@@ -328,15 +324,13 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.ChannelArray#setLength(int, int)
+	 * @see org.epics.pvaccess.client.ChannelArray#setLength(int)
 	 */
 	@Override
-	public void setLength(int length, int capacity) {
+	public void setLength(int length) {
 		
 		if (length < 0)
 			throw new IllegalArgumentException("length < 0");
-		if (capacity < 0)
-			throw new IllegalArgumentException("capacity < 0");
 
 		if (destroyed) {
 			callback.putArrayDone(destroyedStatus, this);
@@ -351,7 +345,6 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 		try {
 			lock();
 			this.length = length;
-			this.capacity = capacity;
 			unlock();
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
@@ -363,12 +356,12 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 	@Override
 	public void getLength() {
 		if (destroyed) {
-			callback.getLengthDone(destroyedStatus, this, 0, 0);
+			callback.getLengthDone(destroyedStatus, this, 0);
 			return;
 		}
 
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.PROCESS.getMaskValue() : QoS.PROCESS.getMaskValue())) {
-			callback.getLengthDone(otherRequestPendingStatus, this, 0, 0);
+			callback.getLengthDone(otherRequestPendingStatus, this, 0);
 			return;
 		}
 		
@@ -376,7 +369,7 @@ public class ChannelArrayRequestImpl extends BaseRequestImpl implements ChannelA
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
 			stopRequest();
-			callback.getLengthDone(channelNotConnected, this, 0, 0);
+			callback.getLengthDone(channelNotConnected, this, 0);
 		}
 	}
 

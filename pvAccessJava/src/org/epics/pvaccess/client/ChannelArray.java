@@ -37,7 +37,6 @@ public interface ChannelArray extends ChannelRequest{
     /**
      * Set the length and/or the capacity.
      * @param length The new length.
-     * @param capacity The new capacity, 0 means do not change.
      */
-    void setLength(int length, int capacity);
+    void setLength(int length);
 }

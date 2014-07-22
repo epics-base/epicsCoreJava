@@ -15,9 +15,9 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 
 	private final AtomicBoolean isOpen = new AtomicBoolean(true);
 
-	public BlockingAbstractCodec(ByteBuffer receiveBuffer, ByteBuffer sendBuffer,
+	public BlockingAbstractCodec(boolean serverFlag, ByteBuffer receiveBuffer, ByteBuffer sendBuffer,
 			int socketSendBufferSize, Logger logger) {
-		super(receiveBuffer, sendBuffer, socketSendBufferSize, true, logger);
+		super(serverFlag, receiveBuffer, sendBuffer, socketSendBufferSize, true, logger);
 	}
 
 	@Override
