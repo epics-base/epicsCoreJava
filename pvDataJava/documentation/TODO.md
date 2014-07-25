@@ -13,8 +13,18 @@ postMonitor: PVUnion, PVUnionArray, and PVStructureArray
 
 PVUnion, PVUnionArray, and PVStructureArray all have elements
 that are treated like a top level field.
-The implementation should be changed so that it implements PostHandler.
-Thus when an element is modified it will call postPut for itself.
+
+Currently if a subField of any of these is changed postMonitor is not called for the field itself.
+
+David asked if this could be changed so that it is called.
+Marty thinks this may not be a good idea.
+
+timeStamp, display, control, and valueAlarm
+----------
+
+normativeTypes.html defines time_t,  display_t, control_t, and alarmlimit_t.
+The definitions are not compatible with how property defined timeStamp, display, control, and valueAlarm.
+The definition of alarm_t does match the definition of property alarm.
 
 
 convert
@@ -39,6 +49,12 @@ This methods like renameField, etc should be removed.
 This can not be done until pvIOCJava is changed
 so that it no longer requires the methods.
 The main change will be to the xml parser.
+
+PVAuxInfo
+---------
+
+This should go away.
+This can not be done until pvIOCJava is changed.
 
 sharedData
 ---------

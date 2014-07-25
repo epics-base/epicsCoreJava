@@ -10,7 +10,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
@@ -41,8 +40,7 @@ public class BasePVString extends AbstractPVScalar implements PVString
     @Override
     public void put(String value) {
         if(super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return;
+            throw new IllegalArgumentException("field is immutable");
         }
         this.value = value;
         super.postPut();

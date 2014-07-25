@@ -5,7 +5,6 @@
  */
 package org.epics.pvdata.property;
 
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
@@ -28,21 +27,17 @@ public final class PVControlFactory implements PVControl{
     @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
-            pvField.message(noControlFound,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(noControlFound);
         }
         PVStructure pvStructure = (PVStructure)(pvField);
         PVDouble pvDouble = pvStructure.getDoubleField("limitLow");
         if(pvDouble==null) {
-            pvField.message(noControlFound,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(noControlFound);
         }
         pvLow = pvDouble;
         pvDouble = pvStructure.getDoubleField("limitHigh");
         if(pvDouble==null) {
-            pvLow = null;
-            pvField.message(noControlFound,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(noControlFound);
         }
         pvHigh = pvDouble;
         return true;

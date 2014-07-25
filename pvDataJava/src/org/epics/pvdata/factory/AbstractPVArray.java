@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVArray;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -68,8 +67,7 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     @Override
     public void setCapacityMutable(boolean isMutable) {
         if(isMutable && super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return;
+            throw new IllegalStateException("field is immutable");
         }
         capacityMutable = isMutable;
     }
@@ -94,8 +92,7 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     public void setLength(int len) {
     	if(len==length) return;
         if(super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return;
+            throw new IllegalStateException("field is immutable");
         }
         if(len>capacity) setCapacity(len);
         if(len>capacity) len = capacity;

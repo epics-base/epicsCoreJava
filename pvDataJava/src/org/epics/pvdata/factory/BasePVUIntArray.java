@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.IntArrayData;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVUIntArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
@@ -43,8 +42,7 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
     public void setCapacity(int len) {
     	if(capacity==len) return;
         if(!capacityMutable) {
-            super.message("not capacityMutable", MessageType.error);
-            return;
+            throw new IllegalArgumentException("capacity is immutable");
         }
         if(length>len) length = len;
         int[]newarray = new int[len];
@@ -69,8 +67,7 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
     @Override
     public int put(int offset, int len, int[]from, int fromOffset) {
         if(super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return 0;
+            throw new IllegalArgumentException("field is immutable");
         }
         if(from==value) return len;
         if(offset+len > length) {

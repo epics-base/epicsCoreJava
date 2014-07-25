@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.BooleanArrayData;
 import org.epics.pvdata.pv.DeserializableControl;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVBooleanArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
@@ -43,8 +42,7 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
     public void setCapacity(int len) {
     	if(capacity==len) return;
         if(!capacityMutable) {
-            super.message("not capacityMutable", MessageType.error);
-            return;
+            throw new IllegalArgumentException("capacity is immutable");
         }
         if(length>len) length = len;
         boolean[]newarray = new boolean[len];
@@ -69,8 +67,7 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
     @Override
     public int put(int offset, int len, boolean[]from, int fromOffset) {
         if(super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return 0;
+            throw new IllegalArgumentException("field is immutable");
         }
         if(from==value) return len;
         if(offset+len > length) {

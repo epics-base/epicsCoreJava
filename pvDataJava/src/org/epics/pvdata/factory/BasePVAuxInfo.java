@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.epics.pvdata.pv.Convert;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVAuxInfo;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVField;
@@ -61,9 +60,9 @@ public class BasePVAuxInfo implements PVAuxInfo {
         if(old!=null) {
             ScalarType oldType = old.getScalar().getScalarType();
             if(oldType==scalarType) return old;
-            pvField.message("AuxoInfo:create key " + key + " already exists with scalarType " + oldType.toString()
-                    + " requestType is " + scalarType.toString(),MessageType.error);
-            return null;
+            String message = "AuxoInfo:create key " + key + " already exists with scalarType " + oldType.toString();
+            message += " requestType is " + scalarType.toString();
+            throw new IllegalArgumentException(message);
         }
         PVScalar pvScalar = pvDataCreate.createPVScalar(scalarType);
         attributeMap.put(key, pvScalar);

@@ -5,7 +5,6 @@
  */
 package org.epics.pvdata.property;
 
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVString;
@@ -32,38 +31,28 @@ public final class PVDisplayFactory implements PVDisplay{
     @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
-            pvField.message(noDisplayFound,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(noDisplayFound);
         }
         PVStructure pvStructure = (PVStructure)(pvField);
         pvDescription = pvStructure.getStringField("description");
         if(pvDescription==null) {
-            pvField.message(noDisplayFound,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(noDisplayFound);
         }
         pvFormat = pvStructure.getStringField("format");
         if(pvFormat==null) {
-            pvField.message(noDisplayFound,MessageType.error);
-            detach();
-            return false;
+            throw new IllegalArgumentException(noDisplayFound);
         }
         pvUnits = pvStructure.getStringField("units");
         if(pvUnits==null) {
-            pvField.message(noDisplayFound,MessageType.error);
-            detach();
-            return false;
+            throw new IllegalArgumentException(noDisplayFound);
         }
         pvLow = pvStructure.getDoubleField("limitLow");
         if(pvLow==null) {
-            pvField.message(noDisplayFound,MessageType.error);
-            detach();
-            return false;
+            throw new IllegalArgumentException(noDisplayFound);
         }
         pvHigh = pvStructure.getDoubleField("limitHigh");
         if(pvHigh==null) {
-            pvField.message(noDisplayFound,MessageType.error);
-            detach();
-            return false;
+            throw new IllegalArgumentException(noDisplayFound);
         }
         return true;
 

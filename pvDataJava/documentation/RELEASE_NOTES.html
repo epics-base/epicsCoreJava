@@ -1,0 +1,31 @@
+<h1>Release release/3.1 IN DEVELOPMENT</h1>
+<p>The main changes since release 3.0.2 are:</p>
+<ul>
+<li>union is new type.</li>
+<li>copy is new.</li>
+<li>monitorPlugin is new.</li>
+<li>PVField no longer extends Requester</li>
+</ul>
+<h2>union is a new basic type.</h2>
+<p>There are two new basic types: union_t and unionArray.</p>
+<p>A union is like a structure that has a single subfield.
+There are two flavors:</p>
+<ul>
+<li><b>varient union</b> The field can have any type.</li>
+<li><b>union</b> The field can any of specified set of types.</li>
+</ul>
+<p>The field type can be dynamically changed.</p>
+<h2>copy</h2>
+<p>This consists of createRequest and pvCopy.
+createRequest was moved from pvAccess to here.
+pvCopy is moved from pvDatabaseCPP and now depends
+only on pvData, i. e. it no longer has any knowledge of PVRecord.</p>
+<h2>monitorPlugin</h2>
+<p>This is for is for use by code that implements pvAccess monitors.
+This is prototype and is subject to debate.</p>
+<h2>PVField</h2>
+<p>This no longer extends Requester of has method setRequester.
+Any code in pvDataJava that called pvField.message now throws an exception instead.
+This change was made so that the semantics now more closely follow pvDataCPP.</p>
+<h1>Release 3.0.2</h1>
+<p>This was the starting point for RELEASE_NOTES</p>

@@ -8,12 +8,10 @@ package org.epics.pvdata.factory;
 
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVAuxInfo;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PostHandler;
-import org.epics.pvdata.pv.Requester;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Type;
 
@@ -32,7 +30,7 @@ public abstract class AbstractPVField implements PVField{
     private String fieldName = null;
     private Field field;
     private PVStructure pvParent = null;
-    private Requester requester = null;
+//    private Requester requester = null;
 	private PostHandler postHandler = null;
     /**
      * Convenience for derived classes that perform conversions.
@@ -87,59 +85,6 @@ public abstract class AbstractPVField implements PVField{
         }
         return ret;
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.Requester#getRequesterName()
-     */
-    @Override
-	public String getRequesterName() {
-		if(requester!=null) {
-			return requester.getRequesterName();
-		} else {
-			return "none";
-		}
-	}
-    
-    private void messagePvt(String message,MessageType messageType,String fullFieldName)
-    {
-        if(pvParent!=null) {
-            if(fullFieldName.length()>0) {
-                fullFieldName = fieldName + '.' + fullFieldName;
-            } else {
-                fullFieldName = fieldName;
-            }
-            AbstractPVField xxx = (AbstractPVField)pvParent;
-            xxx.messagePvt(message, messageType,fullFieldName);
-            return;
-        }
-        message = fullFieldName + " " + message;
-        if(requester!=null) {
-            requester.message(message, messageType);
-        } else {
-            System.out.println(messageType.toString() + " "  + message);
-        }
-    }
-	/* (non-Javadoc)
-	 * @see org.epics.pvdata.pv.Requester#message(java.lang.String, org.epics.pvdata.pv.MessageType)
-	 */
-	@Override
-	public void message(String message, MessageType messageType) {
-	    messagePvt(message,messageType,"");
-		
-	}
-	/* (non-Javadoc)
-	 * @see org.epics.pvdata.pv.PVField#registerRequester(org.epics.pvdata.pv.Requester)
-	 */
-	@Override
-	public void setRequester(Requester requester) {
-	    if(pvParent!=null) {
-	        throw new IllegalStateException("PVField::setRequester only legal for top level structure");
-	    }
-		if(this.requester!=null) {
-			if(requester==this.requester) return;
-			throw new IllegalStateException("A requester is already registered");
-		}
-		this.requester = requester;
-	}
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVField#postPut()
      */

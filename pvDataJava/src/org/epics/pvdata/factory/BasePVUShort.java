@@ -9,7 +9,6 @@ package org.epics.pvdata.factory;
 import java.nio.ByteBuffer;
 
 import org.epics.pvdata.pv.DeserializableControl;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVUShort;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
@@ -41,8 +40,7 @@ public class BasePVUShort extends AbstractPVScalar implements PVUShort
     @Override
     public void put(short value) {
         if(super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return;
+            throw new IllegalArgumentException("field is immutable");
         }
         this.value = value;
         super.postPut();

@@ -11,7 +11,6 @@ import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVByte;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
@@ -23,7 +22,6 @@ import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
-import org.epics.pvdata.pv.Requester;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 
@@ -257,27 +255,6 @@ public class PVCloneTest extends TestCase {
 //System.out.println(nowPVStructure);
         assertTrue(nowPVStructure.equals(origPVStructure));
         assertTrue(nowStructure.equals(origStructure));
-    }
-    
-    public static void testRequester() {
-        PVField pvField = pvChannelToClone.getSubField("d.d.b");
-        pvField.message("this is a test", MessageType.info);
-        Requester requester = new RequesterImpl();
-        pvChannelToClone.setRequester(requester);
-//System.out.println(pvChannelToClone);
-        pvField.message("this is a test", MessageType.info);
-    }
-    
-    private static class RequesterImpl implements Requester {
-        @Override
-        public String getRequesterName() {
-            return "pvCopyTest";
-        }
-        @Override
-        public void message(String message, MessageType messageType) {
-            System.out.printf("pvCopyTest %s messageType %s%n",message,messageType.name());
-            
-        }
     }
 }
 

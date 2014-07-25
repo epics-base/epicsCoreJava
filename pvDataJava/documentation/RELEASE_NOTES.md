@@ -6,6 +6,7 @@ The main changes since release 3.0.2 are:
 * union is new type.
 * copy is new.
 * monitorPlugin is new.
+* PVField no longer extends Requester
 
 
 union is a new basic type.
@@ -34,6 +35,13 @@ monitorPlugin
 
 This is for is for use by code that implements pvAccess monitors.
 This is prototype and is subject to debate.
+
+PVField
+-------
+
+This no longer extends Requester of has method setRequester.
+Any code in pvDataJava that called pvField.message now throws an exception instead.
+This change was made so that the semantics now more closely follow pvDataCPP.
 
 Release 3.0.2
 ==========

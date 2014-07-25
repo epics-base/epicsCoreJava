@@ -11,7 +11,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVField extends Requester,Serializable {
+public interface PVField extends Serializable {
     /**
      * Get the fieldName for this field.
      * @return The name or null if top level field.
@@ -23,12 +23,6 @@ public interface PVField extends Requester,Serializable {
      * each name.
      */
     String getFullName();
-    /**
-     * Register the message requester.
-     * At most one requester can be registered.
-     * @param requester The requester.
-     */
-    void setRequester(Requester requester);
     /**
      * Get offset of the PVField field within top level structure.
      * Every field within the PVStructure has a unique offset.

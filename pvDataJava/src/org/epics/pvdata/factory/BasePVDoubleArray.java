@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.DoubleArrayData;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
@@ -42,8 +41,7 @@ public class BasePVDoubleArray  extends AbstractPVScalarArray implements PVDoubl
     public void setCapacity(int len) {
     	if(capacity==len) return;
         if(!capacityMutable) {
-            super.message("not capacityMutable", MessageType.error);
-            return;
+            throw new IllegalArgumentException("capacity is immutable");
         }
         if(length>len) length = len;
         double[]newarray = new double[len];
@@ -66,8 +64,7 @@ public class BasePVDoubleArray  extends AbstractPVScalarArray implements PVDoubl
      */
     public int put(int offset, int len, double[]from, int fromOffset) {
         if(super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return 0;
+            throw new IllegalArgumentException("field is immutable");
         }
         if(from==value) return len;
         if(len<1) return 0;

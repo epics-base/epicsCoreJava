@@ -5,7 +5,6 @@
  */
 package org.epics.pvdata.property;
 
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVScalarArray;
@@ -34,19 +33,16 @@ public final class PVEnumeratedFactory implements PVEnumerated{
     @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
-            pvField.message(notStructure,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(notStructure);
         }
         PVStructure pvStructure = (PVStructure)pvField;
         PVInt pvInt = pvStructure.getIntField("index");
         if(pvInt==null) {
-            pvField.message(notEnumerated,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(notEnumerated);
         }
         PVScalarArray pvScalarArray = pvStructure.getScalarArrayField("choices",ScalarType.pvString);
         if(pvScalarArray==null) {
-            pvField.message(notEnumerated,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(notEnumerated);
         }
         pvIndex = pvInt;
         pvChoices = (PVStringArray)pvScalarArray;

@@ -35,7 +35,7 @@
 <h1>EPICS pvDataJava</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 08-July-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 25-July-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -73,7 +73,9 @@ V4 control system programming environment:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 08-July-2014 version of the Java implementation of pvData.
+<p>For now this is a working copy so it is not the same as "This version" shown above.</p>
+
+<p>This is the 25-July-2014 version of the Java implementation of pvData.
 This version describes the new types union and unionArray.
 It also describes CreateRequest, which has been moved from pvAccess to pvData,
 and PVCopy, which has been moved from pvIOCCPP and now only depends on
@@ -637,10 +639,9 @@ containing two fields, can be shared by every record that has a time stamp.</p>
 <h3>Data Interfaces</h3>
 
 <p>PVField is the base interface for a data field:</p>
-<pre>interface PVField extends Requester, Serializable {
+<pre>interface PVField extends  Serializable {
     String getFieldName();
     String getFullName();
-    void setRequester(Requester requester);
     int getFieldOffset();
     int getNextFieldOffset();
     int getNumberFields();
@@ -1394,95 +1395,8 @@ where
       status optimization.</dd>
 </dl>
 
-<h3>PVField - Data Interfaces</h3>
+<h3>Requester</h3>
 
-<p>This section defines the Java Interfaces for accessing the data within
-a top level PVStructure.</p>
-
-<h4>PVField</h4>
-
-<p>PVField is the base interface for accessing data. Every field of a
-top level PVStructure has a PVField associated with it.
-This includes the top level structure itself.
-</p>
-<pre>interface PVField extends Requester, Serializable {
-    String getFieldName();
-    void setRequester(Requester requester);
-    int getFieldOffset();
-    int getNextFieldOffset();
-    int getNumberFields();
-    boolean isImmutable();
-    void setImmutable();
-    Field getField();
-    PVStructure getParent();
-    void postPut();
-    void setPostHandler(PostHandler postHandler);
-    void toString(StringBuilder buf);
-    void toString(StringBuilder buf,int indentLevel);
-    String toString();
-    // The following should go away.
-    PVAuxInfo getPVAuxInfo();
-    void renameField(String newName);
-}</pre>
-
-<p>where</p>
-<dl>
-  <dt>getFieldName</dt>
-     <dd>Get the field name for this field. This will be a empty string for
-     the top level structure.</dd>
-  <dt>setRequester</dt>
-    <dd>Set a requester to receive messages sent to this field. A field can
-      only have a single requester. An IllegalStateException is thrown if a
-      requester is already attached.</dd>
-  <dt>getFieldOffset</dt>
-    <dd>Get offset of the PVField field within top level structure. Every field
-      within the PVStructure has a unique offset. The top level structure has
-      an offset of 0. The first field within the structure has offset equal to
-      1. The other offsets are determined by recursively traversing each
-      structure of the tree. </dd>
-  <dt>getNextFieldOffset</dt>
-    <dd>Get the next offset. If the field is a scalar or array field then this
-      is just offset + 1. If the field is a structure it is the offset of the
-      next field after this structure. Thus (nextOffset - offset) is always
-      equal to the total number of fields within the field. </dd>
-  <dt>getNumberFields</dt>
-    <dd>Get the total number of fields in this field. This is nextFieldOffset -
-      fieldOffset. </dd>
-  <dt>isImmutable</dt>
-    <dd>Is the field immutable?</dd>
-  <dt>setImmutable</dt>
-    <dd>Make the field immutable. Once a field is immutable it can never be
-      changed since there is no method to again make it mutable. This is an
-      important design decision because it allows immutable array fields to
-      share the internal primitive data array.</dd>
-  <dt>getField</dt>
-    <dd>Get the reflection interface.</dd>
-  <dt>getParent</dt>
-    <dd>Get the interface for the parent or null if this is the top level
-      PVStructure.</dd>
-  <dt>postPut</dt>
-    <dd>If this field is a field of a record pvRecordField.postPut() is called.
-      If not a field of a record nothing happens.</dd>
-  <dt>setPostHandler</dt>
-     <dd>Set the handler for postPut. At most one handler can be set.</dd>
-  <dt>toString</dt>
-    <dd>Converts the field data to a string. This is mostly for debugging
-      purposes. The format is the meta data format described in the pvData
-      project overview.
-      <b>Note:</b> The actual conversion is done by the Convert facility. </dd>
-</dl>
-<p><b>NOTE:</b> that AuxInfo should go away and so should renameField.
-The xml parser and install in pvIOCJava must be rewriten first.</p>
-
-<h4>Requester</h4>
-
-<p><b>NOTE:</b> PVField extends Requester.
-In pvDataCPP this is no longer true.
-pvDataJava should also no longer extend Requester.
-pvIOCJava needs to  be modified before this is done.</p>
-
-<p>A PVField extends Requester. Requester is present so that when database
-errors are found there is someplace to send a message.</p>
 <p>In the pvIOCJava, PVRecord provides methods to register message requesters. Also a PVDatabase
 provides an identical method. Thus when a message is generated for a field it
 is propagated up to the record with the full field name attached and then
@@ -1515,6 +1429,90 @@ interface Requester {
       </ul>
     </dd>
 </dl>
+
+<h3>PVField - Data Interfaces</h3>
+
+<p>This section defines the Java Interfaces for accessing the data within
+a top level PVStructure.</p>
+
+<h4>PVField</h4>
+
+<p>PVField is the base interface for accessing data. Every field of a
+top level PVStructure has a PVField associated with it.
+This includes the top level structure itself.
+</p>
+<pre>interface PVField Serializable {
+    String getFieldName();
+    int getFieldOffset();
+    int getNextFieldOffset();
+    int getNumberFields();
+    boolean isImmutable();
+    void setImmutable();
+    Field getField();
+    PVStructure getParent();
+    void postPut();
+    void setPostHandler(PostHandler postHandler);
+    void toString(StringBuilder buf);
+    void toString(StringBuilder buf,int indentLevel);
+    String toString();
+    // The following should go away.
+    PVAuxInfo getPVAuxInfo();
+    void renameField(String newName);
+}</pre>
+
+<p>where</p>
+<dl>
+  <dt>getFieldName</dt>
+     <dd>Get the field name for this field. This will be a empty string for
+     the top level structure.</dd>
+  <dt>getFieldOffset</dt>
+    <dd>Get offset of the PVField field within top level structure. Every field
+      within the PVStructure has a unique offset. The top level structure has
+      an offset of 0. The first field within the structure has offset equal to
+      1. The other offsets are determined by recursively traversing each
+      structure of the tree. </dd>
+  <dt>getNextFieldOffset</dt>
+    <dd>Get the next offset. If the field is a scalar or array field then this
+      is just offset + 1. If the field is a structure it is the offset of the
+      next field after this structure. Thus (nextOffset - offset) is always
+      equal to the total number of fields within the field. </dd>
+  <dt>getNumberFields</dt>
+    <dd>Get the total number of fields in this field. This is nextFieldOffset -
+      fieldOffset. </dd>
+  <dt>isImmutable</dt>
+    <dd>Is the field immutable?</dd>
+  <dt>setImmutable</dt>
+    <dd>Make the field immutable. Once a field is immutable it can never be
+      changed since there is no method to again make it mutable. This is an
+      important design decision because it allows immutable array fields to
+      share the internal primitive data array.</dd>
+  <dt>getField</dt>
+    <dd>Get the reflection interface.</dd>
+  <dt>getParent</dt>
+    <dd>Get the interface for the parent or null if this is the top level
+      PVStructure.</dd>
+  <dt>postPut</dt>
+    <dd>If a postHandler is registered it is called otherwise no action is
+      taken.<br />
+     <b>NOTE: </b>The implementation  of the various data interfaces automatically
+      call postPut when a field is changed. However this is not true
+      for a subField of a PVUnion, PVUnionArray, or PVStructureArray.
+     If a subField of any of these is changed then the code that is making
+     the modification must call postPut for the PVUnion, PVUnionArray, or PVStructureArray
+     field. Note also that it is not a good idea to modify a subfield of a PVUnionArray
+     or a PVStructureArray since it violates the idea of Copy On Write for arrays.
+    </dd>
+  <dt>setPostHandler</dt>
+     <dd>Set the handler for postPut. At most one handler can be set.</dd>
+  <dt>toString</dt>
+    <dd>Converts the field data to a string. This is mostly for debugging
+      purposes. The format is the meta data format described in the pvData
+      project overview.
+      <b>Note:</b> The actual conversion is done by the Convert facility. </dd>
+</dl>
+<p><b>NOTE:</b> that AuxInfo should go away and so should renameField.
+The xml parser and install in pvIOCJava must be rewriten first.</p>
+
 
 <h4>PVAuxInfo</h4>
 <p><b>NOTE:</b> PVAuxInfo should go away.</p>

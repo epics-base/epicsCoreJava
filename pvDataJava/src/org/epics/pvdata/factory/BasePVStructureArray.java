@@ -10,7 +10,6 @@ import java.util.Arrays;
 
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
@@ -53,8 +52,7 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
     public void setCapacity(int len) {
     	if(capacity==len) return;
         if(!capacityMutable) {
-            super.message("not capacityMutable", MessageType.error);
-            return;
+            throw new IllegalArgumentException("capacity is immutable");
         }
         if(length==len) return;
         PVStructure[]newarray = new PVStructure[len];
@@ -82,8 +80,7 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
     @Override
     public int put(int offset, int len, PVStructure[]from, int fromOffset) {
         if(super.isImmutable()) {
-            super.message("field is immutable", MessageType.error);
-            return 0;
+            throw new IllegalArgumentException("field is immutable");
         }
         if(from==value) return len;
         if(len<1) return 0;

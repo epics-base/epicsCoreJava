@@ -4,7 +4,6 @@
  * in file LICENSE that is included with this distribution.
  */
 package org.epics.pvdata.property;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVLong;
@@ -33,8 +32,7 @@ public class PVTimeStampFactory implements PVTimeStamp {
     @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
-            pvField.message(noTimeStampFound,MessageType.error);
-            return false;
+            throw new IllegalArgumentException(noTimeStampFound);
         }
         PVStructure pvStructure = (PVStructure)(pvField);
         while(true) {
