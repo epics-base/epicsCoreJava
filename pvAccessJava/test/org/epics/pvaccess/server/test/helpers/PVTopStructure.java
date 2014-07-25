@@ -12,7 +12,6 @@ import org.epics.pvaccess.client.Lockable;
 import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Scalar;
@@ -123,7 +122,7 @@ public class PVTopStructure implements Lockable
 					Writer writer = new StringWriter();
 					PrintWriter printWriter = new PrintWriter(writer);
 					th.printStackTrace(printWriter);
-					pvStructure.message("Unexpected exception caught: " + writer, MessageType.fatalError);
+					System.err.println("Unexpected exception caught: " + writer);
 				}
 			}
 		}
