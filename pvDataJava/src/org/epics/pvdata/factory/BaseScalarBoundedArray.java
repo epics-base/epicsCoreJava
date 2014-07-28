@@ -7,6 +7,7 @@ package org.epics.pvdata.factory;
 
 import java.nio.ByteBuffer;
 
+import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
@@ -19,41 +20,34 @@ import org.epics.pvdata.pv.Type;
  * @author mrk
  *
  */
-public class BaseScalarArray extends BaseField implements ScalarArray {
+public class BaseScalarBoundedArray extends BaseField implements ScalarArray {
     
     private final ScalarType elementType;
+    private final int size;
+    private final String id;
     
     /**
-     * Constructor for BaseArray.
+     * Constructor for bounded size scalar array.
      * @param elementType The element Type.
+     * @param size size bound.
      */
-    public BaseScalarArray(ScalarType elementType) {
+    public BaseScalarBoundedArray(ScalarType elementType, int size) {
         super(Type.scalarArray);
         if (elementType==null)
         	throw new NullPointerException("elementType is null");
+        if (size<=0)
+        	throw new IllegalArgumentException("size <= 0");
         this.elementType = elementType;
+        this.size = size;
+        this.id = BaseScalar.idLUT[this.elementType.ordinal()] + "<" + size + ">";
     }
-	private static final String[] idLUT = {
-		"boolean[]", // pvBoolean
-		"byte[]",    // pvByte
-		"short[]",   // pvShort
-		"int[]",     // pvInt
-		"long[]",    // pvLong
-		"ubyte[]",   // pvUByte
-		"ushort[]",  // pvUShort
-		"uint[]",    // pvUInt
-		"ulong[]",   // pvULong
-		"float[]",   // pvFloat
-		"double[]",  // pvDouble
-		"string[]"   // pvString
-	};
-
+    
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Field#getID()
 	 */
 	@Override
 	public String getID() {
-		return idLUT[elementType.ordinal()];
+		return id;
 	}
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.ScalarArray#getElementType()
@@ -73,7 +67,7 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	 */
 	@Override
 	public int hashCode() {
-		return 0x08 | elementType.ordinal();
+		return 0x10 | elementType.ordinal();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -84,8 +78,10 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 			return true;
 		if (getClass() != obj.getClass())
 			return false;
-		final BaseScalarArray other = (BaseScalarArray) obj;
+		final BaseScalarBoundedArray other = (BaseScalarBoundedArray) obj;
 		if (!elementType.equals(other.elementType))
+			return false;
+		if (size != other.size)
 			return false;
 		return true;
 	}
@@ -96,7 +92,8 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		buffer.put((byte)(0x08 | BaseScalar.typeCodeLUT[elementType.ordinal()]));
+		buffer.put((byte)(0x10 | BaseScalar.typeCodeLUT[elementType.ordinal()]));
+		SerializeHelper.writeSize(size, buffer, control);
 	}
 	
 	/* (non-Javadoc)
@@ -110,12 +107,12 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 
 	@Override
 	public ArraySizeType getArraySizeType() {
-		return ArraySizeType.variable;
+		return ArraySizeType.bounded;
 	}
 	
 	@Override
 	public int getMaximumCapacity() {
-		return 0;
+		return size;
 	}
 	
 }

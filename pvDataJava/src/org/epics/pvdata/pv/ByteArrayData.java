@@ -9,17 +9,6 @@ package org.epics.pvdata.pv;
  * Class required by get/put PVByteArray methods.
  * Get will set data and offset.
  * @author mrk
- *
  */
-public class ByteArrayData {
-    /**
-     * The byte[].
-     * PVByteArray.get sets this value.
-     */
-    public byte[] data;
-    /**
-     * The offset.
-     * PVByteArray.get sets this value.
-     */
-    public int offset;
+public class ByteArrayData extends ArrayData<byte[]>  {
 }

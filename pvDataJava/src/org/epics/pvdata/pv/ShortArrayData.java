@@ -8,17 +8,6 @@ package org.epics.pvdata.pv;
  * Class required by get/put PVShortArray methods.
  * Get will set data and offset.
  * @author mrk
- *
  */
-public class ShortArrayData {
-    /**
-     * The PVShort[].
-     * PVShortArray.get sets this value.
-     */
-    public short[] data;
-    /**
-     * The offset.
-     * PVShortArray.get sets this value.
-     */
-    public int offset;
+public class ShortArrayData extends ArrayData<short[]>  {
 }

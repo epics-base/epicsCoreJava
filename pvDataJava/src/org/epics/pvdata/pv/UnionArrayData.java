@@ -9,17 +9,6 @@ package org.epics.pvdata.pv;
  * Class required by get/put PVUnionArray methods.
  * Get will set data and offset.
  * @author mse
- *
  */
-public class UnionArrayData {
-    /**
-     * The PVUnion[].
-     * PVUnionArray.get sets this value.
-     */
-    public PVUnion[] data;
-    /**
-     * The offset.
-     * PVUnionArray.get sets this value. 
-     */
-    public int offset;
+public class UnionArrayData extends ArrayData<PVUnion[]> {
 }

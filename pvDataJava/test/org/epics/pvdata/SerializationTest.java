@@ -132,7 +132,7 @@ public class SerializationTest extends TestCase {
 		}
 	}
 
-	private void serializatioTest(PVField field)
+	private void serializationTest(PVField field)
 	{
 		// serialize
 		ByteBuffer buffer = ByteBuffer.allocate(1 << 16);
@@ -158,7 +158,7 @@ public class SerializationTest extends TestCase {
 		for (int i = 0; i < types.length; i++)
 		{
 			PVScalar scalar = factory.createPVScalar(types[i]);
-			serializatioTest(scalar);
+			serializationTest(scalar);
 		}
 	}
 
@@ -168,196 +168,196 @@ public class SerializationTest extends TestCase {
 		
 		PVBoolean pvBoolean = (PVBoolean)factory.createPVScalar(ScalarType.pvBoolean);
 		pvBoolean.put(false);
-		serializatioTest(pvBoolean);
+		serializationTest(pvBoolean);
 		pvBoolean.put(true);
-		serializatioTest(pvBoolean);
+		serializationTest(pvBoolean);
 		
 		PVByte pvByte = (PVByte)factory.createPVScalar(ScalarType.pvByte);
 		pvByte.put((byte)0);
-		serializatioTest(pvByte);
+		serializationTest(pvByte);
 		pvByte.put((byte)12);
-		serializatioTest(pvByte);
+		serializationTest(pvByte);
 		pvByte.put((byte)Byte.MAX_VALUE);
-		serializatioTest(pvByte);
+		serializationTest(pvByte);
 		pvByte.put((byte)Byte.MIN_VALUE);
-		serializatioTest(pvByte);
+		serializationTest(pvByte);
 		
 		PVShort pvShort = (PVShort)factory.createPVScalar(ScalarType.pvShort);
 		pvShort.put((short)0);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 		pvShort.put((short)1234);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 		pvShort.put((short)Byte.MAX_VALUE);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 		pvShort.put((short)Byte.MIN_VALUE);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 		pvShort.put((short)Short.MAX_VALUE);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 		pvShort.put((short)Short.MIN_VALUE);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 
 		PVInt pvInt = (PVInt)factory.createPVScalar(ScalarType.pvInt);
 		pvInt.put(0);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		pvInt.put(123456);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		pvInt.put(Byte.MAX_VALUE);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		pvInt.put(Byte.MIN_VALUE);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		pvInt.put(Short.MAX_VALUE);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		pvInt.put(Short.MIN_VALUE);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		pvInt.put(Integer.MAX_VALUE);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		pvInt.put(Integer.MIN_VALUE);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 
 		PVLong pvLong = (PVLong)factory.createPVScalar(ScalarType.pvLong);
 		pvLong.put(0);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(12345678901L);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Byte.MAX_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Byte.MIN_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Short.MAX_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Short.MIN_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Integer.MAX_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Integer.MIN_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Long.MAX_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		pvLong.put(Long.MIN_VALUE);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 	
 		PVUByte pvUByte = (PVUByte)factory.createPVScalar(ScalarType.pvUByte);
 		pvUByte.put((byte)0);
-		serializatioTest(pvUByte);
+		serializationTest(pvUByte);
 		pvUByte.put((byte)12);
-		serializatioTest(pvUByte);
+		serializationTest(pvUByte);
 		pvUByte.put((byte)-12);
-		serializatioTest(pvUByte);
+		serializationTest(pvUByte);
 		pvUByte.put((byte)Byte.MAX_VALUE);
-		serializatioTest(pvUByte);
+		serializationTest(pvUByte);
 		pvUByte.put((byte)Byte.MIN_VALUE);
-		serializatioTest(pvUByte);
+		serializationTest(pvUByte);
 		
 		PVUShort pvUShort = (PVUShort)factory.createPVScalar(ScalarType.pvUShort);
 		pvUShort.put((short)0);
-		serializatioTest(pvUShort);
+		serializationTest(pvUShort);
 		pvUShort.put((short)1234);
-		serializatioTest(pvUShort);
+		serializationTest(pvUShort);
 		pvUShort.put((short)-1234);
-		serializatioTest(pvUShort);
+		serializationTest(pvUShort);
 		pvUShort.put((short)Byte.MAX_VALUE);
-		serializatioTest(pvUShort);
+		serializationTest(pvUShort);
 		pvUShort.put((short)Byte.MIN_VALUE);
-		serializatioTest(pvUShort);
+		serializationTest(pvUShort);
 		pvUShort.put((short)Short.MAX_VALUE);
-		serializatioTest(pvUShort);
+		serializationTest(pvUShort);
 		pvUShort.put((short)Short.MIN_VALUE);
-		serializatioTest(pvUShort);
+		serializationTest(pvUShort);
 
 		PVUInt pvUInt = (PVUInt)factory.createPVScalar(ScalarType.pvUInt);
 		pvUInt.put(0);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(123456);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(-123456);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(Byte.MAX_VALUE);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(Byte.MIN_VALUE);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(Short.MAX_VALUE);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(Short.MIN_VALUE);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(Integer.MAX_VALUE);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 		pvUInt.put(Integer.MIN_VALUE);
-		serializatioTest(pvUInt);
+		serializationTest(pvUInt);
 
 		PVULong pvULong = (PVULong)factory.createPVScalar(ScalarType.pvULong);
 		pvULong.put(0);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(12345678901L);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(-12345678901L);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Byte.MAX_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Byte.MIN_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Short.MAX_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Short.MIN_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Integer.MAX_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Integer.MIN_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Long.MAX_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 		pvULong.put(Long.MIN_VALUE);
-		serializatioTest(pvULong);
+		serializationTest(pvULong);
 
 		PVFloat pvFloat = (PVFloat)factory.createPVScalar(ScalarType.pvFloat);
 		pvFloat.put(0);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 		pvFloat.put((float)12.345);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 		pvFloat.put(Float.MAX_VALUE);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 		pvFloat.put(Float.MIN_VALUE);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 		//pvFloat.put(Float.NaN);
 		//serializatioTest(pvFloat);
 		pvFloat.put(Float.POSITIVE_INFINITY);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 		pvFloat.put(Float.NEGATIVE_INFINITY);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 
 		PVDouble pvDouble = (PVDouble)factory.createPVScalar(ScalarType.pvDouble);
 		pvDouble.put(0);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 		pvDouble.put(12.345);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 		pvDouble.put(Double.MAX_VALUE);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 		pvDouble.put(Double.MIN_VALUE);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 		//pvDouble.put(Double.NaN);
 		//serializatioTest(pvDouble);
 		pvDouble.put(Double.POSITIVE_INFINITY);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 		pvDouble.put(Double.NEGATIVE_INFINITY);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 
 		PVString pvString = (PVString)factory.createPVScalar(ScalarType.pvString);
 		pvString.put("");
-		serializatioTest(pvString);
+		serializationTest(pvString);
 		pvString.put("s");
-		serializatioTest(pvString);
+		serializationTest(pvString);
 		pvString.put("string");
-		serializatioTest(pvString);
+		serializationTest(pvString);
 		pvString.put("string with spaces");
-		serializatioTest(pvString);
+		serializationTest(pvString);
 		pvString.put("string with spaces and special characters\f\n");
-		serializatioTest(pvString);
+		serializationTest(pvString);
 		
 		// huge string test
 		StringBuffer strBuf = new StringBuffer(10000);
 		for (int i = 0; i < strBuf.capacity(); i++)
 			strBuf.append('a');
 		pvString.put(strBuf.toString());
-		serializatioTest(pvString);
+		serializationTest(pvString);
 	}
 	
 	public void testArrayNonInitialized()
@@ -367,10 +367,27 @@ public class SerializationTest extends TestCase {
 		for (int i = 0; i < types.length; i++)
 		{
 			PVArray array = factory.createPVScalarArray(types[i]);
-			serializatioTest(array);
+			serializationTest(array);
 		}
 	}
 
+	public void testArraySizeTypes()
+	{
+        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+		PVDataCreate factory = PVDataFactory.getPVDataCreate();
+
+		Structure s = fieldCreate.createFieldBuilder().
+			addArray("array", ScalarType.pvDouble).
+			addFixedArray("fixedArray", ScalarType.pvDouble, 10).
+			addBoundedArray("boundedArray", ScalarType.pvDouble, 1024).
+				createStructure();
+			assertNotNull(s);
+			assertEquals(Structure.DEFAULT_ID, s.getID());
+			assertEquals(3, s.getFields().length);
+			
+		serializationTest(s);
+		serializationTest(factory.createPVField(s));
+	}
 	
 	public void testArray()
 	{
@@ -378,59 +395,59 @@ public class SerializationTest extends TestCase {
 		
 		PVBooleanArray pvBoolean = (PVBooleanArray)factory.createPVScalarArray(ScalarType.pvBoolean);
 		pvBoolean.put(0, 0, new boolean[0], 0);
-		serializatioTest(pvBoolean);
+		serializationTest(pvBoolean);
 		final boolean[] bv = new boolean[] { false, true, false, true, true };
 		pvBoolean.put(0, bv.length, bv, 0);
-		serializatioTest(pvBoolean);
+		serializationTest(pvBoolean);
 
 		PVByteArray pvByte = (PVByteArray)factory.createPVScalarArray(ScalarType.pvByte);
 		pvByte.put(0, 0, new byte[0], 0);
-		serializatioTest(pvByte);
+		serializationTest(pvByte);
 		final byte[] byv = new byte[] { 0, 1, 2, -1, Byte.MAX_VALUE, Byte.MAX_VALUE - 1, Byte.MIN_VALUE + 1, Byte.MIN_VALUE };		
 		pvByte.put(0, byv.length, byv, 0);
-		serializatioTest(pvByte);
+		serializationTest(pvByte);
 
 		PVShortArray pvShort = (PVShortArray)factory.createPVScalarArray(ScalarType.pvShort);
 		pvShort.put(0, 0, new short[0], 0);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 		final short[] sv = new short[] { 0, 1, 2, -1, Short.MAX_VALUE, Short.MAX_VALUE - 1, Short.MIN_VALUE + 1, Short.MIN_VALUE };		
 		pvShort.put(0, sv.length, sv, 0);
-		serializatioTest(pvShort);
+		serializationTest(pvShort);
 
 		PVIntArray pvInt = (PVIntArray)factory.createPVScalarArray(ScalarType.pvInt);
 		pvInt.put(0, 0, new int[0], 0);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 		final int[] iv = new int[] { 0, 1, 2, -1, Integer.MAX_VALUE, Integer.MAX_VALUE - 1, Integer.MIN_VALUE + 1, Integer.MIN_VALUE };		
 		pvInt.put(0, iv.length, iv, 0);
-		serializatioTest(pvInt);
+		serializationTest(pvInt);
 
 		PVLongArray pvLong = (PVLongArray)factory.createPVScalarArray(ScalarType.pvLong);
 		pvLong.put(0, 0, new long[0], 0);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 		final long[] lv = new long[] { 0, 1, 2, -1, Long.MAX_VALUE, Long.MAX_VALUE - 1, Long.MIN_VALUE + 1, Long.MIN_VALUE };		
 		pvLong.put(0, lv.length, lv, 0);
-		serializatioTest(pvLong);
+		serializationTest(pvLong);
 	
 		PVFloatArray pvFloat = (PVFloatArray)factory.createPVScalarArray(ScalarType.pvFloat);
 		pvFloat.put(0, 0, new float[0], 0);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 		final float[] fv = new float[] { (float)0.0, (float)1.1, (float)2.3, (float)-1.4, Float.MAX_VALUE, Float.MAX_VALUE - (float)1.6, Float.MIN_VALUE + (float)1.1, Float.MIN_VALUE };		
 		pvFloat.put(0, fv.length, fv, 0);
-		serializatioTest(pvFloat);
+		serializationTest(pvFloat);
 
 		PVDoubleArray pvDouble = (PVDoubleArray)factory.createPVScalarArray(ScalarType.pvDouble);
 		pvDouble.put(0, 0, new double[0], 0);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 		final double[] dv = new double[] { (double)0.0, (double)1.1, (double)2.3, (double)-1.4, Double.MAX_VALUE, Double.MAX_VALUE - (double)1.6, Double.MIN_VALUE + (double)1.1, Double.MIN_VALUE };		
 		pvDouble.put(0, dv.length, dv, 0);
-		serializatioTest(pvDouble);
+		serializationTest(pvDouble);
 
 		PVStringArray pvString = (PVStringArray)factory.createPVScalarArray(ScalarType.pvString);
 		pvString.put(0, 0, new String[0], 0);
-		serializatioTest(pvString);
+		serializationTest(pvString);
 		final String[] strv = new String[] { null, "", "a", "a b", " ", "test", "smile", "this is a little longer string... maybe a little but longer... this makes test better" };		
 		pvString.put(0, strv.length, strv, 0);
-		serializatioTest(pvString);
+		serializationTest(pvString);
 		
 		// TODO unsigned
 	}
@@ -443,19 +460,19 @@ public class SerializationTest extends TestCase {
         for (ScalarType s : ScalarType.values())
         {
         	Scalar scalar = fieldCreate.createScalar(s);
-        	serializatioTest(scalar);
+        	serializationTest(scalar);
 
         	ScalarArray scalarArray = fieldCreate.createScalarArray(s);
-        	serializatioTest(scalarArray);
+        	serializationTest(scalarArray);
         }
         
         // and a structure
         Structure structure = (Structure)StandardFieldFactory.getStandardField().timeStamp();
-        serializatioTest(structure);
+        serializationTest(structure);
         
         // and a structure array
         StructureArray structureArray = fieldCreate.createStructureArray(structure);
-        serializatioTest(structureArray);
+        serializationTest(structureArray);
 	}
 	
 	public void testStructure()
@@ -466,8 +483,8 @@ public class SerializationTest extends TestCase {
         pvStructure.getLongField("secondsPastEpoch").put(123);
         pvStructure.getIntField("nanoSeconds").put(456);
 
-		serializatioTest(pvStructure);
-		serializatioTest(pvStructure.getStructure());
+		serializationTest(pvStructure);
+		serializationTest(pvStructure.getStructure());
 		
 		// and more complex :)
         Field[] fields2 = new Field[4];
@@ -487,8 +504,8 @@ public class SerializationTest extends TestCase {
         ps.getIntField("nanoSeconds").put(1011);
         ps.getIntField("userTag").put(-1);
 
-		serializatioTest(pvStructure2);
-		serializatioTest(pvStructure2.getStructure());
+		serializationTest(pvStructure2);
+		serializationTest(pvStructure2.getStructure());
 	}
 	
 	public void testStructureID()
@@ -509,10 +526,10 @@ public class SerializationTest extends TestCase {
         assertFalse(structureWithNoId.equals(structure1));
         assertFalse(structure1.equals(structure2));
 
-        serializatioTest(structure1);
+        serializationTest(structure1);
 
         PVStructure pvStructure = (PVStructure)pvDataCreate.createPVField(structure1);
-		serializatioTest(pvStructure);
+		serializationTest(pvStructure);
 	}
 	
 	public void testStructureArray()
@@ -533,8 +550,8 @@ public class SerializationTest extends TestCase {
         	sad.data[i] = pvStructure;
         }
         
-		serializatioTest(pvStructureArray);
-		serializatioTest(pvStructureArray.getStructureArray());
+		serializationTest(pvStructureArray);
+		serializationTest(pvStructureArray.getStructureArray());
 	}
 
 	public void testVariantUnion()
@@ -546,8 +563,8 @@ public class SerializationTest extends TestCase {
         assertNull(variant.get());
         assertEquals(PVUnion.UNDEFINED_INDEX, variant.getSelectedIndex());
         assertNull(variant.getSelectedFieldName());
-        serializatioTest(variant.getUnion());
-        serializatioTest(variant);
+        serializationTest(variant.getUnion());
+        serializationTest(variant);
         
         PVDouble doubleValue = (PVDouble)pvDataCreate.createPVScalar(ScalarType.pvDouble);
         PVInt intValue = (PVInt)pvDataCreate.createPVScalar(ScalarType.pvInt);
@@ -560,15 +577,15 @@ public class SerializationTest extends TestCase {
         assertSame(doubleValue, variant.get());
         assertEquals(PVUnion.UNDEFINED_INDEX, variant.getSelectedIndex());
         assertNull(variant.getSelectedFieldName());
-        serializatioTest(variant.getUnion());
-        serializatioTest(variant);
+        serializationTest(variant.getUnion());
+        serializationTest(variant);
 
         variant.set(intValue);
         assertSame(intValue, variant.get());
         assertEquals(PVUnion.UNDEFINED_INDEX, variant.getSelectedIndex());
         assertNull(variant.getSelectedFieldName());
-        serializatioTest(variant.getUnion());
-        serializatioTest(variant);
+        serializationTest(variant.getUnion());
+        serializationTest(variant);
 
         variant.set(PVUnion.UNDEFINED_INDEX, doubleValue);
         assertSame(doubleValue, variant.get());
@@ -576,8 +593,8 @@ public class SerializationTest extends TestCase {
 
         variant.set(null);
         assertNull(variant.get());
-        serializatioTest(variant.getUnion());
-        serializatioTest(variant);
+        serializationTest(variant.getUnion());
+        serializationTest(variant);
 	}
 
 	public void testVariantUnionArray()
@@ -586,8 +603,8 @@ public class SerializationTest extends TestCase {
 
         // null variant union array test
         PVUnionArray variantArray = pvDataCreate.createPVVariantUnionArray();
-        serializatioTest(variantArray.getUnionArray());
-        serializatioTest(variantArray);
+        serializationTest(variantArray.getUnionArray());
+        serializationTest(variantArray);
         
         variantArray.setLength(6);
         UnionArrayData uad = new UnionArrayData();
@@ -618,7 +635,7 @@ public class SerializationTest extends TestCase {
         	uad.data[i] = union;
         }
         
-        serializatioTest(variantArray);
+        serializationTest(variantArray);
 	}
 	
 	public void testUnion()
@@ -639,30 +656,30 @@ public class SerializationTest extends TestCase {
         assertNull(union.get());
         assertEquals(PVUnion.UNDEFINED_INDEX, union.getSelectedIndex());
         assertNull(union.getSelectedFieldName());
-        serializatioTest(union.getUnion());
-        serializatioTest(union);
+        serializationTest(union.getUnion());
+        serializationTest(union);
         
         ((PVDouble)union.select(fieldNames[0])).put(12.3);
         assertEquals(12.3, ((PVDouble)union.get()).get());
         assertEquals(0, union.getSelectedIndex());
         assertEquals(fieldNames[0], union.getSelectedFieldName());
-        serializatioTest(union);
+        serializationTest(union);
         
         ((PVInt)union.select(fieldNames[1])).put(543);
         assertEquals(543, ((PVInt)union.get()).get());
         assertEquals(1, union.getSelectedIndex());
         assertEquals(fieldNames[1], union.getSelectedFieldName());
-        serializatioTest(union);
+        serializationTest(union);
 
         ((PVInt)union.select(1)).put(5432);
         assertEquals(5432, ((PVInt)union.get()).get());
-        serializatioTest(union);
+        serializationTest(union);
 
         assertNull(union.select(PVUnion.UNDEFINED_INDEX));
         assertNull(union.get());
         assertEquals(PVUnion.UNDEFINED_INDEX, union.getSelectedIndex());
         assertNull(union.getSelectedFieldName());
-        serializatioTest(union);
+        serializationTest(union);
         
         PVDouble doubleValue = (PVDouble)pvDataCreate.createPVScalar(ScalarType.pvDouble);
         union.set(0, doubleValue);
@@ -726,8 +743,8 @@ public class SerializationTest extends TestCase {
 		
         // null union array test
         PVUnionArray pvUnionArray = pvDataCreate.createPVUnionArray(unionArray);
-        serializatioTest(pvUnionArray.getUnionArray());
-        serializatioTest(pvUnionArray);
+        serializationTest(pvUnionArray.getUnionArray());
+        serializationTest(pvUnionArray);
         
         pvUnionArray.setLength(6);
         UnionArrayData uad = new UnionArrayData();
@@ -757,10 +774,10 @@ public class SerializationTest extends TestCase {
         	uad.data[i] = pvUnion;
         }
         
-        serializatioTest(pvUnionArray);
+        serializationTest(pvUnionArray);
 	}
 
-	private void serializatioTest(Field field)
+	private void serializationTest(Field field)
 	{
 		// serialize
 		ByteBuffer buffer = ByteBuffer.allocate(1 << 12);

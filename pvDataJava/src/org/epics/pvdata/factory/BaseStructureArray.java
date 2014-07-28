@@ -59,7 +59,7 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	 */
 	@Override
 	public int hashCode() {
-		return 0x10 | structure.hashCode();
+		return 0x08 | structure.hashCode();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -82,7 +82,7 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
-		buffer.put((byte)0x90);
+		buffer.put((byte)0x88);
 		control.cachedSerialize(structure, buffer);
 	}
 	
@@ -95,5 +95,14 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 	
+	@Override
+	public ArraySizeType getArraySizeType() {
+		return ArraySizeType.variable;
+	}
+	
+	@Override
+	public int getMaximumCapacity() {
+		return 0;
+	}
 	
 }

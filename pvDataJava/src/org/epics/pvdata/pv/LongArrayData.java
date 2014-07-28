@@ -8,17 +8,6 @@ package org.epics.pvdata.pv;
  * Class required by get/put PVLongArray methods.
  * Get will set data and offset.
  * @author mrk
- *
  */
-public class LongArrayData {
-    /**
-     * The PVLong[].
-     * PVLongArray.get sets this value.
-     */
-    public long[] data;
-    /**
-     * The offset.
-     * PVLongArray.get sets this value. 
-     */
-    public int offset;
+public class LongArrayData extends ArrayData<long[]> {
 }

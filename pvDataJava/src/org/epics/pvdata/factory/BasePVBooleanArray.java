@@ -8,7 +8,6 @@ package org.epics.pvdata.factory;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.BooleanArrayData;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.PVBooleanArray;
@@ -24,153 +23,78 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBooleanArray
 {
     protected boolean[] value;
-    private BooleanArrayData booleanArrayData = new BooleanArrayData();
     
     /**
      * Constructor.
-     * @param array The Introspection interface.
+     * @param array The introspection interface.
      */
     public BasePVBooleanArray(ScalarArray array)
     {
         super(array);
-        value = new boolean[capacity];
-    }        
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.factory.AbstractPVArray#setCapacity(int)
-     */
-    @Override
-    public void setCapacity(int len) {
-    	if(capacity==len) return;
-        if(!capacityMutable) {
-            throw new IllegalArgumentException("capacity is immutable");
-        }
-        if(length>len) length = len;
-        boolean[]newarray = new boolean[len];
-        if(length>0) System.arraycopy(value,0,newarray,0,length);
-        value = newarray;
-        capacity = len;
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVBooleanArray#get(int, int, org.epics.pvdata.pv.BooleanArrayData)
-     */
+    
+    @Override
+    protected void allocate(int newCapacity) {
+    	value = new boolean[newCapacity];
+    	capacity = newCapacity;
+    }
+    
+    @Override
+    protected Object getValue()
+    {
+    	return value;
+    }
+    
+    @Override
+    protected void setValue(Object array)
+    {
+    	value = (boolean[])array;
+    }
+
+    @Override
+	protected int putToBuffer(ByteBuffer buffer, SerializableControl control, int offset, int length)
+	{
+    	final int end = length + offset;
+    	for (int i = offset; i < end; i++)
+    		buffer.put(value[i] ? (byte)1 : (byte)0);
+		return length;
+	}
+	
+    @Override
+	protected int getFromBuffer(ByteBuffer buffer, DeserializableControl control, int offset, int length)
+	{
+    	final int end = length + offset;
+    	for (int i = offset; i < end; i++)
+    		value[i] = (buffer.get() == 0) ? false : true;
+		return length;
+	}
+
     @Override
     public int get(int offset, int len, BooleanArrayData data) {
-        int n = len;
-        if(offset+len > length) n = Math.max(0, length-offset);
-        data.data = value;
-        data.offset = offset;
-        return n;
+    	return internalGet(offset, len, data);
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVBooleanArray#put(int, int, boolean[], int)
-     */
+    
     @Override
-    public int put(int offset, int len, boolean[]from, int fromOffset) {
-        if(super.isImmutable()) {
-            throw new IllegalArgumentException("field is immutable");
-        }
-        if(from==value) return len;
-        if(offset+len > length) {
-            int newlength = offset + len;
-            if(newlength>capacity) {
-                setCapacity(newlength);
-                newlength = capacity;
-                len = newlength - offset;
-                if(len<=0) return 0;
-            }
-            length = newlength;
-        }
-        System.arraycopy(from,fromOffset,value,offset,len);
-        super.postPut();
-        return len;       
+    public int put(int offset, int len, boolean[] from, int fromOffset) {
+    	return internalPut(offset, len, from, fromOffset);
     }
-	/* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVBooleanArray#shareData(boolean[])
-     */
+
+
     @Override
     public void shareData(boolean[] from) {
-        this.value = from;
-        super.capacity = from.length;
-        super.length = from.length;
+    	internalShareData(from);
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl, int, int)
-     */
-    @Override
-	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
-    	// cache
-    	final int length = this.length;
-    	final boolean[] value = this.value;
 
-    	// check bounds
-		if (offset < 0) offset = 0;
-		else if (offset > length) offset = length;
-		if (count < 0) count = length;
-
-		final int maxCount = length - offset;
-		if (count > maxCount)
-			count = maxCount;
-		
-		// write
-		SerializeHelper.writeSize(count, buffer, flusher);
-		final int end = offset + count;
-		int i = offset;
-		while (true)
-		{
-        	final int maxIndex = Math.min(end-i, buffer.remaining())+i;
-			for (; i < maxIndex; i++)
-				buffer.put(value[i] ? (byte)1 : (byte)0);
-			if (i < end)
-				flusher.flushSerializeBuffer();
-			else
-				break;
-		}
-	}
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
-     */
     @Override
-	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		final int size = SerializeHelper.readSize(buffer, control);
-		if (size >= 0) {
-			// prepare array, if necessary
-			if (size > capacity)
-				setCapacity(size);
-			// retrieve value from the buffer
-			int i = 0;
-			while (true)
-			{
-				final int maxIndex = Math.min(size-i, buffer.remaining())+i;
-				for (; i < maxIndex; i++)
-					value[i] = (buffer.get() == 0) ? false : true;
-				if (i < size)
-					control.ensureData(1);
-				else
-					break;
-			}
-			// set new length
-			length = size;
-		}
-		// TODO null arrays (size == -1) not supported
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		// TODO anything else?
-		if (obj instanceof PVBooleanArray) {
-			PVBooleanArray b = (PVBooleanArray)obj;
-			b.get(0, b.getLength(), booleanArrayData);
-			if(booleanArrayData.data==value) return true;
-			return Arrays.equals(booleanArrayData.data, value);
-		}
-		else
-			return false;
-	}
-    /* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+    protected boolean valueEquals(Object obj)
+    {
+		PVBooleanArray b = (PVBooleanArray)obj;
+	    BooleanArrayData arrayData = new BooleanArrayData();
+    	// NOTE: this assumes entire array set to arrayData
+	    b.get(0, b.getLength(), arrayData);
+		return Arrays.equals(arrayData.data, value);
+    }
+	
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(value);

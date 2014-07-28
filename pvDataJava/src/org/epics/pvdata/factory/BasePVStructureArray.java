@@ -24,12 +24,12 @@ import org.epics.pvdata.pv.StructureArrayData;
  * @author mrk
  *
  */
-public class BasePVStructureArray  extends AbstractPVArray implements PVStructureArray
+public class BasePVStructureArray extends AbstractPVArray implements PVStructureArray
 {
 	private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-	protected StructureArray structureArray;
     protected PVStructure[] value;
-    private StructureArrayData structureArrayData = new StructureArrayData();
+
+    protected StructureArray structureArray;
     
     /**
      * Constructor.
@@ -39,85 +39,69 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
     {
         super(structureArray);
         this.structureArray = structureArray;
-        value = new PVStructure[capacity];
     }
+
     @Override
 	public StructureArray getStructureArray() {
 		return structureArray;
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.factory.AbstractPVArray#setCapacity(int)
-     */
+
     @Override
-    public void setCapacity(int len) {
-    	if(capacity==len) return;
-        if(!capacityMutable) {
-            throw new IllegalArgumentException("capacity is immutable");
-        }
-        if(length==len) return;
-        PVStructure[]newarray = new PVStructure[len];
-        int num = length;
-        if(len<length) num = len;
-        for(int i=0; i<num; i++) newarray[i] = value[i];
-        for(int i=num; i<len; i++) newarray[i] = null;
-        value = newarray;
-        capacity = len;
-    }       
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVStructureArray#get(int, int, org.epics.pvdata.pv.StructureArrayData)
-     */
+    protected void allocate(int newCapacity) {
+    	value = new PVStructure[newCapacity];
+    	capacity = newCapacity;
+    }
+    
+    @Override
+    protected Object getValue()
+    {
+    	return value;
+    }
+    
+    @Override
+    protected void setValue(Object array)
+    {
+    	value = (PVStructure[])array;
+    }
+
     @Override
     public int get(int offset, int len, StructureArrayData data) {
-        int n = len;
-        if(offset+len > length) n = Math.max(0, length-offset);
-        data.data = value;
-        data.offset = offset;
-        return n;
+    	return internalGet(offset, len, data);
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVStructureArray#put(int, int, org.epics.pvdata.pv.PVStructure[], int)
-     */
+    
     @Override
-    public int put(int offset, int len, PVStructure[]from, int fromOffset) {
-        if(super.isImmutable()) {
-            throw new IllegalArgumentException("field is immutable");
-        }
-        if(from==value) return len;
-        if(len<1) return 0;
-        if(offset+len > length) {
-            int newlength = offset + len;
-            if(newlength>capacity) {
-                setCapacity(newlength);
-                newlength = capacity;
-                len = newlength - offset;
-                if(len<=0) return 0;
-            }
-            length = newlength;
-        }
-        Structure structure = structureArray.getStructure();
-        for(int i=0; i<len; i++) {
-        	PVStructure frompv = from[i+fromOffset];
-        	if(frompv==null) {
-        		value[i+offset] = null;
-        		continue;
-        	}
-        	if(frompv.getStructure()!=structure) {
-        		throw new IllegalStateException("Element is not a compatible structure");
-        	}
-        	value[i+offset] = frompv;
-        }
-        super.postPut();
-        return len;      
-    }     
-	/* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVDoubleArray#shareData(double[])
-     */
+    public int put(int offset, int len, PVStructure[] from, int fromOffset) {
+    	
+    	// first check if all the PVStructure-s are of the right type
+    	Structure elementField = structureArray.getStructure();
+    	for (PVStructure pvs : from)
+    		if (pvs != null && !pvs.getStructure().equals(elementField))
+    			throw new IllegalStateException("Element is not a compatible structure");
+    	
+    	return internalPut(offset, len, from, fromOffset);
+    }
+
+
     @Override
     public void shareData(PVStructure[] from) {
-        this.value = from;
-        super.capacity = from.length;
-        super.length = from.length;
+    	internalShareData(from);
     }
+
+    @Override
+    protected boolean valueEquals(Object obj)
+    {
+		PVStructureArray b = (PVStructureArray)obj;
+		StructureArrayData arrayData = new StructureArrayData();
+    	// NOTE: this assumes entire array set to arrayData
+	    b.get(0, b.getLength(), arrayData);
+		return Arrays.equals(arrayData.data, value);
+    }
+	
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(value);
+	}
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl, int, int)
 	 */
@@ -172,39 +156,5 @@ public class BasePVStructureArray  extends AbstractPVArray implements PVStructur
 			}
 			length = size;
 		}
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		// TODO anything else?
-		if (obj instanceof PVStructureArray) {
-			PVStructureArray b = (PVStructureArray)obj;
-			if(b.getStructureArray()!=structureArray) return false;
-			int len = b.get(0, b.getLength(), structureArrayData);
-			if(len!=length) return false;
-			PVStructure[]data = structureArrayData.data;
-			if(data==value) return true;
-			for(int i=0; i<length; i++) {
-				if(data[i]!=null) {
-					//just check object NOT contents
-					if(value[i]==null) return false;
-					if(!data[i].equals(value[i])) return false;
-				} else {
-					if(value[i]!=null) return false; 
-				}
-			}
-			return true;
-		}  else {
-			return false;
-		}
-	}
-    /* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(value);
 	}
 }

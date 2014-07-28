@@ -37,13 +37,31 @@ public interface FieldBuilder
     public FieldBuilder add(String name, Field field);
 
     /**
-     * Add array of <code>Scalar</code> elements.
+     * Add variable size array of <code>Scalar</code> elements.
      * @param name name of the array.
      * @param scalarType type of a scalar element.
      * @return this instance of a <code>FieldBuilder</code>.
      */
     public FieldBuilder addArray(String name, ScalarType scalarType);
     
+    /**
+     * Add fixed-size array of <code>Scalar</code> elements.
+     * @param name name of the array.
+     * @param scalarType type of a scalar element.
+     * @param size Array fixed size.
+     * @return this instance of a <code>FieldBuilder</code>.
+     */
+    public FieldBuilder addFixedArray(String name, ScalarType scalarType, int size);
+
+    /**
+     * Add bounded-size array of <code>Scalar</code> elements.
+     * @param name name of the array.
+     * @param scalarType type of a scalar element.
+     * @param bound Array maximum capacity (size).
+     * @return this instance of a <code>FieldBuilder</code>.
+     */
+    public FieldBuilder addBoundedArray(String name, ScalarType scalarType, int bound);
+
     /**
      * Add array of <code>Field</code> elements.
      * @param name name of the array.

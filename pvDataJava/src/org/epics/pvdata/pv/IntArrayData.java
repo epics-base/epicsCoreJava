@@ -8,17 +8,6 @@ package org.epics.pvdata.pv;
  * Class required by get/put PVIntArray methods.
  * Get will set data and offset.
  * @author mrk
- *
  */
-public class IntArrayData {
-    /**
-     * The int[].
-     * PVIntArray.get sets this value.
-     */
-    public int[] data;
-    /**
-     * The offset.
-     * PVIntArray.get sets this value.
-     */
-    public int offset;
+public class IntArrayData extends ArrayData<int[]> {
 }

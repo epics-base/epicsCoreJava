@@ -27,10 +27,10 @@ import org.epics.pvdata.pv.UnionArrayData;
 public class BasePVUnionArray  extends AbstractPVArray implements PVUnionArray
 {
 	private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-	protected UnionArray unionArray;
     protected PVUnion[] value;
-    private UnionArrayData unionArrayData = new UnionArrayData();
-    
+
+	protected UnionArray unionArray;
+
     /**
      * Constructor.
      * @param unionArray The Introspection interface.
@@ -39,85 +39,69 @@ public class BasePVUnionArray  extends AbstractPVArray implements PVUnionArray
     {
         super(unionArray);
         this.unionArray = unionArray;
-        value = new PVUnion[capacity];
     }
+
     @Override
 	public UnionArray getUnionArray() {
 		return unionArray;
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.factory.AbstractPVArray#setCapacity(int)
-     */
+    
     @Override
-    public void setCapacity(int len) {
-    	if(capacity==len) return;
-        if(!capacityMutable) {
-            throw new IllegalArgumentException("capacity is immutable");
-        }
-        if(length==len) return;
-        PVUnion[] newarray = new PVUnion[len];
-        int num = length;
-        if(len<length) num = len;
-        for(int i=0; i<num; i++) newarray[i] = value[i];
-        for(int i=num; i<len; i++) newarray[i] = null;
-        value = newarray;
-        capacity = len;
-    }       
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVUnionArray#get(int, int, org.epics.pvdata.pv.UnionArrayData)
-     */
+    protected void allocate(int newCapacity) {
+    	value = new PVUnion[newCapacity];
+    	capacity = newCapacity;
+    }
+    
+    @Override
+    protected Object getValue()
+    {
+    	return value;
+    }
+    
+    @Override
+    protected void setValue(Object array)
+    {
+    	value = (PVUnion[])array;
+    }
+
     @Override
     public int get(int offset, int len, UnionArrayData data) {
-        int n = len;
-        if(offset+len > length) n = Math.max(0, length-offset);
-        data.data = value;
-        data.offset = offset;
-        return n;
+    	return internalGet(offset, len, data);
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVUnionArray#put(int, int, org.epics.pvdata.pv.PVUnion[], int)
-     */
+    
     @Override
-    public int put(int offset, int len, PVUnion[]from, int fromOffset) {
-        if(super.isImmutable()) {
-            throw new IllegalArgumentException("field is immutable");
-        }
-        if(from==value) return len;
-        if(len<1) return 0;
-        if(offset+len > length) {
-            int newlength = offset + len;
-            if(newlength>capacity) {
-                setCapacity(newlength);
-                newlength = capacity;
-                len = newlength - offset;
-                if(len<=0) return 0;
-            }
-            length = newlength;
-        }
-        Union union = unionArray.getUnion();
-        for(int i=0; i<len; i++) {
-        	PVUnion frompv = from[i+fromOffset];
-        	if(frompv==null) {
-        		value[i+offset] = null;
-        		continue;
-        	}
-        	if(frompv.getUnion()!=union) {
-        		throw new IllegalStateException("Element is not a compatible union");
-        	}
-        	value[i+offset] = frompv;
-        }
-        super.postPut();
-        return len;      
-    }     
-	/* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVDoubleArray#shareData(double[])
-     */
+    public int put(int offset, int len, PVUnion[] from, int fromOffset) {
+    	
+    	// first check if all the PVUnion-s are of the right type
+    	Union elementField = unionArray.getUnion();
+    	for (PVUnion pvu : from)
+    		if (pvu != null && !pvu.getUnion().equals(elementField))
+    			throw new IllegalStateException("Element is not a compatible union");
+    	
+    	return internalPut(offset, len, from, fromOffset);
+    }
+
     @Override
     public void shareData(PVUnion[] from) {
-        this.value = from;
-        super.capacity = from.length;
-        super.length = from.length;
+    	internalShareData(from);
     }
+
+    @Override
+    protected boolean valueEquals(Object obj)
+    {
+		PVUnionArray b = (PVUnionArray)obj;
+		UnionArrayData arrayData = new UnionArrayData();
+    	// NOTE: this assumes entire array set to arrayData
+	    b.get(0, b.getLength(), arrayData);
+		return Arrays.equals(arrayData.data, value);
+    }
+	
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(value);
+	}
+
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl, int, int)
 	 */
@@ -173,38 +157,5 @@ public class BasePVUnionArray  extends AbstractPVArray implements PVUnionArray
 			length = size;
 		}
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		// TODO anything else?
-		if (obj instanceof PVUnionArray) {
-			PVUnionArray b = (PVUnionArray)obj;
-			if(b.getUnionArray()!=unionArray) return false;
-			int len = b.get(0, b.getLength(), unionArrayData);
-			if(len!=length) return false;
-			PVUnion[]data = unionArrayData.data;
-			if(data==value) return true;
-			for(int i=0; i<length; i++) {
-				if(data[i]!=null) {
-					//just check object NOT contents
-					if(value[i]==null) return false;
-					if(!data[i].equals(value[i])) return false;
-				} else {
-					if(value[i]!=null) return false; 
-				}
-			}
-			return true;
-		}  else {
-			return false;
-		}
-	}
-    /* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return Arrays.hashCode(value);
-	}
+	
 }

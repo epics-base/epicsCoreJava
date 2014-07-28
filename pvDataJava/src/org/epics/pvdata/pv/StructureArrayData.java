@@ -9,17 +9,6 @@ package org.epics.pvdata.pv;
  * Class required by get/put PVDoubleArray methods.
  * Get will set data and offset.
  * @author mrk
- *
  */
-public class StructureArrayData {
-    /**
-     * The PVStructure[].
-     * PVStructureArray.get sets this value.
-     */
-    public PVStructure[] data;
-    /**
-     * The offset.
-     * PVStructureArray.get sets this value. 
-     */
-    public int offset;
+public class StructureArrayData extends ArrayData<PVStructure[]>  {
 }

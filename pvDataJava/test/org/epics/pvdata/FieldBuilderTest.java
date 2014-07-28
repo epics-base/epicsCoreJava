@@ -137,6 +137,18 @@ public class FieldBuilderTest extends TestCase {
 		assertSame(u, ((UnionArray)f1).getUnion());
 	}
 	
+	public void testArraySizeTypes()
+	{
+		Structure s = fieldCreate.createFieldBuilder().
+			addArray("variableArray", ScalarType.pvDouble).
+			addFixedArray("fixedArray", ScalarType.pvDouble, 10).
+			addBoundedArray("boundedArray", ScalarType.pvDouble, 1024).
+				createStructure();
+			assertNotNull(s);
+			assertEquals(Structure.DEFAULT_ID, s.getID());
+			assertEquals(3, s.getFields().length);
+	}
+	
 	public void testNestedStructure()
 	{
 		String NESTED_ID = "nestedID";

@@ -11,17 +11,5 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public class BooleanArrayData {
-    /**
-     * The boolean[].
-     * PVBooleanArray.get sets this value.
-     * PVBooleanArray.put requires that the caller set the value. 
-     */
-    public boolean[] data;
-    /**
-     * The offset.
-     * PVBooleanArray.get sets this value.
-     * PVBooleanArray.put requires that the caller set the value. 
-     */
-    public int offset;
+public class BooleanArrayData extends ArrayData<boolean[]> {
 }

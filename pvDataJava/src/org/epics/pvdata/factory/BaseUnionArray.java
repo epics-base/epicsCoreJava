@@ -59,7 +59,7 @@ public class BaseUnionArray extends BaseField implements UnionArray {
 	 */
 	@Override
 	public int hashCode() {
-		return 0x10 | union.hashCode();
+		return 0x80 | union.hashCode();
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
@@ -85,11 +85,11 @@ public class BaseUnionArray extends BaseField implements UnionArray {
 		if (union.isVariant())
 		{
 			// unrestricted/variant union
-			buffer.put((byte)0x92);
+			buffer.put((byte)0x8A);
 		}
 		else
 		{
-			buffer.put((byte)0x91);
+			buffer.put((byte)0x89);
 			control.cachedSerialize(union, buffer);
 		}
 	}
@@ -103,5 +103,14 @@ public class BaseUnionArray extends BaseField implements UnionArray {
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 	
+	@Override
+	public ArraySizeType getArraySizeType() {
+		return ArraySizeType.variable;
+	}
+	
+	@Override
+	public int getMaximumCapacity() {
+		return 0;
+	}
 	
 }

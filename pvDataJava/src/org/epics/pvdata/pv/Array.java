@@ -10,11 +10,18 @@ package org.epics.pvdata.pv;
  * @author mse
  */
 public interface Array extends Field {
-/*	fixed-size array support
-    // 0 not valid value, means undefined
-    std::size_t getMaximumCapacity();
 
-    // 0 not valid value, means undefined
-    std::size_t getFixedLength();	
-*/    
+	enum ArraySizeType { variable, fixed, bounded };
+	
+	/**
+	 * Get array size type (i.e. variable/fixed/bounded size array).
+	 * @return array size type enum.
+	 */
+	ArraySizeType getArraySizeType();
+	
+	/**
+	 * Get maximum capacity of the array. 
+	 * @return maximum capacity of the array, 0 indicates variable size array.
+	 */
+	int getMaximumCapacity();
 }

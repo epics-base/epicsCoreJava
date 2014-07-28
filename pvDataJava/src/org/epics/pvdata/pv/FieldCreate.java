@@ -28,11 +28,25 @@ public interface FieldCreate {
      */
     Scalar createScalar(ScalarType scalarType);
     /**
-     * Create an <i>Array</i> field.
+     * Create an <i>Array</i> field, variable size array.
      * @param elementType The <i>scalarType</i> for array elements
      * @return An <i>Array</i> Interface for the newly created object.
      */
     ScalarArray createScalarArray(ScalarType elementType);
+    /**
+     * Create an <i>Array</i> field, fixed size array.
+     * @param elementType The <i>scalarType</i> for array elements
+     * @param size Fixed array size.
+     * @return An <i>Array</i> Interface for the newly created object.
+     */
+    ScalarArray createFixedScalarArray(ScalarType elementType, int size);
+    /**
+     * Create an <i>Array</i> field, bounded size array.
+     * @param elementType The <i>scalarType</i> for array elements
+     * @param size Array maximum capacity (bound).
+     * @return An <i>Array</i> Interface for the newly created object.
+     */
+    ScalarArray createBoundedScalarArray(ScalarType elementType, int bound);
     /**
      * Create an <i>Array</i> field that is has element type <i>Structure</i>
      * @param elementStructure The <i>Structure</i> for each array element.

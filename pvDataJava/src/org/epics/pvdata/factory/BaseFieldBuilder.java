@@ -80,6 +80,20 @@ public class BaseFieldBuilder implements FieldBuilder {
 	}
 
 	@Override
+	public FieldBuilder addFixedArray(String name, ScalarType scalarType,
+			int size) {
+		members.put(name, fieldCreate.createFixedScalarArray(scalarType, size));
+		return this;
+	}
+
+	@Override
+	public FieldBuilder addBoundedArray(String name, ScalarType scalarType,
+			int bound) {
+		members.put(name, fieldCreate.createBoundedScalarArray(scalarType, bound));
+		return this;
+	}
+
+	@Override
 	public FieldBuilder addArray(String name, Field element) {
 		if (element instanceof Structure)
 			members.put(name, fieldCreate.createStructureArray((Structure)element));
