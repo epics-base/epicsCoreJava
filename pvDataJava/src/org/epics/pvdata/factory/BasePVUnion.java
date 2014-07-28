@@ -197,7 +197,9 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			Field field = control.cachedDeserialize(buffer);
 			if (field != null)
 			{
-				value = pvDataCreate.createPVField(field);
+				// try to reuse existing field instance
+				if (value == null || !field.equals(value.getField()))
+					value = pvDataCreate.createPVField(field);
 				value.deserialize(buffer, control);
 			}
 			else
@@ -205,11 +207,17 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		}
 		else
 		{
+			final int previousSelector = selector;
 			selector = SerializeHelper.readSize(buffer, control);
 			if (selector != UNDEFINED_INDEX)
 			{
-				Field field = union.getField(selector);
-				value = pvDataCreate.createPVField(field);
+				if (selector != previousSelector)
+				{
+					Field field = union.getField(selector);
+					// try to reuse existing field instance
+					if (value == null || !field.equals(value.getField()))
+						value = pvDataCreate.createPVField(field);
+				}
 				value.deserialize(buffer, control);
 			}
 			else
