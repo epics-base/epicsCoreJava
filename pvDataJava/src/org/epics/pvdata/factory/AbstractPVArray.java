@@ -44,7 +44,7 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
         if (getArray().getArraySizeType() == Array.ArraySizeType.fixed)
         {
         	capacity = length = getArray().getMaximumCapacity();
-        	setImmutable();
+        	setCapacityMutable(false);
         }
 
         allocate(capacity);
