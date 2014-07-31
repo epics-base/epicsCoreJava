@@ -65,19 +65,18 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
      */
     public void setCapacity(int newCapacity)
     {
-    	if(newCapacity == capacity) return;
+    	if (newCapacity == capacity) return;
 
-    	if(!capacityMutable)
+    	if (!capacityMutable)
     		throw new IllegalStateException("not capacityMutable");
-    	else if (getArray().getArraySizeType() == Array.ArraySizeType.bounded &&
-    			 newCapacity > getArray().getMaximumCapacity())
-    		throw new IllegalArgumentException("capacity too large for a given bounded array");
-        
-        if (length > newCapacity)
-        	length = newCapacity;
+    	
+    	checkLength(newCapacity);
         
         Object oldValue = getValue();
         allocate(newCapacity);
+
+        if (length > newCapacity)
+        	length = newCapacity;
         
         if (length > 0)
         	System.arraycopy(oldValue, 0, getValue(), 0, length);
@@ -93,20 +92,20 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 
     protected int internalPut(int offset, int len, Object from, int fromOffset) {
 
-    	if(super.isImmutable())
+    	if (super.isImmutable())
         	throw new IllegalStateException("field is immutable");
  
     	Object value = getValue();
-        if(from == value)
+        if (from == value)
         	return len;
         
-        if(offset+len > length)
+        int newLength = offset + len;
+        if (newLength > length)
         {
-        	// TODO remove and throw exception
-        	setCapacity(offset+len);
+        	checkLength(newLength);
+        	setCapacity(newLength);
         	value = getValue();
-        	length = offset+len;
-        	//throw new IndexOutOfBoundsException("offset+len > length");
+        	length = newLength;
         }
         
         System.arraycopy(from, fromOffset, value, offset, len);
@@ -114,10 +113,26 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
         return len;      
     }
 
+    private void checkLength(int len)
+    {
+    	Array.ArraySizeType type = getArray().getArraySizeType();
+    	if (type != Array.ArraySizeType.variable)
+    	{
+    		int size = getArray().getMaximumCapacity();
+	    	if (type == Array.ArraySizeType.fixed && len != size)
+	    		throw new IllegalArgumentException("invalid length for a fixed size array");
+	    	else if (type == Array.ArraySizeType.bounded && len > size)
+	    		throw new IllegalArgumentException("new array capacity too large for a bounded size array");
+    	}
+    }
     
     protected void internalShareData(Object from) {
+    	int len = java.lang.reflect.Array.getLength(from);
+
+    	checkLength(len);
+    	
     	setValue(from);
-    	capacity = length = java.lang.reflect.Array.getLength(from);
+    	capacity = length = len;
     }
 
     /* (non-Javadoc)
@@ -164,12 +179,14 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
      */
     @Override
     public void setLength(int len) {
-    	if(len == length)
+    	if (len == length)
     		return;
         
-    	if(super.isImmutable())
+    	if (super.isImmutable())
         	throw new IllegalStateException("field is immutable");
 
+    	checkLength(len);
+    	
         if (len > capacity)
         	setCapacity(len);
         

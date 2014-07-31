@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVUnion;
@@ -121,7 +122,9 @@ public class BasePVUnionArray  extends AbstractPVArray implements PVUnionArray
 			count = maxCount;
 		
 		// write
-		SerializeHelper.writeSize(count, buffer, flusher);
+		if (getArray().getArraySizeType() != Array.ArraySizeType.fixed)
+			SerializeHelper.writeSize(count, buffer, flusher);
+		
 		for(int i=0; i<count; i++) {
 			if(buffer.remaining()<1) flusher.flushSerializeBuffer();
 			PVUnion pvUnion = value[i+offset];
@@ -137,7 +140,11 @@ public class BasePVUnionArray  extends AbstractPVArray implements PVUnionArray
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		final int size = SerializeHelper.readSize(buffer, control);
+
+		final int size = (getArray().getArraySizeType() != Array.ArraySizeType.fixed) ?
+				SerializeHelper.readSize(buffer, control) :
+				getArray().getMaximumCapacity();
+				
 		if (size >= 0) {
 			// prepare array, if necessary
 			if (size > capacity)

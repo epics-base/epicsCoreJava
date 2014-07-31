@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVStructure;
@@ -121,7 +122,9 @@ public class BasePVStructureArray extends AbstractPVArray implements PVStructure
 			count = maxCount;
 		
 		// write
-		SerializeHelper.writeSize(count, buffer, flusher);
+		if (getArray().getArraySizeType() != Array.ArraySizeType.fixed)
+			SerializeHelper.writeSize(count, buffer, flusher);
+		
 		for(int i=0; i<count; i++) {
 			if(buffer.remaining()<1) flusher.flushSerializeBuffer();
 			PVStructure pvStructure = value[i+offset];
@@ -137,7 +140,12 @@ public class BasePVStructureArray extends AbstractPVArray implements PVStructure
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-		final int size = SerializeHelper.readSize(buffer, control);
+
+		// read size
+		final int size = (getArray().getArraySizeType() != Array.ArraySizeType.fixed) ?
+			SerializeHelper.readSize(buffer, control) :
+			getArray().getMaximumCapacity();
+			
 		if (size >= 0) {
 			// prepare array, if necessary
 			if (size > capacity)
