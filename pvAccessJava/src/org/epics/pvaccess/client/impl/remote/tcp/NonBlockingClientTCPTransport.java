@@ -74,13 +74,13 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 	 * @param receiveBufferSize receive buffer size.
 	 * @param client transport client (owner, requestor).
 	 * @param remoteTransportRevision remote transport revision.
-	 * @param beaconInterval beacon interval in seconds.
+	 * @param heartbeatInterval heartbeat interval in seconds.
 	 * @param priority transport priority.
 	 */
 	public NonBlockingClientTCPTransport(Context context, /* TODO */ Poller poller, SocketChannel channel,
 					ResponseHandler responseHandler, int receiveBufferSize, 
 					TransportClient client, short remoteTransportRevision,
-					float beaconInterval, short priority) throws SocketException {
+					float heartbeatInterval, short priority) throws SocketException {
 		super(context, poller, channel, responseHandler, receiveBufferSize, priority);
 		
 		// initialize owners list, send queue
@@ -91,10 +91,10 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 		//setSendQueueFlushStrategy(SendQueueFlushStrategy.IMMEDIATE);
 		
 		// setup connection timeout timer (watchdog)
-		connectionTimeout = (long)(beaconInterval * 1000);
+		connectionTimeout = (long)(heartbeatInterval * 1000);
 		aliveTimestamp = System.currentTimeMillis();
 		timerNode = TimerFactory.createNode(this);
-		context.getTimer().schedulePeriodic(timerNode, beaconInterval, beaconInterval);
+		context.getTimer().schedulePeriodic(timerNode, heartbeatInterval, heartbeatInterval);
 		
 		//start();
 	}
@@ -226,7 +226,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 	public void callback()
 	{
 		final long diff = System.currentTimeMillis() - aliveTimestamp;
-		if (diff > 2*connectionTimeout)
+		if (diff > ((3*connectionTimeout)/2))
 		{
 			unresponsiveTransport();
 		}

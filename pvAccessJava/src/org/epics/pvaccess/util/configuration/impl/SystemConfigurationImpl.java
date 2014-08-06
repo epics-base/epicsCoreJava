@@ -16,7 +16,19 @@ public class SystemConfigurationImpl implements Configuration {
 	 */
 	@Override
 	public boolean getPropertyAsBoolean(String name, boolean defaultValue) {
-		return Boolean.parseBoolean(getPropertyAsString(name, String.valueOf(defaultValue)));
+		String value = getPropertyAsString(name, String.valueOf(defaultValue));
+		value = value.toLowerCase();
+		
+		boolean isTrue = value.equals("1") || value.equals("true") || value.equals("yes");
+	    if (isTrue)
+	        return true;
+
+		boolean isFalse = value.equals("0") || value.equals("false") || value.equals("no");
+	    if (isFalse)
+	        return false;
+
+		// invalid value
+	    return defaultValue;
 	}
 
 	/* (non-Javadoc)

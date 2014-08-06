@@ -378,7 +378,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	private void internalInitialize() throws PVAException {
 		
 		timer = TimerFactory.create("pvAccess-client timer", ThreadPriority.lower);
-//		connector = new TCPConnector(this, receiveBufferSize, beaconPeriod);
+//		connector = new TCPConnector(this, receiveBufferSize, connectionTimeout);
 		
 		TransportFactory transportFactory = new TransportFactory() {
 			
@@ -418,8 +418,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			}
 		};
 
-		connector = new BlockingTCPConnector(this, transportFactory, receiveBufferSize, beaconPeriod);
-		//connector = new BlockingTCPConnector(this, nonBlockingTransportFactory, receiveBufferSize, beaconPeriod);
+		connector = new BlockingTCPConnector(this, transportFactory, receiveBufferSize, connectionTimeout);
+		//connector = new BlockingTCPConnector(this, nonBlockingTransportFactory, receiveBufferSize, connectionTimeout);
 		transportRegistry = new TransportRegistry();
 		namedLocker = new NamedLockPattern();
 /*
