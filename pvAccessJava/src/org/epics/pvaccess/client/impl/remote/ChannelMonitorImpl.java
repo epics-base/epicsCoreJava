@@ -22,6 +22,7 @@ import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
+import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.misc.BitSetUtil;
 import org.epics.pvdata.misc.BitSetUtilFactory;
@@ -30,6 +31,7 @@ import org.epics.pvdata.monitor.MonitorElement;
 import org.epics.pvdata.monitor.MonitorQueue;
 import org.epics.pvdata.monitor.MonitorQueueFactory;
 import org.epics.pvdata.monitor.MonitorRequester;
+import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVString;
@@ -58,12 +60,12 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	protected AtomicBoolean started = new AtomicBoolean(false);
 
 
-	private interface ElementQueue extends Monitor {
+	private interface MonitorStrategy extends Monitor {
 		void init(Structure structure);
 		void response(Transport transport, ByteBuffer payloadBuffer);
 	}
 	
-	private final ElementQueue elementQueue;
+	private final MonitorStrategy monitorStrategy;
 
 	public static ChannelMonitorImpl create(ChannelImpl channel,
 			MonitorRequester callback,
@@ -97,15 +99,15 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	                callback.monitorConnect(
 	                        PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "queueSize type is not a valid integer", e),
 	                        this, null);
-	                elementQueue = null;
+	                monitorStrategy = null;
 	                destroy(true);
 	                return;
 	            }
 		    }
 		}
 		
-        if(queueSize<2) queueSize = 2;
-        elementQueue = new MultipleElementQueue(queueSize);
+        if (queueSize<2) queueSize = 2;
+        monitorStrategy = new MonitorStrategyQueue(queueSize);
 	}
 
 
@@ -123,122 +125,206 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	}
 		
     private static final BitSetUtil bitSetUtil = BitSetUtilFactory.getCompressBitSet();
+    private static final Convert convert = ConvertFactory.getConvert();
 
-    private final class MultipleElementQueue implements ElementQueue {
+    // TODO fix sync
+    private final class MonitorStrategyQueue implements MonitorStrategy {
 		private final int queueSize;
-		private boolean queueIsFull = false;
-	    private MonitorQueue monitorQueue = null;
-	    private BitSet changedBitSet = null;
-	    private BitSet overrunBitSet = null;
-	    private MonitorElement latestMonitorElement = null;
-	    
 
-		public MultipleElementQueue(int queueSize)
+		private MonitorElement monitorElement = null;
+		private BitSet bitSet1 = null;
+		private BitSet bitSet2 = null;
+	    private boolean overrunInProgress = false;
+
+	    private Structure lastStructure = null;
+	    private MonitorQueue monitorQueue = null;
+	    
+	    private final Object monitorSync = new Object();
+	    
+	    private boolean needToReleaseFirst = false;
+
+
+		public MonitorStrategyQueue(int queueSize)
 		{
+			if (queueSize <= 1)
+				throw new IllegalArgumentException("queueSize <= 1");
+			
 			this.queueSize = queueSize;
 		}
 		
 		@Override
 		public void init(Structure structure)
 		{
-			synchronized (this)
+			synchronized (monitorSync)
 			{
-			    int nfields = 0;
-		        MonitorElement[] monitorElements = new MonitorElement[queueSize];
-		        for(int i=0; i<queueSize; i++) {
+				// reuse on reconnect
+				if (lastStructure == null || !lastStructure.equals(structure))
+				{
+		    		MonitorElement[] monitorElements = new MonitorElement[queueSize];
+		            for(int i=0; i<queueSize; i++) {
 		                PVStructure pvNew = pvDataCreate.createPVStructure(structure);
-		                if(nfields==0) nfields = pvNew.getNumberFields();
 		                monitorElements[i] = MonitorQueueFactory.createMonitorElement(pvNew);
 		            }
 		            monitorQueue = MonitorQueueFactory.create(monitorElements);
-		            changedBitSet = new BitSet(nfields);
-		            overrunBitSet = new BitSet(nfields);
+		            lastStructure = structure;
+				}
 			}
 		}
 		
 		@Override
 		public void response(Transport transport, ByteBuffer payloadBuffer)
 		{
-			synchronized (this)
+			boolean notify = false;
+			
+			synchronized (monitorSync)
 			{
-	            if (queueIsFull) {
-	                MonitorElement monitorElement = latestMonitorElement;
-                    PVStructure pvStructure = monitorElement.getPVStructure();
-                    changedBitSet.deserialize(payloadBuffer, transport);
-                    pvStructure.deserialize(
-                         payloadBuffer,
-                         transport,
-                         changedBitSet);
-                    overrunBitSet.deserialize(payloadBuffer, transport);
-                    monitorElement.getChangedBitSet().or(changedBitSet);
-                    monitorElement.getOverrunBitSet().or(changedBitSet);
-                    
-                    changedBitSet.clear();
-                    overrunBitSet.clear();
-                    return;
+	            // if in overrun mode, check if some is free
+	            if (overrunInProgress)
+	            {
+	            	MonitorElement newElement = monitorQueue.getFree();
+	            	if (newElement != null)
+	            	{
+	            		// take new, put current in use
+	    				final PVStructure pvStructure = monitorElement.getPVStructure();
+			            convert.copy(pvStructure, newElement.getPVStructure());
 
+			            bitSetUtil.compress(monitorElement.getChangedBitSet(), pvStructure);
+			            bitSetUtil.compress(monitorElement.getOverrunBitSet(), pvStructure);
+	            		monitorQueue.setUsed(monitorElement);
+
+	            		monitorElement = newElement;
+	            		notify = true;
+
+	            		overrunInProgress = false;
+	            	}
 	            }
-	            MonitorElement monitorElement = monitorQueue.getFree();
-                if(monitorElement==null) {
-                    throw new IllegalStateException("RealQueue::dataChanged() logic error");
-                }
-                if(monitorQueue.getNumberFree()==0){
-                    queueIsFull = true;
-                    latestMonitorElement = monitorElement;
-                }
-                PVStructure pvStructure = monitorElement.getPVStructure();
-                changedBitSet.deserialize(payloadBuffer, transport);
-                pvStructure.deserialize(
-                     payloadBuffer,
-                     transport,
-                     changedBitSet);
-                overrunBitSet.deserialize(payloadBuffer, transport);
-                bitSetUtil.compress(changedBitSet,pvStructure);
-                bitSetUtil.compress(overrunBitSet,pvStructure);
-                monitorElement.getChangedBitSet().clear();
-                monitorElement.getChangedBitSet().or(changedBitSet);
-                monitorElement.getOverrunBitSet().clear();
-                monitorElement.getOverrunBitSet().or(overrunBitSet);
-                changedBitSet.clear();
-                overrunBitSet.clear();
-                monitorQueue.setUsed(monitorElement);
-
 			}
+			
+			if (notify)
+				callback.monitorEvent(this);
+
+	        synchronized (monitorSync)
+			{
+
+	            // setup current fields
+				final PVStructure pvStructure = monitorElement.getPVStructure();
+	            final BitSet changedBitSet = monitorElement.getChangedBitSet();
+	            final BitSet overrunBitSet = monitorElement.getOverrunBitSet();
+
+	            // special treatment if in overrun state
+	            if (overrunInProgress)
+	            {
+	            	// lazy init
+	            	if (bitSet1 == null) bitSet1 = new BitSet(changedBitSet.size());
+	            	if (bitSet2 == null) bitSet2 = new BitSet(overrunBitSet.size());
+	            	
+	            	bitSet1.deserialize(payloadBuffer, transport);
+					pvStructure.deserialize(payloadBuffer, transport, bitSet1);
+					bitSet2.deserialize(payloadBuffer, transport);
+
+					// OR local overrun
+					// TODO this does not work perfectly if bitSet is compressed !!!
+					// uncompressed bitSets should be used !!!
+					overrunBitSet.or_and(changedBitSet, bitSet1);
+
+					// OR remote change
+					changedBitSet.or(bitSet1);
+
+					// OR remote overrun
+					overrunBitSet.or(bitSet2);
+	            }
+	            else
+	            {
+	            	// deserialize changedBitSet and data, and overrun bit set
+		            changedBitSet.deserialize(payloadBuffer, transport);
+					pvStructure.deserialize(payloadBuffer, transport, changedBitSet);
+					overrunBitSet.deserialize(payloadBuffer, transport);
+	            }
+	            
+				// prepare next free (if any)
+				MonitorElement newElement = monitorQueue.getFree();
+	            if (newElement == null) {
+	                overrunInProgress = true;
+	                return;
+	            }
+	            
+	            // if there was overrun in progress we manipulated bitSets... compress them
+	            if (overrunInProgress) {
+		            bitSetUtil.compress(changedBitSet, pvStructure);
+		            bitSetUtil.compress(overrunBitSet, pvStructure);
+
+		            overrunInProgress = false;
+	            }
+	            
+	            convert.copy(pvStructure, newElement.getPVStructure());
+     
+	            monitorQueue.setUsed(monitorElement);
+
+	            monitorElement = newElement;
+			}
+	        
         	callback.monitorEvent(this);
 		}
 
 		@Override
 		public MonitorElement poll()
 		{
-            synchronized(this) {
-            	return monitorQueue.getUsed();
+            synchronized(monitorSync) {
+            	if (needToReleaseFirst)
+            		return null;
+            	final MonitorElement retVal = monitorQueue.getUsed();
+            	if (retVal != null)
+            	{
+            		needToReleaseFirst = true;
+            		return retVal;
+            	}
+            	
+	            // if in overrun mode and we have free, make it as last element
+	            if (overrunInProgress)
+	            {
+	            	MonitorElement newElement = monitorQueue.getFree();
+	            	if (newElement != null)
+	            	{
+	            		// take new, put current in use
+	    				final PVStructure pvStructure = monitorElement.getPVStructure();
+			            convert.copy(pvStructure, newElement.getPVStructure());
+
+			            bitSetUtil.compress(monitorElement.getChangedBitSet(), pvStructure);
+			            bitSetUtil.compress(monitorElement.getOverrunBitSet(), pvStructure);
+	            		monitorQueue.setUsed(monitorElement);
+
+	            		monitorElement = newElement;
+
+	            		overrunInProgress = false;
+	            		
+	            		needToReleaseFirst = true;
+	            		return monitorQueue.getUsed();
+	            	}
+	            	else
+	            		return null;		// should never happen since queueSize >= 2, but a client not calling release can do this
+	            }
+	            else
+	            	return null;
             }
 		}
 
 		@Override
-		public void release(MonitorElement currentElement)
+		public void release(MonitorElement monitorElement)
 		{
-	        synchronized(this) {
-	            if(queueIsFull) {
-                    MonitorElement monitorElement = latestMonitorElement;
-                    PVStructure pvStructure = monitorElement.getPVStructure();
-                    bitSetUtil.compress(monitorElement.getChangedBitSet(),pvStructure);
-                    bitSetUtil.compress(monitorElement.getOverrunBitSet(),pvStructure);
-                    queueIsFull = false;
-                    latestMonitorElement = null;
-                }
-                monitorQueue.releaseUsed(currentElement);
+	        synchronized(monitorSync) {
+	            monitorQueue.releaseUsed(monitorElement);
+	            needToReleaseFirst = false;
 	        }
 		}
 
 		@Override
 		public Status start()
 		{
-			synchronized (this) {
-				queueIsFull = false;
+			synchronized (monitorSync) {
+				overrunInProgress = false;
 	            monitorQueue.clear();
-	            changedBitSet.clear();
-	            overrunBitSet.clear();
+	            monitorElement = monitorQueue.getFree();
+	            needToReleaseFirst = false;
 			}
 			return okStatus;
 		}
@@ -253,7 +339,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			// noop
 		}
 		
-    }
+	}
 
     /* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
@@ -294,7 +380,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		
 		// deserialize Structure...
 		final Structure structure = (Structure)transport.cachedDeserialize(payloadBuffer);
-		elementQueue.init(structure);
+		monitorStrategy.init(structure);
 
 		// notify
 		callback.monitorConnect(okStatus, this, structure);
@@ -311,7 +397,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		}
 		else
 		{
-			elementQueue.response(transport, payloadBuffer);
+			monitorStrategy.response(transport, payloadBuffer);
 		}
 	}
 
@@ -363,7 +449,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			return destroyedStatus;
 		// TODO not initialized (aka created) check?!!
 		
-		elementQueue.start();
+		monitorStrategy.start();
 		
 		try {
 			// start == process + get
@@ -386,7 +472,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			return destroyedStatus;
 		// TODO not initialized (aka created) check?!!
 		
-		elementQueue.stop();
+		monitorStrategy.stop();
 		
 		try {
 			// stop == process + no get
@@ -405,7 +491,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	 */
 	@Override
 	public MonitorElement poll() {
-		return elementQueue.poll();
+		return monitorStrategy.poll();
 	}
 
 	/* (non-Javadoc)
@@ -413,7 +499,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	 */
 	@Override
 	public void release(MonitorElement monitorElement) {
-		elementQueue.release(monitorElement);
+		monitorStrategy.release(monitorElement);
 	}
 
 	/* (non-Javadoc)
