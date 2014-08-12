@@ -15,15 +15,11 @@ import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
 
 /**
- * Abstract base class for any PVArray field.
- * Any code that implements a PVArray field for an IOC database should extend this class.
+ * Abstract base class for any scalar PVArray field.
  * @author mrk
- *
  */
-public abstract class AbstractPVScalarArray extends AbstractPVArray implements PVScalarArray{
-	/**Constructor that derived classes must call.
-	 * @param array The reflection interface.
-	 */
+public abstract class AbstractPVScalarArray extends AbstractPVArray implements PVScalarArray {
+
 	protected AbstractPVScalarArray(ScalarArray array) {
         super(array);
     }

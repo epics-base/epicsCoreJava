@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.ArrayData;
-import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.PVArray;
 import org.epics.pvdata.pv.SerializableControl;
 
@@ -36,7 +35,7 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
      * Constructor that derived classes must call.
      * @param field The reflection interface.
      */
-    protected AbstractPVArray(Field field) {
+    protected AbstractPVArray(Array field) {
         super(field);
         
         // if array is a fixed-size type
