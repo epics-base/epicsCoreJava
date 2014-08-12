@@ -48,6 +48,8 @@ public abstract class AbstractPVScalarArray extends AbstractPVArray implements P
 		// write size
 		if (getArray().getArraySizeType() != Array.ArraySizeType.fixed)
 			SerializeHelper.writeSize(count, buffer, flusher);
+		else if (count != getArray().getMaximumCapacity())
+			throw new IllegalStateException("fixed array cannot be partially serialized");
 		
 		// write elements
 		final int elementSize = getElementSize();

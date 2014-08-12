@@ -44,6 +44,8 @@ public abstract class AbstractPVComplexArray extends AbstractPVArray {
 		// write
 		if (getArray().getArraySizeType() != Array.ArraySizeType.fixed)
 			SerializeHelper.writeSize(count, buffer, flusher);
+		else if (count != getArray().getMaximumCapacity())
+			throw new IllegalStateException("fixed array cannot be partially serialized");
 		
 		for (int i = 0; i < count; i++)
 		{
