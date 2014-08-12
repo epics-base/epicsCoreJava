@@ -28,6 +28,7 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
+import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.PVArray;
@@ -42,6 +43,11 @@ import org.epics.pvdata.pv.Status.StatusType;
  */
 public class ArrayHandler extends AbstractServerResponseHandler {
 
+	private static final Status fixedArrayErrorStatus =
+			StatusFactory.getStatusCreate().createStatus(
+					StatusType.ERROR, 
+					"fixed sized array returned as a ChannelArray array instance", 
+					null);
 	/**
 	 * @param context
 	 */
@@ -83,12 +89,25 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		
 		@Override
 		public void channelArrayConnect(Status status, ChannelArray channelArray, Array array) {
-			this.status = status;
-			this.channelArray = channelArray;
-			this.array = array;
 			
-			pvPutArray = (PVArray)BaseRequestImpl.reuseOrCreatePVField(array, pvPutArray);
-
+			if (status.isSuccess() && array.getArraySizeType() == Array.ArraySizeType.fixed)
+			{
+				this.status = fixedArrayErrorStatus;
+				this.channelArray = null;
+				this.array = null;
+			}
+			else
+			{
+				this.status = status;
+				this.channelArray = channelArray;
+				this.array = array;
+			}
+			
+			if (status.isSuccess())
+			{
+				this.pvPutArray = (PVArray)BaseRequestImpl.reuseOrCreatePVField(array, pvPutArray);
+			}
+			
 			transport.enqueueSendRequest(this);
 			
 			// self-destruction

@@ -93,9 +93,12 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			this.putStructure = putStructure;
 			this.getStructure = getStructure;
 			
-			this.pvPutGetStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(putStructure, pvPutGetStructure);
-			this.pvPutGetBitSet = BaseRequestImpl.createBitSetFor(pvPutGetStructure, pvPutGetBitSet);
-			
+			if (status.isSuccess())
+			{
+				this.pvPutGetStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(putStructure, pvPutGetStructure);
+				this.pvPutGetBitSet = BaseRequestImpl.createBitSetFor(pvPutGetStructure, pvPutGetBitSet);
+			}
+				
 			transport.enqueueSendRequest(this);
 
 			// self-destruction

@@ -87,8 +87,11 @@ public class PutHandler extends AbstractServerResponseHandler {
 			this.channelPut = channelPut;
 			this.structure = structure;
 			
-			this.putPVStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(structure, putPVStructure);
-			this.putBitSet = BaseRequestImpl.createBitSetFor(putPVStructure, putBitSet);
+			if (status.isSuccess())
+			{
+				this.putPVStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(structure, putPVStructure);
+				this.putBitSet = BaseRequestImpl.createBitSetFor(putPVStructure, putBitSet);
+			}
 			
 			transport.enqueueSendRequest(this);
 

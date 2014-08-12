@@ -18,6 +18,8 @@ import org.epics.pvdata.pv.Status;
 public interface ChannelArrayRequester extends Requester {
     /**
      * The client and server have both completed the createChannelArray request.
+     * <code>array</code> introspection is always be a non-fixed array instance,
+     * even if it's connected to a fixed array.
      * @param status Completion status.
      * @param channelArray The channelArray interface or <code>null</code> if the request failed.
      * @param array The Array introspection interface or <code>null</code> if the request failed.
