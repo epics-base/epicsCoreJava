@@ -5,6 +5,8 @@
  */
 package org.epics.pvdata.copy;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.epics.pvdata.factory.FieldFactory;
@@ -12,7 +14,6 @@ import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
@@ -50,195 +51,414 @@ public class CreateRequest {
 	private static final Pattern commaPattern = Pattern.compile("[,]");
 	private static final Pattern equalPattern = Pattern.compile("[=]");
 	private String message;
-	//private static final Pattern periodPattern = Pattern.compile("[.]");
 
+	private class Node {
+	    String name;
+	    List<Node> nodes = new ArrayList<Node> ();
+	    Node(String name) {
+	        this .name = name;
+	    }
+	}
+	
+	private class OptionPair {
+	    String name;
+	    String value;
+	    OptionPair(String name,String value) {
+	        this.name = name;
+	        this.value = value;
+	    }
+	}
+	
+	private List<OptionPair> optionList = new ArrayList<OptionPair>();
+	
+	private String fullFieldName = "";
 
 	private PVStructure createRequestInternal(String request) {
-		if(request!=null) request = request.replaceAll("\\s+","");
-		if(request==null || request.length()<=0) {
-			PVStructure pvStructure =  pvDataCreate.createPVStructure(emptyStructure);
-			return pvStructure;
-		}
-		int offsetRecord = request.indexOf("record[");
-		int offsetField = request.indexOf("field(");
-		int offsetPutField = request.indexOf("putField(");
-		int offsetGetField = request.indexOf("getField(");
-		PVStructure pvStructure =  pvDataCreate.createPVStructure(emptyStructure);
-		if(offsetRecord>=0) {
-			int offsetBegin = request.indexOf('[', offsetRecord);
-			int offsetEnd = request.indexOf(']', offsetBegin);
-			if(offsetEnd==-1) {
-				message = request.substring(offsetRecord) + "record[ does not have matching ]";
-				return null;
-			}
-			PVStructure pvStruct =  pvDataCreate.createPVStructure(emptyStructure);
-			if(!createRequestOptions(pvStruct,request.substring(offsetBegin+1, offsetEnd))) return null;
-			pvStructure.appendPVField("record", pvStruct);
-		}
-		if(offsetField>=0) {
-			int offsetBegin = request.indexOf('(', offsetField);
-			int offsetEnd = request.indexOf(')', offsetBegin);
-			if(offsetEnd==-1) {
-				message = request.substring(offsetField) + "field( does not have matching )";
-				return null;
-			}
-			PVStructure pvStruct =  pvDataCreate.createPVStructure(emptyStructure);
-			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd))) return null;
-			pvStructure.appendPVField("field", pvStruct);
-		}
-		if(offsetPutField>=0) {
-			int offsetBegin = request.indexOf('(', offsetPutField);
-			int offsetEnd = request.indexOf(')', offsetBegin);
-			if(offsetEnd==-1) {
-				message = request.substring(offsetPutField) + "putField( does not have matching )";
-				return null;
-			}
-			PVStructure pvStruct =  pvDataCreate.createPVStructure(emptyStructure);
-			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd))) return null;
-			pvStructure.appendPVField("putField", pvStruct);
-		}
-		if(offsetGetField>=0) {
-			int offsetBegin = request.indexOf('(', offsetGetField);
-			int offsetEnd = request.indexOf(')', offsetBegin);
-			if(offsetEnd==-1) {
-				message = request.substring(offsetGetField) + "getField( does not have matching )";
-				return null;
-			}
-			PVStructure pvStruct =  pvDataCreate.createPVStructure(emptyStructure);
-			if(!createFieldRequest(pvStruct,request.substring(offsetBegin+1, offsetEnd))) return null;
-			pvStructure.appendPVField("getField", pvStruct);
-		}
-		if(pvStructure.getStructure().getFields().length==0) {
-			if(!createFieldRequest(pvStructure,request)) return null;
-		}
-		return pvStructure;
+	    if(request!=null) request = request.replaceAll("\\s+","");
+	    if(request==null || request.length()<=0) {
+	        PVStructure pvStructure =  pvDataCreate.createPVStructure(emptyStructure);
+	        return pvStructure;
+	    }
+	    int offsetRecord = request.indexOf("record[");
+	    int offsetField = request.indexOf("field(");
+	    int offsetPutField = request.indexOf("putField(");
+	    int offsetGetField = request.indexOf("getField(");
+	    if(offsetRecord==-1&&offsetField==-1&&offsetPutField==-1&&offsetGetField==-1) {
+	        request = "field(" + request + ")";
+	        offsetField = request.indexOf("field(");
+	    }
+	    int numParan = 0;
+	    int numBrace = 0;
+	    int numBracket = 0;
+	    for(int i=0; i< request.length() ; ++i) {
+	        char chr = request.charAt(i);
+	        if(chr=='(') numParan++;
+	        if(chr==')') numParan--;
+	        if(chr=='{') numBrace++;
+            if(chr=='}') numBrace--;
+            if(chr=='[') numBracket++;
+            if(chr==']') numBracket--;
+	    }
+	    if(numParan!=0) {
+	        message = "mismatched () " + numParan;
+	        return null;
+	    }
+	    if(numBrace!=0) {
+            message = "mismatched {} " + numBrace;
+            return null;
+        }
+	    if(numBracket!=0) {
+            message = "mismatched [] " + numBracket;
+            return null;
+        }
+	    List<Node> top = new ArrayList<Node>();
+	    try {
+	        if(offsetRecord>=0) {
+	            fullFieldName = "record";
+                int openBracket = request.indexOf('[', offsetRecord);
+                int closeBracket = request.indexOf(']', openBracket);
+                if(closeBracket==-1) {
+                    message = request.substring(offsetRecord) + "record[ does not have matching ]";
+                    return null;
+                }
+                Node node = new Node("record");
+                if(closeBracket>openBracket+1) {
+                    Node optNode = createRequestOptions(
+                            request.substring(openBracket+1,closeBracket));
+                    node.nodes.add(optNode);
+                }
+                top.add(node);
+            }
+	        if(offsetField>=0) {
+	            fullFieldName = "field";
+	            Node node = new Node("field");
+                int openBrace = request.indexOf('(', offsetField);
+                int closeBrace = request.indexOf(')', openBrace);
+                if(closeBrace == -1) {
+                    message = request.substring(offsetField)
+                            + " field( does not have matching )";
+                    return null;
+                }
+                if(closeBrace>openBrace+1) {
+                    createSubNode(node,request.substring(openBrace+1,closeBrace));
+                }
+                top.add(node);
+            }
+	        if(offsetGetField>=0) {
+	            fullFieldName = "getField";
+                Node node = new Node("getField");
+                int openBrace = request.indexOf('(', offsetGetField);
+                int closeBrace = request.indexOf(')', openBrace);
+                if(closeBrace == -1) {
+                    message = request.substring(offsetField)
+                            + " field( does not have matching )";
+                    return null;
+                }
+                if(closeBrace>openBrace+1) {
+                    createSubNode(node,request.substring(openBrace+1,closeBrace));
+                }
+                top.add(node);
+            }
+	        if(offsetPutField>=0) {
+	            fullFieldName = "getField";
+                Node node = new Node("putField");
+                int openBrace = request.indexOf('(', offsetPutField);
+                int closeBrace = request.indexOf(')', openBrace);
+                if(closeBrace == -1) {
+                    message = request.substring(offsetField)
+                            + " field( does not have matching )";
+                    return null;
+                }
+                if(closeBrace>openBrace+1) {
+                    createSubNode(node,request.substring(openBrace+1,closeBrace));
+                }
+                top.add(node);
+            }
+	    } catch (IllegalStateException e) {
+            message = "while creating Structure exception " + e.getMessage();
+            return null;
+       }
+	   int num = top.size();
+	   Field[] fields = new Field[num];
+	   String[] names = new String[num];
+	   for(int i=0; i<num; ++i) {
+	       Node node = top.get(i);
+	       names[i] = node.name;
+	       List<Node> subNode = node.nodes;
+	       if(subNode.isEmpty()) {
+	           fields[i] = emptyStructure;
+	       } else {
+	           fields[i] = createSubStructure(subNode);
+	       }
+	   }
+	   Structure structure = fieldCreate.createStructure(names, fields);
+	   PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+	   for(OptionPair pair: optionList) {
+	       String name = pair.name;
+           String value = pair.value;
+           PVString pvField = pvStructure.getSubField(PVString.class,name);
+           pvField.put(value);
+	   }
+	   optionList.clear();
+	   return pvStructure;
+
 	}
 
 	private int findMatchingBrace(String request,int index,int numOpen) {
-		int openBrace = request.indexOf('{', index+1);
-		int closeBrace = request.indexOf('}', index+1);
-		if(openBrace==-1 && closeBrace==-1) return -1;
-		if(openBrace>0) {
-			if(openBrace<closeBrace) return findMatchingBrace(request,openBrace,numOpen+1);
-			if(numOpen==1) return closeBrace;
-			return findMatchingBrace(request,closeBrace,numOpen-1);
-		}
-		if(numOpen==1) return closeBrace;
-		return findMatchingBrace(request,closeBrace,numOpen-1);
+	    int openBrace = request.indexOf('{', index+1);
+	    int closeBrace = request.indexOf('}', index+1);
+	    if(openBrace==-1 && closeBrace==-1) {
+	        String message = "mismatched {} " + request;
+	        throw new IllegalStateException(message);
+	    }
+	    if(openBrace>0) {
+	        if(openBrace<closeBrace) return findMatchingBrace(request,openBrace,numOpen+1);
+	        if(numOpen==1) return closeBrace;
+	        return findMatchingBrace(request,closeBrace,numOpen-1);
+	    }
+	    if(numOpen==1) return closeBrace;
+	    return findMatchingBrace(request,closeBrace,numOpen-1);
 	}
 
-	private boolean createFieldRequest(PVStructure pvParent,String request) {
-		request = request.trim();
-		if(request.length()<=0) return true;
-		int comma = request.indexOf(',');
-		if(comma==0) {
-			return createFieldRequest(pvParent,request.substring(1));
-		}
-		int openBrace = request.indexOf('{');
-		int openBracket = request.indexOf('[');
-		PVStructure pvStructure =  pvDataCreate.createPVStructure(emptyStructure);
-		if(comma==-1 && openBrace==-1 && openBracket==-1) {
-			int period = request.indexOf('.');
-			if(period>0) {
-				String fieldName = request.substring(0,period);
-				request = request.substring(period+1);
-				pvParent.appendPVField(fieldName, pvStructure);
-				return createFieldRequest(pvStructure,request);
-			}
-			pvParent.appendPVField(request,pvStructure);
-			return true;
-		}
-		int end = comma;
-		if(openBrace!=-1 && (end> openBrace || end==-1)) end = openBrace;
-		if(openBracket!=-1 && (end> openBracket || end==-1)) end = openBracket;
-		String nextFieldName = request.substring(0,end);
-		if(end==comma) {
-			int period = nextFieldName.indexOf('.');
-			if(period>0) {
-				String fieldName = nextFieldName.substring(0,period);
-				PVStructure xxx =  pvDataCreate.createPVStructure(emptyStructure);
-				String rest = nextFieldName.substring(period+1);
-				createFieldRequest(xxx,rest);
-				pvParent.appendPVField(fieldName, xxx);
-			} else {
-				pvParent.appendPVField(nextFieldName, pvStructure);
-			}
-			request = request.substring(end+1);
-			return createFieldRequest(pvParent,request);
-		}
-		if(end==openBracket) {
-			int closeBracket =  request.indexOf(']');
-			if(closeBracket<=0) {
-				message = request + " does not have matching ]";
-				return false;
-			}
-			String options = request.substring(openBracket+1, closeBracket);
-			int period = nextFieldName.indexOf('.');
-			if(period>0) {
-				String fieldName = nextFieldName.substring(0,period);
-				PVStructure xxx =  pvDataCreate.createPVStructure(emptyStructure);
-				if(!createRequestOptions(xxx,options)) return false;
-				String rest = nextFieldName.substring(period+1);
-				createFieldRequest(xxx,rest);
-				pvParent.appendPVField(fieldName, xxx);
-			} else {
-				if(!createRequestOptions(pvStructure,options)) return false;
-				pvParent.appendPVField(nextFieldName, pvStructure);
-			}
-			request = request.substring(closeBracket+1);
-			return createFieldRequest(pvParent,request);
-		}
-		// end== openBrace
-		int closeBrace = findMatchingBrace(request,openBrace+1,1);
-		if(closeBrace<=0) {
-			message = request + " does not have matching }";
-			return false;
-		}
-		String subFields = request.substring(openBrace+1, closeBrace);
-		if(!createFieldRequest(pvStructure,subFields)) return false;
-		request = request.substring(closeBrace+1);
-		int period = nextFieldName.indexOf('.');
-		if(period<=0) {
-			pvParent.appendPVField(nextFieldName, pvStructure);
-			return createFieldRequest(pvParent,request);
-		}
-		PVStructure yyy = pvParent;
-		while(period>=0) {
-			String fieldName = nextFieldName.substring(0,period);
-			PVStructure xxx =  pvDataCreate.createPVStructure(emptyStructure);
-			yyy.appendPVField(fieldName,xxx);
-			nextFieldName = nextFieldName.substring(period+1);
-			period = nextFieldName.indexOf('.');
-			if(period<=0) {
-				xxx.appendPVField(nextFieldName, pvStructure);
-				break;
-			}
-			yyy = xxx;
-		}
-		return createFieldRequest(pvParent,request);
+	private int findMatchingBracket(String request,int index) {
+	    for(int i=index+1; i< request.length(); ++i) {
+	        if(request.charAt(i) == ']') {
+	            if(i==index+1) {
+	                message = " mismatched [ ]" + message;
+	                throw new IllegalStateException(message);
+	            }
+	            return i;
+	        }
+	    }
+	    message = " missing ]" + request;
+	    throw new IllegalStateException(message);
 	}
+	
+	 private int findEndField(String request) {
+         int ind = 0;
+         int maxind = request.length() -1;
+         while(true) {
+             if(request.charAt(ind)==',') return ind;
+             if(request.charAt(ind)=='[') {
+                 int closeBracket = findMatchingBracket(request,ind);
+                 if(closeBracket==-1) return closeBracket;
+                 ind = closeBracket;
+                 continue;
+             }
+             if(request.charAt(ind)=='{') {
+                 int closeBrace = findMatchingBrace(request,ind,1);
+                 if(ind>=request.length()) return request.length();
+                 ind = closeBrace;
+                 continue;
+             }
+             if(request.charAt(ind)=='.') {
+                 ++ind;
+                 continue;
+             }
+             if(ind>=maxind) break;
+             ++ind;
+         }
+         return request.length();
+
+     }
 
 
-	private boolean createRequestOptions(PVStructure pvParent,String request) {
-		request = request.trim();
-		if(request.length()<=1) return true;
-		String[] items = commaPattern.split(request);
-		int nitems = items.length;
-		PVField[] pvFields = new PVField[nitems];
-		String[] fieldNames = new String[nitems];
-		for(int j=0; j<nitems; j++) {
-			String[] names = equalPattern.split(items[j]);
-			if(names.length!=2) {
-				message = "illegal option ";
-				return false;
-			}
-			PVString pvString = (PVString)pvDataCreate.createPVScalar(ScalarType.pvString);
-			pvString.put(names[1]);
-			fieldNames[j] = names[0];
-			pvFields[j] = pvString;
-		}
-		PVStructure options = pvDataCreate.createPVStructure(fieldNames,pvFields);
-		pvParent.appendPVField("_options", options);
-		return true;
+	private Node createRequestOptions(String request) {
+	    if(request.length()<=1) {
+	        throw new IllegalStateException("logic error empty options");
+	    }
+	    List<Node> top = new ArrayList<Node>();
+	    
+	    String[] items = commaPattern.split(request);
+	    int nitems = items.length;
+	    
+	    for(int j=0; j<nitems; j++) {
+	        String[] names = equalPattern.split(items[j]);
+	        if(names.length!=2) {
+	            message = "illegal option " + request;
+	            throw new IllegalStateException(message);
+	        }
+	        Node node = new Node(names[0]);
+	        String name = fullFieldName + "._options." + names[0];
+	        String value = names[1];
+	        optionList.add(new OptionPair(name,value));
+	        top.add(node);
+	    }
+	    Node node = new Node("_options");
+	    node.nodes = top;
+	    
+	    return node;
 	}
+	
+    private void createSubNode(Node node,String request) {
+        int end = 0;
+        char chr = ' ';
+        for(int i=0; i<request.length(); ++i) {
+            chr= request.charAt(i);
+            if(chr=='[') {
+                end = i;
+                break;
+            }
+            if(chr=='.') {
+                end = i;
+                break;
+            }
+            if(chr=='{') {
+                end = i;
+                break;
+            }
+            if(chr==',') {
+                end = i;
+                break;
+            }
+        }
+        Node optionNode = null;
+        if(chr=='[') {
+            String saveFullName = fullFieldName;
+            fullFieldName += "." + request.substring(0, end);
+            int endBracket = findMatchingBracket(request,end);
+            String options = request.substring(end+1,endBracket);
+            optionNode = createRequestOptions(options);
+            fullFieldName = saveFullName;
+            int next = endBracket+1;
+            if(next<request.length()) {
+                request = request.substring(0, end) + request.substring(endBracket+1);
+            } else {
+                request = request.substring(0, end);
+            }
+            end = 0;
+            for(int i=0; i<request.length(); ++i) {
+                chr= request.charAt(i);
+                if(chr=='.') {
+                    end = i;
+                    break;
+                }
+                if(chr=='{') {
+                    end = i;
+                    break;
+                }
+                if(chr==',') {
+                    end = i;
+                    break;
+                }
+            }
+        }
+        if(end==0) end = request.length();
+        String name = request.substring(0, end);
+        if(name.length()<1) {
+            message = "null field name " + request;
+            throw new IllegalStateException(message);
+        }
+        String saveFullName = fullFieldName;
+        fullFieldName += "." + name;
+        if(end==request.length()) {
+            Node subNode = new Node(name);
+            if(optionNode!=null) {
+                subNode.nodes.add(optionNode);
+            }
+            node.nodes.add(subNode);
+            fullFieldName = saveFullName;
+            return;
+        }
+        if(chr==',') {
+            Node subNode = new Node(name);
+            if(optionNode!=null) {
+                subNode.nodes.add(optionNode);
+            }
+            node.nodes.add(subNode);
+            String rest = request.substring(end+1);
+            fullFieldName = saveFullName;
+            createSubNode(node,rest);
+            return;
+        }
+        if(chr=='.') {
+            request = request.substring(end+1);
+            if(request.length()<1) {
+                message = "null field name " + request;
+                throw new IllegalStateException(message);
+            }
+            Node subNode = new Node(name);
+            if(optionNode!=null) {
+                subNode.nodes.add(optionNode);
+            }
+            int endField = findEndField(request);
+            String subRequest = request.substring(0, endField);
+            createSubNode(subNode,subRequest);
+            node.nodes.add(subNode);
+            int next = endField+1;
+            if(next>=request.length()) {
+                fullFieldName = saveFullName;
+                return;
+            }
+            request = request.substring(next);
+            fullFieldName = saveFullName;
+            createSubNode(node,request);
+            return;
+        }
+        if(chr=='{') {
+            int endBrace = findEndField(request);
+            if((end+1)>=(endBrace-1)) {
+                message = " illegal syntax " + request;
+                throw new IllegalStateException(message);
+            }
+            String subRequest = request.substring(end+1,endBrace-1);
+            if(subRequest.length()<1) {
+                message = " empty {} " + request;
+                throw new IllegalStateException(message);
+            }
+            Node subNode = new Node(name);
+            if(optionNode!=null) {
+                subNode.nodes.add(optionNode);
+            }
+            createSubNode(subNode,subRequest);
+            node.nodes.add(subNode);
+            int next = endBrace + 1;
+            if(next>=request.length()) {
+                fullFieldName = saveFullName;
+                return;
+            }
+            request = request.substring(next);
+            fullFieldName = saveFullName;
+            createSubNode(node,request);
+            return;
+        }
+        message = "logic error";
+        throw new IllegalStateException(message);
+    }
+
+    private Field createSubStructure(List<Node> nodes) {
+        int num = nodes.size();
+        Field[] fields = new Field[num];
+        String[] names = new String[num];
+        for(int i=0; i<num; ++i) {
+            Node node = nodes.get(i);
+            names[i] = node.name;
+            if(node.name.equals("_options")) {
+                fields[i] = createOptions(node.nodes);
+            } else {
+                List<Node> subNode = node.nodes;
+                if(subNode.isEmpty()) {
+                    fields[i] = emptyStructure;
+                } else {
+                    fields[i] = createSubStructure(subNode);
+                }
+            }
+        }
+        Structure structure = fieldCreate.createStructure(names, fields);
+        return structure;
+    }
+    
+    private Structure createOptions(List<Node> nodes) {
+        int num = nodes.size();
+        Field[] fields = new Field[num];
+        String[] names = new String[num];
+        for(int i=0; i<num; ++i) {
+            Node node = nodes.get(i);
+            names[i] = node.name;
+            fields[i] = fieldCreate.createScalar(ScalarType.pvString);
+        }
+        Structure structure = fieldCreate.createStructure(names, fields);
+        return structure;
+    }
+
 }

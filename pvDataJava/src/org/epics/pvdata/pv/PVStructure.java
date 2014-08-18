@@ -53,35 +53,6 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * @return The PVField or null if the offset is not part of this structure, or the field is not of <code>c</code> type.
      */
     <T extends PVField> T getSubField(Class<T> c, int fieldOffset);
-
-    /**
-     * Append a new PVField to this structure.
-     * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
-     * @param fieldName The name of the fueld to append,
-     * @param pvField The field to append.
-     */
-    void appendPVField(String fieldName,PVField pvField);
-    /**
-     * Append a PVField[]. Each element of the array must have been created with this PVStructure as the parent.
-     * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
-     * @param fieldNames The names for the new fields.
-     * @param pvFields The fields to append.
-     * Note that if the original number of fields is 0 than pvFields replaces the original.
-     * Thus the caller must NOT reuse pvFields after calling this method.
-     */
-    void appendPVFields(String[] fieldNames,PVField[] pvFields);
-    /**
-     * Remove a field.
-     * For a javaIOC record. This should only be called when a record is in the readyForInitialization state.
-     * @param fieldName The name of the field to remove.
-     */
-    void removePVField(String fieldName);
-    /**
-     * Replace a field with a new field.
-     * @param oldPVField The old field.
-     * @param newPVField The new field.
-     */
-    void replacePVField(PVField oldPVField,PVField newPVField);
     /**
      * Find a boolean subfield with the specified fieldName.
      * The fieldName is of the form name.name...
@@ -186,19 +157,6 @@ public interface PVStructure extends PVField, BitSetSerializable {
      */
     //@Deprecated
     PVUnionArray getUnionArrayField(String fieldName);
-    /**
-     * Get the name of structure that this structure extends.
-     * @return The name or null if this structure does not extend a structure.
-     */
-    String getExtendsStructureName();
-    /**
-     * Specify the structure that this structure extends.
-     * The call fails if a previous call was successful.
-     * @param extendsStructureName The structure this structure extends.
-     * @return (false,true) if the call (succeeds,fails).
-     * It succeeds only if extendPVStructure is not null and no previous call was successful.
-     */
-    boolean putExtendsStructureName(String extendsStructureName);
     /**
      * Check if PVStructure and sub fields are valid.
      * @return (true,false) if (OK, problems found).

@@ -5806,10 +5806,6 @@ public final class ConvertFactory {
             String id = data.getStructure().getID();
             if (!id.isEmpty()) buffer.append(id).append(' ');
             buffer.append(data.getFieldName());
-            String extendsName = data.getExtendsStructureName();
-            if(extendsName!=null && extendsName.length()>0) {
-                buffer.append(" extends " +extendsName);
-            }
             PVField[] fieldsData = data.getPVFields();
             if (fieldsData != null) {
                 int length = fieldsData.length;

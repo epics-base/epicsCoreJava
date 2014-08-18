@@ -35,7 +35,7 @@
 <h1>EPICS pvDataJava</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 25-July-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 18-August-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -75,7 +75,7 @@ V4 control system programming environment:<br />
 
 <p>For now this is a working copy so it is not the same as "This version" shown above.</p>
 
-<p>This is the 25-July-2014 version of the Java implementation of pvData.
+<p>This is the 18-August-2014 version of the Java implementation of pvData.
 This version describes the new types union and unionArray.
 It also describes CreateRequest, which has been moved from pvAccess to pvData,
 and PVCopy, which has been moved from pvIOCCPP and now only depends on
@@ -656,7 +656,6 @@ containing two fields, can be shared by every record that has a time stamp.</p>
     String toString();
     // The following should go away.
     PVAuxInfo getPVAuxInfo();
-    void renameField(String newName);
 }</pre>
 
 <p>Each scalar type has an associated data interface: PVBoolean,
@@ -738,13 +737,6 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVArray getArrayField(String fieldName,ScalarType elementType);
     PVUnion getUnionField(String fieldName);
     PVUnionArray getUnionArrayField(String fieldName);
-    //the following should go aeay
-    void appendPVField(String fieldName,PVField pvField);
-    void appendPVFields(String[] fieldNames,PVField[] pvFields);
-    void removePVField(String fieldName);
-    void replacePVField(PVField oldPVField,PVField newPVField);
-    String getExtendsStructureName();
-    boolean putExtendsStructureName(String extendsStructureName);
     public boolean checkValid();
 }</pre>
 
@@ -1457,7 +1449,6 @@ This includes the top level structure itself.
     String toString();
     // The following should go away.
     PVAuxInfo getPVAuxInfo();
-    void renameField(String newName);
 }</pre>
 
 <p>where</p>
@@ -1510,9 +1501,6 @@ This includes the top level structure itself.
       project overview.
       <b>Note:</b> The actual conversion is done by the Convert facility. </dd>
 </dl>
-<p><b>NOTE:</b> that AuxInfo should go away and so should renameField.
-The xml parser and install in pvIOCJava must be rewriten first.</p>
-
 
 <h4>PVAuxInfo</h4>
 <p><b>NOTE:</b> PVAuxInfo should go away.</p>
@@ -1911,13 +1899,6 @@ interface PVStructure extends PVField , BitSetSerializable{
     PVArray getArrayField(String fieldName,ScalarType elementType);
     PVUnion getUnionField(String fieldName);
     PVUnionArray getUnionArrayField(String fieldName);
-    //the following should go aeay
-    void appendPVField(String fieldName,PVField pvField);
-    void appendPVFields(String[] fieldNames,PVField[] pvFields);
-    void removePVField(String fieldName);
-    void replacePVField(PVField oldPVField,PVField newPVField);
-    String getExtendsStructureName();
-    boolean putExtendsStructureName(String extendsStructureName);
     public boolean checkValid();
 }</pre>
 
@@ -1941,7 +1922,6 @@ interface PVStructure extends PVField , BitSetSerializable{
     These two methods replace all the type specific methods, which ae no longer required
     and should not be used.</dd>
 </dl>
-<p>The other methods should go away.</p>
 
 <h4>PVDataCreate</h4>
 

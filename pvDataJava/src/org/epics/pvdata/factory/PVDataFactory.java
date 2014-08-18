@@ -347,6 +347,7 @@ public class PVDataFactory {
             			from.toString(),to.toString());
             	String message = formatter.toString();
             	System.out.println(message);
+            	formatter.close();
             	return false;
             }
             for(int i=0; i<fromFields.length; i++) {

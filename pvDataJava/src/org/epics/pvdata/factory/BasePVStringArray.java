@@ -10,10 +10,10 @@ import java.util.Arrays;
 
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.DeserializableControl;
-import org.epics.pvdata.pv.SerializableControl;
-import org.epics.pvdata.pv.StringArrayData;
 import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.SerializableControl;
+import org.epics.pvdata.pv.StringArrayData;
 
 
 /**
