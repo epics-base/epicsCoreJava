@@ -1086,6 +1086,8 @@ public class TestChannelProviderImpl implements ChannelProvider
                 if(pvFields.length!=1) break;
                 pvField = pvFields[0];
             }
+            if (fieldName.startsWith("field."))
+            	fieldName = fieldName.substring(6);
             pvField = pvTopStructure.getPVStructure().getSubField(fieldName);
             if(pvField==null) {
             	channelArrayRequester.channelArrayConnect(subFieldDoesNotExistStatus, null, null);
