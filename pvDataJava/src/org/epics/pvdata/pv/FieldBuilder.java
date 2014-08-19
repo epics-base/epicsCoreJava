@@ -29,6 +29,14 @@ public interface FieldBuilder
     public FieldBuilder add(String name, ScalarType scalarType);
 
     /**
+     * Add a bounded string.
+     * @param name name of the bounded string.
+     * @param maxLength a maximum string length.
+     * @return this instance of a <code>FieldBuilder</code>.
+     */
+    public FieldBuilder addBoundedString(String name, int maxLength);
+
+    /**
      * Add a <code>Field</code> (e.g. <code>Structure</code>, <code>Union</code>).
      * @param name name of the array.
      * @param field a field to add.

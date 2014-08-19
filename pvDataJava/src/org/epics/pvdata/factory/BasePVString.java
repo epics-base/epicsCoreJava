@@ -9,6 +9,7 @@ package org.epics.pvdata.factory;
 import java.nio.ByteBuffer;
 
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.pv.BoundedString;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.Scalar;
@@ -23,9 +24,14 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVString extends AbstractPVScalar implements PVString
 {
     protected String value = "";
+    protected final int maxLength;
     
     public BasePVString(Scalar scalar) {
         super(scalar);
+        if (scalar instanceof BoundedString)
+        	maxLength = ((BoundedString)scalar).getMaximumLength();
+        else
+        	maxLength = 0;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVString#get()
@@ -39,8 +45,10 @@ public class BasePVString extends AbstractPVScalar implements PVString
      */
     @Override
     public void put(String value) {
-        if(super.isImmutable()) {
+        if (super.isImmutable()) {
             throw new IllegalArgumentException("field is immutable");
+        } else if (maxLength > 0 && value.length() > maxLength) {
+            throw new IllegalArgumentException("string length out of bounds");
         }
         this.value = value;
         super.postPut();

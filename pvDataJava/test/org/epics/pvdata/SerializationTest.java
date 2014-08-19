@@ -380,15 +380,47 @@ public class SerializationTest extends TestCase {
 			addArray("array", ScalarType.pvDouble).
 			addFixedArray("fixedArray", ScalarType.pvDouble, 10).
 			addBoundedArray("boundedArray", ScalarType.pvDouble, 1024).
-				createStructure();
-			assertNotNull(s);
-			assertEquals(Structure.DEFAULT_ID, s.getID());
-			assertEquals(3, s.getFields().length);
+			add("scalar", ScalarType.pvDouble).
+			createStructure();
+		assertNotNull(s);
+		assertEquals(Structure.DEFAULT_ID, s.getID());
+		assertEquals(4, s.getFields().length);
 			
 		serializationTest(s);
 		serializationTest(factory.createPVField(s));
 	}
 	
+	public void testBoundedString()
+	{
+        FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+		PVDataCreate factory = PVDataFactory.getPVDataCreate();
+
+		Structure s = fieldCreate.createFieldBuilder().
+			add("str", ScalarType.pvString).
+			addBoundedString("boundedStr", 8).
+			add("scalar", ScalarType.pvDouble).
+			createStructure();
+		assertNotNull(s);
+		assertEquals(Structure.DEFAULT_ID, s.getID());
+		assertEquals(3, s.getFields().length);
+			
+		serializationTest(s);
+		PVStructure pvs = factory.createPVStructure(s);
+		serializationTest(pvs);
+		
+		PVString pvStr = pvs.getStringField("boundedStr");
+		pvStr.put("");
+		pvStr.put("small");
+		pvStr.put("exact123");
+
+		try {
+			pvStr.put("tooLargeString");
+			fail("too large string accepted");
+		} catch (IllegalArgumentException iae) {
+			// OK
+		}
+	}
+
 	public void testArray()
 	{
 		PVDataCreate factory = PVDataFactory.getPVDataCreate();
