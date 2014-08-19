@@ -95,22 +95,22 @@ public class CreateRequest {
 	        if(chr=='(') numParan++;
 	        if(chr==')') numParan--;
 	        if(chr=='{') numBrace++;
-            if(chr=='}') numBrace--;
-            if(chr=='[') numBracket++;
-            if(chr==']') numBracket--;
+	        if(chr=='}') numBrace--;
+	        if(chr=='[') numBracket++;
+	        if(chr==']') numBracket--;
 	    }
 	    if(numParan!=0) {
 	        message = "mismatched () " + numParan;
 	        return null;
 	    }
 	    if(numBrace!=0) {
-            message = "mismatched {} " + numBrace;
-            return null;
-        }
+	        message = "mismatched {} " + numBrace;
+	        return null;
+	    }
 	    if(numBracket!=0) {
-            message = "mismatched [] " + numBracket;
-            return null;
-        }
+	        message = "mismatched [] " + numBracket;
+	        return null;
+	    }
 	    List<Node> top = new ArrayList<Node>();
 	    try {
 	        if(offsetRecord>=0) {
@@ -121,56 +121,56 @@ public class CreateRequest {
                     message = request.substring(offsetRecord) + "record[ does not have matching ]";
                     return null;
                 }
-                Node node = new Node("record");
-                if(closeBracket>openBracket+1) {
+                if(closeBracket-openBracket > 3) {
+                    Node node = new Node("record");
                     Node optNode = createRequestOptions(
                             request.substring(openBracket+1,closeBracket));
                     node.nodes.add(optNode);
+                    top.add(node);
                 }
-                top.add(node);
             }
 	        if(offsetField>=0) {
 	            fullFieldName = "field";
 	            Node node = new Node("field");
-                int openBrace = request.indexOf('(', offsetField);
-                int closeBrace = request.indexOf(')', openBrace);
-                if(closeBrace == -1) {
+                int openParan = request.indexOf('(', offsetField);
+                int closeParan = request.indexOf(')', openParan);
+                if(closeParan == -1) {
                     message = request.substring(offsetField)
                             + " field( does not have matching )";
                     return null;
                 }
-                if(closeBrace>openBrace+1) {
-                    createSubNode(node,request.substring(openBrace+1,closeBrace));
+                if(closeParan>openParan+1) {
+                    createSubNode(node,request.substring(openParan+1,closeParan));
                 }
                 top.add(node);
             }
 	        if(offsetGetField>=0) {
 	            fullFieldName = "getField";
                 Node node = new Node("getField");
-                int openBrace = request.indexOf('(', offsetGetField);
-                int closeBrace = request.indexOf(')', openBrace);
-                if(closeBrace == -1) {
+                int openParan = request.indexOf('(', offsetGetField);
+                int closeParan = request.indexOf(')', openParan);
+                if(closeParan == -1) {
                     message = request.substring(offsetField)
-                            + " field( does not have matching )";
+                            + " getField( does not have matching )";
                     return null;
                 }
-                if(closeBrace>openBrace+1) {
-                    createSubNode(node,request.substring(openBrace+1,closeBrace));
+                if(closeParan>openParan+1) {
+                    createSubNode(node,request.substring(openParan+1,closeParan));
                 }
                 top.add(node);
             }
 	        if(offsetPutField>=0) {
-	            fullFieldName = "getField";
+	            fullFieldName = "putField";
                 Node node = new Node("putField");
-                int openBrace = request.indexOf('(', offsetPutField);
-                int closeBrace = request.indexOf(')', openBrace);
-                if(closeBrace == -1) {
+                int openParan = request.indexOf('(', offsetPutField);
+                int closeParan = request.indexOf(')', openParan);
+                if(closeParan == -1) {
                     message = request.substring(offsetField)
-                            + " field( does not have matching )";
+                            + " putField( does not have matching )";
                     return null;
                 }
-                if(closeBrace>openBrace+1) {
-                    createSubNode(node,request.substring(openBrace+1,closeBrace));
+                if(closeParan>openParan+1) {
+                    createSubNode(node,request.substring(openParan+1,closeParan));
                 }
                 top.add(node);
             }
@@ -292,26 +292,15 @@ public class CreateRequest {
 	
     private void createSubNode(Node node,String request) {
         int end = 0;
-        char chr = ' ';
+        
         for(int i=0; i<request.length(); ++i) {
-            chr= request.charAt(i);
-            if(chr=='[') {
-                end = i;
-                break;
-            }
-            if(chr=='.') {
-                end = i;
-                break;
-            }
-            if(chr=='{') {
-                end = i;
-                break;
-            }
-            if(chr==',') {
-                end = i;
-                break;
-            }
+            char chr= request.charAt(i);
+            if(chr=='[') {end = i; break;}
+            if(chr=='.') {end = i; break;}
+            if(chr=='{') {end = i; break;}
+            if(chr==',') {end = i; break;}
         }
+        char chr = request.charAt(end);
         Node optionNode = null;
         if(chr=='[') {
             String saveFullName = fullFieldName;
@@ -329,18 +318,9 @@ public class CreateRequest {
             end = 0;
             for(int i=0; i<request.length(); ++i) {
                 chr= request.charAt(i);
-                if(chr=='.') {
-                    end = i;
-                    break;
-                }
-                if(chr=='{') {
-                    end = i;
-                    break;
-                }
-                if(chr==',') {
-                    end = i;
-                    break;
-                }
+                if(chr=='.') {end = i; break;}
+                if(chr=='{') {end = i; break;}
+                if(chr==',') {end = i; break;}
             }
         }
         if(end==0) end = request.length();
