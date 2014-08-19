@@ -28,6 +28,13 @@ public interface FieldCreate {
      */
     Scalar createScalar(ScalarType scalarType);
     /**
+     * Create a <i>BoundedString</i>.
+     * @param maxLength The maximum string length.
+     * @return a <i>BoundedScalar</i> interface for the newly created object.
+     * @throws An <i>IllegalArgumentException</i> if maxLength <= 0.
+     */
+    BoundedString createBoundedString(int maxLength);
+    /**
      * Create an <i>Array</i> field, variable size array.
      * @param elementType The <i>scalarType</i> for array elements
      * @return An <i>Array</i> Interface for the newly created object.

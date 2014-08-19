@@ -7,6 +7,7 @@ package org.epics.pvdata.factory;
 
 import java.util.LinkedHashMap;
 
+import org.epics.pvdata.pv.BoundedString;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldBuilder;
 import org.epics.pvdata.pv.FieldCreate;
@@ -68,6 +69,12 @@ public class BaseFieldBuilder implements FieldBuilder {
 	}
 
 	@Override
+	public FieldBuilder addBoundedString(String name, int maxLength) {
+		members.put(name, fieldCreate.createBoundedString(maxLength));
+		return this;
+	}
+
+	@Override
 	public FieldBuilder add(String name, Field field) {
 		members.put(name, field);
 		return this;
@@ -100,7 +107,12 @@ public class BaseFieldBuilder implements FieldBuilder {
 		else if (element instanceof Union)
 			members.put(name, fieldCreate.createUnionArray((Union)element));
 		else if (element instanceof Scalar)
+		{
+			if (element instanceof BoundedString)
+				throw new IllegalArgumentException("bounded string arrays are not supported");
+				
 			members.put(name, fieldCreate.createScalarArray(((Scalar)element).getScalarType()));
+		}
 		else
 			throw new IllegalArgumentException("unsupported array element type:" + element.getClass());
 		return this;

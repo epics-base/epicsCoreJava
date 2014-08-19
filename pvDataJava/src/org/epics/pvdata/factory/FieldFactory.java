@@ -8,6 +8,7 @@ package org.epics.pvdata.factory;
 import java.nio.ByteBuffer;
 
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.pv.BoundedString;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldBuilder;
@@ -72,7 +73,12 @@ public final class FieldFactory {
         {
             return scalars[scalarType.ordinal()];
         }
-        /* (non-Javadoc)
+        
+        @Override
+		public BoundedString createBoundedString(int maxLength) {
+			return new BaseBoundedString(maxLength);
+		}
+		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#createArray(java.lang.String, org.epics.pvdata.pv.ScalarType)
          */
         public ScalarArray createScalarArray(ScalarType elementType)
@@ -269,6 +275,13 @@ public final class FieldFactory {
     			{
     				// Type type = union; variant union (aka any type)
     				return variantUnion;
+    			}
+    			else if (typeCode == 0x83)
+    			{
+    				// TODO cache some sizes?
+    				// bounded string
+    				int maxLength = SerializeHelper.readSize(buffer, control);
+    				return new BaseBoundedString(maxLength);
     			}
     			else
     				throw new IllegalArgumentException("invalid type encoding");

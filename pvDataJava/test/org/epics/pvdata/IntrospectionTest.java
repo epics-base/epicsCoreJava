@@ -12,6 +12,7 @@ import junit.framework.TestCase;
 
 import org.epics.pvdata.factory.BaseUnion;
 import org.epics.pvdata.factory.FieldFactory;
+import org.epics.pvdata.pv.BoundedString;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.Scalar;
@@ -138,5 +139,11 @@ public class IntrospectionTest extends TestCase {
 		UnionArray variantUnionArray = fieldCreate.createVariantUnionArray();
 		assertEquals(variant, variantUnionArray.getUnion());
 		System.out.println(variantUnionArray);
+
+		BoundedString boundedString = fieldCreate.createBoundedString(16);
+        assertTrue(scalarArray.getType()==Type.scalarArray);
+        assertTrue(scalarArray.getElementType()==ScalarType.pvString);
+        assertEquals(16, boundedString.getMaximumLength());
+		System.out.println(boundedString);
 	}
 }
