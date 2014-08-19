@@ -12,7 +12,6 @@ import org.epics.pvdata.pv.PVAuxInfo;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PostHandler;
-import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Type;
 
 
@@ -165,25 +164,6 @@ public abstract class AbstractPVField implements PVField{
         return pvParent;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVField#renameField(java.lang.String)
-     */
-    @Override
-    public void renameField(String newName) {
-        PVStructure parent = getParent();
-        if(parent==null) throw new IllegalStateException("no pvParent");
-        Structure structure = parent.getStructure();
-        PVField[] pvFields = parent.getPVFields();
-        String[] fieldNames = structure.getFieldNames();
-        for(int i=0; i < pvFields.length; i++) {
-            if(pvFields[i]==this) {
-                fieldName = newName;
-                fieldNames[i] = newName;
-                return;
-            }
-        }
-        throw new IllegalStateException("Did not find field in parent");
-    }
-    /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVField#toString(java.lang.StringBuilder)
      */
     @Override
@@ -196,8 +176,7 @@ public abstract class AbstractPVField implements PVField{
     @Override
     public void toString(StringBuilder buf,int indentLevel) {
         convert.getString(buf,this,indentLevel);
-        if(pvAuxInfo==null) return;
-        pvAuxInfo.toString(buf,indentLevel);
+        if(pvAuxInfo!=null) pvAuxInfo.toString(buf,indentLevel+1);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

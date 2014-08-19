@@ -41,9 +41,7 @@ import org.epics.pvdata.pv.Type;
 public class BasePVStructure extends AbstractPVField implements PVStructure
 {
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
-    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
     private PVField[] pvFields;
-    private String extendsStructureName = null;
     
     private void setParentAndName() {
         String[] fieldNames = getStructure().getFieldNames();
@@ -127,138 +125,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     public Structure getStructure() {
         return (Structure)getField();
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVStructure#appendPVField(java.lang.String, org.epics.pvdata.pv.PVField)
-     */
-    @Override
-    public void appendPVField(String fieldName,PVField pvField) {
-        int origLength = pvFields.length;
-        String[] origNames = getStructure().getFieldNames();
-        Field[] origFields = getStructure().getFields();
-        String origID = getStructure().getID();
-        Structure structure = fieldCreate.createStructure(origID, origNames, origFields);
-        structure = fieldCreate.appendField(structure, fieldName,pvField.getField());
-        int newLength = origLength + 1;
-        PVField[] newPVFields = new PVField[newLength];
-        for(int i=0; i<origLength; i++) {
-            newPVFields[i] = pvFields[i];
-        }
-        newPVFields[origLength] = pvField;
-        pvFields = newPVFields;
-        PVStructure pvParent = getParent();
-        if(pvParent!=null) {
-            Structure parentStructure = pvParent.getStructure();
-            PVField[] parentPVFields  = pvParent.getPVFields();
-            int index = -1;
-            for(int i=0;i<parentPVFields.length; i++) {
-                if(parentPVFields[i]==this) {
-                    index = i;
-                }
-            }
-            if(index==-1) {
-                throw new IllegalStateException("PVStructure Logic error");
-            }
-            parentStructure.getFields()[index] = structure;
-        }
-        super.changeField(structure);
-        setParentAndName();
-    }
-    @Override
-	public void appendPVFields(String[] fieldNames,PVField[] extraPVFields)
-    {
-        int origLength = pvFields.length;
-        String[] origNames = getStructure().getFieldNames();
-        Field[] origFields = getStructure().getFields();
-        String origID = getStructure().getID();
-        int extra = fieldNames.length;
-        if(extra==0) return;
-        Field[] extraFields = new Field[extra];
-        for(int i=0; i<extra; i++) {
-            extraFields[i] = extraPVFields[i].getField();
-        }
-        Structure structure = fieldCreate.createStructure(origID, origNames, origFields);
-        structure = fieldCreate.appendFields(structure, fieldNames, extraFields);
-        int newLength = origLength + extra;
-        PVField[] newPVFields = new PVField[newLength];
-        for(int i=0; i<origLength; i++) {
-            newPVFields[i] = pvFields[i];
-        }
-        for(int i=0; i<extra; i++) {
-            newPVFields[origLength + i] = extraPVFields[i];
-        }
-        pvFields = newPVFields;
-        PVStructure pvParent = getParent();
-        if(pvParent!=null) {
-            Structure parentStructure = pvParent.getStructure();
-            PVField[] parentPVFields  = pvParent.getPVFields();
-            int index = -1;
-            for(int i=0;i<parentPVFields.length; i++) {
-                if(parentPVFields[i]==this) {
-                    index = i;
-                }
-            }
-            if(index==-1) {
-                throw new IllegalStateException("PVStructure Logic error");
-            }
-            parentStructure.getFields()[index] = structure;
-        }
-        super.changeField(structure);
-        setParentAndName();
-    }
-	/* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVStructure#removePVField(java.lang.String)
-     */
-    @Override
-    public void removePVField(String fieldName) {
-        PVField pvField = getSubField(fieldName);
-        if(pvField==null) {
-            //super.message("removePVField " + fieldName + " does not exist", MessageType.error);
-            return;
-        }
-        int origLength = pvFields.length;
-        int newLength = origLength - 1;
-        PVField[] newPVFields = new PVField[newLength];
-        String[] newNames = new String[newLength];
-        Field[] newFields = new Field[newLength];
-        int newIndex = 0;
-        for(int i=0; i<origLength; i++) {
-            if(pvFields[i]==pvField) continue;
-            newNames[newIndex] = getStructure().getFieldName(i);
-            newFields[newIndex] = getStructure().getField(i);
-            newPVFields[newIndex++] = pvFields[i];
-        }
-        pvFields = newPVFields;
-        Structure structure = fieldCreate.createStructure(getStructure().getID(),newNames, newFields);
-        PVStructure pvParent = getParent();
-        if(pvParent!=null) {
-            Structure parentStructure = pvParent.getStructure();
-            PVField[] parentPVFields  = pvParent.getPVFields();
-            int index = -1;
-            for(int i=0;i<parentPVFields.length; i++) {
-                if(parentPVFields[i]==this) {
-                    index = i;
-                }
-            }
-            if(index==-1) {
-                throw new IllegalStateException("PVStructure Logic error");
-            }
-            parentStructure.getFields()[index] = structure;
-        }
-        super.changeField(structure);
-        setParentAndName();
-    }
-	@Override
-    public void replacePVField(PVField oldPVField, PVField newPVField) {
-        int length = pvFields.length;
-        Field[] oldFields = getStructure().getFields();
-        for(int i=0; i<length; i++) {
-            if(pvFields[i]==oldPVField) {
-                pvFields[i] = newPVField;
-                oldFields[i] = newPVField.getField();
-            }
-        }
-        setParentAndName();
-    }
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getPVFields()
      */
@@ -403,22 +270,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     //@Deprecated
 	public PVUnionArray getUnionArrayField(String fieldName) {
     	return getSubField(PVUnionArray.class, fieldName);
-	}
-
-	/* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVStructure#getExtendStructure()
-     */
-    public String getExtendsStructureName() {
-        return extendsStructureName;
-    }
-    @Override
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVStructure#putExtendStructure(org.epics.pvdata.pv.PVStructure)
-     */
-    public boolean putExtendsStructureName(String extendsStructureName) {
-        if(extendsStructureName==null || this.extendsStructureName!=null) return false;
-        this.extendsStructureName = extendsStructureName;
-        return true;
     }
     
     private static boolean checkValid(PVStructure pvStructure,String fullName) {
@@ -615,8 +466,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((extendsStructureName == null) ? 0 : extendsStructureName.hashCode());
+		result = prime * result;
 		result = prime * result + Arrays.hashCode(pvFields);
 		return result;
 	}

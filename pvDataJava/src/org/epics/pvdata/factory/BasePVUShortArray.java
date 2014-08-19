@@ -9,10 +9,10 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import org.epics.pvdata.pv.DeserializableControl;
-import org.epics.pvdata.pv.SerializableControl;
-import org.epics.pvdata.pv.ShortArrayData;
 import org.epics.pvdata.pv.PVUShortArray;
 import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.SerializableControl;
+import org.epics.pvdata.pv.ShortArrayData;
 
 
 /**

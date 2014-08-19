@@ -39,17 +39,6 @@ monitorPlugin
 
 A debate is on-going about what semantics should be.
 
-
-PVField, etc should not allow introspection interface to change
-------------
-
-Once created an instance of PVField should not allow the introspection
-interface to change.
-This methods like renameField, etc should be removed.
-This can not be done until pvIOCJava is changed
-so that it no longer requires the methods.
-The main change will be to the xml parser.
-
 PVAuxInfo
 ---------
 

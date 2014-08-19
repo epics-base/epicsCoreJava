@@ -71,11 +71,6 @@ public interface PVField extends Serializable {
      */
     PVStructure getParent();
     /**
-     * Rename the field name.
-     * @param newName The new name.
-     */
-    void renameField(String newName);
-    /**
      * postPut. Called when the field is updated by the implementation.
      */
     void postPut();
