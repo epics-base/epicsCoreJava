@@ -17,7 +17,7 @@ public class TimeStampFactory implements TimeStamp{
     static final long  posixEpochAtEpicsEpoch = TimeStamp.posixEpochAtEpicsEpoch;
 
     private long secondsPastEpoch = 0;
-    private int nanoSeconds = 0;
+    private int nanoseconds = 0;
     private int userTag = 0;
     
     /**
@@ -46,12 +46,12 @@ public class TimeStampFactory implements TimeStamp{
     public void add(double seconds) {
         long secs = (long)seconds;
         long nano = (long)((seconds - secs)*1e9);
-        nanoSeconds += nano;
-        if(nanoSeconds>nanoSecPerSec) {
-            nanoSeconds -= nanoSecPerSec;
+        nanoseconds += nano;
+        if(nanoseconds>nanoSecPerSec) {
+            nanoseconds -= nanoSecPerSec;
             secondsPastEpoch += 1;
-        } else if(nanoSeconds<-nanoSecPerSec) {
-            nanoSeconds += -nanoSecPerSec;
+        } else if(nanoseconds<-nanoSecPerSec) {
+            nanoseconds += -nanoSecPerSec;
             secondsPastEpoch -= 1;
         }
         secondsPastEpoch += secs;
@@ -69,7 +69,7 @@ public class TimeStampFactory implements TimeStamp{
     @Override
     public double diff(TimeStamp a, TimeStamp b) {
         double result = a.getSecondsPastEpoch() - b.getSecondsPastEpoch();
-        result += (a.getNanoSeconds() - b.getNanoSeconds())/1e9;
+        result += (a.getNanoseconds() - b.getNanoseconds())/1e9;
         return result;
     }
     /* (non-Javadoc)
@@ -111,14 +111,14 @@ public class TimeStampFactory implements TimeStamp{
      */
     @Override
     public long getMilliSeconds() {
-        return secondsPastEpoch*1000 + nanoSeconds/1000000;
+        return secondsPastEpoch*1000 + nanoseconds/1000000;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvdata.property.TimeStamp#getNanoSeconds()
+     * @see org.epics.pvdata.property.TimeStamp#getNanoseconds()
      */
     @Override
-    public int getNanoSeconds() {
-        return nanoSeconds;
+    public int getNanoseconds() {
+        return nanoseconds;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.TimeStamp#getSecondsPastEpoch()
@@ -132,13 +132,13 @@ public class TimeStampFactory implements TimeStamp{
      */
     @Override
     public void normalize() {
-        if(nanoSeconds>=0 && nanoSeconds<nanoSecPerSec) return;
-        while(nanoSeconds>=nanoSecPerSec) {
-            nanoSeconds -= nanoSecPerSec;
+        if(nanoseconds>=0 && nanoseconds<nanoSecPerSec) return;
+        while(nanoseconds>=nanoSecPerSec) {
+            nanoseconds -= nanoSecPerSec;
             secondsPastEpoch++;
         }
-        while(nanoSeconds<0) {
-            nanoSeconds += nanoSecPerSec;
+        while(nanoseconds<0) {
+            nanoseconds += nanoSecPerSec;
             secondsPastEpoch--;
         }
     }
@@ -146,9 +146,9 @@ public class TimeStampFactory implements TimeStamp{
      * @see org.epics.pvdata.property.TimeStamp#put(long, int)
      */
     @Override
-    public void put(long secondsPastEpoch, int nanoSeconds) {
+    public void put(long secondsPastEpoch, int nanoseconds) {
         this.secondsPastEpoch = secondsPastEpoch;
-        this.nanoSeconds = nanoSeconds;
+        this.nanoseconds = nanoseconds;
         normalize();
     }
     /* (non-Javadoc)
@@ -157,20 +157,20 @@ public class TimeStampFactory implements TimeStamp{
     @Override
     public void put(long milliSeconds) {
         secondsPastEpoch = milliSeconds/1000;
-        nanoSeconds = (int)((milliSeconds%1000)*1000000);
+        nanoseconds = (int)((milliSeconds%1000)*1000000);
     }
     
     @Override
     public void getCurrentTime() {
         long currentTime = System.currentTimeMillis();
         secondsPastEpoch = currentTime/1000;
-        nanoSeconds = (int)((currentTime - secondsPastEpoch*1000)*1000000);
+        nanoseconds = (int)((currentTime - secondsPastEpoch*1000)*1000000);
     }
     private static long diffInt(TimeStamp left,TimeStamp right ){
         long sl = left.getSecondsPastEpoch();
-        int nl = left.getNanoSeconds();
+        int nl = left.getNanoseconds();
         long sr = right.getSecondsPastEpoch();
-        int nr = right.getNanoSeconds();
+        int nr = right.getNanoseconds();
         long sdiff = sl - sr;
         sdiff *= nanoSecPerSec;
         sdiff += nl - nr;

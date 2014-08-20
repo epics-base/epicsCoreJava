@@ -54,7 +54,7 @@ public final class StandardFieldFactory {
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvString);
 	    alarmField = fieldCreate.createStructure("alarm_t",alarmFieldNames,fields);
 	    fields = new Field[3];
-	    String[] timeStampFieldNames = {"secondsPastEpoch","nanoSeconds","userTag"};
+	    String[] timeStampFieldNames = {"secondsPastEpoch","nanoseconds","userTag"};
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvLong);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
@@ -85,7 +85,7 @@ public final class StandardFieldFactory {
 	    String[] scalarAlarmFieldNames = {
             "active","lowAlarmLimit","lowWarningLimit","highWarningLimit","highAlarmLimit",
             "lowAlarmSeverity","lowWarningSeverity","highWarningSeverity","highAlarmSeverity",
-            "hystersis"
+            "hysteresis"
 	    };
 	    fields[0] = fieldCreate.createScalar(ScalarType.pvBoolean);
 	    fields[1] = fieldCreate.createScalar(ScalarType.pvByte);

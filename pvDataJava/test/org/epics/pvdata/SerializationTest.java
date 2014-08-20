@@ -513,7 +513,7 @@ public class SerializationTest extends TestCase {
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();   
         PVStructure pvStructure = (PVStructure)pvDataCreate.createPVField(StandardFieldFactory.getStandardField().timeStamp());
         pvStructure.getLongField("secondsPastEpoch").put(123);
-        pvStructure.getIntField("nanoSeconds").put(456);
+        pvStructure.getIntField("nanoseconds").put(456);
 
 		serializationTest(pvStructure);
 		serializationTest(pvStructure.getStructure());
@@ -533,7 +533,7 @@ public class SerializationTest extends TestCase {
         
         PVStructure ps = pvStructure2.getStructureField("timeStamp");
         ps.getLongField("secondsPastEpoch").put(789);
-        ps.getIntField("nanoSeconds").put(1011);
+        ps.getIntField("nanoseconds").put(1011);
         ps.getIntField("userTag").put(-1);
 
 		serializationTest(pvStructure2);
@@ -578,7 +578,7 @@ public class SerializationTest extends TestCase {
         {
         	PVStructure pvStructure = pvDataCreate.createPVStructure(sarray.getStructure());
         	pvStructure.getLongField("secondsPastEpoch").put(123*i);
-        	pvStructure.getIntField("nanoSeconds").put(456*i);
+        	pvStructure.getIntField("nanoseconds").put(456*i);
         	sad.data[i] = pvStructure;
         }
         

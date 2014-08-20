@@ -33,10 +33,10 @@ public class TimeStampTest extends TestCase {
 		TimeStamp t1 = TimeStampFactory.create();
 		TimeStamp t2 = TimeStampFactory.create();
 		t1.getCurrentTime();
-		t2.put(t1.getSecondsPastEpoch(), t1.getNanoSeconds());
+		t2.put(t1.getSecondsPastEpoch(), t1.getNanoseconds());
 		assertEquals(t1.getMilliSeconds(), t2.getMilliSeconds());
 		assertEquals(t1.getSecondsPastEpoch(), t2.getSecondsPastEpoch());
-		assertEquals(t1.getNanoSeconds(), t2.getNanoSeconds());
+		assertEquals(t1.getNanoseconds(), t2.getNanoseconds());
 		assertTrue(t1.equals(t2));
 	}
 }

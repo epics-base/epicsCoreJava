@@ -347,7 +347,7 @@ union value
     int intValue
     timeStamp timeStamp
         long secondsPastEpoch
-        int nanoSeconds
+        int nanoseconds
         int userTag
       </pre>
       </dd>
@@ -402,7 +402,7 @@ permitted surrounding each comma.</p>
 <p>Define the following top level structure:</p>
 <pre>structure timeStamp_t
     long secondsPastEpoch
-    int nanoSeconds </pre>
+    int nanoseconds </pre>
 
 <p>Then the following introspection objects can be defined:</p>
 <pre>structure scalarDoubleExample // introspection object
@@ -413,20 +413,20 @@ or
     double value
     structure timeStamp
         long secondsPastEpoch
-        int  nanoSeconds</pre>
+        int  nanoseconds</pre>
 
 <p>The following data objects can be defined:</p>
 <pre>structure scalarDoubleExample // data object
     double value 1.0
     timeStamp_t timeStamp
          long secondsPastEpoch 0
-         int  nanoSeconds 0</pre>
+         int  nanoseconds 0</pre>
 or 
 <pre>scalar arrayDoubleExample
     double[] value  [1.0,2.0]
     structure timeStamp
          long secondsPastEpoch 0
-         int  nanoSeconds 0</pre>
+         int  nanoseconds 0</pre>
 
 <p>If the following interface is defined:</p>
 <pre>structure point_t
@@ -2426,7 +2426,7 @@ structure powerSupplySimple
         string message
     timeStamp_t
         long secondsPastEpoch
-        int nanoSeconds
+        int nanoseconds
         int userTag
     powerSupplyValue_t voltage
         double value
@@ -2557,18 +2557,18 @@ These definitions are defined in project javaIOC.</p>
 <pre>
 structure timeStamp
     long secondsPartEpoch
-    int nanoSeconds
+    int nanoseconds
     int userTag
 </pre>
 
 <p>The Epoch is the POSIX epoch, i.e. Jan 1, 1970 00:00:00 UTC. Both the
-seconds and nanoSeconds are signed integers and thus can be negative. Since the
+seconds and nanoseconds are signed integers and thus can be negative. Since the
 seconds is kept as a 64 bit integer, it allows for a time much greater than the
-present age of the universe. Since the nanoSeconds portion is kept as a 32 bit
+present age of the universe. Since the nanoseconds portion is kept as a 32 bit
 integer it is subject to overflow if a value that corresponds to a value that
 is greater than a little more than 2 seconds of less that about -2 seconds. The
 support code always adjust seconds so that the nanoSecconds part is normalized,
-i. e. it has is 0&lt;=nanoSeconds&lt;nanoSecPerSec..</p>
+i. e. it has is 0&lt;=nanoseconds&lt;nanoSecPerSec..</p>
 <h5>TimeStamp</h5>
 <p>The Java definition of a timeStamp is:</p>
 <pre>interface TimeStamp {
@@ -2579,10 +2579,10 @@ i. e. it has is 0&lt;=nanoSeconds&lt;nanoSecPerSec..</p>
     void normalize();
     long getSecondsPastEpoch();
     long getEpicsSecondsPastEpoch();
-    int getNanoSeconds();
+    int getNanoseconds();
     int getUserTag();
     void setUserTag(int userTag);
-    void put(long secondsPastEpoch,int nanoSeconds);
+    void put(long secondsPastEpoch,int nanoseconds);
     long getMilliSeconds();
     void put(long milliSeconds);
     void getCurrentTime();
@@ -2597,20 +2597,20 @@ i. e. it has is 0&lt;=nanoSeconds&lt;nanoSecPerSec..</p>
 <p>where:</p>
 <dl>
   <dt>normalize</dt>
-    <dd>Adjust secondsPastEpoch and nanoSeconds so that 0&lt;=nanoSeconds&lt;
+    <dd>Adjust secondsPastEpoch and nanoseconds so that 0&lt;=nanoseconds&lt;
       nanoSecPerSec.</dd>
   <dt>getSecondsPastEpoch</dt>
     <dd>Get the seconds part of timeStamp</dd>
   <dt>getEpicsSecondsPastEpoch</dt>
     <dd>Get seconds relative to the EPICS epoch. The epics epoch starts on Jan
       1 1990 00:00:00 UTC.</dd>
-  <dt>getNanoSeconds</dt>
-    <dd>Get the nanoSeconds part of timeStamp.</dd>
+  <dt>getNanoseconds</dt>
+    <dd>Get the nanoseconds part of timeStamp.</dd>
   <dt>getUserTag</dt>
     <dd>Get the userTag</dd>
   <dt>setUserTag</dt>
     <dd>Set the userTag</dd>
-  <dt>put(long secondsPastEpoch,int nanoSeconds)</dt>
+  <dt>put(long secondsPastEpoch,int nanoseconds)</dt>
     <dd>Put a value into the timeStamp.</dd>
   <dt>getMilliSeconds</dt>
     <dd>Get bthe number of milliseconds since the epoch.</dd>

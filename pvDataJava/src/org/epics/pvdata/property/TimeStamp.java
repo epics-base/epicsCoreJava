@@ -16,7 +16,7 @@ public interface TimeStamp {
     static final long nanoSecPerSec = milliSecPerSec*microSecPerSec;
     static final long  posixEpochAtEpicsEpoch = 631152000;
     /**
-     * Adjust secs and nanoSeconds so that 0<=nanoSeconds<nanoSecPerSec
+     * Adjust secs and nanoseconds so that 0<=nanoseconds<nanoSecPerSec
      */
     void normalize();
     /**
@@ -33,7 +33,7 @@ public interface TimeStamp {
      * Get the number of nanoseconds within the second.
      * @return The number.
      */
-    int getNanoSeconds();
+    int getNanoseconds();
     /**
      * Get the userTag.
      * @return The userTag.
@@ -47,9 +47,9 @@ public interface TimeStamp {
     /**
      * Put the time.
      * @param secondsPastEpoch The number of seconds since January 1, 1970, 00:00:00 UTC
-     * @param nanoSeconds The number of nanoseconds within the second.
+     * @param nanoseconds The number of nanoseconds within the second.
      */
-    void put(long secondsPastEpoch,int nanoSeconds);
+    void put(long secondsPastEpoch,int nanoseconds);
     /**
      * Get the number of milliSeconds since the January 1, 1970, 00:00:00 UTC
      * @return The number.

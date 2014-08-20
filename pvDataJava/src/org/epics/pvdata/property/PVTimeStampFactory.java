@@ -37,11 +37,11 @@ public class PVTimeStampFactory implements PVTimeStamp {
         PVStructure pvStructure = (PVStructure)(pvField);
         while(true) {
             PVField xxx = pvStructure.getSubField("secondsPastEpoch");
-            if(xxx!=null) xxx = pvStructure.getSubField("nanoSeconds");
+            if(xxx!=null) xxx = pvStructure.getSubField("nanoseconds");
             if(xxx!=null) xxx = pvStructure.getSubField("userTag");
             if(xxx!=null) {
                 pvSecs = pvStructure.getLongField("secondsPastEpoch");
-                pvNano = pvStructure.getIntField("nanoSeconds");
+                pvNano = pvStructure.getIntField("nanoseconds");
                 pvUserTag = pvStructure.getIntField("userTag");
                 if(pvSecs!=null && pvNano!=null && pvUserTag!=null) return true;
             }
@@ -93,7 +93,7 @@ public class PVTimeStampFactory implements PVTimeStamp {
         if(pvSecs.isImmutable() || pvNano.isImmutable()) return false;
         pvSecs.put(timeStamp.getSecondsPastEpoch());
         pvUserTag.put(timeStamp.getUserTag());
-        pvNano.put(timeStamp.getNanoSeconds());
+        pvNano.put(timeStamp.getNanoseconds());
         return true;
     }
 

@@ -61,7 +61,7 @@ public class BitSetUtilTest extends TestCase {
         int offsetTimeStamp = pvField.getFieldOffset();
         pvField = pvs.getSubField("timeStamp.secondsPastEpoch");
         int offsetSeconds = pvField.getFieldOffset();
-        pvField = pvs.getSubField("timeStamp.nanoSeconds");
+        pvField = pvs.getSubField("timeStamp.nanoseconds");
         int offsetNano = pvField.getFieldOffset();
         pvField = pvs.getSubField("timeStamp.userTag");
         int offsetUserTag = pvField.getFieldOffset();

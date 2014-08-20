@@ -4,6 +4,7 @@ Release release/3.1 IN DEVELOPMENT
 The main changes since release 3.0.2 are:
 
 * methods that change interface removed from PVField and PVStructure
+* timeStamp and valueAlarm name changes
 * union is new type.
 * copy is new.
 * monitorPlugin is new.
@@ -18,6 +19,15 @@ replacePVField, getExtendsStructureName, and putExtendsStructureName.
 
 With these changes there should be no methods that can change the introspection interface
 of any data onject after it is created.
+
+
+timeStamp and valueAlarm name changes
+--------------
+
+In timeStamp nanoSeconds is changed to nanoseconds.
+
+In valueAlarm hystersis is changed to hysteresis
+
 
 union is a new basic type.
 ------------

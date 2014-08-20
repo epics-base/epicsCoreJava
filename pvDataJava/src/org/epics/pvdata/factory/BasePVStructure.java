@@ -11,7 +11,6 @@ import java.util.Arrays;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVBoolean;
 import org.epics.pvdata.pv.PVByte;
 import org.epics.pvdata.pv.PVDataCreate;

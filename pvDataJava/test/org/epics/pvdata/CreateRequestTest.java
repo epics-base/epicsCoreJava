@@ -46,6 +46,12 @@ public class CreateRequestTest extends TestCase {
         assertTrue(pvRequest!=null);
         System.out.printf("request %s%n%s%n",request,pvRequest.toString());
         
+        request = "record[]field()getField()putField()";
+        pvRequest = createRequest.createRequest(request);
+        if(pvRequest==null) requester.message(createRequest.getMessage(), MessageType.error);
+        assertTrue(pvRequest!=null);
+        System.out.printf("request %s%n%s%n",request,pvRequest.toString());
+        
         
         request = "aaa[a=b,c=d]";
         pvRequest = createRequest.createRequest(request);
