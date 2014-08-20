@@ -121,7 +121,7 @@ public class ExampleStructureSerializationPerformance extends JapexDriverBase im
 
         PVStructure timeStampStructure = pvField.getStructureField("timeStamp");
 		timeStampStructure.getLongField("secondsPastEpoch").put(0x1122334455667788L);
-		timeStampStructure.getIntField("nanoSeconds").put(0xAABBCCDD);
+		timeStampStructure.getIntField("nanoseconds").put(0xAABBCCDD);
 		timeStampStructure.getIntField("userTag").put(0xEEEEEEEE);
 
         PVStructure alarmStructure = pvField.getStructureField("alarm");

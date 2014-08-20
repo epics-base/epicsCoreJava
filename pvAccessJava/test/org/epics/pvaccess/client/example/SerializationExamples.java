@@ -178,7 +178,7 @@ public class SerializationExamples {
 
         PVStructure timeStampStructure = pvStructure.getStructureField("timeStamp");
 		timeStampStructure.getLongField("secondsPastEpoch").put(0x1122334455667788L);
-		timeStampStructure.getIntField("nanoSeconds").put(0xAABBCCDD);
+		timeStampStructure.getIntField("nanoseconds").put(0xAABBCCDD);
 		timeStampStructure.getIntField("userTag").put(0xEEEEEEEE);
 
         PVStructure alarmStructure = pvStructure.getStructureField("alarm");

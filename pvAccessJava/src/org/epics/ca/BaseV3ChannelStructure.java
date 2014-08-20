@@ -92,7 +92,7 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
     private PVInt pvAlarmStatus = null;
     private PVStructure pvTimeStamp = null;
     private PVLong pvSeconds = null;
-    private PVInt pvNanoSeconds = null;
+    private PVInt pvNanoseconds = null;
     private PVScalar pvScalarValue = null;
     private PVScalarArray pvArrayValue = null;
     // Following not null if nativeDBRType.isENUM
@@ -288,7 +288,7 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
             pvTimeStamp = pvStructure.getStructureField("timeStamp");
             if(pvTimeStamp!=null) {
                 pvSeconds = pvTimeStamp.getLongField("secondsPastEpoch");
-                pvNanoSeconds = pvTimeStamp.getIntField("nanoSeconds");
+                pvNanoseconds = pvTimeStamp.getIntField("nanoseconds");
             }
         }
         bitSet = new BitSet(pvStructure.getNumberFields());
@@ -895,7 +895,7 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
             long seconds = timeStamp.secPastEpoch();
             seconds += 7305*86400;
             pvSeconds.put(seconds);
-            pvNanoSeconds.put((int)timeStamp.nsec());
+            pvNanoseconds.put((int)timeStamp.nsec());
         }
         if(severity!=null && pvAlarm!=null) {
             int index = severity.getValue();
