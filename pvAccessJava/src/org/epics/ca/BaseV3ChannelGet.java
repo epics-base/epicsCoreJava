@@ -114,7 +114,8 @@ implements ChannelGet,GetListener,ConnectionListener
         }
         isActive.set(true);
         try {
-            jcaChannel.get(v3ChannelStructure.getRequestDBRType(),jcaChannel.getElementCount(), this);
+        	// we use count == 0, to get actual (not maximum) number of elements
+            jcaChannel.get(v3ChannelStructure.getRequestDBRType(),0,this);
         } catch (Throwable th) {
             getDone(statusCreate.createStatus(StatusType.ERROR, "failed to get", th));
         }
