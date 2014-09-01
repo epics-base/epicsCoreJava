@@ -165,7 +165,7 @@ public class InetAddressUtil {
 	 */
 	public static final void encodeAsIPv6Address(ByteBuffer buffer, InetAddress address) throws RuntimeException {
 		if (address instanceof Inet6Address)
-			buffer.put(address.getAddress());
+			buffer.put(address.getAddress());	// always network byte order
 		else if (address instanceof Inet4Address)
 		{
 			// IPv4 compatible IPv6 address
@@ -175,7 +175,7 @@ public class InetAddressUtil {
 			// next 16-bits are 1
 			buffer.putShort((short)0xFFFF);
 			// following IPv4 address
-			buffer.put(address.getAddress());
+			buffer.put(address.getAddress());	// always network byte order
 		}
 		else
 			throw new RuntimeException("unsupported network addresss: " + address);

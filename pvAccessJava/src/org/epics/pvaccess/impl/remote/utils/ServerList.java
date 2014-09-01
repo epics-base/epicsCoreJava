@@ -25,10 +25,11 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.util.HexDump;
@@ -43,6 +44,13 @@ import org.epics.pvdata.misc.SerializeHelper;
  * @author msekoranja
  */
 public class ServerList  {
+
+	static
+	{
+		// force only IPv4 sockets, since EPICS does not work right with IPv6 sockets
+		// see http://java.sun.com/j2se/1.5.0/docs/guide/net/properties.html
+		System.setProperty("java.net.preferIPv4Stack", "true");
+	}
 
 	private static boolean send(DatagramChannel channel, 
 			InetSocketAddress[] sendAddresses, ByteBuffer buffer) 
@@ -117,7 +125,8 @@ public class ServerList  {
 	private static class ServerEntry {
 		GUID guid;
 		String protocol;
-		final ArrayList<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>(3);
+		// Set removes duplicates
+		final Set<InetSocketAddress> addresses = new HashSet<InetSocketAddress>();
 		byte version;
 		
 		/**
@@ -253,7 +262,7 @@ public class ServerList  {
 		DatagramChannel datagramChannel = DatagramChannel.open();
 		datagramChannel.configureBlocking(true);
 		datagramChannel.socket().setBroadcast(true);
-		datagramChannel.socket().setSoTimeout(3000);	// 3 sec
+		datagramChannel.socket().setSoTimeout(1000);	// 1 sec
 		datagramChannel.bind(new InetSocketAddress(0));
 
 		
@@ -263,9 +272,10 @@ public class ServerList  {
 		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)0x80);	// big endian
 		sendBuffer.put((byte)0x03);	// search
-		sendBuffer.putInt(8);		// payload size
+		sendBuffer.putInt(8+16+2+3);		// payload size
+		
 		sendBuffer.putInt(0);	    // sequenceId
-		sendBuffer.put((byte)0x01); // reply required // TODO unicast vs multicast
+		sendBuffer.put((byte)0x81); // reply required // TODO unicast vs multicast; for now we mark outselves as unicast
 		sendBuffer.put((byte)0);		// reserved
 		sendBuffer.putShort((short)0);  // reserved
 
@@ -274,7 +284,7 @@ public class ServerList  {
 		InetAddressUtil.encodeAsIPv6Address(sendBuffer, address.getAddress());
 		sendBuffer.putShort((short)address.getPort());
 		
-		sendBuffer.put((byte)0x00);	// no restruction on protocol
+		sendBuffer.put((byte)0x00);	// no restriction on protocol
 		sendBuffer.putShort((byte)0x00);	// count
 
 		

@@ -168,7 +168,7 @@ public abstract class AbstractCodec
 						if (payloadSize == 0)
 							continue;
 
-						logger.warning("Not-a-frst segmented message received in normal mode from client " + getLastReadBufferSocketAddress() + ", disconnecting...");
+						logger.warning("Not-a-first segmented message received in normal mode from client " + getLastReadBufferSocketAddress() + ", disconnecting...");
 						invalidDataStreamHandler();
 						throw new InvalidDataStreamException("not-a-first segmented message received in normal mode");
 					}
