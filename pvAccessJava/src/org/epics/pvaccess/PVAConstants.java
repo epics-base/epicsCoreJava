@@ -46,6 +46,7 @@ public interface PVAConstants {
 	 */
 	public static final int PVA_BROADCAST_PORT = 5076;
 
+
 	/**
 	 * PVA protocol message header size.
 	 */

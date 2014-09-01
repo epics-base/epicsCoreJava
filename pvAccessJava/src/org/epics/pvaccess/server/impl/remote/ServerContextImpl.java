@@ -512,17 +512,19 @@ public class ServerContextImpl implements ServerContext, Context {
 					InetAddress group = InetAddress.getByName("224.0.0.128");
 					/*MembershipKey key =*/ broadcastTransport.join(group, localNIF);
 				
-					logger.config("Local multicast enabled on " + group + ":" + broadcastPort + " using " + localNIF.getDisplayName() + ".");
-					
+					InetSocketAddress anyAddress = new InetSocketAddress(0);
+					// NOTE: localMulticastTransport is not started (no read is called on a socket)
 					localMulticastTransport = (BlockingUDPTransport)broadcastConnector.connect(
 //					localMulticastTransport = (UDPTransport)broadcastConnector.connect(
 														null, serverResponseHandler,
-														listenLocalAddress, PVAConstants.PVA_PROTOCOL_REVISION,
+														anyAddress, PVAConstants.PVA_PROTOCOL_REVISION,
 														PVAConstants.PVA_DEFAULT_PRIORITY);
 					localMulticastTransport.setMutlicastNIF(localNIF, true);
 					localMulticastTransport.setSendAddresses(new InetSocketAddress[] {
 							new InetSocketAddress(group, broadcastPort)
 					});
+
+					logger.config("Local multicast enabled on " + group + ":" + broadcastPort + " using " + localNIF.getDisplayName() + ".");
 				}
 				catch (Throwable th) 
 				{
@@ -545,8 +547,6 @@ public class ServerContextImpl implements ServerContext, Context {
 			}
 
 			broadcastTransport.start();
-			if (localMulticastTransport != null)
-				localMulticastTransport.start();
 		}
 		catch (ConnectionException ce)
 		{
