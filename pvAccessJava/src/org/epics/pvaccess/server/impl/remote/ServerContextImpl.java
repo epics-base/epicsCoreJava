@@ -526,7 +526,17 @@ public class ServerContextImpl implements ServerContext, Context {
 				}
 				catch (Throwable th) 
 				{
-					logger.log(Level.CONFIG, "Failed to join to a multicast group, local multicast disabled.", th);
+					if (localMulticastTransport != null)
+					{
+						try {
+							localMulticastTransport.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						localMulticastTransport = null;
+					}
+					logger.log(Level.CONFIG, "Failed to initialize local multicast, funcionality disabled.", th);
 				}
 			}
 			else
