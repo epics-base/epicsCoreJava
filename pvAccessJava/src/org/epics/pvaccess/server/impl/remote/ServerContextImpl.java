@@ -545,6 +545,8 @@ public class ServerContextImpl implements ServerContext, Context {
 			}
 
 			broadcastTransport.start();
+			if (localMulticastTransport != null)
+				localMulticastTransport.start();
 		}
 		catch (ConnectionException ce)
 		{
@@ -654,6 +656,18 @@ public class ServerContextImpl implements ServerContext, Context {
 				e.printStackTrace();
 			}
 		}
+		
+		// and close local multicast transport
+		if (localMulticastTransport != null) 
+		{
+			try {
+				localMulticastTransport.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		// stop accepting connections
 		if (acceptor != null) 
 			acceptor.destroy();
