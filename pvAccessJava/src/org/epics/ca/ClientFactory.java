@@ -32,6 +32,9 @@ import org.epics.pvdata.pv.Status.StatusType;
 
 /**
  * Factory and implementation of Channel Access V3 client.
+ * By default CAJ is used, but context can be changed by setting
+ * system property named by <code>JCA_CONTEXT_CLASS_PROPERTY_NAME</code>
+ * (e.g. <code>org.epics.ca.ClientFactory.jcaContextClass</code>).
  * @author mrk
  *
  */
@@ -41,7 +44,9 @@ public class ClientFactory  {
 	private static ChannelProviderFactoryImpl factory = null; 
 
     public static final String PROVIDER_NAME = "ca";
-
+    
+    public static final String JCA_CONTEXT_CLASS_PROPERTY_NAME = ClientFactory.class.getName() + ".jcaContextClass";
+    
     private static class ChannelProviderFactoryImpl implements ChannelProviderFactory
     {
 
@@ -111,7 +116,8 @@ public class ClientFactory  {
         ChannelProviderImpl() {
         	Context c = null;
             try {
-            	c = JCALibrary.getInstance().createContext(JCALibrary.CHANNEL_ACCESS_JAVA);
+            	String contextClass = System.getProperty(JCA_CONTEXT_CLASS_PROPERTY_NAME, JCALibrary.CHANNEL_ACCESS_JAVA);
+            	c = JCALibrary.getInstance().createContext(contextClass);
             } catch (Throwable e) {
                 e.printStackTrace();
                 context = null;
