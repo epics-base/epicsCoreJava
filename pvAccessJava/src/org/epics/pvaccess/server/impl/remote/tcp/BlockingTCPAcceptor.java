@@ -116,9 +116,14 @@ public class BlockingTCPAcceptor {
 				// validate connection
 				if (!validateConnection(transport, address))
 				{
+					// TODO
+					// wait for negative response to be sent back and
+					// hold off the client for retrying at very high rate
+					Thread.sleep(1000);
+					
 					transport.close();
 					context.getLogger().finer("Connection to PVA client " + address + " failed to be validated, closing it.");
-					return;
+					continue;
 				}
 				
 				context.getLogger().finer("Serving to PVA client: " + address);
@@ -144,9 +149,7 @@ public class BlockingTCPAcceptor {
 	private boolean validateConnection(Transport transport, SocketAddress address)
 	{
 		try {
-			// TODO constant
-			transport.verify(5000);
-			return true;
+			return transport.verify(5000);
 		}
 		catch (Throwable th) {
 			th.printStackTrace();

@@ -61,6 +61,9 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 		{
 			// always close in the same thread, same way, etc.
 			
+			// unblock read
+			readThread.interrupt();
+			
 			// wakeup processSendQueue
 			sendQueue.wakeup();
 		}
@@ -141,7 +144,7 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 		} catch (InterruptedException e) {
 			// noop
 		}	
-		
+
 		// call internal destroy
 		internalDestroy();
 	}

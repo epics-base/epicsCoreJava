@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.AsynchronousCloseException;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
@@ -244,6 +246,10 @@ public abstract class AbstractCodec
 		catch (ConnectionClosedException cce)
 		{
 			// noop, should be already handled (and logged)
+		}
+		catch (ClosedByInterruptException cbie)
+		{
+			close();
 		}
 	}
 	
@@ -539,6 +545,11 @@ public abstract class AbstractCodec
 
 	public abstract void writePollOne() throws IOException;
 	
+	// why 0xFF? It gives NaN for floating points
+	final static byte[] PADDING_BYTES = { 
+		(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF
+	};
+	
 	// TODO note alignment must be 2, 4, 8 ONLY!!!
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.SerializableControl#alignBuffer(int)
@@ -552,9 +563,15 @@ public abstract class AbstractCodec
 		if (pos == newpos)
 			return;
 		
+		/*
 		// there is always enough of space
 		// since sendBuffer capacity % PVA_ALIGNMENT == 0
 		sendBuffer.position(newpos);
+		*/
+		
+		// for safety reasons we really pad (override previous message data)
+		int padCount = newpos - pos;
+		sendBuffer.put(PADDING_BYTES, 0, padCount);
 	}
 
 	/* (non-Javadoc)

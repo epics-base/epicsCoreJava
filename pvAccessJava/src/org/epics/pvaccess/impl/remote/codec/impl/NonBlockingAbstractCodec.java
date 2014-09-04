@@ -86,7 +86,7 @@ public abstract class NonBlockingAbstractCodec extends AbstractCodec implements 
 	public void close() throws IOException {
 		if (isOpen.getAndSet(false))
 		{
-			// TODO is this OK?
+			// TODO is this OK? yes...
 			internalDestroy();
 		}
 	}

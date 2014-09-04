@@ -108,7 +108,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	@Override
 	protected void internalDestroy() {
 		super.internalDestroy();
-		
+
 		// remove from registry
 		context.getTransportRegistry().remove(this);
 	
@@ -123,9 +123,12 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	 */
 	protected void internalClose()
 	{
-		// noop
+		InetSocketAddress remoteAddress = getRemoteAddress();
+		if (remoteAddress != null)
+			context.getLogger().finer("TCP socket to " + remoteAddress + " closed.");
+		else
+			context.getLogger().finer("TCP socket to 'unknown' closed.");
 	}
-	
 	
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.Transport#getType()
@@ -283,6 +286,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 		outgoingIR.serialize(field, buffer, this);
 	}
 	
+	protected boolean verifiedCalled = false;
 	protected boolean verified = false;
 	private Object verifiedMonitor = new Object();
 	
@@ -299,6 +303,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 				context.getLogger().fine(logMessage);
 			}
 			
+			verifiedCalled = true;
 			verified = status.isSuccess();
 			verifiedMonitor.notifyAll();
 		}
@@ -312,7 +317,7 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 		synchronized (verifiedMonitor) {
 			try {
 				final long start = System.currentTimeMillis();
-				while (!verified && (System.currentTimeMillis() - start) < timeoutMs)
+				while (!verifiedCalled && (System.currentTimeMillis() - start) < timeoutMs)
 						verifiedMonitor.wait(timeoutMs);
 			} catch (InterruptedException e) {
 				// noop
