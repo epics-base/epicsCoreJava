@@ -55,7 +55,7 @@ public interface PVAConstants {
     /**
      * All messages must be aligned to 8-bytes (64-bit).
      */
-    public static final int PVA_ALIGNMENT = 1;    // TODO !!!
+    public static final int PVA_ALIGNMENT = 8;
 
     /**
 	 * UDP maximum send message size (for sending search requests).
