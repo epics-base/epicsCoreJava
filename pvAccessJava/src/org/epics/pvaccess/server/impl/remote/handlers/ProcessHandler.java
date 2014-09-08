@@ -93,6 +93,10 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
+
+			// asCheck
+			channel.getChannelSecuritySession().release(ioid);
+			
 			if (channelProcess != null)
 				channelProcess.destroy();
 		}
@@ -170,6 +174,14 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 		    // pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelProcess(ioid, pvRequest);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)16, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
+				return;
+			}
+
 		    // create...
 		    new ChannelProcessRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -188,21 +200,21 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 				return;
 			}
 
-			/*
-			// check write access rights
-			if (!AccessRights.PROCESS.isSet(channel.getAccessRights()))
-			{
-				processResponse(transport, ioid, qosCode, BaseChannelRequester.noProcessACLStatus);
-				if (lastRequest)
-					request.destroy();
-				return;
-			}
-			*/
 			ChannelProcess channelProcess = request.getChannelProcess();
 			
 			if (lastRequest)
 				channelProcess.lastRequest();
 
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeProcess(ioid);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)16, transport, ioid, qosCode, asStatus);
+				if (lastRequest)
+					request.destroy();
+				return;
+			}
+			
 			channelProcess.process();
 		}
 		

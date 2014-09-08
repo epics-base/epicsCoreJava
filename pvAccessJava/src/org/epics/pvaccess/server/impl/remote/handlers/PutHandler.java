@@ -125,6 +125,10 @@ public class PutHandler extends AbstractServerResponseHandler {
 		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
+
+			// asCheck
+			channel.getChannelSecuritySession().release(ioid);
+			
 			if (channelPut != null)
 				channelPut.destroy();
 		}
@@ -229,17 +233,16 @@ public class PutHandler extends AbstractServerResponseHandler {
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
-			/*
-			// check process access rights
-			if (process && !AccessRights.PROCESS.isSet(channel.getAccessRights()))
-			{
-				putResponse(transport, ioid, qosCode, BaseChannelRequester.noReadACLStatus);
-				return;
-			}
-			*/
-
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
+
+		    // asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelPut(ioid, pvRequest);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
+				return;
+			}
 	
 			// create...
 		    new ChannelPutRequesterImpl(context, channel, ioid, transport, pvRequest);
@@ -267,37 +270,36 @@ public class PutHandler extends AbstractServerResponseHandler {
 			
 			if (get)
 			{
-				/*
-				// check read access rights
-				if (!AccessRights.READ.isSet(channel.getAccessRights()))
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
+				if (!asStatus.isSuccess())
 				{
-					putResponse(transport, ioid, qosCode, BaseChannelRequester.noReadACLStatus);
+					BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, qosCode, asStatus);
 					if (lastRequest)
 						request.destroy();
 					return;
 				}
-				*/
 
 				channelPut.get();
 			}
 			else
 			{
-				/*
-				// check write access rights
-				if (!AccessRights.WRITE.isSet(channel.getAccessRights()))
-				{
-					putResponse(transport, ioid, qosCode, BaseChannelRequester.noWriteACLStatus);
-					if (lastRequest)
-						request.destroy();
-					return;
-				}
-				*/
-				
 				// deserialize bitSet and do a put
 				final BitSet putBitSet = request.getPutBitSet();
 				final PVStructure putPVStructure = request.getPutPVStructure();
 				putBitSet.deserialize(payloadBuffer, transport);
 				putPVStructure.deserialize(payloadBuffer, transport, putBitSet);
+				
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizePut(ioid, putPVStructure, putBitSet);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+				
 				channelPut.put(putPVStructure, putBitSet);
 			}
 		}

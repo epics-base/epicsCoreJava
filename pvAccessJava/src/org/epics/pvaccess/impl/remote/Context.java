@@ -14,6 +14,9 @@
 
 package org.epics.pvaccess.impl.remote;
 
+import java.util.Map;
+
+import org.epics.pvaccess.plugins.SecurityPlugin;
 import org.epics.pvaccess.util.logging.LoggerProvider;
 import org.epics.pvdata.misc.Timer;
 
@@ -36,5 +39,12 @@ public interface Context extends LoggerProvider {
 	 * @return transport (virtual circuit) registry.
 	 */
 	public TransportRegistry getTransportRegistry();
+	
+	/**
+	 * Get map of available security plug-ins.
+	 * @return the map of available security plug-ins
+	 */
+	public Map<String, SecurityPlugin> getSecurityPlugins();
+
 
 }

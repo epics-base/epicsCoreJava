@@ -21,13 +21,15 @@ import java.util.logging.Level;
 
 import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.Channel;
+import org.epics.pvaccess.client.Channel.ConnectionState;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.Channel.ConnectionState;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
+import org.epics.pvaccess.plugins.SecurityPlugin.ChannelSecuritySession;
+import org.epics.pvaccess.plugins.SecurityPlugin.SecuritySession;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.server.impl.remote.rpc.ServerRPCService;
@@ -83,8 +85,27 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			return;
 		}
 		
-		final ChannelProvider provider = context.getChannelProvider();
-		final ChannelRequester cr = new ChannelRequesterImpl(transport, channelName, cid);
+		SecuritySession securitySession = transport.getSecuritySession();
+		ChannelSecuritySession channelSecuritySession;
+		try {
+			channelSecuritySession = securitySession.createChannelSession(channelName);
+			if (channelSecuritySession == null)
+				throw new SecurityException("null channelSecuritySession");
+		} catch (SecurityException se) {
+			final ChannelRequester cr = new ChannelRequesterImpl(transport, channelName, cid, null);
+			Status asStatus = StatusFactory.getStatusCreate().
+					createStatus(StatusType.ERROR, "Insufficient rights to create a channel: " + se.getMessage(), se);
+			cr.channelCreated(asStatus, null);
+			return;
+		} catch (Throwable th) {
+			final ChannelRequester cr = new ChannelRequesterImpl(transport, channelName, cid, null);
+			Status asStatus = StatusFactory.getStatusCreate().
+					createStatus(StatusType.ERROR, "Unexpected exception caught while examining channel creation access rights: " + th.getMessage(), th);
+			cr.channelCreated(asStatus, null);
+			return;
+		}
+		
+		final ChannelRequester cr = new ChannelRequesterImpl(transport, channelName, cid, channelSecuritySession);
 		
 		if (channelName.equals(SERVER_CHANNEL_NAME))
 		{
@@ -98,7 +119,10 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			cr.channelCreated(StatusFactory.getStatusCreate().getStatusOK(), serverChannel);
 		}
 		else
+		{
+			final ChannelProvider provider = context.getChannelProvider();
 			provider.createChannel(channelName, cr, transport.getPriority());
+		}
 	}
 
 	/**
@@ -123,6 +147,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		private final Transport transport;
 		private final String channelName;
 		private final int cid;
+		private final ChannelSecuritySession css;
 
 		private Status status;
 		private Channel channel;
@@ -132,10 +157,11 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		 * @param channelName
 		 * @param cid
 		 */
-		public ChannelRequesterImpl(Transport transport, String channelName, int cid) {
+		public ChannelRequesterImpl(Transport transport, String channelName, int cid, ChannelSecuritySession css) {
 			this.transport = transport;
 			this.channelName = channelName;
 			this.cid = cid;
+			this.css = css;
 		}
 		
 		@Override
@@ -195,6 +221,8 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			// error response
 			if (channel == null) {
 				createChannelFailedResponse(buffer, control, status);
+				if (css != null)
+					css.close();
 			}
 			// OK
 			else {
@@ -211,7 +239,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 					int sid = casTransport.preallocateChannelSID();
 					try
 					{
-						serverChannel = new ServerChannelImpl(channel, cid, sid, casTransport.getSecurityToken());
+						serverChannel = new ServerChannelImpl(channel, cid, sid, css);
 						
 						// ack allocation and register
 						casTransport.registerChannel(sid, serverChannel);
@@ -234,6 +262,8 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 							BaseChannelRequester.statusCreate.createStatus(StatusType.FATAL, "failed to create channel", th));
 					if (serverChannel != null)
 						serverChannel.destroy();
+					else if (css != null)
+						css.close();
 				}
 			}
 		}

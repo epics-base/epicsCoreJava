@@ -105,6 +105,10 @@ public class GetHandler extends AbstractServerResponseHandler {
 		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
+
+			// asCheck
+			channel.getChannelSecuritySession().release(ioid);
+			
 			if (channelGet != null)
 				channelGet.destroy();
 		}
@@ -195,18 +199,17 @@ public class GetHandler extends AbstractServerResponseHandler {
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
-			/*
-			// check process access rights
-			if (process && !AccessRights.PROCESS.isSet(channel.getAccessRights()))
-			{
-				getFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noProcessACLStatus);
-				return;
-			}
-			*/
-
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 	
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelGet(ioid, pvRequest);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)10, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
+				return;
+			}
+			
 			// create...
 			new ChannelGetRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -224,17 +227,17 @@ public class GetHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)10, transport, ioid, qosCode, BaseChannelRequester.otherRequestPendingStatus);
 				return;
 			}
-
-			/*
-			// check read access rights
-			if (!AccessRights.READ.isSet(channel.getAccessRights()))
+			
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
+			if (!asStatus.isSuccess())
 			{
-				getFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noReadACLStatus);
+				BaseChannelRequester.sendFailureMessage((byte)10, transport, ioid, qosCode, asStatus);
 				if (lastRequest)
 					request.destroy();
 				return;
 			}
-			 */
+
 			ChannelGet channelGet = request.getChannelGet();
 			
 			if (lastRequest)

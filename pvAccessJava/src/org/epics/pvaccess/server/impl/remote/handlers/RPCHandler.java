@@ -99,6 +99,10 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
+
+			// asCheck
+			channel.getChannelSecuritySession().release(ioid);
+			
 			if (channelRPC != null)
 				channelRPC.destroy();
 		}
@@ -185,18 +189,17 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
-			/*
-			// check process access rights
-			if (process && !AccessRights.PROCESS.isSet(channel.getAccessRights()))
-			{
-				putGetFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noProcessACLStatus);
-				return;
-			}
-			*/
-
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 		    
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelRPC(ioid, pvRequest);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)20, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
+				return;
+			}
+
 			// create...
 		    new ChannelRPCRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -215,31 +218,19 @@ public class RPCHandler extends AbstractServerResponseHandler {
 				return;
 			}
 
-			/*
-			// check write access rights
-			if (!AccessRights.WRITE.isSet(channel.getAccessRights()))
-			{
-				putGetFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noWriteACLStatus);
-				if (lastRequest)
-					request.destroy();
-				return;
-			}
-			 */
-			
-			/*
-			// check read access rights
-			if (!AccessRights.READ.isSet(channel.getAccessRights()))
-			{
-				putGetFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noReadACLStatus);
-				if (lastRequest)
-					request.destroy();
-				return;
-			}
-			*/
-
 			// deserialize put data
 			final PVStructure pvArgument = SerializationHelper.deserializeStructureFull(payloadBuffer, transport);
 			
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeRPC(ioid, pvArgument);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)20, transport, ioid, qosCode, asStatus);
+				if (lastRequest)
+					request.destroy();
+				return;
+			}
+
 			ChannelRPC channelRPC = request.getChannelRPC();
 			
 			if (lastRequest)

@@ -122,6 +122,14 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 			
 		final String subField = SerializeHelper.deserializeString(payloadBuffer, transport);
 
+		// asCheck
+		Status asStatus = channel.getChannelSecuritySession().authorizeGetField(ioid, subField);
+		if (!asStatus.isSuccess())
+		{
+			getFieldFailureResponse(transport, ioid, asStatus);
+			return;
+		}
+
 		// issue request
 		channel.getChannel().getField(new GetFieldRequesterImpl(context, channel, ioid, transport), subField);
 	}

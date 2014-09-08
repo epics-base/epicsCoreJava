@@ -14,7 +14,6 @@
 
 package org.epics.pvaccess.impl.remote.server;
 
-import org.epics.pvdata.pv.PVField;
 
 
 /**
@@ -24,12 +23,6 @@ import org.epics.pvdata.pv.PVField;
  */
 public interface ChannelHostingTransport {
 
-	/**
-	 * Get security token.
-	 * @return security token, can be <code>null</code>.
-	 */
-	public PVField getSecurityToken();
-	
 	/**
 	 * Preallocate new channel SID.
 	 * @return new channel server id (SID).

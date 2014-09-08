@@ -20,6 +20,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.nio.ByteBuffer;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -39,6 +42,7 @@ import org.epics.pvaccess.impl.remote.TransportRegistry;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPConnector;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport;
+import org.epics.pvaccess.plugins.SecurityPlugin;
 import org.epics.pvaccess.server.ServerContext;
 import org.epics.pvaccess.server.impl.remote.tcp.BlockingTCPAcceptor;
 import org.epics.pvaccess.server.plugins.BeaconServerStatusProvider;
@@ -199,7 +203,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	/**
 	 * Channel access.
 	 */
-	protected ChannelProviderRegistry channelAccess;
+	protected ChannelProviderRegistry channelProviderRegistry;
 
 	/**
 	 * Channel provider name.
@@ -243,6 +247,8 @@ public class ServerContextImpl implements ServerContext, Context {
 		generateGUID();
 		initializeLogger();
 		loadConfiguration();
+		initializeSecutiryPlugins();
+		
 		this.channelProvider = channelProvider;
 		this.serverResponseHandler = new ServerResponseHandler(this);
 	}
@@ -363,9 +369,9 @@ public class ServerContextImpl implements ServerContext, Context {
 		else if (state != State.NOT_INITIALIZED)
 			throw new IllegalStateException("Context already initialized.");
 
-		this.channelAccess = channelAccess;
+		this.channelProviderRegistry = channelAccess;
 		
-		this.channelProvider = this.channelAccess.getProvider(channelProviderName);
+		this.channelProvider = this.channelProviderRegistry.getProvider(channelProviderName);
 		if (this.channelProvider == null)
 			throw new RuntimeException("Channel provider with name '" + channelProviderName + "' not available.");
 		
@@ -387,7 +393,7 @@ public class ServerContextImpl implements ServerContext, Context {
 		else if (state != State.NOT_INITIALIZED)
 			throw new IllegalStateException("Context already initialized.");
 
-		this.channelAccess = null;
+		this.channelProviderRegistry = null;
 		this.channelProvider = channelProvider;
 		
 		internalInitialize();
@@ -922,6 +928,42 @@ public class ServerContextImpl implements ServerContext, Context {
 		return timer;
 	}
 
+	// NOTE order must be preserved
+	private final Map<String, SecurityPlugin> securityPlugins = new LinkedHashMap<String, SecurityPlugin>();
+
+	@Override
+	public Map<String, SecurityPlugin> getSecurityPlugins() {
+		return securityPlugins;
+	}
+
+	private void initializeSecutiryPlugins()
+	{
+		String classes = System.getProperty(SecurityPlugin.SECURITY_PLUGINS_SERVER_KEY);
+		if (classes != null)
+		{
+			StringTokenizer tokens = new StringTokenizer(classes, ",");
+			 
+			while (tokens.hasMoreElements())
+			{
+				String className = tokens.nextToken().trim();
+				logger.log(Level.FINER, "Loading security plug-in '" + className + "'...");
+				
+				try
+				{
+					final Class<?> c = Class.forName(className);	
+					SecurityPlugin p = (SecurityPlugin)c.newInstance();		// TODO in the future any specific method can be used		
+					securityPlugins.put(p.getId(), p);
+					logger.log(Level.FINER, "Security plug-in '" + className + "' [" + p.getId() + "] loaded.");
+				} catch (Throwable th) {
+					logger.log(Level.WARNING, "Failed to load security plug-in '" + className + "'.", th);
+				}
+			}
+		}
+		
+		logger.log(Level.FINE, "Installed security plug-ins: " + securityPlugins.keySet() + ".");
+	}
+
+	
     /**
      * Get LF thread pool.
      * @return LF thread pool, can be <code>null</code> if disabled.
@@ -931,11 +973,11 @@ public class ServerContextImpl implements ServerContext, Context {
     }*/
 
 	/**
-	 * Get channel access implementation.
-	 * @return channel access implementation.
+	 * Get channel provider registry implementation.
+	 * @return channel provider registry implementation.
 	 */
-	public ChannelProviderRegistry getChannelAccess() {
-		return channelAccess;
+	public ChannelProviderRegistry getChannelChannelProviderRegistry() {
+		return channelProviderRegistry;
 	}
 	
 	/**

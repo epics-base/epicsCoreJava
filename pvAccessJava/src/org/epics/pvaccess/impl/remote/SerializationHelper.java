@@ -6,6 +6,7 @@ import org.epics.pvaccess.PVFactory;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Structure;
@@ -62,14 +63,23 @@ public class SerializationHelper {
 	 * @return deserialized PVStructure, can be <code>null</code>.
 	 */
 	public static final PVStructure deserializeStructureFull(ByteBuffer payloadBuffer, DeserializableControl control) {
-	    PVStructure pvStructure = null;
-	    final Field structureField = control.cachedDeserialize(payloadBuffer);
-	    if (structureField != null)
+		return (PVStructure)deserializeFull(payloadBuffer, control);
+	}
+
+	/**
+	 * Deserialize optional PVField.
+	 * @param payloadBuffer data buffer.
+	 * @return deserialized PVField, can be <code>null</code>.
+	 */
+	public static final PVField deserializeFull(ByteBuffer payloadBuffer, DeserializableControl control) {
+	    PVField pvField = null;
+	    final Field field = control.cachedDeserialize(payloadBuffer);
+	    if (field != null)
 	    {
-	    	pvStructure = pvDataCreate.createPVStructure((Structure)structureField);
-	    	pvStructure.deserialize(payloadBuffer, control);
+	    	pvField = pvDataCreate.createPVField(field);
+	    	pvField.deserialize(payloadBuffer, control);
 	    }
-	    return pvStructure;
+	    return pvField;
 	}
 
 	public final static void serializeNullField(ByteBuffer buffer, SerializableControl control)
@@ -92,13 +102,20 @@ public class SerializationHelper {
 	 * @param buffer data buffer.
 	 */
 	public static final void serializeStructureFull(ByteBuffer buffer, SerializableControl control, PVStructure pvStructure) {
-	
-	    if (pvStructure == null)
-	    	serializeNullField(buffer, control);
-	    else {
-		    control.cachedSerialize(pvStructure.getField(), buffer);
-		    pvStructure.serialize(buffer, control);
-	    }
+		serializeFull(buffer, control, pvStructure);
 	}
 
+	/**
+	 * Serialize optional PVField.
+	 * @param buffer data buffer.
+	 */
+	public static final void serializeFull(ByteBuffer buffer, SerializableControl control, PVField pvField) {
+	
+	    if (pvField == null)
+	    	serializeNullField(buffer, control);
+	    else {
+		    control.cachedSerialize(pvField.getField(), buffer);
+		    pvField.serialize(buffer, control);
+	    }
+	}
 }

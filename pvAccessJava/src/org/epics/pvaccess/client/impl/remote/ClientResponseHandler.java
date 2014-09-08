@@ -30,6 +30,7 @@ import org.epics.pvaccess.client.impl.remote.handlers.NoopResponse;
 import org.epics.pvaccess.client.impl.remote.handlers.SearchResponseHandler;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
+import org.epics.pvaccess.impl.security.AuthNZHandler;
 import org.epics.pvaccess.util.HexDump;
 
 
@@ -65,8 +66,8 @@ public class ClientResponseHandler implements ResponseHandler {
 				new EchoResponse(context), /*  2 */
 				new NoopResponse(context, "Search"), /*  3 */
 				new SearchResponseHandler(context), /*  4 */
-				new NoopResponse(context, "Introspection search"), /*  5 */
-				dataResponse, /*  6 - introspection search */
+				new AuthNZHandler(), /*  5 */
+				new NoopResponse(context, "Access rights change"), /*  6 - access rights change */
 				new CreateChannelHandler(context), /*  7 */
 				new NoopResponse(context, "Destroy channel"), /*  8 */ // TODO it might be useful to implement this...
 				new ConnectionValidatedHandler(context), /*  9 */

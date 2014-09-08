@@ -117,6 +117,10 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
+
+			// asCheck
+			channel.getChannelSecuritySession().release(ioid);
+			
 			if (channelMonitor != null)
 				channelMonitor.destroy();
 		}
@@ -240,6 +244,14 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 			
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeCreateMonitor(ioid, pvRequest);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)13, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
+				return;
+			}
+			
 			// create...
 			new MonitorRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -262,16 +274,17 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			}
 			*/
 
-			/*
-			// check read access rights
-			if (!AccessRights.READ.isSet(channel.getAccessRights()))
+			// NOTE: we do a get check
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
+			if (!asStatus.isSuccess())
 			{
-				monitorFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noReadACLStatus);
+				BaseChannelRequester.sendFailureMessage((byte)13, transport, ioid, qosCode, asStatus);
 				if (lastRequest)
 					request.destroy();
 				return;
 			}
-			*/
+			
 
 			if (process)
 			{

@@ -18,7 +18,9 @@ import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
 import java.nio.channels.Channel;
 
+import org.epics.pvaccess.plugins.SecurityPlugin.SecuritySession;
 import org.epics.pvdata.pv.DeserializableControl;
+import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.Status;
 
 
@@ -139,5 +141,19 @@ public interface Transport extends DeserializableControl, Channel {
 	 * and if there is not response to it, transport will be considered as unresponsive.
 	 */
 	void aliveNotification();
+
+	/**
+	 * Pass data to the active security plug-in session.
+	 * @param data the data (any data), can be <code>null</code>.
+	 */
+	void authNZMessage(PVField data);
+
+	/**
+	 * Used to initialize authNZ (select security plug-in).
+	 * @param data
+	 */
+	void authNZInitialize(Object data);
+	
+	SecuritySession getSecuritySession();
 	
 }

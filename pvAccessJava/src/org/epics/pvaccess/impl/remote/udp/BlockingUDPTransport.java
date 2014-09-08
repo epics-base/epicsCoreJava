@@ -40,10 +40,12 @@ import org.epics.pvaccess.impl.remote.TransportClient;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
+import org.epics.pvaccess.plugins.SecurityPlugin.SecuritySession;
 import org.epics.pvaccess.server.ServerContext;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
+import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.Status;
 
 
@@ -755,6 +757,22 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 	@Override
 	public void aliveNotification() {
 		// noop
+	}
+
+	@Override
+	public void authNZMessage(PVField data) {
+		// noop
+	}
+
+	@Override
+	public void authNZInitialize(Object data) {
+		// noop
+	}
+
+	@Override
+	public SecuritySession getSecuritySession() {
+		// noop
+		return null;
 	}
 	
 }

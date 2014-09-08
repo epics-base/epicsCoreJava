@@ -16,12 +16,11 @@ package org.epics.pvaccess.server.impl.remote;
 
 import java.io.PrintStream;
 
-import org.epics.pvaccess.client.AccessRights;
 import org.epics.pvaccess.client.Channel;
 import org.epics.pvaccess.impl.remote.server.ServerChannel;
+import org.epics.pvaccess.plugins.SecurityPlugin.ChannelSecuritySession;
 import org.epics.pvaccess.util.IntHashMap;
 import org.epics.pvdata.misc.Destroyable;
-import org.epics.pvdata.pv.PVField;
 
 /**
  * Server channel (client connection to local channel).
@@ -45,6 +44,11 @@ public class ServerChannelImpl implements ServerChannel {
 	 * Channel CID.
 	 */
 	protected final int cid;
+	
+	/**
+	 * Channel secutiry session.
+	 */
+	protected final ChannelSecuritySession channelSecuritySession;
 
 	/**
 	 * Requests.
@@ -61,11 +65,11 @@ public class ServerChannelImpl implements ServerChannel {
 	 * @param channel local channel.
 	 * @param cid channel CID.
 	 * @param sid channel SID.
-	 * @param securityToken security token.
+	 * @param css
 	 */
 	public ServerChannelImpl(Channel channel, 
 						 int cid, int sid,
-						 PVField securityToken)
+						 ChannelSecuritySession css)
 	{
 		if (channel == null)
 			throw new IllegalArgumentException("non null local channel required");
@@ -73,6 +77,7 @@ public class ServerChannelImpl implements ServerChannel {
 		this.cid = cid;
 		this.sid = sid;
 		this.channel = channel;
+		this.channelSecuritySession = css;
 	}
 	
 	/**
@@ -99,17 +104,9 @@ public class ServerChannelImpl implements ServerChannel {
 		return sid;
 	}
 
-	/**
-     * Get access rights (bit-mask encoded).
-     * @see AccessRights
-     * @return bit-mask encoded access rights.
-     */
-	// TODO !!!
-    public short getAccessRights()
-    {
-    	// default impl.
-    	return (short)(0);
-    }
+	public ChannelSecuritySession getChannelSecuritySession() {
+		return channelSecuritySession;
+	}
 
     /**
      * Register request
@@ -181,6 +178,15 @@ public class ServerChannelImpl implements ServerChannel {
 		
 		// destroy all requests
 		destroyAllRequests();
+
+		try
+		{
+			channelSecuritySession.close();
+		} catch (Throwable th) {
+			// guard from bad plug-on
+			// TODO
+			th.printStackTrace();
+		}
 		
 		// TODO make impl that does shares channels (and does ref counting)!!!
 		// try catch?

@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
+import org.epics.pvaccess.impl.security.AuthNZHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.ArrayHandler;
 import org.epics.pvaccess.server.impl.remote.handlers.BadResponse;
 import org.epics.pvaccess.server.impl.remote.handlers.CancelRequestHandler;
@@ -70,7 +71,7 @@ public final class ServerResponseHandler implements ResponseHandler {
 				new EchoHandler(context), /*  2 */
 				new SearchHandler(context), /*  3 */
 				badResponse, /*  4 */
-				badResponse, /*  5 */
+				new AuthNZHandler(), /*  5 */
 				badResponse, /*  6 */
 				new CreateChannelHandler(context), /*  7 */
 				new DestroyChannelHandler(context), /*  8 */

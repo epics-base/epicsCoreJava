@@ -16,10 +16,11 @@ package org.epics.pvaccess.client.impl.remote.handlers;
 
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.Transport;
-import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvdata.misc.SerializeHelper;
 
 
@@ -53,10 +54,11 @@ public class ConnectionValidationHandler extends AbstractClientResponseHandler {
 		/*int serverIntrospectionRegistryMaxSize = */ payloadBuffer.getShort(); // & 0x0000FFFF;
 		// TODO authNZ
 		int size = SerializeHelper.readSize(payloadBuffer, transport);
+		List<String> offeredSecurityPlugins = new ArrayList<String>(size);
 		for (int i = 0; i < size; i++)
-			SerializeHelper.deserializeString(payloadBuffer, transport);
+			offeredSecurityPlugins.add(SerializeHelper.deserializeString(payloadBuffer, transport));
 
-		transport.enqueueSendRequest((TransportSender)transport);
+		transport.authNZInitialize(offeredSecurityPlugins);
 	}
 
 }

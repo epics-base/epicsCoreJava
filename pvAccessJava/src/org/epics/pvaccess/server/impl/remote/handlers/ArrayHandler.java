@@ -153,6 +153,10 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
+
+			// asCheck
+			channel.getChannelSecuritySession().release(ioid);
+			
 			if (channelArray != null)
 				channelArray.destroy();
 		}
@@ -253,6 +257,14 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		    // pvRequest data
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelGet(ioid, pvRequest);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
+				return;
+			}
+
 			// create...
 		    new ChannelArrayRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -283,15 +295,47 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				final int offset = SerializeHelper.readSize(payloadBuffer, transport);
 				final int count = SerializeHelper.readSize(payloadBuffer, transport);
 				final int stride = SerializeHelper.readSize(payloadBuffer, transport);
+				
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+				
 				channelArray.getArray(offset, count, stride);
 			}
 			else if (setLength)
 			{
 				final int length = SerializeHelper.readSize(payloadBuffer, transport);
+				
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizeSetLength(ioid);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+				
 				channelArray.setLength(length);
 			}
 			else if (getLength)
 			{
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+
 				channelArray.getLength();
 			}
 			else
@@ -302,6 +346,17 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				// no count, we do not want to send extra data
 				final PVArray array = request.getPVArray();
 				array.deserialize(payloadBuffer, transport);
+
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizePut(ioid, array);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+				
 				channelArray.putArray(array, offset, array.getLength(), stride);
 			}
 		}

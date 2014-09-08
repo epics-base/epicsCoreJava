@@ -15,13 +15,18 @@
 package org.epics.pvaccess.client.impl.remote.tcp;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 import org.epics.pvaccess.impl.remote.Context;
+import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportClient;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
@@ -29,17 +34,24 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.io.Poller;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvaccess.impl.remote.tcp.NonBlockingTCPTransport;
+import org.epics.pvaccess.impl.security.SecurityPluginMessageTransportSender;
+import org.epics.pvaccess.plugins.SecurityPlugin;
+import org.epics.pvaccess.plugins.SecurityPlugin.SecurityPluginControl;
+import org.epics.pvaccess.plugins.SecurityPlugin.SecuritySession;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.misc.Timer.TimerCallback;
 import org.epics.pvdata.misc.Timer.TimerNode;
 import org.epics.pvdata.misc.TimerFactory;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.Status;
 
 /**
  * Client TCP transport implementation.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport implements Transport, TimerCallback, TransportSender {
+public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
+	implements Transport, TimerCallback, TransportSender, SecurityPluginControl {
 
 	/**
 	 * Owners (users) of the transport.
@@ -361,9 +373,15 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 			// QoS (aka connection priority(
 			buffer.putShort(getPriority());
 			
-			// list of authNZ plugin name
-			// TODO
-			SerializeHelper.serializeString("", buffer, control);
+			// selected authNZ plug-in name
+			String securityPluginName = (securitySession != null) ? securitySession.getSecurityPlugin().getId() : "";
+			SerializeHelper.serializeString(securityPluginName, buffer, control);
+			
+			// optional authNZ plug-in initialization data
+			if (securitySession != null)
+				SerializationHelper.serializeFull(buffer, control, securitySession.initializationData());
+			else
+				SerializationHelper.serializeNullField(buffer, control);
 			
 			// send immediately
 			control.flush(true);
@@ -376,6 +394,79 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport imple
 			// send immediately
 			control.flush(true);
 		}
+	}
+
+	@Override
+	public void authNZInitialize(Object data) {
+		
+		@SuppressWarnings("unchecked")
+		List<String> offeredSecurityPlugins = (List<String>)(data);
+		if (!offeredSecurityPlugins.isEmpty())
+		{
+			InetSocketAddress remoteAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
+			Map<String, SecurityPlugin> availableSecurityPlugins = context.getSecurityPlugins();
+		
+			for (String offeredSPName : offeredSecurityPlugins)
+			try
+			{
+				SecurityPlugin securityPlugin = availableSecurityPlugins.get(offeredSPName);
+				if (securityPlugin != null && securityPlugin.isValidFor(remoteAddress))
+				{
+					// create session
+					securitySession = securityPlugin.createSession(remoteAddress, this, null);
+				}
+			} catch (Throwable th) {
+				context.getLogger().log(Level.SEVERE, "Unexpected exception caught while calling SecurityPluin.isValidFor(InetAddress) methods.", th);
+			}
+		}
+		
+		enqueueSendRequest(this);
+		
+	}
+	
+	private volatile SecuritySession securitySession = null;
+
+	@Override
+	public void authNZMessage(PVField data) {
+		SecuritySession ss = securitySession;
+		if (ss != null)
+			ss.messageReceived(data);
+		else
+			context.getLogger().warning("authNZ message received but no security plug-in session active");
+	}
+	
+	@Override
+	public void sendSecurityPluginMessage(PVField data) {
+		// TODO not optimal since it allocates a new object every time
+		enqueueSendRequest(new SecurityPluginMessageTransportSender(data));
+	}
+
+	@Override
+	public void authenticationCompleted(Status status) {
+		// noop for client side (server will send ConnectionValidation message)
+	}
+
+	// TODO move to proper place
+	@Override
+	public void close() throws IOException {
+		
+		if (securitySession != null)
+		{
+			try {
+				securitySession.close();
+			} catch (Throwable th) {
+				context.getLogger().log(Level.WARNING, "Unexpection exception caight while closing secutiry session.", th);
+			}
+			
+			securitySession = null;
+		}
+		
+		super.close();
+	}
+
+	@Override
+	public SecuritySession getSecuritySession() {
+		return securitySession;
 	}
 	
 	/* (non-Javadoc)

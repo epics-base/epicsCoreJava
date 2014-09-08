@@ -14,10 +14,16 @@
 
 package org.epics.pvaccess.server.impl.remote.tcp;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.Context;
@@ -28,8 +34,14 @@ import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.impl.remote.server.ServerChannel;
 import org.epics.pvaccess.impl.remote.tcp.BlockingTCPTransport;
+import org.epics.pvaccess.impl.security.NoSecurityPlugin;
+import org.epics.pvaccess.impl.security.SecurityPluginMessageTransportSender;
+import org.epics.pvaccess.plugins.SecurityPlugin;
+import org.epics.pvaccess.plugins.SecurityPlugin.SecurityPluginControl;
+import org.epics.pvaccess.plugins.SecurityPlugin.SecuritySession;
 import org.epics.pvaccess.util.IntHashMap;
 import org.epics.pvdata.factory.StatusFactory;
+import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -39,7 +51,8 @@ import org.epics.pvdata.pv.Status.StatusType;
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class BlockingServerTCPTransport extends BlockingTCPTransport implements ChannelHostingTransport, TransportSender {
+public class BlockingServerTCPTransport extends BlockingTCPTransport
+	implements ChannelHostingTransport, TransportSender, SecurityPluginControl {
 
 	/**
 	 * Last SID cache. 
@@ -186,14 +199,6 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	}
 
 	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.core.ChannelHostingTransport#getSecurityToken()
-	 */
-	public PVField getSecurityToken() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 	 */
 	@Override
@@ -265,8 +270,27 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 			buffer.putShort(Short.MAX_VALUE);
 			
 			// list of authNZ plugin names
-			// TODO
-			buffer.put((byte)0);
+			Map<String, SecurityPlugin> securityPlugins = context.getSecurityPlugins();
+			List<String> validSPNames = new ArrayList<String>(securityPlugins.size());
+			InetSocketAddress remoteAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
+			for (SecurityPlugin securityPlugin : securityPlugins.values())
+			{
+				try
+				{
+					if (securityPlugin.isValidFor(remoteAddress))
+						validSPNames.add(securityPlugin.getId());
+				} catch (Throwable th) {
+					context.getLogger().log(Level.SEVERE, "Unexpected exception caught while calling SecurityPluin.isValidFor(InetAddress)/getId() methods.", th);
+				}
+			}
+			
+			int validSPCount = validSPNames.size();
+			
+			SerializeHelper.writeSize(validSPCount, buffer, this);
+			for (String spName : validSPNames)
+				SerializeHelper.serializeString(spName, buffer);
+			
+			securityRequired = (validSPCount > 0);
 			
 			// send immediately
 			control.flush(true);
@@ -278,7 +302,7 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 			//
 			
 			control.startMessage((byte)9, 0);
-			
+
 			verificationStatus.serialize(buffer, control);
 			
 			// send immediately
@@ -302,9 +326,11 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	public void release(TransportClient client) {
 	}
 	
-	private volatile Status verificationStatus = 
-		StatusFactory.getStatusCreate()
-			.createStatus(StatusType.ERROR, "server-side valiation timeout", null);
+	private static Status validationTimeoutStatus =
+			StatusFactory.getStatusCreate()
+				.createStatus(StatusType.ERROR, "server-side validation timeout", null);
+
+	private volatile Status verificationStatus = validationTimeoutStatus;
 
 	@Override
 	public void verified(Status status) {
@@ -315,20 +341,137 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport implements 
 	@Override
 	public boolean verify(long timeoutMs) {
 		enqueueSendRequest(this);
-		
+
 		boolean verified = super.verify(timeoutMs);
-		
+
 		enqueueSendRequest(this);
 
 		return verified;
 	}
 	
+	private static Status invalidSecurityPluginNameStatus =
+			StatusFactory.getStatusCreate()
+				.createStatus(StatusType.ERROR, "invalid security plug-in name", null);
+	
+	@Override
+	public void authNZInitialize(Object data) {
+		
+		Object[] dataArray = (Object[])data;
+		String securityPluginName = (String)dataArray[0];
+		PVField initializationData = (PVField)dataArray[1];
+		
+		InetSocketAddress remoteAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
+	
+		// check if plug-in name is valid
+		SecurityPlugin securityPlugin = context.getSecurityPlugins().get(securityPluginName);
+		if (securityPlugin == null)
+		{
+			if (securityRequired)
+			{
+				verified(invalidSecurityPluginNameStatus);
+				return;
+			}
+			else
+			{
+				securityPlugin = NoSecurityPlugin.INSTANCE;
+				context.getLogger().finer("No security plug-in installed, selecting default plug-in '" + securityPlugin.getId() + "' for PVA client: " + remoteAddress);
+			}
+		}
+		
+		try
+		{
+			if (!securityPlugin.isValidFor(remoteAddress))
+				verified(invalidSecurityPluginNameStatus);
+		} catch (Throwable th) {
+			context.getLogger().log(Level.SEVERE, "Unexpected exception caught while calling SecurityPluin.isValidFor(InetAddress) methods.", th);
+			
+			verified(StatusFactory.getStatusCreate()
+						.createStatus(StatusType.ERROR, "disfunctional security plug-in", th));
+			return;
+		}
+
+		context.getLogger().finer("Accepted security plug-in '" + securityPluginName + "' for PVA client: " + remoteAddress);
+		
+		// create session
+		securitySession = securityPlugin.createSession(remoteAddress, this, initializationData);
+	}
+	
+	private volatile SecuritySession securitySession = null;
+	private volatile boolean securityRequired = true;
+
+	@Override
+	public void authNZMessage(PVField data) {
+		SecuritySession ss = securitySession;
+		if (ss != null)
+			ss.messageReceived(data);
+		else
+			context.getLogger().warning("authNZ message received but no security plug-in session active");
+	}
+	
+	@Override
+	public void sendSecurityPluginMessage(PVField data) {
+		// TODO not optimal since it allocates a new object every time
+		enqueueSendRequest(new SecurityPluginMessageTransportSender(data));
+	}
+	
+	@Override
+	public void authenticationCompleted(Status status) {
+
+		try {
+			context.getLogger().finer("Authentication completed with status '" + status.getType() + "' for PVA client: " + channel.getRemoteAddress());
+		} catch (IOException e1) {
+			// noop
+		}
+		
+		if (!verified)
+			verified(status);
+		else if (!status.isSuccess())
+		{
+			String msg = "Re-authentication failed: " + status.getMessage();
+			String stackDump = status.getStackDump();
+			if (stackDump != null && !stackDump.isEmpty())
+				msg += "\n" + stackDump;
+			context.getLogger().info(msg);
+
+			try {
+				close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.Transport#aliveNotification()
 	 */
 	@Override
 	public void aliveNotification() {
 		// noop on server-side
+	}
+
+	// TODO move to proper place
+	@Override
+	public void close() throws IOException {
+		
+		if (securitySession != null)
+		{
+			try {
+				securitySession.close();
+			} catch (Throwable th) {
+				context.getLogger().log(Level.WARNING, "Unexpection exception caight while closing secutiry session.", th);
+			}
+			
+			securitySession = null;
+		}
+		
+		super.close();
+	}
+
+
+	@Override
+	public SecuritySession getSecuritySession() {
+		return securitySession;
 	}
 	
 }

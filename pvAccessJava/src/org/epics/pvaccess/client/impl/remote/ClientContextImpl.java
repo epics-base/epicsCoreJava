@@ -20,7 +20,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Handler;
@@ -56,6 +58,8 @@ import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvaccess.impl.remote.request.ResponseRequest;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPConnector;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport;
+import org.epics.pvaccess.plugins.SecurityPlugin;
+import org.epics.pvaccess.plugins.impl.client.CAClientSecurityPlugin;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvaccess.util.IntHashMap;
 import org.epics.pvaccess.util.configuration.Configuration;
@@ -267,6 +271,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	{
 		initializeLogger();
 		loadConfiguration();
+		initializeSecutiryPlugins();
 		
 		clientResponseHandler = new ClientResponseHandler(this);
 	}
@@ -970,6 +975,47 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		return timer;
 	}
 
+	private final Map<String, SecurityPlugin> securityPlugins = new LinkedHashMap<String, SecurityPlugin>();
+
+	@Override
+	public Map<String, SecurityPlugin> getSecurityPlugins() {
+		return securityPlugins;
+	}
+
+	private void initializeSecutiryPlugins()
+	{
+		String classes = System.getProperty(SecurityPlugin.SECURITY_PLUGINS_CLIENT_KEY);
+		if (classes != null)
+		{
+			StringTokenizer tokens = new StringTokenizer(classes, ",");
+			 
+			while (tokens.hasMoreElements())
+			{
+				String className = tokens.nextToken().trim();
+				logger.log(Level.FINER, "Loading security plug-in '" + className + "'...");
+				
+				try
+				{
+					final Class<?> c = Class.forName(className);	
+					SecurityPlugin p = (SecurityPlugin)c.newInstance();		// TODO in the future any specific method can be used		
+					securityPlugins.put(p.getId(), p);
+					logger.log(Level.FINER, "Security plug-in '" + className + "' [" + p.getId() + "] loaded.");
+				} catch (Throwable th) {
+					logger.log(Level.WARNING, "Failed to load security plug-in '" + className + "'.", th);
+				}
+			}
+		}
+		
+		// load by default
+		if (!securityPlugins.containsKey("ca"))
+		{
+			SecurityPlugin p = new CAClientSecurityPlugin();
+			securityPlugins.put(p.getId(), p);
+		}
+
+		logger.log(Level.FINE, "Installed security plug-ins: " + securityPlugins.keySet() + ".");
+	}
+	
 	/**
 	 * Get channel search manager.
 	 * @return channel search manager.

@@ -149,6 +149,10 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
+
+			// asCheck
+			channel.getChannelSecuritySession().release(ioid);
+			
 			if (channelPutGet != null)
 				channelPutGet.destroy();
 		}
@@ -266,18 +270,17 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
-			/*
-			// check process access rights
-			if (process && !AccessRights.PROCESS.isSet(channel.getAccessRights()))
-			{
-				putGetFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noProcessACLStatus);
-				return;
-			}
-			*/
-
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
 		    
+			// asCheck
+			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelPutGet(ioid, pvRequest);
+			if (!asStatus.isSuccess())
+			{
+				BaseChannelRequester.sendFailureMessage((byte)12, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
+				return;
+			}
+
 			// create...
 		    new ChannelPutGetRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -298,38 +301,36 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 				return;
 			}
 
-			/*
-			// check write access rights
-			if (!AccessRights.WRITE.isSet(channel.getAccessRights()))
-			{
-				putGetFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noWriteACLStatus);
-				if (lastRequest)
-					request.destroy();
-				return;
-			}
-			 */
-			
-			/*
-			// check read access rights
-			if (!AccessRights.READ.isSet(channel.getAccessRights()))
-			{
-				putGetFailureResponse(transport, ioid, qosCode, BaseChannelRequester.noReadACLStatus);
-				if (lastRequest)
-					request.destroy();
-				return;
-			}
-			*/
-			
 			ChannelPutGet channelPutGet = request.getChannelPutGet();
 			if (lastRequest)
 				channelPutGet.lastRequest();
 			
 			if (getGet)
 			{
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)12, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+
 				channelPutGet.getGet();
 			}
 			else if (getPut)
 			{
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)12, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+
 				channelPutGet.getPut();
 			}
 			else
@@ -339,6 +340,17 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 				final PVStructure pvStructure = request.getPVPutStructure();
 				bitSet.deserialize(payloadBuffer, transport);
 				pvStructure.deserialize(payloadBuffer, transport, bitSet);
+				
+				// asCheck
+				Status asStatus = channel.getChannelSecuritySession().authorizePutGet(ioid, pvStructure, bitSet);
+				if (!asStatus.isSuccess())
+				{
+					BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, qosCode, asStatus);
+					if (lastRequest)
+						request.destroy();
+					return;
+				}
+				
 				channelPutGet.putGet(pvStructure, bitSet);
 			}
 		}

@@ -59,7 +59,7 @@ public class BlockingTCPConnector implements Connector {
 	/**
 	 * Verification timeout.
 	 */
-	private static final int VERIFICATION_TIMEOUT = 3000;	// 3s
+	private static final int VERIFICATION_TIMEOUT = 5000;	// 5s
 
 	/**
 	 * Receive buffer size.

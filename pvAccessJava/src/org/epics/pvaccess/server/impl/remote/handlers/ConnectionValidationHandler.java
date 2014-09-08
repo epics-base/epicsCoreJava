@@ -17,10 +17,11 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
-import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.pv.PVField;
 
 
 /**
@@ -52,11 +53,17 @@ public class ConnectionValidationHandler extends AbstractServerResponseHandler {
 		/*int clientIntrospectionRegistryMaxSize = */ payloadBuffer.getShort(); // & 0x0000FFFF;
 		// TODO connectionQos
 		/*short connectionQos =*/ payloadBuffer.getShort();
-		// TODO authNZ
-		/*String authNZ = */ SerializeHelper.deserializeString(payloadBuffer, transport);
 		
-		// TODO call this after authNZ has done their work
-		transport.verified(StatusFactory.getStatusCreate().getStatusOK());
+		// authNZ
+		String securityPluginName = SerializeHelper.deserializeString(payloadBuffer, transport);
+		
+		// optional authNZ plug-in initialization data
+		PVField data = payloadBuffer.hasRemaining() ? 
+				SerializationHelper.deserializeFull(payloadBuffer, transport) :
+				null;
+		
+		transport.authNZInitialize(new Object[] { securityPluginName, data });
+		
 	}
 	
 }
