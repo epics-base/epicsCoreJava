@@ -254,7 +254,7 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 			ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 			sendBuffer.put(PVAConstants.PVA_MAGIC);
 			sendBuffer.put(PVAConstants.PVA_VERSION);
-			sendBuffer.put((byte)0x81);		// control + big endian
+			sendBuffer.put((byte)0xc1);		// control + server + big endian
 			sendBuffer.put((byte)2);		// set byte order
 			sendBuffer.putInt(0);		
 	
@@ -291,7 +291,7 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 			
 			SerializeHelper.writeSize(validSPCount, buffer, this);
 			for (String spName : validSPNames)
-				SerializeHelper.serializeString(spName, buffer);
+				SerializeHelper.serializeString(spName, buffer, this);
 			
 			securityRequired = (validSPCount > 0);
 			
