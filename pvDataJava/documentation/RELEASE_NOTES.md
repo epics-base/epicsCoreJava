@@ -1,4 +1,4 @@
-Release release/3.1 IN DEVELOPMENT
+Release 4.0 IN DEVELOPMENT
 ===========
 
 The main changes since release 3.0.2 are:

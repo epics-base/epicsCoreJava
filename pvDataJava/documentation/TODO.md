@@ -19,13 +19,12 @@ Currently if a subField of any of these is changed postMonitor is not called for
 David asked if this could be changed so that it is called.
 Marty thinks this may not be a good idea.
 
-timeStamp, display, control, and valueAlarm
+valueAlarm
 ----------
 
-normativeTypes.html defines time_t,  display_t, control_t, and alarmlimit_t.
-The definitions are not compatible with how property defined timeStamp, display, control, and valueAlarm.
-The definition of alarm_t does match the definition of property alarm.
-
+normativeTypes.html describes valueAlarm only for a value field that has type
+double.
+The implementation also supports all the numeric scalar types.
 
 convert
 --------
