@@ -5,7 +5,7 @@
 
     <groupId>org.epics</groupId>
     <artifactId>pvDataJava</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>4.0.0</version>
     <packaging>jar</packaging>
 
     <name>pvData - Java</name>
@@ -33,6 +33,15 @@
             <url>scp://shell.sourceforge.net/home/project-web/epics/htdocs/maven2</url>
         </repository>
     </distributionManagement>
+
+   <repositories>
+        <repository>
+            <id>epics</id>
+            <name>EPICS Repository</name>
+            <url>http://epics.sourceforge.net/maven2/</url>
+        </repository>
+    </repositories>
+
   
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -45,8 +54,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                 </configuration>
             </plugin>
 
