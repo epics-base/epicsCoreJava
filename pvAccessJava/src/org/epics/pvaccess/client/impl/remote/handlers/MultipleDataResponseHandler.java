@@ -32,7 +32,7 @@ public class MultipleDataResponseHandler extends AbstractClientResponseHandler {
 	 * @param context
 	 */
 	public MultipleDataResponseHandler(ClientContextImpl context) {
-		super(context, "Data response");
+		super(context, "Multiple data response");
 	}
 
 	/* (non-Javadoc)
@@ -41,6 +41,9 @@ public class MultipleDataResponseHandler extends AbstractClientResponseHandler {
 	@Override
 	public void handleResponse(InetSocketAddress responseFrom, Transport transport, byte version, byte command, int payloadSize, ByteBuffer payloadBuffer) {
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
+		
+		// TODO add submessage payload size, so that non-existant IOID can be skipped
+		// and others not lost
 		
 		while (true)
 		{

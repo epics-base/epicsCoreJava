@@ -54,6 +54,8 @@ public interface PVAConstants {
 
     /**
      * All messages must be aligned to 8-bytes (64-bit).
+     * MUST be 1. Code does not handle well alignment in some situations (e.g. direct deserialize).
+     * Alignment is not worth additional code complexity. 
      */
     public static final int PVA_ALIGNMENT = 1;
 
