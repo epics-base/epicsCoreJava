@@ -4,6 +4,8 @@
 package org.epics.pvaccess.server.rpc.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.epics.pvaccess.client.Channel;
@@ -13,6 +15,7 @@ import org.epics.pvaccess.client.ChannelListRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.server.rpc.RPCService;
+import org.epics.pvaccess.util.WildcharMatcher;
 import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
@@ -32,6 +35,7 @@ public class RPCChannelProvider implements ChannelProvider {
 		statusCreate.createStatus(StatusType.ERROR, "no such channel", null);
 	
 	private final HashMap<String, RPCService> services = new HashMap<String, RPCService>();
+	private final LinkedHashMap<String, RPCService> wildServices = new LinkedHashMap<String, RPCService>();
 	private final ThreadPoolExecutor threadPool;
 	
 	public RPCChannelProvider(ThreadPoolExecutor threadPool) {
@@ -59,6 +63,27 @@ public class RPCChannelProvider implements ChannelProvider {
 				// noop
 			}
 		};
+	
+	// assumes sync on services
+	private RPCService findWildService(String wildcard)
+	{
+		if (!wildServices.isEmpty())
+			for (Map.Entry<String, RPCService> entry : wildServices.entrySet())
+				if (WildcharMatcher.match(entry.getKey(), wildcard))
+					return entry.getValue();
+		
+		return null;
+	}
+	
+	// (too) simple check
+	private boolean isWildcardPattern(String pattern)
+	{
+		return
+		   (pattern.indexOf('*') != -1 ||
+			pattern.indexOf('?') != -1 ||
+			(pattern.indexOf('[') != -1 && pattern.indexOf(']') != -1));
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProvider#channelFind(java.lang.String, org.epics.pvaccess.client.ChannelFindRequester)
 	 */
@@ -67,7 +92,8 @@ public class RPCChannelProvider implements ChannelProvider {
 			ChannelFindRequester channelFindRequester) {
 		boolean found;
 		synchronized (services) {
-			found = services.containsKey(channelName);
+			found = services.containsKey(channelName) ||
+					(findWildService(channelName) != null);
 		}
 		channelFindRequester.channelFindResult(okStatus, channelFind, found);
 		return channelFind;
@@ -90,6 +116,8 @@ public class RPCChannelProvider implements ChannelProvider {
 		RPCService service;
 		synchronized (services) {
 			service = services.get(channelName);
+			if (service == null)
+				service = findWildService(channelName);
 		}
 		
 		if (service == null)
@@ -122,13 +150,18 @@ public class RPCChannelProvider implements ChannelProvider {
 	{
 		synchronized (services) {
 			services.put(serviceName, service);
+			
+			if (isWildcardPattern(serviceName))
+				wildServices.put(serviceName, service);
 		}
+		
 	}
 	
 	public void unregisterService(String serviceName)
 	{
 		synchronized (services) {
 			services.remove(serviceName);
+			wildServices.remove(serviceName);
 		}
 	}
 
@@ -141,6 +174,7 @@ public class RPCChannelProvider implements ChannelProvider {
 
 		synchronized (services) {
 			services.clear();
+			wildServices.clear();
 		}
 	}
 }
