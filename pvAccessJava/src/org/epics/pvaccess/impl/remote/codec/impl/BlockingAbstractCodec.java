@@ -3,8 +3,10 @@ package org.epics.pvaccess.impl.remote.codec.impl;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
 import org.epics.pvaccess.impl.remote.codec.ConnectionClosedException;
 
@@ -12,6 +14,8 @@ import org.epics.pvaccess.impl.remote.codec.ConnectionClosedException;
 
 // NOTE: supports 2 threads per connection (receive and send)
 public abstract class BlockingAbstractCodec extends AbstractCodec {
+
+	private final boolean debug = Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) >= 3;
 
 	private final AtomicBoolean isOpen = new AtomicBoolean(true);
 
@@ -117,8 +121,9 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 			} catch (ConnectionClosedException cce) {
 				// noop
 			} catch (IOException e) {
-				// TODO
-				e.printStackTrace();
+
+				if (debug)
+					logger.log(Level.FINER, "IO exception caught in read thread.", e);
 			}
 		}
 	}
@@ -133,8 +138,10 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 			} catch (ConnectionClosedException cce) {
 				// noop
 			} catch (IOException e) {
-				// TODO
-				e.printStackTrace();
+
+				if (debug)
+					logger.log(Level.FINER, "IO exception caught in send thread.", e);
+				
 			}
 		}
 
