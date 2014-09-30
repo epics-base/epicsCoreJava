@@ -27,7 +27,7 @@ public class RPCWildcardServiceExample {
 		public PVStructure request(PVStructure args) throws RPCRequestException {
 			
 	        // NTURI support
-			if (!args.getStructure().getID().equals("uri:ev4:nt/2012/pwd:NTURI"))
+			if (!args.getStructure().getID().equals("ev4:nt/NTURI:1.0"))
 	            throw new RPCRequestException(StatusType.ERROR, "RPC argument must be a NTURI normative type");
 			
 			// this is a wildcard service, get the actual channel name

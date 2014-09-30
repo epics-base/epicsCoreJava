@@ -41,14 +41,14 @@ public class ServerRPCService implements RPCService {
 	private static final Structure helpStructure =
 		PVFactory.getFieldCreate()
 			.createFieldBuilder()
-				.setId("uri:ev4:nt/2012/pwd:NTScalar")
+				.setId("ev4:nt/NTScalar:1.0")
 				.add("value", ScalarType.pvString)
 				.createStructure();
 	
 	private static final Structure channelListStructure =
 		PVFactory.getFieldCreate()
 			.createFieldBuilder()
-				.setId("uri:ev4:nt/2012/pwd:NTScalarArray")
+				.setId("ev4:nt/NTScalarArray:1.0")
 				.addArray("value", ScalarType.pvString)
 				.createStructure();
 
@@ -101,7 +101,7 @@ public class ServerRPCService implements RPCService {
 	public PVStructure request(PVStructure args) throws RPCRequestException {
 		
 		// NTURI support
-		if (args.getStructure().getID().equals("uri:ev4:nt/2012/pwd:NTURI"))
+		if (args.getStructure().getID().equals("ev4:nt/NTURI:1.0"))
 			args = args.getStructureField("query");
 			
 		// help support

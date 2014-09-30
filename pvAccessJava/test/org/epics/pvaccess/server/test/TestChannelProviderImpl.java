@@ -1208,7 +1208,7 @@ public class TestChannelProviderImpl implements ChannelProvider
 		    	inc = 1.0;
 		    }
 		    
-		    Structure scalarArrayStructure = fieldCreate.createStructure("uri:ev4:nt/2012/pwd:NTScalarArray",
+		    Structure scalarArrayStructure = fieldCreate.createStructure("ev4:nt/NTScalarArray:1.0",
 		    		new String[] { "value" },
 		    		new Field[] { fieldCreate.createScalarArray(ScalarType.pvDouble) } );
 		    
