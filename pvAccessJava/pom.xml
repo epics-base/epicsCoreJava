@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>pvAccess - Java</name>
-    <url>http://epics-pvdata.sourceforge.net/pvDataJava</url>
+    <url>http://epics-pvdata.sourceforge.net/pvAccessJava</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
