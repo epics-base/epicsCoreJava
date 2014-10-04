@@ -397,7 +397,7 @@ channel.</p>
          ChannelProvider.PRIORITY_DEFAULT);
 </pre>
 
-<p>This package defines the interfaces a client uses to comnmunicate with a
+<p>This package defines the interfaces a client uses to communicate with a
 pvAccess server. This project fully implements all the interfaces. If a server
 is implemented for other systems, it is OK to implement a subset of the
 interfaces. For example the CA server implemented by the pvIOCJava does not
@@ -475,7 +475,7 @@ of channel access that fully supports structured data as defined by PVData. It
 is assumed that the reader understands PVData, which is implemented by the
 package "org.epics.pvdata". </p>
 
-<p>A Channel provides a communication path beween a client and a PVRecord. A
+<p>A Channel provides a communication path between a client and a PVRecord. A
 channel access server, which must reside in the same process as the PVRecord,
 provides access to the record. The client and server can be part of the same
 process or can be in different processes on the same network node or on
@@ -589,7 +589,7 @@ interface ChannelProviderRegistry {
 <p>This method is to be used to by local pvAccess implementations (e.g.
 pvAccess server queries pvIOCJava). A client can determine if a channel exists
 without creating a channel. The client must implement a requester interface and
-the implentation provides an interface that the client can use to cancel the
+the implementation provides an interface that the client can use to cancel the
 request. The interfaces are:</p>
 <pre>
 interface ChannelFindRequester {
@@ -650,7 +650,7 @@ interface ChannelRequester extends Requester {
     <dd>This is called when a channel has been created. The argument provides
       the channel unless status was not success.</dd>
   <dt>channelStateChange</dt>
-    <dd>A channel connection state change has occured. This is called the first
+    <dd>A channel connection state change has occurred. This is called the first
       time when a channel has been created and connected to a server or
       destroyed.</dd>
 </dl>
@@ -769,7 +769,7 @@ interface ChannelRequest extends Lockable, Destroyable {
     <dd>Destroy whatever the extended interface implements. It will free all
       resources it uses.</dd>
   <dt>getChannel</dt>
-     <dd>Get the channel instance to which this reuest belongs.</dt>
+     <dd>Get the channel instance to which this request belongs.</dt>
   <dt>cancel</dt>
      <dd>Cancel the current request.</dd>
   <dt>lastRequest</dt>
@@ -936,7 +936,7 @@ interface ChannelPutRequester extends Requester {
       is connected to the server. Status provides the result of the
       createChannelPut request. If status is not success than the other
       arguments are null. channelPut is the interface for requesting puts and
-      gets. Structure is the introsection interface that must be used
+      gets. Structure is the introspection interface that must be used
       for data that is put to the server or that is returned by a get request.
       </dd>
   <dt>putDone</dt>
@@ -1035,7 +1035,7 @@ interface ChannelPutGetRequester extends Requesters
       request is connected to the server. Status provides the result of the
       createChannelPutGet request. If status is not success than the other
       arguments are null. channelPutGet is the interface for requesting putGet,
-      getPut and getGet. putStructure is the intropection interface
+      getPut and getGet. putStructure is the introspection interface
       that is used for data sent by the client and getStructure the introspection
       interface for data received by the client.
      </dd>
@@ -1091,7 +1091,7 @@ called.</p>
 
 <h3>ChannelRPC</h3>
 
-<p>A ChannelRPC is like a putProcessGet except that a completly different
+<p>A ChannelRPC is like a putProcessGet except that a completely different
 PVStructure can be returned for each request. It is created via a call to:</p>
 <pre>interface Channel extends Requester {
     ChannelRPC createChannelRPC(
@@ -1267,7 +1267,7 @@ interface ChannelArray extends ChannelRequest{
 
 <h3>Monitor</h3>
 
-<p>Monitor provides the abiliy to set monitors on data in a PVRecord. What
+<p>Monitor provides the ability to set monitors on data in a PVRecord. What
 triggers a monitor depends on the monitor support in the server. The standard
 server provides support for the following: onPut, onChange, onAbsoluteChange,
 and onPercentChange.</p>
@@ -1370,7 +1370,7 @@ and onPercentChange.</p>
 
 <p>Something like how CA implements access security is required. A
 complication is that for CA a client attaches to a single scalar or array
-field. For pvAccess a client attaches to an arbirary set of fields in a record.
+field. For pvAccess a client attaches to an arbitrary set of fields in a record.
 Takes some thought to decide what to do.</p>
 
 <h3>User Controlled Send Queues</h3>
@@ -1626,7 +1626,7 @@ PVData.
   <dt>printInfo</dt>
     <dd>Print server info to the System.out.</dd>
   <dt>dispose</dt>
-    <dd>Silently destory the server instance.</dd>
+    <dd>Silently destroy the server instance.</dd>
   <dt>setBeaconServerStatusProvider</dt>
     <dd>Set BeaconServerStatusProvider instance to be used by the server (optional).</dd>
 </dl>
