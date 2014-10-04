@@ -18,7 +18,7 @@ The following methods were removed from PVStrucure: appendPVField, appendPVField
 replacePVField, getExtendsStructureName, and putExtendsStructureName.
 
 With these changes there should be no methods that can change the introspection interface
-of any data onject after it is created.
+of any data object after it is created.
 
 
 timeStamp and valueAlarm name changes
@@ -37,7 +37,7 @@ There are two new basic types: union_t and unionArray.
 A union is like a structure that has a single subfield.
 There are two flavors:
 
-* <b>varient union</b> The field can have any type.
+* <b>variant union</b> The field can have any type.
 * <b>union</b> The field can any of specified set of types.
 
 The field type can be dynamically changed.

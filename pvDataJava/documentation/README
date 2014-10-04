@@ -13,7 +13,7 @@
 The following line publishes pvDataJava.html to the SourceForge web site,
 but bypasses the mercurial repo of pvDataJava.html (pvDataJava), so don't use this
 command. Instead use mercurial to pull, update, (make your change) and then
-commit your change. Then BNL's Jenkins CIS will notice the update, and buplish
+commit your change. Then BNL's Jenkins CIS will notice the update, and publish
 to sourceforge for you.
 
 scp pvDataJava.html <user>,epics-pvdata@web.sourceforge.net:htdocs/doc/pvDataJava

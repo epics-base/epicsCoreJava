@@ -90,11 +90,11 @@ currently planned by the EPICS V4 Working Group. </p> </p>
 
 <h2>Introduction</h2>
 
-<p>pvData is one of a set of related packages in the EPICS V4 core sofware. It
+<p>pvData is one of a set of related packages in the EPICS V4 core software. It
 describes and implements the data management system to which the the other projects
 interface.</p>
 
-<p>pvData (Process Variable Data) defines and implements an efficent way to
+<p>pvData (Process Variable Data) defines and implements an efficient way to
 store, access, and communicate memory resident data structures.</p>
 <dl>
   <dt>definition</dt>
@@ -319,19 +319,19 @@ xxx_t[] fieldName
       </pre>
       <p>Thus a structure array is an array where each element is a structure
       but all elements have the same introspection interface. For introspection
-      the structureDef appears once without any data valuies.</p>
+      the structureDef appears once without any data values.</p>
     </dd>
    <dt>union</dt>
       <dd>
-       This has two flavors: a varient union or a union of a fixed set
+       This has two flavors: a variant union or a union of a fixed set
        of types.
-       A varient union has a single sub-field that can be of any type
+       A variant union has a single sub-field that can be of any type
        and has the name <b>any</b>.
        A regular union has a single sub-field has a type that is from
       a fixed set of types and a name associated with the type.
        The union introspection interface has a field array
        that has the types and a string array that has the names.<br />
-      A varient union has the form:
+      A variant union has the form:
       <pre>
 union fieldName
     any any
@@ -352,8 +352,8 @@ union value
    <dt>UnionArray</dt>
        <dd>
         This is an array of unions.
-        Each element has the same interspection interface
-         but the subifield of each element can have a different type.
+        Each element has the same introspection interface
+         but the subfield of each element can have a different type.
        The following is an example of a union array:
        <pre>
 any[]
@@ -893,7 +893,7 @@ of methods for converting and copying data between field.</p>
 <p>The interface FieldCreate creates the introspection interfaces. The
 interface PVDataCreate creates the PVField interfaces. Between them they
 provide the ability to create every type of Field and PVField, i.e. they
-provide a complete implemenation of pvData. It is also possible for other code
+provide a complete implementation of pvData. It is also possible for other code
 to provide implementations.</p>
 
 <p>The interface StandardField provides introspection objects for standard fields.
@@ -1040,15 +1040,15 @@ Reflection consists of the following:</p>
       In addition it has a name for each field.</dd>
   <dt>StructureArray</dt>
     <dd>The field holds Structure[]. Each element has the same Structure
-      interspection interface. A client can only get/put entire PVStructure
+      introspection interface. A client can only get/put entire PVStructure
       elements NOT subfields of array elements.</dd>
   <dt>Union</dt>
     <dd>Has a single subField. The single field can either be
-    any type (variant union) or any of a specfied set of types (regular union).
-      interspection interface.</dd>
+    any type (variant union) or any of a specified set of types (regular union).
+      introspection interface.</dd>
    <dt>UnionArray</dt>
      <dd>The field holds Union[]. Each element has the same Union
-      interspection interface.</dd>
+      introspection interface.</dd>
   <dt>FieldCreate</dt>
     <dd>This is an interface that provides methods to create introspection
       interfaces. A factory is provides to create FieldCreate.</dd>
@@ -1168,7 +1168,7 @@ where
    <dt>getFieldName</dt>
        <dd>Get the name for the specified index.</dd>
    <dt>isVariant</dt>
-      <dd>returns <b>true</b> if this is varient array and <b>false</b> otherwise.
+      <dd>returns <b>true</b> if this is variant array and <b>false</b> otherwise.
 </dl>
 <h5>UnionArray</h5>
 <pre>
@@ -1211,7 +1211,7 @@ after the initial letter.</p>
 where
 <dl>
    <dt>createFieldBuilder</dt>
-    <dd>Create an instance of FieldBuilder, which is desribed next.</dd>
+    <dd>Create an instance of FieldBuilder, which is described next.</dd>
    <dt>createScalar</dt>
      <dd>Return the Scalar with the specified scalarType.
        Note that the implementation creates a single instance for
@@ -1232,7 +1232,7 @@ where
    <dt>appendFields</dt>
      <dd>Append an array of fields to a structure.</dd>
    <dt>createVariantUnion</dt>
-      <dd>Create a varient union, i. e. a union where the subfield can be any valid type.</dd>
+      <dd>Create a variant union, i. e. a union where the subfield can be any valid type.</dd>
    <dt>createUnion</dt>
       <dd>Create a union where the sub-field can have any of the types an names defined
       by the arguments and the associated names.
@@ -1287,7 +1287,7 @@ public interface FieldBuilder
 <dl>
   <dt>setId</dt>
      <dd>
-      Specfy the id for the next createStructure or createUnion call.
+      Specify the id for the next createStructure or createUnion call.
      </dd>
   <dt>add</dt>
      <dd>
@@ -1415,7 +1415,7 @@ interface Requester {
           For the default implementation, PVField prepends the full field name
           to the message and calls PVRecord.message. The default implementation
           for PVRecord either displays the message on stdout or stderr or gives
-          the message to message requsters.</li>
+          the message to message requesters.</li>
       </ul>
     </dd>
 </dl>
@@ -1503,7 +1503,7 @@ This includes the top level structure itself.
 <h4>PVAuxInfo</h4>
 <p><b>NOTE:</b> PVAuxInfo should go away.</p>
 
-<p>AuxInfo (Auxillary Information) is information about a field that is
+<p>AuxInfo (Auxiliary Information) is information about a field that is
 application specific. It will not be available outside the application that
 implements the database. In particular it will not be made available to Channel
 Access. It is used by the database itself to override the default
@@ -1717,7 +1717,7 @@ must set the PVArray to be immutable. If the PVArray is not immutable then
 the application is responsibility for coordinating access to the array.
 This violates the principle that objects should not expose their internal data but
 is important for immutable arrays. For example pvData and the javaIOC define
-many enumerated structures where an enumerated structure has twofields: index
+many enumerated structures where an enumerated structure has two fields: index
 and choices. Choices is a PVStringArray that holds the enumerated choices.
 Index is a PVInt that is the index of the currently selected choice. The
 choices can be immutable. Allowing the choices internal String[] to be shared
@@ -2142,7 +2142,7 @@ implemented by calling these convert methods.</p>
 The concept of Standard Field is closely related to property which is described below.
 The section on property provides details about alarm,
 timeStamp, display, control, and enumerated.
-That section should be read in conjuction with this section.</p>
+That section should be read in conjunction with this section.</p>
 <p>A standard field is a field that tools know how to use.
 pvData defines and provides support for the following standard fields.</p>
 <dl>
@@ -2203,26 +2203,26 @@ where
 <dl>
    <dt>scalar</dt>
      <dd>Create a Structure that has a scalar field named value and with the
-      specfied scalarType.
-     The structure can have aditional fields that are properties of the value field.
+      specified scalarType.
+     The structure can have additional fields that are properties of the value field.
      properties is some combination of
      alarm, timeStamp, display, control, and valueAlarm.</dd>
    <dt>scalarArray</dt>
      <dd>Create a Structure that has a scalarArray field named value and with the
-      specfied elementType,.
-     The structure can have aditional fields that are properties of the value field.
+      specified elementType,.
+     The structure can have additional fields that are properties of the value field.
      properties is some combination of
      alarm, timeStamp, display, and control.</dd>
    <dt>structureArray</dt>
      <dd>Create a Structure that has a structureArray field named value and with the
-      specfied structure as the introspection interface for each array element,.
-     The structure can have aditional fields that are properties of the value field.
+      specified structure as the introspection interface for each array element,.
+     The structure can have additional fields that are properties of the value field.
      properties is some combination of alarm and timeStamp.</dd>
    <dt>enumerated()</dt>
       <dd>Create an enumerated Structure</dd>
    <dt>enumerated(String properties)</dt>
      <dd>Create a Structure that has an enumerated structure field named value.
-      The structure can have aditional fields that are properties of the value field.
+      The structure can have additional fields that are properties of the value field.
      properties is some combination of
      alarm, timeStamp, and enumeratedAlarm.</dd>
    <dt>alarm</dt>
@@ -2264,20 +2264,20 @@ where
 <dl>
    <dt>scalar</dt>
      <dd>Create a PVStructure that has a scalar field named value and with the
-      specfied scalarType.
-     The structure can have aditional fields that are properties of the value field.
+      specified scalarType.
+     The structure can have additional fields that are properties of the value field.
      properties is some combination of
      alarm, timeStamp, display, control, and valueAlarm.</dd>
    <dt>scalarArray</dt>
      <dd>Create a PVStructure that has a scalarArray field named value and with the
-      specfied elementType,.
-     The structure can have aditional fields that are properties of the value field.
+      specified elementType,.
+     The structure can have additional fields that are properties of the value field.
      properties is some combination of
      alarm, timeStamp, display, and control.</dd>
    <dt>structureArray</dt>
      <dd>Create a PVStructure that has a structureArray field named value and with the
-      specfied structure as the introspection interface for each array element,.
-     The structure can have aditional fields that are properties of the value field.
+      specified structure as the introspection interface for each array element,.
+     The structure can have additional fields that are properties of the value field.
      properties is some combination of alarm and timeStamp.</dd>
    <dt>enumerated(String[] choices)</dt>
       <dd>Create an enumerated PVStructure.
@@ -2286,7 +2286,7 @@ where
    <dt>enumerated(String[] choices,String properties)</dt>
      <dd>Create a PVStructure that has an enumerated structure field named value.
        The choices field of value is initialized with choices and set immutable.
-      The structure can have aditional fields that are properties of the value field.
+      The structure can have additional fields that are properties of the value field.
      properties is some combination of
      alarm, timeStamp, and enumeratedAlarm.</dd>
 </dl>
@@ -2387,7 +2387,7 @@ considered properties of the value field. The fieldname is also the property
 name. The value field can have any type, i.e. scalar, scalarArray, or
 structure. Typical property fields are timeStamp, alarm, display, control, and
 history. The timeStamp is a special case. If it appears anywhere in the
-structure hieraracy above a value field it is a property of the value field.</p>
+structure hierarchy above a value field it is a property of the value field.</p>
 
 <p>For example the following top level structure has a single value field. The
 value field has properties alarm, timeStamp, and display.</p>
@@ -2487,7 +2487,7 @@ general purpose clients.</p>
       characteristics for the value field.</dd>
   <dt>history</dt>
     <dd>Provides a history buffer for the value field. Note that currently
-      PVData does not define history suppoprt.</dd>
+      PVData does not define history support.</dd>
   <dt>other</dt>
     <dd>Other standard properties can be defined.</dd>
 </dl>
@@ -2611,12 +2611,12 @@ i. e. it has is 0&lt;=nanoseconds&lt;nanoSecPerSec..</p>
   <dt>put(long secondsPastEpoch,int nanoseconds)</dt>
     <dd>Put a value into the timeStamp.</dd>
   <dt>getMilliSeconds</dt>
-    <dd>Get bthe number of milliseconds since the epoch.</dd>
+    <dd>Get the number of milliseconds since the epoch.</dd>
   <dt>put(long milliSeconds);</dt>
     <dd>Put a value into the timeStamp given the number of milliSeconds since
       the epoch.</dd>
   <dt>getCurrentTime</dt>
-    <dd>Get the curent time.</dd>
+    <dd>Get the current time.</dd>
   <dt>equals</dt>
     <dd>Is this time equal other?</dd>
   <dt>lt</dt>
@@ -2632,8 +2632,8 @@ i. e. it has is 0&lt;=nanoseconds&lt;nanoSecPerSec..</p>
 </dl>
 
 <p>The TimeStamp class provides arithmetic and comparison methods for time
-stamps. The result is always kept in normalized form, which means that the nano
-second portion is 0&le;=nano&lt;nanoSecPerSec. Note that it is OK to have
+stamps. The result is always kept in normalized form, which means that the
+nanosecond portion is 0&le;=nano&lt;nanoSecPerSec. Note that it is OK to have
 timeStamps for times previous to the epoch.</p>
 <h5>TimeStampFactory</h5>
 <pre>
@@ -2816,7 +2816,7 @@ The java definition for Control is:
 <p>where</p>
 <dl>
   <dt>Control</dt>
-    <dd>The default constructure.</dd>
+    <dd>The default constructor.</dd>
   <dt>getLow</dt>
     <dd>Get the low limit.</dd>
   <dt>getHigh</dt>
@@ -2894,7 +2894,7 @@ structure display
 <p>where</p>
 <dl>
   <dt>Control</dt>
-    <dd>The default constructure.</dd>
+    <dd>The default constructor.</dd>
   <dt>getLow</dt>
     <dd>Get the low limit.</dd>
   <dt>getHigh</dt>
@@ -2989,7 +2989,7 @@ class PVDisplayFactory implements PVDisplay{
   <dt>detach</dt>
     <dd>Just detaches from the pvData structure.</dd>
   <dt>isAttached</dt>
-    <dd>Is there an attachment to an enemerated structure?</dd>
+    <dd>Is there an attachment to an enumerated structure?</dd>
   <dt>setIndex</dt>
     <dd>Set the index field in the pvData structure. An exception is thrown if
       not attached to a pvData structure. </dd>
@@ -3085,7 +3085,7 @@ which is a structure containing two fields:</p>
   <dt>TimeFunction</dt>
     <dd>Time how long a function call requires.</dd>
   <dt>LinkedList</dt>
-    <dd>A douuble linked list facility that requires the user to allocate a
+    <dd>A double linked list facility that requires the user to allocate a
       node. It is more efficient that ArrayList and does not require the
       implementation to allocate storage for the nodes.</dd>
   <dt>Timer</dt>
@@ -3301,7 +3301,7 @@ where
 <p>TimeFunction is a facility that measures the average number of seconds a
 function call requires. When timeCall is called, it calls function in a loop.
 It starts with a loop of one iteration. If the total elapsed time is less then
-.1 seconds it increases the number of iterrations by a factor of 10. It keeps
+.1 seconds it increases the number of iterations by a factor of 10. It keeps
 repeating until the elapsed time is greater than .1 seconds. It returns the
 average number of seconds per call.</p>
 <h4>TimeFunctionRequester</h4>
@@ -3325,9 +3325,9 @@ public class TimeFunctionFactory {
 <h3>linked list</h3>
 
 <p>LinkedList implements a double linked list that requires a user to allocate
-the nodes. It is more efficent that ArrayList for implementing stacks and
+the nodes. It is more efficient that ArrayList for implementing stacks and
 queues. For lists that are traversed while new elements can be added or
-removed, LinkedListArray provides a way to get an array of the currrent
+removed, LinkedListArray provides a way to get an array of the current
 elements without allocating a new array each time the array is traversed.</p>
 
 <p>LinkedListArray converts a LinkedList to an LinkNode array. The
@@ -3500,9 +3500,9 @@ following methods: </p>
 <dl>
   <dt>callback</dt>
     <dd>This is called when a timer expires. This is called with no locks held.
-      When called a delay timer is no longer on the queue but a periodioc timer
+      When called a delay timer is no longer on the queue but a periodic timer
       is on a queue. Thus the callback for a delay timer can issue a new
-      schedule request but a periodic timer must not. Note the explaination of
+      schedule request but a periodic timer must not. Note the explanation of
       TimerNode.cancel below.</dd>
   <dt>timerStopped</dt>
     <dd>Timer.stop was called when a timer request was queued. or if the timer
@@ -3528,7 +3528,7 @@ callback. It has the single method:</p>
 
 <p>This provides a queue which has an immutable capacity, which is specified
 when the queue is created. When the queue is full the user code is expected to
-keep using the current el;ement until a new free element becomes avalable. This
+keep using the current element until a new free element becomes available. This
 is used by pvData.monitor.</p>
 <h4>QueueCreate</h4>
 <pre>
@@ -3567,7 +3567,7 @@ public interface Queue&lt;T&gt; {
   <dt>getNumberFree</dt>
     <dd>Get the number of fee elements in the queue.</dd>
   <dt>capacity</dt>
-    <dd>Get the capacity, i.e. the maximun number of elements the queue can
+    <dd>Get the capacity, i.e. the maximum number of elements the queue can
       hold.</dd>
   <dt>getFree</dt>
     <dd>Get the next free element. Null is returned if no free elements are
@@ -3634,7 +3634,7 @@ the following:</p>
 <h3>SerializeHelper</h3>
 
 <p>This is a helper class for serialization, which is required for sending and
-receiving pvData over the nerwork.</p>
+receiving pvData over the network.</p>
 <pre>class SerializeHelper {
     static void writeSize(final int s, ByteBuffer buffer);
     static int readSize(ByteBuffer buffer);
@@ -3671,7 +3671,7 @@ provides a language independent overview of <b>copy</b> and <b>monitor</b>.
 </p>
 <p>
 <b>NOTE:pvRequest.html</b> must be updated since it is based on an earlier version of pvCopy that
-had knowlege of PVRecord. The C++ version was implemented in pvDatabaseCPP
+had knowledge of PVRecord. The C++ version was implemented in pvDatabaseCPP
 and the Java version on pvIOCJava.
 At present only the C++ version of the new API for pvCopy is implemented.
 </p>
@@ -3684,13 +3684,13 @@ At present only the C++ version of the new API for pvCopy is implemented.
       Given an ascii string createRequest creates a PVStructure that provides
       a pvData representation of the information from the ascii string.
       It is this structure that can be passed to the channel create methods.<br />
-      The information in a pvRequest selects an arbitrarary subset of the
+      The information in a pvRequest selects an arbitrary subset of the
       fields in a top level structure that resides in the server.
       In addition options can be specified. Both global and field specific
       options can be specified.
       </dd>
    <dt>pvCopy</dt>
-     <dd>This is a faculity used by channel providers.
+     <dd>This is a facility used by channel providers.
      It provides client specific code that manages a copy of an arbitrary
      subset of the fields in a top level structure that resides in the
      provider. It also allows provider access to options specified
@@ -3804,7 +3804,7 @@ where
         This is the method for creating a PVCopy instance.<br/>
         <dl>
            <dt>pvMaster</dt>
-             <dd>the top level sructure managed by the server.</dd>
+             <dd>the top level structure managed by the server.</dd>
           <dt>pvRequest</dt>
            <dd>selects the set of subfields desired
          and options for each field.</dd>
@@ -3860,12 +3860,12 @@ where
    <dt>updateCopyFromBitSet</dt>
       <dd>
        For each set bit in bitSet set the field in copyPVStructure to the value
-      of the corrseponding field in pvMaster.
+      of the corresponding field in pvMaster.
       </dd>
    <dt>updateMaster</dt>
       <dd>
        For each set bit in bitSet set the field in pvMaster to the value
-      of the corrseponding field in copyPVStructure.
+      of the corresponding field in copyPVStructure.
       
       </dd>
    <dt>getOptions</dt>
@@ -3885,7 +3885,7 @@ where
 <p>This consists of two components:
 <dl>
    <dt>monitor</dt>
-     <dd>Used by code that implements pvAccess montors.</dd>
+     <dd>Used by code that implements pvAccess monitors.</dd>
    <dt>monitorPlugin</dt>
       <dd>Code that provides special semantics for monitors.</dd>
 </dl>
@@ -3965,7 +3965,7 @@ Note that each client has it's own queue that is not shared with other client.
    <dt>start</dt>
      <dd>
       Start monitoring.
-      This will result in a an inital monitor that has the current value
+      This will result in a an initial monitor that has the current value
       of all fields.
      </dd>
    <dt>stop</dt>
@@ -3975,11 +3975,11 @@ Note that each client has it's own queue that is not shared with other client.
    <dt>poll</dt>
      <dd>
       Called to get a monitor element.
-      If no new elemants are available then a null pointer is returned.
+      If no new elements are available then a null pointer is returned.
      </dd>
    <dt>release</dt>
      <dd>
-      Release the monotor element.
+      Release the monitor element.
       The caller owns the monitor element between the calls to poll and release.
      </dd>
 <dl>
@@ -4107,7 +4107,7 @@ It has methods:</p>
      <dd>
      MonitorPluginManager is a singleton.
      The first call to get will create the single instance.
-     Further calls will rerurn the single instance.
+     Further calls will return the single instance.
      </dd>
    <dt>addPlugin</dt>
      <dd>
@@ -4115,18 +4115,18 @@ It has methods:</p>
      </dd>
    <dt>findPlugin</dt>
      <dd>
-      Find a plugin. A NULL shared pointer is reurned if it has not been added.
+      Find a plugin. A NULL shared pointer is returned if it has not been added.
      </dd>
    <dt>showNames</dt>
      <dd>
-      Show the names of all puugins that have been added.
+      Show the names of all plugins that have been added.
      </dd>
 </dl>
 <p><b>NOTE:</b>
 Should the method <b>causeMonitor</b> 
 have arguments <b>pvField</b> and <b>pvTop</b>
-be defined so that they can not be modfied.
-This would be posssible if the following was defined:
+be defined so that they can not be modified.
+This would be possible if the following was defined:
 <pre>
 typedef std::tr1::shared_ptr&lt;const PVField&gt; PVFieldConstPtr;
 typedef std::tr1::shared_ptr&lt;const PVStructure&gt; PVStructureConstPtr;
@@ -4138,7 +4138,7 @@ virtual bool causeMonitor(
         PVStructureConstPtr const &amp;pvTop,
         MonitorElementPtr const &amp;monitorElement) = 0;
 </pre>
-But just adding these definitions is not sufficent.
+But just adding these definitions is not sufficient.
 In addition all methods defined in pvDataCPP must be checked.
 In particular many of the methods in <b>Convert</b> must have
 their arguments modified.
@@ -4164,15 +4164,15 @@ structure powerSupply
     structure power
        double value
        structure alarm
-       struvture display
+       structure display
     structure voltage
        double value
        structure alarm
-       struvture display
+       structure display
     structure current
        double value
        structure alarm
-       struvture display
+       structure display
 </pre>
 <p>A pvAccess client wants to create a monitor on the powerSupply as follows:
 The client wants a top level structure that looks like:
@@ -4188,7 +4188,7 @@ structure powerSupply
        double value
 </pre>
 In addition the client wants monitors to occur only when one of the monitored
-fields changes value but not just because a put occured.
+fields changes value but not just because a put occurred.
 Also if only the timeStamp changes value then that should not cause a monitor.
 </p>
 <p>The example monitor plugin implements the semantics the
