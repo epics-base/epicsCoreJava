@@ -49,6 +49,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.epics.pvdata.factory.ConvertFactory;
+import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.pvdata.factory.StandardPVFieldFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.property.AlarmSeverity;
@@ -57,6 +59,7 @@ import org.epics.pvdata.property.PVEnumerated;
 import org.epics.pvdata.property.PVEnumeratedFactory;
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.MessageType;
+import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
@@ -66,7 +69,9 @@ import org.epics.pvdata.pv.PVScalarArray;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.StandardField;
 import org.epics.pvdata.pv.StandardPVField;
+import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Type;
 
 /**
@@ -75,7 +80,9 @@ import org.epics.pvdata.pv.Type;
  */
 public class BaseV3ChannelStructure implements V3ChannelStructure {
     private static final Convert convert = ConvertFactory.getConvert();
+    private static final StandardField standardField = StandardFieldFactory.getStandardField();
     private static final StandardPVField standardPVField = StandardPVFieldFactory.getStandardPVField();
+    private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private static enum DBRProperty {none,status,time,graphic,control};
     private static final Map<gov.aps.jca.dbr.Status, AlarmStatus> statusMap = new HashMap<Status, AlarmStatus>();
     
@@ -265,7 +272,8 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
             pvStructure = standardPVField.scalarArray(scalarType, properties);
             break;
         case structure:
-            pvStructure = standardPVField.enumerated(new String[0], properties);
+		    Structure field = standardField.enumerated(properties);
+		    pvStructure =  pvDataCreate.createPVStructure(field);
         }
         if(nativeDBRType.isENUM()) {
             PVStructure pvStruct = (PVStructure)pvStructure.getPVFields()[0];
