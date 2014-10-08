@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.epics.pvaccess.PVAConstants;
-import org.epics.pvaccess.util.HexDump;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvaccess.util.configuration.Configuration;
 import org.epics.pvaccess.util.configuration.ConfigurationProvider;
@@ -80,43 +79,6 @@ public class ServerList  {
 		}
 		
 		return true;
-	}
-	
-	private static class GUID {
-		private final byte[] guid;
-
-		public GUID(byte[] guid) {
-			this.guid = guid;
-		}
-
-		@Override
-		public int hashCode() {
-			return Arrays.hashCode(guid);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			GUID other = (GUID) obj;
-			if (!Arrays.equals(guid, other.guid))
-				return false;
-			return true;
-		}
-
-		@Override
-		public String toString() {
-			StringBuffer b = new StringBuffer(50);
-			b.append("Ox");
-			for (byte v : guid)
-				b.append(HexDump.toHex(v));
-			return b.toString();
-		}
-		
 	}
 	
 	private static final Map<GUID, ServerEntry> serverMap =
@@ -233,7 +195,6 @@ public class ServerList  {
 	 */
 	public static void main(String[] args) throws Throwable {
 		
-		
 		final ConfigurationProvider configurationProvider = ConfigurationFactory.getProvider();
 		Configuration config = configurationProvider.getConfiguration("pvAccess-client");
 		if (config == null)
@@ -275,7 +236,7 @@ public class ServerList  {
 		sendBuffer.putInt(8+16+2+3);		// payload size
 		
 		sendBuffer.putInt(0);	    // sequenceId
-		sendBuffer.put((byte)0x81); // reply required // TODO unicast vs multicast; for now we mark outselves as unicast
+		sendBuffer.put((byte)0x81); // reply required // TODO unicast vs multicast; for now we mark ourselves as unicast
 		sendBuffer.put((byte)0);		// reserved
 		sendBuffer.putShort((short)0);  // reserved
 

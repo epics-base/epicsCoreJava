@@ -97,6 +97,11 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 		
 		final String protocol = SerializeHelper.deserializeString(payloadBuffer, transport);
 
+		org.epics.pvaccess.client.impl.remote.BeaconHandler beaconHandler = context.getBeaconHandler(protocol, responseFrom);
+		// currently we care only for servers used by this context  
+		if (beaconHandler == null)
+			return;
+
 		// extra data
 		PVField data = null;
 		final Field field = fieldCreate.deserialize(payloadBuffer, transport);
@@ -105,11 +110,6 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 			data = pvDataCreate.createPVField(field);
 			data.deserialize(payloadBuffer, transport);
 		}
-		
-		org.epics.pvaccess.client.impl.remote.BeaconHandler beaconHandler = context.getBeaconHandler(protocol, responseFrom);
-		// currently we care only for servers used by this context  
-		if (beaconHandler == null)
-			return;
 
 		// notify beacon handler
 		beaconHandler.beaconNotify(responseFrom, version, timestamp, guid, sequentalID, changeCount, data);

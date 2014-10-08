@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -89,6 +88,7 @@ public abstract class AbstractCodec
 	}
 	
 
+	@SuppressWarnings("incomplete-switch")
 	public final void processRead() throws IOException, ConnectionClosedException, InvalidDataStreamException
 	{
 		//System.out.println("processRead");
