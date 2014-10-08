@@ -16,6 +16,7 @@ package org.epics.pvaccess.impl.remote.utils;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +25,6 @@ import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.client.impl.remote.BeaconHandler;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvdata.pv.PVField;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * Simple server monitor GUI.
@@ -42,7 +41,6 @@ public class ServerStatusMonitor {
 		/**
 		 * Beacon handler map.
 		 */
-		@SuppressWarnings("unchecked")
 		private final Map<String, BeaconHandler> beaconHandlerMap = 
 				Collections.synchronizedMap(new HashMap<String, BeaconHandler>());
 		
