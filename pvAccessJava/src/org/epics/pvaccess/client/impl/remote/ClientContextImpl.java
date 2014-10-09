@@ -131,6 +131,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	 * Context logger.
 	 */
 	protected Logger logger;
+	
+	/**
+	 * Debug level.
+	 */
+	protected int debugLevel;
 
 	/**
 	 * A space-separated list of broadcast address for process variable name resolution.
@@ -269,8 +274,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	 */
 	public ClientContextImpl()
 	{
-		initializeLogger();
 		loadConfiguration();
+		initializeLogger();
 		initializeSecutiryPlugins();
 		
 		clientResponseHandler = new ClientResponseHandler(this);
@@ -289,21 +294,26 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	 */
 	protected void initializeLogger()
 	{
-		String thisClassName = this.getClass().getName();
-		String loggerName = thisClassName;
-		logger = Logger.getLogger(loggerName);
+		logger = Logger.getLogger(this.getClass().getName());
 		
-		// TODO use config
-		if (Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) > 0)
+		if (debugLevel > 0)
 		{
 			logger.setLevel(Level.ALL);
+			
+			// install console logger only if there is no already installed
+			Logger inspectedLogger = logger;
 			boolean found = false;
-			for (Handler handler : logger.getHandlers())
-				if (handler instanceof ConsoleLogHandler)
-				{
-					found = true;
-					break;
-				}
+			while (inspectedLogger != null)
+			{
+				for (Handler handler : inspectedLogger.getHandlers())
+					if (handler instanceof ConsoleLogHandler)
+					{
+						found = true;
+						break;
+					}
+				inspectedLogger = inspectedLogger.getParent();
+			}
+			
 			if (!found)
 				logger.addHandler(new ConsoleLogHandler());
 		}
@@ -327,6 +337,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	protected void loadConfiguration()
 	{
 		final Configuration config = getConfiguration();
+		
+		debugLevel = config.getPropertyAsInteger(PVAConstants.PVACCESS_DEBUG, 0);
 		
 		addressList = config.getPropertyAsString("EPICS_PVA_ADDR_LIST", addressList);
 		autoAddressList = config.getPropertyAsBoolean("EPICS_PVA_AUTO_ADDR_LIST", autoAddressList);
@@ -902,6 +914,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	 */
 	public Logger getLogger() {
 		return logger;
+	}
+
+	@Override
+	public int getDebugLevel() {
+		return debugLevel;
 	}
 
 	/**

@@ -30,8 +30,8 @@ public class AuthNZHandler extends AbstractResponseHandler {
 
 	/**
 	 */
-	public AuthNZHandler() {
-		super("authNZ message");
+	public AuthNZHandler(boolean debug) {
+		super("authNZ message", debug);
 	}
 
 	/* (non-Javadoc)

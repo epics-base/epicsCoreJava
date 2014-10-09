@@ -66,7 +66,7 @@ public class ClientResponseHandler implements ResponseHandler {
 				new EchoResponse(context), /*  2 */
 				new NoopResponse(context, "Search"), /*  3 */
 				new SearchResponseHandler(context), /*  4 */
-				new AuthNZHandler(), /*  5 */
+				new AuthNZHandler(context.getDebugLevel() >= 3), /*  5 */
 				new NoopResponse(context, "Access rights change"), /*  6 - access rights change */
 				new CreateChannelHandler(context), /*  7 */
 				new NoopResponse(context, "Destroy channel"), /*  8 */ // TODO it might be useful to implement this...

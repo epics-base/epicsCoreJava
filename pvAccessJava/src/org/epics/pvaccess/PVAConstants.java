@@ -103,7 +103,8 @@ public interface PVAConstants {
     public static final String PVA_DEFAULT_PROVIDER = "local";
 
     /**
-     * String value of the JVM property key to turn on debugging. 
+     * String value of the JVM property key to turn on debugging.
+	 * (0 - none, 1 - debug, 2 - more debug, 3 - dump messages)
      */
     public static final String PVACCESS_DEBUG = "EPICS_PVA_DEBUG";
 }

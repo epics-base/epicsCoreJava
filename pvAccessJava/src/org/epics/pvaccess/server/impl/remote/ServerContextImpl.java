@@ -119,6 +119,11 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected Logger logger;
 
 	/**
+	 * Debug level.
+	 */
+	protected int debugLevel;
+
+	/**
 	 * A space-separated list of broadcast address which to send beacons.
 	 * Each address must be of the form: ip.number:port or host.name:port
 	 */
@@ -245,8 +250,8 @@ public class ServerContextImpl implements ServerContext, Context {
 	public ServerContextImpl(ChannelProvider channelProvider)
 	{
 		generateGUID();
-		initializeLogger();
 		loadConfiguration();
+		initializeLogger();
 		initializeSecutiryPlugins();
 		
 		this.channelProvider = channelProvider;
@@ -288,17 +293,25 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected void initializeLogger()
 	{
 		logger = Logger.getLogger(this.getClass().getName());
-		// TODO use config
-		if (Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) > 0)
+		
+		if (debugLevel > 0)
 		{
 			logger.setLevel(Level.ALL);
+			
+			// install console logger only if there is no already installed
+			Logger inspectedLogger = logger;
 			boolean found = false;
-			for (Handler handler : logger.getHandlers())
-				if (handler instanceof ConsoleLogHandler)
-				{
-					found = true;
-					break;
-				}
+			while (inspectedLogger != null)
+			{
+				for (Handler handler : inspectedLogger.getHandlers())
+					if (handler instanceof ConsoleLogHandler)
+					{
+						found = true;
+						break;
+					}
+				inspectedLogger = inspectedLogger.getParent();
+			}
+			
 			if (!found)
 				logger.addHandler(new ConsoleLogHandler());
 		}
@@ -323,6 +336,8 @@ public class ServerContextImpl implements ServerContext, Context {
 	{
 		final Configuration config = getConfiguration();
 		
+		debugLevel = config.getPropertyAsInteger(PVAConstants.PVACCESS_DEBUG, 0);
+
 		beaconAddressList = config.getPropertyAsString("EPICS_PVA_ADDR_LIST", beaconAddressList);
 		beaconAddressList = config.getPropertyAsString("EPICS_PVAS_BEACON_ADDR_LIST", beaconAddressList);
 		
@@ -820,6 +835,11 @@ public class ServerContextImpl implements ServerContext, Context {
 		return logger;
 	}
 
+	@Override
+	public int getDebugLevel() {
+		return debugLevel;
+	}
+	
 	/**
 	 * Get receiver buffer (payload) size.
 	 * @return max payload size.

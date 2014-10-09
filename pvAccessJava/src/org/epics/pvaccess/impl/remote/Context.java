@@ -46,5 +46,10 @@ public interface Context extends LoggerProvider {
 	 */
 	public Map<String, SecurityPlugin> getSecurityPlugins();
 
+	/**
+	 * Get internal debug level configuration, higher value means more, 0 means none.
+	 * @return debug level.
+	 */
+	public int getDebugLevel();
 
 }
