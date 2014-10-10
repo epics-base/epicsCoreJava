@@ -38,7 +38,7 @@
 <h1>EPICS pvAccessJava</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date. -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 09-July-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 10-Oct-2014</h2>
 <dl>
   <dt>This version:</dt>
     <dd><a
@@ -66,7 +66,7 @@ related set of products:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 09-July-2014 version of the Java implementation of pvAccess. It
+<p>This is the 10-Oct-2014 version of the Java implementation of pvAccess. It
 is a complete implementation of pvAccess as currently defined. </p>
 
 </div>
@@ -364,7 +364,7 @@ The name of the provider is <b>pva</b>.</p>
 
 <p>This provides an implementation of ChannelProvider that uses the Channel Access
 network protocol instead of the pvAccess network protocol.
-It converts between DBR data and pvData.</p>
+It converts between DBR data and pvData.
 It has a ClientFactory that has methods start and stop.</p>
 <p>A client starts the channelProvider as follows:</p>
 <pre>
@@ -400,9 +400,8 @@ channel.</p>
 <p>This package defines the interfaces a client uses to communicate with a
 pvAccess server. This project fully implements all the interfaces. If a server
 is implemented for other systems, it is OK to implement a subset of the
-interfaces. For example the CA server implemented by the pvIOCJava does not
-support ChannelPutGet because an EPICS V3 IOC does not provide an equivalent
-facility.</p>
+interfaces.
+</p>
 
 <p>Except for ChannelAccessFactory and CreateRequest, this package
 contains only Java interface and enum definition.
@@ -529,8 +528,6 @@ interface ChannelProviderRegistry {
 </pre>
 
 <p>where</p>
-<dl>
-</dl>
 <dl>
   <dt>getProvider</dt>
     <dd>This gets the requested provider.Two providers are registered automatically:
@@ -717,9 +714,9 @@ overview.</p>
 
 <p>Many of the interface described in the later sections are created via a
 create call that has as one of it's arguments:
+</p>
 <pre>       PVStructure pvRequest</pre>
-
-See pvDataJava for a description of pvRequest.</p>
+See pvDataJava for a description of pvRequest.
 
 <h3>AccessRights</h3>
 
@@ -769,7 +766,7 @@ interface ChannelRequest extends Lockable, Destroyable {
     <dd>Destroy whatever the extended interface implements. It will free all
       resources it uses.</dd>
   <dt>getChannel</dt>
-     <dd>Get the channel instance to which this request belongs.</dt>
+     <dd>Get the channel instance to which this request belongs.</dd>
   <dt>cancel</dt>
      <dd>Cancel the current request.</dd>
   <dt>lastRequest</dt>
@@ -951,8 +948,7 @@ interface ChannelPutRequester extends Requester {
       is set then all fields of pvStructure have new data. Note that each
       PVField implements a method getFieldOffset(). this can be used with
       bitSet to determine which fields have new data values. See BitSet and
-      PVField in org.epics.pvdata for details.</dd>
-
+      PVField in org.epics.pvdata for details.
     </dd>
 </dl>
 
@@ -1242,8 +1238,7 @@ interface ChannelArray extends ChannelRequest{
         int stride);
     void getLength();
     void setLength(
-        int length,
-        int capacity);
+        int length);
 }
 </pre>
 
@@ -1307,7 +1302,7 @@ and onPercentChange.</p>
            <dt>status</dt>
              <dd>The result of the createMonitor request.
                 If status is not success than the other arguments are null.
-             <//dd>
+             </dd>
            <dt>monitor</dt>
                <dd>The interface for the Monitor.</dd>
            <dt>structure</dt>
@@ -1595,11 +1590,13 @@ package.</p>
 <p>This package defines the server interfaces for pvAccess, which is the
 version of channel access that fully supports structured data as defined by
 PVData. 
+</p>
 <h3>Server Context</h3>
 
 <p>This is an interface implemented by pvAccess server:</p>
 <pre>interface ServerContext {
     Version getVersion();
+    void initialize(ChannelProviderRegistry channelAccess) throws PVAException;
     void initialize(ChannelAccess channelAccess) throws PVAException, IllegalStateException;
     void run(int seconds) throws PVAException, IllegalStateException;
     void shutdown() throws PVAException, IllegalStateException;
@@ -1609,7 +1606,6 @@ PVData.
     void dispose();
     void setBeaconServerStatusProvider(BeaconServerStatusProvider beaconServerStatusProvider);
 }</pre>
-</p>
 
 <p>where</p>
 <dl>
