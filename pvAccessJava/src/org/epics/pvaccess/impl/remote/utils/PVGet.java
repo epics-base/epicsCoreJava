@@ -7,6 +7,8 @@ package org.epics.pvaccess.impl.remote.utils;
 
 import java.io.PrintStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -20,6 +22,7 @@ import org.epics.pvaccess.client.ChannelGetRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.client.ChannelRequester;
+import org.epics.pvaccess.impl.remote.utils.getopt.Getopt;
 import org.epics.pvaccess.util.logging.ConsoleLogHandler;
 import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.copy.CreateRequest;
@@ -43,10 +46,13 @@ import org.epics.pvdata.pv.PVUByte;
 import org.epics.pvdata.pv.PVUInt;
 import org.epics.pvdata.pv.PVULong;
 import org.epics.pvdata.pv.PVUShort;
+import org.epics.pvdata.pv.PVUnion;
+import org.epics.pvdata.pv.PVUnionArray;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArrayData;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.UnionArrayData;
 
 /**
  * @author mse
@@ -130,9 +136,11 @@ public class PVGet {
 			terseStructureArray(o, (PVStructureArray)pv, separator);
 			break;
 		case union:
-		//	break;
+			terseUnion(o, (PVUnion)pv, separator);
+			break;
 		case unionArray:
-		//	break;
+			terseUnionArray(o, (PVUnionArray)pv, separator);
+			break;
 		default:
 			throw new RuntimeException("unsupported field type");
 		}
@@ -140,6 +148,12 @@ public class PVGet {
 	
 	private static void terseStructure(PrintStream o, PVStructure pvStructure, char separator)
 	{
+		if (pvStructure == null)
+		{
+			o.print("(null)");
+			return;
+		}
+		
 		PVField[] fieldsData = pvStructure.getPVFields();
 		boolean first = true;
 		for (PVField fieldData : fieldsData)
@@ -151,6 +165,17 @@ public class PVGet {
 			
 			terse(o, fieldData, separator);
 		}
+	}
+
+	private static void terseUnion(PrintStream o, PVUnion pvUnion, char separator)
+	{
+		if (pvUnion == null || pvUnion.get() == null)
+		{
+			o.print("(null)");
+			return;
+		}
+		
+		terse(o, pvUnion.get(), separator);
 	}
 
 	private static void terseScalarArray(PrintStream o, PVScalarArray pvArray, char separator)
@@ -216,36 +241,144 @@ public class PVGet {
 	    }
 	}
 
+	private static void terseUnionArray(PrintStream o, PVUnionArray pvArray, char separator)
+	{
+		int length = pvArray.getLength();
+		//final boolean arrayCountFlag = true;
+		//if (arrayCountFlag)
+		{
+			if (length <= 0)
+			{
+				o.println('0');
+				return;
+			}
+			o.print(length);
+			o.print(separator);
+		}
+
+		UnionArrayData sad = new UnionArrayData();
+		pvArray.get(0, length, sad);
+		
+	    boolean first = true;
+	    for (PVUnion pvUnion : sad.data)
+	    {
+			if (first)
+				first = false;
+			else
+				o.print(separator);
+
+			terseUnion(o, pvUnion, separator);
+	    }
+	}
+
 	enum PrintMode { ValueOnlyMode, StructureMode, TerseMode };
 	
-    public static void main(String[] args) throws Throwable {
-        
-    	int argc = args.length;
-        if (argc == 0 || argc > 2)
-        {
-            System.out.println("Usage: <channelName> [<pvRequest>]");
-            return;
-        }
-        
-        PrintMode printMode = PrintMode.ValueOnlyMode;
-        
-        String channelName = args[0];
-        String pvRequestString = DEFAULT_REQUEST;
-        
-        if (argc > 1)
-        {
-        	pvRequestString = args[1];
-        	printMode = PrintMode.StructureMode;
-        }
-        
+	public static void usage()
+	{
+	    System.err.println (
+		    "\nUsage: java " + PVGet.class.getName() + " [options] <PV name>...\n\n" +
+		    "  -h: Help: Print this message\n" +
+		    "options:\n" +
+		    "  -r <pv request>:   Request, specifies what fields to return and options, default is '" + DEFAULT_REQUEST + "'\n" +
+		    "  -w <sec>:          Wait time, specifies timeout, default is " + DEFAULT_TIMEOUT + " second(s)\n" +
+		    "  -t:                Terse mode - print only value, without names\n" +
+	//	    "  -m:                Monitor mode\n" +
+	//	    "  -q:                Quiet mode, print only error messages\n" +
+		    "  -d:                Enable debug output\n" + 
+		    "  -F <ofs>:          Use <ofs> as an alternate output field separator\n" // +
+	//	    "  -f <input file>:   Use <input file> as an input that provides a list PV name(s) to be read, use '-' for stdin\n" +
+	//	    "  -c:                Wait for clean shutdown and report used instance count (for expert users)\n" +
+	//	    "\nexample: pvget double01\n"
+	    );
+	}
+	
+    public static void main(String[] args) throws Throwable
+    {
+
+		int opt; /* getopt() current option */
+		boolean debug = false;
+		@SuppressWarnings("unused")
+		boolean monitor = false;
+		@SuppressWarnings("unused")
+		boolean quiet = false;
+
+		float timeOut = DEFAULT_TIMEOUT;
+		String request = DEFAULT_REQUEST;
+		PrintMode printMode = PrintMode.ValueOnlyMode;
+		char fieldSeparator = ' ';
+
+		Getopt g = new Getopt(PVGet.class.getSimpleName(), args, ":hr:w:tmqdcF:f:");
+		g.setOpterr(false);
+
+		while ((opt = g.getopt()) != -1) {
+			switch (opt) {
+			case 'h': /* Print usage */
+				usage();
+				System.exit(0);
+			case 'w': /* Set PVA timeout value */
+				// TODO no error handling at all (NPE, NumberFormatException)
+				timeOut = Float.valueOf(g.getOptarg());
+				if (timeOut <= 0.0) {
+					System.err.println(g.getOptarg()
+							+ " is not a valid timeout value "
+							+ "- ignored. ('PVGet -h' for help.)");
+					timeOut = DEFAULT_TIMEOUT;
+				}
+				break;
+			case 'r': /* Set PVA timeout value */
+				// TODO error handling
+				request = g.getOptarg();
+				// do not override terse mode
+				if (printMode == PrintMode.ValueOnlyMode)
+					printMode = PrintMode.StructureMode;
+				break;
+			case 't': /* Terse mode */
+				printMode = PrintMode.TerseMode;
+				break;
+			case 'm': /* Monitor mode */
+				monitor = true;
+				break;
+			case 'q': /* Quiet mode */
+				quiet = true;
+				break;
+			case 'd': /* Debug log level */
+				debug = true;
+				break;
+			case 'F': /* Store this for output formatting */
+				// TODO error handling
+				fieldSeparator = g.getOptarg().charAt(0);
+				break;
+			case '?':
+				System.err.println("Unrecognized option: '-"
+						+ (char) g.getOptopt() + "'. ('PVGet -h' for help.)");
+				System.exit(1);
+			case ':':
+				System.err.println("Option '-" + (char) g.getOptopt()
+						+ "' requires an argument. ('PVGet -h' for help.)");
+				System.exit(1);
+			default:
+				usage();
+				System.exit(1);
+			}
+		}
+
+		// Remaining args list are PV names
+		int nPvs = args.length - g.getOptind();
+		if (nPvs < 1) {
+			System.err.println("No pv name(s) specified. ('PVGet -h' for help.)");
+			System.exit(1);
+		}
+
+		List<String> pvs = new ArrayList<String>(nPvs);
+		for (int i = g.getOptind(); i < args.length; i++)
+			pvs.add(args[i]);
+
         // initialize console logging
-        ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
+        ConsoleLogHandler.defaultConsoleLogging(
+        		debug || Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) > 0 ? Level.ALL : Level.INFO
+        				);
         Logger logger = Logger.getLogger(PVGet.class.getName());
         
-        // TODO
-        if (Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) > 0)
-        	logger.setLevel(Level.ALL);
-
         // setup pvAccess client
         org.epics.pvaccess.ClientFactory.start();
 
@@ -254,27 +387,36 @@ public class PVGet {
         	ChannelProviderRegistryFactory.getChannelProviderRegistry()
         		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
         
-        //
-        // create channel and channelGet
-        //
-        CountDownLatch doneSignal = new CountDownLatch(1);
-
-        ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
-        Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
-        
-        ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, channel, doneSignal, printMode);
-        CreateRequest createRequest = CreateRequest.create();
-        PVStructure pvRequest = createRequest.createRequest(pvRequestString);
-        if(pvRequest==null) {
-        	String message = "createRequest failed " + createRequest.getMessage();
-        	logger.info(message);
-        } else {
-        	channel.createChannelGet(channelGetRequester,pvRequest);
-
-        	// wait up-to 3 seconds for completion
-        	if (!doneSignal.await((long)(DEFAULT_TIMEOUT*1000), TimeUnit.MILLISECONDS))
-        		logger.info("[" + channel.getChannelName() + "] connection timeout");
+        // create channels
+        List<Channel> channels = new ArrayList<Channel>(pvs.size());
+        for (String channelName : pvs)
+        {
+            ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
+            Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
+            channels.add(channel);
         }
+        
+        // do get
+        for (Channel channel : channels)
+        {
+	        CountDownLatch doneSignal = new CountDownLatch(1);
+	        
+	        ChannelGetRequester channelGetRequester =
+	        		new ChannelGetRequesterImpl(logger, channel, doneSignal, printMode, fieldSeparator);
+	        CreateRequest createRequest = CreateRequest.create();
+	        PVStructure pvRequest = createRequest.createRequest(request);
+	        if(pvRequest==null) {
+	        	String message = "createRequest failed " + createRequest.getMessage();
+	        	logger.info(message);
+	        } else {
+	        	channel.createChannelGet(channelGetRequester,pvRequest);
+	
+	        	// wait up-to 3 seconds for completion
+	        	if (!doneSignal.await((long)(DEFAULT_TIMEOUT*1000), TimeUnit.MILLISECONDS))
+	        		logger.info("[" + channel.getChannelName() + "] connection timeout");
+	        }
+        }
+        
         // stop pvAccess client
         org.epics.pvaccess.ClientFactory.stop();
     }
@@ -315,13 +457,16 @@ public class PVGet {
     	private final Channel channel;
     	private final CountDownLatch doneSignaler;
     	private final PrintMode printMode;
+    	private final char fieldSeparator;
     	
-    	public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler, PrintMode printMode)
+    	public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler,
+    			PrintMode printMode, char fieldSeparator)
     	{
     		this.logger = logger;
     		this.channel = channel;
     		this.doneSignaler = doneSignaler;
     		this.printMode = printMode;
+    		this.fieldSeparator = fieldSeparator;
     	}
 
 		@Override
@@ -370,8 +515,7 @@ public class PVGet {
 						}
 						else
 						{
-							final char fieldSeparator = ' '; 
-							if (/*fieldSeparator == ' ' && */value.getField().getType() == Type.scalar)
+							if (fieldSeparator == ' ' && value.getField().getType() == Type.scalar)
 								System.out.printf("%-30s", channel.getChannelName());
 							else
 								System.out.print(channel.getChannelName());
@@ -379,10 +523,15 @@ public class PVGet {
 							System.out.print(fieldSeparator);
 							
 							terse(System.out, value, fieldSeparator);
+							System.out.println();
 						}
 					}
 				}
-				//else if (printMode == PrintMode.TerseMode) {}
+				else if (printMode == PrintMode.TerseMode)
+				{
+					terse(System.out, pvStructure, fieldSeparator);
+					System.out.println();
+				}
 				else // if (printMode == PrintMode.StructureMode)
 					System.out.println(channel.getChannelName() + "\n" + pvStructure + "\n");
 			}	
