@@ -35,7 +35,7 @@
 <h1>EPICS pvDataJava</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 18-August-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 10-Oct-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -44,11 +44,12 @@
     </dd>
     <dt>This version:</dt>
     <dd><a
-      href="pvDataJava_20140818.html">pvDataJava_20140818.html</a>
+      href="pvDataJava_20140818.html">pvDataJava_20140818.html
+      </a>
     </dd>
     <dt>Previous version:</dt>
     <dd> <a
-      href="pvDataJava_20140708.html">pvDataJava_20140708.html</a>
+      href="pvDataJava_20140708.html">pvDataJava_20140708.html
       </a>
     </dd>
     <dt>Editors:</dt>
@@ -73,14 +74,15 @@ V4 control system programming environment:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 18-August-2014 version of the Java implementation of pvData.
+<p>This is the 10-Oct-2014 version of the Java implementation of pvData.
 This version describes the new types union and unionArray.
 It also describes CreateRequest, which has been moved from pvAccess to pvData,
 and PVCopy, which has been moved from pvIOCCPP and now only depends on
 pvData.</p>
 
 <p> The text describes software which is a complete implementation of pvData as
-currently planned by the EPICS V4 Working Group. </p> </p>
+currently planned by the EPICS V4 Working Group.
+</p>
 
 
 <div id="toc">
@@ -239,30 +241,29 @@ rest of the line is a comment. </p>
    <dd>A scalar field can be any of the following: 
       <dl>
         <dt>boolean</dt>
-          <dd>Has the value<span>true</span> or
-            <span>false</span></dd>
+          <dd>Has the value<span>true</span> or <span>false</span></dd>
         <dt>byte</dt>
-          <dd>An 8 bit signed integer.</dd>
+          <dd>8 bit signed integer.</dd>
         <dt>short</dt>
-          <dd>An 16 bit signed integer.</dd>
+          <dd>16 bit signed integer.</dd>
         <dt>int</dt>
-          <dd>An 32 bit signed integer.</dd>
+          <dd>32 bit signed integer.</dd>
         <dt>long</dt>
-          <dd>An 64 bit signed integer.</dd>
+          <dd>64 bit signed integer.</dd>
         <dt>ubyte</dt>
-          <dd>An 8 bit unsigned integer.</dd>
+          <dd>8 bit unsigned integer.</dd>
         <dt>ushort</dt>
-          <dd>An 16 bit unsigned integer.</dd>
+          <dd>16 bit unsigned integer.</dd>
         <dt>uint</dt>
-          <dd>An 32 bit unsigned integer.</dd>
+          <dd>32 bit unsigned integer.</dd>
         <dt>ulong</dt>
-          <dd>An 64 bit unsigned integer.</dd>
+          <dd>64 bit unsigned integer.</dd>
         <dt>float</dt>
-          <dd>A IEEE float.</dd>
+          <dd>IEEE float.</dd>
         <dt>double</dt>
-          <dd>A IEEE double.</dd>
+          <dd>IEEE double.</dd>
         <dt>string</dt>
-          <dd>An immutable string.</dd>
+          <dd>immutable string.</dd>
       </dl>
     </dd>
   <dt>scalarArray</dt>
@@ -744,7 +745,10 @@ interface PVStructure extends PVField , BitSetSerializable{
 <pre>public interface FieldCreate {
     FieldBuilder createFieldBuilder();
     Scalar createScalar(ScalarType scalarType);
+    BoundedString createBoundedString(int maxLength);
     ScalarArray createScalarArray(ScalarType elementType);
+    ScalarArray createFixedScalarArray(ScalarType elementType, int size);
+    ScalarArray createBoundedScalarArray(ScalarType elementType, int bound);
     StructureArray createStructureArray(Structure elementStructure);
     UnionArray createUnionArray(Union elementUnion);
     UnionArray createVariantUnionArray();
@@ -765,8 +769,11 @@ public interface FieldBuilder
 {
     public FieldBuilder setId(String id);
     public FieldBuilder add(String name, ScalarType scalarType);
+    public FieldBuilder addBoundedString(String name, int maxLength);
     public FieldBuilder add(String name, Field field);
     public FieldBuilder addArray(String name, ScalarType scalarType);
+    public FieldBuilder addFixedArray(String name, ScalarType scalarType, int size);
+    public FieldBuilder addBoundedArray(String name, ScalarType scalarType, int bound);
     public FieldBuilder addArray(String name, Field element);
     public Structure createStructure();
     public Union createUnion();
@@ -991,7 +998,7 @@ interface DeserializableControl {
 where
 <dl>
    <dt>ensureData</dt>
-     <dd>Helper method. Ensures specified size of bytes, provides it if necessary.</dd>`
+     <dd>Helper method. Ensures specified size of bytes, provides it if necessary.</dd>
    <dt>alignData</dt>
       <dd>Align buffer.Note that this takes care only current buffer alignment. If streaming protocol is used,
         care must be taken that entire stream is aligned.</dd>
@@ -1160,7 +1167,7 @@ where
       <b>null</b> is returned if not found.
      </dd>
    <dt>getFieldIndex</dt>
-      <dd>Get the index for name. -1 is returned if not found.
+      <dd>Get the index for name. -1 is returned if not found.</dd>
    <dt>getFields</dt>
        <dd>Get the array of types.</dd>
    <dt>getFieldNames</dt>
@@ -1168,7 +1175,7 @@ where
    <dt>getFieldName</dt>
        <dd>Get the name for the specified index.</dd>
    <dt>isVariant</dt>
-      <dd>returns <b>true</b> if this is variant array and <b>false</b> otherwise.
+      <dd>returns <b>true</b> if this is variant array and <b>false</b> otherwise.</dd>
 </dl>
 <h5>UnionArray</h5>
 <pre>
@@ -1183,18 +1190,24 @@ where
 </dl>
 <h5>FieldCreate</h5>
 <p><b>Syntax for fieldName and id.</b>
-<p>A <b>fieldName</b> must begin with a letter and must be a sequence of letters
+</p>
+<p>
+A <b>fieldName</b> must begin with a letter and must be a sequence of letters
 and digits.
 A letter is defined as 'A'-'Z', 'a'-'z','_', or any Unicode character
 that denotes a letter in a language. Similarly digits are '0'-'9' and any
 Unicode character that denotes a digit in a language.
-Note that this is the same as the Java syntax for variable names.</p>
+Note that this is the same as the Java syntax for variable names.
+</p>
 <p>The syntax for <b>id</b> is the same except the '.' is also allowed
 after the initial letter.</p>
 <pre>public interface FieldCreate {
     FieldBuilder createFieldBuilder();
     Scalar createScalar(ScalarType scalarType);
+    BoundedString createBoundedString(int maxLength);
     ScalarArray createScalarArray(ScalarType elementType);
+    ScalarArray createFixedScalarArray(ScalarType elementType, int size);
+    ScalarArray createBoundedScalarArray(ScalarType elementType, int bound);
     StructureArray createStructureArray(Structure elementStructure);
     UnionArray createUnionArray(Union elementUnion);
     UnionArray createVariantUnionArray();
@@ -1216,13 +1229,25 @@ where
      <dd>Return the Scalar with the specified scalarType.
        Note that the implementation creates a single instance for
       each scalarType.</dd>
+   <dt>createBoundedString</dt>
+      <dd>Return a scalar pvString that has a bounded size for a string.</dd>
    <dt>createScalarArray</dt>
      <dd>Return the ScalarArray with the specified elementType.
        Note that the implementation creates a single instance for
       each elementType.</dd>
+   <dt>createFixedScalarArray</dt>
+      <dd>Return the ScalarArray with the specified elementType and specifies that size of
+        element size of any object that has this introspection interface.</dd>
+   <dt>createBoundedScalarArray</dt>
+      <dd>Return the ScalarArray with the specified elementType and specifies that maximum
+        element size of any object that has this introspection interface.</dd>
    <dt>createStructureArray</dt>
      <dd>Return a StructureArray with the specified introspection
      interface for each array element.</dd>
+   <dt>createUnionArray</dt>
+      <dd>Return a UnionArray with the specified introspection interface.</dd>
+   <dt>createVariantUnionArray</dt> 
+       <dd>Return a UnionArray of variant union elements.</dd>
    <dt>createStructure</dt>
      <dd>Return a Structure. There are two methods.
      The first creates a structure with an empty ID which results in an id of <b>structure</b>.
@@ -1272,8 +1297,11 @@ public interface FieldBuilder
 {
     public FieldBuilder setId(String id);
     public FieldBuilder add(String name, ScalarType scalarType);
+    public FieldBuilder addBoundedString(String name, int maxLength);
     public FieldBuilder add(String name, Field field);
     public FieldBuilder addArray(String name, ScalarType scalarType);
+    public FieldBuilder addFixedArray(String name, ScalarType scalarType, int size);
+    public FieldBuilder addBoundedArray(String name, ScalarType scalarType, int bound);
     public FieldBuilder addArray(String name, Field element);
     public Structure createStructure();
     public Union createUnion();
@@ -1294,12 +1322,18 @@ public interface FieldBuilder
      Add a name and field for then next call to createStructure or createUnion.
      There are two forms: one for an existing field and the other for a scalar field.
      </dd>
+   <dt>addBoundedString</dt>
+     <dd>Add a bounded string field.</dd>
   <dt>addArray</dt>
      <dd>
      Add a name and array field for then next call to createStructure or createUnion.
      There are two forms: one for an existing field and the other for a scalar field.
       Note that for an existing field this specifies the element type.
      </dd>
+   <dt>addFixedArray</dt>
+     <dd>Add a scalar fixed array field.</dd>
+   <dt>addBoundedArray</dt>
+     <dd>Add a scalar bounded array field.</dd>
   <dt>createStructure</dt>
      <dd>
        Create a Structure from the precious add and addArray methods.
@@ -1433,6 +1467,7 @@ This includes the top level structure itself.
 </p>
 <pre>interface PVField Serializable {
     String getFieldName();
+    String getFullName();
     int getFieldOffset();
     int getNextFieldOffset();
     int getNumberFields();
@@ -1454,6 +1489,8 @@ This includes the top level structure itself.
   <dt>getFieldName</dt>
      <dd>Get the field name for this field. This will be a empty string for
      the top level structure.</dd>
+  <dt>getFullName</dt>
+     <dd>Return the path name and field name for this field.</dd>
   <dt>getFieldOffset</dt>
     <dd>Get offset of the PVField field within top level structure. Every field
       within the PVStructure has a unique offset. The top level structure has
@@ -1622,6 +1659,7 @@ all the other PV Array interfaces. It extends PVField and provides the
 additional methods:</p>
 <pre>
 interface PVArray extends PVField, SerializableArray {
+    Array getArray();
     int getLength();
     void setLength(int len);
     int getCapacity();
@@ -1631,6 +1669,8 @@ interface PVArray extends PVField, SerializableArray {
 }
 </pre>
 <dl>
+  <dt>getArray</dt>
+    <dd>Get the Array introspection interface.</dd>
   <dt>getLength</dt>
 <dd>Get the current length. This is less that or equal to the capacity.</dd>
   <dt>setLength</dt>
@@ -1711,6 +1751,12 @@ double[] getArray(PVDoubleArray pv)
 }
 </pre>
 
+<p><b>NOTE: </b> The pvDataCPP now enforces COW (Copy on Write) for arrays.
+In the future pvDataJava should have similar rules but without the concept of <b>const</b>
+it may not be possible to enforce COW.
+shareData definitely voilates COW if any code changes the shared data.
+It should <b>not</b> used except for immutable arrays.
+</p>
 <p>shareData results in the PVArray using the primitive array that is passed to
 this method. This is most useful for immutable arrays. In this case the caller
 must set the PVArray to be immutable. If the PVArray is not immutable then 
@@ -2380,7 +2426,9 @@ Look at the code for details.
 
 <h3>Definition of Property</h3>
 
-<p>Only fields named "value" have properties. A record can have multiple value
+<p>A field can have properties provided by other fields in the same structure.
+Often this field has the name <b>value</b>
+A record can have multiple value
 fields, which can appear in the top level structure of a record or in a
 substructure. All other fields in the structure containing a value field are
 considered properties of the value field. The fieldname is also the property
@@ -2554,7 +2602,7 @@ These definitions are defined in project javaIOC.</p>
 <p>A timeStamp is represented by the following structure</p>
 <pre>
 structure timeStamp
-    long secondsPartEpoch
+    long secondsPastEpoch
     int nanoseconds
     int userTag
 </pre>
@@ -3675,7 +3723,7 @@ had knowledge of PVRecord. The C++ version was implemented in pvDatabaseCPP
 and the Java version on pvIOCJava.
 At present only the C++ version of the new API for pvCopy is implemented.
 </p>
-<p>Copy provides:
+<p>Copy provides:</p>
 <dl>
    <dt>createRequest</dt>
      <dd>
@@ -3710,7 +3758,6 @@ Monitor provides:
      of pvAccess but only pvData.
     </dd>
 </dl>
-</p>
 
 <h2>support for copy</h2>
 <p><b>copy</b> provides the ability to create a structure that has 
@@ -3882,14 +3929,13 @@ where
 
 
 <h2>support for monitor</h2>
-<p>This consists of two components:
+<p>This consists of two components:</p>
 <dl>
    <dt>monitor</dt>
      <dd>Used by code that implements pvAccess monitors.</dd>
    <dt>monitorPlugin</dt>
       <dd>Code that provides special semantics for monitors.</dd>
 </dl>
-</p>
 <h3>monitor</h3>
 <pre>
 class MonitorElement {
@@ -3916,6 +3962,7 @@ class MonitorRequester : public virtual Requester {
 <h4>monitorElement</h4>
 <p><b>MonitorElement</b> holds the data for one element of a monitor queue.
 It has the fields:
+</p>
 <dl>
   <dt>pvStructurePtr</dt>
     <dd>A top level structure with data values at the time the monitors occurs.</dd>
@@ -3924,13 +3971,13 @@ It has the fields:
   <dt>overrunBitSet</dt>
      <dd>Shows which fields have changed more han once since the previous monitor.</dd>
 </dl>
-</p>
 <h4>monitorElement queue</h4>
 <p>
 A queue of monitor elements must be implemented by any channel provider that implements
 <b>Channel::createMonitor</b>.
 For an example implementation look at pvDatabaseCPP.
 It has the following:
+</p>
 <pre>
 typedef Queue&lt;MonitorElement&gt; MonitorElementQueue;
 typedef std::tr1::shared_ptr&lt;MonitorElementQueue&gt; MonitorElementQueuePtr;
@@ -3982,7 +4029,6 @@ Note that each client has it's own queue that is not shared with other client.
       Release the monitor element.
       The caller owns the monitor element between the calls to poll and release.
      </dd>
-<dl>
 </dl>
 <h4>MonitorRequester</h4>
 <p>This must be implemented by a pvAccess client.
@@ -4050,7 +4096,7 @@ It has methods:</p>
        Should the value of pvField cause a monitor to be raised.
        pvField and pvTop are fields in the top level structure
        being monitored. monitorElement has the top level structure
-       for the copy</b>.
+       for the copy<br/>.
        The implementation should <b>not</b> modify the fields in the structure
         being monitored.
         Called with pvTop locked.
@@ -4099,7 +4145,7 @@ It has methods:</p>
       pairs. name is the subField name and value is the subField value.<br/>
      Note that a plugin will below to a single client.
     </dd>
-<dl>
+</dl>
 <h4>MonitorPluginManager</h4>
 <p><b>MonitorPluginManager</b> has the methods:</p>
 <dl>
@@ -4127,6 +4173,7 @@ Should the method <b>causeMonitor</b>
 have arguments <b>pvField</b> and <b>pvTop</b>
 be defined so that they can not be modified.
 This would be possible if the following was defined:
+</p>
 <pre>
 typedef std::tr1::shared_ptr&lt;const PVField&gt; PVFieldConstPtr;
 typedef std::tr1::shared_ptr&lt;const PVStructure&gt; PVStructureConstPtr;
@@ -4143,7 +4190,6 @@ In addition all methods defined in pvDataCPP must be checked.
 In particular many of the methods in <b>Convert</b> must have
 their arguments modified.
 Big job.
-</p>
 <h2>monitorPlugin example</h2>
 <h3>Example Plugin Overview</h3>
 <p>This section describes an example plugin that:</p>
@@ -4176,6 +4222,7 @@ structure powerSupply
 </pre>
 <p>A pvAccess client wants to create a monitor on the powerSupply as follows:
 The client wants a top level structure that looks like:
+</p>
 <pre>
 structure powerSupply
     structure alarm
@@ -4190,9 +4237,9 @@ structure powerSupply
 In addition the client wants monitors to occur only when one of the monitored
 fields changes value but not just because a put occurred.
 Also if only the timeStamp changes value then that should not cause a monitor.
-</p>
 <p>The example monitor plugin implements the semantics the
 client wants. It can be attached to any field via the following options:
+</p>
 <pre>
 [plugin=onChange,raiseMonitor=value]
 </pre>
@@ -4201,7 +4248,6 @@ value. In addition <b>value</b> equals <b>false</b> means do not raise a monotor
 for changes to this field.
 But if a change to another field does cause a monitor the change to this field
 will be passed to the client.
-</p>
 <p>
 Assume that the client has already connected to the channel.
 The client can then issue the commands:</p>

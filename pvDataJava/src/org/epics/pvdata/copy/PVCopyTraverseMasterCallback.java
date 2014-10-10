@@ -21,8 +21,8 @@ import org.epics.pvdata.pv.PVField;
  */
 public interface PVCopyTraverseMasterCallback {
     /**
-     * Called once for each field in mapvField The field in master.
-     * @param 
+     * Called once for each field in the copy. 
+     * @param pvField The field in the master.
      */
     void nextMasterPVField(PVField pvField);
 }

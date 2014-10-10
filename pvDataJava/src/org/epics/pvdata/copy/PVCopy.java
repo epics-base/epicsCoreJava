@@ -60,7 +60,7 @@ public interface PVCopy {
      * @param masterPVField The field in master.
      * @return The offset or -1 if the field in the record does not have a copy in the PVStructure.
      */
-    int getCopyOffset(PVStructure masterPVStructure,PVField masterdPVField);
+    int getCopyOffset(PVStructure masterPVStructure,PVField masterPVField);
     /**
      * Given a offset in the copy get the corresponding field in pvMaster.
      * @param structureOffset The offset in the copy.

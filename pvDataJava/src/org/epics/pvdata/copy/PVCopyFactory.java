@@ -15,7 +15,7 @@ import org.epics.pvdata.pv.PVStructure;
 public class PVCopyFactory {
     /**
      * Map a subset of the fields within a PVRecord.
-     * @param pvRecord The PVRecord.
+     * @param pvMaster The master PVStructure.
      * @param pvRequest A PVStructure which describes the set of fields of PVRecord that
      * should be mapped. See the packaged overview for details.
      * PVRecord of should it keep a separate copy.
