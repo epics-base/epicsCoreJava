@@ -1,9 +1,9 @@
 package org.epics.pvaccess.plugins.impl.client;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import org.epics.pvaccess.plugins.SecurityPlugin;
+import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StatusFactory;
@@ -21,45 +21,10 @@ public class CAClientSecurityPlugin implements SecurityPlugin, SecurityPlugin.Se
 
 	private static PVStructure userAndHost;
 	
-	private static final String HOSTNAME_KEY = "HOSTNAME";
-	private static final String STRIP_HOSTNAME_KEY = "STRIP_HOSTNAME";
-	
-	private static synchronized String getHostName() 
-	{
-		// default fallback
-		String hostName = "localhost";
-		
-		try {
-			InetAddress localAddress = InetAddress.getLocalHost();
-			hostName = localAddress.getHostName();
-		} catch (Throwable uhe) {	// not only UnknownHostException
-			// try with environment variable
-			try {
-				String envHN = System.getenv(HOSTNAME_KEY);
-				if (envHN != null)
-					hostName = envHN;
-			} catch (Throwable th) {
-				// in case not supported by JVM/OS
-			}
-			
-			// and system property (overrides env. var.)
-			hostName = System.getProperty(HOSTNAME_KEY, hostName);
-		}
-		
-		if (System.getProperties().contains(STRIP_HOSTNAME_KEY))
-		{
-			int dotPos = hostName.indexOf('.');
-			if (dotPos > 0)
-				hostName = hostName.substring(0, dotPos);
-		}
-		
-		return hostName;
-	}
-
 	static {
 
 		String userName = System.getProperty("user.name", "nobody");
-		String hostName = getHostName();
+		String hostName = InetAddressUtil.getHostName();
 		
 		Structure userAndHostStructure =
 				FieldFactory.getFieldCreate().createFieldBuilder().

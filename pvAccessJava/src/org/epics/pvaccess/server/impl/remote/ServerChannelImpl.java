@@ -145,6 +145,15 @@ public class ServerChannelImpl implements ServerChannel {
 			return (Destroyable)requests.get(id);
 		}
     }
+    
+    public Destroyable[] getRequests()
+	{
+    	synchronized (requests) {
+    		Destroyable[] reqs = new Destroyable[requests.size()];
+    		requests.toArray(reqs);
+    		return reqs;
+		}
+	}
 
     /**
      * Destroy all registered requests.

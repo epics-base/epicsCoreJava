@@ -60,4 +60,10 @@ public interface ChannelHostingTransport {
 	 * @return channel count.
 	 */
 	public int getChannelCount();
+	
+	/**
+	 * Get an array of all hosted channels.
+	 * @return an array of all hosted channels.
+	 */
+	public ServerChannel[] getChannels(); 
 }
