@@ -4,7 +4,7 @@
 
     <groupId>org.epics</groupId>
     <artifactId>pvAccessJava</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>pvAccess - Java</name>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>pvDataJava</artifactId>
-            <version>3.1.1-SNAPSHOT</version>
+            <version>4.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.sun.japex</groupId>
