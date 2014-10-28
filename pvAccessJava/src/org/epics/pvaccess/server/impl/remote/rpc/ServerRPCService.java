@@ -71,14 +71,14 @@ public class ServerRPCService implements RPCService {
 	private static final Structure helpStructure =
 		fieldCreate
 			.createFieldBuilder()
-				.setId("ev4:nt/NTScalar:1.0")
+				.setId("epics:nt/NTScalar:1.0")
 				.add("value", ScalarType.pvString)
 				.createStructure();
 	
 	private static final Structure channelListStructure =
 		fieldCreate
 			.createFieldBuilder()
-				.setId("ev4:nt/NTScalarArray:1.0")
+				.setId("epics:nt/NTScalarArray:1.0")
 				.addArray("value", ScalarType.pvString)
 				.createStructure();
 
@@ -204,7 +204,7 @@ public class ServerRPCService implements RPCService {
 	public PVStructure request(PVStructure args) throws RPCRequestException {
 		
 		// NTURI support
-		if (args.getStructure().getID().equals("ev4:nt/NTURI:1.0"))
+		if (args.getStructure().getID().startsWith("epics:nt/NTURI:1."))
 			args = args.getStructureField("query");
 			
 		// help support
