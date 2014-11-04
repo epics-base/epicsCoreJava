@@ -35,7 +35,7 @@
 <h1>EPICS pvDataJava</h1>
 <!-- Maturity: Working Draft or Request for Comments, or Recommendation, and date.  -->
 
-<h2 class="nocount">EPICS v4 Working Group, Working Draft, 10-Oct-2014</h2>
+<h2 class="nocount">EPICS v4 Working Group, Working Draft, 04-Nov-2014</h2>
 
   <dl>
     <dt>Latest version:</dt>
@@ -74,7 +74,7 @@ V4 control system programming environment:<br />
 
 <h2 class="nocount">Status of this Document</h2>
 
-<p>This is the 10-Oct-2014 version of the Java implementation of pvData.
+<p>This is the 04-Nov-2014 version of the Java implementation of pvData.
 This version describes the new types union and unionArray.
 It also describes CreateRequest, which has been moved from pvAccess to pvData,
 and PVCopy, which has been moved from pvIOCCPP and now only depends on
@@ -791,9 +791,13 @@ public interface FieldBuilder
     PVScalar createPVScalar(Scalar scalar);
     PVScalar createPVScalar(ScalarType fieldType);
     PVScalar createPVScalar(PVScalar scalarToClone);
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; T createPVScalar(
+        PVScalarType&lt;T, TA&gt; scalarType);
     PVScalarArray createPVScalarArray(ScalarArray array);
     PVScalarArray createPVScalarArray(ScalarType elementType);
     PVScalarArray createPVScalarArray(PVScalarArray arrayToClone;
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; TA createPVScalarArray(
+        PVScalarType&lt;T, TA&gt; elementType);
     PVStructureArray createPVStructureArray(StructureArray structureArray);
     PVUnionArray createPVUnionArray(UnionArray unionArray);
     PVUnionArray createPVVariantUnionArray();
@@ -803,10 +807,6 @@ public interface FieldBuilder
     PVUnion createPVUnion(Union union);
     PVUnion createPVVariantUnion();
     PVUnion createPVUnion(PVUnion unionToClone);
-    &lt;T extends PVScalar, TA extends PVScalarArray&gt; T createPVScalar(
-        PVScalarType&lt;T, TA&gt; scalarType);
-    &lt;T extends PVScalar, TA extends PVScalarArray&gt; TA createPVScalarArray(
-        PVScalarType&lt;T, TA&gt; elementType);
 	
     PVStructureArray createPVStructureArray(Structure structure);
     PVUnionArray createPVUnionArray(Union union);
@@ -1977,9 +1977,13 @@ interfaces. A factory is provided that creates PVDataCreate.</p>
     PVScalar createPVScalar(Scalar scalar);
     PVScalar createPVScalar(ScalarType fieldType);
     PVScalar createPVScalar(PVScalar scalarToClone);
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; T createPVScalar(
+        PVScalarType&lt;T, TA&gt; scalarType);
     PVScalarArray createPVScalarArray(ScalarArray array);
     PVScalarArray createPVScalarArray(ScalarType elementType);
     PVScalarArray createPVScalarArray(PVScalarArray arrayToClone;
+    &lt;T extends PVScalar, TA extends PVScalarArray&gt; TA createPVScalarArray(
+        PVScalarType&lt;T, TA&gt; elementType);
     PVStructureArray createPVStructureArray(StructureArray structureArray);
     PVUnionArray createPVUnionArray(UnionArray unionArray);
     PVUnionArray createPVVariantUnionArray();
@@ -1989,10 +1993,6 @@ interfaces. A factory is provided that creates PVDataCreate.</p>
     PVUnion createPVUnion(Union union);
     PVUnion createPVVariantUnion();
     PVUnion createPVUnion(PVUnion unionToClone);
-    &lt;T extends PVScalar, TA extends PVScalarArray&gt; T createPVScalar(
-        PVScalarType&lt;T, TA&gt; scalarType);
-    &lt;T extends PVScalar, TA extends PVScalarArray&gt; TA createPVScalarArray(
-        PVScalarType&lt;T, TA&gt; elementType);
 	
     PVStructureArray createPVStructureArray(Structure structure);
     PVUnionArray createPVUnionArray(Union union);
@@ -2007,18 +2007,25 @@ where
   <dt>createPVScalar</dt>
     <dd>Creates an instance of a PVScalar. Three versions are supplied. The
       first is passed an introspection interface. The second provides the field
-      name and the scalarType. The last provides a field name and a PVScalar to
+      name and the scalarType. The third provides a field name and a PVScalar to
       clone. The newly created PVScalar will have the same auxInfos as the
       original.
-      A generic version is available.
+      The last is a generic version that casts to the appropriate type.
+     An example is:
+<pre>
+PVDouble value  = pvDataCeate.createPVScalar(PVScalarType.pvDouble);
+</pre>
       </dd>
   <dt>createPVScalarArray</dt>
     <dd>Create an instance of a PVArray. Three versions are supplied. The first
-      is passed an introspection interface. The second provides the field name
-      and the elementType. The last provides a field name and a PVArray to
-      clone. The newly created PVArray will have the same auxInfos as the
-      original.
-      A generic version is available.
+      is passed an introspection interface. The second provides and the elementType.
+      The third provides an array to clone.
+      The newly created PVArray will have the same values as the original.
+      The last is a generic version that casts to the appropriate type.
+     An example is:
+<pre>
+PVDoubleArray value  = pvDataCeate.createPVScalarArray(PVScalarType.pvDouble);
+</pre>
       </dd>
   <dt>createPVStructureArray</dt>
     <dd>Create a PVStructureArray. It must be passed a structureToClone. This
@@ -2035,14 +2042,16 @@ where
   <dt>createPVStructure</dt>
     <dd>Create an instance of a PVStructure. Three methods are provided. The
       first method uses a previously created structure introspection interface.
-      The second uses a PVField[].
+      The second called with fielvName array and a Field array.
       The third initializes the subfields by cloning the fields contained in
       structToClone. The newly created sub-fields will have the same values and
       auxInfos as the original. If structToClone is null then the new structure
       is initialized to have 0 sub-fields.</dd>
    <dt>createPVUnion</dt>
-    <dd>Create a PVUnion. It must be passed a union. This
-      will become the union interface for the single sub-field.
+    <dd>Create a PVUnion.
+      Two versions are provided.
+      The first is passed a Union interface the single sub-field.
+       The second is passed a PVUnion to clone.
       </dd>
    <dt>createPVVariantUnion</dt>
       <dd>Create a variant PVUnion.
