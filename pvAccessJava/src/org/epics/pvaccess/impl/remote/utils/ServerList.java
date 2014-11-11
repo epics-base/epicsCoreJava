@@ -233,7 +233,7 @@ public class ServerList  {
 		sendBuffer.put(PVAConstants.PVA_VERSION);
 		sendBuffer.put((byte)0x80);	// big endian
 		sendBuffer.put((byte)0x03);	// search
-		sendBuffer.putInt(8+16+2+3);		// payload size
+		sendBuffer.putInt(4+1+3+16+2+1+2);		// payload size
 		
 		sendBuffer.putInt(0);	    // sequenceId
 		sendBuffer.put((byte)0x81); // reply required // TODO unicast vs multicast; for now we mark ourselves as unicast
