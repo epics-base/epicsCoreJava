@@ -5,7 +5,7 @@
 
     <groupId>org.epics</groupId>
     <artifactId>pvDataJava</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1</version>
     <packaging>jar</packaging>
 
     <name>pvData - Java</name>
