@@ -45,7 +45,7 @@ public class LinkedListTest extends TestCase {
     		assertTrue(basic.index==i);
     		basicList.remove(basics[i]);
     		int length = basicList.getLength();
-    		assertTrue(length==(4-i));
+    		assertTrue(length==(numNodes-(i+1)));
     	}
     }
     
