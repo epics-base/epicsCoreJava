@@ -16,7 +16,9 @@ package org.epics.pvaccess.client.impl.remote;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.HashMap;
@@ -198,6 +200,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 //	protected UDPTransport searchTransport = null;
 	protected BlockingUDPTransport searchTransport = null;
 
+	/**
+	 * Local multicast address.
+	 */
+	protected InetSocketAddress localBroadcastAddress = null;
+	
 	/**
 	 * PVA connector (creates PVA virtual circuit).
 	 */
@@ -544,6 +551,38 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 			if (broadcastAddressList != null)
 				for (int i = 0; i < broadcastAddressList.length; i++)
 	        		logger.finer("Broadcast address #" + i + ": " + broadcastAddressList[i] + '.');
+			
+            // TODO do not use searchBroadcast in future
+			// TODO configurable local NIF, address
+			// setup local broadcasting
+			NetworkInterface localNIF = InetAddressUtil.getLoopbackNIF();
+			if (localNIF != null)
+			{
+				try
+				{
+					InetAddress group = InetAddress.getByName("224.0.0.128");
+					localBroadcastAddress = new InetSocketAddress(group, broadcastPort);
+					/*MembershipKey key =*/ searchTransport.join(group, localNIF);
+				
+                    // NOTE: this disables usage of multicast addresses in EPICS_PVA_ADDR_LIST
+					searchTransport.setMutlicastNIF(localNIF, true);
+					
+					//searchTransport.setSendAddresses(new InetSocketAddress[] {
+					//		new InetSocketAddress(group, broadcastPort)
+					//});
+
+					logger.config("Local multicast enabled on " + localBroadcastAddress + ":" + broadcastPort + " using " + localNIF.getDisplayName() + ".");
+				}
+				catch (Throwable th) 
+				{
+					logger.log(Level.CONFIG, "Failed to initialize local multicast, funcionality disabled.", th);
+				}
+			}
+			else
+			{
+				logger.config("Failed to detect a loopback network interface, local multicast disabled.");
+			}
+
 			
 			broadcastTransport.start();
 			searchTransport.start();
@@ -981,6 +1020,15 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		return searchTransport;
 	}
 
+	/**
+	 * Get local multicast address (group).
+	 * @return the address.
+	 */
+	public InetSocketAddress getLocalMulticastAddress()
+	{
+		return localBroadcastAddress;
+	}
+	
 	/**
 	 * Get PVA transport (virtual circuit) registry.
 	 * @return PVA transport (virtual circuit) registry.
