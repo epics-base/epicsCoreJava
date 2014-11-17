@@ -28,6 +28,7 @@ import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.MembershipKey;
+import java.nio.channels.UnresolvedAddressException;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -386,6 +387,11 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 				context.getLogger().log(Level.FINER, "No route to host exception caught when sending to: " + sendAddresses[i] + ".", nrthe);
 				continue;
 			}
+			catch (UnresolvedAddressException uae)
+			{
+				context.getLogger().log(Level.FINER, "Unresolved address exception caught when sending to: " + sendAddresses[i] + ".", uae);
+				continue;
+			}
 			catch (Throwable ex) 
 			{
 				ex.printStackTrace(); // TODO !!!
@@ -532,10 +538,11 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		for (int i = 0; i < sendAddresses.length; i++)
 		{
 			InetAddress address = sendAddresses[i].getAddress();
+			// address == null if unresolved
 			// unicast = not broadcast and not multicast
-			isSendAddressUnicast[i] =
-						!broadcastAddresses.contains(address) && 
-						!address.isMulticastAddress();
+			isSendAddressUnicast[i] = (address == null) ||
+						(!broadcastAddresses.contains(address) && 
+						!address.isMulticastAddress());
 		}
 	}
 

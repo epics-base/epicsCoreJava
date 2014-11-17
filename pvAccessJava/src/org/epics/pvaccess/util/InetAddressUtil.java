@@ -306,8 +306,18 @@ public class InetAddressUtil {
 				address = address.substring(0, pos);
 			}
 			
-			// add parsed address
-			al.add(new InetSocketAddress(address, port));
+			try
+			{
+				InetSocketAddress isa = new InetSocketAddress(address, port);
+				
+				// add parsed address if resolved
+				if (!isa.isUnresolved())
+					al.add(isa);
+			}
+			catch (Throwable th) {
+				// TODO
+				th.printStackTrace();
+			}
 		}
 
 		// copy to array

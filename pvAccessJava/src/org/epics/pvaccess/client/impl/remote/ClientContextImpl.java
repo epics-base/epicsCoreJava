@@ -539,6 +539,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 					searchTransport.setSendAddresses(list);
 				}
 			}
+
+			final InetSocketAddress[] broadcastAddressList = broadcastTransport.getSendAddresses();
+			if (broadcastAddressList != null)
+				for (int i = 0; i < broadcastAddressList.length; i++)
+	        		logger.finer("Broadcast address #" + i + ": " + broadcastAddressList[i] + '.');
 			
 			broadcastTransport.start();
 			searchTransport.start();
