@@ -70,7 +70,8 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 		final byte[] guid = new byte[12];
 		payloadBuffer.get(guid);
 		
-		final int sequentalID = payloadBuffer.getShort() & 0x0000FFFF;
+		/*final byte qosCode = */ payloadBuffer.get();
+		final int sequentalID = payloadBuffer.get()  & 0x000000FF;
 		final int changeCount = payloadBuffer.getShort() & 0x0000FFFF;
 		
 		// 128-bit IPv6 address
