@@ -39,6 +39,6 @@ public interface PVAVersion {
     /**
      * Development version.
      */
-    public static final boolean VERSION_DEVELOPMENT = true;
+    public static final boolean VERSION_DEVELOPMENT = false;
 
 }
