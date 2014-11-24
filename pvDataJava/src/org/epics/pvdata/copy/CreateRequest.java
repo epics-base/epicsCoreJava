@@ -73,135 +73,140 @@ public class CreateRequest {
 	
 	private String fullFieldName = "";
 
-	private PVStructure createRequestInternal(String request) {
-	    if(request!=null) request = request.replaceAll("\\s+","");
-	    if(request==null || request.length()<=0) {
-	        PVStructure pvStructure =  pvDataCreate.createPVStructure(emptyStructure);
-	        return pvStructure;
-	    }
-	    int offsetRecord = request.indexOf("record[");
-	    int offsetField = request.indexOf("field(");
-	    int offsetPutField = request.indexOf("putField(");
-	    int offsetGetField = request.indexOf("getField(");
-	    if(offsetRecord==-1&&offsetField==-1&&offsetPutField==-1&&offsetGetField==-1) {
-	        request = "field(" + request + ")";
-	        offsetField = request.indexOf("field(");
-	    }
-	    int numParan = 0;
-	    int numBrace = 0;
-	    int numBracket = 0;
-	    for(int i=0; i< request.length() ; ++i) {
-	        char chr = request.charAt(i);
-	        if(chr=='(') numParan++;
-	        if(chr==')') numParan--;
-	        if(chr=='{') numBrace++;
-	        if(chr=='}') numBrace--;
-	        if(chr=='[') numBracket++;
-	        if(chr==']') numBracket--;
-	    }
-	    if(numParan!=0) {
-	        message = "mismatched () " + numParan;
-	        return null;
-	    }
-	    if(numBrace!=0) {
-	        message = "mismatched {} " + numBrace;
-	        return null;
-	    }
-	    if(numBracket!=0) {
-	        message = "mismatched [] " + numBracket;
-	        return null;
-	    }
-	    List<Node> top = new ArrayList<Node>();
+	private PVStructure createRequestInternal(String request)
+	{
 	    try {
-	        if(offsetRecord>=0) {
-	            fullFieldName = "record";
-                int openBracket = request.indexOf('[', offsetRecord);
-                int closeBracket = request.indexOf(']', openBracket);
-                if(closeBracket==-1) {
-                    message = request.substring(offsetRecord) + "record[ does not have matching ]";
-                    return null;
-                }
-                if(closeBracket-openBracket > 3) {
-                    Node node = new Node("record");
-                    Node optNode = createRequestOptions(
-                            request.substring(openBracket+1,closeBracket));
-                    node.nodes.add(optNode);
-                    top.add(node);
-                }
-            }
-	        if(offsetField>=0) {
-	            fullFieldName = "field";
-	            Node node = new Node("field");
-                int openParan = request.indexOf('(', offsetField);
-                int closeParan = request.indexOf(')', openParan);
-                if(closeParan == -1) {
-                    message = request.substring(offsetField)
-                            + " field( does not have matching )";
-                    return null;
-                }
-                if(closeParan>openParan+1) {
-                    createSubNode(node,request.substring(openParan+1,closeParan));
-                }
-                top.add(node);
-            }
-	        if(offsetGetField>=0) {
-	            fullFieldName = "getField";
-                Node node = new Node("getField");
-                int openParan = request.indexOf('(', offsetGetField);
-                int closeParan = request.indexOf(')', openParan);
-                if(closeParan == -1) {
-                    message = request.substring(offsetField)
-                            + " getField( does not have matching )";
-                    return null;
-                }
-                if(closeParan>openParan+1) {
-                    createSubNode(node,request.substring(openParan+1,closeParan));
-                }
-                top.add(node);
-            }
-	        if(offsetPutField>=0) {
-	            fullFieldName = "putField";
-                Node node = new Node("putField");
-                int openParan = request.indexOf('(', offsetPutField);
-                int closeParan = request.indexOf(')', openParan);
-                if(closeParan == -1) {
-                    message = request.substring(offsetField)
-                            + " putField( does not have matching )";
-                    return null;
-                }
-                if(closeParan>openParan+1) {
-                    createSubNode(node,request.substring(openParan+1,closeParan));
-                }
-                top.add(node);
-            }
-	    } catch (IllegalStateException e) {
-            message = "while creating Structure exception " + e.getMessage();
-            return null;
-       }
-	   int num = top.size();
-	   Field[] fields = new Field[num];
-	   String[] names = new String[num];
-	   for(int i=0; i<num; ++i) {
-	       Node node = top.get(i);
-	       names[i] = node.name;
-	       List<Node> subNode = node.nodes;
-	       if(subNode.isEmpty()) {
-	           fields[i] = emptyStructure;
-	       } else {
-	           fields[i] = createSubStructure(subNode);
-	       }
-	   }
-	   Structure structure = fieldCreate.createStructure(names, fields);
-	   PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-	   for(OptionPair pair: optionList) {
-	       String name = pair.name;
-           String value = pair.value;
-           PVString pvField = pvStructure.getSubField(PVString.class,name);
-           pvField.put(value);
-	   }
-	   optionList.clear();
-	   return pvStructure;
-
+	        if(request!=null) request = request.replaceAll("\\s+","");
+	        if(request==null || request.length()<=0) {
+	            PVStructure pvStructure =  pvDataCreate.createPVStructure(emptyStructure);
+	            return pvStructure;
+	        }
+	        int offsetRecord = request.indexOf("record[");
+	        int offsetField = request.indexOf("field(");
+	        int offsetPutField = request.indexOf("putField(");
+	        int offsetGetField = request.indexOf("getField(");
+	        if(offsetRecord==-1&&offsetField==-1&&offsetPutField==-1&&offsetGetField==-1) {
+	            request = "field(" + request + ")";
+	            offsetField = request.indexOf("field(");
+	        }
+	        int numParan = 0;
+	        int numBrace = 0;
+	        int numBracket = 0;
+	        for(int i=0; i< request.length() ; ++i) {
+	            char chr = request.charAt(i);
+	            if(chr=='(') numParan++;
+	            if(chr==')') numParan--;
+	            if(chr=='{') numBrace++;
+	            if(chr=='}') numBrace--;
+	            if(chr=='[') numBracket++;
+	            if(chr==']') numBracket--;
+	        }
+	        if(numParan!=0) {
+	            message = "mismatched () " + numParan;
+	            return null;
+	        }
+	        if(numBrace!=0) {
+	            message = "mismatched {} " + numBrace;
+	            return null;
+	        }
+	        if(numBracket!=0) {
+	            message = "mismatched [] " + numBracket;
+	            return null;
+	        }
+	        List<Node> top = new ArrayList<Node>();
+	        try {
+	            if(offsetRecord>=0) {
+	                fullFieldName = "record";
+	                int openBracket = request.indexOf('[', offsetRecord);
+	                int closeBracket = request.indexOf(']', openBracket);
+	                if(closeBracket==-1) {
+	                    message = request.substring(offsetRecord) + "record[ does not have matching ]";
+	                    return null;
+	                }
+	                if(closeBracket-openBracket > 3) {
+	                    Node node = new Node("record");
+	                    Node optNode = createRequestOptions(
+	                            request.substring(openBracket+1,closeBracket));
+	                    node.nodes.add(optNode);
+	                    top.add(node);
+	                }
+	            }
+	            if(offsetField>=0) {
+	                fullFieldName = "field";
+	                Node node = new Node("field");
+	                int openParan = request.indexOf('(', offsetField);
+	                int closeParan = request.indexOf(')', openParan);
+	                if(closeParan == -1) {
+	                    message = request.substring(offsetField)
+	                            + " field( does not have matching )";
+	                    return null;
+	                }
+	                if(closeParan>openParan+1) {
+	                    createSubNode(node,request.substring(openParan+1,closeParan));
+	                }
+	                top.add(node);
+	            }
+	            if(offsetGetField>=0) {
+	                fullFieldName = "getField";
+	                Node node = new Node("getField");
+	                int openParan = request.indexOf('(', offsetGetField);
+	                int closeParan = request.indexOf(')', openParan);
+	                if(closeParan == -1) {
+	                    message = request.substring(offsetField)
+	                            + " getField( does not have matching )";
+	                    return null;
+	                }
+	                if(closeParan>openParan+1) {
+	                    createSubNode(node,request.substring(openParan+1,closeParan));
+	                }
+	                top.add(node);
+	            }
+	            if(offsetPutField>=0) {
+	                fullFieldName = "putField";
+	                Node node = new Node("putField");
+	                int openParan = request.indexOf('(', offsetPutField);
+	                int closeParan = request.indexOf(')', openParan);
+	                if(closeParan == -1) {
+	                    message = request.substring(offsetField)
+	                            + " putField( does not have matching )";
+	                    return null;
+	                }
+	                if(closeParan>openParan+1) {
+	                    createSubNode(node,request.substring(openParan+1,closeParan));
+	                }
+	                top.add(node);
+	            }
+	        } catch (IllegalStateException e) {
+	            message = "while creating Structure exception " + e.getMessage();
+	            return null;
+	        }
+	        int num = top.size();
+	        Field[] fields = new Field[num];
+	        String[] names = new String[num];
+	        for(int i=0; i<num; ++i) {
+	            Node node = top.get(i);
+	            names[i] = node.name;
+	            List<Node> subNode = node.nodes;
+	            if(subNode.isEmpty()) {
+	                fields[i] = emptyStructure;
+	            } else {
+	                fields[i] = createSubStructure(subNode);
+	            }
+	        }
+	        Structure structure = fieldCreate.createStructure(names, fields);
+	        PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
+	        for(OptionPair pair: optionList) {
+	            String name = pair.name;
+	            String value = pair.value;
+	            PVString pvField = pvStructure.getSubField(PVString.class,name);
+	            pvField.put(value);
+	        }
+	        optionList.clear();
+	        return pvStructure;
+	    } catch (Exception e) {
+	        message = e.getMessage();
+	        return null;
+	    }
 	}
 
 	private int findMatchingBrace(String request,int index,int numOpen) {
