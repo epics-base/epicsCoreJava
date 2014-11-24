@@ -392,10 +392,10 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 				context.getLogger().log(Level.FINER, "Unresolved address exception caught when sending to: " + sendAddresses[i] + ".", uae);
 				continue;
 			}
-			catch (Throwable ex) 
+			catch (Throwable th)
 			{
-				ex.printStackTrace(); // TODO !!!
-				return false;
+				context.getLogger().log(Level.FINER, "Exception caught when sending to: " + sendAddresses[i] + ".", th);
+				continue;
 			}
 		}
 		
@@ -429,10 +429,13 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		{
 			context.getLogger().log(Level.FINER, "No route to host exception caught when sending to: " + address + ".", nrthe);
 		}
-		catch (Throwable ex) 
+		catch (UnresolvedAddressException uae)
 		{
-			// TODO what to do here
-			ex.printStackTrace(); 
+			context.getLogger().log(Level.FINER, "Unresolved address exception caught when sending to: " + address + ".", uae);
+		}
+		catch (Throwable th)
+		{
+			context.getLogger().log(Level.FINER, "Exception caught when sending to: " + address + ".", th);
 		}
 	}
 
