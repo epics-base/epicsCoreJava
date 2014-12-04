@@ -50,7 +50,7 @@ public interface FieldCreate {
     /**
      * Create an <i>Array</i> field, bounded size array.
      * @param elementType The <i>scalarType</i> for array elements
-     * @param size Array maximum capacity (bound).
+     * @param bound Array maximum capacity (bound).
      * @return An <i>Array</i> Interface for the newly created object.
      */
     ScalarArray createBoundedScalarArray(ScalarType elementType, int bound);

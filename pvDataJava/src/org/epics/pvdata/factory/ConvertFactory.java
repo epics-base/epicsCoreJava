@@ -813,17 +813,15 @@ public final class ConvertFactory {
             PVField fromValue = from.get();
             if (from.getUnion().isVariant())
             {
-            	if (fromValue == null)
-            		to.set(null);
-            	else
-            		to.set(pvDataCreate.createPVField(from.get()));	// clone value
+            	// shallow copy
+            	to.set(from.get());
             }
             else
             {
             	if (fromValue == null) {
             		to.select(PVUnion.UNDEFINED_INDEX);
             	} else {
-             	    to.set(from.getSelectedFieldName(),from.get());
+             	    to.set(from.getSelectedIndex(),from.get());
             	}
             }
             

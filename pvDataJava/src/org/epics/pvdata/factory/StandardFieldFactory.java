@@ -258,19 +258,19 @@ public final class StandardFieldFactory {
 		public Structure scalar(ScalarType scalarType,String properties)
 		{
 			Scalar field = fieldCreate.createScalar(scalarType);	// scalar_t
-		    return createProperties("ev4:nt:NTScalar:1.0",field,properties);
+		    return createProperties("epics:nt/NTScalar:1.0",field,properties);
 		}
 		@Override
 		public Structure scalarArray(ScalarType elementType, String properties)
 		{
 			ScalarArray field = fieldCreate.createScalarArray(elementType);	// scalar_t[]
-		    return createProperties("ev4:nt:NTScalarArray:1.0",field,properties);
+		    return createProperties("epics:nt/NTScalarArray:1.0",field,properties);
 		}
 		@Override
 		public Structure structureArray(Structure structure,String properties)
 		{
 			StructureArray field = fieldCreate.createStructureArray(structure);
-		    return createProperties("ev4:nt:NTStructureArray:1.0",field,properties);
+		    return createProperties("epics:nt/NTStructureArray:1.0",field,properties);
 		}
 		@Override
 		public Structure enumerated()
@@ -287,7 +287,7 @@ public final class StandardFieldFactory {
 		public Structure enumerated(String properties)
 		{
 		    Structure field = enumerated();	// enum_t
-		    return createProperties("ev4:nt:NTEnum:1.0",field,properties);
+		    return createProperties("epics:nt/NTEnum:1.0",field,properties);
 
 		}
 		

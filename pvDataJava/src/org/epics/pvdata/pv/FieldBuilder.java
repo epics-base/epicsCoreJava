@@ -73,10 +73,10 @@ public interface FieldBuilder
     /**
      * Add array of <code>Field</code> elements.
      * @param name name of the array.
-     * @param field a type of an array element.
+     * @param field The type of each array element.
      * @return this instance of a <code>FieldBuilder</code>.
      */
-    public FieldBuilder addArray(String name, Field element);
+    public FieldBuilder addArray(String name, Field field);
 
     /**
      * Create a <code>Structure</code>.

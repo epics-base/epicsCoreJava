@@ -158,6 +158,15 @@ public class CreateRequestTest extends TestCase {
         }
         assertTrue(pvRequest==null);
         
+        request = "field(alarm.status,alarm.severity)";
+        System.out.printf("%nError Expected for next call!!%n");
+        pvRequest = createRequest.createRequest(request);
+        if(pvRequest==null) {
+            requester.message(createRequest.getMessage(), MessageType.error);
+            System.out.println(request);
+        }
+        assertTrue(pvRequest==null);
+        
         request = "record[process=true,xxx=yyy]"
                 + "putField(power.value)"
                 + "getField(alarm,timeStamp,power{value,alarm},"
