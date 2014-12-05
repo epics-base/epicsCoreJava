@@ -1,14 +1,19 @@
 <html>
 <body>
 <p>This package contains interfaces and code for standard pvData structure fields.</p>
-<p>Only fields named "value" have properties. A record can have multiple value
-fields, which can appear in the top level structure of a record or in a
-substructure. All other fields in the structure containing a value field are
-considered properties of the value field. The fieldname is also the property
-name. The value field can have any type, i.e. scalar, scalarArray, or
-structure. Typical property fields are timeStamp, alarm, display, control, and
-history. The timeStamp is a special case. If it appears anywhere in the
-structure hieraracy above a value field it is a property of the value field.</p>
-<p>See documentation/pvDataJava.html for a more complete overview.</p>
+<p>
+Support for the following standard fields is provided:</p>
+<dl>
+    <dt>enum</dt>
+      <dd>A structure for an enumerated value. It has subfields index and choices.</dd>
+   <dt>alarm</dt>
+      <dd>A alarm has a severity, status, and message.</dd>
+   <dt>timeStamp</dt>
+      <dd>Extensive support is provided for time.</dd>
+   <dt>control</dt>
+      <dd>Provides support for setting limits for scalar double values.</dd>
+    <dt>display</dt>
+      <dd>Provides support for for displaying scalar double values.</dd>
+<dl>
 </body>
 </html>

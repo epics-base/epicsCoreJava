@@ -2,8 +2,110 @@
 <body>
 <p>This package contains the interface definitions for the Java implementation of pvData.</p>
 <p>This package has the enum, interface, and class definitions that define pvData. This
-section provides a complete definition of what pvData is. This package
-completely describes how pvData is accessed.</p>
-<p>See documentation/pvDataJava.html for a more complete overview.</p>
+section provides a complete definition of what pvData is and how data is accessed.
+<p>
+This package defines the following:
+<dl>
+  <dt>ScalarType</dt>
+      <dd>One of: <b>pvBoolean, pvByte, pvShort, pvInt, pvLong, pvUByte, pvUShort, pvUInt, pvULong,
+       pvFloat, pvDouble, pvString</b>
+      </dd>
+  <dt>Type</dt>
+       <dd>One of <b>scalar, union, structure, scalarArray, unionArray, structureArray</b>
+       </dd>
+  <dt>Introspection Interfaces<dt>
+     <dd>
+        <dl>
+           <dt>Field</dt>
+              <dd>Base introspection interface.</dd>
+           <dt>Scalar</dt>
+               <dd>Introspection interface for type scalar.</dd>
+           <dt>Union</dt>
+               <dd>Introspection interface for type union.</dd>
+           <dt>Structure</dt>
+               <dd>Introspection interface for type structure.</dd>
+           <dt>ScalarArray</dt>
+               <dd>Introspection interface for type scalarArray.</dd>
+           <dt>UnionArray</dt>
+               <dd>Introspection interface for type unionArray.</dd>
+           <dt>StructureArray</dt>
+               <dd>Introspection interface for type structureArray.</dd>
+        </dl>
+     </dd>
+  <dt>Data Interfaces<dt>
+     <dd>
+        <dl>
+           <dt>PVField</dt>
+              <dd>Base data interface.</dd>
+           <dt>PVScalar</dt>
+              <dd>Base data interface for type scalar.
+                  <dl>
+                     <dt>PVBoolean</dt>
+                        <dd>Data interface for scalar of type pvBoolean.</dd>
+                     <dt>PVByte</dt>
+                        <dd>Data interface for scalar of type pvByte.</dd>
+                     <dt>PVShort</dt>
+                        <dd>Data interface for scalar of type pvShort.</dd>
+                     <dt>PVInt</dt>
+                        <dd>Data interface for scalar of type pvInt.</dd>
+                     <dt>PVLong</dt>
+                        <dd>Data interface for scalar of type pvLong.</dd>
+                     <dt>PVUByte</dt>
+                        <dd>Data interface for scalar of type pvUByte.</dd>
+                     <dt>PVUShort</dt>
+                        <dd>Data interface for scalar of type pvUShort.</dd>
+                     <dt>PVUInt</dt>
+                        <dd>Data interface for scalar of type pvUInt.</dd>
+                     <dt>PVULong</dt>
+                        <dd>Data interface for scalar of type pvULong.</dd>
+                     <dt>PVFloat</dt>
+                        <dd>Data interface for scalar of type pvFloat.</dd>
+                     <dt>PVDouble</dt>
+                        <dd>Data interface for scalar of type pvDouble.</dd>
+                     <dt>PVString</dt>
+                        <dd>Data interface for scalar of type pvString.</dd>
+                  </dl>
+           <dt>PVUnion</dt>
+              <dd>Data interface for type pvUnion.</dd>
+           <dt>PVStructure</dt>
+              <dd>Data interface for type pvUnion.</dd>
+           <dt>PVScalarArray</dt>
+              <dd>Base data interface for type scalarArray.
+                  <dl>
+                     <dt>PVBooleanArray</dt>
+                        <dd>Data interface for scalarArray of type pvBoolean.</dd>
+                     <dt>PVByteArray</dt>
+                        <dd>Data interface for scalarArray of type pvByte.</dd>
+                     <dt>PVShortArray</dt>
+                        <dd>Data interface for scalarArray of type pvShort.</dd>
+                     <dt>PVIntArray</dt>
+                        <dd>Data interface for scalarArray of type pvInt.</dd>
+                     <dt>PVLongArray</dt>
+                        <dd>Data interface for scalarArray of type pvLong.</dd>
+                     <dt>PVUByteArray</dt>
+                        <dd>Data interface for scalarArray of type pvUByte.</dd>
+                     <dt>PVUShortArray</dt>
+                        <dd>Data interface for scalarArray of type pvUShort.</dd>
+                     <dt>PVUIntArray</dt>
+                        <dd>Data interface for scalarArray of type pvUInt.</dd>
+                     <dt>PVULongArray</dt>
+                        <dd>Data interface for scalarArray of type pvULong.</dd>
+                     <dt>PVFloatArray</dt>
+                        <dd>Data interface for scalarArray of type pvFloat.</dd>
+                     <dt>PVDoubleArray</dt>
+                        <dd>Data interface for scalarArray of type pvDouble.</dd>
+                     <dt>PVStringArray</dt>
+                        <dd>Data interface for scalarArray of type pvString.</dd>
+                  </dl>
+               </dd>
+           <dt>PVUnionArray</dt>
+              <dd>Data interface for type pvUnionArray.</dd>
+           <dt>PVStructureArray</dt>
+              <dd>Data interface for type pvStructureArray.</dd>
+        </dl>
+     </dd>
+</dl>
+</p>
+
 </body>
 </html>
