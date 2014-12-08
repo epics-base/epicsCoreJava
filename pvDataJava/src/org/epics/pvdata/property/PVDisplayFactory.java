@@ -11,12 +11,17 @@ import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Type;
 
+/**
+ * Implementation of PVDisplay.
+ * @author mrk
+ *
+ */
 public final class PVDisplayFactory implements PVDisplay{
-    public PVString pvDescription = null;
-    public PVString pvFormat = null;
-    public PVString pvUnits = null;
-    public PVDouble pvLow = null;
-    public PVDouble pvHigh = null;
+    private PVString pvDescription = null;
+    private PVString pvFormat = null;
+    private PVString pvUnits = null;
+    private PVDouble pvLow = null;
+    private PVDouble pvHigh = null;
     private static final String noDisplayFound = "No display structure was located";
     private static final String notAttached = "Not attached to an display structure";
 

@@ -105,11 +105,17 @@ public class BaseScalarBoundedArray extends BaseField implements ScalarArray {
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Array#getArraySizeType()
+	 */
 	@Override
 	public ArraySizeType getArraySizeType() {
 		return ArraySizeType.bounded;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Array#getMaximumCapacity()
+	 */
 	@Override
 	public int getMaximumCapacity() {
 		return size;

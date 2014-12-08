@@ -23,6 +23,10 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
 {
     protected short value;
     
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVShort(Scalar scalar) {
         super(scalar);
         value = 0;

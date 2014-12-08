@@ -38,6 +38,9 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
         this.unionArray = unionArray;
     }
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVUnionArray#getUnionArray()
+     */
     @Override
 	public UnionArray getUnionArray() {
 		return unionArray;
@@ -61,11 +64,17 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
     	value = (PVUnion[])array;
     }
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVUnionArray#get(int, int, org.epics.pvdata.pv.UnionArrayData)
+     */
     @Override
     public int get(int offset, int len, UnionArrayData data) {
     	return internalGet(offset, len, data);
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVUnionArray#put(int, int, org.epics.pvdata.pv.PVUnion[], int)
+     */
     @Override
     public int put(int offset, int len, PVUnion[] from, int fromOffset) {
     	
@@ -78,6 +87,9 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
     	return internalPut(offset, len, from, fromOffset);
     }
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVUnionArray#shareData(org.epics.pvdata.pv.PVUnion[])
+     */
     @Override
     public void shareData(PVUnion[] from) {
     	internalShareData(from);
@@ -108,6 +120,9 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
 		return pvDataCreate.createPVUnion(unionArray.getUnion());
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(value);

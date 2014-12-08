@@ -34,6 +34,9 @@ public class BaseScalar extends BaseField implements Scalar {
         this.scalarType = scalarType;
     }
     
+	/**
+	 * ID for each scalarType
+	 */
 	public static final String[] idLUT = {
 		"boolean", // pvBoolean
 		"byte",    // pvByte
@@ -91,6 +94,9 @@ public class BaseScalar extends BaseField implements Scalar {
 		return true;
 	}
 	
+	/**
+	 * Type code for each scalarType.
+	 */
 	public static final byte[] typeCodeLUT = {
 		0x00, // pvBoolean
 		0x20, // pvByte

@@ -9,6 +9,8 @@ import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.PVStructure;
 
 /**
+ * A monitorElement.
+ * If holds the data for a monitor and change and overflow bitSets.
  * @author mrk
  *
  */

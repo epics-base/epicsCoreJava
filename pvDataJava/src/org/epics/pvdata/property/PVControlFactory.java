@@ -10,6 +10,11 @@ import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Type;
 
+/**
+ * Implementation of PVControl.
+ * @author mrk
+ *
+ */
 public final class PVControlFactory implements PVControl{
     private PVDouble pvLow = null;
     private PVDouble pvHigh = null;

@@ -6,6 +6,7 @@
 package org.epics.pvdata.property;
 
 /**
+ * An implementation of TimeStamp.
  * @author mrk
  *
  */

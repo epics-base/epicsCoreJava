@@ -14,6 +14,10 @@ package org.epics.pvdata.misc;
  *
  */
 public interface LinkedList<T> {
+    /**
+     * Get the number of elements in the list.
+     * @return The number of elements.
+     */
     int getLength();
     /**
      * Add a node to the end of the list.

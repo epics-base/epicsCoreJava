@@ -174,6 +174,7 @@ public class BaseStructure extends BaseField implements Structure {
         buf.append(getID());
         toStringCommon(buf, indentLevel + 1);
     }
+    
     void toStringCommon(StringBuilder buf, int indentLevel) {
     	convert.newLine(buf,indentLevel);
         int length = fields.length;

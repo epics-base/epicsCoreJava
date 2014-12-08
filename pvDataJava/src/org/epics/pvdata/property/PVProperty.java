@@ -7,12 +7,13 @@ package org.epics.pvdata.property;
 
 import org.epics.pvdata.pv.PVField;
 /**
+ * An interface for locating property fields.
  * @author mrk
  *
  */
 public interface PVProperty {
     /**
-     * 
+     * Find a property by looking for a field by name.
      *  
      * @param pvField The pvField.
      * @param fieldName A string of the form name.name...

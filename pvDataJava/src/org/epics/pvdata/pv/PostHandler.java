@@ -6,10 +6,13 @@
 package org.epics.pvdata.pv;
 
 /**
- * Inytrerface for PostHandler.
+ * Interface for PostHandler.
  * @author mrk
  *
  */
 public interface PostHandler {
-     void postPut();
+     /**
+     * Called when a field is changed.
+     */
+    void postPut();
 }

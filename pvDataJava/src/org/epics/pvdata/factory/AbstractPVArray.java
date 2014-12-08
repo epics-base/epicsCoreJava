@@ -49,6 +49,9 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
         allocate(capacity);
     }
     
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVArray#getArray()
+	 */
 	@Override
 	public Array getArray() {
 		return (Array)getField();

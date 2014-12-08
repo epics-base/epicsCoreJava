@@ -74,6 +74,9 @@ public final class FieldFactory {
             return scalars[scalarType.ordinal()];
         }
         
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.FieldCreate#createBoundedString(int)
+         */
         @Override
 		public BoundedString createBoundedString(int maxLength) {
 			return new BaseBoundedString(maxLength);
@@ -86,10 +89,16 @@ public final class FieldFactory {
             return scalarArrays[elementType.ordinal()];
         }
         
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.FieldCreate#createFixedScalarArray(org.epics.pvdata.pv.ScalarType, int)
+         */
         @Override
 		public ScalarArray createFixedScalarArray(ScalarType elementType, int size) {
         	return new BaseScalarFixedArray(elementType, size);
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.FieldCreate#createBoundedScalarArray(org.epics.pvdata.pv.ScalarType, int)
+		 */
 		@Override
 		public ScalarArray createBoundedScalarArray(ScalarType elementType, int bound) {
         	return new BaseScalarBoundedArray(elementType, bound);
@@ -131,6 +140,9 @@ public final class FieldFactory {
 		public Structure createStructure(String id, String[] fieldNames, Field[] fields) {
             return new BaseStructure(id,fieldNames,fields);
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.FieldCreate#createStructure(org.epics.pvdata.pv.Structure)
+		 */
 		@Override
         public Structure createStructure(Structure structToClone) {
 		    String[] oldFieldNames = structToClone.getFieldNames();
@@ -147,6 +159,9 @@ public final class FieldFactory {
 		    structure.clone(fields, fieldNames);
 		    return structure;
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.FieldCreate#appendField(org.epics.pvdata.pv.Structure, java.lang.String, org.epics.pvdata.pv.Field)
+         */
         @Override
         public Structure appendField(Structure structure, String fieldName, Field field) {
 		    String[] oldNames = structure.getFieldNames();
@@ -164,6 +179,9 @@ public final class FieldFactory {
             return createStructure(oldID,newNames,newFields);
             
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.FieldCreate#appendFields(org.epics.pvdata.pv.Structure, java.lang.String[], org.epics.pvdata.pv.Field[])
+         */
         @Override
         public Structure appendFields(Structure structure, String[] fieldNames,Field[] fields) {
             String[] oldNames = structure.getFieldNames();
@@ -185,14 +203,23 @@ public final class FieldFactory {
             return createStructure(oldID,newNames,newFields);
         }
         
+    	/* (non-Javadoc)
+    	 * @see org.epics.pvdata.pv.FieldCreate#createVariantUnion()
+    	 */
     	@Override
 		public Union createVariantUnion() {
 			return variantUnion;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.FieldCreate#createUnion(java.lang.String[], org.epics.pvdata.pv.Field[])
+		 */
 		@Override
 		public Union createUnion(String[] fieldNames, Field[] fields) {
 			return new BaseUnion(fieldNames, fields);
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.FieldCreate#createUnion(java.lang.String, java.lang.String[], org.epics.pvdata.pv.Field[])
+		 */
 		@Override
 		public Union createUnion(String id, String[] fieldNames, Field[] fields) {
 			return new BaseUnion(id, fieldNames, fields);

@@ -86,7 +86,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <overview>src/overview.html</overview>
+                    <overview>documentation/pvDataJava.html</overview>
                 </configuration>
             </plugin>
 

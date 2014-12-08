@@ -12,7 +12,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * Factory for creating threads.
+ * @author mrk
+ *
+ */
 public class ThreadCreateFactory {
+    /**
+     * Get the single instance of ThreadCreate.
+     * @return threadCreate interface.
+     */
     public static ThreadCreate getThreadCreate() {
         return threadCreate;
     }

@@ -69,17 +69,26 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
 		return length;
 	}
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVBooleanArray#get(int, int, org.epics.pvdata.pv.BooleanArrayData)
+     */
     @Override
     public int get(int offset, int len, BooleanArrayData data) {
     	return internalGet(offset, len, data);
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVBooleanArray#put(int, int, boolean[], int)
+     */
     @Override
     public int put(int offset, int len, boolean[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
 
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVBooleanArray#shareData(boolean[])
+     */
     @Override
     public void shareData(boolean[] from) {
     	internalShareData(from);
@@ -95,6 +104,9 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
 		return Arrays.equals(arrayData.data, value);
     }
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(value);

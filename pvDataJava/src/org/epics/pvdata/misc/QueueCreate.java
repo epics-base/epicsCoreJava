@@ -6,15 +6,26 @@
 package org.epics.pvdata.misc;
 
 /**
+ * A factory for creating a finite queue.
  * @author mrk
  *
  */
 public class QueueCreate<T> {
     
+    /**
+     * Create a Queue.
+     * @param queueElements The queue elements.
+     * @return The Queue.
+     */
     public Queue<T> create(QueueElement<T>[] queueElements) {
         return new QueueImpl<T>(queueElements);
     }
     
+    /**
+     * Create a QueueElement.
+     * @param object The data the queueElement contains.
+     * @return The queueElement.
+     */
     public QueueElement<T> createQueueElement(T object) {
         return new QueueElementImpl<T>(object);
     }

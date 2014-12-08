@@ -11,6 +11,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Type;
 
 /**
+ * Implementation of PVTimeStamp.
  * @author mrk
  *
  */

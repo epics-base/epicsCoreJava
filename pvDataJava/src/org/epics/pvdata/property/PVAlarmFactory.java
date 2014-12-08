@@ -11,6 +11,11 @@ import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Type;
 
+/**
+ * Implementation of PVAlarm.
+ * @author mrk
+ *
+ */
 public final class PVAlarmFactory implements PVAlarm{
     private PVInt pvSeverity = null;
     private PVInt pvStatus = null;

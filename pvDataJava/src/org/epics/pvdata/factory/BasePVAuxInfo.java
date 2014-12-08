@@ -19,6 +19,9 @@ import org.epics.pvdata.pv.ScalarType;
 
 /**
  * Base Class for PVAuxInfo. Normally this is not extended.
+ * @deprecated
+ * This is used by pvIOCJava.
+ * It should be changed so that this is no longer required.
  * @author mrk
  *
  */
@@ -29,7 +32,7 @@ public class BasePVAuxInfo implements PVAuxInfo {
     
     private PVField pvField;
     /**
-     * Constructor for BaseFieldAttribute.
+     * Constructor
      */
     public  BasePVAuxInfo(PVField pvField){
         this.pvField = pvField;

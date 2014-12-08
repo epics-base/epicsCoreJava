@@ -23,6 +23,10 @@ public class BasePVByte extends AbstractPVScalar implements PVByte
 {
     protected byte value;
     
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVByte(Scalar scalar) {
         super(scalar);
         value = 0;

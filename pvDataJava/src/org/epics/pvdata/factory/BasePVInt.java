@@ -23,6 +23,10 @@ public class BasePVInt extends AbstractPVScalar implements PVInt
 {
     protected int value;
 
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVInt(Scalar scalar) {
         super(scalar);
         value = 0;

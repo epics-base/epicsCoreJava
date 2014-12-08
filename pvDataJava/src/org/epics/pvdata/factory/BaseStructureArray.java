@@ -95,11 +95,17 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Array#getArraySizeType()
+	 */
 	@Override
 	public ArraySizeType getArraySizeType() {
 		return ArraySizeType.variable;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Array#getMaximumCapacity()
+	 */
 	@Override
 	public int getMaximumCapacity() {
 		return 0;

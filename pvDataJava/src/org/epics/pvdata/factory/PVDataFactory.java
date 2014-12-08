@@ -257,14 +257,23 @@ public class PVDataFactory {
         	}
         	return pvStructure;
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.PVDataCreate#createPVUnion(org.epics.pvdata.pv.Union)
+         */
         @Override
 		public PVUnion createPVUnion(Union union) {
         	return new BasePVUnion(union);
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVVariantUnion()
+		 */
 		@Override
 		public PVUnion createPVVariantUnion() {
 			return new BasePVUnion(fieldCreate.createVariantUnion());
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVUnion(org.epics.pvdata.pv.PVUnion)
+		 */
 		@Override
 		public PVUnion createPVUnion(PVUnion unionToClone) {
             if (unionToClone==null)
@@ -275,24 +284,39 @@ public class PVDataFactory {
 			union.set(unionToClone.getSelectedIndex(), createPVField(unionToClone.get()));
 			return union;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVVariantUnionArray()
+		 */
 		@Override
 		public PVUnionArray createPVVariantUnionArray() {
 			return new BasePVUnionArray(fieldCreate.createVariantUnionArray());
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVScalar(org.epics.pvdata.pv.PVScalarType)
+		 */
 		@Override
 		public <T extends PVScalar, TA extends PVScalarArray> T createPVScalar(
 				PVScalarType<T, TA> scalarType) {
 			return scalarType.getPVFieldClass().cast(createPVScalar(scalarType.getScalarType()));
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVScalarArray(org.epics.pvdata.pv.PVScalarType)
+		 */
 		@Override
 		public <T extends PVScalar, TA extends PVScalarArray> TA createPVScalarArray(
 				PVScalarType<T, TA> elementType) {
 			return elementType.getPVFieldArrayClass().cast(createPVScalarArray(elementType.getScalarType()));
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVStructureArray(org.epics.pvdata.pv.Structure)
+		 */
 		@Override
 		public PVStructureArray createPVStructureArray(Structure structure) {
 			return createPVStructureArray(fieldCreate.createStructureArray(structure));
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.PVDataCreate#createPVUnionArray(org.epics.pvdata.pv.Union)
+		 */
 		@Override
 		public PVUnionArray createPVUnionArray(Union union) {
 			return createPVUnionArray(fieldCreate.createUnionArray(union));

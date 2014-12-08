@@ -26,7 +26,7 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
     
     /**
      * Constructor.
-     * @param array The Byterospection interface.
+     * @param array The introspection interface.
      */
     public BasePVByteArray(ScalarArray array)
     {
@@ -65,17 +65,26 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 		return length;
 	}
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVByteArray#get(int, int, org.epics.pvdata.pv.ByteArrayData)
+     */
     @Override
     public int get(int offset, int len, ByteArrayData data) {
     	return internalGet(offset, len, data);
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVByteArray#put(int, int, byte[], int)
+     */
     @Override
     public int put(int offset, int len, byte[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
 
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVByteArray#shareData(byte[])
+     */
     @Override
     public void shareData(byte[] from) {
     	internalShareData(from);
@@ -91,6 +100,9 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 		return Arrays.equals(arrayData.data, value);
     }
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(value);

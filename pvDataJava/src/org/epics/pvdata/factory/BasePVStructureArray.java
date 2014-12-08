@@ -37,6 +37,9 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
         this.structureArray = structureArray;
     }
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructureArray#getStructureArray()
+     */
     @Override
 	public StructureArray getStructureArray() {
 		return structureArray;
@@ -60,11 +63,17 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     	value = (PVStructure[])array;
     }
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructureArray#get(int, int, org.epics.pvdata.pv.StructureArrayData)
+     */
     @Override
     public int get(int offset, int len, StructureArrayData data) {
     	return internalGet(offset, len, data);
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructureArray#put(int, int, org.epics.pvdata.pv.PVStructure[], int)
+     */
     @Override
     public int put(int offset, int len, PVStructure[] from, int fromOffset) {
     	
@@ -78,6 +87,9 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     }
 
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructureArray#shareData(org.epics.pvdata.pv.PVStructure[])
+     */
     @Override
     public void shareData(PVStructure[] from) {
     	internalShareData(from);
@@ -108,6 +120,9 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
 		return pvDataCreate.createPVStructure(structureArray.getStructure());
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(value);

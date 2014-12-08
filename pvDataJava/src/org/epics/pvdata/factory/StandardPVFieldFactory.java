@@ -16,10 +16,15 @@ import org.epics.pvdata.pv.StandardPVField;
 import org.epics.pvdata.pv.Structure;
 
 /**
+ * Generate data object for standard fields.
  * @author mrk
  *
  */
 public final class  StandardPVFieldFactory {
+	/**
+	 * Get the single instance of PVStandardField.
+     * @return The interface for PVStandardField.
+	 */
 	public static synchronized StandardPVField getStandardPVField()
 	{
 		if(impl==null) {
@@ -34,6 +39,9 @@ public final class  StandardPVFieldFactory {
 	{
 		StandardPVFieldImpl(){}
 
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.StandardPVField#scalar(org.epics.pvdata.pv.ScalarType, java.lang.String)
+		 */
 		@Override
 		public PVStructure scalar(ScalarType scalarType,String properties)
 		{
@@ -41,6 +49,9 @@ public final class  StandardPVFieldFactory {
 		    PVStructure pvStructure = pvDataCreate.createPVStructure(field);
 		    return pvStructure;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.StandardPVField#scalarArray(org.epics.pvdata.pv.ScalarType, java.lang.String)
+		 */
 		@Override
 		public PVStructure scalarArray(ScalarType elementType, String properties)
 		{
@@ -48,6 +59,9 @@ public final class  StandardPVFieldFactory {
             PVStructure pvStructure = pvDataCreate.createPVStructure(field);
             return pvStructure;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.StandardPVField#structureArray(org.epics.pvdata.pv.Structure, java.lang.String)
+		 */
 		@Override
 		public PVStructure structureArray(Structure structure,String properties)
 		{
@@ -55,6 +69,9 @@ public final class  StandardPVFieldFactory {
             PVStructure pvStructure = pvDataCreate.createPVStructure(field);
             return pvStructure;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.StandardPVField#enumerated(java.lang.String[])
+		 */
 		@Override
 		public PVStructure enumerated(String[] choices)
 		{
@@ -69,6 +86,9 @@ public final class  StandardPVFieldFactory {
 		    pvChoices.setImmutable();
 		    return pvStructure;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.StandardPVField#enumerated(java.lang.String[], java.lang.String)
+		 */
 		@Override
 		public PVStructure enumerated(String[] choices,String properties)
 		{

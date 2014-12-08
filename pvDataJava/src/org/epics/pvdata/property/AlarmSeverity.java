@@ -53,5 +53,9 @@ public enum AlarmSeverity {
     private static final String[] alarmSeverityNames = {
         "NONE","MINOR","MAJOR","INVALID","UNDEFINED"
     };
+    /**
+     * Get the names associated with each severity.
+     * @return The array of names.
+     */
     public static String[] getSeverityNames() { return alarmSeverityNames;}
 }

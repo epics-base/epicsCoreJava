@@ -33,6 +33,9 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
         	throw new NullPointerException("elementType is null");
         this.elementType = elementType;
     }
+	/**
+	 * ID for each scalarArray type.
+	 */
 	private static final String[] idLUT = {
 		"boolean[]", // pvBoolean
 		"byte[]",    // pvByte
@@ -108,11 +111,17 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Array#getArraySizeType()
+	 */
 	@Override
 	public ArraySizeType getArraySizeType() {
 		return ArraySizeType.variable;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.Array#getMaximumCapacity()
+	 */
 	@Override
 	public int getMaximumCapacity() {
 		return 0;

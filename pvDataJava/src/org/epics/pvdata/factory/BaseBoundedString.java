@@ -20,6 +20,10 @@ public class BaseBoundedString extends BaseScalar implements BoundedString {
 
 	public final int maxLength;
 	
+	/**
+	 * Constructor
+	 * @param maxLength The maximum length the string can have.
+	 */
 	public BaseBoundedString(int maxLength) {
 		super(ScalarType.pvString);
 
@@ -29,11 +33,17 @@ public class BaseBoundedString extends BaseScalar implements BoundedString {
 		this.maxLength = maxLength;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.factory.BaseScalar#getID()
+	 */
 	@Override
 	public String getID() {
 		return super.getID() + '(' + maxLength + ')';
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.factory.BaseScalar#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
+	 */
 	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
@@ -41,16 +51,25 @@ public class BaseBoundedString extends BaseScalar implements BoundedString {
 		SerializeHelper.writeSize(maxLength, buffer, control);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.BoundedString#getMaximumLength()
+	 */
 	@Override
 	public int getMaximumLength() {
 		return maxLength;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.factory.BaseScalar#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return super.hashCode() | maxLength << 4;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.factory.BaseScalar#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

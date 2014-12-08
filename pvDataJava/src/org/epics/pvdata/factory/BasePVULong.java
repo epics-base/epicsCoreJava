@@ -23,6 +23,10 @@ public class BasePVULong extends AbstractPVScalar implements PVULong
 {
     protected long value;
     
+    /**
+     * Constructor
+     * @param scalar The introspection  interface.
+     */
     public BasePVULong(Scalar scalar) {
         super(scalar);
         value = 0;

@@ -30,17 +30,26 @@ public final class StatusFactory {
         return statusCreate;
     }
     
+	/**
+	 * The value for NEW_LINE.
+	 */
 	public static String NEW_LINE = System.getProperty("line.separator");
 	
     private static final class StatusCreateImpl implements StatusCreate {
 
     	private static final StatusImpl okStatus = new StatusImpl(StatusType.OK, null, null);
     	
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.StatusCreate#getStatusOK()
+		 */
 		@Override
 		public Status getStatusOK() {
 			return okStatus;
 		}
  
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.StatusCreate#createStatus(org.epics.pvdata.pv.Status.StatusType, java.lang.String, java.lang.Throwable)
+		 */
 		@Override
 		public Status createStatus(StatusType type, String message, Throwable cause) {
 			String stackDump = null;
@@ -112,19 +121,28 @@ public final class StatusFactory {
     	private String message;
     	private String stackDump;
     	    	
-		public StatusImpl(StatusType type, String message, String stackDump) {
+		StatusImpl(StatusType type, String message, String stackDump) {
 			this.type = type;
 			this.message = message;
 			this.stackDump = stackDump;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.Status#getMessage()
+		 */
 		@Override
 		public String getMessage() {
 			return message;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.Status#getStackDump()
+		 */
 		@Override
 		public String getStackDump() {
 			return stackDump;
 		}
+		/* (non-Javadoc)
+		 * @see org.epics.pvdata.pv.Status#getType()
+		 */
 		@Override
 		public StatusType getType() {
 			return type;

@@ -6,6 +6,7 @@
 package org.epics.pvdata.misc;
 
 /**
+ * A finite Queue.
  * @author mrk
  *
  */

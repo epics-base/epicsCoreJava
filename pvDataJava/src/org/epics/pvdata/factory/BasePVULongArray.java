@@ -67,17 +67,26 @@ public class BasePVULongArray extends AbstractPVScalarArray implements PVULongAr
 		return length;
 	}
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVULongArray#get(int, int, org.epics.pvdata.pv.LongArrayData)
+     */
     @Override
     public int get(int offset, int len, LongArrayData data) {
     	return internalGet(offset, len, data);
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVULongArray#put(int, int, long[], int)
+     */
     @Override
     public int put(int offset, int len, long[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
 
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVULongArray#shareData(long[])
+     */
     @Override
     public void shareData(long[] from) {
     	internalShareData(from);
@@ -93,6 +102,9 @@ public class BasePVULongArray extends AbstractPVScalarArray implements PVULongAr
 		return Arrays.equals(arrayData.data, value);
     }
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(value);

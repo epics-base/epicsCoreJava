@@ -22,10 +22,13 @@ import org.epics.pvdata.pv.Structure;
 /**
  * @author mrk
  *
+ * This is mainly used by pvAccess clients.
+ * Given a request string it creates a pvRequest structure that can be passed to the pvAccess create methods.
+ * In turn pvAccess passes the pvRequest to a local channel provider which then passes it to pvCopy.
  */
 public class CreateRequest {
 	/**
-	 * Create s CreateRequest.
+	 * Create CreateRequest.
 	 * @return new instance of CreateRequest
 	 */
 	public static CreateRequest create()
@@ -33,14 +36,19 @@ public class CreateRequest {
 		return new CreateRequest();
 	}
 	/**
-	 * Create a request structure for the create calls in Channel.
+	 * Create a request structure for the create methods in Channel.
 	 * See the package overview documentation for details.
 	 * @param request The field request. See the package overview documentation for details.
-	 * @return The request structure if an invalid request was given. 
+	 * @return The request structure.
+	 * If an invalid request was given null is returned and getMessage can be called to find the reason for the failure. 
 	 */
 	public PVStructure createRequest(String request) {
 		return createRequestInternal(request);
 	}
+	/**
+	 * Get the reason why the last call to createRequest returned null.
+	 * @return The reason why createRequest failed.
+	 */
 	public String getMessage() {
 		return message;
 	}

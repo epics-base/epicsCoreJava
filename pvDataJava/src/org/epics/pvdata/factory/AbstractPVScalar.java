@@ -9,6 +9,9 @@ import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.Scalar;
 
 /**
+ * Abstract base class for a PVScalar.
+ * A factory that implements PVScalar must extend this class.
+ * 
  * @author mrk
  *
  */

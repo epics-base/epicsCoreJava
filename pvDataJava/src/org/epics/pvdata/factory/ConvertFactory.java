@@ -1622,6 +1622,9 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#fromUByte(org.epics.pvdata.pv.PVScalar, byte)
+         */
         @Override
         public void fromUByte(PVScalar pv, byte xxx)
         {
@@ -1681,6 +1684,9 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#fromUShort(org.epics.pvdata.pv.PVScalar, short)
+         */
         @Override
         public void fromUShort(PVScalar pv, short xxx) {
             int from = widenUnsigned(xxx);
@@ -1739,6 +1745,9 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#fromUInt(org.epics.pvdata.pv.PVScalar, int)
+         */
         @Override
         public void fromUInt(PVScalar pv, int xxx) {
             long from = widenUnsigned(xxx);
@@ -1797,6 +1806,9 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#fromULong(org.epics.pvdata.pv.PVScalar, long)
+         */
         @Override
         public void fromULong(PVScalar pv, long from) {
             ScalarType type = pv.getScalar().getScalarType();
@@ -1852,12 +1864,8 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * org.epics.pvdata.pv.Convert#fromFloat(org.epics.pvdata.pv.PVScalar,
-         * float)
+        /* (non-Javadoc)
+         * @see org.epics.pvdata.pv.Convert#fromFloat(org.epics.pvdata.pv.PVScalar, float)
          */
         @Override
         public void fromFloat(PVScalar pv, float from) {

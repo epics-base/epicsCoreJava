@@ -26,6 +26,10 @@ public class BasePVString extends AbstractPVScalar implements PVString
     protected String value = "";
     protected final int maxLength;
     
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVString(Scalar scalar) {
         super(scalar);
         if (scalar instanceof BoundedString)

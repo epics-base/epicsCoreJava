@@ -32,6 +32,9 @@ public class BaseFieldBuilder implements FieldBuilder {
 	private final String nestedName;
 	private final boolean nestedArray;
 	
+	/**
+	 * Constructor
+	 */
 	public BaseFieldBuilder()
 	{
 		parentBuilder = null;
@@ -56,36 +59,54 @@ public class BaseFieldBuilder implements FieldBuilder {
 		members.clear();
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#setId(java.lang.String)
+	 */
 	@Override
 	public FieldBuilder setId(String id) {
 		this.id = id;
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#add(java.lang.String, org.epics.pvdata.pv.ScalarType)
+	 */
 	@Override
 	public FieldBuilder add(String name, ScalarType scalarType) {
 		members.put(name, fieldCreate.createScalar(scalarType));
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addBoundedString(java.lang.String, int)
+	 */
 	@Override
 	public FieldBuilder addBoundedString(String name, int maxLength) {
 		members.put(name, fieldCreate.createBoundedString(maxLength));
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#add(java.lang.String, org.epics.pvdata.pv.Field)
+	 */
 	@Override
 	public FieldBuilder add(String name, Field field) {
 		members.put(name, field);
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addArray(java.lang.String, org.epics.pvdata.pv.ScalarType)
+	 */
 	@Override
 	public FieldBuilder addArray(String name, ScalarType scalarType) {
 		members.put(name, fieldCreate.createScalarArray(scalarType));
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addFixedArray(java.lang.String, org.epics.pvdata.pv.ScalarType, int)
+	 */
 	@Override
 	public FieldBuilder addFixedArray(String name, ScalarType scalarType,
 			int size) {
@@ -93,6 +114,9 @@ public class BaseFieldBuilder implements FieldBuilder {
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addBoundedArray(java.lang.String, org.epics.pvdata.pv.ScalarType, int)
+	 */
 	@Override
 	public FieldBuilder addBoundedArray(String name, ScalarType scalarType,
 			int bound) {
@@ -100,6 +124,9 @@ public class BaseFieldBuilder implements FieldBuilder {
 		return this;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addArray(java.lang.String, org.epics.pvdata.pv.Field)
+	 */
 	@Override
 	public FieldBuilder addArray(String name, Field element) {
 		if (element instanceof Structure)
@@ -154,6 +181,9 @@ public class BaseFieldBuilder implements FieldBuilder {
 			throw new IllegalArgumentException("unsupported type: " + type);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#createStructure()
+	 */
 	@Override
 	public Structure createStructure() {
 		if (parentBuilder != null)
@@ -164,6 +194,9 @@ public class BaseFieldBuilder implements FieldBuilder {
 		return structure;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#createUnion()
+	 */
 	@Override
 	public Union createUnion() {
 		if (parentBuilder != null)
@@ -174,26 +207,41 @@ public class BaseFieldBuilder implements FieldBuilder {
 		return union;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addNestedStructure(java.lang.String)
+	 */
 	@Override
 	public FieldBuilder addNestedStructure(String name) {
 		return new BaseFieldBuilder(this, name, Structure.class, false);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addNestedUnion(java.lang.String)
+	 */
 	@Override
 	public FieldBuilder addNestedUnion(String name) {
 		return new BaseFieldBuilder(this, name, Union.class, false);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addNestedStructureArray(java.lang.String)
+	 */
 	@Override
 	public FieldBuilder addNestedStructureArray(String name) {
 		return new BaseFieldBuilder(this, name, Structure.class, true);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#addNestedUnionArray(java.lang.String)
+	 */
 	@Override
 	public FieldBuilder addNestedUnionArray(String name) {
 		return new BaseFieldBuilder(this, name, Union.class, true);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.FieldBuilder#endNested()
+	 */
 	@Override
 	public FieldBuilder endNested() {
 		if (parentBuilder == null)

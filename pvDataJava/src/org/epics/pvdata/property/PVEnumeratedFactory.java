@@ -14,6 +14,11 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.StringArrayData;
 import org.epics.pvdata.pv.Type;
 
+/**
+ * Implementation of PVEnumerated.
+ * @author mrk
+ *
+ */
 public final class PVEnumeratedFactory implements PVEnumerated{
     private PVInt pvIndex = null;
     private PVStringArray pvChoices = null;

@@ -15,10 +15,6 @@ import org.epics.pvdata.pv.PVField;
  * @author mrk
  *
  */
-/**
- * @author mrk
- *
- */
 public interface PVCopyTraverseMasterCallback {
     /**
      * Called once for each field in the copy. 

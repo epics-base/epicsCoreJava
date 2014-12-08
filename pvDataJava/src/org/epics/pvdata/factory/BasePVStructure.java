@@ -83,6 +83,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         this.pvFields = pvFields;
         setParentAndName();
     }
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.factory.AbstractPVField#setImmutable()
+     */
     @Override
     public void setImmutable() {
         super.setImmutable();
@@ -165,6 +168,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     	return getSubField(PVInt.class, fieldName);
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructure#getSubField(java.lang.Class, java.lang.String)
+     */
     @Override
 	public <T extends PVField> T getSubField(Class<T> c, String fieldName)
 	{
@@ -175,6 +181,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 			return null;
 	}
 	
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructure#getSubField(java.lang.Class, int)
+     */
     @Override
 	public <T extends PVField> T getSubField(Class<T> c, int fieldOffset)
 	{
@@ -317,6 +326,9 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         return result;
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVStructure#checkValid()
+     */
     @Override
     public boolean checkValid() {
         PVStructure xxx = this;
@@ -325,6 +337,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         return checkValid(xxx,"");
     }
+    
     private PVField findSubField(String fieldName,PVStructure pvStructure) {
         if(fieldName==null || fieldName.length()<1) return null;
         int index = fieldName.indexOf('.');

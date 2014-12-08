@@ -23,6 +23,10 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
 {
     protected float value;
     
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVFloat(Scalar scalar) {
         super(scalar);
         value = 0;

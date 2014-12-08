@@ -13,18 +13,15 @@ import org.epics.pvdata.pv.Structure;
 
 
 /**
- * This interface maps between a PVRecord and a PVStructure that holds a copy of a subset
- * of the data in the PVRecord.
+ * 
  * @author mrk
  *
- */
-/**
- * @author mrk
- *
+ * This interface maps between a master PVStructure and a PVStructure that holds a copy of a subset
+ * of the data in the master.
  */
 public interface PVCopy {
     /**
-     * Get the PVRecord to which this PVCopy is attached. 
+     * Get the master PVStructure to which this PVCopy is attached. 
      * @return The interface.
      */
     PVStructure getPVMaster();
@@ -40,21 +37,21 @@ public interface PVCopy {
      */
     Structure getStructure();
     /**
-     * Create a PVStructure which can hold a subset of the data from the PVRecord.
+     * Create a PVStructure which can hold a subset of the data from the master.
      * A client may require multiple PVStructures. For example if a monitor request supports
      * a queue than a PVStructure is required for each queue element.
      * @return The interface.
      */
     PVStructure createPVStructure();
     /**
-     * Given a field in pvMaster. return the offset in copy for the same field.
+     * Given a field the master. return the offset in copy for the same field.
      * A value of -1 that the copy does not have this field.
      * @param masterPVField The field in master.
      * @return The offset or -1 if the field in the record does not have a copy in the PVStructure.
      */
     int getCopyOffset(PVField masterPVField);
     /**
-     * Given a field within pvMastee, return the offset in copy for the same field.
+     * Given a field within master, return the offset in copy for the same field.
      *A value of -1 that the copy does not have this field.
      * @param masterPVStructure A structure in master that has masterPVField.
      * @param masterPVField The field in master.
@@ -62,7 +59,7 @@ public interface PVCopy {
      */
     int getCopyOffset(PVStructure masterPVStructure,PVField masterPVField);
     /**
-     * Given a offset in the copy get the corresponding field in pvMaster.
+     * Given a offset in the copy get the corresponding field in master.
      * @param structureOffset The offset in the copy.
      * @return The interface within master.
      */
@@ -75,7 +72,7 @@ public interface PVCopy {
      */
     void initCopy(PVStructure copyPVStructure, BitSet bitSet);
     /**
-     * Update PVStructure from PVRecord. The BitSet shows which fields in PVStructure have changed.
+     * Update PVStructure from master. The BitSet shows which fields in PVStructure have changed.
      * @param copyPVStructure The PVStructure.
      * @param bitSet The BitSet which shows the fields that were modified.
      */
@@ -88,7 +85,7 @@ public interface PVCopy {
      */
     void updateCopyFromBitSet(PVStructure copyPVStructure,BitSet bitSet);
     /**
-     * Update the fields in PVRecord with data from PVStructure. Only fields
+     * Update the fields in master with data from PVStructure. Only fields
      * that have the offset in bitSet set to true are modified.
      * @param copyPVStructure The PVStructure.
      * @param bitSet The offsets within PVStructure that have new data.

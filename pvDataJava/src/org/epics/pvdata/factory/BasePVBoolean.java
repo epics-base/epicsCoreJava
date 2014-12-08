@@ -23,6 +23,10 @@ public class BasePVBoolean extends AbstractPVScalar implements PVBoolean
 {
     protected boolean value = false;
 
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVBoolean(Scalar scalar) {
         super(scalar);
     }        

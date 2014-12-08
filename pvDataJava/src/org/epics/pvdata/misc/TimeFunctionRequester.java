@@ -5,6 +5,11 @@
  */
 package org.epics.pvdata.misc;
 
+/**
+ * The interface that must be implemented by code that calls TimeFunction.
+ * @author mrk
+ *
+ */
 public interface TimeFunctionRequester {
     void function();
 }

@@ -67,17 +67,26 @@ public class BasePVDoubleArray extends AbstractPVScalarArray implements PVDouble
 		return length;
 	}
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVDoubleArray#get(int, int, org.epics.pvdata.pv.DoubleArrayData)
+     */
     @Override
     public int get(int offset, int len, DoubleArrayData data) {
     	return internalGet(offset, len, data);
     }
     
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVDoubleArray#put(int, int, double[], int)
+     */
     @Override
     public int put(int offset, int len, double[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
 
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVDoubleArray#shareData(double[])
+     */
     @Override
     public void shareData(double[] from) {
     	internalShareData(from);
@@ -93,6 +102,9 @@ public class BasePVDoubleArray extends AbstractPVScalarArray implements PVDouble
 		return Arrays.equals(arrayData.data, value);
     }
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return Arrays.hashCode(value);

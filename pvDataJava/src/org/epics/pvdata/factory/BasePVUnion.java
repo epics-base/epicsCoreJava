@@ -39,16 +39,25 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
         variant = union.isVariant();
     }
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#getUnion()
+	 */
 	@Override
 	public Union getUnion() {
 		return union;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#get()
+	 */
 	@Override
 	public PVField get() {
 		return value;
 	}
 
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.PVUnion#get(java.lang.Class)
+     */
     @Override
 	public <T extends PVField> T get(Class<T> c)
 	{
@@ -58,11 +67,17 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			return null;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#getSelectedIndex()
+	 */
 	@Override
 	public int getSelectedIndex() {
 		return selector;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#getSelectedFieldName()
+	 */
 	@Override
 	public String getSelectedFieldName() {
 		// no name for undefined and for variant unions
@@ -72,6 +87,9 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			return union.getFieldName(selector);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#select(int)
+	 */
 	@Override
 	public PVField select(int index) {
 		// no change
@@ -96,6 +114,9 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		return value;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#select(java.lang.String)
+	 */
 	@Override
 	public PVField select(String fieldName) {
 		int index = variant ? -1 : union.getFieldIndex(fieldName);
@@ -106,6 +127,9 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	}
 
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#select(java.lang.Class, int)
+	 */
 	@Override
 	public <T extends PVField> T select(Class<T> c, int index) {
 		PVField pv = select(index);
@@ -115,6 +139,9 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#select(java.lang.Class, java.lang.String)
+	 */
 	@Override
 	public <T extends PVField> T select(Class<T> c, String fieldName) {
 		PVField pv = select(fieldName);
@@ -124,11 +151,17 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#set(org.epics.pvdata.pv.PVField)
+	 */
 	@Override
 	public void set(PVField value) {
 		set(selector, value);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#set(int, org.epics.pvdata.pv.PVField)
+	 */
 	@Override
 	public void set(int index, PVField value) {
 		if (variant && index != UNDEFINED_INDEX)
@@ -154,6 +187,9 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		super.postPut();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.epics.pvdata.pv.PVUnion#set(java.lang.String, org.epics.pvdata.pv.PVField)
+	 */
 	@Override
 	public void set(String fieldName, PVField value) {
 		int index = variant ? -1 : union.getFieldIndex(fieldName);

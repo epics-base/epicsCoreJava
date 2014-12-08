@@ -76,5 +76,9 @@ public enum AlarmStatus {
     private static final String[] alarmStatusNames = {
         "NONE","DEVICE","DRIVER","RECORD","DB","CONF","UNDEFINED","CLIENT"
     };
+    /**
+     * Get the names associated with each status.
+     * @return The array of names.
+     */
     public static String[] getStatusNames() { return alarmStatusNames;}
 }

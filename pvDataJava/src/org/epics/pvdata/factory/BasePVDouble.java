@@ -23,6 +23,10 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
 {
     protected double value;
     
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVDouble(Scalar scalar) {
         super(scalar);
         value = 0;

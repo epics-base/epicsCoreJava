@@ -12,6 +12,7 @@ import java.util.Map;
  * Each item is stored as a PVScalar.
  * A map (key,value) is provided for accessing the items where the key is a String.
  * @author mrk
+ * @deprecated
  *
  */
 public interface PVAuxInfo {

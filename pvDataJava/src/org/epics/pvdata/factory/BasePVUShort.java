@@ -14,7 +14,7 @@ import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.SerializableControl;
 
 /**
- * Base class for PVByte.
+ * Base class for PVUShort
  * It provides a complete implementation but can be extended.
  * @author mrk
  *
@@ -23,6 +23,10 @@ public class BasePVUShort extends AbstractPVScalar implements PVUShort
 {
     protected short value;
     
+    /**
+     * Constructor
+     * @param scalar The introspection interface.
+     */
     public BasePVUShort(Scalar scalar) {
         super(scalar);
         value = 0;
