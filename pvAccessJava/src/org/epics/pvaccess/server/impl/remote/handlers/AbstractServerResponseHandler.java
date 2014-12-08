@@ -34,7 +34,7 @@ public abstract class AbstractServerResponseHandler extends AbstractResponseHand
 	 * @param description
 	 */
 	public AbstractServerResponseHandler(ServerContextImpl context, String description) {
-		super(description);
+		super(description, context.getDebugLevel() >= 3);
 		this.context = context;
 	}
 

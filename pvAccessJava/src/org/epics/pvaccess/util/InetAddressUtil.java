@@ -37,6 +37,50 @@ import java.util.StringTokenizer;
  */
 public class InetAddressUtil {
 
+	private static final String HOSTNAME_KEY = "HOSTNAME";
+	private static final String STRIP_HOSTNAME_KEY = "STRIP_HOSTNAME";
+	
+	private static String hostName = null;
+	
+	public static synchronized String getHostName()
+	{
+		if (hostName == null)
+			hostName = internalGetHostName();
+		return hostName;
+	}
+	
+	private static String internalGetHostName() 
+	{
+		// default fallback
+		String hostName = "localhost";
+		
+		try {
+			InetAddress localAddress = InetAddress.getLocalHost();
+			hostName = localAddress.getHostName();
+		} catch (Throwable uhe) {	// not only UnknownHostException
+			// try with environment variable
+			try {
+				String envHN = System.getenv(HOSTNAME_KEY);
+				if (envHN != null)
+					hostName = envHN;
+			} catch (Throwable th) {
+				// in case not supported by JVM/OS
+			}
+			
+			// and system property (overrides env. var.)
+			hostName = System.getProperty(HOSTNAME_KEY, hostName);
+		}
+		
+		if (System.getProperties().contains(STRIP_HOSTNAME_KEY))
+		{
+			int dotPos = hostName.indexOf('.');
+			if (dotPos > 0)
+				hostName = hostName.substring(0, dotPos);
+		}
+		
+		return hostName;
+	}
+
 	/**
 	 * Get broadcast addresses.
 	 * @param port port to be added to get socket address.
@@ -262,8 +306,18 @@ public class InetAddressUtil {
 				address = address.substring(0, pos);
 			}
 			
-			// add parsed address
-			al.add(new InetSocketAddress(address, port));
+			try
+			{
+				InetSocketAddress isa = new InetSocketAddress(address, port);
+				
+				// add parsed address if resolved
+				if (!isa.isUnresolved())
+					al.add(isa);
+			}
+			catch (Throwable th) {
+				// TODO
+				th.printStackTrace();
+			}
 		}
 
 		// copy to array

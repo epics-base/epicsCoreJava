@@ -19,6 +19,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 
 import org.epics.pvaccess.client.ChannelFind;
@@ -34,6 +35,9 @@ import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.SerializeHelper;
+import org.epics.pvdata.misc.Timer.TimerCallback;
+import org.epics.pvdata.misc.Timer.TimerNode;
+import org.epics.pvdata.misc.TimerFactory;
 import org.epics.pvdata.pv.Status;
 
 /**
@@ -44,6 +48,9 @@ import org.epics.pvdata.pv.Status;
 public class SearchHandler extends AbstractServerResponseHandler {
 
 	private final ChannelFindRequesterImplObjectPool objectPool = new ChannelFindRequesterImplObjectPool();
+
+	private final Random random = new Random();
+	private static final int MAX_SERVER_SEARCH_RESPONSE_DELAY_MS = 100;
 	
 	/**
 	 * @param context
@@ -135,7 +142,10 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		transport.ensureData(2);
 		final int count = payloadBuffer.getShort() & 0xFFFF;
 		
+		// TODO DoS attack
 		final boolean responseRequired = QoS.REPLY_REQUIRED.isSet(qosCode);
+		
+		// TODO bloom filter or similar server selection (by GUID)
 		
 		ChannelProvider provider = context.getChannelProvider();
 
@@ -153,8 +163,26 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		}
 		else
 		{
+			// server search response
 			if (allowed)
-				objectPool.get().set(searchSequenceId, responseFrom).channelFindResult(StatusFactory.getStatusCreate().getStatusOK(), null, false);
+			{
+				double delay = random.nextInt(MAX_SERVER_SEARCH_RESPONSE_DELAY_MS) / 1000.0;
+				final InetSocketAddress rf = responseFrom;
+				TimerNode timerNode = TimerFactory.createNode(new TimerCallback() {
+					
+					@Override
+					public void timerStopped() {
+						// noop
+					}
+					
+					@Override
+					public void callback() {
+						objectPool.get().set(searchSequenceId, rf).channelFindResult(StatusFactory.getStatusCreate().getStatusOK(), null, false);
+					}
+				});
+				// delay response to avoid "UDP search storms"
+				context.getTimer().scheduleAfterDelay(timerNode, delay);
+			}
 		}
 	}
 

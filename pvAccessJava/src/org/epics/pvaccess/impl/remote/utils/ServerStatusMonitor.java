@@ -16,8 +16,10 @@ package org.epics.pvaccess.impl.remote.utils;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.client.impl.remote.BeaconHandler;
@@ -29,7 +31,7 @@ import org.epics.pvdata.pv.PVField;
  * @author msekoranja
  * @version $Id$
  */
-public class ServerStatusMonitor implements BeaconHandler {
+public class ServerStatusMonitor {
 
 	/**
 	 * Context implementation.
@@ -37,48 +39,62 @@ public class ServerStatusMonitor implements BeaconHandler {
 	private static class BeaconMonitorContextImpl extends ClientContextImpl
 	{
 		/**
-		 * Beacon handler.
+		 * Beacon handler map.
 		 */
-		private BeaconHandler beaconHandler;
+		private final Map<String, BeaconHandler> beaconHandlerMap = 
+				Collections.synchronizedMap(new HashMap<String, BeaconHandler>());
 		
 		/**
 		 * Constructor.
-		 * @param beaconHandler handler used to handle beacon messages. 
 		 */
-		public BeaconMonitorContextImpl(BeaconHandler beaconHandler) {
+		public BeaconMonitorContextImpl() {
 			super();
-			this.beaconHandler = beaconHandler;
 		}
 
 		@Override
 		public BeaconHandler getBeaconHandler(String protocol, InetSocketAddress responseFrom) {
-			return beaconHandler;
+			BeaconHandler bh = beaconHandlerMap.get(protocol);
+			if (bh == null)
+			{
+				bh = new BeaconHandlerImpl(protocol);
+				beaconHandlerMap.put(protocol, bh);
+			}
+			return bh;
 		}
 		
 	}
 
-	/**
-	 * ISO 8601 date formatter.
-	 */
-	private static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
-	@Override
-	public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
-							 long timestamp, byte[] guid, int sequentalID,
-							 int changeCount, PVField data) {
-		// sync timeFormatter and System.out
-		synchronized(timeFormatter)
+	static class BeaconHandlerImpl implements BeaconHandler
+	{
+		/**
+		 * ISO 8601 date formatter.
+		 */
+		private static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		
+		private final String protocol;
+		
+		public BeaconHandlerImpl(String protocol)
 		{
-			final byte major = (byte)(remoteTransportRevision >> 4); 
-			final byte minor = (byte)(remoteTransportRevision & 0x0F);
-			System.out.printf("[%s] %s: seqID %d, version %d.%d, guid %s, change %d\n",
-					timeFormatter.format(new Date(timestamp)),
-					from,
-					sequentalID, major, minor,
-					Arrays.toString(guid),
-					changeCount);
-			if (data != null)
-				System.out.println(data);
+			this.protocol = protocol;
+		}
+
+		@Override
+		public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
+								 long timestamp, byte[] guid, int sequentalID,
+								 int changeCount, PVField data) {
+			// sync timeFormatter and System.out
+			synchronized(timeFormatter)
+			{
+				System.out.printf("[%s] %s@%s: seqID %d, version %d, guid %s, change %d\n",
+						timeFormatter.format(new Date(timestamp)),
+						protocol, from,
+						sequentalID, remoteTransportRevision,
+						GUID.toString(guid),
+						changeCount);
+				if (data != null)
+					System.out.println(data);
+			}
 		}
 	}
 
@@ -95,7 +111,7 @@ public class ServerStatusMonitor implements BeaconHandler {
     private void initialize() throws PVAException {
         
 		// Create a context with default configuration values.
-		context = new BeaconMonitorContextImpl(this);
+		context = new BeaconMonitorContextImpl();
 		context.initialize();
 
 		// Display basic information about the context.

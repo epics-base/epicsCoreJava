@@ -20,38 +20,23 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.Transport;
-import org.epics.pvdata.misc.SerializeHelper;
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVField;
-
+import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport;
+import org.epics.pvaccess.util.InetAddressUtil;
 
 /**
- * Beacon message handler.
+ * Search request handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
-public class BeaconHandler extends AbstractClientResponseHandler {
-
-	/**
-	 * PVField factory.
-	 */
-	private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-
-	/**
-	 * Field factory.
-	 */
-	private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
+public class SearchHandler extends AbstractClientResponseHandler {
 
 	/**
 	 * @param context
 	 */
-	public BeaconHandler(ClientContextImpl context) {
-		super(context, "Beacon");
+	public SearchHandler(ClientContextImpl context) {
+		super(context, "Search request");
 	}
 
 	/* (non-Javadoc)
@@ -59,26 +44,25 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 	 */
 	@Override
 	public void handleResponse(InetSocketAddress responseFrom, Transport transport, byte version, byte command, int payloadSize, ByteBuffer payloadBuffer) {
-
-		// reception timestamp
-		final long timestamp = System.currentTimeMillis();
-
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
-		
-		transport.ensureData(12+2+2+16+2);
-		
-		final byte[] guid = new byte[12];
-		payloadBuffer.get(guid);
-		
-		/*final byte qosCode = */ payloadBuffer.get();
-		final int sequentalID = payloadBuffer.get()  & 0x000000FF;
-		final int changeCount = payloadBuffer.getShort() & 0x0000FFFF;
-		
+
+		transport.ensureData(4+1+3+16+2);
+
+		final int startPosition = payloadBuffer.position();
+
+		/*final int searchSequenceId =*/ payloadBuffer.getInt();
+		final byte qosCode = payloadBuffer.get();
+
+		// reserved part
+		payloadBuffer.get();
+		payloadBuffer.getShort();
+
 		// 128-bit IPv6 address
 		byte[] byteAddress = new byte[16]; 
 		payloadBuffer.get(byteAddress);
-	
+		
 		final int port = payloadBuffer.getShort() & 0xFFFF;
+		
 		
 		// NOTE: Java knows how to compare IPv4/IPv6 :)
 		
@@ -86,7 +70,7 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 		try {
 			addr = InetAddress.getByAddress(byteAddress);
 		} catch (UnknownHostException e) {
-			context.getLogger().log(Level.FINER, "Invalid address '" +  new String(byteAddress) + "' in beacon received from: " + responseFrom, e);
+			context.getLogger().log(Level.FINER, "Invalid address '" +  new String(byteAddress) + "' in search response received from: " + responseFrom, e);
 			return;
 		}
 
@@ -95,25 +79,36 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 			responseFrom = new InetSocketAddress(addr, port);
 		else
 			responseFrom = new InetSocketAddress(responseFrom.getAddress(), port);
-		
-		final String protocol = SerializeHelper.deserializeString(payloadBuffer, transport);
 
-		org.epics.pvaccess.client.impl.remote.BeaconHandler beaconHandler = context.getBeaconHandler(protocol, responseFrom);
-		// currently we care only for servers used by this context  
-		if (beaconHandler == null)
-			return;
 
-		// extra data
-		PVField data = null;
-		final Field field = fieldCreate.deserialize(payloadBuffer, transport);
-		if (field != null)
+        // we ignore the rest, since we care only about data relevant
+        // to do the local multicast
+
+		// 
+		// locally broadcast if unicast (qosCode & 0x80 == 0x80)
+		//
+		if ((qosCode & 0x80) == 0x80)
 		{
-			data = pvDataCreate.createPVField(field);
-			data.deserialize(payloadBuffer, transport);
+			BlockingUDPTransport bt = 
+					//context.getLocalMulticastTransport();
+					context.getSearchTransport();
+			if (bt != null)
+			{
+				// clear unicast flag
+				payloadBuffer.put(startPosition+4, (byte)(qosCode & ~0x80));
+				
+				// update response address
+				payloadBuffer.position(startPosition+8);
+				InetAddressUtil.encodeAsIPv6Address(payloadBuffer, responseFrom.getAddress());
+				
+				payloadBuffer.position(payloadBuffer.limit());		// send will call flip()
+				
+				bt.send(payloadBuffer, context.getLocalMulticastAddress());
+				return;
+			}
 		}
-
-		// notify beacon handler
-		beaconHandler.beaconNotify(responseFrom, version, timestamp, guid, sequentalID, changeCount, data);
+		
 	}
-
+	
 }
+ 

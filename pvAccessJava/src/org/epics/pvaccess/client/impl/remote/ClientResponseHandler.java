@@ -27,6 +27,7 @@ import org.epics.pvaccess.client.impl.remote.handlers.EchoResponse;
 import org.epics.pvaccess.client.impl.remote.handlers.MessageHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.MultipleDataResponseHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.NoopResponse;
+import org.epics.pvaccess.client.impl.remote.handlers.SearchHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.SearchResponseHandler;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.request.ResponseHandler;
@@ -64,9 +65,9 @@ public class ClientResponseHandler implements ResponseHandler {
 				new BeaconHandler(context), /*  0 */
 				new ConnectionValidationHandler(context), /*  1 */
 				new EchoResponse(context), /*  2 */
-				new NoopResponse(context, "Search"), /*  3 */
+				new SearchHandler(context), /*  3 */
 				new SearchResponseHandler(context), /*  4 */
-				new AuthNZHandler(), /*  5 */
+				new AuthNZHandler(context.getDebugLevel() >= 3), /*  5 */
 				new NoopResponse(context, "Access rights change"), /*  6 - access rights change */
 				new CreateChannelHandler(context), /*  7 */
 				new NoopResponse(context, "Destroy channel"), /*  8 */ // TODO it might be useful to implement this...

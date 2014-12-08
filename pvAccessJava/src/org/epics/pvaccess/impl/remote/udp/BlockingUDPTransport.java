@@ -28,6 +28,7 @@ import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.MembershipKey;
+import java.nio.channels.UnresolvedAddressException;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -386,10 +387,15 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 				context.getLogger().log(Level.FINER, "No route to host exception caught when sending to: " + sendAddresses[i] + ".", nrthe);
 				continue;
 			}
-			catch (Throwable ex) 
+			catch (UnresolvedAddressException uae)
 			{
-				ex.printStackTrace(); // TODO !!!
-				return false;
+				context.getLogger().log(Level.FINER, "Unresolved address exception caught when sending to: " + sendAddresses[i] + ".", uae);
+				continue;
+			}
+			catch (Throwable th)
+			{
+				context.getLogger().log(Level.FINER, "Exception caught when sending to: " + sendAddresses[i] + ".", th);
+				continue;
 			}
 		}
 		
@@ -423,10 +429,13 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		{
 			context.getLogger().log(Level.FINER, "No route to host exception caught when sending to: " + address + ".", nrthe);
 		}
-		catch (Throwable ex) 
+		catch (UnresolvedAddressException uae)
 		{
-			// TODO what to do here
-			ex.printStackTrace(); 
+			context.getLogger().log(Level.FINER, "Unresolved address exception caught when sending to: " + address + ".", uae);
+		}
+		catch (Throwable th)
+		{
+			context.getLogger().log(Level.FINER, "Exception caught when sending to: " + address + ".", th);
 		}
 	}
 
@@ -532,10 +541,11 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 		for (int i = 0; i < sendAddresses.length; i++)
 		{
 			InetAddress address = sendAddresses[i].getAddress();
+			// address == null if unresolved
 			// unicast = not broadcast and not multicast
-			isSendAddressUnicast[i] =
-						!broadcastAddresses.contains(address) && 
-						!address.isMulticastAddress();
+			isSendAddressUnicast[i] = (address == null) ||
+						(!broadcastAddresses.contains(address) && 
+						!address.isMulticastAddress());
 		}
 	}
 

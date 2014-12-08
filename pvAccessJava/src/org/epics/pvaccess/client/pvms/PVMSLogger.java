@@ -46,7 +46,7 @@ public class PVMSLogger {
 		
 	public static final Structure logStructure =
 		FieldFactory.getFieldCreate().createFieldBuilder().
-			setId("ev4:test/NTLogRecord:1.0").
+			setId("epics:test/NTLogRecord:1.0").
 			
 			// used to group all the logs from one "session"
 			add("uuid_msb", ScalarType.pvLong).

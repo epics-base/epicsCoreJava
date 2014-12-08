@@ -73,7 +73,7 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	/**
 	 * Beacon sequence ID.
 	 */
-	protected short beaconSequenceID = 0;
+	protected byte beaconSequenceID = 0;
 
 	/**
 	 * Fast (at startup) beacon period (in sec).
@@ -195,7 +195,11 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 		control.startMessage((byte)0, 12+2+2+16+2);
 		
 		buffer.put(guid);
-		buffer.putShort(beaconSequenceID);
+
+		// TODO qosCode/flags (e.g. multicast/unicast)
+		buffer.put((byte)0);
+		
+		buffer.put(beaconSequenceID);
 		
 		// TODO for now fixed changeCount
 		buffer.putShort((short)0);

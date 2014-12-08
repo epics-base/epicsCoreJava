@@ -187,6 +187,16 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport
 		}
 	}
 
+	@Override
+	public ServerChannel[] getChannels()
+	{
+		synchronized (channels) {
+			ServerChannel[] sca = new ServerChannel[channels.size()];
+			channels.toArray(sca);
+			return sca;
+		}
+	}
+
 	/**
 	 * Get channel count.
 	 * @return channel count.

@@ -10,11 +10,12 @@ import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.codec.AbstractCodec;
 import org.epics.pvaccess.impl.remote.codec.ConnectionClosedException;
 
-// TODO send thread is not terminated!!!
+// TODO check if send thread is terminated
 
 // NOTE: supports 2 threads per connection (receive and send)
 public abstract class BlockingAbstractCodec extends AbstractCodec {
 
+	// TODO not via config
 	private final boolean debug = Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) >= 3;
 
 	private final AtomicBoolean isOpen = new AtomicBoolean(true);

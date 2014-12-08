@@ -17,7 +17,6 @@ package org.epics.pvaccess.impl.remote.request;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
-import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.util.HexDump;
 
@@ -41,11 +40,10 @@ public abstract class AbstractResponseHandler implements ResponseHandler {
 	/**
 	 * @param description
 	 */
-	public AbstractResponseHandler(String description) {
+	public AbstractResponseHandler(String description, boolean debug) {
 		this.description = description;
-		// TODO use config (0 - none, 1 - debug, 2 - more debug, 3 - dump messages)
 		// dump messages flag
-		debug = Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) >= 3;
+		this.debug = debug;
 	}
 
 	/* (non-Javadoc)

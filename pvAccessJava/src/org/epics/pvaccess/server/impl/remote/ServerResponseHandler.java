@@ -71,7 +71,7 @@ public final class ServerResponseHandler implements ResponseHandler {
 				new EchoHandler(context), /*  2 */
 				new SearchHandler(context), /*  3 */
 				badResponse, /*  4 */
-				new AuthNZHandler(), /*  5 */
+				new AuthNZHandler(context.getDebugLevel() >= 3), /*  5 */
 				badResponse, /*  6 */
 				new CreateChannelHandler(context), /*  7 */
 				new DestroyChannelHandler(context), /*  8 */
