@@ -83,6 +83,19 @@ pvData.</p>
 <p> The text describes software which is a complete implementation of pvData as
 currently planned by the EPICS V4 Working Group.
 </p>
+<p>
+<b>Note for Service Developers:</b>
+The current release of EPICS V4 is the 4.4.0 release.
+The C++ release includes pvDatabaseCPP, which provides a full implementation of
+a local pvAccess ChannelProvider.
+The Java version of the 4.4.0 release does not provide anything that provides the same.
+If a Service is implemented only via ChannelRPC then pvAccessCPP provides the connection to pvAccess.
+If a Service requires the other Channel methods, i. e. ChannelGet, ChannelPut, etc. then a local ChannelProvider is required.
+Although it is not part of the 4.4.0 release, pvIOCJava does provide a full implementation of a local pvAccess ChannelProvider.
+It also provides a lot more but the developer should be wary of using more than the local pvAccess ChannelProvider
+since there is no guarantee about what else will continue to be supported.
+pvIOCJava is only available via the sourceforge pvIOCJava repository.
+</p>
 
 
 <div id="toc">
@@ -107,8 +120,7 @@ store, access, and communicate memory resident data structures.</p>
     <dd>The set of packages provided by this project provide a complete Java
       implementation of pvData. Project pvAccess is the network support for
       pvData, i.e. it provides a channel access client and server that fully
-      support pvData. Project pvIOCJava provides an IOC (Input Output Controller)
-      that supports pvData and provides record processing..</dd>
+      support pvData.</dd>
   <dt>efficient</dt>
     <dd>Small memory footprint, low cpu overhead, and concise code base.</dd>
   <dt>data storage</dt>
@@ -185,29 +197,6 @@ store, access, and communicate memory resident data structures.</p>
       </dd>
 </dl>
 
-<p>Project <b>pvIOCJava</b> implements a Process Variable (PV) Database,
-which is a memory resident database holding pvData,
-has the following features:</p>
-<ul>
-  <li>A database has records.</li>
-  <li>Each record has a unique record name.</li>
-  <li>A record has a top level PVStructure, which is a structured set of data
-    as defined by this project.</li>
-</ul>
-
-<p>pvData was initially created to support the javaIOC and was part of the
-javaIOC project.
-The original javaIOC project has been broken up into many projects,
-e. g. pvDataJava, pvAccessJava, pvIOCJava, pvServiceJava.
-In addition there are C++ implementation of some of these projects.
-pvData is intended for use by 1) pvAccess
-clients, 2) Interface between client and network, 3) Interface between network
-and pvAccess server, 4) Interface between server and IOC database.
-Since it is an interface to data, it could also be used by other systems,
-e.g. TANGO, TINE, etc.
-A high level Physics application can hold data as pvData.
-By starting a pvAccess server, the data can made available to network
-clients.</p>
 
 <p>pvData contains everything required, by pvAccess, to create and pass data
 between pvAccess clients and servers. </p>
@@ -1421,11 +1410,10 @@ where
 
 <h3>Requester</h3>
 
-<p>In the pvIOCJava, PVRecord provides methods to register message requesters. Also a PVDatabase
-provides an identical method. Thus when a message is generated for a field it
-is propagated up to the record with the full field name attached and then
-propagated to the PVDatabase which sends the messages to the registered
-requesters.</p>
+<p>Requester is an interface that allows messages to be given to client code.
+An instance of Requester must be implemented by the client.
+The definition is:
+</p>
 <pre>
 enum MessageType {info,warning,error,fatalError}
 
@@ -3721,16 +3709,10 @@ They are intended for use by pvAccess and by pvAccess servers.
 They are provided with this project because the code depends only on
 pvData itself.
 </p>
-<p>This document describes C++ specific code.
+<p>This document describes Java specific code.
 <a href="http://epics-pvdata.sourceforge.net/informative/pvRequest.html">
 pvRequest.html</a>
 provides a language independent overview of <b>copy</b> and <b>monitor</b>.
-</p>
-<p>
-<b>NOTE:pvRequest.html</b> must be updated since it is based on an earlier version of pvCopy that
-had knowledge of PVRecord. The C++ version was implemented in pvDatabaseCPP
-and the Java version on pvIOCJava.
-At present only the C++ version of the new API for pvCopy is implemented.
 </p>
 <p>Copy provides:</p>
 <dl>
