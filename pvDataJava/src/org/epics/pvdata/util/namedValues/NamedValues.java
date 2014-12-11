@@ -3,20 +3,24 @@ package org.epics.pvdata.util.namedValues;
 import java.util.Vector;
 
 /**
- * NamedValues is a particular implementation of a named value system, in 
- * which the value in each name/value pair is itself specifically a vector of values.
- * Functionally then, the name identifies a list of data.
- * 
- * named/value pairs are added to a NameValues object through the add method.
- * The list of names (in the system of name/value pairs) is acquired through getLabels.
- * And the whole system (all the names, and all the values associated with each 
- * name, is acquired through getValues.
+ * NamedValues is a particular implementation of a named value system,
+ * in which the value in each name/value pair is itself specifically a
+ * Vector of values. 
+ *
+ * <p> Functionally then, the name identifies a list of
+ * data. </p>
+ *
+ * <p>named/value pairs are added to a NameValues object through the
+ * {@link add add} method.  The list of names (in the system of
+ * name/value pairs) is acquired through {@link getLabels getLabels}.
+ * And the whole system (all the names, and all the values associated
+ * with each name, is acquired through {@link getValues getValues}.</p>
  *  
- * In this way, a table can be thought of as a NamedValues system, where each
+ * <p>In this way, a table can be thought of as a NamedValues system, where each
  * column label and the values under it are a single named/value.  A single 
- * NamedValues object holds a whole table.
+ * NamedValues object holds a whole table.</p>
  *    
- * @author 11.11.11 Greg White (gregory.white@psi.ch) from an idea by Chris Larrieu.
+ * @author Greg White and Chris Larrieu. 11-Dec-201, SLAC 
  *
  */
 public class NamedValues
@@ -30,7 +34,7 @@ public class NamedValues
     protected Vector<String[]> values = new Vector<String[]>();
 
     /**
-     * Add a named vector of values to a NameValues object.
+     * Add a named Vector of values to a NameValues object.
      * 
      * @param name The name of the list of values to add, eg "girlscouts"
      * @param value The list of values associated with name, eg {"Caroline", "Mary", "Beth"}

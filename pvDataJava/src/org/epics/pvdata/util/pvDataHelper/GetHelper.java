@@ -14,15 +14,37 @@ import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.StringArrayData;
 
 /**
- * GetHelper is a utility class with methods to help copy the contents of PVData types
- * out to more general types. 
+ * GetHelper is a utility class with methods to help application level code 
+ * copy the contents of PVData array types out to Java vectors. 
+ *
+ * <p> As described in the <a
+ * href="http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/tip/documentation/pvDataJava.html">pvDataJava
+ * Reference Guide</a> on the <a
+ * href="http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/tip/documentation/pvDataJava.html#pvfield_">pvField
+ * data interface</a>, a "caller must be prepared to make multiple
+ * calls to retrieve or put an entire array." The methods of GetHelper
+ * make those multiple calls assuming the caller wishes to get all the
+ * values of the whole array. The returned types are Vectors so that
+ * the required size need not be known by the caller.  </p> <p>If the
+ * calling code will know the size of the returned data a priori, then
+ * see also the utilities in {@link org.epics.pvdata.pv.Convert
+ * Convert}.  
+ * </p>
  * 
- * @author greg
+ * @see <a
+ * href="http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/tip/documentation/pvDataJava.html#pvfield_">
+ * pvDataJava Reference Guide, pvField data interface</a>
+ * @see org.epics.pvdata.pv.Convert
+ *
+ * @author Greg White, SLAC, 2012
  *
  */	
 
 public class GetHelper 
 {
+	        /**
+                 * Copy out the entire array of doubles into a Vector of Double.
+	         */
 		public static Vector<Double> getDoubleVector( PVDoubleArray pv )
 		{
 	        int len = pv.getLength();
@@ -36,7 +58,10 @@ public class GetHelper
 	        }
 	        return ret;
 		}
-			
+		
+	        /** 
+                 * Copy out the entire array of longs into a Vector of Long.
+	         */	
 		public static Vector<Long> getLongVector( PVLongArray pv )
 		{
 	        int len = pv.getLength();
@@ -51,6 +76,9 @@ public class GetHelper
 	        return ret;
 		}
 		
+                /** 
+                 * Copy out the entire array of bytes into a Vector of Byte.
+	         */
 		public static Vector<Byte> getByteVector( PVByteArray pv )
 		{
 	        int len = pv.getLength();
@@ -65,6 +93,9 @@ public class GetHelper
 	        return ret;
 		}
 		
+                /** 
+                 * Copy out the entire array of strings into a Vector of String.
+	         */
 		public static Vector<String> getStringVector( PVStringArray pv )
 		{
 	        int len = pv.getLength();
@@ -87,6 +118,9 @@ public class GetHelper
 	        return ret;
 		}
 		
+                /** 
+                 * Copy out the entire array of booleans into a Vector of Boolean.
+	         */
 		public static Vector<Boolean> getBooleanVector( PVBooleanArray pv )
 		{
 	        int len = pv.getLength();
