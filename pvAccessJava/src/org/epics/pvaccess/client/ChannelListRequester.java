@@ -22,5 +22,5 @@ public interface ChannelListRequester {
      * @param hasDynamic true if the provider supports creation of dynamic channels (on the fly)
      * 			and they cannot be listed in channelNames, otherwise false.
      */
-    void channelListResult(Status status, ChannelFind channelFind, Set<String> channelNames, boolean hasDynamic);
+    void channelListResult(Status status, ChannelFind channelFind, Set<String> channelName, boolean hasDynamic);
 }

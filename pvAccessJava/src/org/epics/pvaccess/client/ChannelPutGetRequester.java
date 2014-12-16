@@ -31,7 +31,7 @@ public interface ChannelPutGetRequester extends Requester
      * The putGet request is done. This is always called with no locks held.
      * @param status Completion status.
      * @param channelPutGet The channelPutGet interface.
-     * @param pvGetStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
+     * @param getPVStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
      * @param getBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
      */
     void putGetDone(Status status, ChannelPutGet channelPutGet, PVStructure getPVStructure, BitSet getBitSet);
@@ -39,7 +39,7 @@ public interface ChannelPutGetRequester extends Requester
      * The getPut request is done. This is always called with no locks held.
      * @param status Completion status.
      * @param channelPutGet The channelPutGet interface.
-     * @param pvPutStructure The PVStructure that holds the putData or <code>null</code> if the request failed.
+     * @param putPVStructure The PVStructure that holds the putData or <code>null</code> if the request failed.
      * @param putBitSet putPVStructure changed bit-set or <code>null</code> if the request failed.
      */
     void getPutDone(Status status, ChannelPutGet channelPutGet, PVStructure putPVStructure, BitSet putBitSet);
@@ -47,7 +47,7 @@ public interface ChannelPutGetRequester extends Requester
      * The getGet request is done. This is always called with no locks held.
      * @param status Completion status.
      * @param channelPutGet The channelPutGet interface.
-     * @param pvGetStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
+     * @param getPVStructure The PVStructure that holds the getData or <code>null</code> if the request failed.
      * @param getBitSet getPVStructure changed bit-set or <code>null</code> if the request failed.
      */
     void getGetDone(Status status, ChannelPutGet channelPutGet, PVStructure getPVStructure, BitSet getBitSet);

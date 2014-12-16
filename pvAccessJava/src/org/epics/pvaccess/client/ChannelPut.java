@@ -20,7 +20,7 @@ public interface ChannelPut extends ChannelRequest {
      * Put data to a channel.
      * Completion status is reported by calling ChannelPutRequester.putDone() callback.
      * @param pvPutStructure The PVStructure that holds the putData.
-     * @param putBitSet putPVStructure bit-set (selects what fields to put).
+     * @param bitSet selects what fields to put.
      */
     void put(PVStructure pvPutStructure, BitSet bitSet);
     /**
