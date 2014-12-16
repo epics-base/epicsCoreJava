@@ -129,6 +129,8 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <overview>documentation/pvAccessJava.html</overview>
             </plugin>
 
             <plugin> 
