@@ -131,6 +131,7 @@
                 </executions>
                 <configuration>
                     <overview>documentation/pvAccessJava.html</overview>
+                </configuration>
             </plugin>
 
             <plugin> 
