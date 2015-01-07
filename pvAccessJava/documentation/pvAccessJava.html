@@ -238,22 +238,18 @@ for response. </p>
             this.logger = logger;
         }
 
-        @Override
         public String getRequesterName() {
             return getClass().getName();
         }
 
-        @Override
         public void message(String message, MessageType messageType) {
             logger.log(LoggingUtils.toLevel(messageType), message);
         }
 
-        @Override
         public void channelCreated(Status status, Channel channel) {
             logger.info("Channel '" + channel.getChannelName() + "' created with status: " + status + ".");
         }
 
-        @Override
         public void channelStateChange(Channel channel, ConnectionState connectionState) {
             logger.info("Channel '" + channel.getChannelName() + "' " + connectionState + ".");
         }
@@ -281,17 +277,14 @@ change. The implementation above just logs all the information. </p>
             this.doneSignaler = doneSignaler;
         }
 
-        @Override
         public String getRequesterName() {
             return getClass().getName();
         }
 
-        @Override
         public void message(String message, MessageType messageType) {
             logger.log(LoggingUtils.toLevel(messageType), message);
         }
 
-        @Override
         public void channelGetConnect(Status status, ChannelGet channelGet,Structure structure
         {
             logger.info("ChannelGet for '" + channel.getChannelName() +
@@ -305,7 +298,6 @@ change. The implementation above just logs all the information. </p>
                 doneSignaler.countDown();
         }
 
-        @Override
         public void getDone(Status status, PVStructure pvStructure, BitSet changedBitSet)s
         {
             logger.info("getDone for '" + channel.getChannelName() +
