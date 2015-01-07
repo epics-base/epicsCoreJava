@@ -60,6 +60,13 @@ public class CreateChannelHandler extends AbstractClientResponseHandler {
 		{
 			// failed check
 			if (!status.isSuccess()) {
+				
+				String logMessage ="Failed to create channel '" + channel.getChannelName() + "': " + status.getMessage();
+				String stackDump = status.getStackDump();
+				if (stackDump != null && !stackDump.isEmpty())
+					logMessage += "\n" + stackDump;
+				context.getLogger().fine(logMessage);
+				
 				channel.createChannelFailed();
 				return;
 			}	

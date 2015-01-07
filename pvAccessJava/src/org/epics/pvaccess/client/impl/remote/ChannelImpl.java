@@ -222,8 +222,15 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	public synchronized void createChannelFailed()
 	{
 		cancel();
-		// ... and search again
-		initiateSearch();
+		
+		if (transport != null)
+		{
+			transport.release(this);
+			transport = null;
+		}
+		
+		// ... and search again, with penalty
+		initiateSearch(true);
 	}
 
 	/**
@@ -367,19 +374,19 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		}
 		
 		if (initiateSearch)
-			initiateSearch();
+			initiateSearch(false);
 
 	}
 	
 	/**
 	 * Initiate search (connect) procedure.
 	 */
-	public synchronized void initiateSearch()
+	public synchronized void initiateSearch(boolean penalize)
 	{
 		allowCreation = true;
 		
 		if (addresses == null)
-			context.getChannelSearchManager().register(this);
+			context.getChannelSearchManager().register(this, penalize);
 		else
 		{
 			context.getTimer().scheduleAfterDelay(timerNode,
@@ -428,11 +435,12 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		Transport transport = getTransport();
 		if (transport != null)
 		{
+			// TODO use GUID to determine whether there are multiple servers with the same channel
 			// multiple defined PV or reconnect request (same server address)
 			if (!transport.getRemoteAddress().equals(serverAddress))
 			{
 				requester.message("More than one channel with name '" + name +
-							 "' detected, additional response from: " + serverAddress, MessageType.warning);
+							 "' detected, connected to: " + transport.getRemoteAddress() + ", ignored: " + serverAddress, MessageType.warning);
 				return;
 			}
 		}
@@ -807,7 +815,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		if (connectionState == ConnectionState.DESTROYED)
 			throw new IllegalArgumentException("Channel destroyed.");
 		else if (connectionState != ConnectionState.CONNECTED)
-			initiateSearch();
+			initiateSearch(false);
 	}
 
 	protected synchronized void disconnect() {

@@ -148,7 +148,7 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 
 		// wait read thread to die
 		try {
-			readThread.join();		// TODO timeout
+			readThread.join(3000);
 		} catch (InterruptedException e) {
 			// noop
 		}	

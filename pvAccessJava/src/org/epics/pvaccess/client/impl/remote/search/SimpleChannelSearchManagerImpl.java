@@ -316,11 +316,16 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		}
 	}
 
+	public void register(SearchInstance channel)
+	{
+		register(channel, false);
+	}
+	
 	/**
 	 * Register channel.
 	 * @param channel
 	 */
-	public void register(SearchInstance channel)
+	public void register(SearchInstance channel, boolean penalize)
 	{
 		if (canceled)
 			return;
@@ -329,7 +334,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		{
 			// overrided if already registered
 			channels.put(channel.getChannelID(), channel);
-			channel.getUserValue().set(1);
+			channel.getUserValue().set(penalize ? MAX_FALLBACK_COUNT_VALUE : DEFAULT_COUNT_VALUE);
 		}
 
 		// put to immediate, batched list
@@ -390,10 +395,11 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		callback();
 	}
 
+	private final static int DEFAULT_COUNT_VALUE = 1;
 	private final static int BOOST_VALUE = 1;
 	// must be power of two (so that search is done)
-	private final static int MAX_COUNT_VALUE = 1 << 7;
-	private final static int MAX_FALLBACK_COUNT_VALUE = (1 << 6) + 1;
+	private final static int MAX_COUNT_VALUE = 1 << 8;
+	private final static int MAX_FALLBACK_COUNT_VALUE = (1 << 7) + 1;
 	
 	private void boost()
 	{

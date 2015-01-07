@@ -34,6 +34,11 @@ public interface ChannelSearchManager {
 	 */
 	public void register(SearchInstance channel);
 
+	/**
+	 * Register channel, with maximum possible period search.
+	 * @param channel
+	 */
+	public void register(SearchInstance channel, boolean penalize);
 
 	/**
 	 * Unregister channel.

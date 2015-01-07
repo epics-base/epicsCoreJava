@@ -414,9 +414,12 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			if (QoS.INIT.isSet(qos))
 			{
 				final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
+				
+				boolean restoreStartedState = started.get();
+				
 				initResponse(transport, version, payloadBuffer, qos, status);
 
-				if (started.get())
+				if (restoreStartedState)
 					start();
 			}
 			else if (QoS.DESTROY.isSet(qos))
