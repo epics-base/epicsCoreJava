@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.epics</groupId>
+    <artifactId>EPICS-Java</artifactId>
+    <version>4.4.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <organization>
+        <name>EPICS</name>
+    </organization>
+
+    <name>bundleRelease - Java</name>
+    <inceptionYear>2015</inceptionYear>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <dependencies>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>pvDataJava</artifactId>
+            <version>4.0.2</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>pvDataJava</artifactId>
+            <version>4.0.2</version>
+            <classifier>sources</classifier>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>pvAccessJava</artifactId>
+            <version>4.0.3</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>pvAccessJava</artifactId>
+            <version>4.0.3</version>
+            <classifier>sources</classifier>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easyPVAJava</artifactId>
+            <version>0.4.3</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>easyPVAJava</artifactId>
+            <version>0.4.3</version>
+            <classifier>sources</classifier>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>exampleJava</artifactId>
+            <version>4.0.2</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>exampleJava</artifactId>
+            <version>4.0.2</version>
+            <classifier>sources</classifier>
+        </dependency>
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>directoryService</artifactId>
+            <version>0.3.3</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>directoryService</artifactId>
+            <version>0.3.3</version>
+            <classifier>sources</classifier>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>epics</id>
+            <name>EPICS Repository</name>
+            <url>http://epics.sourceforge.net/maven2/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+    	<!-- To be able to deploy, set login/passwd in your m2 settings.xml, <servers> section
+    	(id values there should match ids below) -->
+        <repository>
+            <id>epics.releases</id>
+            <name>EPICS Repository</name>
+            <url>scp://shell.sourceforge.net/home/project-web/epics/htdocs/maven2</url>
+        </repository>
+    </distributionManagement>
+  
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/distribution.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                          <goal>single</goal>
+                        </goals>
+                    </execution>
+              </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
