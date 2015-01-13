@@ -4,7 +4,6 @@
 
     <groupId>org.epics</groupId>
     <artifactId>EPICS-Java</artifactId>
-    <version>4.4.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -18,75 +17,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
-    <dependencies>
-        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>pvDataJava</artifactId>
-            <version>4.0.2</version>
-            <classifier>javadoc</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>pvDataJava</artifactId>
-            <version>4.0.2</version>
-            <classifier>sources</classifier>
-        </dependency>
-        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>pvAccessJava</artifactId>
-            <version>4.0.3</version>
-            <classifier>javadoc</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>pvAccessJava</artifactId>
-            <version>4.0.3</version>
-            <classifier>sources</classifier>
-        </dependency>
-        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>easyPVAJava</artifactId>
-            <version>0.4.3</version>
-            <classifier>javadoc</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>easyPVAJava</artifactId>
-            <version>0.4.3</version>
-            <classifier>sources</classifier>
-        </dependency>
-        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>exampleJava</artifactId>
-            <version>4.0.2</version>
-            <classifier>javadoc</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>exampleJava</artifactId>
-            <version>4.0.2</version>
-            <classifier>sources</classifier>
-        </dependency>
-        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>directoryService</artifactId>
-            <version>0.3.3</version>
-            <classifier>javadoc</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>directoryService</artifactId>
-            <version>0.3.3</version>
-            <classifier>sources</classifier>
-        </dependency>
 
-    </dependencies>
+    <parent>
+        <groupId>${project.groupId}</groupId>
+        <artifactId>ev4-java-bundle</artifactId>
+        <version>1.0</version>
+        <relativePath>config</relativePath>
+    </parent>
 
     <repositories>
         <repository>

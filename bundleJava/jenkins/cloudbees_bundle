@@ -1,0 +1,130 @@
+# EPICS V4 Java implementation - bundleJava project
+# Jenkins @ Cloudbees maven bundle job
+#
+# Jenkins invokes scripts with the "-ex" option. So the build is considered a failure
+# if any of the commands exits with a non-zero exit code.
+#
+# Author: Ralph Lange <Ralph.Lange@gmx.de>
+# Copyright (C) 2015 ITER Organization.
+# All rights reserved. Use is subject to license terms.
+
+function usage {
+echo "
+    cloudbees_bundle creates config/pom.xml with dependencies
+    to allow maven based bundling of an EPICS V4 Java release.
+
+    Usage:
+
+        cloudbees_bundle -n <releaseName>
+
+		-h					Print this help
+        -n <releaseNumber>  The number identifying the release. This is the
+                            key suffix used to search RELEASE_VERSIONS to find the
+                            modules in the release.
+"
+}
+
+thisdir=${PWD}
+function Exit {
+    cd ${thisdir}
+    exit $1
+}
+
+declare -a modulesa
+
+###########################################
+# Get command line args
+
+releaseNumber=4.4.1
+
+while getopts hu:n: opt; do
+    case "$opt" in
+        h) usage; Exit 0 ;;
+        n) releaseNumber=${OPTARG} ;; 
+        *) echo "Unknown Argument, see cloudbees_bundle -h"; Exit 1;;
+    esac
+done
+shift $((OPTIND-1));
+
+releaseName=EPICS-Java-${releaseNumber}
+
+parentPom=config/pom.xml
+parentPomDir=$( dirname "$parentPom" )
+
+###########################################
+# Fetch the version file
+
+if [ -e RELEASE_VERSIONS ]; then
+    rm -rf RELEASE_VERSIONS
+fi
+wget -nv http://hg.code.sf.net/p/epics-pvdata/pvDataWWW/raw-file/tip/scripts/RELEASE_VERSIONS
+
+file=${PWD}/RELEASE_VERSIONS
+release_versions_pathname=$( readlink -f "$( dirname "$file" )" )/$( basename "$file" )
+
+if [ ! -f ${release_versions_pathname} ]; then
+    echo "Failed to locate the release versions file ${release_versions_pathname}"
+    Exit 6
+fi
+
+###########################################
+# Read repos and versions from the version file
+
+modulesa=(`awk -v relname=${releaseName} 'BEGIN {relname="^" relname "$"} $1 ~ relname {print $2}' < $release_versions_pathname`)
+
+# Check we got at least one module
+if [ ${#modulesa[@]} -lt 1 ]; then
+    echo "Failed to find modules for release ${releaseName}"
+    Exit 7
+fi
+
+echo ${releaseName} is composed of ${modulesa[*]}
+
+echo "Creating ${parentPom}"
+mkdir -p "$parentPomDir"
+rm -fr ${parentPom}
+echo "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"
+  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+  xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd\">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>\${project.groupId}</groupId>
+  <artifactId>ev4-java-bundle</artifactId>
+  <version>1.0</version>
+  <packaging>pom</packaging>
+
+  <version>${releaseNumber}</version>
+  
+  <dependencies>" >${parentPom}
+
+for modulei in ${modulesa[*]}
+do
+    tag=`awk -v relname=${releaseName} -v modulename=${modulei} \
+          'BEGIN {relname="^" relname "$"} $1 ~ relname && $2 ~ modulename {print $3}' < $release_versions_pathname`
+
+    if [ $? -ne 0 ]; then
+	    echo "Could not get module version for ${modulei}, exiting"
+	    Exit 8
+    fi
+
+    echo Adding ${modulei} ${tag} to ${releaseName} definition
+
+	echo "
+  <dependency>
+    <groupId>\${project.groupId}</groupId>
+    <artifactId>${modulei}</artifactId>
+    <version>${tag}</version>
+    <classifier>javadoc</classifier>
+  </dependency>
+  <dependency>
+    <groupId>\${project.groupId}</groupId>
+    <artifactId>${modulei}</artifactId>
+    <version>${tag}</version>
+    <classifier>sources</classifier>
+  </dependency>" >>${parentPom}
+
+done
+
+echo "  </dependencies>
+</project>" >> ${parentPom}
