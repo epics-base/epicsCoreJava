@@ -4,7 +4,8 @@
 
     <groupId>org.epics</groupId>
     <artifactId>EPICS-Java</artifactId>
-
+    <version>4.4.0</version>
+  
     <packaging>pom</packaging>
 
     <organization>
@@ -19,7 +20,7 @@
     </properties>
 
     <parent>
-        <groupId>${project.groupId}</groupId>
+        <groupId>org.epics</groupId>
         <artifactId>ev4-java-bundle</artifactId>
         <version>1.0</version>
         <relativePath>config</relativePath>

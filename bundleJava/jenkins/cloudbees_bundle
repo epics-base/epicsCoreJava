@@ -89,13 +89,11 @@ echo "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"
                       http://maven.apache.org/xsd/maven-4.0.0.xsd\">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>\${project.groupId}</groupId>
+  <groupId>org.epics</groupId>
   <artifactId>ev4-java-bundle</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
 
-  <version>${releaseNumber}</version>
-  
   <dependencies>" >${parentPom}
 
 for modulei in ${modulesa[*]}
@@ -111,20 +109,26 @@ do
     echo Adding ${modulei} ${tag} to ${releaseName} definition
 
 	echo "
-  <dependency>
-    <groupId>\${project.groupId}</groupId>
-    <artifactId>${modulei}</artifactId>
-    <version>${tag}</version>
-    <classifier>javadoc</classifier>
-  </dependency>
-  <dependency>
-    <groupId>\${project.groupId}</groupId>
-    <artifactId>${modulei}</artifactId>
-    <version>${tag}</version>
-    <classifier>sources</classifier>
-  </dependency>" >>${parentPom}
+    <dependency>
+      <groupId>\${project.groupId}</groupId>
+      <artifactId>${modulei}</artifactId>
+      <version>${tag}</version>
+    </dependency>
+    <dependency>
+      <groupId>\${project.groupId}</groupId>
+      <artifactId>${modulei}</artifactId>
+      <version>${tag}</version>
+      <classifier>javadoc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>\${project.groupId}</groupId>
+      <artifactId>${modulei}</artifactId>
+      <version>${tag}</version>
+      <classifier>sources</classifier>
+    </dependency>" >>${parentPom}
 
 done
 
-echo "  </dependencies>
+echo "
+  </dependencies>
 </project>" >> ${parentPom}
