@@ -4,7 +4,6 @@
 
     <groupId>org.epics</groupId>
     <artifactId>EPICS-Java</artifactId>
-    <version>4.4.0</version>
   
     <packaging>pom</packaging>
 
@@ -63,11 +62,14 @@
                         <goals>
                           <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <finalName>${bundleVersion}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
                     </execution>
               </executions>
             </plugin>
 
         </plugins>
     </build>
-
 </project>

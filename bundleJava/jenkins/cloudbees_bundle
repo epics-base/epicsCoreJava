@@ -94,6 +94,9 @@ echo "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"
   <version>1.0</version>
   <packaging>pom</packaging>
 
+  <properties>
+    <bundleVersion>${releaseName}</bundleVersion>
+  </properties>
   <dependencies>" >${parentPom}
 
 for modulei in ${modulesa[*]}
