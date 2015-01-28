@@ -114,6 +114,18 @@ public class RPCServer {
 	}
 
 	/**
+	 * Register async. RPC service.
+	 * Multiple services (with different name) can be registered.
+	 * In case of name duplicates, the last registered service (with the same name) is used.
+	 * @param serviceName RPC service name. This name is used by client to discover/connect to the service.
+	 * @param service async. service implementation.
+	 */
+	public void registerService(String serviceName, RPCServiceAsync service)
+	{
+		channelProviderImpl.registerService(serviceName, service);
+	}
+
+	/**
 	 * Unregister RPC service.
 	 * @param serviceName name of the RPC service to be unregistered.
 	 */

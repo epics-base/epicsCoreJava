@@ -14,7 +14,7 @@ import org.epics.pvaccess.client.ChannelFindRequester;
 import org.epics.pvaccess.client.ChannelListRequester;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.server.rpc.RPCService;
+import org.epics.pvaccess.server.rpc.Service;
 import org.epics.pvaccess.util.WildcharMatcher;
 import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.pv.Status;
@@ -34,8 +34,8 @@ public class RPCChannelProvider implements ChannelProvider {
 	private static final Status noSuchChannelStatus =
 		statusCreate.createStatus(StatusType.ERROR, "no such channel", null);
 	
-	private final HashMap<String, RPCService> services = new HashMap<String, RPCService>();
-	private final LinkedHashMap<String, RPCService> wildServices = new LinkedHashMap<String, RPCService>();
+	private final HashMap<String, Service> services = new HashMap<String, Service>();
+	private final LinkedHashMap<String, Service> wildServices = new LinkedHashMap<String, Service>();
 	private final ThreadPoolExecutor threadPool;
 	
 	public RPCChannelProvider(ThreadPoolExecutor threadPool) {
@@ -64,11 +64,11 @@ public class RPCChannelProvider implements ChannelProvider {
 			}
 		};
 	
-	// assumes sync on services
-	private RPCService findWildService(String wildcard)
+	// assumes synchronization on services
+	private Service findWildService(String wildcard)
 	{
 		if (!wildServices.isEmpty())
-			for (Map.Entry<String, RPCService> entry : wildServices.entrySet())
+			for (Map.Entry<String, Service> entry : wildServices.entrySet())
 				if (WildcharMatcher.match(entry.getKey(), wildcard))
 					return entry.getValue();
 		
@@ -113,7 +113,7 @@ public class RPCChannelProvider implements ChannelProvider {
 			ChannelRequester channelRequester, short priority)
 	{
 		
-		RPCService service;
+		Service service;
 		synchronized (services) {
 			service = services.get(channelName);
 			if (service == null)
@@ -146,7 +146,7 @@ public class RPCChannelProvider implements ChannelProvider {
 		throw new RuntimeException("not supported");
 	}
 
-	public void registerService(String serviceName, RPCService service)
+	public void registerService(String serviceName, Service service)
 	{
 		synchronized (services) {
 			services.put(serviceName, service);

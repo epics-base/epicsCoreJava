@@ -25,7 +25,10 @@ import org.epics.pvaccess.client.ChannelRPCRequester;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.GetFieldRequester;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
+import org.epics.pvaccess.server.rpc.RPCResponseCallback;
 import org.epics.pvaccess.server.rpc.RPCService;
+import org.epics.pvaccess.server.rpc.RPCServiceAsync;
+import org.epics.pvaccess.server.rpc.Service;
 import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorRequester;
@@ -57,18 +60,18 @@ public class RPCChannel implements Channel {
 	private final String channelName;
 	private final ChannelRequester channelRequester;
 	
-	private final RPCService rpcService;
+	private final Service service;
 	private final ThreadPoolExecutor threadPool;
 	
 	
 	public RPCChannel(ChannelProvider provider, String channelName,
-			ChannelRequester channelRequester, RPCService rpcService,
+			ChannelRequester channelRequester, Service service,
 			ThreadPoolExecutor threadPool)
 	{
 		this.provider = provider;
 		this.channelName = channelName;
 		this.channelRequester = channelRequester;
-		this.rpcService = rpcService;
+		this.service = service;
 		this.threadPool = threadPool;
 	}
 
@@ -120,7 +123,7 @@ public class RPCChannel implements Channel {
 	}
 
 	
-	private class ChannelRPCImpl implements ChannelRPC
+	private class ChannelRPCImpl implements ChannelRPC, RPCResponseCallback
 	{
 		private final ChannelRPCRequester channelRPCRequester;
 		private final Channel channel;
@@ -147,7 +150,7 @@ public class RPCChannel implements Channel {
 			return channel;
 		}
 
-		private void processRequest(PVStructure pvArgument)
+		private void processRequest(RPCService rpcService, PVStructure pvArgument)
 		{
 			PVStructure result = null;
 			Status status = okStatus;
@@ -192,20 +195,64 @@ public class RPCChannel implements Channel {
 		}
 		
 		@Override
-		public void request(final PVStructure pvArgument) {
-			if (threadPool == null)
-				processRequest(pvArgument);
-			else
-			{
-				threadPool.execute(new Runnable() {
-					@Override
-					public void run() {
-						processRequest(pvArgument);
-					}
-				});
-			}
+		public void requestDone(Status status, PVStructure result) {
+			channelRPCRequester.requestDone(status, this, result);
+			
+			if (lastRequest)
+				destroy();
 		}
 		
+		private void processRequest(RPCServiceAsync rpcServiceAsync, PVStructure pvArgument)
+		{
+			try
+			{
+				rpcServiceAsync.request(pvArgument, this);
+			}
+			catch (Throwable th)
+			{
+				// handle user unexpected errors
+				Status status = 
+					statusCreate.createStatus(StatusType.FATAL,
+								"Unexpected exception caught while calling RPCService.request(PVStructure).",
+								th);
+
+				channelRPCRequester.requestDone(status, this, null);
+				
+				if (lastRequest)
+					destroy();
+			}
+		
+			// we wait for callback to be called
+		}
+
+		@Override
+		public void request(final PVStructure pvArgument) {
+			
+			if (service instanceof RPCService)
+			{
+				final RPCService rpcService = (RPCService)service;
+				
+				if (threadPool == null)
+					processRequest(rpcService, pvArgument);
+				else
+				{
+					threadPool.execute(new Runnable() {
+						@Override
+						public void run() {
+							processRequest(rpcService, pvArgument);
+						}
+					});
+				}
+			}
+			else if (service instanceof RPCServiceAsync)
+			{
+				final RPCServiceAsync rpcServiceAsync = (RPCServiceAsync)service;
+				processRequest(rpcServiceAsync, pvArgument);
+			}
+			else
+				throw new RuntimeException("unsupported Service type");
+		}
+
 		@Override
 		public void destroy() {
 			// remove from the list
@@ -316,5 +363,4 @@ public class RPCChannel implements Channel {
 		channelRequester.message(message, messageType);
 	}
 
-	
 }

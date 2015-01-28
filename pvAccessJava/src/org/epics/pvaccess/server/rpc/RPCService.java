@@ -9,7 +9,7 @@ import org.epics.pvdata.pv.PVStructure;
  * Interface defining a service.
  * @author msekoranja
  */
-public interface RPCService {
+public interface RPCService extends Service {
 	
 	/**
 	 * RPC call request. 
