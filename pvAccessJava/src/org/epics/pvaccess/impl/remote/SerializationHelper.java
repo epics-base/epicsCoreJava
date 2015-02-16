@@ -3,6 +3,9 @@ package org.epics.pvaccess.impl.remote;
 import java.nio.ByteBuffer;
 
 import org.epics.pvaccess.PVFactory;
+import org.epics.pvdata.factory.ConvertFactory;
+import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.PVDataCreate;
@@ -118,4 +121,82 @@ public class SerializationHelper {
 		    pvField.serialize(buffer, control);
 	    }
 	}
+	
+	static Convert convert = ConvertFactory.getConvert();
+	public static void copyUnchecked(PVField from, PVField to)
+	{
+		// TODO implement
+		convert.copy(from, to);
+	}
+	
+	public static void copyStructureUnchecked(PVStructure from, PVStructure to) {
+		
+		if (from == to)
+			return;
+			
+        PVField[] fromPVFields = from.getPVFields();
+        PVField[] toPVFields = to.getPVFields();
+        
+        for (int i = 0; i < fromPVFields.length; i++)
+        {
+        	final PVField pvField = fromPVFields[i];
+            int numberFields = pvField.getNumberFields();
+            
+            // serialize field or fields
+            if (numberFields == 1)
+            	copyUnchecked(pvField, toPVFields[i]);
+            else
+            	copyStructureUnchecked((PVStructure)pvField, (PVStructure)toPVFields[i]);
+        }
+	}
+
+	public static void partialCopy(PVStructure from, PVStructure to, BitSet maskBitSet) {
+		partialCopy(from, to, maskBitSet, false);
+	}
+	
+	public static void partialCopy(PVStructure from, PVStructure to, BitSet maskBitSet, boolean inverse) {
+		
+		if (from == to)
+			return;
+			
+        int offset = from.getFieldOffset();
+        int numberFields = from.getNumberFields();
+        int next = inverse ?
+        		maskBitSet.nextClearBit(offset) :
+        		maskBitSet.nextSetBit(offset);
+        
+        // no more changes or no changes in this structure
+        if (next<0 || next>=offset+numberFields) return;
+
+        // entire structure
+        if(offset==next) {
+        	copyStructureUnchecked(from, to);
+        	return;
+        }
+        
+        PVField[] fromPVFields = from.getPVFields();
+        PVField[] toPVFields = to.getPVFields();
+        
+        for (int i = 0; i < fromPVFields.length; i++)
+        {
+        	final PVField pvField = fromPVFields[i];
+            offset = pvField.getFieldOffset();
+            numberFields = pvField.getNumberFields();
+            next = inverse ?
+            		maskBitSet.nextClearBit(offset) :
+            		maskBitSet.nextSetBit(offset);
+            
+            // no more changes
+            if (next<0) return;
+            //  no change in this pvField
+            if (next>=offset+numberFields) continue;
+            
+            // serialize field or fields
+            if (numberFields == 1)
+            	copyUnchecked(pvField, toPVFields[i]);
+            else
+            	partialCopy((PVStructure)pvField, (PVStructure)toPVFields[i], maskBitSet, inverse);
+        }
+	}
+	
 }
