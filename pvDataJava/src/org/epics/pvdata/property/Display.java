@@ -13,7 +13,7 @@ public class Display {
     /**
      * The constructor.
      */
-    Display() {}
+    public Display() {}
     /**
      * Get the low limit.
      * @return The value.
