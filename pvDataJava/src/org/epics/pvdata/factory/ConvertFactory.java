@@ -635,6 +635,7 @@ public final class ConvertFactory {
                 	        fromElementType, toElementType));
             }
             if(to.getLength()<count+offset) to.setLength(count+offset);
+            to.postPut();
             return ncopy;
         }
 
