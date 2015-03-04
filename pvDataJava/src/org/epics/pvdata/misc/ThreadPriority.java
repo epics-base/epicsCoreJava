@@ -14,7 +14,7 @@ package org.epics.pvdata.misc;
  */
 public enum ThreadPriority {
     /**
-     * Lowest prority.
+     * Lowest priority.
      */
     lowest,
     /**

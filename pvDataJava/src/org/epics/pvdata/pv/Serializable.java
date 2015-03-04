@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 
 
 /**
- * Base interface for serializaion.
+ * Base interface for serialization.
  * @author mse
  *
  */

@@ -57,7 +57,7 @@ public interface PVField extends Serializable {
     boolean isImmutable();
     /**
      * Set the field to be immutable, i. e. it can no longer be modified.
-     * This is permanent, i.e. once done the field can onot be made mutable.
+     * This is permanent, i.e. once done the field cannot be made mutable.
      */
     void setImmutable();
     /**

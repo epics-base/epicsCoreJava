@@ -140,7 +140,7 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * String deserializaton helper method.
+	 * String deserialization helper method.
 	 */
 	public final static String deserializeString(ByteBuffer buffer, DeserializableControl control) {
 		int size = SerializeHelper.readSize(buffer, control);
@@ -164,7 +164,7 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * String deserializaton helper method.
+	 * String deserialization helper method.
 	 */
 	public final static String deserializeString(ByteBuffer buffer) {
 		int size = SerializeHelper.readSize(buffer);

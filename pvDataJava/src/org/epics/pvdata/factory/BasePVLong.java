@@ -15,7 +15,7 @@ import org.epics.pvdata.pv.SerializableControl;
 
 /**
  * Base class for PVLong.
- * It provides a complete implementation but cal also be extended.
+ * It provides a complete implementation but can also be extended.
  * @author mrk
  *
  */

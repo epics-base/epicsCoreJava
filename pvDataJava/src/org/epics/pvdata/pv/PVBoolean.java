@@ -12,7 +12,7 @@ package org.epics.pvdata.pv;
  */
 public interface PVBoolean extends PVScalar{
     /**
-     * Get the <i>booolean</i> value stored in the field.
+     * Get the <i>boolean</i> value stored in the field.
      * @return boolean The value of field.
     */
     boolean get();

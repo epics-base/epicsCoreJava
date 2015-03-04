@@ -15,7 +15,7 @@ import org.epics.pvdata.pv.PVField;
  *        int status
  *        string message
  * </pre>
- * This interface converts betweeen the integer severity and the enum alarmSeverity.
+ * This interface converts between the integer severity and the enum alarmSeverity.
  * @author mrk
  *
  */

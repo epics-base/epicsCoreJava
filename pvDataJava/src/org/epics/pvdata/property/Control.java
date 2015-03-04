@@ -7,7 +7,7 @@
 package org.epics.pvdata.property;
 
 /**
- * A class for control limuts.
+ * A class for control limits.
  * @author mrk
  *
  */

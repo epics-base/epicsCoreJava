@@ -142,7 +142,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
     //@Deprecated
     PVStructureArray getStructureArrayField(String fieldName);
     /**
-     * Find a unon subfield with the specified fieldName.
+     * Find a union subfield with the specified fieldName.
      * The fieldName is of the form name.name...
      * @param fieldName The field name to find.
      * @return The interface if the field of the correct type is found or null if not found.
