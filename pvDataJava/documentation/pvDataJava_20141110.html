@@ -237,7 +237,7 @@ rest of the line is a comment. </p>
 
 <p>type is one of the following:</p>
 <dl>
-  <dt>scalar</dt>
+  <dt id = "metalang_scalar">scalar</dt>
    <dd>A scalar field can be any of the following: 
       <dl>
         <dt>boolean</dt>
@@ -266,7 +266,7 @@ rest of the line is a comment. </p>
           <dd>immutable string.</dd>
       </dl>
     </dd>
-  <dt>scalarArray</dt>
+  <dt id = "metalang_scalar_array">scalarArray</dt>
     <dd>A scalarArray field is an array of any of the scalar types. 
       <dl>
         <dt>boolean[]</dt>
@@ -283,7 +283,7 @@ rest of the line is a comment. </p>
         <dt>string[]</dt>
       </dl>
     </dd>
-  <dt>structure</dt>
+  <dt id = "metalang_structure">structure</dt>
     <dd>A structure field has the definition: 
       <pre>
 structure fieldName
@@ -307,7 +307,7 @@ structure xxx_t
     ...
       </pre>
     </dd>
-  <dt>structureArray</dt>
+  <dt id = "metalang_structure_array">structureArray</dt>
     <dd>A structureArray field has the definition: 
       <pre>
 structure[] fieldName
@@ -322,7 +322,7 @@ xxx_t[] fieldName
       but all elements have the same introspection interface. For introspection
       the structureDef appears once without any data values.</p>
     </dd>
-   <dt>union</dt>
+   <dt id = "metalang_union">union</dt>
       <dd>
        This has two flavors: a variant union or a union of a fixed set
        of types.
@@ -350,7 +350,7 @@ union value
         int userTag
       </pre>
       </dd>
-   <dt>UnionArray</dt>
+   <dt id = "metalang_union_array">UnionArray</dt>
        <dd>
         This is an array of unions.
         Each element has the same introspection interface
