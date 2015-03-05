@@ -481,7 +481,7 @@ structure pointArrayExample
             double y 10.0</pre>
 
 <h2 >Interface Definitions</h2>
-<p>This section gives a <b>brief</b> description of the pvData intospection and data interfaces.
+<p>This section gives a <b>brief</b> description of the pvData introspection and data interfaces.
 In this section the methods are shown but not described. See org.epics.pvdata.pv below for a
 description of each method.</p>
 
@@ -687,7 +687,7 @@ interface PVDoubleArray extends PVArray {
 }</pre>
 
 <p>PVStructureArray is the interface for an array of structures where each element
-has the same iontrospection interface.</p>
+has the same introspection interface.</p>
 <pre>public class StructureArrayData {
     public PVStructure[] data;
     public int offset;
@@ -1246,7 +1246,7 @@ where
    <dt>appendFields</dt>
      <dd>Append an array of fields to a structure.</dd>
    <dt>createVariantUnion</dt>
-      <dd>Create a variant union, i. e. a union where the subfield can be any valid type.</dd>
+      <dd>Create a variant union, i.e. a union where the subfield can be any valid type.</dd>
    <dt>createUnion</dt>
       <dd>Create a union where the sub-field can have any of the types an names defined
       by the arguments and the associated names.
@@ -1697,18 +1697,18 @@ interface PVDoubleArray extends PVScalarArray {
 <p>Get "exposes" it's internal array by setting data.data and data.offset. The
 caller is responsible for copying the array elements. This violates the
 principle that objects should not expose their internal data but is done for
-efficency. For example it makes it possible to copy between arrays with
+efficiency. For example it makes it possible to copy between arrays with
 identical element types via a call to System.arraycopy without requiring an
 intermediate array.</p>
 
-<p>Both get and put return the number of elements actually transfered. The
+<p>Both get and put return the number of elements actually transferred. The
 arguments are:</p>
 <dl>
   <dt>offset</dt>
 <dd>The offset in the PV array.</dd>
   <dt>len</dt>
 <dd>The maximum number of elements to transfer. The number actually
-  transfered will be less than or equal to this value.</dd>
+  transferred will be less than or equal to this value.</dd>
   <dt>data</dt>
 <dd>Get sets data.data to it's internal array and data.offset to the offset
   into the array. The caller is responsible for the actual data
@@ -1742,7 +1742,7 @@ double[] getArray(PVDoubleArray pv)
 <p><b>NOTE: </b> The pvDataCPP now enforces COW (Copy on Write) for arrays.
 In the future pvDataJava should have similar rules but without the concept of <b>const</b>
 it may not be possible to enforce COW.
-shareData definitely voilates COW if any code changes the shared data.
+shareData definitely violates COW if any code changes the shared data.
 It should <b>not</b> used except for immutable arrays.
 </p>
 <p>shareData results in the PVArray using the primitive array that is passed to
@@ -2732,7 +2732,7 @@ structure alarm
 </pre>
 
 <p>Note that severity and status are NOT defined as enumerated structures.
-The reason is performance, i. e. prevent passing the array of choice strings everywhere.
+The reason is performance, i.e. prevent passing the array of choice strings everywhere.
 The AlarmStatus and AlarmSeverity provide the equivalent of choices for an
 enumerated structure.</p>
 <h5>AlarmSeverity</h5>
@@ -3105,7 +3105,7 @@ which is a structure containing two fields:</p>
   <dt>clear</dt>
     <dd>Clear the bitMask, i.e. no choices are selected..</dd>
   <dt>registerChoice</dt>
-    <dd>Register a new choice. If thed choice already exists then it''s index
+    <dd>Register a new choice. If the choice already exists then it's index
       is returned. If not it is appended to the choices.</dd>
 </dl>
 <h4>MultiChoiceFactory</h4>
@@ -3960,7 +3960,7 @@ It has the fields:
   <dt>changedBitSet</dt>
      <dd>Shows which fields have changed since the previous monitor.</dd>
   <dt>overrunBitSet</dt>
-     <dd>Shows which fields have changed more han once since the previous monitor.</dd>
+     <dd>Shows which fields have changed more than once since the previous monitor.</dd>
 </dl>
 <h4>monitorElement queue</h4>
 <p>
@@ -4235,7 +4235,7 @@ client wants. It can be attached to any field via the following options:
 [plugin=onChange,raiseMonitor=value]
 </pre>
 This plugin will trigger a monitor for the field only if the field changes
-value. In addition <b>value</b> equals <b>false</b> means do not raise a monotor
+value. In addition <b>value</b> equals <b>false</b> means do not raise a monitor
 for changes to this field.
 But if a change to another field does cause a monitor the change to this field
 will be passed to the client.
