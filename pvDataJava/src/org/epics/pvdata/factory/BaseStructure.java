@@ -14,6 +14,9 @@ import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.StructureArray;
+import org.epics.pvdata.pv.UnionArray;
 import org.epics.pvdata.pv.Type;
 
 /**
@@ -192,7 +195,8 @@ public class BaseStructure extends BaseField implements Structure {
         		break;
         	case structureArray:
         		convert.newLine(buf,indentLevel+1);
-        		field.toString(buf, indentLevel+1);
+        		Structure structureField = ((StructureArray)field).getStructure();
+        		structureField.toString(buf, indentLevel+1);
         		break;
         	case union:
         		BaseUnion union = (BaseUnion)field;
@@ -200,7 +204,8 @@ public class BaseStructure extends BaseField implements Structure {
         		break;
         	case unionArray:
         		convert.newLine(buf,indentLevel+1);
-        		field.toString(buf, indentLevel+1);
+        		Union unionField = ((UnionArray)field).getUnion();
+        		unionField.toString(buf, indentLevel+1);
         		break;
         	}
         	if(i<length-1) convert.newLine(buf,indentLevel);
