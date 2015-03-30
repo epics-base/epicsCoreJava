@@ -136,6 +136,30 @@ public class BaseUnion extends BaseField implements Union {
     public Field getField(int fieldIndex) {
 	    return fields[fieldIndex];
     }
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.Union#getField(java.lang.Class, java.lang.String)
+     */
+    @Override
+	public <T extends Field> T getField(Class<T> c, String fieldName)
+	{
+		Field pv = getField(fieldName);
+		if (c.isInstance(pv))
+			return c.cast(pv);
+		else
+			return null;
+	}
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.Union#getField(java.lang.Class, int)
+     */
+    @Override
+	public <T extends Field> T getField(Class<T> c, int fieldOffset)
+	{
+		Field pv = getField(fieldOffset);
+		if (c.isInstance(pv))
+			return c.cast(pv);
+		else
+			return null;
+	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Structure#getFieldNames()
 	 */
