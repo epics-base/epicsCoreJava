@@ -106,7 +106,7 @@ public class BaseUnion extends BaseField implements Union {
 		return id;
 	}
     /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.Structure#getField(java.lang.String)
+     * @see org.epics.pvdata.pv.Union#getField(java.lang.String)
      */
 	@Override
     public Field getField(String name) {
@@ -118,7 +118,7 @@ public class BaseUnion extends BaseField implements Union {
         return null;
     }
 	/* (non-Javadoc)
-     * @see org.epics.pvdata.pv.Structure#getFieldIndex(java.lang.String)
+     * @see org.epics.pvdata.pv.Union#getFieldIndex(java.lang.String)
      */
 	@Override
     public int getFieldIndex(String name) {
@@ -130,7 +130,7 @@ public class BaseUnion extends BaseField implements Union {
         return -1;
     }
     /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.Structure#getField(int)
+     * @see org.epics.pvdata.pv.Union#getField(int)
      */
     @Override
     public Field getField(int fieldIndex) {
@@ -161,21 +161,21 @@ public class BaseUnion extends BaseField implements Union {
 			return null;
 	}
 	/* (non-Javadoc)
-	 * @see org.epics.pvdata.pv.Structure#getFieldNames()
+	 * @see org.epics.pvdata.pv.Union#getFieldNames()
 	 */
 	@Override
     public String[] getFieldNames() {
 	    return fieldNames;
     }
 	/* (non-Javadoc)
-	 * @see org.epics.pvdata.pv.Structure#getFieldName(int)
+	 * @see org.epics.pvdata.pv.Union#getFieldName(int)
 	 */
 	@Override
     public String getFieldName(int fieldIndex) {
 	    return fieldNames[fieldIndex];
     }
     /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.Structure#getFields()
+     * @see org.epics.pvdata.pv.Union#getFields()
      */
     @Override
     public Field[] getFields() {
