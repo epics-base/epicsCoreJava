@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>pvData - Java</name>
-    <url>http://epics-pvdata.sourceforge.net/pvDataJava</url>
+    <url>https://github.com/epics-base/pvDataJava.git</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
