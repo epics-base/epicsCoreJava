@@ -1,5 +1,1 @@
-bin
-doc
-target
-documentation/html
-.classpath
+/target/
