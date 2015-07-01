@@ -8,7 +8,7 @@
     <packaging>jar</packaging>
 
     <name>pvAccess - Java</name>
-    <url>http://epics-pvdata.sourceforge.net/pvAccessJava</url>
+    <url>https://github.com/epics-base/pvAccessJava</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +18,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -136,12 +136,12 @@
 
             <plugin> 
                 <artifactId>maven-deploy-plugin</artifactId> 
-                <version>2.7</version> 
+                <version>2.8.2</version> 
                 <dependencies> 
                     <dependency> 
                         <groupId>org.apache.maven.wagon</groupId> 
                         <artifactId>wagon-ssh</artifactId> 
-                        <version>2.2</version> 
+                        <version>2.8</version> 
                     </dependency> 
                 </dependencies> 
             </plugin>
