@@ -18,52 +18,52 @@ public class Display {
      * Get the low limit.
      * @return The value.
      */
-    double getLow() {return low;}
+    public double getLow() {return low;}
     /**
      * Get the High Limit.
      * @return The value.
      */
-    double getHigh() { return high;}
+    public double getHigh() { return high;}
     /**
      * set the low limut.
      * @param value The value.
      */
-    void setLow(double value){low = value;}
+    public void setLow(double value){low = value;}
     /**
      * Set the high limit.
      * @param value The value.
      */
-    void setHigh(double value){high = value;}
+    public void setHigh(double value){high = value;}
     /**
      * Get the description.
      * @return The value.
      */
-    String getDescription() {return description;}
+    public String getDescription() {return description;}
     /**
      * Set the description.
      * @param value The value.
      */
-    void setDescription(String value) {description = value;}
+    public void setDescription(String value) {description = value;}
     /**
      * Get the format.
      * @return The value.
      */
-    String getFormat() {return format;}
+    public String getFormat() {return format;}
     /**
      * Set the format.
      * @param value The value.
      */
-    void setFormat(String value) {format = value;}
+    public void setFormat(String value) {format = value;}
     /**
      * Get the units.
      * @return The value.
      */
-    String getUnits() {return units;}
+    public String getUnits() {return units;}
     /**
      * Set the units.
      * @param value The value.
      */
-    void setUnits(String value) {units = value;}
+    public void setUnits(String value) {units = value;}
     
     private String description = "";
     private String format = "";
