@@ -1,1 +1,1 @@
-# normativeTypes
+# normativeTypesJava
