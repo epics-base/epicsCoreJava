@@ -144,6 +144,11 @@ public class NTTestBase extends TestCase
 
             pvControl.set(control);
 
+            double low2 = type.getControl().
+            getSubField(PVDouble.class, "limitLow").get();
+            double high2 = type.getControl().
+                getSubField(PVDouble.class, "limitHigh").get();
+
             assertEquals(low,low2);
             assertEquals(high,high2);
         }
