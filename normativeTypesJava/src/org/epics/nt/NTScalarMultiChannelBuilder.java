@@ -43,8 +43,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addDescriptor()
     {
-                descriptor = true;
-                return this;
+        descriptor = true;
+        return this;
     }
 
     /**
@@ -53,8 +53,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addAlarm()
     {
-                alarm = true;
-                return this;
+        alarm = true;
+        return this;
     }
 
     /**
@@ -63,8 +63,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addTimeStamp()
     {
-            timeStamp = true;
-            return this;
+        timeStamp = true;
+        return this;
     }
 
     /**
@@ -73,8 +73,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addSeverity()
     {
-            severity = true;
-            return this;
+        severity = true;
+        return this;
     }
 
     /**
@@ -83,10 +83,9 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addStatus()
     {
-            status = true;
-            return this;
+        status = true;
+        return this;
     }
-
 
     /**
      * Add message array to the NTScalarMultiChannel.
@@ -94,8 +93,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addMessage()
     {
-            message = true;
-            return this;
+        message = true;
+        return this;
     }
 
     /**
@@ -104,8 +103,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addSecondsPastEpoch()
     {
-            secondsPastEpoch = true;
-            return this;
+        secondsPastEpoch = true;
+        return this;
     }
 
     /**
@@ -114,8 +113,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addNanoseconds()
     {
-            nanoseconds = true;
-            return this;
+        nanoseconds = true;
+        return this;
     }
 
     /**
@@ -124,8 +123,8 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder addUserTag()
     {
-            userTag = true;
-            return this;
+        userTag = true;
+        return this;
     }
 
     /**
@@ -204,7 +203,6 @@ public class NTScalarMultiChannelBuilder
         return st;
     }
 
-
     /**
      * Create a <b>PVStructure</b> that represents NTScalarMultiChannel.
      * This resets this instance state and allows new {@code instance to be created.}
@@ -233,9 +231,9 @@ public class NTScalarMultiChannelBuilder
      */
     public NTScalarMultiChannelBuilder add(String name, Field field)
     {
-            extraFields.add(field);
-            extraFieldNames.add(name);
-            return this;
+        extraFields.add(field);
+        extraFieldNames.add(name);
+        return this;
     }
 
     NTScalarMultiChannelBuilder()

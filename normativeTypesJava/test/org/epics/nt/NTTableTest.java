@@ -566,18 +566,6 @@ public class NTTableTest extends NTTestBase
 		assertNotNull(pvLabels);
 
         String[] columnNames_rb = nttable.getColumnNames();
-System.out.println("Expected");
-for (String columnName :columnNames)
-    System.out.println(columnName);
-
-System.out.println();
-
-System.out.println("Got");
-for (String columnName_rb :columnNames_rb)
-    System.out.println(columnName_rb);
-
-    System.out.println();
-
         org.junit.Assert.assertArrayEquals(columnNames_rb, columnNames);
 
 		// Test optional fields through NTTable interface

@@ -143,19 +143,19 @@ public class NTEnum
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
-	 */
-    public PVStructure getTimeStamp()
-    {
-        return pvNTEnum.getSubField(PVStructure.class, "timeStamp");
-    }
-
-    /* (non-Javadoc)
 	 * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
 	 */
     public PVStructure getAlarm()
     {
        return pvNTEnum.getSubField(PVStructure.class, "alarm");
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
+	 */
+    public PVStructure getTimeStamp()
+    {
+        return pvNTEnum.getSubField(PVStructure.class, "timeStamp");
     }
 
     /* (non-Javadoc)

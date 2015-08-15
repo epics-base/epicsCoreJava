@@ -36,7 +36,7 @@ public class NTEnumBuilder
 
     /**
      * Add alarm structure to the NTEnum.
-     * @return this instance of <b>NTEnumBuilder</b>.</b>.
+     * @return this instance of <b>NTEnumBuilder</b>.
      */
     public NTEnumBuilder addAlarm()
     {
@@ -46,7 +46,7 @@ public class NTEnumBuilder
 
     /**
      * Add timeStamp structure to the NTEnum.
-     * @return this instance of <b>NTEnumBuilder</b>.</b>.
+     * @return this instance of <b>NTEnumBuilder</b>.
      */
     public NTEnumBuilder addTimeStamp()
     {

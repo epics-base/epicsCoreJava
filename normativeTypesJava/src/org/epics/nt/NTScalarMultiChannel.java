@@ -308,8 +308,9 @@ public class NTScalarMultiChannel
     {
         pvNTScalarMultiChannel = pvStructure;
         pvValue = pvStructure.getSubField(PVScalarArray.class, "value");
-        pvTimeStamp = pvStructure.getSubField(PVStructure.class, "timeStamp");
+        pvChannelName = pvStructure.getSubField(PVStringArray.class, "channelName");
         pvAlarm = pvStructure.getSubField(PVStructure.class, "alarm");
+        pvTimeStamp = pvStructure.getSubField(PVStructure.class, "timeStamp");
         pvChannelName = pvStructure.getSubField(PVStringArray.class, "channelName");
         pvDescriptor = pvStructure.getSubField(PVString.class, "descriptor");
         pvSeverity = pvStructure.getSubField(PVIntArray.class, "severity");
@@ -323,8 +324,6 @@ public class NTScalarMultiChannel
 
     private PVStructure pvNTScalarMultiChannel;
     private PVScalarArray pvValue;
-    private PVStructure pvTimeStamp;
-    private PVStructure pvAlarm;
     private PVStringArray pvChannelName;
     private PVBooleanArray pvIsConnected;
     private PVIntArray pvSeverity;
@@ -334,5 +333,7 @@ public class NTScalarMultiChannel
     private PVIntArray pvNanoseconds;
     private PVIntArray pvUserTag;
     private PVString pvDescriptor;
+    private PVStructure pvAlarm;
+    private PVStructure pvTimeStamp;
 }
 

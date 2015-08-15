@@ -165,7 +165,6 @@ public class NTMatrix
        return pvNTMatrix.getSubField(PVStructure.class, "alarm");
     }
 
-
     /* (non-Javadoc)
 	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
 	 */
@@ -173,7 +172,6 @@ public class NTMatrix
     {
         return pvNTMatrix.getSubField(PVStructure.class, "timeStamp");
     }
-
 
     /* (non-Javadoc)
 	 * @see org.epics.pvdata.nt.Has#getDisplay()
@@ -196,7 +194,6 @@ public class NTMatrix
             return false;
     }
 
-
     /* (non-Javadoc)
 	 * @see org.epics.pvdata.nt.HasTimeStamp#attachTimeStamp(org.epics.pvdata.property.PVTimeStamp)
 	 */
@@ -208,7 +205,6 @@ public class NTMatrix
         else
             return false;
     }
-
 
     /* (non-Javadoc)
 	 * @see org.epics.pvdata.nt.HasDisplay#attachDisplay(org.epics.pvdata.property.PVDisplay)
