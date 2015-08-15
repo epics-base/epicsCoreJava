@@ -153,7 +153,7 @@ public class NTScalarMultiChannel
      * Get the display field.
      * @return PVStructure which may be null.
      */
-    public PVField getValue()
+    public PVScalarArray getValue()
     {
         return pvValue;
     }
@@ -307,7 +307,7 @@ public class NTScalarMultiChannel
     NTScalarMultiChannel(PVStructure pvStructure)
     {
         pvNTScalarMultiChannel = pvStructure;
-        pvValue = pvStructure.getSubField(PVUnionArray.class, "value");
+        pvValue = pvStructure.getSubField(PVScalarArray.class, "value");
         pvTimeStamp = pvStructure.getSubField(PVStructure.class, "timeStamp");
         pvAlarm = pvStructure.getSubField(PVStructure.class, "alarm");
         pvChannelName = pvStructure.getSubField(PVStringArray.class, "channelName");
@@ -322,9 +322,9 @@ public class NTScalarMultiChannel
     }
 
     private PVStructure pvNTScalarMultiChannel;
+    private PVScalarArray pvValue;
     private PVStructure pvTimeStamp;
     private PVStructure pvAlarm;
-    private PVUnionArray pvValue;
     private PVStringArray pvChannelName;
     private PVBooleanArray pvIsConnected;
     private PVIntArray pvSeverity;
