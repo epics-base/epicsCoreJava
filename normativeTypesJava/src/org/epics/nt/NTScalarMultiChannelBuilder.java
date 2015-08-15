@@ -249,6 +249,7 @@ public class NTScalarMultiChannelBuilder
         descriptor = false;
         alarm = false;
         timeStamp = false;
+        severity = false;
         status = false;
         message = false;
         secondsPastEpoch = false;
