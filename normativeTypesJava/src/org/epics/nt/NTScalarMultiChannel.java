@@ -247,7 +247,7 @@ public class NTScalarMultiChannel
      * Get the descriptor.
      * @return PVString which may be null.
      */
-    PVString getDescriptor()
+    public PVString getDescriptor()
     {
         return pvDescriptor;
     }
