@@ -18,6 +18,7 @@ import org.epics.pvdata.pv.Type;
 public final class PVControlFactory implements PVControl{
     private PVDouble pvLow = null;
     private PVDouble pvHigh = null;
+    private PVDouble pvMinStep = null;
     private static final String noControlFound = "No control structure was located";
     private static final String notAttached = "Not attached to an control structure";
 
@@ -45,6 +46,11 @@ public final class PVControlFactory implements PVControl{
             throw new IllegalArgumentException(noControlFound);
         }
         pvHigh = pvDouble;
+        pvDouble = pvStructure.getDoubleField("minStep");
+        if(pvDouble==null) {
+            throw new IllegalArgumentException(noControlFound);
+        }
+        pvMinStep = pvDouble;
         return true;
     }
     /* (non-Javadoc)
@@ -54,13 +60,14 @@ public final class PVControlFactory implements PVControl{
     public void detach() {
         pvLow = null;
         pvHigh = null;
+        pvMinStep = null;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#isAttached()
      */
     @Override
     public boolean isAttached() {
-        if(pvLow==null || pvHigh==null) return false;
+        if(pvLow==null || pvHigh==null || pvMinStep==null) return false;
         return true;
     }
     /* (non-Javadoc)
@@ -68,23 +75,25 @@ public final class PVControlFactory implements PVControl{
      */
     @Override
     public void get(Control control) {
-        if(pvLow==null || pvHigh==null) {
+        if(pvLow==null || pvHigh==null || pvMinStep==null) {
             throw new IllegalStateException(notAttached);
         }
         control.setLow(pvLow.get());
         control.setHigh(pvHigh.get());
+        control.setMinStep(pvMinStep.get());
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#set(org.epics.pvdata.property.Control)
      */
     @Override
     public boolean set(Control control) {
-        if(pvLow==null || pvHigh==null) {
+        if(pvLow==null || pvHigh==null || pvMinStep==null) {
             throw new IllegalStateException(notAttached);
         }
         if(pvLow.isImmutable() || pvHigh.isImmutable()) return false;
         pvLow.put(control.getLow());
         pvHigh.put(control.getHigh());
+        pvMinStep.put(control.getMinStep());
         return true;
     }
 

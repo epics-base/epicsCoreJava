@@ -27,6 +27,11 @@ public class Control {
      */
     public double getHigh() {return high;}
     /**
+     * Get control minStep.
+     * @return The value.
+     */
+    public double getMinStep() {return minStep;}
+    /**
      * Set control low.
      * @param value The value.
      */
@@ -36,8 +41,14 @@ public class Control {
      * @param value The value.
      */
     public void setHigh(double value) {high = value;}
+    /**
+     * Set control minStep.
+     * @param value The value.
+     */
+    public void setMinStep(double value) {minStep = value;}
     
     private double low = 0.0;
     private double high = 0.0;
+    private double minStep = 0.0;
 
 }
