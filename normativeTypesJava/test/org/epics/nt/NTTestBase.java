@@ -37,7 +37,7 @@ public class NTTestBase extends TestCase
     {
         PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
         boolean attached = type.attachTimeStamp(pvTimeStamp);
-        assertEquals(attached, expected);
+        assertEquals(expected, attached);
 
         if (expected && attached)
         {
@@ -68,7 +68,7 @@ public class NTTestBase extends TestCase
     {
         PVAlarm pvAlarm = PVAlarmFactory.create();
         boolean attached = type.attachAlarm(pvAlarm);
-        assertEquals(attached, expected);
+        assertEquals(expected, attached);
 
         if (expected && attached)
         {
@@ -102,7 +102,7 @@ public class NTTestBase extends TestCase
     {
         PVDisplay pvDisplay = PVDisplayFactory.create();
         boolean attached = type.attachDisplay(pvDisplay);
-        assertEquals(attached, expected);
+        assertEquals(expected, attached);
 
         if (expected && attached)
         {
@@ -130,7 +130,7 @@ public class NTTestBase extends TestCase
     {
         PVControl pvControl = PVControlFactory.create();
         boolean attached = type.attachControl(pvControl);
-        assertEquals(attached, expected);
+        assertEquals(expected, attached);
 
         if (expected && attached)
         {

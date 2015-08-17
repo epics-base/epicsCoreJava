@@ -405,7 +405,7 @@ public class NTScalarArrayTest extends NTTestBase
     {
         FieldBuilder builder = fieldCreate.createFieldBuilder();
         Structure s = builder.setId(str).createStructure();
-        assertEquals(NTScalarArray.is_a(s), expected);
+        assertEquals(expected, NTScalarArray.is_a(s));
     }
 
 
@@ -413,7 +413,7 @@ public class NTScalarArrayTest extends NTTestBase
     public static void testStructureIsCompatibleImpl(Structure s, boolean expected)
     {
         PVStructure pvSt = dataCreate.createPVStructure(s);
-        assertEquals(NTScalarArray.isCompatible(pvSt), expected);
+        assertEquals(expected, NTScalarArray.isCompatible(pvSt));
     }
 
     private static <T extends PVScalarArray>

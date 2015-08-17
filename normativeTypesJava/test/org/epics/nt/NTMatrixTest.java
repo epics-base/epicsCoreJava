@@ -388,7 +388,7 @@ public class NTMatrixTest extends NTTestBase
     {
         FieldBuilder builder = fieldCreate.createFieldBuilder();
         Structure s = builder.setId(str).createStructure();
-        assertEquals(NTMatrix.is_a(s), expected);
+        assertEquals(expected, NTMatrix.is_a(s));
     }
 
 
@@ -396,7 +396,7 @@ public class NTMatrixTest extends NTTestBase
     public static void testStructureIsCompatibleImpl(Structure s, boolean expected)
     {
         PVStructure pvSt = dataCreate.createPVStructure(s);
-        assertEquals(NTMatrix.isCompatible(pvSt), expected);
+        assertEquals(expected, NTMatrix.isCompatible(pvSt));
     }
 
     /*private static void testNTMatrix_BuilderCreatedImpl()

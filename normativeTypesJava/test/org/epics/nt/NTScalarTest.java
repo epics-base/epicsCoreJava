@@ -403,7 +403,7 @@ public class NTScalarTest extends NTTestBase
     {
         FieldBuilder builder = fieldCreate.createFieldBuilder();
         Structure s = builder.setId(str).createStructure();
-        assertEquals(NTScalar.is_a(s), expected);
+        assertEquals(expected, NTScalar.is_a(s));
     }
 
 
@@ -411,7 +411,7 @@ public class NTScalarTest extends NTTestBase
     public static void testStructureIsCompatibleImpl(Structure s, boolean expected)
     {
         PVStructure pvSt = dataCreate.createPVStructure(s);
-        assertEquals(NTScalar.isCompatible(pvSt), expected);
+        assertEquals(expected, NTScalar.isCompatible(pvSt));
     }
 
     private static <T extends PVScalar>

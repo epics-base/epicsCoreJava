@@ -428,7 +428,7 @@ public class NTTableTest extends NTTestBase
     {
         FieldBuilder builder = fieldCreate.createFieldBuilder();
         Structure s = builder.setId(str).createStructure();
-        assertEquals(NTTable.is_a(s), expected);
+        assertEquals(expected, NTTable.is_a(s));
     }
 
 
@@ -436,7 +436,7 @@ public class NTTableTest extends NTTestBase
     public static void testStructureIsCompatibleImpl(Structure s, boolean expected)
     {
         PVStructure pvSt = dataCreate.createPVStructure(s);
-        assertEquals(NTTable.isCompatible(pvSt), expected);
+        assertEquals(expected, NTTable.isCompatible(pvSt));
     }
 
     

@@ -29,7 +29,7 @@ public class NTUtilsTest extends TestCase
         boolean is_a1 = NTUtils.is_a(u1,u2);
         boolean is_a2 = NTUtils.is_a(u2,u1);
         assertEquals(is_a1, is_a2);
-        assertEquals(is_a1, expected);
+        assertEquals(expected, is_a1);
     }
 
     public static void test1()
