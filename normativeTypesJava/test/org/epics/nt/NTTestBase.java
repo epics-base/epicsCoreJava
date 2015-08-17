@@ -108,6 +108,18 @@ public class NTTestBase extends TestCase
         {
             Display display = new Display();
 
+            double low = -1.0;
+            double high = 1.0;
+            String format = "%4.2f";
+            String units = "mA";
+            String description = "Beam current";
+
+            display.setLow(low);
+            display.setHigh(high);
+            display.setFormat(format);
+            display.setUnits(units);
+            display.setDescription(description);
+
             pvDisplay.set(display);
 
             double low2 = type.getDisplay().
@@ -120,6 +132,12 @@ public class NTTestBase extends TestCase
                 getSubField(PVString.class, "units").get();
             String description2 = type.getDisplay().
                 getSubField(PVString.class, "description").get();
+
+            assertEquals(low,low2);
+            assertEquals(high,high2);
+            assertEquals(format,format2);
+            assertEquals(units,units2);
+            assertEquals(description,description2);
         }
     }
 
@@ -138,9 +156,11 @@ public class NTTestBase extends TestCase
 
             double low = -1.0;
             double high = 1.0;
+            double minStep = 0.01;
 
             control.setLow(low);
             control.setHigh(high);
+            control.setMinStep(minStep);
 
             pvControl.set(control);
 
@@ -148,9 +168,12 @@ public class NTTestBase extends TestCase
             getSubField(PVDouble.class, "limitLow").get();
             double high2 = type.getControl().
                 getSubField(PVDouble.class, "limitHigh").get();
+            double minStep2 = type.getControl().
+                getSubField(PVDouble.class, "minStep").get();
 
             assertEquals(low,low2);
             assertEquals(high,high2);
+            assertEquals(minStep,minStep2);
         }
     }
 
