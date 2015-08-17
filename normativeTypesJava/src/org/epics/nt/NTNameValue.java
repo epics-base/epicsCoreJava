@@ -136,21 +136,30 @@ public class NTNameValue
      * Get the value field.
      * @return The PVField for the values.
      */
-    public PVField getValue()
+    public PVScalarArray getValue()
     {
         return pvValue;
     }
 
     /* Get the value field of a specified type (e.g. PVDoubleArray).
      * @param c expected class of a requested field.
-     * @return The PVField or null if the subfield does not exist, or the field is not of <code>c</code> type.
+     * @return The PVScalarArray or null if the subfield does not exist, or the field is not of <code>c</code> type.
      */
-    public <T extends PVField> T getValue(Class<T> c)
+    public <T extends PVScalarArray> T getValue(Class<T> c)
     {
 		if (c.isInstance(pvValue))
 			return c.cast(pvValue);
 		else
 			return null;
+    }
+
+    /**
+     * Get the name array field.
+     * @return The PVStringArray for the name.
+     */
+    PVStringArray getName()
+    {
+        return pvNTNameValue.getSubField(PVStringArray.class, "name");
     }
 
     /**
@@ -217,11 +226,11 @@ public class NTNameValue
     NTNameValue(PVStructure pvStructure)
     {
         pvNTNameValue = pvStructure;
-        pvValue = pvNTNameValue.getSubField("value");
+        pvValue = pvNTNameValue.getSubField(PVScalarArray.class, "value");
     }
 
     private PVStructure pvNTNameValue;
-    private PVField pvValue;
+    private PVScalarArray pvValue;
 }
 
 
