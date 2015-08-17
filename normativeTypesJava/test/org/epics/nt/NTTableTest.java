@@ -328,28 +328,7 @@ public class NTTableTest extends NTTestBase
             addColumn("value",ScalarType.pvDouble).
             addTimeStamp().create();
 
-        PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
-        boolean attached = nttable.attachTimeStamp(pvTimeStamp);
-        assertTrue(attached);
-
-        TimeStamp timeStamp = TimeStampFactory.create();
-        long secondsPastEpoch = 1439251159;
-        int nanoseconds = 851129075;
-        int userTag = 42; 
-        timeStamp.put(secondsPastEpoch,nanoseconds);
-        timeStamp.setUserTag(userTag);
-        pvTimeStamp.set(timeStamp);
-
-        long secondsPastEpoch2 = nttable.getTimeStamp().
-            getSubField(PVLong.class, "secondsPastEpoch").get();
-        int nanoseconds2 = nttable.getTimeStamp().
-            getSubField(PVInt.class, "nanoseconds").get();
-        int userTag2 = nttable.getTimeStamp().
-            getSubField(PVInt.class, "userTag").get();
-
-        assertEquals(secondsPastEpoch,secondsPastEpoch2);
-        assertEquals(nanoseconds,nanoseconds2);
-        assertEquals(userTag,userTag2);
+        testAttachTimeStamp(nttable, true);
     }
  
     public static void testTimeStamp2()
@@ -358,9 +337,7 @@ public class NTTableTest extends NTTestBase
             add("value", exampleColumns).
             create();
 
-        PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
-        boolean attached = nttable.attachTimeStamp(pvTimeStamp);
-        assertFalse(attached);
+        testAttachTimeStamp(nttable, false);
     }
 
     // test attaching alarms
