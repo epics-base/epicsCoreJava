@@ -301,6 +301,27 @@ public class NTField {
     }
 
     /**
+     * Create an alarmLimit structure.
+     * @return an alarmLimit structure.
+     */
+    public Structure createAlarmLimit()
+    {
+        return fieldCreate.createFieldBuilder().
+           setId("alarmLimit_t").
+           add("active", ScalarType.pvBoolean).
+           add("lowAlarmLimit", ScalarType.pvDouble). 
+           add("lowWarningLimit", ScalarType.pvDouble). 
+           add("highWarningLimit", ScalarType.pvDouble). 
+           add("highAlarmLimit", ScalarType.pvDouble). 
+           add("lowAlarmSeverity", ScalarType.pvInt). 
+           add("lowWarningSeverity", ScalarType.pvInt). 
+           add("highWarningSeverity", ScalarType.pvInt).
+           add("highAlarmSeverity", ScalarType.pvInt).
+           add("hysteresis", ScalarType.pvDouble).
+           createStructure();
+    }
+
+    /**
      * Create a display structure.
      * @return a displayalarm structure.
      */
