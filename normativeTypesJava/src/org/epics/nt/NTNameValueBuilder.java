@@ -29,7 +29,7 @@ public class NTNameValueBuilder
     /**
      * Set a value type of a NTNameValue.
      * @param scalarType the value type.
-     * @return this instance of <b>NTNameValueBuilder</b>.</b>.
+     * @return this instance of <b>NTNameValueBuilder</b>.
      */
     public NTNameValueBuilder value(ScalarType scalarType)
     {
@@ -40,7 +40,7 @@ public class NTNameValueBuilder
 
     /**
      * Add descriptor field to the NTNameValue.
-     * @return this instance of <b>NTNameValueBuilder</b>.</b>.
+     * @return this instance of <b>NTNameValueBuilder</b>.
      */
     public NTNameValueBuilder addDescriptor()
     {
@@ -50,7 +50,7 @@ public class NTNameValueBuilder
 
     /**
      * Add alarm structure to the NTNameValue.
-     * @return this instance of <b>NTNameValueBuilder</b>.</b>.
+     * @return this instance of <b>NTNameValueBuilder</b>.
      */
     public NTNameValueBuilder addAlarm()
     {
@@ -60,7 +60,7 @@ public class NTNameValueBuilder
 
     /**
      * Add timeStamp structure to the NTNameValue.
-     * @return this instance of <b>NTNameValueBuilder</b>.</b>.
+     * @return this instance of <b>NTNameValueBuilder</b>.
      */
     public NTNameValueBuilder addTimeStamp()
     {
@@ -129,7 +129,7 @@ public class NTNameValueBuilder
      * Add extra <b>Field</b> to the type.
      * @param name name of the field.
      * @param field a field to add.
-     * @return this instance of <b>NTNameValueBuilder</b>.</b>.
+     * @return this instance of <b>NTNameValueBuilder</b>.
      */
     public NTNameValueBuilder add(String name, Field field) 
     {

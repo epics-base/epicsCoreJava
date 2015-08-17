@@ -28,7 +28,7 @@ public class NTScalarArrayBuilder
     /**
      * Set a value type of a NTScalarArray.
      * @param scalarType the value type.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder value(ScalarType scalarType)
     {
@@ -39,7 +39,7 @@ public class NTScalarArrayBuilder
 
     /**
      * Add descriptor field to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder addDescriptor()
     {
@@ -49,7 +49,7 @@ public class NTScalarArrayBuilder
 
     /**
      * Add alarm structure to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder addAlarm()
     {
@@ -59,7 +59,7 @@ public class NTScalarArrayBuilder
 
     /**
      * Add timeStamp structure to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder addTimeStamp()
     {
@@ -68,7 +68,7 @@ public class NTScalarArrayBuilder
     }
     /**
      * Add display structure to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder addDisplay()
     {
@@ -77,7 +77,7 @@ public class NTScalarArrayBuilder
     }
     /**
      * Add control structure to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder addControl()
     {
@@ -151,7 +151,7 @@ public class NTScalarArrayBuilder
      * Add extra <b>Field</b> to the type.
      * @param name name of the field.
      * @param field a field to add.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder add(String name, Field field) 
     {

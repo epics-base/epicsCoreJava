@@ -70,7 +70,7 @@ public class NTNDArrayBuilder
 
     /**
      * Add display structure to the NTNDArray.
-     * @return this instance of <b>NTNDArrayBuilder</b>.</b>.
+     * @return this instance of <b>NTNDArrayBuilder</b>.
      */
     public NTNDArrayBuilder addDisplay()
     {

@@ -27,7 +27,7 @@ public class NTScalarBuilder
     /**
      * Set a value type of an NTScalar.
      * @param scalarType the value type.
-     * @return this instance of <b>NTScalarBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder value(ScalarType scalarType)
     {
@@ -38,7 +38,7 @@ public class NTScalarBuilder
 
     /**
      * Add descriptor field to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder addDescriptor()
     {
@@ -48,7 +48,7 @@ public class NTScalarBuilder
 
     /**
      * Add alarm structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder addAlarm()
     {
@@ -58,7 +58,7 @@ public class NTScalarBuilder
 
     /**
      * Add timeStamp structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder addTimeStamp()
     {
@@ -68,7 +68,7 @@ public class NTScalarBuilder
 
     /**
      * Add display structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder addDisplay()
     {
@@ -78,7 +78,7 @@ public class NTScalarBuilder
 
     /**
      * Add control structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder addControl()
     {
@@ -152,7 +152,7 @@ public class NTScalarBuilder
      * Add extra <b>Field</b> to the type.
      * @param name name of the field.
      * @param field a field to add.
-     * @return this instance of <b>NTScalarBuilder</b>.</b>.
+     * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder add(String name, Field field) 
     {

@@ -27,7 +27,7 @@ public class NTMatrixBuilder
 {
     /**
      * Add descriptor field to the NTMatrix.
-     * @return this instance of <b>NTMatrixBuilder</b>.</b>.
+     * @return this instance of <b>NTMatrixBuilder</b>.
      */
     public NTMatrixBuilder addDescriptor()
     {

@@ -26,7 +26,7 @@ public class NTEnumBuilder
 {
     /**
      * Add descriptor field to the NTEnum.
-     * @return this instance of <b>NTEnumBuilder</b>.</b>.
+     * @return this instance of <b>NTEnumBuilder</b>.
      */
     public NTEnumBuilder addDescriptor()
     {
@@ -111,7 +111,7 @@ public class NTEnumBuilder
      * Add extra <b>Field</b> to the type.
      * @param name name of the field.
      * @param field a field to add.
-     * @return this instance of <b>NTEnumBuilder</b>.</b>.
+     * @return this instance of <b>NTEnumBuilder</b>.
      */
     public NTEnumBuilder add(String name, Field field) 
     {
