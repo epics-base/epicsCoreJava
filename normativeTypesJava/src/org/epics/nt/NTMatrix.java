@@ -33,14 +33,14 @@ public class NTMatrix
      * and if so returns a NTMatrix which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
-     * @param structure The structure to be wrapped.
+     * @param pvStructure The PVStructure to be wrapped.
      * @return NTMatrix instance on success, null otherwise.
      */
-    public static NTMatrix wrap(PVStructure structure)
+    public static NTMatrix wrap(PVStructure pvStructure)
     {
-        if (!isCompatible(structure))
+        if (!isCompatible(pvStructure))
             return null;
-        return wrapUnsafe(structure);
+        return wrapUnsafe(pvStructure);
     }
 
     /**

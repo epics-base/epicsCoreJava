@@ -32,14 +32,14 @@ public class NTScalarArray
      * and if so returns a NTScalarArray which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
-     * @param structure The structure to be wrapped.
+     * @param pvStructure The PVStructure to be wrapped.
      * @return NTScalarArray instance on success, null otherwise.
      */
-    public static NTScalarArray wrap(PVStructure structure)
+    public static NTScalarArray wrap(PVStructure pvStructure)
     {
-        if (!isCompatible(structure))
+        if (!isCompatible(pvStructure))
             return null;
-        return wrapUnsafe(structure);
+        return wrapUnsafe(pvStructure);
     }
 
     /**
