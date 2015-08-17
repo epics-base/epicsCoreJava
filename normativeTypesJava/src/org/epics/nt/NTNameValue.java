@@ -191,15 +191,6 @@ public class NTNameValue
     }
 
     /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */ 
-    public String toString()
-    {
-        return getPVStructure().toString();
-    }
-
-
-    /* (non-Javadoc)
 	 * @see org.epics.pvdata.nt.HasAlarm#attachAlarm(org.epics.pvdata.property.PVAlarm)
 	 */
     public boolean attachAlarm(PVAlarm pvAlarm)
@@ -209,6 +200,14 @@ public class NTNameValue
             return pvAlarm.attach(al);
         else
             return false;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */ 
+    public String toString()
+    {
+        return getPVStructure().toString();
     }
 
     /**

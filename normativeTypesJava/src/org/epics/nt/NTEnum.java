@@ -159,18 +159,6 @@ public class NTEnum
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#attachTimeStamp(org.epics.pvdata.property.PVTimeStamp)
-	 */
-    public boolean attachTimeStamp(PVTimeStamp pvTimeStamp)
-    {
-        PVStructure ts = getTimeStamp();
-        if (ts != null)
-            return pvTimeStamp.attach(ts);
-        else
-            return false;
-    }
-
-    /* (non-Javadoc)
 	 * @see org.epics.pvdata.nt.HasAlarm#attachAlarm(org.epics.pvdata.property.PVAlarm)
 	 */
     public boolean attachAlarm(PVAlarm pvAlarm)
@@ -178,6 +166,18 @@ public class NTEnum
         PVStructure al = getAlarm();
         if (al != null)
             return pvAlarm.attach(al);
+        else
+            return false;
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasTimeStamp#attachTimeStamp(org.epics.pvdata.property.PVTimeStamp)
+	 */
+    public boolean attachTimeStamp(PVTimeStamp pvTimeStamp)
+    {
+        PVStructure ts = getTimeStamp();
+        if (ts != null)
+            return pvTimeStamp.attach(ts);
         else
             return false;
     }

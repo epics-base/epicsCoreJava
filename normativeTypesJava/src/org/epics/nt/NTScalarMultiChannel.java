@@ -253,19 +253,19 @@ public class NTScalarMultiChannel
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
-	 */
-    public PVStructure getTimeStamp()
-    {
-        return pvTimeStamp;
-    }
-
-    /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
-	 */
+     * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
+     */
     public PVStructure getAlarm()
     {
         return pvAlarm;
+    }
+
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
+     */
+    public PVStructure getTimeStamp()
+    {
+        return pvTimeStamp;
     }
 
     /* (non-Javadoc)

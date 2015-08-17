@@ -42,7 +42,6 @@ public class NTScalar
         return wrapUnsafe(pvStructure);
     }
 
-
     /**
      * Creates an NTScalar wrapping the specified PVStructure, regardless of the latter's compatibility.
      *
@@ -120,16 +119,75 @@ public class NTScalar
         return new NTScalarBuilder();
     }
 
-    /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#attachTimeStamp(org.epics.pvdata.property.PVTimeStamp)
-	 */
-    public boolean attachTimeStamp(PVTimeStamp pvTimeStamp)
+    /**
+     * Get the pvStructure.
+     * @return PVStructure.
+     */
+    public PVStructure getPVStructure()
     {
-        PVStructure ts = getTimeStamp();
-        if (ts != null)
-            return pvTimeStamp.attach(ts);
-        else
-            return false;
+        return pvNTScalar;
+    }
+
+    /**
+     * Get the value field.
+     * @return The PVScalar for the values.
+     */
+    public PVScalar getValue()
+    {
+        return pvValue;
+    }
+
+    /* Get the value field of a specified type (e.g. PVDouble).
+     * @param c expected class of a requested field.
+     * @return The PVScalar or null if the subfield does not exist, or the field is not of <code>c</code> type.
+     */
+    public <T extends PVScalar> T getValue(Class<T> c)
+    {
+		if (c.isInstance(pvValue))
+			return c.cast(pvValue);
+		else
+			return null;
+    }
+
+    /**
+     * Get the descriptor field.
+     * @return The pvString or null if no function field.
+     */
+    public PVString getDescriptor()
+    {
+        return pvNTScalar.getSubField(PVString.class, "descriptor");
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
+	 */
+    public PVStructure getAlarm()
+    {
+       return pvNTScalar.getSubField(PVStructure.class, "alarm");
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
+	 */
+    public PVStructure getTimeStamp()
+    {
+        return pvNTScalar.getSubField(PVStructure.class, "timeStamp");
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.Has#getDisplay()
+	 */
+    public PVStructure getDisplay()
+    {
+       return pvNTScalar.getSubField(PVStructure.class, "display");
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasControl#getControl()
+	 */
+    public PVStructure getControl()
+    {
+       return pvNTScalar.getSubField(PVStructure.class, "control");
     }
 
     /* (non-Javadoc)
@@ -140,6 +198,18 @@ public class NTScalar
         PVStructure al = getAlarm();
         if (al != null)
             return pvAlarm.attach(al);
+        else
+            return false;
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasTimeStamp#attachTimeStamp(org.epics.pvdata.property.PVTimeStamp)
+	 */
+    public boolean attachTimeStamp(PVTimeStamp pvTimeStamp)
+    {
+        PVStructure ts = getTimeStamp();
+        if (ts != null)
+            return pvTimeStamp.attach(ts);
         else
             return false;
     }
@@ -166,77 +236,6 @@ public class NTScalar
             return pvControl.attach(ctrl);
         else
             return false;
-    }
-
-    /**
-     * Get the pvStructure.
-     * @return PVStructure.
-     */
-    public PVStructure getPVStructure()
-    {
-        return pvNTScalar;
-    }
-
-    /**
-     * Get the descriptor field.
-     * @return The pvString or null if no function field.
-     */
-    public PVString getDescriptor()
-    {
-        return pvNTScalar.getSubField(PVString.class, "descriptor");
-    }
-
-    /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
-	 */
-    public PVStructure getTimeStamp()
-    {
-        return pvNTScalar.getSubField(PVStructure.class, "timeStamp");
-    }
-
-    /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
-	 */
-    public PVStructure getAlarm()
-    {
-       return pvNTScalar.getSubField(PVStructure.class, "alarm");
-    }
-
-    /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.Has#getDisplay()
-	 */
-    public PVStructure getDisplay()
-    {
-       return pvNTScalar.getSubField(PVStructure.class, "display");
-    }
-
-    /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasControl#getControl()
-	 */
-    public PVStructure getControl()
-    {
-       return pvNTScalar.getSubField(PVStructure.class, "control");
-    }
-
-    /**
-     * Get the value field.
-     * @return The PVScalar for the values.
-     */
-    public PVScalar getValue()
-    {
-        return pvValue;
-    }
-
-    /* Get the value field of a specified type (e.g. PVDouble).
-     * @param c expected class of a requested field.
-     * @return The PVScalar or null if the subfield does not exist, or the field is not of <code>c</code> type.
-     */
-    public <T extends PVScalar> T getValue(Class<T> c)
-    {
-		if (c.isInstance(pvValue))
-			return c.cast(pvValue);
-		else
-			return null;
     }
 
     /* (non-Javadoc)

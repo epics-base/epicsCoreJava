@@ -309,8 +309,6 @@ public class NTMultiChannel
     }
 
     private PVStructure pvNTMultiChannel;
-    private PVStructure pvTimeStamp;
-    private PVStructure pvAlarm;
     private PVUnionArray pvValue;
     private PVStringArray pvChannelName;
     private PVBooleanArray pvIsConnected;
@@ -321,5 +319,7 @@ public class NTMultiChannel
     private PVIntArray pvNanoseconds;
     private PVIntArray pvUserTag;
     private PVString pvDescriptor;
+    private PVStructure pvAlarm;
+    private PVStructure pvTimeStamp;
 }
 
