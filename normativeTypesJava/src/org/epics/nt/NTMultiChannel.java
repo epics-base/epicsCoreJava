@@ -230,7 +230,7 @@ public class NTMultiChannel
         return pvIsConnected;
     }
 
-   /**
+    /**
      * Get the descriptor.
      * @return PVString which may be null.
      */
@@ -240,16 +240,16 @@ public class NTMultiChannel
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
-	 */
+     * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
+     */
     public PVStructure getAlarm()
     {
         return pvAlarm;
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
-	 */
+     * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
+     */
     public PVStructure getTimeStamp()
     {
         return pvTimeStamp;

@@ -139,14 +139,14 @@ public class NTScalarArray
 
     /* Get the value field of a specified type (e.g. PVDoubleArray).
      * @param c expected class of a requested field.
-     * @return The PVField or null if the subfield does not exist, or the field is not of <code>c</code> type.
+     * @return The PVScalarArray or null if the subfield does not exist, or the field is not of <code>c</code> type.
      */
     public <T extends PVScalarArray> T getValue(Class<T> c)
     {
-		if (c.isInstance(pvValue))
-			return c.cast(pvValue);
-		else
-			return null;
+        if (c.isInstance(pvValue))
+            return c.cast(pvValue);
+        else
+            return null;
     }
 
     /**
@@ -167,24 +167,24 @@ public class NTScalarArray
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
-	 */
+     * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
+     */
     public PVStructure getTimeStamp()
     {
         return pvNTScalarArray.getSubField(PVStructure.class, "timeStamp");
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.Has#getDisplay()
-	 */
+     * @see org.epics.pvdata.nt.Has#getDisplay()
+     */
     public PVStructure getDisplay()
     {
        return pvNTScalarArray.getSubField(PVStructure.class, "display");
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasControl#getControl()
-	 */
+      * @see org.epics.pvdata.nt.HasControl#getControl()
+      */
     public PVStructure getControl()
     {
        return pvNTScalarArray.getSubField(PVStructure.class, "control");
@@ -259,5 +259,4 @@ public class NTScalarArray
     private PVStructure pvNTScalarArray;
     private PVScalarArray pvValue;
 }
-
 

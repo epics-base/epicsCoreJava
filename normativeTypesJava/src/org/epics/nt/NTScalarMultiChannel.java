@@ -158,7 +158,6 @@ public class NTScalarMultiChannel
         return pvValue;
     }
 
-
     /* Get the value field of a specified type (e.g. PVDoubleArray).
      * @param c expected class of a requested field.
      * @return The PVField or null if the subfield does not exist, or the field is not of <code>c</code> type.
@@ -199,7 +198,7 @@ public class NTScalarMultiChannel
     }
 
     /**
-     * Get the message of each chnnel.
+     * Get the message of each channel.
      * @return PVStringArray which may be null.
      */
     public PVStringArray getMessage()

@@ -16,7 +16,7 @@ import org.epics.pvdata.property.PVTimeStamp;
 import org.epics.pvdata.property.PVAlarm;
 
 /**
- * Wrapper class for NTScalar
+ * Wrapper class for NTTable
  *
  * @author dgh
  */

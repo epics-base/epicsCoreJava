@@ -133,8 +133,6 @@ public class NTUnion
         return pvValue;
     }
 
-
-
    /**
      * Get the descriptor.
      * @return PVString which may be null.

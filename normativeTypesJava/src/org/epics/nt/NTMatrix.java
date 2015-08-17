@@ -128,7 +128,6 @@ public class NTMatrix
         return pvNTMatrix;
     }
 
-
     /**
      * Get the value field.
      * @return The PVDoubleArray for the values.
@@ -146,7 +145,6 @@ public class NTMatrix
     {
         return pvNTMatrix.getSubField(PVIntArray.class, "dim");
     }
-
 
     /**
      * Get the descriptor field.
