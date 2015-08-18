@@ -55,25 +55,24 @@ public class NTMatrixTest extends NTTestBase
 
     public static void testNTMatrix_BuilderCreated2()
     {
-        testNTMatrix_BuilderCreatedImpl(new String[] {"timeStamp"});
+        testNTMatrix_BuilderCreatedImpl(new String[] {"dim"});
     }
 
     public static void testNTMatrix_BuilderCreated3()
     {
-        testNTMatrix_BuilderCreatedImpl(
-            new String[] {"descriptor", "alarm", "timeStamp"} );
+        testNTMatrix_BuilderCreatedImpl(new String[] {"dim", "timeStamp"});
     }
 
     public static void testNTMatrix_BuilderCreated4()
     {
         testNTMatrix_BuilderCreatedImpl(
-            new String[] {"descriptor", "display", "timeStamp"} );
+            new String[] {"dim", "descriptor", "display", "timeStamp"} );
     }
 
     public static void testNTMatrix_BuilderCreated5()
     {
         testNTMatrix_BuilderCreatedImpl(
-            new String[] {"descriptor", "alarm", "display", "timeStamp"},
+            new String[] {"dim","descriptor", "alarm", "display", "timeStamp"},
             new String[] {"extra1"}, 
             new Field[]  { fieldCreate.createScalar(ScalarType.pvDouble)});
     }
@@ -252,7 +251,6 @@ public class NTMatrixTest extends NTTestBase
         Structure s = fieldCreate.createFieldBuilder().
             setId(NTMatrix.URI).
             addArray("value", ScalarType.pvDouble).
-            addArray("dim", ScalarType.pvInt).
             createStructure();
 
         NTMatrix ntmatrix = NTMatrix.wrap(dataCreate.createPVStructure(s));
@@ -283,7 +281,7 @@ public class NTMatrixTest extends NTTestBase
             addArray("extra", ScalarType.pvString).
             createStructure();
 
-        String[] standardFields = { "descriptor", "alarm",
+        String[] standardFields = { "dim", "descriptor", "alarm",
             "display", "timeStamp" };
         String[] extraNames = { "extra" };
         Field[] extraFields = { fieldCreate.createScalarArray(ScalarType.pvString) };
@@ -391,18 +389,11 @@ public class NTMatrixTest extends NTTestBase
         assertEquals(expected, NTMatrix.is_a(s));
     }
 
-
-
     public static void testStructureIsCompatibleImpl(Structure s, boolean expected)
     {
         PVStructure pvSt = dataCreate.createPVStructure(s);
         assertEquals(expected, NTMatrix.isCompatible(pvSt));
     }
-
-    /*private static void testNTMatrix_BuilderCreatedImpl()
-    {
-        testNTMatrix_BuilderCreatedImpl(new String[0], new String[0], new Field[0]);
-    }*/
 
     private static void testNTMatrix_BuilderCreatedImpl(String[] standardFields)
     {
@@ -421,6 +412,7 @@ public class NTMatrixTest extends NTTestBase
     private static NTMatrix createNTMatrix(String[] standardFields,
         String[] extraNames, Field[] extraFields)
     {
+        boolean hasDim        = find("dim", standardFields);
         boolean hasDescriptor = find("descriptor", standardFields);
         boolean hasTimeStamp  = find("timeStamp", standardFields);
         boolean hasAlarm      = find("alarm", standardFields);
@@ -429,6 +421,7 @@ public class NTMatrixTest extends NTTestBase
         // Create NTMatrix
         NTMatrixBuilder builder = NTMatrix.createBuilder();
 
+        if (hasDim) builder.addDim();
         if (hasDescriptor) builder.addDescriptor();
         if (hasTimeStamp) builder.addTimeStamp();
         if (hasAlarm) builder.addAlarm();
@@ -444,6 +437,7 @@ public class NTMatrixTest extends NTTestBase
         String[] standardFields, String[] extraNames, Field[] extraFields)
     {
         // parse optional fields
+        boolean hasDim        = find("dim", standardFields);
         boolean hasDescriptor = find("descriptor", standardFields);
         boolean hasTimeStamp  = find("timeStamp", standardFields);
         boolean hasAlarm      = find("alarm", standardFields);
@@ -454,6 +448,14 @@ public class NTMatrixTest extends NTTestBase
 		assertNotNull(pvValue);
 
 		// Test optional fields through NTMatrix interface
+
+        PVIntArray pvDim = ntmatrix.getDim();
+        if (hasDim)
+        {
+            assertNotNull(pvDim);
+        }
+        else
+            assertNull(pvDim);
 
         PVString pvDescriptor = ntmatrix.getDescriptor();
         if (hasDescriptor)

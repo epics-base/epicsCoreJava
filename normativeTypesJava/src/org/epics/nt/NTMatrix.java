@@ -86,10 +86,11 @@ public class NTMatrix
         PVDoubleArray pvValue = pvStructure.getSubField(PVDoubleArray.class, "value");
         if (pvValue == null) return false;
 
-        PVIntArray pvDim = pvStructure.getSubField(PVIntArray.class, "dim");
-        if (pvDim == null) return false;
+        PVField pvField = pvStructure.getSubField("dim");
+        if (pvField != null && pvStructure.getSubField(PVIntArray.class, "dim") == null)
+            return false;
 
-        PVField pvField = pvStructure.getSubField("descriptor");
+        pvField = pvStructure.getSubField("descriptor");
         if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
             return false;
 
@@ -138,7 +139,7 @@ public class NTMatrix
     }
 
     /**
-     * Get the value field.
+     * Get the dim field.
      * @return The PVIntArray for the values.
      */
     public PVIntArray getDim()

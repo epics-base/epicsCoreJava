@@ -26,6 +26,16 @@ import java.util.ArrayList;
 public class NTMatrixBuilder
 {
     /**
+     * Add dim field to the NTMatrix.
+     * @return this instance of <b>NTMatrixBuilder</b>.
+     */
+    public NTMatrixBuilder addDim()
+    {
+        dim = true;
+        return this;
+    }
+
+    /**
      * Add descriptor field to the NTMatrix.
      * @return this instance of <b>NTMatrixBuilder</b>.
      */
@@ -75,10 +85,12 @@ public class NTMatrixBuilder
         FieldBuilder builder =
             FieldFactory.getFieldCreate().createFieldBuilder().
                setId(NTMatrix.URI).
-               addArray("value", ScalarType.pvDouble).
-               addArray("dim", ScalarType.pvInt);
+               addArray("value", ScalarType.pvDouble);
 
         NTField ntField = NTField.get();
+
+        if (dim)
+           builder.addArray("dim", ScalarType.pvInt);
 
         if (descriptor)
             builder.add("descriptor", ScalarType.pvString);
@@ -142,6 +154,7 @@ public class NTMatrixBuilder
 
     private void reset()
     {
+        dim = false;
         descriptor = false;
         alarm = false;
         timeStamp = false;
@@ -150,6 +163,7 @@ public class NTMatrixBuilder
         extraFields.clear();
     }
 
+    private boolean dim;
     private boolean descriptor;
     private boolean alarm;
     private boolean timeStamp;
