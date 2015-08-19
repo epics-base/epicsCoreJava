@@ -163,7 +163,7 @@ public class NTNDArray
      * Get the value field.
      * @return The PVField for the values.
      */
-    PVUnion getValue()
+    public PVUnion getValue()
     {
         return pvNTNDArray.getSubField(PVUnion.class, "value");
     }
@@ -172,7 +172,7 @@ public class NTNDArray
      * Get the codec field.
      * @return the PVStructure.
      */
-    PVStructure getCodec()
+    public PVStructure getCodec()
     {
         return pvNTNDArray.getSubField(PVStructure.class, "codec");
     }
@@ -181,7 +181,7 @@ public class NTNDArray
      * Get the compressedDataSize field.
      * @return PVStructure.
      */
-    PVLong getCompressedDataSize()
+    public PVLong getCompressedDataSize()
     {
         return pvNTNDArray.getSubField(PVLong.class, "compressedSize");
     }
@@ -190,7 +190,7 @@ public class NTNDArray
      * Get the uncompressedDataSize field.
      * @return PVStructure.
      */
-    PVLong getUncompressedDataSize()
+    public PVLong getUncompressedDataSize()
     {
         return pvNTNDArray.getSubField(PVLong.class, "uncompressedSize");
     }
@@ -199,7 +199,7 @@ public class NTNDArray
      * Get the dimension field.
      * @return the PVStructure.
      */
-    PVStructureArray getDimension()
+    public PVStructureArray getDimension()
     {
         return pvNTNDArray.getSubField(PVStructureArray.class, "dimension");
     }
@@ -208,7 +208,7 @@ public class NTNDArray
      * Get the uniqueId field.
      * @return PVInt
      */
-    PVInt getUniqueId()
+    public PVInt getUniqueId()
     {
         return pvNTNDArray.getSubField(PVInt.class, "uniqueId");
     }
@@ -217,7 +217,7 @@ public class NTNDArray
      * Get the data timeStamp field.
      * @return PVStructure.
      */
-    PVStructure getDataTimeStamp()
+    public PVStructure getDataTimeStamp()
     {    
         return pvNTNDArray.getSubField(PVStructure.class, "dataTimeStamp");
     }
@@ -226,9 +226,9 @@ public class NTNDArray
      * Get the attribute field.
      * @return the PVStructure.
      */
-    PVStructureArray getAttribute()
+    public PVStructureArray getAttribute()
     {
-        return pvNTNDArray.getSubField(PVStructureArray.class, "dataTimeStamp");
+        return pvNTNDArray.getSubField(PVStructureArray.class, "attribute");
     }
 
     /**
