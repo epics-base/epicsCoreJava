@@ -74,6 +74,36 @@ public class NTScalarMultiChannel
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTScalarMultiChannel.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTScalarMultiChannel through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param structure The pvStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTScalarMultiChannel.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTScalarMultiChannel through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        // TODO implement through introspection interface
+        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
+            getPVDataCreate().createPVStructure(structure));
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTScalarMultiChannel.
      *
      * Checks whether the specified structure is compatible with this version
@@ -128,6 +158,18 @@ public class NTScalarMultiChannel
         if (pvField != null && pvStructure.getSubField(PVIntArray.class, "userTag")== null)
             return false;
 
+        return true;
+    }
+
+    /**
+     * Checks if the specified structure is a valid NTScalarMultiChannel.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTScalar
+     * @return (false,true) if (is not, is) a valid NTScalarMultiChannel.
+     */
+    public boolean isValid()
+    {
         return true;
     }
 

@@ -5,6 +5,9 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVScalar;
@@ -71,6 +74,66 @@ public class NTScalar
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTScalar.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTScalar through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param structure The pvStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTScalar.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTScalar.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTScalar through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTScalar.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        if (structure == null) return false;
+
+        Scalar valueField = structure.getField(Scalar.class, "value");
+        if (valueField == null)
+            return false;
+
+        Field field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        NTField ntField = NTField.get();
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        field = structure.getField("display");
+        if (field != null && !ntField.isDisplay(field))
+            return false;
+
+        field = structure.getField("control");
+        if (field != null && !ntField.isControl(field))
+            return false;
+
+        return true;
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTScalar.
      *
      * Checks whether the specified structure is compatible with this version
@@ -82,31 +145,18 @@ public class NTScalar
     {
         if (pvStructure == null) return false;
 
-        PVScalar pvValue = pvStructure.getSubField(PVScalar.class, "value");
-        if (pvValue == null) return false;
+        return isCompatible(pvStructure.getStructure());
+    }
 
-        PVField pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("display");
-        if(pvField != null && !ntField.isDisplay(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("control");
-        if (pvField != null && !ntField.isControl(pvField.getField()))
-            return false;
-
+    /**
+     * Checks if the specified structure is a valid NTScalar.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTScalar
+     * @return (false,true) if (is not, is) a valid NTScalar.
+     */
+    public boolean isValid()
+    {
         return true;
     }
 

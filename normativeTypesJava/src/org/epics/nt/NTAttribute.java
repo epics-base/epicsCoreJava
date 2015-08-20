@@ -74,6 +74,36 @@ public class NTAttribute
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTAttribute.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTAttribute through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param structure The pvStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTAttribute.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTAttribute.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTAttribute through introspection interface.
+     * @param structure The structure to test.
+     * @return (false,true) if (is not, is) a compatible NTAttribute.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        // TODO implement through introspection interface
+        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
+            getPVDataCreate().createPVStructure(structure));
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTAttribute.
      *
      * Checks whether the specified structure is compatible with this version
@@ -110,6 +140,18 @@ public class NTAttribute
         if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
             return false;
 
+        return true;
+    }
+
+    /**
+     * Checks if the specified structure is a valid NTAttribute.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTAttribute
+     * @return (false,true) if (is not, is) a valid NTAttribute.
+     */
+    public boolean isValid()
+    {
         return true;
     }
 

@@ -70,6 +70,36 @@ public class NTContinuum
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTContinuum.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTContinuum through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param structure The pvStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTContinuum.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTScalar.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTScalar through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTScalar.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        // TODO implement through introspection interface
+        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
+            getPVDataCreate().createPVStructure(structure));
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTContinuum.
      *
      * Checks whether the specified structure is compatible with this version
@@ -104,6 +134,18 @@ public class NTContinuum
         if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
             return false;
 
+        return true;
+    }
+
+    /**
+     * Checks if the specified structure is a valid NTScalar.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTScalar
+     * @return (false,true) if (is not, is) a valid NTScalar.
+     */
+    public boolean isValid()
+    {
         return true;
     }
 

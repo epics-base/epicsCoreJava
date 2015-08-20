@@ -72,6 +72,36 @@ public class NTUnion
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTUnion.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTUnion through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param structure The pvStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTUnion.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTUnion.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTUnion through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTUnion.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        // TODO implement through introspection interface
+        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
+            getPVDataCreate().createPVStructure(structure));
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTUnion.
      *
      * Checks whether the specified structure is compatible with this version
@@ -103,6 +133,19 @@ public class NTUnion
         if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
             return false;
 
+        return true;
+    }
+
+
+    /**
+     * Checks if the specified structure is a valid NTUnion.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTUnion
+     * @return (false,true) if (is not, is) a valid NTUnion.
+     */
+    public boolean isValid()
+    {
         return true;
     }
 

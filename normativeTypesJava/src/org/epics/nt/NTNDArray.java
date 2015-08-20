@@ -78,6 +78,36 @@ public class NTNDArray
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTNDArray.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTNDArray through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param structure The pvStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTNDArray.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTNDArray.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTNDArray through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTNDArray.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        // TODO implement through introspection interface
+        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
+            getPVDataCreate().createPVStructure(structure));
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTNDArray.
      *
      * Checks whether the specified structure is compatible with this version
@@ -130,6 +160,19 @@ public class NTNDArray
         if (pvField != null && !ntField.isControl(pvField.getField()))
             return false;
 
+        return true;
+    }
+
+
+    /**
+     * Checks if the specified structure is a valid NTNDArray.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTNDArray
+     * @return (false,true) if (is not, is) a valid NTNDArray.
+     */
+    public boolean isValid()
+    {
         return true;
     }
 

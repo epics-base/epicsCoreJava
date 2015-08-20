@@ -73,6 +73,36 @@ public class NTURI
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTURI.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTURI through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param structure The pvStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTURI.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTURI.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTURI through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTURI.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        // TODO implement through introspection interface
+        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
+            getPVDataCreate().createPVStructure(structure));
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTURI.
      *
      * Checks whether the specified structure is compatible with this version
@@ -119,6 +149,19 @@ public class NTURI
         else if (pvStructure.getSubField("query") != null)
             return false;
 
+        return true;
+    }
+
+
+    /**
+     * Checks if the specified structure is a valid NTURI.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTURI
+     * @return (false,true) if (is not, is) a valid NTURI.
+     */
+    public boolean isValid()
+    {
         return true;
     }
 
