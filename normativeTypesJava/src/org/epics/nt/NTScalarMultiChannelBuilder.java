@@ -128,14 +128,23 @@ public class NTScalarMultiChannelBuilder
     }
 
     /**
+     * Add isConnected array to the NTScalarMultiChannel.
+     * @return this instance of <b>NTScalarMultiChannelBuilder</b>.
+     */
+    public NTScalarMultiChannelBuilder addIsConnected()
+    {
+        isConnected = true;
+        return this;
+    }
+
+    /**
      * Create a <b>Structure</b> that represents NTScalarMultiChannel.
      * This resets this instance state and allows new instance to be created.
      * @return a new instance of a <b>Structure</b>.
      */
     public Structure createStructure()
     {
-        NTField ntField = NTField.get();
-        int nfields = 3;
+        int nfields = 2;
         int extraCount = extraFieldNames.size();
         nfields += extraCount;
         if(descriptor) ++nfields;
@@ -147,16 +156,16 @@ public class NTScalarMultiChannelBuilder
         if(secondsPastEpoch) ++nfields;
         if(nanoseconds) ++nfields;
         if(userTag) ++nfields;
+        if(isConnected) ++nfields;
         Field[] fields = new Field[nfields];
         String[] names = new String[nfields];
         int ind = 0;
         names[ind] = "value";
+        NTField ntField = NTField.get();
         FieldCreate fieldCreate = FieldFactory.getFieldCreate();
         fields[ind++] = fieldCreate.createScalarArray(valueType);
         names[ind] = "channelName";
-        fields[ind++] = fieldCreate.createScalarArray(ScalarType.pvString);
-        names[ind] = "isConnected";
-        fields[ind++] = fieldCreate.createScalarArray(ScalarType.pvBoolean);
+        fields[ind++] =  fieldCreate.createScalarArray(ScalarType.pvString);
         if(descriptor) {
             names[ind] = "descriptor";
             fields[ind++] = fieldCreate.createScalar(ScalarType.pvString);
@@ -192,6 +201,10 @@ public class NTScalarMultiChannelBuilder
         if(userTag) {
             names[ind] = "userTag";
             fields[ind++] = fieldCreate.createScalarArray(ScalarType.pvInt);
+        }
+        if(isConnected) {
+            names[ind] = "isConnected";
+            fields[ind++] = fieldCreate.createScalarArray(ScalarType.pvBoolean);
         }
         for (int i = 0; i< extraCount; i++) {
             names[ind] = extraFieldNames.get(i);
@@ -253,6 +266,9 @@ public class NTScalarMultiChannelBuilder
         secondsPastEpoch = false;
         nanoseconds = false;
         userTag = false;
+        // TODO When client code updated, don't include isConnected by default
+        // i.e. change line below to isConnected = false;
+        isConnected = true;
         extraFieldNames.clear();
         extraFields.clear();
     }
@@ -267,6 +283,7 @@ public class NTScalarMultiChannelBuilder
     private boolean secondsPastEpoch;
     private boolean nanoseconds;
     private boolean userTag;
+    private boolean isConnected;
 
     // NOTE: this preserves order, however it does not handle duplicates
     private ArrayList<String> extraFieldNames = new ArrayList<String>();

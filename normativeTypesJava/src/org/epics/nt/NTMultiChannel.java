@@ -265,7 +265,7 @@ public class NTMultiChannel
 
     /**
      * Get the connection state of each channel.
-     * @return PVBooleanArray
+     * @return PVBooleanArray, which may be null.
      */
     public PVBooleanArray getIsConnected()
     {
