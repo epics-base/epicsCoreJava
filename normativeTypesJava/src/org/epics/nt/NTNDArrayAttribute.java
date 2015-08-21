@@ -1,0 +1,156 @@
+/**
+ * Copyright - See the COPYRIGHT that is included with this distribution.
+ * EPICS pvData is distributed subject to a Software License Agreement found
+ * in file LICENSE that is included with this distribution.
+ */
+package org.epics.nt;
+
+import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVScalar;
+import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.PVString;
+import org.epics.pvdata.pv.PVStringArray;
+import org.epics.pvdata.pv.PVUnion;
+import org.epics.pvdata.property.PVTimeStamp;
+import org.epics.pvdata.property.PVAlarm;
+import org.epics.pvdata.property.PVDisplay;
+import org.epics.pvdata.property.PVControl;
+
+/**
+ * Wrapper class for NTAttribute extended as required by NTNDArray
+ *
+ * @author dgh
+ */
+public class NTNDArrayAttribute extends NTAttribute
+   implements HasAlarm, HasTimeStamp
+{
+
+    /**
+     * Creates an NTNDArrayAttribute wrapping the specified PVStructure if the latter is compatible.
+     *
+     * Checks the supplied structure is compatible with NTAttribute as extended
+     * by NTNDArray and if so returns a NTAttribute which wraps it.
+     * This method will return null if the structure is not compatible
+     * or is null.
+     * @param pvStructure The PVStructure to be wrapped.
+     * @return NTAttribute instance on success, null otherwise.
+     */
+    public static NTNDArrayAttribute wrap(PVStructure pvStructure)
+    {
+        if (!isCompatible(pvStructure))
+            return null;
+        return wrapUnsafe(pvStructure);
+    }
+
+    /**
+     * Creates an NTNDArrayAttribute wrapping the specified PVStructure, regardless of the latter's compatibility.
+     *
+     * No checks are made as to whether the specified PVStructure
+     * is compatible with NTAttribute or is non-null.
+     * @param pvStructure The PVStructure to be wrapped.
+     * @return NTAttribute instance.
+     */
+    public static NTNDArrayAttribute wrapUnsafe(PVStructure pvStructure)
+    {
+        return new NTNDArrayAttribute(pvStructure);
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTAttribute.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTAttribute through introspection interface.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTAttribute.
+     */
+    public static boolean isCompatible(PVStructure pvStructure)
+    {
+        if (!NTAttribute.isCompatible(pvStructure)) return false;
+
+        PVString pvDescription = pvStructure.getSubField(PVString.class, "descriptor");
+        if (pvDescription == null) return false;
+
+        PVInt pvSourceType = pvStructure.getSubField(PVInt.class, "sourceType");
+        if (pvSourceType == null) return false;
+
+        PVString pvSource = pvStructure.getSubField(PVString.class, "source");
+        if (pvSource == null) return false;
+
+        return true;
+    }
+
+    /**
+     * Create an NTNDArrayAttribute builder instance.
+     * @return builder instance.
+     */
+    public static NTNDArrayAttributeBuilder createBuilder()
+    {
+        return new NTNDArrayAttributeBuilder();
+    }
+
+    /**
+     * Get the pvStructure.
+     * @return PVStructure.
+     */
+    public PVStructure getPVStructure()
+    {
+        return pvNTAttribute;
+    }
+
+    /**
+     * Get the name field.
+     * @return The PVString for the name.
+     */
+    public PVString getSource()
+    {
+        return pvNTAttribute.getSubField(PVString.class, "source");
+    }
+
+    /**
+     * Get the namesourceType field.
+     * @return The PVInt for the name.
+     */
+    public PVInt getSourceType()
+    {
+        return pvNTAttribute.getSubField(PVInt.class, "sourceType");
+    }
+
+    /**
+     * Get the descriptor field.
+     * @return The PVString or null if no function field.
+     */
+    public PVString getDescriptor()
+    {
+        return pvNTAttribute.getSubField(PVString.class, "descriptor");
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
+	 */
+    public PVStructure getAlarm()
+    {
+       return pvNTAttribute.getSubField(PVStructure.class, "alarm");
+    }
+
+    /* (non-Javadoc)
+	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
+	 */
+    public PVStructure getTimeStamp()
+    {
+        return pvNTAttribute.getSubField(PVStructure.class, "timeStamp");
+    }
+
+    /**
+     * Constructor
+     * @param pvStructure The PVStructure to be wrapped.
+     */
+    NTNDArrayAttribute(PVStructure pvStructure)
+    {
+        super(pvStructure);
+    }
+
+}
+
+
