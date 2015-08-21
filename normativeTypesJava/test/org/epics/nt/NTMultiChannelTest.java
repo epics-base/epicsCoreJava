@@ -443,7 +443,7 @@ public class NTMultiChannelTest extends NTTestBase
             createStructure();
 
         Structure s2 = builder.
-             value(exampleRegularUnion()).
+            value(exampleRegularUnion()).
             addDescriptor().
             addTimeStamp().
             addAlarm().

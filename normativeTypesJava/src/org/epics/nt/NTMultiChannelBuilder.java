@@ -33,8 +33,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder value(Union value)
     {
-                valueType = value;
-                return this;
+        valueType = value;
+        return this;
     }
 
     /**
@@ -43,8 +43,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addDescriptor()
     {
-                descriptor = true;
-                return this;
+        descriptor = true;
+        return this;
     }
 
     /**
@@ -53,8 +53,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addAlarm()
     {
-                alarm = true;
-                return this;
+        alarm = true;
+        return this;
     }
 
     /**
@@ -63,8 +63,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addTimeStamp()
     {
-            timeStamp = true;
-            return this;
+        timeStamp = true;
+        return this;
     }
 
     /**
@@ -73,8 +73,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addSeverity()
     {
-            severity = true;
-            return this;
+        severity = true;
+        return this;
     }
 
     /**
@@ -83,10 +83,9 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addStatus()
     {
-            status = true;
-            return this;
+       status = true;
+        return this;
     }
-
 
     /**
      * Add message array to the NTMultiChannel.
@@ -94,8 +93,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addMessage()
     {
-            message = true;
-            return this;
+        message = true;
+        return this;
     }
 
     /**
@@ -104,8 +103,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addSecondsPastEpoch()
     {
-            secondsPastEpoch = true;
-            return this;
+        secondsPastEpoch = true;
+        return this;
     }
 
     /**
@@ -114,8 +113,8 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addNanoseconds()
     {
-            nanoseconds = true;
-            return this;
+        nanoseconds = true;
+        return this;
     }
 
     /**
@@ -208,7 +207,6 @@ public class NTMultiChannelBuilder
         return st;
     }
 
-
     /**
      * Create a <b>PVStructure</b> that represents NTMultiChannel.
      * This resets this instance state and allows new {@code instance to be created.}
@@ -237,9 +235,9 @@ public class NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder add(String name, Field field)
     {
-            extraFields.add(field);
-            extraFieldNames.add(name);
-            return this;
+        extraFields.add(field);
+        extraFieldNames.add(name);
+        return this;
     }
 
     NTMultiChannelBuilder() {}
