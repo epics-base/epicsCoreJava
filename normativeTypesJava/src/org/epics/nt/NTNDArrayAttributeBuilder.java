@@ -99,8 +99,7 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
             builder.add(extraFieldNames.get(i), extraFields.get(i));
 
         Structure s = builder.createStructure();
-System.out.println(s);
-System.out.println();
+
         reset();
         return s;
     }
