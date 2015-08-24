@@ -115,7 +115,7 @@ public class NTHistogram
         if (pvField != null && pvStructure.getSubField(PVDoubleArray.class, "ranges") == null)
             return false;
 
-        PVScalarArray pvValue = pvStructure.getSubField(PVDoubleArray.class, "value");
+        PVScalarArray pvValue = pvStructure.getSubField(PVScalarArray.class, "value");
         if (pvValue == null) return false;
         switch(pvValue.getScalarArray().getElementType())
         {
