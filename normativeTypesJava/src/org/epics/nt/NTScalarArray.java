@@ -145,8 +145,6 @@ public class NTScalarArray
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null) return false;
-
         return isCompatible(pvStructure.getStructure());
     }
 

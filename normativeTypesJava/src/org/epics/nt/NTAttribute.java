@@ -5,7 +5,12 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.Union;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVScalar;
@@ -98,9 +103,49 @@ public class NTAttribute
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        Scalar nameField = structure.getField(Scalar.class, "name");
+        if (nameField == null)
+            return false;
+
+        if (nameField.getScalarType() != ScalarType.pvString)
+            return false;
+
+        Union valueField = structure.getField(Union.class, "value");
+        if (valueField == null)
+            return false;
+
+       if (!valueField.isVariant())
+            return false;
+
+        Field field = structure.getField("tags");
+        if (field != null)
+        {
+            ScalarArray tagsField = structure.getField(ScalarArray.class, "tags");
+            if (tagsField == null || tagsField.getElementType() != ScalarType.pvString)
+                return false;
+        }
+
+        NTField ntField = NTField.get();
+
+        field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -113,34 +158,7 @@ public class NTAttribute
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null) return false;
-
-        PVString pvName = pvStructure.getSubField(PVString.class, "name");
-        if (pvName == null) return false;
-
-        PVUnion pvValue = pvStructure.getSubField(PVUnion.class, "value");
-        if (pvValue == null) return false;
-
-        if (!pvValue.getUnion().isVariant()) return false;
-
-        PVField pvField = pvStructure.getSubField("tags");
-        if (pvField != null && pvStructure.getSubField(PVStringArray.class, "tags") == null) return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
 
     /**

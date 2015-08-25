@@ -5,7 +5,11 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.Union;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVScalar;
@@ -96,9 +100,31 @@ public class NTUnion
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        Union valueField = structure.getField(Union.class,"value");
+        if (valueField == null)
+            return false;
+
+        NTField ntField = NTField.get();
+
+        Field field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -111,31 +137,8 @@ public class NTUnion
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null)
-            return false;
-
-        PVUnion pvValue = pvStructure.getSubField(PVUnion.class, "value");
-
-        if (pvValue== null)
-            return false;
-
-        PVField pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
-
 
     /**
      * Checks if the specified structure is a valid NTUnion.

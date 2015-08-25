@@ -5,6 +5,10 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDoubleArray;
@@ -94,9 +98,44 @@ public class NTHistogram
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        ScalarArray rangesField = structure.getField(ScalarArray.class, "ranges");
+        if (rangesField == null)
+            return false;
+
+        if (rangesField.getElementType() != ScalarType.pvDouble)
+            return false;
+
+        ScalarArray valueField = structure.getField(ScalarArray.class, "value");
+        if (valueField == null)
+            return false;
+
+        ScalarType scalarType = valueField.getElementType();
+        if (scalarType != ScalarType.pvShort &&
+            scalarType != ScalarType.pvInt &&
+            scalarType != ScalarType.pvLong)
+            return false;
+
+        NTField ntField = NTField.get();
+
+        Field field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -109,41 +148,8 @@ public class NTHistogram
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null) return false;
-
-        PVField pvField = pvStructure.getSubField("ranges");
-        if (pvField != null && pvStructure.getSubField(PVDoubleArray.class, "ranges") == null)
-            return false;
-
-        PVScalarArray pvValue = pvStructure.getSubField(PVScalarArray.class, "value");
-        if (pvValue == null) return false;
-        switch(pvValue.getScalarArray().getElementType())
-        {
-        case pvShort:
-        case pvInt:
-        case pvLong:
-            break;
-        default:
-            return false;
-        }
-
-        pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
-
 
     /**
      * Checks if the specified structure is a valid NTHistogram.

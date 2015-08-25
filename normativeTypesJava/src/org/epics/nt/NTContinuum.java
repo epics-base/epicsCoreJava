@@ -5,6 +5,10 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDoubleArray;
@@ -94,9 +98,48 @@ public class NTContinuum
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        ScalarArray baseField = structure.getField(ScalarArray.class, "base");
+        if (baseField == null)
+            return false;
+
+        if (baseField.getElementType() != ScalarType.pvDouble)
+            return false;
+
+        ScalarArray valueField = structure.getField(ScalarArray.class, "value");
+        if (valueField == null)
+            return false;
+
+        if (valueField.getElementType() != ScalarType.pvDouble)
+            return false;
+
+        ScalarArray unitsField = structure.getField(ScalarArray.class, "units");
+        if (unitsField == null)
+            return false;
+
+        if (unitsField.getElementType() != ScalarType.pvString)
+            return false;
+
+        NTField ntField = NTField.get();
+
+        Field field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -109,32 +152,7 @@ public class NTContinuum
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null) return false;
-
-        PVDoubleArray pvBase = pvStructure.getSubField(PVDoubleArray.class, "base");
-        if (pvBase == null) return false;
-
-        PVDoubleArray pvValue = pvStructure.getSubField(PVDoubleArray.class, "value");
-        if (pvValue == null) return false;
-
-        PVStringArray pvUnits = pvStructure.getSubField(PVStringArray.class, "units");
-        if (pvUnits == null) return false;
-
-        PVField pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
 
     /**

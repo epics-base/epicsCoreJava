@@ -5,6 +5,10 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDoubleArray;
@@ -72,6 +76,74 @@ public class NTMatrix
     }
 
     /**
+     * Checks if the specified structure reports to be a compatible NTMatrix.
+     *
+     * Checks whether the specified structure reports compatibility with this
+     * version of NTMatrix through type ID, including checking version numbers.
+     * The return value does not depend on whether the structure is actually
+     * compatible in terms of its introspection type
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTMatrix.
+     */
+    public static boolean is_a(PVStructure pvStructure)
+    {
+        return is_a(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTMatrix.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTMatrix through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTMatrix.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        if (structure == null) return false;
+
+        ScalarArray valueField = structure.getField(ScalarArray.class, "value");
+        if (valueField == null)
+            return false;
+
+        ScalarType scalarType = valueField.getElementType();
+        if (scalarType != ScalarType.pvDouble)
+            return false;
+
+        Field field = structure.getField("dim");
+        if (field != null)
+        {
+            ScalarArray dimField = structure.getField(ScalarArray.class, "dim");
+            if (dimField == null || dimField.getElementType() != ScalarType.pvInt)
+                return false;
+        }
+
+        NTField ntField = NTField.get();
+
+        field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        field = structure.getField("display");
+        if (field != null && !ntField.isDisplay(field))
+            return false;
+
+        return true;
+    }
+
+    /**
      * Checks if the specified structure is compatible with NTMatrix.
      *
      * Checks whether the specified structure is compatible with this version
@@ -81,34 +153,7 @@ public class NTMatrix
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null) return false;
-
-        PVDoubleArray pvValue = pvStructure.getSubField(PVDoubleArray.class, "value");
-        if (pvValue == null) return false;
-
-        PVField pvField = pvStructure.getSubField("dim");
-        if (pvField != null && pvStructure.getSubField(PVIntArray.class, "dim") == null)
-            return false;
-
-        pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("display");
-        if(pvField != null && !ntField.isDisplay(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
 
     /**

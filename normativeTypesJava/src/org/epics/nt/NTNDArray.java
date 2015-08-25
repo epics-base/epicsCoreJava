@@ -5,6 +5,12 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.StructureArray;
+import org.epics.pvdata.pv.Union;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Union;
 import org.epics.pvdata.pv.PVField;
@@ -102,9 +108,107 @@ public class NTNDArray
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        Union valueField = structure.getField(Union.class,"value");
+        if (valueField == null)
+            return false;
+
+        // TODO: Do this without converting to string
+        String valueTypeStr = NTNDArrayBuilder.getValueType().
+            toString();
+
+        if (!valueField.toString().equals(valueTypeStr))
+            return false;
+
+
+        Structure codecField = structure.getField(Structure.class, "codec");
+
+        if(!codecField.getID().equals("codec_t")) return false;
+
+        // TODO: Do this without converting to string
+        String codecStrucStr = NTNDArrayBuilder.getCodecStructure().
+            toString();
+
+        if (!codecField.toString().equals(codecStrucStr))
+            return false;
+
+
+        Scalar compressedSizeField = structure.getField(Scalar.class, "compressedSize");
+        if (compressedSizeField == null)
+            return false;
+
+        if (compressedSizeField.getScalarType() != ScalarType.pvLong)
+            return false;
+
+
+        Scalar uncompressedSizeField = structure.getField(Scalar.class, "uncompressedSize");
+        if (uncompressedSizeField == null)
+            return false;
+
+        if (uncompressedSizeField.getScalarType() != ScalarType.pvLong)
+            return false;
+
+
+        StructureArray dimensionField = structure.getField(StructureArray.class, "dimension");
+
+        Structure dimElementStruc = dimensionField.getStructure();
+
+        if(!dimElementStruc.getID().equals("dimension_t"))
+            return false;
+
+        // TODO: Do this without converting to string
+        String dimensionStrucStr = NTNDArrayBuilder.
+             getDimensionStructure().toString();
+
+        if (!dimElementStruc.toString().equals(dimensionStrucStr))
+            return false;
+
+
+        NTField ntField = NTField.get();
+
+        Structure dataTimeStampField = structure.getField(Structure.class,
+            "dataTimeStamp");
+        if (dataTimeStampField == null || !ntField.isTimeStamp(dataTimeStampField))
+            return false;
+
+
+        Scalar uniqueIdField = structure.getField(Scalar.class, "uniqueId");
+        if (uniqueIdField == null)
+            return false;
+
+        if (uniqueIdField.getScalarType() != ScalarType.pvInt)
+            return false;
+
+
+        StructureArray attributeField = structure.getField(StructureArray.class, "attribute");
+
+        Structure attributeElementStruc = attributeField.getStructure();
+
+        if (!NTNDArrayAttribute.isCompatible(attributeElementStruc))
+            return false;
+
+        Field field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+            return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        field = structure.getField("display");
+        if (field != null && !ntField.isDisplay(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -117,52 +221,8 @@ public class NTNDArray
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        NTField ntField = NTField.get();
-
-        if (pvStructure == null) return false;
-        PVUnion pvValue = pvStructure.getSubField(PVUnion.class, "value");
-        if (pvValue == null) return false;
-
-        PVField pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        if(pvStructure.getSubField(PVLong.class, "compressedSize") == null) return false;
-        if(pvStructure.getSubField(PVLong.class, "uncompressedSize") == null) return false;
-        PVStructure pvCodec = pvStructure.getSubField(PVStructure.class, "codec");
-        if(pvCodec == null) return false;
-        if(pvCodec.getSubField(PVString.class, "name")== null) return false;
-        if(pvCodec.getSubField(PVUnion.class, "parameters")== null) return false;
-        PVStructureArray pvDimension = pvStructure.getSubField(PVStructureArray.class, "dimension");
-        if(!pvDimension.getStructureArray().getStructure().getID().equals("dimension_t")) return false;
-        if(pvStructure.getSubField(PVInt.class, "uniqueId") == null) return false;
-        pvField = pvStructure.getSubField("dataTimeStamp");
-        if(pvField != null && !ntField.isTimeStamp(pvField.getField())) return false;
-        PVStructureArray pvAttribute = pvStructure.
-            getSubField(PVStructureArray.class, "attribute");
-        if(pvAttribute == null) return false;
-        if(!pvAttribute.getStructureArray().getStructure().
-            getID().equals(NTNDArray.NTAttributeURI)) return false;
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("display");
-        if(pvField != null && !ntField.isDisplay(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("control");
-        if (pvField != null && !ntField.isControl(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
-
 
     /**
      * Checks if the specified structure is a valid NTNDArray.

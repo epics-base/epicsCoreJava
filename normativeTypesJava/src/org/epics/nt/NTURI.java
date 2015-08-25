@@ -95,7 +95,7 @@ public class NTURI
      * @param structure The Structure to test.
      * @return (false,true) if (is not, is) a compatible NTURI.
      */
-    public static boolean isCompatible(Structure structure)
+    public static boolean isCompatible2(Structure structure)
     {
         // TODO implement through introspection interface
         return isCompatible(org.epics.pvdata.factory.PVDataFactory.
@@ -107,29 +107,46 @@ public class NTURI
      *
      * Checks whether the specified structure is compatible with this version
      * of NTURI through introspection interface.
-     * @param pvStructure The PVStructure to test.
+     * @param structure The Structure to test.
      * @return (false,true) if (is not, is) a compatible NTURI.
      */
-    public static boolean isCompatible(PVStructure pvStructure)
+    public static boolean isCompatible(Structure structure)
     {
-        if (pvStructure == null) return false;
+        if (structure == null) return false;
 
-        PVString pvScheme = pvStructure.getSubField(PVString.class, "scheme");
-        if (pvScheme == null) return false;
+        Scalar schemeField = structure.getField(Scalar.class, "scheme");
+        if (schemeField == null)
+            return false;
 
-        if (pvStructure.getSubField("authority") != null &&
-            pvStructure.getSubField(PVString.class, "authority") == null)
- return false;
+        if (schemeField.getScalarType() != ScalarType.pvString)
+            return false;
 
-        PVString pvPath = pvStructure.getSubField(PVString.class, "path");
-        if (pvPath == null) return false;
 
-        PVStructure pvQuery = pvStructure.getSubField(PVStructure.class, "query");
-        if (pvQuery != null)
+        Scalar pathField = structure.getField(Scalar.class, "path");
+        if (pathField == null)
+            return false;
+
+        if (pathField.getScalarType() != ScalarType.pvString)
+            return false;
+
+        Field field = structure.getField("authority");
+        if (field != null)
         {
+            Scalar authorityField = structure.getField(Scalar.class, "authority");
+            if (authorityField == null || authorityField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("query");
+        if (field != null)
+        {
+            Structure queryField = structure.getField(Structure.class, "query");
+            if (queryField == null)
+                return false;
+
             try {
                 // check fields are scalars and int/double/string
-                Field[] queryFields = pvQuery.getStructure().getFields();
+                Field[] queryFields = queryField.getFields();
                 for (Field f : queryFields)
                 {
                     ScalarType t = ((Scalar)f).getScalarType();
@@ -144,14 +161,24 @@ public class NTURI
                     }
                 }
             }
-            catch (ClassCastException e) { return false; }
+            catch (ClassCastException e) { return false; }            
         }
-        else if (pvStructure.getSubField("query") != null)
-            return false;
 
         return true;
     }
 
+    /**
+     * Checks if the specified structure is compatible with NTURI.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTURI through introspection interface.
+     * @param pvStructure The PVStructure to test.
+     * @return (false,true) if (is not, is) a compatible NTURI.
+     */
+    public static boolean isCompatible(PVStructure pvStructure)
+    {
+        return isCompatible(pvStructure.getStructure());
+    }
 
     /**
      * Checks if the specified structure is a valid NTURI.

@@ -5,6 +5,8 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
@@ -62,23 +64,48 @@ public class NTNDArrayAttribute extends NTAttribute
      *
      * Checks whether the specified structure is compatible with this version
      * of NTAttribute through introspection interface.
+     * @param structure The Structure to test.
+     * @return (false,true) if (is not, is) a compatible NTAttribute.
+     */
+    public static boolean isCompatible(Structure structure)
+    {
+        if (!NTAttribute.isCompatible(structure)) return false;
+
+        Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+        if (descriptorField == null)
+            return false;
+
+        if (descriptorField.getScalarType() != ScalarType.pvString)
+            return false;
+
+        Scalar sourceField = structure.getField(Scalar.class, "source");
+        if (sourceField == null)
+            return false;
+
+        if (sourceField.getScalarType() != ScalarType.pvString)
+            return false;
+
+        Scalar sourceTypeField = structure.getField(Scalar.class, "sourceType");
+        if (sourceTypeField == null)
+            return false;
+
+        if (sourceTypeField.getScalarType() != ScalarType.pvInt)
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Checks if the specified structure is compatible with NTAttribute.
+     *
+     * Checks whether the specified structure is compatible with this version
+     * of NTAttribute through introspection interface.
      * @param pvStructure The PVStructure to test.
      * @return (false,true) if (is not, is) a compatible NTAttribute.
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (!NTAttribute.isCompatible(pvStructure)) return false;
-
-        PVString pvDescription = pvStructure.getSubField(PVString.class, "descriptor");
-        if (pvDescription == null) return false;
-
-        PVInt pvSourceType = pvStructure.getSubField(PVInt.class, "sourceType");
-        if (pvSourceType == null) return false;
-
-        PVString pvSource = pvStructure.getSubField(PVString.class, "source");
-        if (pvSource == null) return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
 
     /**

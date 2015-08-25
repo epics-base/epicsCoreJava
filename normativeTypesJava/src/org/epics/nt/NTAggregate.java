@@ -5,7 +5,12 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.Type;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDouble;
 import org.epics.pvdata.pv.PVLong;
@@ -94,9 +99,81 @@ public class NTAggregate
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        Scalar valueField = structure.getField(Scalar.class, "value");
+        if (valueField == null)
+            return false;
+
+       if (valueField.getScalarType() != ScalarType.pvDouble)
+            return false;
+
+        Scalar nField = structure.getField(Scalar.class, "N");
+        if (nField == null)
+            return false;
+
+        if (nField.getScalarType() != ScalarType.pvLong)
+            return false;
+
+        Field field = structure.getField("first");
+        if (field != null)
+        {
+            Scalar firstField = structure.getField(Scalar.class, "first");
+            if (firstField == null || firstField.getScalarType() != ScalarType.pvDouble)
+                return false;
+        }
+
+        NTField ntField = NTField.get();
+
+        field = structure.getField("firstTimeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        field = structure.getField("last");
+        if (field != null)
+        {
+            Scalar lastField = structure.getField(Scalar.class, "last");
+            if (lastField == null || lastField.getScalarType() != ScalarType.pvDouble)
+                return false;
+        }
+
+        field = structure.getField("lastTimeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        field = structure.getField("max");
+        if (field != null)
+        {
+            Scalar maxField = structure.getField(Scalar.class, "max");
+            if (maxField == null || maxField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("min");
+        if (field != null)
+        {
+            Scalar minField = structure.getField(Scalar.class, "min");
+            if (minField == null || minField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -109,53 +186,7 @@ public class NTAggregate
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null) return false;
-
-        PVDouble pvValue = pvStructure.getSubField(PVDouble.class, "value");
-        if (pvValue == null) return false;
-
-        PVLong pvLong = pvStructure.getSubField(PVLong.class, "N");
-        if (pvLong == null) return false;
-
-        if (pvStructure.getSubField("dispersion") != null &&
-            pvStructure.getSubField(PVDouble.class, "dispersion") == null)
- return false;
-
-        NTField ntField = NTField.get();
-
-        if (pvStructure.getSubField("first") != null &&
-            pvStructure.getSubField(PVDouble.class, "first") == null)
- return false;
-
-        PVField pvField = pvStructure.getSubField("firstTimeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
- return false;
-
-        if (pvStructure.getSubField("last") != null &&
-            pvStructure.getSubField(PVDouble.class, "last") == null)
- return false;
-
-        pvField = pvStructure.getSubField("lastTimeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
- return false;
-
-        if (pvStructure.getSubField("max") != null &&
-            pvStructure.getSubField(PVDouble.class, "max") == null)
- return false;
-
-        pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
 
     /**

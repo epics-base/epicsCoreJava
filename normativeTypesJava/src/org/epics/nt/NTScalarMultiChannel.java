@@ -5,6 +5,11 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVBooleanArray;
@@ -98,9 +103,90 @@ public class NTScalarMultiChannel
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        ScalarArray valueField = structure.getField(ScalarArray.class,
+            "value");
+
+        if (valueField == null)
+            return false;
+
+        ScalarArray channelNameField = structure.getField(ScalarArray.class,
+            "channelName");
+
+        if (channelNameField == null)
+            return false;
+
+        if (channelNameField.getElementType() != ScalarType.pvString)
+            return false;
+
+        NTField ntField = NTField.get();
+
+        Field field = structure.getField("severity");
+        if (field != null)
+        {
+            ScalarArray severityField = structure.getField(ScalarArray.class, "severity");
+            if (severityField == null || severityField.getElementType() != ScalarType.pvInt)
+                return false;
+        }
+
+        field = structure.getField("status");
+        if (field != null)
+        {
+            ScalarArray statusField = structure.getField(ScalarArray.class, "status");
+            if (statusField == null || statusField.getElementType() != ScalarType.pvInt)
+                return false;
+        }
+
+        field = structure.getField("message");
+        if (field != null)
+        {
+            ScalarArray messageField = structure.getField(ScalarArray.class, "message");
+            if (messageField == null || messageField.getElementType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("secondsPastEpoch");
+        if (field != null)
+        {
+            ScalarArray secondsPastEpochField = structure.getField(ScalarArray.class, "secondsPastEpoch");
+            if (secondsPastEpochField == null || secondsPastEpochField.getElementType() != ScalarType.pvLong)
+                return false;
+        }
+
+        field = structure.getField("nanoseconds");
+        if (field != null)
+        {
+            ScalarArray nanosecondsField = structure.getField(ScalarArray.class, "nanoseconds");
+            if (nanosecondsField == null || nanosecondsField.getElementType() != ScalarType.pvInt)
+                return false;
+        }
+
+        field = structure.getField("userTag");
+        if (field != null)
+        {
+            ScalarArray userTagField = structure.getField(ScalarArray.class, "userTag");
+            if (userTagField == null || userTagField.getElementType() != ScalarType.pvInt)
+                return false;
+        }
+
+        field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -113,56 +199,7 @@ public class NTScalarMultiChannel
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null)
-            return false;
-
-        PVScalarArray pvValue = pvStructure.getSubField(PVScalarArray.class, "value");
-        if (pvValue== null)
-            return false;
-
-        PVStringArray pvChannelName = pvStructure.getSubField(PVStringArray.class, "channelName");
-        if (pvChannelName == null)
-            return false;
-
-        PVField pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor")== null)
-            return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("severity");
-        if (pvField != null && pvStructure.getSubField(PVIntArray.class, "severity")== null)
-            return false;
-
-        pvField = pvStructure.getSubField("status");
-        if (pvField != null && pvStructure.getSubField(PVIntArray.class, "status") == null)
-            return false;
-
-        pvField = pvStructure.getSubField("message");
-        if (pvField != null && pvStructure.getSubField(PVStringArray.class, "message")== null)
-            return false;
-
-        pvField = pvStructure.getSubField("secondsPastEpoch");
-        if (pvField != null && pvStructure.getSubField(PVLongArray.class, "secondsPastEpoch")== null)
-            return false;
-
-        pvField = pvStructure.getSubField("nanoseconds");
-        if (pvField != null && pvStructure.getSubField(PVIntArray.class, "nanoseconds")== null)
-            return false;
-
-        pvField = pvStructure.getSubField("userTag");
-        if (pvField != null && pvStructure.getSubField(PVIntArray.class, "userTag")== null)
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
 
     /**
