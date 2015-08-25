@@ -6,6 +6,7 @@
 package org.epics.nt;
 
 import junit.framework.TestCase;
+import org.junit.Assert;
 
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldBuilder;
@@ -16,14 +17,17 @@ import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVIntArray;
 import org.epics.pvdata.pv.PVLong;
-import org.epics.pvdata.pv.PVULong;
+import org.epics.pvdata.pv.PVLongArray;
 import org.epics.pvdata.pv.PVScalarArray;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVScalar;
+import org.epics.pvdata.pv.StringArrayData;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.property.*;
@@ -67,7 +71,7 @@ public class NTTableTest extends NTTestBase
             new String[] {"descriptor", "alarm"} );
     }
 
-    public static void testNTTable_BuilderCreated5()
+    public static void testNTTable_BuilderCreated4()
     {
         testNTTable_BuilderCreatedImpl(exampleColumnNames, exampleTypes,
            exampleLabels, 
@@ -186,8 +190,7 @@ public class NTTableTest extends NTTestBase
             fieldCreate.createFieldBuilder().
                 setId(NTTable.URI).
                 addArray("labels", ScalarType.pvString).
-                addArray("x", ScalarType.pvDouble).
-                addArray("y", ScalarType.pvDouble).
+                add("value", badExampleColumns).
                 createStructure(),
             false);
     }
@@ -280,7 +283,6 @@ public class NTTableTest extends NTTestBase
             new String[0], new Field[0]);      // extra fields
     }
 
-
     public static void testWrappedNTTable2()
     {
         Structure s = fieldCreate.createFieldBuilder().
@@ -319,6 +321,96 @@ public class NTTableTest extends NTTestBase
             exampleLabels,
             standardFields, extraNames,extraFields);
     }
+
+
+    public static void testStructureIsValid1()
+    {
+        NTTable nttable = NTTable.createBuilder().
+            addColumns(exampleColumnNames, exampleTypes).
+            create();
+
+        setLabels(nttable, exampleLabels);
+
+        nttable.getColumn(PVDoubleArray.class, "value").put(0, 3, exampleVals, 0);
+        nttable.getColumn(PVIntArray.class, "severity").put(0, 3, exampleSevs, 0);
+        nttable.getColumn(PVIntArray.class, "status").put(0, 3, exampleStats, 0);
+        nttable.getColumn(PVLongArray.class, "secondsPastEpoch").put(0, 3, exampleSecs, 0);
+        nttable.getColumn(PVIntArray.class, "nanoseconds").put(0, 3, exampleNsecs, 0);
+
+        assertTrue(nttable.isValid());
+    }
+
+    public static void testStructureIsValid2a1()
+    {
+        NTTable nttable = NTTable.createBuilder().
+            addColumns(exampleColumnNames, exampleTypes).
+            create();
+
+        setLabels(nttable, exampleLabels);
+
+        nttable.getColumn(PVDoubleArray.class, "value").put(0, 2, exampleVals, 0);
+        nttable.getColumn(PVIntArray.class, "severity").put(0, 3, exampleSevs, 0);
+        nttable.getColumn(PVIntArray.class, "status").put(0, 3, exampleStats, 0);
+        nttable.getColumn(PVLongArray.class, "secondsPastEpoch").put(0, 3, exampleSecs, 0);
+        nttable.getColumn(PVIntArray.class, "nanoseconds").put(0, 3, exampleNsecs, 0);
+
+        assertFalse(nttable.isValid());
+    }
+
+    public static void testStructureIsValid2a2()
+    {
+        NTTable nttable = NTTable.createBuilder().
+            addColumns(exampleColumnNames, exampleTypes).
+            create();
+
+        setLabels(nttable, exampleLabels);
+
+        nttable.getColumn(PVDoubleArray.class, "value").put(0, 3, exampleVals, 0);
+        nttable.getColumn(PVIntArray.class, "severity").put(0, 2, exampleSevs, 0);
+        nttable.getColumn(PVIntArray.class, "status").put(0, 3, exampleStats, 0);
+        nttable.getColumn(PVLongArray.class, "secondsPastEpoch").put(0, 3, exampleSecs, 0);
+        nttable.getColumn(PVIntArray.class, "nanoseconds").put(0, 3, exampleNsecs, 0);
+
+        assertFalse(nttable.isValid());
+    }
+
+    public static void testStructureIsValid2b1()
+    {
+        NTTable nttable = NTTable.createBuilder().
+            addColumns(exampleColumnNames, exampleTypes).
+            create();
+
+        String[] labels = java.util.Arrays.copyOfRange(exampleLabels, 0, exampleLabels.length-1);
+        setLabels(nttable, labels);
+
+        nttable.getColumn(PVDoubleArray.class, "value").put(0, 3, exampleVals, 0);
+        nttable.getColumn(PVIntArray.class, "severity").put(0, 3, exampleSevs, 0);
+        nttable.getColumn(PVIntArray.class, "status").put(0, 3, exampleStats, 0);
+        nttable.getColumn(PVLongArray.class, "secondsPastEpoch").put(0, 3, exampleSecs, 0);
+        nttable.getColumn(PVIntArray.class, "nanoseconds").put(0, 3, exampleNsecs, 0);
+
+        assertFalse(nttable.isValid());
+    }
+
+    public static void testStructureIsValid2b2()
+    {
+        NTTable nttable = NTTable.createBuilder().
+            addColumns(exampleColumnNames, exampleTypes).
+            create();
+
+        String[] labels = java.util.Arrays.copyOfRange(exampleLabels, 0, exampleLabels.length+1);
+        labels[labels.length-1] = "Exta label";
+        setLabels(nttable, labels);
+
+        nttable.getColumn(PVDoubleArray.class, "value").put(0, 3, exampleVals, 0);
+        nttable.getColumn(PVIntArray.class, "severity").put(0, 3, exampleSevs, 0);
+        nttable.getColumn(PVIntArray.class, "status").put(0, 3, exampleStats, 0);
+        nttable.getColumn(PVLongArray.class, "secondsPastEpoch").put(0, 3, exampleSecs, 0);
+        nttable.getColumn(PVIntArray.class, "nanoseconds").put(0, 3, exampleNsecs, 0);
+
+        assertFalse(nttable.isValid());
+    }
+
 
     // test attaching timeStamps
 
@@ -466,14 +558,16 @@ public class NTTableTest extends NTTestBase
         NTTable nttable = createNTTable(columnNames, scalarTypes,
             standardFields,extraNames,extraFields);
 
-        ntTableChecks(nttable, columnNames, scalarTypes, labels,
+        ntTableChecks(nttable, columnNames, scalarTypes, columnNames,
             standardFields,extraNames,extraFields);
 
-        NTTable nttable2 = createNTTable2(columnNames, scalarTypes,
-            standardFields,extraNames,extraFields);
+        if (labels != null)
+        {
+            setLabels(nttable, labels);
 
-        ntTableChecks(nttable2, columnNames, scalarTypes, labels,
-            standardFields,extraNames,extraFields);        
+            ntTableChecks(nttable, columnNames, scalarTypes, labels,
+                standardFields,extraNames,extraFields);
+        }
     }
 
     private static NTTable createNTTable(String[] columnNames,
@@ -500,28 +594,11 @@ public class NTTableTest extends NTTestBase
         return builder.create();
     }
 
-    private static NTTable createNTTable2(String[] columnNames,
-         ScalarType[] scalarTypes, String[] standardFields,
-        String[] extraNames, Field[] extraFields)
+    private static void setLabels(NTTable nttable, String[] labels)
     {
-        boolean hasDescriptor = find("descriptor", standardFields);
-        boolean hasTimeStamp  = find("timeStamp", standardFields);
-        boolean hasAlarm      = find("alarm", standardFields);
-
-        // Create NTTable
-        NTTableBuilder builder = NTTable.createBuilder();
-
-        for (int i = 0; i < columnNames.length; ++i)
-            builder.addColumns(columnNames, scalarTypes);
-
-        if (hasDescriptor) builder.addDescriptor();
-        if (hasTimeStamp) builder.addTimeStamp();
-        if (hasAlarm) builder.addAlarm();
-
-        for (int i = 0; i < extraNames.length; ++i)
-            builder.add(extraNames[i], extraFields[i]);
-
-        return builder.create();
+        PVStringArray pvLabels = nttable.getLabels();
+        pvLabels.setLength(labels.length); 
+        pvLabels.put(0, labels.length, labels, 0);
     }
 
     private static void ntTableChecks(NTTable nttable,
@@ -543,7 +620,7 @@ public class NTTableTest extends NTTestBase
 		assertNotNull(pvLabels);
 
         String[] columnNames_rb = nttable.getColumnNames();
-        org.junit.Assert.assertArrayEquals(columnNames_rb, columnNames);
+        Assert.assertArrayEquals(columnNames_rb, columnNames);
 
 		// Test optional fields through NTTable interface
 
@@ -578,8 +655,6 @@ public class NTTableTest extends NTTestBase
         PVStructure pvStructure = nttable.getPVStructure();
         assertTrue(NTTable.is_a(pvStructure.getStructure()));
         assertTrue(NTTable.isCompatible(pvStructure));
-/*
-        assertSame(pvValue3, pvStructure.getSubField(c, "value"));*/
 
         for (String columnName : columnNames)
         {
@@ -601,7 +676,9 @@ public class NTTableTest extends NTTestBase
 
         if (labels != null)
         {
-            
+            StringArrayData data = new StringArrayData();
+            pvLabels.get(0, pvLabels.getLength(), data);
+            Assert.assertArrayEquals(labels, data.data);
         }
     }
 
@@ -626,5 +703,21 @@ public class NTTableTest extends NTTestBase
             addArray("secondsPastEpoch", ScalarType.pvLong).
             addArray("nanoseconds", ScalarType.pvInt).
             createStructure();
+
+    private static final Structure badExampleColumns = fieldCreate.
+            createFieldBuilder().
+            addArray("value", ScalarType.pvDouble).
+            addArray("severity", ScalarType.pvInt).
+            addArray("status", ScalarType.pvInt).
+            addArray("secondsPastEpoch", ScalarType.pvLong).
+            add("nanoseconds", ScalarType.pvInt).
+            createStructure();
+
+    private static final double[] exampleVals = { 3.14159, 2.71828, 137.036 };
+    private static final long[] exampleSecs = { 1440426549, 1440422949, 1440419349 };
+    private static final int[] exampleNsecs = { 211194323, 212182425, 213276531 };
+    private static final int[] exampleSevs = { 1, 0, 2 };
+    private static final int[] exampleStats = { 1, 0, 1 };
+
 }
 
