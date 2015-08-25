@@ -94,55 +94,15 @@ public class NTNDArrayBuilder
 
         NTField ntField = NTField.get();
 
-        if (valueType == null)
-        {
-            for (ScalarType st : ScalarType.values())
-            {
-                if (st != ScalarType.pvString)
-                    builder.addArray(st.toString() + "Value", st);
-            }
-            valueType = builder.createUnion();                
-        }
-
-        if (codecStruc == null)
-        {
-            codecStruc = builder.setId("codec_t").
-                add("name", ScalarType.pvString).
-                add("parameters", fieldCreate.createVariantUnion()).
-                createStructure();
-        }
-
-        if (dimensionStruc == null)
-        {
-            dimensionStruc = builder.setId("dimension_t").
-                add("size", ScalarType.pvInt).
-                add("offset",  ScalarType.pvInt).
-                add("fullSize",  ScalarType.pvInt).
-                add("binning",  ScalarType.pvInt).
-                add("reverse",  ScalarType.pvBoolean).
-                createStructure();
-        }
-
-        if (attributeStruc == null)
-        {
-            attributeStruc = builder.setId(NTNDArray.NTAttributeURI).
-		        add("name", ScalarType.pvString).
-			    add("value", fieldCreate.createVariantUnion()).
-			    add("descriptor", ScalarType.pvString).
-                add("sourceType", ScalarType.pvInt).
-                add("source", ScalarType.pvString).
-               createStructure();
-        }
-
         builder.setId(NTNDArray.URI).
-            add("value", valueType).
-            add("codec", codecStruc).
+            add("value", getValueType()).
+            add("codec", getCodecStructure()).
             add("compressedSize", ScalarType.pvLong).
             add("uncompressedSize", ScalarType.pvLong).
-            addArray("dimension", dimensionStruc).
+            addArray("dimension", getDimensionStructure()).
             add("uniqueId", ScalarType.pvInt).
             add("dataTimeStamp", ntField.createTimeStamp()).
-            addArray("attribute", attributeStruc);
+            addArray("attribute", getAttributeStructure());
 
         if (descriptor)
             builder.add("descriptor", ScalarType.pvString);
@@ -209,6 +169,66 @@ public class NTNDArrayBuilder
         extraFieldNames.clear();
         extraFields.clear();
     }
+
+    static Union getValueType()
+    {
+        if (valueType == null)
+        {
+            for (ScalarType st : ScalarType.values())
+            {
+                if (st != ScalarType.pvString)
+                    builder.addArray(st.toString() + "Value", st);
+            }
+            valueType = builder.createUnion();                
+        }
+        return valueType;
+    }
+
+    static Structure getCodecStructure()
+    {
+        if (codecStruc == null)
+        {
+            codecStruc = builder.setId("codec_t").
+                add("name", ScalarType.pvString).
+                add("parameters", fieldCreate.createVariantUnion()).
+                createStructure();
+        }
+        return codecStruc;
+    }
+
+    static Structure getDimensionStructure()
+    {
+        if (dimensionStruc == null)
+        {
+            dimensionStruc = builder.setId("dimension_t").
+                add("size", ScalarType.pvInt).
+                add("offset",  ScalarType.pvInt).
+                add("fullSize",  ScalarType.pvInt).
+                add("binning",  ScalarType.pvInt).
+                add("reverse",  ScalarType.pvBoolean).
+                createStructure();
+        }
+        return dimensionStruc;
+    }
+
+    static Structure getAttributeStructure()
+    {
+        if (attributeStruc == null)
+        {
+            attributeStruc = builder.setId(NTNDArray.NTAttributeURI).
+		        add("name", ScalarType.pvString).
+			    add("value", fieldCreate.createVariantUnion()).
+			    add("descriptor", ScalarType.pvString).
+                add("sourceType", ScalarType.pvInt).
+                add("source", ScalarType.pvString).
+               createStructure();
+        }
+        return attributeStruc;
+    }
+
+    private static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+
+    private static FieldBuilder builder = fieldCreate.createFieldBuilder();
 
     private static Union valueType;
     private static Structure codecStruc;
