@@ -141,11 +141,12 @@ public class NTTableBuilder
      */
     public PVStructure createPVStructure()
     {
+        // put the column names in labels by default
+        String[] labelArray = columnNames.toArray(new String[columnNames.size()]);
+
         PVStructure s = PVDataFactory.getPVDataCreate().createPVStructure(
             createStructure());
 
-        // put the column names in labels by default
-        String[] labelArray = columnNames.toArray(new String[columnNames.size()]);
         s.getSubField(PVStringArray.class, "labels").put(
             0, labelArray.length, labelArray, 0);
 
