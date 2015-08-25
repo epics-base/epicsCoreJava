@@ -84,7 +84,7 @@ public class NTNDArray
      * version of NTNDArray through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type
-     * @param structure The pvStructure to test.
+     * @param pvStructure The PVStructure to test.
      * @return (false,true) if (is not, is) a compatible NTNDArray.
      */
     public static boolean is_a(PVStructure pvStructure)

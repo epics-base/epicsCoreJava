@@ -8,7 +8,7 @@ package org.epics.nt;
 /**
  * Utility class for parsing an ID following the NT type ID conventions
  *
- * An NT type ID will be of the from epics:nt/<type-name>:<Major>.<Minor>,
+ * An NT type ID will be of the from epics:nt/&lt;type-name&gt;:&lt;Major&gt;.&lt;Minor&gt;,
  * e.g. epics:nt/NTNDArray:1.2
  * @author dgh
  */
@@ -18,7 +18,6 @@ public class NTID
      * Creates an NTID from the specified type ID
      *
      * @param id The the id to be parsed.
-     * @return NTNDArray instance on success, null otherwise.
      */
     public NTID(String id)
     {

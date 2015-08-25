@@ -62,7 +62,7 @@ public class NTTable
      * version of NTTable through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type
-     * @param structure The pvStructure to test.
+     * @param structure The Structure to test.
      * @return (false,true) if (is not, is) a compatible NTTable.
      */
     public static boolean is_a(Structure structure)
@@ -78,7 +78,7 @@ public class NTTable
      * version of NTTable through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type
-     * @param structure The pvStructure to test.
+     * @param pvStructure The PVStructure to test.
      * @return (false,true) if (is not, is) a compatible NTTable.
      */
     public static boolean is_a(PVStructure pvStructure)
