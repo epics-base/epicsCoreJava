@@ -374,6 +374,7 @@ public class NTScalarMultiChannelTest extends NTTestBase
         Structure s = fieldCreate.createFieldBuilder().
             setId(NTScalarMultiChannel.URI).
             addArray("value", ScalarType.pvString).
+            addArray("channelName", ScalarType.pvString).
             add("descriptor", ScalarType.pvString).
             add("alarm", ntField.createAlarm()).
             add("timeStamp", ntField.createTimeStamp()).

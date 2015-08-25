@@ -120,6 +120,10 @@ public class NTMultiChannel
         if (pvValue== null)
             return false;
 
+        PVStringArray pvChannelName = pvStructure.getSubField(PVStringArray.class, "channelName");
+        if (pvChannelName == null)
+            return false;
+
         PVField pvField = pvStructure.getSubField("descriptor");
         if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor")== null)
             return false;
