@@ -5,7 +5,12 @@
  */
 package org.epics.nt;
 
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.Type;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVScalarArray;
@@ -96,9 +101,43 @@ public class NTTable
      */
     public static boolean isCompatible(Structure structure)
     {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
+        if (structure == null) return false;
+
+        Structure valueField = structure.getField(Structure.class, "value");
+        if (valueField == null)
+            return false;
+
+        for (Field field : valueField.getFields())
+        {
+            if (field.getType() != Type.scalarArray) return false;
+        }
+
+        ScalarArray labelsField = structure.getField(ScalarArray.class, "labels");
+        if (labelsField == null)
+            return false;
+
+        if (labelsField.getElementType() != ScalarType.pvString)
+            return false;
+
+        Field field = structure.getField("descriptor");
+        if (field != null)
+        {
+            Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
+            if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
+                return false;
+        }
+
+        NTField ntField = NTField.get();
+
+        field = structure.getField("alarm");
+        if (field != null && !ntField.isAlarm(field))
+            return false;
+
+        field = structure.getField("timeStamp");
+        if (field != null && !ntField.isTimeStamp(field))
+            return false;
+
+        return true;
     }
 
     /**
@@ -111,31 +150,8 @@ public class NTTable
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
-        if (pvStructure == null) return false;
-
-        PVStructure pvValue = pvStructure.getSubField(PVStructure.class, "value");
-        if (pvValue == null) return false;
-
-        PVStringArray pvLabels = pvStructure.getSubField(PVStringArray.class, "labels");
-        if (pvLabels == null) return false;
-
-        PVField pvField = pvStructure.getSubField("descriptor");
-        if (pvField != null && pvStructure.getSubField(PVString.class, "descriptor") == null)
-            return false;
-
-        NTField ntField = NTField.get();
-
-        pvField = pvStructure.getSubField("alarm");
-        if (pvField != null  && !ntField.isAlarm(pvField.getField()))
-            return false;
-
-        pvField = pvStructure.getSubField("timeStamp");
-        if (pvField != null && !ntField.isTimeStamp(pvField.getField()))
-            return false;
-
-        return true;
+        return isCompatible(pvStructure.getStructure());
     }
-
 
     /**
      * Checks if the specified structure is a valid NTTable.
@@ -146,6 +162,30 @@ public class NTTable
      */
     public boolean isValid()
     {
+        PVField[] columns = pvValue.getPVFields();
+        
+        if (getLabels().getLength() != columns.length) return false;
+        boolean first = true;
+        int length = 0;
+        for (PVField column : columns)
+        {
+            try
+            {
+                int colLength = ((PVScalarArray)column).getLength();
+                if (first)
+                {
+                    length = colLength;
+                    first = false;
+                }
+                else if (length != colLength)
+                    return false;
+            }
+            catch (ClassCastException e)
+            {
+                return false;
+            }
+        }
+
         return true;
     }
 
