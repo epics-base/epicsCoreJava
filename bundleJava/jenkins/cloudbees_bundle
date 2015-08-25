@@ -57,7 +57,7 @@ parentPomDir=$( dirname "$parentPom" )
 if [ -e RELEASE_VERSIONS ]; then
     rm -rf RELEASE_VERSIONS
 fi
-wget -nv http://hg.code.sf.net/p/epics-pvdata/pvDataWWW/raw-file/tip/scripts/RELEASE_VERSIONS
+wget -nv https://raw.githubusercontent.com/epics-base/pvDataWWW/master/scripts/RELEASE_VERSIONS
 
 file=${PWD}/RELEASE_VERSIONS
 release_versions_pathname=$( readlink -f "$( dirname "$file" )" )/$( basename "$file" )
