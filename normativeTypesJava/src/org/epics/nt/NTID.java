@@ -99,16 +99,15 @@ public class NTID
     }
 
     /**
-     * Get the unqualified name, without namespace or version
+     * Get the version number as a string
      *
-     * For example above return "NTNDArray"
+     * For example above return "1.2"
      * @return the unqualified name
      */
     public String getVersion()
     {
         if (version == null)
         {
-            hasVersion = versionSepIndex >= 0;
             version = (hasVersion) ? fullName.substring(versionSepIndex+1) : "";
         }
         return version;
@@ -122,18 +121,19 @@ public class NTID
      */
     public String getMajorVersionString()
     {
-        if (majorVersion == null)
+        if (majorVersionStr == null)
         {
             if (hasVersion)
             {
-                int index = fullName.indexOf('.', versionSepIndex+1);
-                majorVersion = (index >= 0) 
-                    ? fullName.substring(versionSepIndex+1) : "";
+                endMajorIndex = fullName.indexOf('.', versionSepIndex+1);
+                majorVersionStr = (endMajorIndex >= 0) 
+                    ? fullName.substring(versionSepIndex+1, endMajorIndex) : 
+                      fullName.substring(versionSepIndex+1);
             }
             else
-                majorVersion = "";
+                majorVersionStr = "";
         }
-        return majorVersion;
+        return majorVersionStr;
     }
 
     /**
@@ -143,32 +143,55 @@ public class NTID
      */
     public boolean hasMajorVersion()
     {
-        //TODO check it's a number
-        return hasVersion;
+        if (hasVersion && !majorVersionParsed)
+        {
+            try {
+                majorVersion = Integer.parseInt(getMajorVersionString());
+                hasMajor = true;
+            } catch (NumberFormatException e) {}
+            majorVersionParsed = true;
+        }
+        return hasMajor;
     }
 
     /**
      * Get the Major version as an integer
      *
      * For example above return 1
-     * @return the Major string
+     * If hasMajorVersion() returns true then this method returns
+     * the integer version number, else it returns 0. 
+     * @return the Major version
      */
     public int getMajorVersion()
     {
-
-        return Integer.parseInt(getMajorVersionString());
+        // call hasMajorVersion() to calculate values
+        hasMajorVersion();
+        return majorVersion;
     }
 
     /**
-     * Get the Major version as a string
+     * Get the Minor version as a string
      *
-     * For example above return "1"
-     * @return the Major string
+     * For example above return "2"
+     * @return the Minor string
      */
     public String getMinorVersionString()
     {
-        // TODO
-        return "";
+        // call hasMinorVersion() to calculate start of minor
+        getMajorVersionString();
+        if (minorVersionStr == null)
+        {
+            if (hasVersion && endMajorIndex >= 0)
+            {
+                endMinorIndex = fullName.indexOf('.', endMajorIndex+1);
+                minorVersionStr = (endMinorIndex >= 0) 
+                    ? fullName.substring(endMajorIndex+1, endMinorIndex) : 
+                      fullName.substring(endMajorIndex+1);
+            }
+            else
+                minorVersionStr = "";
+        }
+        return minorVersionStr;
     }
 
     /**
@@ -178,20 +201,30 @@ public class NTID
      */
     public boolean hasMinorVersion()
     {
-        // TODO
-        return false;
+        if (hasVersion && !minorVersionParsed)
+        {
+            try {
+                minorVersion = Integer.parseInt(getMinorVersionString());
+                hasMinor = true;
+            } catch (NumberFormatException e) {}
+            minorVersionParsed = true;
+        }
+        return hasMinor;
     }
 
     /**
      * Get the Minor version as an integer
      *
-     * For example above return 1
+     * For example above return 2
+     * If hasMinorVersion() returns true then this method returns
+     * the integer version number, else it returns 0. 
      * @return the Minor string
      */
     public int getMinorVersion()
     {
-        // TODO
-        return 0;
+        // call hasMinorVersion() to calculate values
+        hasMinorVersion();
+        return minorVersion;
     }
 
     private String fullName = null;
@@ -199,10 +232,21 @@ public class NTID
     private String namespace = null;
     private String name = null;
     private String version = null;
-    private String majorVersion = null;
 
-    private boolean nsQualified = false;
     private int nsSepIndex = -1;
-    private boolean hasVersion;
-    private int versionSepIndex = -1; 
+    private int versionSepIndex = -1;
+    private boolean nsQualified = false;
+    private boolean hasVersion = false;
+
+    private int endMajorIndex = 0;
+    private String majorVersionStr = null;
+    private boolean majorVersionParsed;
+    private boolean hasMajor = false;
+    private int majorVersion = 0;
+
+    private int endMinorIndex = 0;
+    private String minorVersionStr = null;
+    private boolean minorVersionParsed;
+    private boolean hasMinor = false;
+    private int minorVersion = 0;
 }
