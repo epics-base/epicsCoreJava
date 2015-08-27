@@ -155,7 +155,7 @@ public class NTNameValue
      */
     public boolean isValid()
     {
-        return true;
+        return (getValue().getLength() == getName().getLength());
     }
 
     /**

@@ -164,7 +164,8 @@ public class NTContinuum
      */
     public boolean isValid()
     {
-        return true;
+        return ((getUnits().getLength()-1)*getBase().getLength() ==
+            getValue().getLength());
     }
 
     /**

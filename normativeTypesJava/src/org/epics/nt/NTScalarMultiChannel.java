@@ -211,7 +211,20 @@ public class NTScalarMultiChannel
      */
     public boolean isValid()
     {
-        return true;
+        int valueLength = getValue().getLength();
+        if (getChannelName().getLength() != valueLength) return false;
+
+        PVScalarArray[] arrayFields = {
+            getSeverity(), getStatus(), getMessage(), 
+            getSecondsPastEpoch(), getNanoseconds(), getUserTag()
+        };
+
+        for (PVScalarArray arrayField : arrayFields)
+        {
+            if (arrayField != null && arrayField.getLength() != valueLength)
+                return false;
+        }
+        return true; 
     }
 
     /**

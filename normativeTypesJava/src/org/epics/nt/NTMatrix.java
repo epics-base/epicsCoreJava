@@ -13,6 +13,7 @@ import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVIntArray;
+import org.epics.pvdata.pv.IntArrayData;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.property.PVTimeStamp;
@@ -154,6 +155,39 @@ public class NTMatrix
     public static boolean isCompatible(PVStructure pvStructure)
     {
         return isCompatible(pvStructure.getStructure());
+    }
+
+    /**
+     * Checks if the specified structure is a valid NTMatrix.
+     *
+     * Checks whether the wrapped structure is valid with respect to this
+     * version of NTMatrix
+     * @return (false,true) if (is not, is) a valid NTMatrix.
+     */
+    public boolean isValid()
+    {
+        int valueLength = getValue().getLength();
+        if (valueLength == 0)
+            return false;
+
+        PVIntArray pvDim = getDim();
+        if (pvDim != null)
+        {
+            int length = pvDim.getLength();
+            if (length != 1 && length !=2)
+                return false;
+
+            IntArrayData data = new IntArrayData();
+            pvDim.get(0,length,data);
+            int expectedLength = 1;
+            for (int d : data.data)
+            {
+                expectedLength *=d;
+            }
+            if (expectedLength != valueLength)
+                return false; 
+        }
+        return true;
     }
 
     /**

@@ -22,6 +22,7 @@ import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PVStructureArray;
+import org.epics.pvdata.pv.StructureArrayData;
 import org.epics.pvdata.pv.PVUnion;
 import org.epics.pvdata.property.PVTimeStamp;
 import org.epics.pvdata.property.PVAlarm;
@@ -233,6 +234,20 @@ public class NTNDArray
      */
     public boolean isValid()
     {
+        long valueSize = getValueSize();
+        long compressedSize = getCompressedDataSize().get();
+        if (valueSize != compressedSize)
+            return false;
+
+        long expectedUncompressed = getExpectedUncompressedSize();
+        long uncompressedSize = getUncompressedDataSize().get();
+        if (uncompressedSize != expectedUncompressed)
+            return false;
+
+        String codecName = getCodec().getSubField(PVString.class, "name").get();
+        if (codecName.equals("") && valueSize < uncompressedSize)
+            return false;
+
         return true;
     }
 
@@ -406,6 +421,74 @@ public class NTNDArray
     NTNDArray(PVStructure pvStructure)
     {
         pvNTNDArray = pvStructure;
+    }
+
+    private long getExpectedUncompressedSize()
+    {
+        long size = 0;
+        PVStructureArray pvDim = getDimension();
+
+        if (pvDim.getLength() != 0)
+        {
+            size = getValueTypeSize();
+            StructureArrayData data = new StructureArrayData();
+            pvDim.get(0, pvDim.getLength(),data);
+            for (PVStructure dim : data.data)
+            {
+                size *= dim.getSubField(PVInt.class, "size").get();
+            }
+        }
+
+        return size;
+    }
+
+    private long getValueSize()
+    {
+        long size = 0;
+        PVScalarArray storedValue = getValue().get(PVScalarArray.class);
+        if (storedValue != null)
+        {
+            size = storedValue.getLength()*getValueTypeSize();
+        }
+        return size;
+    }
+
+    private int getValueTypeSize()
+    {
+        int typeSize = 0;
+        PVScalarArray storedValue = getValue().get(PVScalarArray.class);
+        if (storedValue != null)
+        {
+            switch (storedValue.getScalarArray().getElementType())
+            {
+            case pvBoolean:
+            case pvByte:
+            case pvUByte:
+                typeSize = 1;
+                break;
+
+            case pvShort:
+            case pvUShort:
+                typeSize = 2;
+                break;
+
+            case pvInt:
+            case pvUInt:
+            case pvFloat:
+                typeSize = 4;
+                break;
+
+            case pvLong:
+            case pvULong:
+            case pvDouble:
+                typeSize = 8;
+                break;
+
+            default:
+                break;
+            }
+        }
+        return typeSize;
     }
 
     static final String NTAttributeURI = "epics:nt/NTAttribute:1.0";

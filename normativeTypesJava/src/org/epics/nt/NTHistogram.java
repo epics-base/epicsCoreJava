@@ -160,7 +160,7 @@ public class NTHistogram
      */
     public boolean isValid()
     {
-        return true;
+        return (getValue().getLength()+1 == getRanges().getLength());
     }
 
     /**
