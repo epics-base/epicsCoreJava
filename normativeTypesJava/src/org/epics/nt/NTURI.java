@@ -95,21 +95,6 @@ public class NTURI
      * @param structure The Structure to test.
      * @return (false,true) if (is not, is) a compatible NTURI.
      */
-    public static boolean isCompatible2(Structure structure)
-    {
-        // TODO implement through introspection interface
-        return isCompatible(org.epics.pvdata.factory.PVDataFactory.
-            getPVDataCreate().createPVStructure(structure));
-    }
-
-    /**
-     * Checks if the specified structure is compatible with NTURI.
-     *
-     * Checks whether the specified structure is compatible with this version
-     * of NTURI through introspection interface.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) a compatible NTURI.
-     */
     public static boolean isCompatible(Structure structure)
     {
         if (structure == null) return false;
