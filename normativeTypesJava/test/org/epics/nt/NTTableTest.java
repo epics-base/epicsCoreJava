@@ -104,8 +104,15 @@ public class NTTableTest extends NTTestBase
         testStructureIs_aImpl("epics:nt/NTScalar:1.0", false);
     }
 
-    // test compatibility - compatible structures
+    // test compatibility - null structures
 
+    public static void testStructureIsCompatibleNull()
+    {
+        PVStructure pvs = null;
+        assertFalse(NTTable.isCompatible(pvs));
+    }
+
+    // test compatibility - compatible structures
 
     public static void testStructureIsCompatible1a()
     {

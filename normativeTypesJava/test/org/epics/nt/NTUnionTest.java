@@ -101,6 +101,14 @@ public class NTUnionTest extends NTTestBase
         testStructureIs_aImpl("epics:nt/NTUnionArray:1.0", false);
     }
 
+    // test compatibility - null structures
+
+    public static void testStructureIsCompatibleNull()
+    {
+        PVStructure pvs = null;
+        assertFalse(NTUnion.isCompatible(pvs));
+    }
+
     // test compatibility - compatible structures
 
     public static void testStructureIsCompatible1a()

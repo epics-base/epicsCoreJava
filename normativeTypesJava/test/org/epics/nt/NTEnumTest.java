@@ -96,6 +96,14 @@ public class NTEnumTest extends NTTestBase
         testStructureIs_aImpl("epics:nt/NTEnumArray:1.0", false);
     }
 
+    // test compatibility - null structures
+
+    public static void testStructureIsCompatibleNull()
+    {
+        PVStructure pvs = null;
+        assertFalse(NTEnum.isCompatible(pvs));
+    }
+
     // test compatibility - compatible structures
 
     public static void testStructureIsCompatible1a()

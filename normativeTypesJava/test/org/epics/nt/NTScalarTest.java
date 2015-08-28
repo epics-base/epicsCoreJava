@@ -99,6 +99,14 @@ public class NTScalarTest extends NTTestBase
         testStructureIs_aImpl("epics:nt/NTScalarArray:1.0", false);
     }
 
+    // test compatibility - null structures
+
+    public static void testStructureIsCompatibleNull()
+    {
+        PVStructure pvs = null;
+        assertFalse(NTScalarArray.isCompatible(pvs));
+    }
+
     // test compatibility - compatible structures
 
     public static void testStructureIsCompatible1a()
