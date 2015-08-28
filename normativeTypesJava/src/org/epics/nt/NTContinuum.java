@@ -89,12 +89,12 @@ public class NTContinuum
     }
 
     /**
-     * Checks if the specified structure is compatible with NTScalar.
+     * Checks if the specified structure is compatible with NTContinuum.
      *
      * Checks whether the specified structure is compatible with this version
-     * of NTScalar through introspection interface.
+     * of NTContinuum through introspection interface.
      * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) a compatible NTScalar.
+     * @return (false,true) if (is not, is) a compatible NTContinuum.
      */
     public static boolean isCompatible(Structure structure)
     {
@@ -156,11 +156,11 @@ public class NTContinuum
     }
 
     /**
-     * Checks if the specified structure is a valid NTScalar.
+     * Checks if the specified structure is a valid NTContinuum.
      *
      * Checks whether the wrapped structure is valid with respect to this
-     * version of NTScalar
-     * @return (false,true) if (is not, is) a valid NTScalar.
+     * version of NTContinuum
+     * @return (false,true) if (is not, is) a valid NTContinuum.
      */
     public boolean isValid()
     {
