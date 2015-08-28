@@ -244,6 +244,7 @@ public class NTMatrixTest extends NTTestBase
                 createStructure(),
             false);
     }
+
     // test wrapping compatible structures
 
     public static void testWrappedNTMatrix1()
@@ -296,6 +297,64 @@ public class NTMatrixTest extends NTTestBase
 
         ntmatrixChecks(ntmatrix, standardFields,
             extraNames,extraFields);
+    }
+
+
+    // test isValid()
+
+    public static void testStructureIsValid1()
+    {
+        NTMatrix ntmatrix =  NTMatrix.createBuilder().addDim().create();
+
+        PVDoubleArray pvValue = ntmatrix.getValue();
+        PVIntArray pvDim = ntmatrix.getDim();
+
+        assertFalse(ntmatrix.isValid());
+
+        int[] dims = { 0 };
+        pvDim.put(0, dims.length, dims, 0);
+        assertFalse(ntmatrix.isValid());
+
+        dims = new int[]{ 5 };
+        pvDim.put(0, dims.length, dims, 0);
+        assertFalse(ntmatrix.isValid());
+
+        pvValue.setLength(2);
+        assertFalse(ntmatrix.isValid());
+
+        pvValue.setLength(5);
+        assertTrue(ntmatrix.isValid());
+
+        pvValue.setLength(6);
+        assertFalse(ntmatrix.isValid());
+
+        dims = new int[]{ 6, 1 };
+        pvDim.put(0, dims.length, dims, 0);
+        assertTrue(ntmatrix.isValid());
+
+        pvValue.setLength(5);
+        assertFalse(ntmatrix.isValid());
+
+        dims = new int[]{ 5, 1 };
+        pvDim.put(0, dims.length, dims, 0);
+        assertTrue(ntmatrix.isValid());
+
+        pvValue.setLength(6);
+        assertFalse(ntmatrix.isValid());
+
+        dims = new int[]{ 2, 3 };
+        pvDim.put(0, dims.length, dims, 0);
+        assertTrue(ntmatrix.isValid());
+
+        pvValue.setLength(5);
+        assertFalse(ntmatrix.isValid());
+
+        pvValue.setLength(7);
+        assertFalse(ntmatrix.isValid());
+
+        dims = new int[]{ 7, 1, 1 };
+        pvDim.put(0, dims.length, dims, 0);
+        assertFalse(ntmatrix.isValid());
     }
 
     // test attaching timeStamps

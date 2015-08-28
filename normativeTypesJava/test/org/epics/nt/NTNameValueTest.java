@@ -272,6 +272,38 @@ public class NTNameValueTest extends NTTestBase
             extraNames,extraFields);
     }
 
+    // test is valid
+    public static void testStructureIsValid()
+    {
+        NTNameValue ntnameValue = NTNameValue.createBuilder().
+            value(ScalarType.pvDouble).create();
+
+        PVDoubleArray pvValue = ntnameValue.getValue(PVDoubleArray.class);
+        PVStringArray pvName = ntnameValue.getName();
+
+        double[] vals = { 1.0, 2.0, 3.0 };
+        String[] names = { "a", "b", "c", };
+
+        assertTrue(ntnameValue.isValid());
+
+        pvValue.put(0, vals.length, vals, 0);
+        pvName.put(0, names.length, names, 0);
+
+        assertTrue(ntnameValue.isValid());
+
+        pvName.setLength(2); 
+        assertFalse(ntnameValue.isValid());
+
+        pvValue.setLength(1); 
+        assertFalse(ntnameValue.isValid());
+
+        pvName.setLength(0); 
+        assertFalse(ntnameValue.isValid());
+
+        pvValue.setLength(0); 
+        assertTrue(ntnameValue.isValid());
+    }
+
     // test attaching timeStamps
 
     public static void testTimeStamp1()

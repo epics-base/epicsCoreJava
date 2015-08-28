@@ -265,6 +265,58 @@ public class NTContinuumTest extends NTTestBase
             extraNames,extraFields);
     }
 
+     // test isValid()  
+    public static void testIsValid()
+    {
+        NTContinuum ntcontinuum = NTContinuum.createBuilder().create();
+
+        PVDoubleArray pvValue = ntcontinuum.getValue();
+        PVDoubleArray pvBase = ntcontinuum.getBase();
+        PVStringArray pvUnits = ntcontinuum.getUnits();
+
+        // valid sizes
+        pvValue.setLength(3);
+        pvBase.setLength(3);
+        pvUnits.setLength(2);
+        assertTrue(ntcontinuum.isValid());
+
+        pvValue.setLength(3);
+        pvBase.setLength(1);
+        pvUnits.setLength(4);
+        assertTrue(ntcontinuum.isValid());
+
+        pvValue.setLength(12);
+        pvBase.setLength(3);
+        pvUnits.setLength(5);
+        assertTrue(ntcontinuum.isValid());
+
+        // invalid sizes
+        pvValue.setLength(3);
+        pvBase.setLength(2);
+        pvUnits.setLength(2);
+        assertFalse(ntcontinuum.isValid());
+
+        pvValue.setLength(3);
+        pvBase.setLength(4);
+        pvUnits.setLength(2);
+        assertFalse(ntcontinuum.isValid());
+
+        pvValue.setLength(3);
+        pvBase.setLength(2);
+        pvUnits.setLength(2);
+        assertFalse(ntcontinuum.isValid());
+
+        pvValue.setLength(3);
+        pvBase.setLength(1);
+        pvUnits.setLength(3);
+        assertFalse(ntcontinuum.isValid());
+
+        pvValue.setLength(3);
+        pvBase.setLength(1);
+        pvUnits.setLength(5);
+        assertFalse(ntcontinuum.isValid());
+    }
+
     // test attaching timeStamps
 
     public static void testTimeStamp1()

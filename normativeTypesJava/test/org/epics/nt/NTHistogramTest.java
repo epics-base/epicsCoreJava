@@ -259,7 +259,35 @@ public class NTHistogramTest extends NTTestBase
             extraNames,extraFields);
     }
 
-    // test attaching timeStamps
+     // test isValid()  
+    public static void testIsValid()
+    {
+        NTHistogram nthistogram = NTHistogram.createBuilder().
+            value(ScalarType.pvInt).create();
+
+        PVDoubleArray pvRanges = nthistogram.getRanges();
+        PVIntArray pvValue = nthistogram.getValue(PVIntArray.class);
+
+        assertFalse(nthistogram.isValid());
+
+        double[] ranges = {-1.0, 1.0 };
+        pvRanges.put(0, ranges.length, ranges, 0);
+        assertFalse(nthistogram.isValid());
+
+        int[] values = { 42 };
+        pvValue.put(0, values.length, values, 0);
+        assertTrue(nthistogram.isValid());
+
+        values = new int[]{ 42, 24, 42 };
+        pvValue.put(0, values.length, values, 0);
+        assertFalse(nthistogram.isValid());
+
+        ranges = new double[]{-2.0, -1.0, 1.0, 2.0 };
+        pvRanges.put(0, ranges.length, ranges, 0);
+        assertTrue(nthistogram.isValid());
+    }
+
+
 
     public static void testTimeStamp1()
     {

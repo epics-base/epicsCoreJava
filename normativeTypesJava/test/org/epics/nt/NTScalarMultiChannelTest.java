@@ -13,6 +13,7 @@ import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.PVArray;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
@@ -399,6 +400,96 @@ public class NTScalarMultiChannelTest extends NTTestBase
             extraNames,extraFields);
     }
 
+    // test isValid()
+
+    public static void testIsValid1()
+    {
+        testIsValidImpl1(ScalarType.pvInt, new String[0],
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid2()
+    {
+        testIsValidImpl1(ScalarType.pvUByte,
+            new String[] {"severity", "nanoseconds", "timeStamp" },
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid3()
+    {
+        testIsValidImpl1(ScalarType.pvLong,
+            new String[] {"severity", "status", "message", "alarm" },
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid4()
+    {
+        testIsValidImpl1(ScalarType.pvUShort,
+            new String[] {"secondsPastEpoch", "status", "message", "descriptor" },
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid5()
+    {
+        testIsValidImpl1(ScalarType.pvUShort,
+            new String[] {"secondsPastEpoch", "status", "message",
+                         "severity", "status", "message",
+                         "descriptor", "alarm", "timeStamp" },
+            new String[] {"extra"},
+            new Field[]{ fieldCreate.createScalar(ScalarType.pvInt) } );
+    }
+
+    public static void testIsValidImpl1(ScalarType scalarType,
+        String[] standardFields,
+        String[] extraNames, Field[] extraFields)
+    {
+        NTScalarMultiChannel ntscalarMultiChannel = createNTScalarMultiChannel(
+            scalarType, standardFields,extraNames,extraFields);
+
+        testIsValidImpl2(ntscalarMultiChannel, new int[] { 0,1,2 }, new int[] {0,1,2,3} );
+    }
+
+    public static void testIsValidImpl2(NTScalarMultiChannel ntsmc,
+        int[] lengths, int[] badLengths)
+    {
+        assertTrue(ntsmc.isValid());
+        PVArray[] subfields = {
+            ntsmc.getValue(),
+            ntsmc.getChannelName(),
+            ntsmc.getSeverity(),
+            ntsmc.getStatus(),
+            ntsmc.getMessage(),
+            ntsmc.getSecondsPastEpoch(),
+            ntsmc.getNanoseconds(),
+            ntsmc.getUserTag()
+        };
+
+        for (int i : lengths)
+        {
+            for (PVArray array: subfields)
+            {
+                 if (array != null) array.setLength(i);
+            }
+            assertTrue(ntsmc.isValid());
+
+            for (int j : badLengths)
+            {
+                if (j == i) continue;
+
+                for (PVArray array: subfields)
+                {
+                    if (array != null)
+                    {
+                        array.setLength(j);
+                        assertFalse(ntsmc.isValid());
+                        array.setLength(i);
+                    }
+                }
+            }
+            assertTrue(ntsmc.isValid());
+        }
+    }
+
     // test attaching timeStamps
 
     public static void testTimeStamp1()
@@ -518,16 +609,18 @@ public class NTScalarMultiChannelTest extends NTTestBase
     private static <T extends PVScalarArray>
     void testNTScalarMultiChannel_BuilderCreatedImpl(Class<T> c, ScalarType scalarType, String[] standardFields, String[] extraNames, Field[] extraFields)
     {
-        NTScalarMultiChannel ntscalarMultiChannel = createNTScalarMultiChannel(c,scalarType,
-            standardFields,extraNames,extraFields);
+        NTScalarMultiChannel ntscalarMultiChannel = createNTScalarMultiChannel(
+            scalarType, standardFields,extraNames,extraFields);
 
         ntScalarMultiChannelChecks(ntscalarMultiChannel,c,scalarType,
             standardFields,extraNames,extraFields);        
     }
 
 
-    private static <T extends PVScalarArray>
-    NTScalarMultiChannel createNTScalarMultiChannel(Class<T> c, ScalarType scalarType, String[] standardFields, String[] extraNames, Field[] extraFields)
+    private static //<T extends PVScalarArray>
+    NTScalarMultiChannel createNTScalarMultiChannel(//Class<T> c,
+        ScalarType scalarType, String[] standardFields,
+        String[] extraNames, Field[] extraFields)
     {
         boolean hasDescriptor  = find("descriptor", standardFields);
         boolean hasTimeStamp   = find("timeStamp", standardFields);

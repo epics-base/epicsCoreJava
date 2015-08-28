@@ -14,6 +14,7 @@ import org.epics.pvdata.pv.Scalar;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.PVArray;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
@@ -355,15 +356,15 @@ public class NTMultiChannelTest extends NTTestBase
                 addArray("isConnected", ScalarType.pvBoolean).
             createStructure();
 
-        NTMultiChannel ntscalarMultiChannel = NTMultiChannel.wrap(dataCreate.createPVStructure(s));
+        NTMultiChannel ntmultiChannel = NTMultiChannel.wrap(dataCreate.createPVStructure(s));
 
-        ntScalarMultiChannelChecks(ntscalarMultiChannel, variantUnion, new String[0],
+        ntScalarMultiChannelChecks(ntmultiChannel, variantUnion, new String[0],
             new String[0], new Field[0]);
 
-        NTMultiChannel ntscalarMultiChannel2 = NTMultiChannel.wrapUnsafe(dataCreate.
+        NTMultiChannel ntmultiChannel2 = NTMultiChannel.wrapUnsafe(dataCreate.
             createPVStructure(s));
 
-        ntScalarMultiChannelChecks(ntscalarMultiChannel2, variantUnion, new String[0],
+        ntScalarMultiChannelChecks(ntmultiChannel2, variantUnion, new String[0],
             new String[0], new Field[0]);
     }
 
@@ -384,53 +385,143 @@ public class NTMultiChannelTest extends NTTestBase
         String[] extraNames = { "extra" };
         Field[] extraFields = { fieldCreate.createScalarArray(ScalarType.pvString) };
 
-        NTMultiChannel ntscalarMultiChannel = NTMultiChannel.wrap(dataCreate.createPVStructure(s));
+        NTMultiChannel ntmultiChannel = NTMultiChannel.wrap(dataCreate.createPVStructure(s));
 
-        ntScalarMultiChannelChecks(ntscalarMultiChannel,variantUnion, standardFields, extraNames,extraFields);
+        ntScalarMultiChannelChecks(ntmultiChannel,variantUnion, standardFields, extraNames,extraFields);
 
-        NTMultiChannel ntscalarMultiChannel2 = NTMultiChannel.wrapUnsafe(dataCreate.
+        NTMultiChannel ntmultiChannel2 = NTMultiChannel.wrapUnsafe(dataCreate.
             createPVStructure(s));
 
-        ntScalarMultiChannelChecks(ntscalarMultiChannel,variantUnion, standardFields,
+        ntScalarMultiChannelChecks(ntmultiChannel,variantUnion, standardFields,
             extraNames,extraFields);
+    }
+
+    // test isValid()
+
+    public static void testIsValid1()
+    {
+        testIsValidImpl1(variantUnion, new String[0],
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid2()
+    {
+        testIsValidImpl1(variantUnion,
+            new String[] {"severity", "nanoseconds", "timeStamp" },
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid3()
+    {
+        testIsValidImpl1(exampleRegularUnion(),
+            new String[] {"severity", "status", "message", "alarm" },
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid4()
+    {
+        testIsValidImpl1(variantUnion,
+            new String[] {"secondsPastEpoch", "status", "message", "descriptor" },
+            new String[0], new Field[0]);
+    }
+
+    public static void testIsValid5()
+    {
+        testIsValidImpl1(exampleRegularUnion(),
+            new String[] {"secondsPastEpoch", "status", "message",
+                         "severity", "status", "message",
+                         "descriptor", "alarm", "timeStamp" },
+            new String[] {"extra"},
+            new Field[]{ fieldCreate.createScalar(ScalarType.pvInt) } );
+    }
+
+    public static void testIsValidImpl1(Union u,
+        String[] standardFields,
+        String[] extraNames, Field[] extraFields)
+    {
+        NTMultiChannel ntmultiChannel = createNTMultiChannel(
+            u, standardFields,extraNames,extraFields);
+
+        testIsValidImpl2(ntmultiChannel, new int[] { 0,1,2 }, new int[] {0,1,2,3} );
+    }
+
+    public static void testIsValidImpl2(NTMultiChannel ntmc,
+        int[] lengths, int[] badLengths)
+    {
+        assertTrue(ntmc.isValid());
+        PVArray[] subfields = {
+            ntmc.getValue(),
+            ntmc.getChannelName(),
+            ntmc.getSeverity(),
+            ntmc.getStatus(),
+            ntmc.getMessage(),
+            ntmc.getSecondsPastEpoch(),
+            ntmc.getNanoseconds(),
+            ntmc.getUserTag()
+        };
+
+        for (int i : lengths)
+        {
+            for (PVArray array: subfields)
+            {
+                 if (array != null) array.setLength(i);
+            }
+            assertTrue(ntmc.isValid());
+
+            for (int j : badLengths)
+            {
+                if (j == i) continue;
+
+                for (PVArray array: subfields)
+                {
+                    if (array != null)
+                    {
+                        array.setLength(j);
+                        assertFalse(ntmc.isValid());
+                        array.setLength(i);
+                    }
+                }
+            }
+            assertTrue(ntmc.isValid());
+        }
     }
 
     // test attaching timeStamps
 
     public static void testTimeStamp1()
     {
-        NTMultiChannel ntscalarMultiChannel = NTMultiChannel.createBuilder().
+        NTMultiChannel ntmultiChannel = NTMultiChannel.createBuilder().
             value(variantUnion).
             addTimeStamp().create();
 
-        testAttachTimeStamp(ntscalarMultiChannel, true);
+        testAttachTimeStamp(ntmultiChannel, true);
     }
  
     public static void testTimeStamp2()
     {
-        NTMultiChannel ntscalarMultiChannel = NTMultiChannel.createBuilder().
+        NTMultiChannel ntmultiChannel = NTMultiChannel.createBuilder().
             value(variantUnion).create();
 
-        testAttachTimeStamp(ntscalarMultiChannel, false);
+        testAttachTimeStamp(ntmultiChannel, false);
     }
 
     // test attaching alarms
 
     public static void testAlarm1()
     {
-        NTMultiChannel ntscalarMultiChannel = NTMultiChannel.createBuilder().
+        NTMultiChannel ntmultiChannel = NTMultiChannel.createBuilder().
              value(variantUnion).
             addAlarm().create();
 
-        testAttachAlarm(ntscalarMultiChannel, true);
+        testAttachAlarm(ntmultiChannel, true);
     }
 
     public static void testAlarm2()
     {
-        NTMultiChannel ntscalarMultiChannel = NTMultiChannel.createBuilder().
+        NTMultiChannel ntmultiChannel = NTMultiChannel.createBuilder().
              value(variantUnion).create();
 
-        testAttachAlarm(ntscalarMultiChannel, false);
+        testAttachAlarm(ntmultiChannel, false);
     }
 
 
@@ -514,10 +605,10 @@ public class NTMultiChannelTest extends NTTestBase
     private static
     void testNTMultiChannel_BuilderCreatedImpl(Union u, String[] standardFields, String[] extraNames, Field[] extraFields)
     {
-        NTMultiChannel ntscalarMultiChannel = createNTMultiChannel(u,
+        NTMultiChannel ntmultiChannel = createNTMultiChannel(u,
             standardFields,extraNames,extraFields);
 
-        ntScalarMultiChannelChecks(ntscalarMultiChannel,u,
+        ntScalarMultiChannelChecks(ntmultiChannel,u,
             standardFields,extraNames,extraFields);        
     }
 
@@ -555,7 +646,7 @@ public class NTMultiChannelTest extends NTTestBase
     }
 
     private static
-    void ntScalarMultiChannelChecks(NTMultiChannel ntscalarMultiChannel, Union u, String[] standardFields,
+    void ntScalarMultiChannelChecks(NTMultiChannel ntmultiChannel, Union u, String[] standardFields,
         String[] extraNames, Field[] extraFields)
     {
         // parse optional fields
@@ -570,13 +661,13 @@ public class NTMultiChannelTest extends NTTestBase
         boolean hasMessage     = find("message", standardFields);
 
         // Test value field through NTMultiChannel interface
-        PVUnionArray pvValue = ntscalarMultiChannel.getValue();
+        PVUnionArray pvValue = ntmultiChannel.getValue();
 		assertNotNull(pvValue);
 
 		// Test optional fields through NTMultiChannel interface
         NTField ntField = NTField.get();
 
-        PVString pvDescriptor = ntscalarMultiChannel.getDescriptor();
+        PVString pvDescriptor = ntmultiChannel.getDescriptor();
         if (hasDescriptor)
         {
             assertNotNull(pvDescriptor);
@@ -584,7 +675,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvDescriptor);
 
-        PVStructure pvTimeStamp = ntscalarMultiChannel.getTimeStamp();
+        PVStructure pvTimeStamp = ntmultiChannel.getTimeStamp();
         if (hasTimeStamp)
         {
             assertNotNull(pvTimeStamp);
@@ -593,7 +684,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvTimeStamp);
 
-        PVStructure pvAlarm = ntscalarMultiChannel.getAlarm();
+        PVStructure pvAlarm = ntmultiChannel.getAlarm();
         if (hasAlarm)
         {
             assertNotNull(pvAlarm);
@@ -602,7 +693,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvAlarm);
 
-        PVLongArray pvSeconds = ntscalarMultiChannel.getSecondsPastEpoch();
+        PVLongArray pvSeconds = ntmultiChannel.getSecondsPastEpoch();
         if (hasSeconds)
         {
             assertNotNull(pvSeconds);
@@ -610,7 +701,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvSeconds);
 
-        PVIntArray pvNanoseconds = ntscalarMultiChannel.getNanoseconds();
+        PVIntArray pvNanoseconds = ntmultiChannel.getNanoseconds();
         if (hasNanoseconds)
         {
             assertNotNull(pvNanoseconds);
@@ -618,7 +709,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvNanoseconds);
 
-        PVIntArray pvUserTag = ntscalarMultiChannel.getUserTag();
+        PVIntArray pvUserTag = ntmultiChannel.getUserTag();
         if (hasUserTag)
         {
             assertNotNull(pvUserTag);
@@ -626,7 +717,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvUserTag);
 
-        PVIntArray pvSeverity = ntscalarMultiChannel.getSeverity();
+        PVIntArray pvSeverity = ntmultiChannel.getSeverity();
         if (hasSeverity)
         {
             assertNotNull(pvSeverity);
@@ -634,7 +725,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvSeverity);
 
-        PVIntArray pvStatus = ntscalarMultiChannel.getStatus();
+        PVIntArray pvStatus = ntmultiChannel.getStatus();
         if (hasStatus)
         {
             assertNotNull(pvStatus);
@@ -642,7 +733,7 @@ public class NTMultiChannelTest extends NTTestBase
         else
             assertNull(pvStatus);
 
-        PVStringArray pvMessage = ntscalarMultiChannel.getMessage();
+        PVStringArray pvMessage = ntmultiChannel.getMessage();
         if (hasMessage)
         {
             assertNotNull(pvMessage);
@@ -651,7 +742,7 @@ public class NTMultiChannelTest extends NTTestBase
             assertNull(pvMessage);
 
         // Test PVStructure from NTMultiChannel
-        PVStructure pvStructure = ntscalarMultiChannel.getPVStructure();
+        PVStructure pvStructure = ntmultiChannel.getPVStructure();
         assertTrue(NTMultiChannel.is_a(pvStructure.getStructure()));
         assertTrue(NTMultiChannel.isCompatible(pvStructure));
 
