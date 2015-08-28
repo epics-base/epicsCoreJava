@@ -199,6 +199,8 @@ public class NTScalarMultiChannel
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
+        if (pvStructure == null) return false;
+
         return isCompatible(pvStructure.getStructure());
     }
 
