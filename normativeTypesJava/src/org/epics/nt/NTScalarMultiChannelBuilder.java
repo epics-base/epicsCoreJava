@@ -266,9 +266,7 @@ public class NTScalarMultiChannelBuilder
         secondsPastEpoch = false;
         nanoseconds = false;
         userTag = false;
-        // TODO When client code updated, don't include isConnected by default
-        // i.e. change line below to isConnected = false;
-        isConnected = true;
+        isConnected = false;
         extraFieldNames.clear();
         extraFields.clear();
     }
