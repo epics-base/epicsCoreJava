@@ -125,6 +125,9 @@ public class NTNDArray
 
         Structure codecField = structure.getField(Structure.class, "codec");
 
+        if (codecField == null)
+            return false;       
+
         if(!codecField.getID().equals("codec_t")) return false;
 
         // TODO: Do this without converting to string
@@ -152,6 +155,8 @@ public class NTNDArray
 
 
         StructureArray dimensionField = structure.getField(StructureArray.class, "dimension");
+        if (dimensionField == null)
+            return false;    
 
         Structure dimElementStruc = dimensionField.getStructure();
 
@@ -184,10 +189,14 @@ public class NTNDArray
 
         StructureArray attributeField = structure.getField(StructureArray.class, "attribute");
 
+        if (attributeField == null)
+            return false;
+
         Structure attributeElementStruc = attributeField.getStructure();
 
         if (!NTNDArrayAttribute.isCompatible(attributeElementStruc))
             return false;
+
 
         Field field = structure.getField("descriptor");
         if (field != null)
