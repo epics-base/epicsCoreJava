@@ -1,12 +1,13 @@
 
-Copyright (c) 2008 Martin R. Kraimer
+Copyright (c) 2006-2015 Martin R. Kraimer
 Copyright (c) 2006 The University of Chicago, as Operator of Argonne
      National Laboratory.
 Copyright (c) 2006 Deutsches Elektronen-Synchrotron,
      Member of the Helmholtz Association, (DESY), HAMBURG, GERMANY.
-Copyright (c) 2007 Control System Laboratory,
+Copyright (c) 2007-2015 Control System Laboratory,
     (COSYLAB) Ljubljana Slovenia
-
+Copyright (c) 2012-2015 Diamond Light Source Limited,
+    (DLS) Didcot, United Kingdom
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -76,3 +77,19 @@ purpose, and non-infringement.  This software is provided on an "as is"
 basis, and DESY has no obligation to provide maintenance, support,
 updates, enhancements, or modifications.
 ________________________________________________________________________
+
+This software is in part copyrighted by Diamond Light Source Limited (DLS)
+
+In no event shall DLS be liable to any party for direct, indirect,
+special, incidental, or consequential damages arising out of the use of
+this software, its documentation, or any derivatives thereof, even if
+DLS has been advised of the possibility of such damage.
+
+DLS specifically disclaims any warranties, including, but not limited
+to, the implied warranties of merchantability, fitness for a particular
+purpose, and non-infringement.  This software is provided on an "as is"
+basis, and DLS has no obligation to provide maintenance, support,
+updates, enhancements, or modifications.
+
+________________________________________________________________________
+
