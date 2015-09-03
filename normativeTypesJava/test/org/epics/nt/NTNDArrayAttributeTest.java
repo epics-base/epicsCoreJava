@@ -30,49 +30,49 @@ import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.property.*;
 
 /**
- * JUnit test for NTAttribute.
+ * JUnit test for NTNDArrayAttribute.
  * @author dgh
  *
  */
-public class NTAttributeTest extends NTTestBase
+public class NTNDArrayAttributeTest extends NTTestBase
 {
-    // Test creation of NTAttributeBuilder
+    // Test creation of NTNDArrayAttributeBuilder
 
     public static void testCreateBuilder()
 	{
-        NTAttributeBuilder builder1 = NTAttribute.createBuilder();
+        NTNDArrayAttributeBuilder builder1 = NTNDArrayAttribute.createBuilder();
 		assertNotNull(builder1);
 
-        NTAttributeBuilder builder2 = NTAttribute.createBuilder();		
+        NTNDArrayAttributeBuilder builder2 = NTNDArrayAttribute.createBuilder();		
 		assertNotSame(builder1, builder2);
 	}
 
-    // Test NTAttributes created with Builder
+    // Test NTNDArrayAttributes created with Builder
 
-    public static void testNTAttribute_BuilderCreated1()
+    public static void testNTNDArrayAttribute_BuilderCreated1()
     {
-        testNTAttribute_BuilderCreatedImpl(new String[] {});
+        testNTNDArrayAttribute_BuilderCreatedImpl(new String[] {});
     }
 
-    public static void testNTAttribute_BuilderCreated2()
+    public static void testNTNDArrayAttribute_BuilderCreated2()
     {
-        testNTAttribute_BuilderCreatedImpl(new String[] {"timeStamp"});
+        testNTNDArrayAttribute_BuilderCreatedImpl(new String[] {"timeStamp"});
     }
 
-    public static void testNTAttribute_BuilderCreated3()
+    public static void testNTNDArrayAttribute_BuilderCreated3()
     {
-        testNTAttribute_BuilderCreatedImpl(new String[] {"tags", "descriptor", "alarm", "timeStamp"} );
+        testNTNDArrayAttribute_BuilderCreatedImpl(new String[] {"tags", "alarm", "timeStamp"} );
     }
 
-    public static void testNTAttribute_BuilderCreated4()
+    public static void testNTNDArrayAttribute_BuilderCreated4()
     {
-        testNTAttribute_BuilderCreatedImpl(new String[] {"descriptor", "alarm", "timeStamp"} );
+        testNTNDArrayAttribute_BuilderCreatedImpl(new String[] { "alarm", "timeStamp"} );
     }
 
-    public static void testNTAttribute_BuilderCreated5()
+    public static void testNTNDArrayAttribute_BuilderCreated5()
     {
-        testNTAttribute_BuilderCreatedImpl(
-            new String[] {"tags", "descriptor", "timeStamp"},
+        testNTNDArrayAttribute_BuilderCreatedImpl(
+            new String[] {"tags", "timeStamp"},
             new String[] {"extra1"}, 
             new Field[]  { fieldCreate.createScalar(ScalarType.pvDouble)});
     }
@@ -80,22 +80,22 @@ public class NTAttributeTest extends NTTestBase
 
     // Test is_a
 
-    public static void testNTAttributeIs_a()
+    public static void testNTNDArrayAttributeIs_a()
     {
-        Structure s = NTAttribute.createBuilder().createStructure();
-		assertTrue(NTAttribute.is_a(s));
+        Structure s = NTNDArrayAttribute.createBuilder().createStructure();
+		assertTrue(NTNDArrayAttribute.is_a(s));
     }
 
     public static void testStructureIs_a()
     {
-        testStructureIs_aImpl(NTAttribute.URI, true);
+        testStructureIs_aImpl(NTNDArrayAttribute.URI, true);
         testStructureIs_aImpl("epics:nt/NTAttribute:1.0", true);
         testStructureIs_aImpl("epics:nt/NTAttribute:1.1", true);
         testStructureIs_aImpl("epics:nt/NTAttribute:2.0", false);
         testStructureIs_aImpl("epics:nt/NTAttribute", false);
         testStructureIs_aImpl("nt/NTAttribute:1.0", false);
         testStructureIs_aImpl("NTAttribute:1.0", false);
-        testStructureIs_aImpl("NTAttribute", false);
+        testStructureIs_aImpl("NTNDArrayAttribute", false);
         testStructureIs_aImpl("epics:nt/NTScalar:1.0", false);
     }
 
@@ -104,7 +104,7 @@ public class NTAttributeTest extends NTTestBase
     public static void testStructureIsCompatibleNull()
     {
         PVStructure pvs = null;
-        assertFalse(NTAttribute.isCompatible(pvs));
+        assertFalse(NTNDArrayAttribute.isCompatible(pvs));
     }
 
     // test compatibility - compatible structures
@@ -113,9 +113,12 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
+                add("descriptor", ScalarType.pvString).
+                add("sourceType", ScalarType.pvInt).
+                add("source", ScalarType.pvString).
                 createStructure(),
             true);  
     }
@@ -124,10 +127,13 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
                 addArray("tags", ScalarType.pvString).
+                add("descriptor", ScalarType.pvString).
+                add("sourceType", ScalarType.pvInt).
+                add("source", ScalarType.pvString).
                 add("extra", ScalarType.pvString).
                 createStructure(),
             true);
@@ -137,11 +143,13 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
                 addArray("tags", ScalarType.pvString).
                 add("descriptor", ScalarType.pvString).
+                add("sourceType", ScalarType.pvInt).
+                add("source", ScalarType.pvString).
                 add("alarm", ntField.createAlarm()).
                 add("timeStamp", ntField.createTimeStamp()).
                 addArray("extra", ScalarType.pvString).
@@ -155,7 +163,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("Value", fieldCreate.createVariantUnion()).
                 createStructure(),
@@ -166,7 +174,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 addArray("value", fieldCreate.createVariantUnion()).
                 createStructure(),
@@ -182,7 +190,7 @@ public class NTAttributeTest extends NTTestBase
 
         testStructureIsCompatibleImpl( 
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 addArray("value", u).
                 createStructure(),
@@ -193,7 +201,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
                 add("tags", ScalarType.pvString).
@@ -205,7 +213,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
                 addArray("tags", ScalarType.pvInt).
@@ -217,7 +225,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", ntField.createTimeStamp()).
                 createStructure(),
@@ -228,7 +236,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
                 add("descriptor", ScalarType.pvInt).
@@ -240,7 +248,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
                 add("alarm", ScalarType.pvInt).
@@ -252,7 +260,7 @@ public class NTAttributeTest extends NTTestBase
     {
         testStructureIsCompatibleImpl(
             fieldCreate.createFieldBuilder().
-                setId(NTAttribute.URI).
+                setId(NTNDArrayAttribute.URI).
                 add("name", ScalarType.pvString).
                 add("value", fieldCreate.createVariantUnion()).
                 add("timeStamp", ScalarType.pvInt).
@@ -260,22 +268,36 @@ public class NTAttributeTest extends NTTestBase
             false);
     }
 
+    public static void testStructureIsCompatible1e()
+    {
+        testStructureIsCompatibleImpl(
+            fieldCreate.createFieldBuilder().
+                setId(NTNDArrayAttribute.URI).
+                add("name", ScalarType.pvString).
+                add("value", fieldCreate.createVariantUnion()).
+                createStructure(),
+            false);  
+    }
+
     // test wrapping compatible structures
 
-    public static void testWrappedNTAttribute1()
+    public static void testWrappedNTNDArrayAttribute1()
     {
         Structure s = fieldCreate.createFieldBuilder().
-            setId(NTAttribute.URI).
+            setId(NTNDArrayAttribute.URI).
             add("name", ScalarType.pvString).
             add("value", fieldCreate.createVariantUnion()).
+            add("descriptor", ScalarType.pvString).
+            add("sourceType", ScalarType.pvInt).
+            add("source", ScalarType.pvString).
             createStructure();
 
-        NTAttribute ntattribute = NTAttribute.wrap(dataCreate.createPVStructure(s));
+        NTNDArrayAttribute ntattribute = NTNDArrayAttribute.wrap(dataCreate.createPVStructure(s));
 
         ntAttributeChecks(ntattribute, new String[0],
             new String[0], new Field[0]);
 
-        NTAttribute ntattribute2 = NTAttribute.wrapUnsafe(dataCreate.
+        NTNDArrayAttribute ntattribute2 = NTNDArrayAttribute.wrapUnsafe(dataCreate.
             createPVStructure(s));
 
         ntAttributeChecks(ntattribute2, new String[0],
@@ -283,30 +305,32 @@ public class NTAttributeTest extends NTTestBase
     }
 
 
-    public static void testWrappedNTAttribute2()
+    public static void testWrappedNTNDArrayAttribute2()
     {
         Structure s = fieldCreate.createFieldBuilder().
-            setId(NTAttribute.URI).
+            setId(NTNDArrayAttribute.URI).
             add("name", ScalarType.pvString).
             add("value", fieldCreate.createVariantUnion()).
             addArray("tags", ScalarType.pvString).
             add("descriptor", ScalarType.pvString).
+            add("sourceType", ScalarType.pvInt).
+            add("source", ScalarType.pvString).
             add("alarm", ntField.createAlarm()).
             add("timeStamp", ntField.createTimeStamp()).
             addArray("extra", ScalarType.pvString).
             createStructure();
 
-        String[] standardFields = { "tags", "descriptor", "alarm", "timeStamp" };
+        String[] standardFields = { "tags", "alarm", "timeStamp" };
         String[] extraNames = { "extra" };
         Field[] extraFields = { fieldCreate.createScalarArray(ScalarType.pvString) };
 
-        NTAttribute ntattribute = NTAttribute.wrap(dataCreate.createPVStructure(s));
+        NTNDArrayAttribute ntattribute = NTNDArrayAttribute.wrap(dataCreate.createPVStructure(s));
 
         ntAttributeChecks(ntattribute, 
             standardFields,
             extraNames,extraFields);
 
-        NTAttribute ntattribute2 = NTAttribute.wrapUnsafe(dataCreate.
+        NTNDArrayAttribute ntattribute2 = NTNDArrayAttribute.wrapUnsafe(dataCreate.
             createPVStructure(s));
 
         ntAttributeChecks(ntattribute, 
@@ -320,7 +344,7 @@ public class NTAttributeTest extends NTTestBase
 
     public static void testTimeStamp1()
     {
-        NTAttribute ntattribute = NTAttribute.createBuilder().
+        NTNDArrayAttribute ntattribute = NTNDArrayAttribute.createBuilder().
             addTimeStamp().create();
 
         testAttachTimeStamp(ntattribute, true);
@@ -328,7 +352,7 @@ public class NTAttributeTest extends NTTestBase
  
     public static void testTimeStamp2()
     {
-        NTAttribute ntattribute = NTAttribute.createBuilder().create();
+        NTNDArrayAttribute ntattribute = NTNDArrayAttribute.createBuilder().create();
 
         testAttachTimeStamp(ntattribute, false);
     }
@@ -337,7 +361,7 @@ public class NTAttributeTest extends NTTestBase
 
     public static void testAlarm1()
     {
-        NTAttribute ntattribute = NTAttribute.createBuilder().
+        NTNDArrayAttribute ntattribute = NTNDArrayAttribute.createBuilder().
             addAlarm().create();
 
         testAttachAlarm(ntattribute, true);
@@ -345,7 +369,7 @@ public class NTAttributeTest extends NTTestBase
 
     public static void testAlarm2()
     {
-        NTAttribute ntattribute = NTAttribute.createBuilder().create();
+        NTNDArrayAttribute ntattribute = NTNDArrayAttribute.createBuilder().create();
 
         testAttachAlarm(ntattribute, false);
     }
@@ -353,7 +377,7 @@ public class NTAttributeTest extends NTTestBase
 
     public static void testBuilderResets()
     {
-        NTAttributeBuilder builder = NTAttribute.createBuilder();
+        NTNDArrayAttributeBuilder builder = NTNDArrayAttribute.createBuilder();
 
         Structure s1 = builder.createStructure();
 
@@ -387,43 +411,42 @@ public class NTAttributeTest extends NTTestBase
     {
         FieldBuilder builder = fieldCreate.createFieldBuilder();
         Structure s = builder.setId(str).createStructure();
-        assertEquals(expected, NTAttribute.is_a(s));
+        assertEquals(expected, NTNDArrayAttribute.is_a(s));
     }
 
     public static void testStructureIsCompatibleImpl(Structure s, boolean expected)
     {
         PVStructure pvSt = dataCreate.createPVStructure(s);
-        assertEquals(expected, NTAttribute.isCompatible(pvSt));
+        assertEquals(expected, NTNDArrayAttribute.isCompatible(pvSt));
     }
 
     private static
-    void testNTAttribute_BuilderCreatedImpl(String[] standardFields)
+    void testNTNDArrayAttribute_BuilderCreatedImpl(String[] standardFields)
     {
-        testNTAttribute_BuilderCreatedImpl(standardFields, new String[0], new Field[0]);
+        testNTNDArrayAttribute_BuilderCreatedImpl(standardFields, new String[0], new Field[0]);
     }
 
 
     private static
-    void testNTAttribute_BuilderCreatedImpl(String[] standardFields, String[] extraNames, Field[] extraFields)
+    void testNTNDArrayAttribute_BuilderCreatedImpl(String[] standardFields, String[] extraNames, Field[] extraFields)
     {
-        NTAttribute ntattribute = createNTAttribute(standardFields,extraNames,extraFields);
+        NTNDArrayAttribute ntattribute = createNTNDArrayAttribute(standardFields,extraNames,extraFields);
 
         ntAttributeChecks(ntattribute,standardFields,extraNames,extraFields);        
     }
 
 
     private static
-    NTAttribute createNTAttribute(String[] standardFields, String[] extraNames, Field[] extraFields)
+    NTNDArrayAttribute createNTNDArrayAttribute(String[] standardFields, String[] extraNames, Field[] extraFields)
     {
         boolean hasTags       = find("tags", standardFields);
-        boolean hasDescriptor = find("descriptor", standardFields);
         boolean hasTimeStamp  = find("timeStamp", standardFields);
         boolean hasAlarm      = find("alarm", standardFields);
 
-        // Create NTAttribute
-        NTAttributeBuilder builder = NTAttribute.createBuilder();
+        // Create NTNDArrayAttribute
+        NTNDArrayAttributeBuilder builder = NTNDArrayAttribute.createBuilder();
         if (hasTags) builder.addTags();
-        if (hasDescriptor) builder.addDescriptor();
+        builder.addDescriptor();
         if (hasTimeStamp) builder.addTimeStamp();
         if (hasAlarm) builder.addAlarm();
 
@@ -434,23 +457,31 @@ public class NTAttributeTest extends NTTestBase
     }
 
     private static
-    void ntAttributeChecks(NTAttribute ntattribute, String[] standardFields,
+    void ntAttributeChecks(NTNDArrayAttribute ntattribute, String[] standardFields,
         String[] extraNames, Field[] extraFields)
     {
         // parse optional fields
         boolean hasTags       = find("tags", standardFields);
-        boolean hasDescriptor = find("descriptor", standardFields);
         boolean hasTimeStamp  = find("timeStamp", standardFields);
         boolean hasAlarm      = find("alarm", standardFields);
 
-        // Test value field through NTAttribute interface
+        // Test value field through NTNDArrayAttribute interface
         PVString pvName = ntattribute.getName();
 		assertNotNull(pvName);
 
         PVUnion pvValue = ntattribute.getValue();
 		assertNotNull(pvValue);
 
-		// Test optional fields through NTAttribute interface
+        PVString pvDescriptor = ntattribute.getDescriptor();
+        assertNotNull(pvDescriptor);
+
+        PVInt pvSourceType = ntattribute.getSourceType();
+        assertNotNull(pvSourceType);
+
+        PVString pvSource = ntattribute.getSource();
+        assertNotNull(pvSource);
+
+		// Test optional fields through NTNDArrayAttribute interface
         NTField ntField = NTField.get();
 
         PVStringArray pvTags = ntattribute.getTags();
@@ -460,14 +491,6 @@ public class NTAttributeTest extends NTTestBase
         }
         else
             assertNull(pvTags);
-
-        PVString pvDescriptor = ntattribute.getDescriptor();
-        if (hasDescriptor)
-        {
-            assertNotNull(pvDescriptor);
-        }
-        else
-            assertNull(pvDescriptor);
 
         PVStructure pvTimeStamp = ntattribute.getTimeStamp();
         if (hasTimeStamp)
@@ -487,10 +510,10 @@ public class NTAttributeTest extends NTTestBase
         else
             assertNull(pvAlarm);
 
-        // Test PVStructure from NTAttribute
+        // Test PVStructure from NTNDArrayAttribute
         PVStructure pvStructure = ntattribute.getPVStructure();
-        assertTrue(NTAttribute.is_a(pvStructure.getStructure()));
-        assertTrue(NTAttribute.isCompatible(pvStructure));
+        assertTrue(NTNDArrayAttribute.is_a(pvStructure.getStructure()));
+        assertTrue(NTNDArrayAttribute.isCompatible(pvStructure));
 
         assertSame(pvName, pvStructure.getSubField(PVString.class, "name"));
         assertSame(pvValue, pvStructure.getSubField(PVUnion.class, "value"));
@@ -499,6 +522,9 @@ public class NTAttributeTest extends NTTestBase
         assertSame(pvDescriptor,pvStructure.getSubField(PVString.class, "descriptor"));
         assertSame(pvTimeStamp, pvStructure.getSubField(PVStructure.class, "timeStamp"));
         assertSame(pvAlarm, pvStructure.getSubField(PVStructure.class, "alarm"));
+
+        assertSame(pvSourceType,pvStructure.getSubField(PVInt.class, "sourceType"));
+        assertSame(pvSource,pvStructure.getSubField(PVString.class, "source"));
 
         for (int i = 0; i < extraNames.length; ++i)
         {
