@@ -7,11 +7,10 @@ package org.epics.nt;
 
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.StructureArray;
-import org.epics.pvdata.pv.Union;
-import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Union;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVInt;
@@ -115,11 +114,7 @@ public class NTNDArray
         if (valueField == null)
             return false;
 
-        // TODO: Do this without converting to string
-        String valueTypeStr = NTNDArrayBuilder.getValueType().
-            toString();
-
-        if (!valueField.toString().equals(valueTypeStr))
+        if (!NTValueType.isCompatible(valueField))
             return false;
 
 
@@ -128,13 +123,7 @@ public class NTNDArray
         if (codecField == null)
             return false;       
 
-        if(!codecField.getID().equals("codec_t")) return false;
-
-        // TODO: Do this without converting to string
-        String codecStrucStr = NTNDArrayBuilder.getCodecStructure().
-            toString();
-
-        if (!codecField.toString().equals(codecStrucStr))
+        if (!NTCodec.isCompatible(codecField))
             return false;
 
 
@@ -160,14 +149,7 @@ public class NTNDArray
 
         Structure dimElementStruc = dimensionField.getStructure();
 
-        if(!dimElementStruc.getID().equals("dimension_t"))
-            return false;
-
-        // TODO: Do this without converting to string
-        String dimensionStrucStr = NTNDArrayBuilder.
-             getDimensionStructure().toString();
-
-        if (!dimElementStruc.toString().equals(dimensionStrucStr))
+        if (!NTDimension.isCompatible(dimElementStruc))
             return false;
 
 
@@ -505,4 +487,84 @@ public class NTNDArray
     static final String NTAttributeURI = "epics:nt/NTAttribute:1.0";
     private PVStructure pvNTNDArray;
 }
+
+
+class NTValueType
+{
+    public static boolean isCompatible(Union u)
+    {
+        if (u == null) return false;
+
+        if (u.getID() != Union.DEFAULT_ID) return false;
+        if (u.isVariant()) return false;
+
+        for (ScalarType scalarType : ScalarType.values())
+        {
+            if (scalarType != ScalarType.pvString)
+            {
+                String name = scalarType.toString() + "Value";
+                ScalarArray scalarField = u.getField(ScalarArray.class, name);
+                if (scalarField == null ||
+                        scalarField.getElementType() != scalarType)
+                   return false;
+            }
+        }
+
+        return true;
+    }
+};
+
+class NTCodec
+{
+    public static boolean isCompatible(Structure structure)
+    {
+        if (structure == null) return false;
+
+        if (structure.getID() != "codec_t") return false;
+
+        Scalar scalarField = structure.getField(Scalar.class, "name");
+        if (scalarField == null || scalarField.getScalarType() != ScalarType.pvString)
+            return false;
+
+        Union paramField = structure.getField(Union.class, "parameters");
+        if (paramField == null || !paramField.isVariant())
+            return false;
+
+        return true;
+    }
+};
+
+
+class NTDimension
+{
+    public static boolean isCompatible(Structure structure)
+    {
+        if(structure == null) return false;
+
+        if (structure.getID() != "dimension_t") return false;
+
+        Scalar scalarField = structure.getField(Scalar.class, "size");
+        if (scalarField == null || scalarField.getScalarType() != ScalarType.pvInt)
+            return false;
+
+        scalarField = structure.getField(Scalar.class, "offset");
+        if (scalarField == null || scalarField.getScalarType() != ScalarType.pvInt)
+            return false;
+
+        scalarField = structure.getField(Scalar.class, "fullSize");
+        if (scalarField == null || scalarField.getScalarType() != ScalarType.pvInt)
+            return false;
+
+        scalarField = structure.getField(Scalar.class, "binning");
+        if (scalarField == null || scalarField.getScalarType() != ScalarType.pvInt)
+            return false;
+
+        scalarField = structure.getField(Scalar.class, "reverse");
+        if (scalarField == null || scalarField.getScalarType() != ScalarType.pvBoolean)
+            return false;
+
+        return true;
+    }
+};
+
 
