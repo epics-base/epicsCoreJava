@@ -24,7 +24,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>pvDataJava</artifactId>
-            <version>4.1.0-SNAPSHOT</version>
+            <version>5.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     
