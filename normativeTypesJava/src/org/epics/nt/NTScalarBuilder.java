@@ -26,7 +26,7 @@ public class NTScalarBuilder
 {
     /**
      * Set a value type of an NTScalar.
-     * @param scalarType the value type.
+     * @param scalarType the scalar type of the value field.
      * @return this instance of <b>NTScalarBuilder</b>.
      */
     public NTScalarBuilder value(ScalarType scalarType)

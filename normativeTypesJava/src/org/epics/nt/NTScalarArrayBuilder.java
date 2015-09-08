@@ -27,7 +27,7 @@ public class NTScalarArrayBuilder
 {
     /**
      * Set a value type of a NTScalarArray.
-     * @param scalarType the value type.
+     * @param scalarType the scalar type of the value field.
      * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder value(ScalarType scalarType)

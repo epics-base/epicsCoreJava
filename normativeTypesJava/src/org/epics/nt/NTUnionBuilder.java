@@ -29,6 +29,7 @@ public class NTUnionBuilder
     /**
      * specify the union for the value field.
      * If this is not called then a variantUnion is the default.
+     * @param value the introspection object for the union value field.
      * @return this instance of  <b>NTUnionBuilder</b>.
      */
     public NTUnionBuilder value(Union value)

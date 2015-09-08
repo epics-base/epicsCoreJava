@@ -29,6 +29,7 @@ public class NTScalarMultiChannelBuilder
     /**
      * specify the union for the value field.
      * If this is not called then a variantUnion is the default.
+     * @param scalarType the scalar type of the value field.
      * @return this instance of  <b>NTScalarMultiChannelBuilder</b>.
      */
     public NTScalarMultiChannelBuilder value(ScalarType scalarType)
