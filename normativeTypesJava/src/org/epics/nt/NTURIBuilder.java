@@ -121,7 +121,7 @@ public class NTURIBuilder
     }
 
     /**
-     * Add extra <b>Scalar</b> of ScalarType pvDouble
+     * Add extra <b>Scalar</b> of ScalarType pvInt
      * to the query field of the type.
      * @param name name of the field.
      * @return this instance of <b>NTURIBuilder</b>.
