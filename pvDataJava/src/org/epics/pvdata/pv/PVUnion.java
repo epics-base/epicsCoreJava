@@ -42,7 +42,7 @@ public interface PVUnion extends PVField, Serializable {
      * Select field (set index) and get the field at the index.
      * @param index index of the field to select.
      * @return corresponding PVField (of undetermined value), <code>null</code> if <code>index == UNDEFINED_INDEX</code>.
-     * @throws <code>IllegalArgumentException</code> if index is invalid (out of range).
+     * @throws IllegalArgumentException if index is invalid (out of range).
      */
     PVField select(int index);
 
@@ -51,7 +51,7 @@ public interface PVUnion extends PVField, Serializable {
      * @param c expected class of a requested field.
      * @param index index of the field to select.
      * @return corresponding PVField (of undetermined value), <code>null</code> if <code>index == UNDEFINED_INDEX</code>.
-     * @throws <code>IllegalArgumentException</code> if index is invalid (out of range).
+     * @throws IllegalArgumentException if index is invalid (out of range).
      */
     <T extends PVField> T select(Class<T> c, int index);
     
@@ -59,7 +59,7 @@ public interface PVUnion extends PVField, Serializable {
      * Select field (set index) and get the field by given name.
      * @param fieldName the name of the field to select.
      * @return corresponding PVField (of undetermined value).
-     * @throws <code>IllegalArgumentException</code> if field does not exist.
+     * @throws IllegalArgumentException if field does not exist.
      */
     PVField select(String fieldName);
     
@@ -68,7 +68,7 @@ public interface PVUnion extends PVField, Serializable {
      * @param c expected class of a requested field.
      * @param fieldName the name of the field to select.
      * @return corresponding PVField (of undetermined value).
-     * @throws <code>IllegalArgumentException</code> if field does not exist.
+     * @throws IllegalArgumentException if field does not exist.
      */
     <T extends PVField> T select(Class<T> c, String fieldName);
 

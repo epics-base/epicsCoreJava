@@ -50,7 +50,7 @@ public interface Structure extends Field{
     /**
      * Get a subfield by index.
      * @param c expected class of a requested field.
-     * @param fieldOffset The offset.
+     * @param fieldIndex The index.
      * @return The Field or null if the index is invalid, or the field is not of <code>c</code> type.
      */
     <T extends Field> T getField(Class<T> c, int fieldIndex);

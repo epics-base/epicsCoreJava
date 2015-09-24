@@ -35,14 +35,14 @@ public interface LinkedList<T> {
      * Add a node after a node that is already on the list.
      * @param listNode The node that is on the list.
      * @param addNode The node to add.
-     * @throws IllegalStatexception if listNode is not on list or addNode is already on list.
+     * @throws IllegalStateException if listNode is not on list or addNode is already on list.
      */
     void insertAfter(LinkedListNode<T> listNode,LinkedListNode<T> addNode);
     /**
      * Add a node before a node that is already on the list.
      * @param listNode The node that is on the list.
      * @param addNode The node to add.
-     * @throws IllegalStatexception if listNode is not on list or addNode is already on list.
+     * @throws IllegalStateException if listNode is not on list or addNode is already on list.
      */
     void insertBefore(LinkedListNode<T> listNode,LinkedListNode<T> addNode);   
     /**

@@ -16,7 +16,7 @@ public interface TimeStamp {
     static final long nanoSecPerSec = milliSecPerSec*microSecPerSec;
     static final long  posixEpochAtEpicsEpoch = 631152000;
     /**
-     * Adjust secs and nanoseconds so that 0<=nanoseconds<nanoSecPerSec
+     * Adjust secs and nanoseconds so that 0&lt;=nanoseconds&lt;nanoSecPerSec
      */
     void normalize();
     /**

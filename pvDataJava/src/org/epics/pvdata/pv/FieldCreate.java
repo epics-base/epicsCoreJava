@@ -24,14 +24,14 @@ public interface FieldCreate {
      * Create a <i>ScalarField</i>.
      * @param scalarType The scalar type.
      * @return a <i>Scalar</i> interface for the newly created object.
-     * @throws An <i>IllegalArgumentException</i> if an illegal type is specified.
+     * @throws IllegalArgumentException if an illegal type is specified.
      */
     Scalar createScalar(ScalarType scalarType);
     /**
      * Create a <i>BoundedString</i>.
      * @param maxLength The maximum string length.
      * @return a <i>BoundedScalar</i> interface for the newly created object.
-     * @throws An <i>IllegalArgumentException</i> if maxLength <= 0.
+     * @throws IllegalArgumentException if maxLength &lt;= 0.
      */
     BoundedString createBoundedString(int maxLength);
     /**

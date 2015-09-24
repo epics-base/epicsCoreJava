@@ -38,7 +38,6 @@ public abstract class AbstractPVField implements PVField{
     /**
      * Constructor that must be called by derived classes.
      * @param field The introspection interface.
-     * @param pvParent The pvParent PVStructure.
      * @throws IllegalArgumentException if field is null;
      */
     protected AbstractPVField(Field field) {

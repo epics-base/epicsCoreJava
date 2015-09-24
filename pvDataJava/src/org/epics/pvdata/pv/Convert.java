@@ -233,7 +233,7 @@ public interface Convert {
      */
     int  copyUnionArray(PVUnionArray from,int offset, PVUnionArray to,int toOffset,int length);
     /**
-     * Convert a PV to a <byte>.
+     * Convert a PV to a byte.
      * @param pv a PV
      * @return converted value
      */
