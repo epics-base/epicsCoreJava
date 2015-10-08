@@ -1,4 +1,68 @@
-Release 4.0 IN DEVELOPMENT
+Release 5.0
+===========
+
+The main changes since release 4.0 are:
+
+* New template versions of Structure::getField
+* Printing of structure and union arrays modified
+* minStep field added to Control
+* Changes to access specifiers in Display and PVDisplay
+
+New template version of Structure::getField
+--------------------------------------------
+
+A new template getField method has been added to Structure
+
+<T extends Field> 
+T 	getField(Class<T> c, String fieldName)
+
+Can be used, for example, as follows:
+
+    Structure tsStruc = struc.getField(Structure.class, "timeStamp");
+
+
+Printing of structure and union arrays modified
+-----------------------------------------------
+
+The string representation of a structure array has been changed from:
+
+    structure[] structureArrayField
+        structure[]
+            structure
+                long secondsPastEpoch
+                int nanoseconds
+
+to
+
+    structure[] structureArrayField
+        structure[]
+            long secondsPastEpoch
+            int nanoseconds
+
+This brings it in line with the pvData meta language. Similar changes have been made for unions.
+
+
+minStep field added to Control
+------------------------------
+
+Support for the minStep field has been added to Control. This brings it in
+line with the C++ implementation and the Normative Types specification.
+
+getMinStep and setMinStep methods have been added to Control. Handling of
+minStep field added in PVControl.
+
+
+Changes to access specifiers in Display and PVDisplay
+-----------------------------------------------------
+
+The access specifiers of the methods in Display have been changed from
+default/package to public.
+
+The fields in the PVDisplayFactory class have been changed from public to
+private.
+
+
+Release 4.0
 ===========
 
 The main changes since release 3.0.2 are:
