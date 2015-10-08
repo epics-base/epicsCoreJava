@@ -13,8 +13,8 @@ New template version of Structure::getField
 
 A new template getField method has been added to Structure
 
-<T extends Field> 
-T 	getField(Class<T> c, String fieldName)
+    <T extends Field>
+    T getField(Class<T> c, String fieldName)
 
 Can be used, for example, as follows:
 
