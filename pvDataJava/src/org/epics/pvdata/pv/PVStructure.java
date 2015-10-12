@@ -20,7 +20,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
     Structure getStructure();
     /**
      * Get the <i>PVField</i> array for the nodes of the structure.
-     * @return array of PVField. One for each field.
+     * @return array of PVField, one for each field.
      */
     PVField[] getPVFields();
     /**
@@ -40,17 +40,19 @@ public interface PVStructure extends PVField, BitSetSerializable {
     /**
      * Get the PVField subfield with name fieldName.
      * The fieldName is of the form name.name...
-     * @param c expected class of a requested field.
+     * @param <T> the expected type of the PVField of the requested field
+     * @param c class object modeling the class T of expected type of the requested field
      * @param fieldName The fieldName.
-     * @return The PVField or null if the subfield does not exist, or the field is not of <code>c</code> type.
+     * @return The PVField or null if the subfield does not exist, or the field is not of type <code>T</code>.
      */
     <T extends PVField> T getSubField(Class<T> c, String fieldName);
 
     /**
      * Get the PVField with the specified offset.
-     * @param c expected class of a requested field.
+     * @param <T> the expected type of the PVField of the requested field
+     * @param c class object modeling the class T of expected type of the requested field
      * @param fieldOffset The offset.
-     * @return The PVField or null if the offset is not part of this structure, or the field is not of <code>c</code> type.
+     * @return the PVField or null if the offset is not part of this structure, or the field is not of type <code>T</code>.
      */
     <T extends PVField> T getSubField(Class<T> c, int fieldOffset);
     /**
@@ -129,6 +131,7 @@ public interface PVStructure extends PVField, BitSetSerializable {
      * Find an array subfield with the specified fieldName and elementType.
      * The fieldName is of the form name.name...
      * @param fieldName The field name to find.
+     * @param elementType the ScalarType of an element of the ScalarArray field
      * @return The interface if the field of the correct type is found or null if not found.
      */
     //@Deprecated

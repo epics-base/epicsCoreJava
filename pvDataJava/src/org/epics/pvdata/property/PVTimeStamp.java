@@ -31,7 +31,9 @@ public interface PVTimeStamp {
      */
     boolean isAttached();
     /**
-     * Get the TimeStamp. A logic error exception will be thrown if not attached to a timeStamp field.
+     * Get the time stamp values from the attached time stamp field and write to the specified TimeStamp.
+     * @param timeStamp the TimeStamp to be updated
+     * @throws IllegalStateException if this PVTimeStamp not attached to a time stamp field 
      */
     void get(TimeStamp timeStamp);
     /**

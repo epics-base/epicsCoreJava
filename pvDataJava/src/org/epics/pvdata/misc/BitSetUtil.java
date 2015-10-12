@@ -25,7 +25,7 @@ public interface BitSetUtil {
      * <p>Note that this is a recursive algorithm.</p>
      * <p>Channel Access can call this before sending data. It can then pass entire structures if the structure offset bit is set.</p>
      * @param bitSet The bitSet for pvStructure. 
-     * @param pvStructure
+     * @param pvStructure the PVStructure relative to which the compression is performed
      * @return (false,true) if (no, at least one) bit is set in bitSet.
      */
     boolean compress(BitSet bitSet,PVStructure pvStructure);

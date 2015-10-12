@@ -32,7 +32,7 @@ public interface Monitor extends Destroyable {
     MonitorElement poll();
     /**
      * Release a MonitorElement that was returned by poll.
-     * @param monitorElement
+     * @param monitorElement the MonitorElement to release
      */
     void release(MonitorElement monitorElement);
 }

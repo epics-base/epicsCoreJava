@@ -14,15 +14,15 @@ public interface AccessSecurityLevel {
     /**
      * Get the name associated with an access security level.
      * @param level The level.
-     * @return The name associated with the level. Throws an exception if the level does not exist.
-     * @throws IndexOutOfBoundsException
+     * @return The name associated with the level.
+     * @throws IndexOutOfBoundsException if the level does not exist.
      */
     String getName(int level) throws IndexOutOfBoundsException;
     /**
      * Get the access security level with the specified name.
      * @param name The name.
      * @return The access security level. An exception is thrown for an illegal name.
-     * @throws NoSuchFieldException
+     * @throws NoSuchFieldException if name is illegal
      */
     int getLevel(String name) throws NoSuchFieldException;
     /**

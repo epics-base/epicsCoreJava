@@ -14,8 +14,8 @@ package org.epics.pvdata.misc;
 public interface Executor {
     /**
      * Create a node that can be passed to execute.
-     * @param command
-     * @return Interface.
+     * @param command the command to be executed
+     * @return the ExecutorNode created
      */
     ExecutorNode createNode(Runnable command);
     /**

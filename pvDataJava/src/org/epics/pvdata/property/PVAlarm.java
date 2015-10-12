@@ -38,7 +38,9 @@ public interface PVAlarm {
      */
     boolean isAttached();
     /**
-     * Get the alarm. A logic error exception will be thrown if not attached to an alarm field.
+     * Get the alarm values from the attached alarm field and write to the specified Alarm.
+     * @param alarm the Alarm to be updated
+     * @throws IllegalStateException if this PVAlarm not attached to an alarm field 
      */
     void get(Alarm alarm);
     /**

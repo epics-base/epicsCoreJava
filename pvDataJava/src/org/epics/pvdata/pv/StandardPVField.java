@@ -28,6 +28,7 @@ public interface StandardPVField {
     /**
      * Create a PVStructure with a structureArray value field.
      * @param properties Some combination of alarm,timeStamp
+     * @param structure the Structure of the StructureArray value field
      * @return The PVStructure with fields value plus the specified properties.
      */
     PVStructure structureArray(Structure structure,String properties);

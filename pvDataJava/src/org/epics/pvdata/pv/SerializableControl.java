@@ -23,8 +23,8 @@ public interface SerializableControl {
 	
 	
 	/**
-	 * Helper method. Ensures specified size of bytes, flushes if necessary.
-	 * @param size
+	 * Ensures that the specified number of bytes are available for serialization, flushes if necessary.
+	 * @param size the number of bytes
 	 */
 	void ensureBuffer(int size);
 

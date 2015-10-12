@@ -33,7 +33,8 @@ public interface PVUnion extends PVField, Serializable {
     
     /**
      * Get the <code>PVField</code> value stored in the field.
-     * @param c expected class of a requested field.
+     * @param <T> the expected type of the PVField of the requested field
+     * @param c class object modeling the class T of expected type of the requested field
      * @return <code>PVField</code> value of field, <code>null</code> if <code>getSelectedIndex() == UNDEFINED_INDEX</code>.
      */
     <T extends PVField> T get(Class<T> c);
@@ -48,7 +49,8 @@ public interface PVUnion extends PVField, Serializable {
 
     /**
      * Select field (set index) and get the field at the index.
-     * @param c expected class of a requested field.
+     * @param <T> the expected type of the PVField of the requested field
+     * @param c class object modeling the class T of expected type of the requested field
      * @param index index of the field to select.
      * @return corresponding PVField (of undetermined value), <code>null</code> if <code>index == UNDEFINED_INDEX</code>.
      * @throws IllegalArgumentException if index is invalid (out of range).
@@ -65,7 +67,8 @@ public interface PVUnion extends PVField, Serializable {
     
     /**
      * Select field (set index) and get the field by given name.
-     * @param c expected class of a requested field.
+     * @param <T> the expected type of the PVField of the requested field
+     * @param c class object modeling the class T of expected type of the requested field
      * @param fieldName the name of the field to select.
      * @return corresponding PVField (of undetermined value).
      * @throws IllegalArgumentException if field does not exist.

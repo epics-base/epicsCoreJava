@@ -14,13 +14,14 @@ package org.epics.pvdata.pv;
 public interface PVField extends Serializable {
     /**
      * Get the fieldName for this field.
-     * @return The name or null if top level field.
+     * @return The name or the empty string if top-level field.
      */
     String getFieldName();
     /**
      * Fully expand the name of this field using the
      * names of its parent fields with a dot '.' separating
      * each name.
+     * @return The full name or the empty string if top-level field.
      */
     String getFullName();
     /**

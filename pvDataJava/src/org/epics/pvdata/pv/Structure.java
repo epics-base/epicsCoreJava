@@ -41,17 +41,19 @@ public interface Structure extends Field{
     Field getField(int fieldIndex);
     /**
      * Get the Field for the specified fieldName
-     * @param c expected class of a requested field.
+     * @param <T> the expected type of the Field of the requested field
+     * @param c class object modeling the class T of expected type of the requested field
      * @param fieldName The fieldName.
-     * @return The Field or null if the field does not exist, or the field is not of <code>c</code> type.
+     * @return The Field or null if the field does not exist, or the field is not of type <code>T</code>.
      */
     <T extends Field> T getField(Class<T> c, String fieldName);
 
     /**
      * Get a subfield by index.
-     * @param c expected class of a requested field.
+     * @param <T> the expected type of the Field of the requested field
+     * @param c class object modeling the class T of expected type of the requested field
      * @param fieldIndex The index.
-     * @return The Field or null if the index is invalid, or the field is not of <code>c</code> type.
+     * @return The Field or null if the field does not exist, or the field is not of type <code>T</code>.
      */
     <T extends Field> T getField(Class<T> c, int fieldIndex);
     /**

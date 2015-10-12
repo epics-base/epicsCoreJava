@@ -31,7 +31,9 @@ public interface PVControl {
      */
     boolean isAttached();
     /**
-     * Get the Control. A logic error exception will be thrown if not attached to a control field.
+     * Get the control values from the attached control field and write to the specified Control.
+     * @param control the Control to be updated
+     * @throws IllegalStateException if this PVControl not attached to a control field 
      */
     void get(Control control);
     /**

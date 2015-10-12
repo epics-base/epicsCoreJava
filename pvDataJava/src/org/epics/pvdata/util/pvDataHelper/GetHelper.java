@@ -42,9 +42,11 @@ import org.epics.pvdata.pv.StringArrayData;
 
 public class GetHelper 
 {
-	        /**
-                 * Copy out the entire array of doubles into a Vector of Double.
-	         */
+		/**
+		 * Copy out the entire array of doubles into a Vector of Double.
+		 * @param pv the PVDoubleArray to copy to
+		 * @return the Vector containg the values from the specified array
+		 */
 		public static Vector<Double> getDoubleVector( PVDoubleArray pv )
 		{
 	        int len = pv.getLength();
@@ -59,9 +61,11 @@ public class GetHelper
 	        return ret;
 		}
 		
-	        /** 
-                 * Copy out the entire array of longs into a Vector of Long.
-	         */	
+		/** 
+		 * Copy out the entire array of longs into a Vector of Long.
+		 * @param pv the PVLongArray to copy to
+		 * @return the Vector containg the values from the specified array        
+		 */	
 		public static Vector<Long> getLongVector( PVLongArray pv )
 		{
 	        int len = pv.getLength();
@@ -76,9 +80,11 @@ public class GetHelper
 	        return ret;
 		}
 		
-                /** 
-                 * Copy out the entire array of bytes into a Vector of Byte.
-	         */
+		/** 
+		 * Copy out the entire array of bytes into a Vector of Byte.
+		 * @param pv the PVByteArray to copy to
+		 * @return the Vector containg the values from the specified array      
+		 */
 		public static Vector<Byte> getByteVector( PVByteArray pv )
 		{
 	        int len = pv.getLength();
@@ -93,9 +99,11 @@ public class GetHelper
 	        return ret;
 		}
 		
-                /** 
-                 * Copy out the entire array of strings into a Vector of String.
-	         */
+		/** 
+		 * Copy out the entire array of strings into a Vector of String.
+		 * @param pv the PVStringArray to copy to
+		 * @return the Vector containg the values from the specified array      
+		 */
 		public static Vector<String> getStringVector( PVStringArray pv )
 		{
 	        int len = pv.getLength();
@@ -118,9 +126,11 @@ public class GetHelper
 	        return ret;
 		}
 		
-                /** 
-                 * Copy out the entire array of booleans into a Vector of Boolean.
-	         */
+		/** 
+		 * Copy out the entire array of booleans into a Vector of Boolean.
+		 * @param pv the PVBooleanArray to copy to
+		 * @return the Vector containg the values from the specified array
+		 */
 		public static Vector<Boolean> getBooleanVector( PVBooleanArray pv )
 		{
 	        int len = pv.getLength();

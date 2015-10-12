@@ -37,17 +37,17 @@ public interface Convert {
 	void getFullFieldName(StringBuilder builder,PVField pvField);
     /**
      * Convert a PVField to a string.
-     * param buf buffer for the result
-     * @param pv a PVField to convert to a string.
      * If a PVField is a structure or array be prepared for a very long string.
+     * @param buf buffer for the result
+     * @param pv a PVField to convert to a string.
      * @param indentLevel indentation level
      */
     void getString(StringBuilder buf,PVField pv, int indentLevel);
     /**
      * Convert a PVField to a string.
-     * param buf buffer for the result
-     * @param pv The PVField to convert to a string.
      * If the PVField is a structure or array be prepared for a very long string.
+     * @param buf buffer for the result
+     * @param pv The PVField to convert to a string.
      */
     void getString(StringBuilder buf,PVField pv);
     /**
@@ -89,7 +89,7 @@ public interface Convert {
      * @param toOffset Starting element in the string array.
      * @return Number of elements converted.
      */
-    int toStringArray(PVScalarArray pv, int offset, int length, String[]to, int toOffset);
+    int toStringArray(PVScalarArray pv, int offset, int length, String[] to, int toOffset);
     /**
      * Are from and to valid arguments to copy.
      * This first checks of both arguments have the same Type.
@@ -421,7 +421,7 @@ public interface Convert {
      * @param offset starting element in a PV
      * @param length number of elements to transfer
      * @param from value to put into PV
-     * @param fromOffset
+     * @param fromOffset starting element in the source array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */
@@ -476,7 +476,7 @@ public interface Convert {
      * @param offset starting element in a PV
      * @param length number of elements to transfer
      * @param from value to put into PV
-     * @param fromOffset
+     * @param fromOffset starting element in the source array
      * @return number of elements converted
      * @throws IllegalArgumentException if the element type is not numeric
      */

@@ -16,10 +16,11 @@ import org.epics.pvdata.pv.SerializableControl;
 public final class SerializeHelper {
 
 	/**
-	 * Serialize array size.
-	 * @param s size to encode.
-	 * @param buffer serialization buffer.
-	 * @param flusher flusher.
+	 * Serialize the specified array size into the specified buffer, flushing when necessary.
+	 * The specified SerializableControl manages any flushing required.
+	 * @param s       size to encode
+	 * @param buffer  the buffer to be serialized into
+	 * @param flusher the SerializableControl to manage the flushing
 	 */
 	public final static void writeSize(final int s, ByteBuffer buffer, SerializableControl flusher) {
 		flusher.ensureBuffer(Long.SIZE/Byte.SIZE + 1);
@@ -27,9 +28,9 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * Serialize array size.
-	 * @param s size to encode.
-	 * @param buffer serialization buffer.
+	 * Serialize the specified array size into the specified buffer.
+	 * @param s       size to encode
+	 * @param buffer  the buffer to be serialized into
 	 */
 	private final static void writeSize(final int s, ByteBuffer buffer) {
 		if (s == -1)					// null
@@ -41,9 +42,11 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * Deserialize array size.
-	 * @param buffer deserialization buffer.
-	 * @return array size.
+	 * Deserialize the array size from the specified buffer.
+	 * The specified DeserializableControl ensures sufficient bytes are available.
+	 * @param buffer the buffer to serialize from
+	 * @param control the DeserializableControl
+	 * @return the deserialized array size
 	 */
 	public final static int readSize(ByteBuffer buffer, DeserializableControl control)
 	{
@@ -63,9 +66,9 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * Deserialize array size.
-	 * @param buffer deserialization buffer.
-	 * @return array size.
+	 * Deserialize the array size from the specified buffer.
+	 * @param buffer the buffer to serialize from
+	 * @return the deserialized array size
 	 */
 	public final static int readSize(ByteBuffer buffer)
 	{
@@ -83,7 +86,11 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * String serialization helper method.
+	 * Serialize the specified string into the specified buffer, flushing when necessary.
+	 * The specified SerializableControl manages any flushing required.
+	 * @param value   the string to be serialized
+	 * @param buffer  the buffer to be serialized into
+	 * @param flusher the SerializableControl to manage the flushing
 	 */
 	public final static void serializeString(final String value, ByteBuffer buffer, SerializableControl flusher) {
 		if (value == null)
@@ -105,7 +112,9 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * String serialization helper method.
+	 * Serialize the specified string into the specified buffer.
+	 * @param value   the string to be serialized
+	 * @param buffer  the buffer to be serialized into
 	 */
 	public final static void serializeString(final String value, ByteBuffer buffer) {
 		if (value == null)
@@ -117,8 +126,17 @@ public final class SerializeHelper {
 		}
 	}
 
+
 	/**
-	 * String serialization helper method.
+	 * Serialize a substring of a specified string into the specified buffer, flushing when necessary.
+	 * The substring serialized is of the specified length and starts
+	 * at the specified offset relative to supplied string.
+	 * The specified SerializableControl manages any flushing required.
+	 * @param value   the string from which a substring is to be serialized
+	 * @param offset  the start of the substring relative to supplied string
+	 * @param count   the length of the substring
+	 * @param buffer  the buffer to be serialized into
+	 * @param flusher the SerializableControl to manage the flushing
 	 */
 	public final static void serializeSubstring(final String value, int offset,
 			int count, ByteBuffer buffer, SerializableControl flusher) {
@@ -140,7 +158,11 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * String deserialization helper method.
+	 * Deserialize a string from the specified buffer.
+	 * The specified DeserializableControl ensures sufficient bytes are available.
+	 * @param buffer  the buffer to serialize from
+	 * @param control the DeserializableControl
+	 * @return the deserialized string
 	 */
 	public final static String deserializeString(ByteBuffer buffer, DeserializableControl control) {
 		int size = SerializeHelper.readSize(buffer, control);
@@ -164,7 +186,9 @@ public final class SerializeHelper {
 	}
 
 	/**
-	 * String deserialization helper method.
+	 * Deserialize a string from the specified buffer.
+	 * @param buffer  the buffer to serialize from
+	 * @return the deserialized string
 	 */
 	public final static String deserializeString(ByteBuffer buffer) {
 		int size = SerializeHelper.readSize(buffer);

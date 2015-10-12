@@ -33,6 +33,7 @@ public class BasePVAuxInfo implements PVAuxInfo {
     private PVField pvField;
     /**
      * Constructor
+     * @param pvField the PVField with which this PVAuxInfo is associated
      */
     public  BasePVAuxInfo(PVField pvField){
         this.pvField = pvField;

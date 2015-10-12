@@ -191,6 +191,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param longs a long array containing a little-endian representation
      *        of a sequence of bits to be used as the initial bits of the
      *        new bit set
+     * @return a new bit set containing all the bits in the given long array
      * @since 1.7
      */
     public static BitSet valueOf(long[] longs) {
@@ -214,6 +215,8 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param lb a long buffer containing a little-endian representation
      *        of a sequence of bits between its position and limit, to be
      *        used as the initial bits of the new bit set
+     * @return the new bit set
+     * @return a new bit set containing all the bits in the given long buffer between its position and limit
      * @since 1.7
      */
     public static BitSet valueOf(LongBuffer lb) {
@@ -239,6 +242,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param bytes a byte array containing a little-endian
      *        representation of a sequence of bits to be used as the
      *        initial bits of the new bit set
+     * @return a new bit set containing all the bits in the given byte array
      * @since 1.7
      */
     public static BitSet valueOf(byte[] bytes) {
@@ -259,6 +263,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param bb a byte buffer containing a little-endian representation
      *        of a sequence of bits between its position and limit, to be
      *        used as the initial bits of the new bit set
+     * @return a new bit set containing all the bits in the given byte
      * @since 1.7
      */
     public static BitSet valueOf(ByteBuffer bb) {
@@ -934,8 +939,8 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
     /**
      * Perform AND operation on <code>set1</code> and <code>set2</code>,
      * and OR on result and this instance.
-     * @param set1
-     * @param set2
+     * @param set1 first argument of initial AND operation
+     * @param set2 second argument of initial AND operation
      */
     public void or_and(BitSet set1, BitSet set2) {
     	int inUse = Math.min(set1.wordsInUse, set2.wordsInUse);
@@ -1127,7 +1132,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         }
     }
 
-    /**
+    /*
      * Attempts to reduce internal storage used for the bits in this bit set.
      * Calling this method may, but is not required to, affect the value
      * returned by a subsequent call to the {@link #size()} method.
@@ -1138,7 +1143,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         }
     }*/
 
-    /**
+    /*
      * Save the state of the {@code BitSet} instance to a stream (i.e.,
      * serialize it).
      */
@@ -1153,7 +1158,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         s.writeFields();
     }
 
-    /**
+    /*
      * Reconstitute the {@code BitSet} instance from a stream (i.e.,
      * deserialize it).
      */
@@ -1183,14 +1188,14 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * <p>Example:
      * <pre>
      * BitSet drPepper = new BitSet();</pre>
-     * Now {@code drPepper.toString()} returns "{@code {}}".<p>
+     * Now {@code drPepper.toString()} returns "{@code {}}".
      * <pre>
      * drPepper.set(2);</pre>
-     * Now {@code drPepper.toString()} returns "{@code {2}}".<p>
+     * <p>Now {@code drPepper.toString()} returns "{@code {2}}".
      * <pre>
      * drPepper.set(4);
      * drPepper.set(10);</pre>
-     * Now {@code drPepper.toString()} returns "{@code {2, 4, 10}}".
+     * <p>Now {@code drPepper.toString()} returns "{@code {2, 4, 10}}".
      *
      * @return a string representation of this bit set
      */

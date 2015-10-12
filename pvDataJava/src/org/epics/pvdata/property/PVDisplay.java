@@ -31,7 +31,9 @@ public interface PVDisplay {
      */
     boolean isAttached();
     /**
-     * Get the Display. A logic error exception will be thrown if not attached to a display field.
+     * Get the display values from the attached display field and write to the specified Display.
+     * @param display the Display to be updated
+     * @throws IllegalStateException if this PVDisplay not attached to a display field
      */
     void get(Display display);
     /**
