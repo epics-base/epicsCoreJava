@@ -16,30 +16,39 @@ import org.epics.pvdata.pv.MessageType;
 public interface MessageQueue {
     /**
      * Get the next message.
-     * @return The next message or null if no messages.
+     *
+     * @return the next message or null if no messages
      */
     MessageNode get();
+
     /**
      * PutFactory a new message into the queue.
-     * @param message The message.
-     * @param messageType The message type.
-     * @param replaceLast If queue is full should last message be replaced by this message.
-     * @return true if the message was put into the queue or false if the queue was full.
+     *
+     * @param message the message
+     * @param messageType the message type
+     * @param replaceLast whether the last message should be replaced by this message if queue is full
+     * @return true if the message was put into the queue or false if the queue was full
      */
-    boolean put(String message,MessageType messageType,boolean replaceLast);
+    boolean put(String message, MessageType messageType, boolean replaceLast);
+
     /**
      * Is the message queue empty?
-     * @return (false,true) if it (is not, is) empty.
+     * 
+     * @return (false,true) if it (is not, is) empty
      */
     boolean isEmpty();
+
     /**
      * Is the queue full?
-     * @return (false,true) if there (is, is not) a free MessageNode.
+     *
+     * @return (false,true) if there (is, is not) a free MessageNode
      */
     boolean isFull();
+
     /**
      * Get the number of calls to replaceFirst and/or replaceLast since the last call.
-     * @return The number.
+     *
+     * @return the number of calls to replaceFirst and/or replaceLast since the last call
      */
     int getClearOverrun();
 }

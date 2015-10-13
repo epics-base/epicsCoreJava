@@ -18,10 +18,11 @@ public interface SerializableArray extends Serializable {
 	
     /**
      * Serialize field into given buffer.
-	 * @param buffer serialization buffer.
-	 * @param flusher flush interface.
-	 * @param offset offset in array.
-	 * @param count number of elements in array.
+     * 
+	 * @param buffer serialization buffer
+	 * @param flusher flush interface
+	 * @param offset offset in array
+	 * @param count number of elements in array
 	 */
 	void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count);
 }

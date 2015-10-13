@@ -19,14 +19,17 @@ package org.epics.pvdata.misc;
 public interface ThreadCreate {
     /**
      * Create a new thread.
-     * @param name The thread name.
-     * @param priority The thread priority.
-     * @param runnableReady An implementation of RunnableReady.
-     * @return The newly created thread. Create does not return until ready has been called.
+     *
+     * @param name the thread name
+     * @param priority the thread priority
+     * @param runnableReady an implementation of RunnableReady
+     * @return the newly created thread. Create does not return until ready has been called.
      */
     Thread create(String name, int priority, RunnableReady runnableReady);
+
     /**
      * Get an array of all the active threads.
+     *
      * @return The array.
      */
     Thread[] getThreads();

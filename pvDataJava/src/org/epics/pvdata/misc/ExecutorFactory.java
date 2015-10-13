@@ -17,9 +17,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ExecutorFactory {
     /**
      * Create a new set of threads.
-     * @param threadName The name for the set of threads.
-     * @param priority The ScanPriority for the thread.
-     * @return The IOCExecutor interface.
+     * 
+     * @param threadName the name for the set of threads
+     * @param priority the ScanPriority for the thread
+     * @return the IOCExecutor interface
      */
     static public Executor create(String threadName, ThreadPriority priority) {
         return new ExecutorInstance(threadName,priority);

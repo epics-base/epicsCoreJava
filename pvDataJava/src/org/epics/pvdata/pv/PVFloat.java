@@ -13,13 +13,15 @@ package org.epics.pvdata.pv;
 public interface PVFloat extends PVScalar{
     /**
      * Get the <i>float</i> value stored in the field.
-     * @return float Value of field.
+     *
+     * @return the float value of field
      */
     float get();
     /**
      * Put the <i>float</i> value into the field.
      * If the field is immutable a message is generated and the field not modified.
-     * @param value New value.
+     *
+     * @param value the new value
      */
     void put(float value);
 }

@@ -59,9 +59,10 @@ public enum ScalarType {
      * Value has type <i>string</i>.
      */
     pvString;
+
     /**
      * Is this an integer (signed or unsigned). true if byte, short, int, long, ubyte, ushort, uint, or ulong.
-     * @return true if it is an integer type.
+     * @return true if it is an integer type
      */
     public boolean isInteger() {
         if( (ordinal() >= ScalarType.pvByte.ordinal()) && (ordinal() <= ScalarType.pvULong.ordinal()) ) {
@@ -69,9 +70,11 @@ public enum ScalarType {
         }
         return false;
     }
+
     /**
      * Is this an unsigned integer. true if ubyte, ushort, uint, or ulong.
-     * @return true if it is an unsigned integer type.
+     * 
+     * @return true if it is an unsigned integer type
      */
     public boolean isUInteger() {
         if( (ordinal() >= ScalarType.pvUByte.ordinal()) && (ordinal() <= ScalarType.pvULong.ordinal()) ) {
@@ -79,9 +82,11 @@ public enum ScalarType {
         }
         return false;
     }
+
     /**
      * Is this a Java numeric type?
-     * @return Returns true if the type is a Java numeric type.
+     * 
+     * @return true if the type is a Java numeric type.
      * The numeric types are byte, short, int, long, float, and double.
      */
     public boolean isNumeric() {
@@ -90,9 +95,11 @@ public enum ScalarType {
         }
         return false;
     }
+
     /**
      * Is this a Java primitive type?
-     * @return Returns true if the type is a Java primitive type.
+     * 
+     * @return true if the type is a Java primitive type.
      * The numeric types and boolean are primitive types.
      */
     public boolean isPrimitive() {
@@ -100,10 +107,12 @@ public enum ScalarType {
         if(ordinal() == ScalarType.pvBoolean.ordinal()) return true;
         return false;
     }
+
     /**
      * Get the ScalarType for a string defining the type.
-     * @param type A character string defining the type.
-     * @return The ScalarType or null if an illegal type.
+     * 
+     * @param type a character string defining the type
+     * @return the ScalarType or null if an illegal type
      */
     public static ScalarType getScalarType(String type) {
         if(type.equals("boolean")) return ScalarType.pvBoolean;

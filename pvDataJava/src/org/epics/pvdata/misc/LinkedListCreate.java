@@ -13,22 +13,25 @@ package org.epics.pvdata.misc;
 public class LinkedListCreate<T> {
     /**
      * Create a Linked List.
-     * @return The interface.
+     * 
+     * @return the interface
      */
     public LinkedList<T> create() {
         return new LinkedListImpl<T>();
     }
     /**
      * Create a Linked List Node.
-     * @param object The object for the node.
-     * @return The interface.
+     * 
+     * @param object the object for the node.
+     * @return the interface.
      */
     public LinkedListNode<T> createNode(T object) {
         return new LinkedListNodeImpl<T>(object);
     }
     /**
      * Create a Linked List Array.
-     * @return The interface.
+     * 
+     * @return the interface
      */
     public LinkedListArray<T> createArray() {
         return new LinkedListArrayImpl<T>();

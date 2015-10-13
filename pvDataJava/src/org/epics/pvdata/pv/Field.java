@@ -13,28 +13,37 @@ package org.epics.pvdata.pv;
 public interface Field extends Serializable {
     /**
      * Get the identification string.
-     * @return The identification string, can be empty.
+     *
+     * @return the identification string, can be empty
      */
     String getID();
+
     /**
      * Get the field type.
-     * @return The field type.
+     *
+     * @return the field type
      */
     Type getType();
+
     /**
      * Convert to a string
-     * @param buf buffer for the result
+     *
+     * @param buf the buffer for the result
      */
     void toString(StringBuilder buf);
+
     /**
      * Convert to a string
+     *
      * @param buf buffer for the result
-     * @param indentLevel Indentation level
+     * @param indentLevel the indentation level
      */
-    void toString(StringBuilder buf,int indentLevel);
+    void toString(StringBuilder buf, int indentLevel);
+
     /**
      * Implement standard toString().
-     * @return The field as a String.
+     *
+     * @return The field as a String
      */
     String toString();
 }

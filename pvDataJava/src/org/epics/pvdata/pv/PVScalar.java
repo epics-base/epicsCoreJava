@@ -13,7 +13,8 @@ package org.epics.pvdata.pv;
 public interface PVScalar extends PVField{
     /**
      * Get the Scalar reflection interface.
-     * @return The Scalar interface.
+     *
+     * @return the Scalar interface
      */
     Scalar getScalar();
 }

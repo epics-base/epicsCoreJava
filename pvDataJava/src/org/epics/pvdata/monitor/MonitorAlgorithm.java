@@ -13,14 +13,18 @@ package org.epics.pvdata.monitor;
 public interface MonitorAlgorithm {
     /**
      * Get the name of the algorithm.
-     * @return The name.
+     *
+     * @return the name
      */
     String getAlgorithmName();
+
     /**
      * Should the current value cause a monitor?
-     * @return (false,true) if a monitor (should not, should) be raised.
+     *
+     * @return (false,true) if a monitor (should not, should) be raised
      */
     boolean causeMonitor();
+
     /**
      * A monitor was raised. The implementation should update to the latest value.
      */

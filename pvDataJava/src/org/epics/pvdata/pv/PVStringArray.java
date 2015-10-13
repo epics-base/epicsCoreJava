@@ -23,7 +23,7 @@ public interface PVStringArray extends PVScalarArray{
      * Get sets these values. The caller must do the actual data transfer.
      * @return The number of elements that can be transfered.
      * This is always less than or equal to length.
-     * If the value is less then length then get should be called again.
+     * If the value is less than the length then put should be called again.
      * If the return value is greater than 0 then data.data is
      * a reference to the array and data.offset is the offset into the
      * array.

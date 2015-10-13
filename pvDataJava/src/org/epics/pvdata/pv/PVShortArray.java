@@ -16,6 +16,7 @@ package org.epics.pvdata.pv;
 public interface PVShortArray extends PVScalarArray{
     /**
      * Get values from a <i>PVShortArray</i> and put them into <i>short[]to</i>.
+     *
      * @param offset The offset to the first element to get.
      * @param length The maximum number of elements to transfer.
      * @param data The class containing the data and an offset into the data.
@@ -28,23 +29,27 @@ public interface PVShortArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, ShortArrayData data);
+
     /**
      * Put values into a <i>PVShortArray</i> from <i>short[]from</i>.
-     * @param offset The offset to the first element to put.
-     * @param length The maximum number of elements to transfer.
-     * @param from The array from which to get the data.
-     * @param fromOffset The offset into from.
-     * @return The number of elements transfered.
+     *
+     * @param offset the offset to the first element to put
+     * @param length the maximum number of elements to transfer
+     * @param from the array from which to get the data
+     * @param fromOffset the offset into from
+     * @return the number of elements transfered.
      * This is always less than or equal to length.
-     * If the value is less then length then put should be called again.
-     * @throws IllegalStateException if the field is not mutable.
+     * If the value is less than the length then put should be called again.
+     * @throws IllegalStateException if the field is not mutable
      */
     int put(int offset,int length, short[] from, int fromOffset);
+
     /**
      * Share the data from caller.
      * The capacity and length are taken from the array and this array is made immutable.
      * This should only be used to share immutable data.
-     * @param from The data to share.
+     *
+     * @param from the data to share
      */
     void shareData(short[] from);
 }

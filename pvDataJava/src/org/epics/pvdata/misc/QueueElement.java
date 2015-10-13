@@ -13,8 +13,9 @@ package org.epics.pvdata.misc;
  */
 public interface QueueElement<T> {
     /**
-     * Get the object passed to QueueCreate.createElement();
-     * @return the object.
+     * Get the object passed to QueueCreate.createElement().
+     *
+     * @return the object
      */
     public T getObject();
 }

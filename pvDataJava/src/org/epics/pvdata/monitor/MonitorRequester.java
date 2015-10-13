@@ -10,26 +10,30 @@ import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 
 /**
- *  Requester for ChannelMonitor.
+ * Requester for ChannelMonitor.
  * @author mrk
  *
  */
-public interface MonitorRequester extends Requester{
+public interface MonitorRequester extends Requester {
     /**
      * The client and server have both completed the createMonitor request.
-     * @param status Completion status.
-     * @param monitor The monitor
-     * @param structure The structure defining the data.
+     *
+     * @param status the completion status
+     * @param monitor the monitor
+     * @param structure the structure defining the data
      */
     void monitorConnect(Status status, Monitor monitor, Structure structure);
     /**
      * A monitor event has occurred. The requester must call Monitor.poll to get data.
-     * @param monitor The monitor.
+     *
+     * @param monitor the monitor
      */
     void monitorEvent(Monitor monitor);
+
     /**
      * The data source is no longer available.
-     * @param monitor The monitor.
+     *
+     * @param monitor the monitor
      */
     void unlisten(Monitor monitor);
 }

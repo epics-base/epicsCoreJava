@@ -11,17 +11,19 @@ package org.epics.pvdata.pv;
  */
 public interface Array extends Field {
 
-	enum ArraySizeType { variable, fixed, bounded };
-	
-	/**
-	 * Get array size type (i.e. variable/fixed/bounded size array).
-	 * @return array size type enum.
-	 */
-	ArraySizeType getArraySizeType();
-	
-	/**
-	 * Get maximum capacity of the array. 
-	 * @return maximum capacity of the array, 0 indicates variable size array.
-	 */
-	int getMaximumCapacity();
+    enum ArraySizeType { variable, fixed, bounded };
+    
+    /**
+     * Get array size type (i.e. variable/fixed/bounded size array).
+     *
+     * @return array size type enum
+     */
+    ArraySizeType getArraySizeType();
+    
+    /**
+     * Get maximum capacity of the array.
+     * 
+     * @return maximum capacity of the array, 0 indicates variable size array
+     */
+    int getMaximumCapacity();
 }

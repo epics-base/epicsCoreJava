@@ -15,18 +15,20 @@ import java.nio.ByteBuffer;
  *
  */
 public interface Serializable {
-	
-	/**
+    
+    /**
      * Serialize field into given buffer.
-	 * @param buffer serialization buffer.
-	 * @param flusher flush interface.
-	 */
-	void serialize(ByteBuffer buffer, SerializableControl flusher);
+     * 
+     * @param buffer the serialization buffer
+     * @param flusher the flush interface
+     */
+    void serialize(ByteBuffer buffer, SerializableControl flusher);
 
-	/**
+    /**
      * Deserialize buffer.
-	 * @param buffer serialization buffer.
-	 * @param control deserialization control.
-	 */
+     * 
+     * @param buffer the serialization buffer
+     * @param control the deserialization control
+     */
      void deserialize(ByteBuffer buffer, DeserializableControl control);
 }

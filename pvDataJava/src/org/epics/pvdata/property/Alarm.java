@@ -16,36 +16,48 @@ public final class Alarm {
      * Constructor
      */
     public Alarm() {}
+
     /**
      * Get the alarm message.
-     * @return The value.
+     *
+     * @return the value
      */
     public String getMessage() {return message;}
+
     /**
      * Set the alarm message.
-     * @param message The message.
+     *
+     * @param message the message
      */
     public void setMessage(String message) {this.message = message;}
+
     /**
      * Get the alarm severity.
-     * @return The value.
+     *
+     * @return the value
      */
     public AlarmSeverity getSeverity() {return severity;}
+
     /**
      * Set the alarm severity.
+     *
      * If an invalid value is given than an exception is thrown.
-     * @param alarmSeverity The severity.
+     * @param alarmSeverity the severity
      */
     public void setSeverity(AlarmSeverity alarmSeverity) {this.severity = alarmSeverity;}
+
     /**
      * Get the alarm status.
-     * @return The value.
+     *
+     * @return the value
      */
     public AlarmStatus getStatus() {return status;}
+
     /**
      * Set the alarm status.
      * If an invalid value is given than an exception is thrown.
-     * @param alarmStatus The status.
+     *
+     * @param alarmStatus the status
      */
     public void setStatus(AlarmStatus alarmStatus) {this.status = alarmStatus;}
     

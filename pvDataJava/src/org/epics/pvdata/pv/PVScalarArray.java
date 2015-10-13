@@ -14,7 +14,8 @@ package org.epics.pvdata.pv;
 public interface PVScalarArray extends PVArray {
     /**
      * Get the Array introspection interface.
-     * @return The introspection interface.
+     *
+     * @return the introspection interface
      */
     ScalarArray getScalarArray();
 }

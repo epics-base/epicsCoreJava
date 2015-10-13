@@ -27,9 +27,11 @@ public final class PVDisplayFactory implements PVDisplay{
 
     /**
      * Create a PVDisplay.
-     * @return The newly created PVDisplay.
+     *
+     * @return the newly created PVDisplay
      */
-    public static PVDisplay create() { return new PVDisplayFactory();} 
+    public static PVDisplay create() { return new PVDisplayFactory();}
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVDisplay#attach(org.epics.pvdata.pv.PVField)
      */
@@ -62,6 +64,7 @@ public final class PVDisplayFactory implements PVDisplay{
         return true;
 
     }
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVDisplay#detach()
      */

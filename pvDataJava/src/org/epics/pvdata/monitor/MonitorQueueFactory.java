@@ -20,10 +20,11 @@ public class MonitorQueueFactory {
     
     /**
      * Create a MonitorQueue.
-     * @param monitorElements This is MonitorElement array. Each monitorElement must be created by
-     * calling MonitorQueueFactory.createMonitorElement.
-     * @throws IllegalStateException if the queue size is not at least 2.
-     * @return The MonitorQueue interface.
+     *
+     * @param monitorElements a MonitorElement array. Each monitorElement
+     * must becreated by calling MonitorQueueFactory.createMonitorElement.
+     * @return the MonitorQueue interface.
+     * @throws IllegalStateException if the queue size is not at least 2
      */
     public static MonitorQueue create(MonitorElement[] monitorElements) {
         int length = monitorElements.length;
@@ -42,9 +43,10 @@ public class MonitorQueueFactory {
     }
     
     /**
-     * Create a MonitorElememnt.
-     * @param pvStructure The data structure for the monitorElement.
-     * @return The monitorElement.
+     * Create a MonitorElement.
+     *
+     * @param pvStructure The data structure for the monitorElement
+     * @return the monitorElement
      */
     public static MonitorElement createMonitorElement(PVStructure pvStructure) {
         return new MonitorElementImlp(pvStructure);

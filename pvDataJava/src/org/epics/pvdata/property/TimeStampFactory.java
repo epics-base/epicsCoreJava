@@ -23,9 +23,11 @@ public class TimeStampFactory implements TimeStamp{
     
     /**
      * Create an instance of a timeStamp.
-     * @return The interface.
+     *
+     * @return the interface
      */
-    public static TimeStamp create() { return new TimeStampFactory();}  
+    public static TimeStamp create() { return new TimeStampFactory();}
+  
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.TimeStamp#getUserTag()
      */

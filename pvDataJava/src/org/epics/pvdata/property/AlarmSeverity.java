@@ -34,9 +34,10 @@ public enum AlarmSeverity {
     UNDEFINED;
     
     /**
-     * get the alarm severity.
-     * @param value the integer value.
-     * @return The alarm severity.
+     * Get the alarm severity.
+     *
+     * @param value the integer value
+     * @return the alarm severity
      */
     public static AlarmSeverity getSeverity(int value) {
         switch(value) {
@@ -53,9 +54,11 @@ public enum AlarmSeverity {
     private static final String[] alarmSeverityNames = {
         "NONE","MINOR","MAJOR","INVALID","UNDEFINED"
     };
+
     /**
      * Get the names associated with each severity.
-     * @return The array of names.
+     *
+     * @return the array of names
      */
     public static String[] getSeverityNames() { return alarmSeverityNames;}
 }

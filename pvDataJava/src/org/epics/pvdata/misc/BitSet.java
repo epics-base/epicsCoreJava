@@ -476,12 +476,12 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param src bit-set to be copied from.
      */
     public void set(BitSet src) {
-    	// we ensure that words array size is adequate (and not wordsInUse to ensure capacity to the future)
-    	if (src.words.length > this.words.length)
-    		this.words = new long[src.words.length];
-    	
-    	System.arraycopy(src.words, 0, this.words, 0, src.wordsInUse);
-    	this.wordsInUse = src.wordsInUse;
+        // we ensure that words array size is adequate (and not wordsInUse to ensure capacity to the future)
+        if (src.words.length > this.words.length)
+            this.words = new long[src.words.length];
+        
+        System.arraycopy(src.words, 0, this.words, 0, src.wordsInUse);
+        this.wordsInUse = src.wordsInUse;
     }
     
     /**
@@ -943,14 +943,14 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param set2 second argument of initial AND operation
      */
     public void or_and(BitSet set1, BitSet set2) {
-    	int inUse = Math.min(set1.wordsInUse, set2.wordsInUse);
+        int inUse = Math.min(set1.wordsInUse, set2.wordsInUse);
 
-    	// ensure capacity
-    	if (wordsInUse < inUse) {
+        // ensure capacity
+        if (wordsInUse < inUse) {
             words = Arrays.copyOf(words, inUse);
             wordsInUse = inUse;
         }
-    	
+        
         // Perform logical AND on words in common
         for (int i = 0; i < inUse; i++)
             words[i] |= (set1.words[i] & set2.words[i]);
@@ -1226,95 +1226,95 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      */
     public long[] getBitArray()
     {
-    	return words;
+        return words;
     }
     
     /**
      * NOTE: word is atomic unit here; some bytes might be saved, but it's not worth it. 
-	 * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
+     * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-	@Override
+    @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
-		/*
-		SerializeHelper.writeSize(wordsInUse, buffer, flusher);
-    	int i = 0;
-    	while (i < wordsInUse)
-    	{
-        	final int spaceLeft = buffer.remaining() / (Long.SIZE/Byte.SIZE);
-        	final int maxIndex = Math.min(wordsInUse, i + spaceLeft);
-        	for (; i < maxIndex; i++)
-        		buffer.putLong(words[i]);
-        	
-        	if (i < wordsInUse)
-        		flusher.flushSerializeBuffer();
-    	}
-    	*/
-    	
+        /*
+        SerializeHelper.writeSize(wordsInUse, buffer, flusher);
+        int i = 0;
+        while (i < wordsInUse)
+        {
+            final int spaceLeft = buffer.remaining() / (Long.SIZE/Byte.SIZE);
+            final int maxIndex = Math.min(wordsInUse, i + spaceLeft);
+            for (; i < maxIndex; i++)
+                buffer.putLong(words[i]);
+            
+            if (i < wordsInUse)
+                flusher.flushSerializeBuffer();
+        }
+        */
+        
         int n = wordsInUse;
         if (n == 0) {
-    		SerializeHelper.writeSize(0, buffer, flusher);
-    		return;
+            SerializeHelper.writeSize(0, buffer, flusher);
+            return;
         }
         int len = 8 * (n-1);
         for (long x = words[n - 1]; x != 0; x >>>= 8)
             len++;
         
- 		SerializeHelper.writeSize(len, buffer, flusher);
-		flusher.ensureBuffer(len);
+         SerializeHelper.writeSize(len, buffer, flusher);
+        flusher.ensureBuffer(len);
 
-	    n = len / 8;
-	    for (int i = 0; i < n; i++)
-        	buffer.putLong(words[i]);
-	    
-	    if (n < wordsInUse)
-	        for (long x = words[wordsInUse - 1]; x != 0; x >>>= 8)
-	        	buffer.put((byte) (x & 0xff));
+        n = len / 8;
+        for (int i = 0; i < n; i++)
+            buffer.putLong(words[i]);
+        
+        if (n < wordsInUse)
+            for (long x = words[wordsInUse - 1]; x != 0; x >>>= 8)
+                buffer.put((byte) (x & 0xff));
     }
 
-	/* (non-Javadoc)
-	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
-	 */
-	@Override
-	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
+     */
+    @Override
+    public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 
-		final int bytes = SerializeHelper.readSize(buffer, control);	// in bytes
-		
-		wordsInUse = (bytes + 7) / 8;
-		if (wordsInUse > words.length)
-    		words = new long[wordsInUse];
+        final int bytes = SerializeHelper.readSize(buffer, control);    // in bytes
+        
+        wordsInUse = (bytes + 7) / 8;
+        if (wordsInUse > words.length)
+            words = new long[wordsInUse];
 
-		if (wordsInUse == 0)
-			return;
-		
-		control.ensureData(bytes);
-		
-		int i = 0;
-		final int longs = bytes / 8;
+        if (wordsInUse == 0)
+            return;
+        
+        control.ensureData(bytes);
+        
+        int i = 0;
+        final int longs = bytes / 8;
         while (i < longs)
             words[i++] = buffer.getLong();
         
         for (int j = i; j < wordsInUse; j++)
-        	words[j] = 0;
+            words[j] = 0;
         
         for (int remaining = (bytes - longs * 8), j = 0; j < remaining; j++)
             words[i] |= (buffer.get() & 0xffL) << (8 * j);
         
-		/*
-		
-		wordsInUse = SerializeHelper.readSize(buffer, control);
-    	if (wordsInUse > words.length)
-    		words = new long[wordsInUse];
-    	int i = 0;
-		while (i < wordsInUse)
-		{
-			final int maxIndex = Math.min(wordsInUse-i, buffer.remaining()/(Long.SIZE/Byte.SIZE))+i;
-			for (; i < maxIndex; i++)
-				words[i] = buffer.getLong();
-			if (i < wordsInUse)
-				control.ensureData(Long.SIZE/Byte.SIZE);
-		}
-    	for (; i < words.length; i++)
-    		words[i] = 0;
-    	*/
-	}
+        /*
+        
+        wordsInUse = SerializeHelper.readSize(buffer, control);
+        if (wordsInUse > words.length)
+            words = new long[wordsInUse];
+        int i = 0;
+        while (i < wordsInUse)
+        {
+            final int maxIndex = Math.min(wordsInUse-i, buffer.remaining()/(Long.SIZE/Byte.SIZE))+i;
+            for (; i < maxIndex; i++)
+                words[i] = buffer.getLong();
+            if (i < wordsInUse)
+                control.ensureData(Long.SIZE/Byte.SIZE);
+        }
+        for (; i < words.length; i++)
+            words[i] = 0;
+        */
+    }
 }

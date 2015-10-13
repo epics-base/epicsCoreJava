@@ -41,25 +41,32 @@ public interface Timer {
          * The TimerNode can be reused by calling a schedule method.
          */
         void cancel();
+
         /**
          * Check if this TimerNode is being scheduled.
-         * @return the scheduled status flag.
+         *
+         * @return the scheduled status flag
          */
         boolean isScheduled();
     }
+
     /**
      * Scheduler a call back after a specified delay.
-     * @param timerNode The TimerNode allocated via a call to TimerFactory.createNode.
-     * @param delay The delay in seconds.
+     *
+     * @param timerNode the TimerNode allocated via a call to TimerFactory.createNode
+     * @param delay the delay in seconds
      */
     void scheduleAfterDelay(TimerNode timerNode,double delay);
+
     /**
      * Schedule a periodic call back.
-     * @param timerNode The TimerNode allocated via a call to createNode.
-     * @param delay The delay in seconds to the first callback.
-     * @param period The period in seconds.
+     *
+     * @param timerNode the TimerNode allocated via a call to createNode
+     * @param delay the delay in seconds to the first callback
+     * @param period the period in seconds
      */
     void schedulePeriodic(TimerNode timerNode,double delay,double period);
+
     /**
      * Stop the timer.
      */

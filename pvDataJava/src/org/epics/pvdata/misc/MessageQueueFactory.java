@@ -15,8 +15,9 @@ import org.epics.pvdata.pv.MessageType;
 public class MessageQueueFactory {
     /**
      * Create a messageQueue.
-     * @param size The number of nodes. This can not be changed.
-     * @return The interface for the messageQueue.
+     * 
+     * @param size the number of nodes. This can not be changed.
+     * @return the interface for the messageQueue
      */
     public static MessageQueue create(int size) {
         return new MessageQueueImpl(size);

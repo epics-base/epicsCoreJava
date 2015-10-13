@@ -13,13 +13,16 @@ package org.epics.pvdata.pv;
 public interface PVDouble extends PVScalar{
     /**
      * Get the <i>double</i> value stored in the field.
-     * @return double The value.
+     *
+     * @return double the value
      */
     double get();
+
     /**
      * Put the <i>double</i> value into the field.
      * If the field is immutable a message is generated and the field not modified.
-     * @param value The new value.
+     *
+     * @param value the new value
      */
     void put(double value);
 }

@@ -16,21 +16,23 @@ public class ArrayData<T> {
      * PVArray.get sets this value.
      */
     public T data;
+
     /**
      * The offset.
      * PVArray.get sets this value.
      */
     public int offset;
 
-	/**
-	 * Generic method that sets data and offset.
-	 * @param array object representing an array instance.
-	 * @param offset offset within the array.
-	 */
-	@SuppressWarnings("unchecked")
-	public void set(Object array, int offset)
-	{
-		this.data = (T)array;
-		this.offset = offset;
-	}
+    /**
+     * Generic method that sets data and offset.
+     *
+     * @param array object representing an array instance
+     * @param offset offset within the array
+     */
+    @SuppressWarnings("unchecked")
+    public void set(Object array, int offset)
+    {
+        this.data = (T)array;
+        this.offset = offset;
+    }
 }

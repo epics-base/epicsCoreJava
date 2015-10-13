@@ -36,8 +36,8 @@ public class NamedValues
     /**
      * Add a named Vector of values to a NameValues object.
      * 
-     * @param name The name of the list of values to add, eg "girlscouts"
-     * @param value The list of values associated with name, eg {"Caroline", "Mary", "Beth"}
+     * @param name the name of the list of values to add, eg "girlscouts"
+     * @param value the list of values associated with name, eg {"Caroline", "Mary", "Beth"}
      */
     @SuppressWarnings("rawtypes")
 	public void add (String name,  Vector value)
@@ -54,7 +54,7 @@ public class NamedValues
     /**
      * Gets all the names in the named/values system at once, as an array of Strings.
      * 
-     * @return all names in the NamedValues object, ie the column headings in the table analogy.
+     * @return all names in the NamedValues object, ie the column headings in the table analogy
      */
     public String[] getLabels ()
     {
@@ -67,8 +67,8 @@ public class NamedValues
      * Since each "value" is itself a list (supplied as a vector to the add method), this
      * method returns a 2d array. 
      *   
-     * @return The values arrays presently in the NamedValues object, 
-     * ie the contents of the table in the table analogy.
+     * @return the values arrays presently in the NamedValues object, 
+     * i.e. the contents of the table in the table analogy
      */
     public String[][] getValues ()
     {

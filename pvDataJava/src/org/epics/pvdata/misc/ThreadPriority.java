@@ -56,15 +56,17 @@ public enum ThreadPriority {
     
     /**
      * Get the Java priority for this ScanPriority.
-     * @return The java priority.
+     * 
+     * @return The java priority
      */
     public int getJavaPriority() {
         return javaPriority[ordinal()];
     }
     /**
      * Get the javaPriority for a given scanPriority.
-     * @param threadPriority The threadPriority.
-     * @return The java priority.
+     *
+     * @param threadPriority the threadPriority
+     * @return the java priority
      */
     public static int getJavaPriority(ThreadPriority threadPriority) {
         return threadPriority.getJavaPriority();

@@ -29,14 +29,16 @@ public abstract class AbstractPVField implements PVField{
     private String fieldName = null;
     private Field field;
     private PVStructure pvParent = null;
-//    private Requester requester = null;
 	private PostHandler postHandler = null;
+
     /**
-     * Convenience for derived classes that perform conversions.
+     * Convenience method for derived classes that perform conversions.
      */
     protected static final Convert convert = ConvertFactory.getConvert();
+
     /**
      * Constructor that must be called by derived classes.
+     *
      * @param field The introspection interface.
      * @throws IllegalArgumentException if field is null;
      */
@@ -58,6 +60,7 @@ public abstract class AbstractPVField implements PVField{
     {
         this.field = field;
     }
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVField#getFieldName()
      */

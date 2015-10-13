@@ -27,33 +27,37 @@ public interface PVUnion extends PVField, Serializable {
     
     /**
      * Get the <code>PVField</code> value stored in the field.
-     * @return <code>PVField</code> value of field, <code>null</code> if <code>getSelectedIndex() == UNDEFINED_INDEX</code>.
+     *
+     * @return <code>PVField</code> value of field, <code>null</code> if <code>getSelectedIndex() == UNDEFINED_INDEX</code>
      */
     PVField get();
     
     /**
      * Get the <code>PVField</code> value stored in the field.
+     *
      * @param <T> the expected type of the PVField of the requested field
      * @param c class object modeling the class T of expected type of the requested field
-     * @return <code>PVField</code> value of field, <code>null</code> if <code>getSelectedIndex() == UNDEFINED_INDEX</code>.
+     * @return <code>PVField</code> value of field, <code>null</code> if <code>getSelectedIndex() == UNDEFINED_INDEX</code>
      */
     <T extends PVField> T get(Class<T> c);
 
     /**
      * Select field (set index) and get the field at the index.
-     * @param index index of the field to select.
-     * @return corresponding PVField (of undetermined value), <code>null</code> if <code>index == UNDEFINED_INDEX</code>.
-     * @throws IllegalArgumentException if index is invalid (out of range).
+     *
+     * @param index index of the field to select
+     * @return corresponding PVField (of undetermined value), <code>null</code> if <code>index == UNDEFINED_INDEX</code>
+     * @throws IllegalArgumentException if index is invalid (out of range)
      */
     PVField select(int index);
 
     /**
      * Select field (set index) and get the field at the index.
+     *
      * @param <T> the expected type of the PVField of the requested field
      * @param c class object modeling the class T of expected type of the requested field
      * @param index index of the field to select.
-     * @return corresponding PVField (of undetermined value), <code>null</code> if <code>index == UNDEFINED_INDEX</code>.
-     * @throws IllegalArgumentException if index is invalid (out of range).
+     * @return corresponding PVField (of undetermined value), <code>null</code> if <code>index == UNDEFINED_INDEX</code>
+     * @throws IllegalArgumentException if index is invalid (out of range)
      */
     <T extends PVField> T select(Class<T> c, int index);
     
@@ -67,47 +71,55 @@ public interface PVUnion extends PVField, Serializable {
     
     /**
      * Select field (set index) and get the field by given name.
+     *
      * @param <T> the expected type of the PVField of the requested field
      * @param c class object modeling the class T of expected type of the requested field
-     * @param fieldName the name of the field to select.
-     * @return corresponding PVField (of undetermined value).
-     * @throws IllegalArgumentException if field does not exist.
+     * @param fieldName the name of the field to select
+     * @return corresponding PVField (of undetermined value)
+     * @throws IllegalArgumentException if field does not exist
      */
     <T extends PVField> T select(Class<T> c, String fieldName);
 
     /**
      * Get selected field index.
-     * @return selected field index.
+     *
+     * @return selected field index
      */
     int getSelectedIndex();
     
     /**
      * Get selected field name.
-     * @return selected field name.
+     *
+     * @return selected field name
      */
     String getSelectedFieldName();
     
     /**
      * Set the <code>PVField</code> (by reference!) as selected field.
-     * If a value is not a valid union field an <code>IllegalArgumentException</code> exception is thrown.
-     * @param value the field to set.
+     *
+     * @param value the field to set
+     * @throws IllegalArgumentException if value is not a valid union field
      */
     void set(PVField value);
+
     /**
      * Set the <code>PVField</code> (by reference!) as field at given index.
      * If a value is not a valid union field an <code>IllegalArgumentException</code> exception is thrown.
      * Use <code>select(int)</code> to put by value.
+     *
      * @param index index of a field to put.
      * @param value the field to set.
      * @see #select(int)
      */
     void set(int index, PVField value);
+
     /**
      * Set the <code>PVField</code> (by reference!) as field by given name.
      * If a value is not a valid union field an <code>IllegalArgumentException</code> exception is thrown.
      * Use <code>select(String)</code> to put by value.
-     * @param fieldName Name of the field to put.
-     * @param value the field to set.
+     *
+     * @param fieldName Name of the field to put
+     * @param value the field to set
      * @see #select(String)
      */
     void set(String fieldName, PVField value);

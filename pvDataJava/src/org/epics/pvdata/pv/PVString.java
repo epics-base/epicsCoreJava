@@ -13,13 +13,15 @@ package org.epics.pvdata.pv;
 public interface PVString extends PVScalar, SerializableArray{
     /**
      * Get the <i>String</i> value stored in the field.
-     * @return string value of field.
+     *
+     * @return the string value of field
      */
     String get();
     /**
      * Put the <i>String</i> value into the field.
      * If the field is immutable a message is generated and the field not modified.
-     * @param value New value.
+     *
+     * @param value the new value
      */
     void put(String value);
 }

@@ -18,11 +18,12 @@ import org.epics.pvdata.pv.Scalar;
 public abstract class AbstractPVScalar extends AbstractPVField implements PVScalar {
     /**
      * Constructor.
-     * @param scalar The ScalarType.
+     * @param scalar the ScalarType
      */
     protected AbstractPVScalar(Scalar scalar) {
         super(scalar);
     }
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVScalar#getScalar()
      */

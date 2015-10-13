@@ -11,9 +11,10 @@ package org.epics.pvdata.misc;
  *
  */
 public interface RunnableReady {
-     /**
-      * The run method.
-     * @param threadReady threadReady.ready() must be called when run is ready.
+    /**
+     * The run method.
+     *
+     * @param threadReady threadReady.ready() must be called when run is ready
      */
     void run(ThreadReady threadReady);
 }

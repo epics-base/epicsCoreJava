@@ -12,9 +12,10 @@ package org.epics.pvdata.pv;
  */
 public interface BoundedString extends Scalar {
 
-	/**
-	 * Get string maximum length.
-	 * @return string maximum length.
-	 */
-	int getMaximumLength();
+    /**
+     * Get string maximum length.
+     *
+     * @return string maximum length
+     */
+    int getMaximumLength();
 }

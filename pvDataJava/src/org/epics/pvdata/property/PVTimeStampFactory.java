@@ -24,9 +24,11 @@ public class PVTimeStampFactory implements PVTimeStamp {
 
     /**
      * Create a PVTimeStamp.
-     * @return The newly created PVTimeStamp.
+     *
+     * @return the newly created PVTimeStamp
      */
-    public static PVTimeStamp create() { return new PVTimeStampFactory();} 
+    public static PVTimeStamp create() { return new PVTimeStampFactory();}
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVTimeStamp#attach(org.epics.pvdata.pv.PVField)
      */

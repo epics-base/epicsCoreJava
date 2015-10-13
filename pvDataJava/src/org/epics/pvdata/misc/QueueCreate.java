@@ -14,8 +14,9 @@ public class QueueCreate<T> {
     
     /**
      * Create a Queue.
-     * @param queueElements The queue elements.
-     * @return The Queue.
+     *
+     * @param queueElements the queue elements
+     * @return the Queue
      */
     public Queue<T> create(QueueElement<T>[] queueElements) {
         return new QueueImpl<T>(queueElements);
@@ -23,8 +24,9 @@ public class QueueCreate<T> {
     
     /**
      * Create a QueueElement.
-     * @param object The data the queueElement contains.
-     * @return The queueElement.
+     *
+     * @param object the data the queueElement contains
+     * @return the QueueElement
      */
     public QueueElement<T> createQueueElement(T object) {
         return new QueueElementImpl<T>(object);

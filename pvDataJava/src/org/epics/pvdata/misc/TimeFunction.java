@@ -14,7 +14,8 @@ public interface TimeFunction {
     /**
      * Time the call.
      * TimeFunctionRequester.function is called repeatedly and the average time per call is calculated.
-     * @return The average number of seconds the function call required.
+     *
+     * @return the average number of seconds the function call required
      */
     double timeCall();
 }

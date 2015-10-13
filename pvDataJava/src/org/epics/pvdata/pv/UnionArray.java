@@ -13,7 +13,8 @@ package org.epics.pvdata.pv;
 public interface UnionArray extends Array {
     /**
      * Get the union interface for an array element.
-     * @return The interface.
+     * 
+     * @return the interface
      */
     Union getUnion();
 }

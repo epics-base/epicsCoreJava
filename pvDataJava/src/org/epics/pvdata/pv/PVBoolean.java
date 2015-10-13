@@ -13,13 +13,16 @@ package org.epics.pvdata.pv;
 public interface PVBoolean extends PVScalar{
     /**
      * Get the <i>boolean</i> value stored in the field.
-     * @return boolean The value of field.
-    */
+     *
+     * @return boolean the value of field
+     */
     boolean get();
+
     /**
      * Put the field from a <i>boolean</i> value.
      * If the field is immutable a message is generated and the field not modified.
-     * @param value The new boolean value for field.
+     *
+     * @param value the new boolean value for field.
      */
     void put(boolean value);
 }

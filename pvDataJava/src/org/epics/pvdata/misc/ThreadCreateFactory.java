@@ -20,7 +20,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ThreadCreateFactory {
     /**
      * Get the single instance of ThreadCreate.
-     * @return threadCreate interface.
+     *
+     * @return threadCreate interface
      */
     public static ThreadCreate getThreadCreate() {
         return threadCreate;

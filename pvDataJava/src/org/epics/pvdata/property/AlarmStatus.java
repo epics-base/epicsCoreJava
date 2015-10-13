@@ -54,9 +54,10 @@ public enum AlarmStatus {
     CLIENT;
     
     /**
-     * get the alarm status.
-     * @param value the integer value.
-     * @return The alarm status.
+     * Get the alarm status.
+     *
+     * @param value the integer value
+     * @return The alarm status
      */
     public static AlarmStatus getStatus(int value) {
         switch(value) {
@@ -76,9 +77,11 @@ public enum AlarmStatus {
     private static final String[] alarmStatusNames = {
         "NONE","DEVICE","DRIVER","RECORD","DB","CONF","UNDEFINED","CLIENT"
     };
+
     /**
      * Get the names associated with each status.
-     * @return The array of names.
+     *
+     * @return the array of names
      */
     public static String[] getStatusNames() { return alarmStatusNames;}
 }

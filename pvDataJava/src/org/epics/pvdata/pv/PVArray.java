@@ -14,40 +14,53 @@ package org.epics.pvdata.pv;
 public interface PVArray extends PVField, SerializableArray {
     /**
      * Get the Array introspection interface.
-     * @return The introspection interface.
+     *
+     * @return the introspection interface
      */
     Array getArray();
+
     /**
      * Get the current length of the array.
-     * @return The current length of the array.
+     *
+     * @return the current length of the array
      */
     int getLength();
+
     /**
      * Set the length of the array.
-     * @param length Set the length.
-     * @throws IllegalStateException if the field is not mutable.
+     *
+     * @param length the new length of the array
+     * @throws IllegalStateException if the field is not mutable
      */
     void setLength(int length);
+
     /**
      * Get the current capacity of the array,
-     * i.e. the allocated number of elements.
-     * @return The capacity.
+     * that is, the allocated number of elements.
+     *
+     * @return the capacity
      */
     int getCapacity();
+
     /**
      * Set the capacity.
-     * @param length The new capacity for the array.
-     * @throws IllegalStateException if the capacity can't be changed.
+     *
+     * @param length the new capacity for the array
+     * @throws IllegalStateException if the capacity can't be changed
      */
     void setCapacity(int length);
+
     /**
      * Can the capacity be changed?
-     * @return If it can be modified.
+     *
+     * @return whether it can be modified
      */
     boolean isCapacityMutable();
+
     /**
      * Set capacityMutable.
-     * @param isMutable New value for capacityMutable.
+     *
+     * @param isMutable the new value for capacityMutable
      */
     void setCapacityMutable(boolean isMutable);
 }

@@ -24,9 +24,11 @@ public final class PVControlFactory implements PVControl{
 
     /**
      * Create a PVControl.
-     * @return The newly created PVControl.
+     *
+     * @return the newly created PVControl
      */
-    public static PVControl create() { return new PVControlFactory();} 
+    public static PVControl create() { return new PVControlFactory();}
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#attach(org.epics.pvdata.pv.PVField)
      */

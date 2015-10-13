@@ -17,21 +17,28 @@ import org.epics.pvdata.pv.Status;
 public interface Monitor extends Destroyable {
     /**
      * Start monitoring.
-     * @return completion status.
+     *
+     * @return completion status
      */
     Status start();
+
     /**
      * Stop Monitoring.
-     * @return completion status.
+     *
+     * @return completion status
      */
     Status stop();
+
     /**
      * If monitor has occurred return data.
-     * @return monitorElement for modified data on null if no monitors have occurred.
+     *
+     * @return monitorElement for modified data on null if no monitors have occurred
      */
     MonitorElement poll();
+
     /**
      * Release a MonitorElement that was returned by poll.
+     *
      * @param monitorElement the MonitorElement to release
      */
     void release(MonitorElement monitorElement);

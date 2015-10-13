@@ -17,16 +17,21 @@ import org.epics.pvdata.pv.PVStructure;
 public interface MonitorElement {
     /**
      * Get the PVStructure.
+     *
      * @return The PVStructure.
      */
     PVStructure getPVStructure();
+
     /**
      * Get the bitSet showing which fields have changed.
+     *
      * @return The bitSet.
      */
     BitSet getChangedBitSet();
+
     /**
      * Get the bitSet showing which fields have been changed more than once.
+     *
      * @return The bitSet.
      */
     BitSet getOverrunBitSet();

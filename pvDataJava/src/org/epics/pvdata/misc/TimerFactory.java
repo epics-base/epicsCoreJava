@@ -21,17 +21,20 @@ import org.epics.pvdata.misc.Timer.TimerNode;
 public class TimerFactory {
     /**
      * Create and return a Timer.
-     * @param threadName The thread name for the timer thread.
-     * @param priority The priority for the timer thread.
-     * @return The new timer.
+     *
+     * @param threadName the thread name for the timer thread
+     * @param priority the priority for the timer thread
+     * @return the new timer
      */
     static public Timer create(String threadName, ThreadPriority priority) {
         return new TimerInstance(threadName,priority);
     }
+
     /**
-     * Create a node that can be passed to the schedule methods..
-     * @param timerCallback The interface implemented by the user.
-     * @return Interface.
+     * Create a TimerNode that can be passed to the schedule methods.
+     *
+     * @param timerCallback the callbacks called when the timer expires or is stopped
+     * @return the TimerNode created
      */
     static public TimerNode createNode(TimerCallback timerCallback) {
         return new TimerNodeImpl(timerCallback);

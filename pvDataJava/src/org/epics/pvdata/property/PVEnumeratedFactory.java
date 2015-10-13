@@ -29,9 +29,11 @@ public final class PVEnumeratedFactory implements PVEnumerated{
 
     /**
      * Create a PVControl.
-     * @return The newly created PVControl.
+     *
+     * @return the newly created PVControl
      */
-    public static PVEnumerated create() { return new PVEnumeratedFactory();} 
+    public static PVEnumerated create() { return new PVEnumeratedFactory();}
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#attach(org.epics.pvdata.pv.PVField)
      */

@@ -15,13 +15,16 @@ package org.epics.pvdata.pv;
 public interface PVULong extends PVScalar{
     /**
      * Get the <i>long</i> value stored in the field.
-     * @return long value of field.
+     *
+     * @return the long value of field
      */
     long get();
+
     /**
      * Put the <i>long</i> value into the field.
      * If the field is immutable a message is generated and the field not modified.
-     * @param value New value.
+     *
+     * @param value the new value
      */
     void put(long value);
 }

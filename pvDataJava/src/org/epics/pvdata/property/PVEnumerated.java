@@ -20,46 +20,60 @@ public interface PVEnumerated {
      * @return (false,true) if enumerated field (not found, found).
      */
     boolean attach(PVField pvField);
+
     /**
      * Remove attachment to an enumerated field.
      */
     void detach();
+
     /**
      * Is this attached to an enumerated structure.
      * @return false or true.
      */
     boolean isAttached();
+
     // each of the following throws logic_error is not attached to PVField
     // a set returns false if field is immutable
     /**
      * Set the index.
-     * @param index The value.
+     *
+     * @param index the value
      * @return (false,true) if the index (was not, was) modified.
      */
     boolean setIndex(int index);
+
     /**
      * Get the current index.
-     * @return The value.
+     *
+     * @return the value
      */
     int getIndex();
+
     /**
      * Get the choice corresponding to the current index.
-     * @return The value.
+     *
+     * @return the value
      */
     String getChoice();
+
     /**
      * Are the choices mutable.
+     *
      * @return false or true
      */
     boolean choicesMutable();
+
     /**
      * Get the current choices.
-     * @return The choices.
+     *
+     * @return the choices
      */
     String[] getChoices();
+
     /**
      * Set the choices.
-     * @param choices The choices.
+     *
+     * @param choices the choices
      * @return (false,true) in choices are (immutable, mutable)
      */
     boolean setChoices(String[] choices);

@@ -12,16 +12,19 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVUShort extends PVScalar{
+public interface PVUShort extends PVScalar {
     /**
      * Get the <i>short</i> value stored in the field.
-     * @return short value of field.
+     *
+     * @return the short value of field
      */
     short get();
+
     /**
      * Put the <i>short</i> value into the field.
      * If the field is immutable a message is generated and the field not modified.
-     * @param value New value.
+     *
+     * @param value the new value
      */
     void put(short value);
 }

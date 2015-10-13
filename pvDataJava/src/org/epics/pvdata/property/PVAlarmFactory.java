@@ -25,9 +25,11 @@ public final class PVAlarmFactory implements PVAlarm{
 
     /**
      * Create a PVAlarm.
-     * @return The newly created PVAlarm.
+     *
+     * @return the newly created PVAlarm
      */
-    public static PVAlarm create() { return new PVAlarmFactory();} 
+    public static PVAlarm create() { return new PVAlarmFactory();}
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVAlarm#attach(org.epics.pvdata.pv.PVField)
      */

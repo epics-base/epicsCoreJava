@@ -18,10 +18,13 @@ import org.epics.pvdata.pv.PVStructure;
 public class PVPropertyFactory {
     private PVPropertyFactory() {} // don't create
     private static PVPropertyImpl pvProperty = new PVPropertyImpl();
+
     /**
      * Get the interface for PVProperty.
-     * There is only one implementation which can be shared by an arbitrary number of users.
-     * @return The interface.
+     * There is only one implementation which can be shared by an arbitrary
+     * number of users.
+     *
+     * @return the instance of PVProperty
      */
     public static PVProperty getPVProperty() {
         return pvProperty;

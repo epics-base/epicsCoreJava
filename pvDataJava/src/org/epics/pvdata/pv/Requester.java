@@ -15,13 +15,16 @@ package org.epics.pvdata.pv;
 public interface Requester {
     /**
      * Get the name of the requester.
+     * 
      * @return The name.
      */
     String getRequesterName();
+
     /**
      * Report a message.
-     * @param message The message.
-     * @param messageType The message type.
+     *
+     * @param message the message
+     * @param messageType the message type
      */
     void message(String message, MessageType messageType);
 }

@@ -10,10 +10,11 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface Scalar extends Field{
+public interface Scalar extends Field {
     /**
      * Get the ScalarType.
-     * @return The ScalarType, non-<code>null</code>.
+     *
+     * @return the ScalarType (non-<code>null</code>)
      */
     ScalarType getScalarType();
 }

@@ -18,6 +18,7 @@ public class MessageNode {
      * The message.
      */
     public String message;
+
     /**
      * The message type.
      */

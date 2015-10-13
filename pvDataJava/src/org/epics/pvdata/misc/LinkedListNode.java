@@ -14,12 +14,14 @@ package org.epics.pvdata.misc;
 public interface LinkedListNode<T> {
     /**
      * Get the object passed to LinkedListCreate.createNode();
-     * @return the object.
+     * 
+     * @return the object
      */
     T getObject();
     /**
      * Is this node on a list?
-     * @return (false,true) if node (is not,is) on a list.
+     *
+     * @return (false,true) if node (is not,is) on a list
      */
     boolean isOnList();
 }

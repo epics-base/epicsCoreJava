@@ -31,9 +31,11 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
      * For use by derived classes.
      */
     protected boolean capacityMutable = true;
+
     /**
      * Constructor that derived classes must call.
-     * @param field The reflection interface.
+     *
+     * @param field the reflection interface
      */
     protected AbstractPVArray(Array field) {
         super(field);

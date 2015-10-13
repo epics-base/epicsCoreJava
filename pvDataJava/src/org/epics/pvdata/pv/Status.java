@@ -27,18 +27,21 @@ public interface Status extends Serializable {
 
 	/**
 	 * Get status type. 
+	 * 
 	 * @return status type, non-<code>null</code>.
 	 */
 	StatusType getType();
 	
 	/**
 	 * Get error message describing an error. Required if error status.
-	 * @return error message.
+	 *
+	 * @return error message
 	 */
 	String getMessage();
 	
 	/**
-	 * Get stack dump where error (exception) happened. Optional. 
+	 * Get stack dump where error (exception) happened. Optional.
+	 * 
 	 * @return stack dump.
 	 */
 	String getStackDump();
@@ -47,14 +50,16 @@ public interface Status extends Serializable {
 	 * Convenient OK test. Same as <code>(getType() == StatusType.OK)</code>. 
 	 * NOTE: this will return <code>false</code> on WARNING message although operation succeeded.
 	 * To check if operation succeeded, use <code>isSuccess</code>.
-	 * @return OK status.
+     *
+	 * @return OK status
 	 * @see #isSuccess()
 	 */
 	boolean isOK();
 
 	/**
 	 * Check if operation succeeded.
-	 * @return operation success status.
+	 * 
+	 * @return operation success status
 	 */
 	boolean isSuccess();
 }
