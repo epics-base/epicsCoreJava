@@ -284,7 +284,7 @@ public class NTURI
      * @return the field or null if the subfield does not exist, or the field is not of <code>c</code> type
      * @return the PVScalar for the query field
      */
-    public <T extends PVScalar> T getValue(Class<T> c, String name)
+    public <T extends PVScalar> T getQueryField(Class<T> c, String name)
     {
         PVField pvField = pvQuery.getSubField(name);
 		if (c.isInstance(pvField))
