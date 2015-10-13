@@ -27,8 +27,9 @@ public class NTScalarArrayBuilder
 {
     /**
      * Set a value type of a NTScalarArray.
-     * @param scalarType the scalar type of the value field.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.
+     * 
+     * @param scalarType the scalar type of the value field
+     * @return this instance of <b>NTScalarArrayBuilder</b>
      */
     public NTScalarArrayBuilder value(ScalarType scalarType)
     {
@@ -39,7 +40,8 @@ public class NTScalarArrayBuilder
 
     /**
      * Add descriptor field to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTScalarArrayBuilder</b>
      */
     public NTScalarArrayBuilder addDescriptor()
     {
@@ -49,7 +51,8 @@ public class NTScalarArrayBuilder
 
     /**
      * Add alarm structure to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTScalarArrayBuilder</b>
      */
     public NTScalarArrayBuilder addAlarm()
     {
@@ -59,24 +62,29 @@ public class NTScalarArrayBuilder
 
     /**
      * Add timeStamp structure to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTScalarArrayBuilder</b>
      */
     public NTScalarArrayBuilder addTimeStamp()
     {
         timeStamp = true;
         return this;
     }
+
     /**
      * Add display structure to the NTScalarArray.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTScalarArrayBuilder</b>
      */
     public NTScalarArrayBuilder addDisplay()
     {
         display = true;
         return this;
     }
+
     /**
      * Add control structure to the NTScalarArray.
+     * 
      * @return this instance of <b>NTScalarArrayBuilder</b>.
      */
     public NTScalarArrayBuilder addControl()
@@ -88,6 +96,7 @@ public class NTScalarArrayBuilder
     /**
      * Create a <b>Structure</b> that represents NTScalarArray.
      * This resets this instance state and allows new instance to be created.
+     * 
      * @return a new instance of a <b>Structure</b>.
      */
     public Structure createStructure()
@@ -130,7 +139,8 @@ public class NTScalarArrayBuilder
     /**
      * Create a <b>PVStructure</b> that represents NTScalarArray.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>PVStructure</b>.
+     * 
+     * @return a new instance of a <b>PVStructure</b>
      */
     public PVStructure createPVStructure()
     {
@@ -140,7 +150,8 @@ public class NTScalarArrayBuilder
     /**
      * Create a <b>NTScalarArray</b> instance.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>NTScalarArray</b>.
+     * 
+     * @return a new instance of a <b>NTScalarArray</b>
      */
     public NTScalarArray create()
     {
@@ -149,9 +160,10 @@ public class NTScalarArrayBuilder
 
     /**
      * Add extra <b>Field</b> to the type.
-     * @param name name of the field.
-     * @param field a field to add.
-     * @return this instance of <b>NTScalarArrayBuilder</b>.
+     * 
+     * @param name name of the field
+     * @param field a field to add
+     * @return this instance of <b>NTScalarArrayBuilder</b>
      */
     public NTScalarArrayBuilder add(String name, Field field) 
     {

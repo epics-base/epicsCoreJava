@@ -19,16 +19,17 @@ public interface HasAlarm
 {
      /**
       * Attach a PVAlarm.
-      *
       * Will return false if no alarm field.
-      * @param pvAlarm The PVAlarm that will be attached.
+      *
+      * @param pvAlarm the PVAlarm to be attached
       * @return true if the operation was successfull, otherwise false.
       */
     public boolean attachAlarm(PVAlarm pvAlarm);
 
     /**
      * Get the alarm field.
-     * @return PVStructure which may be null.
+     *
+     * @return the alarm field PVStructure, which may be null
      */
     public PVStructure getAlarm();
 }

@@ -24,7 +24,7 @@ import org.epics.pvdata.property.PVTimeStamp;
 import org.epics.pvdata.property.PVAlarm;
 
 /**
- * Wrapper class for NTScalarMultiChannel
+ * Wrapper class for NTScalarMultiChannel.
  *
  * @author dgh
  */
@@ -35,13 +35,14 @@ public class NTScalarMultiChannel
 
     /**
      * Creates an NTScalarMultiChannel wrapping the specified PVStructure if the latter is compatible.
-     *
+     * <p>
      * Checks the supplied structure is compatible with NTScalarMultiChannel
      * and if so returns a NTScalarMultiChannel which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
-     * @param pvStructure The PVStructure to be wrapped.
-     * @return NTScalarMultiChannel instance on success, null otherwise.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTScalarMultiChannel instance on success, null otherwise
      */
     public static NTScalarMultiChannel wrap(PVStructure pvStructure)
     {
@@ -52,11 +53,12 @@ public class NTScalarMultiChannel
 
     /**
      * Creates an NTScalarMultiChannel wrapping the specified PVStructure, regardless of the latter's compatibility.
-     *
+     * <p>
      * No checks are made as to whether the specified PVStructure
      * is compatible with NTScalarMultiChannel or is non-null.
-     * @param pvStructure The PVStructure to be wrapped.
-     * @return NTScalarMultiChannel instance.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTScalarMultiChannel instance
      */
     public static NTScalarMultiChannel wrapUnsafe(PVStructure pvStructure)
     {
@@ -65,13 +67,14 @@ public class NTScalarMultiChannel
 
     /**
      * Checks if the specified structure reports to be a compatible NTScalarMultiChannel.
-     *
+     * <p>
      * Checks whether the specified structure reports compatibility with this
      * version of NTScalarMultiChannel through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
-     * compatible in terms of its introspection type
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel.
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel
      */
     public static boolean is_a(Structure structure)
     {
@@ -80,13 +83,14 @@ public class NTScalarMultiChannel
 
     /**
      * Checks if the specified structure reports to be a compatible NTScalarMultiChannel.
-     *
+     * <p>
      * Checks whether the specified structure reports compatibility with this
      * version of NTScalarMultiChannel through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
-     * compatible in terms of its introspection type
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel.
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel
      */
     public static boolean is_a(PVStructure pvStructure)
     {
@@ -95,11 +99,12 @@ public class NTScalarMultiChannel
 
     /**
      * Checks if the specified structure is compatible with NTScalarMultiChannel.
-     *
+     * <p>
      * Checks whether the specified structure is compatible with this version
      * of NTScalarMultiChannel through introspection interface.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel.
+     *
+     * @param structure the Structure to test
+     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel
      */
     public static boolean isCompatible(Structure structure)
     {
@@ -191,11 +196,12 @@ public class NTScalarMultiChannel
 
     /**
      * Checks if the specified structure is compatible with NTScalarMultiChannel.
-     *
+     * <p>
      * Checks whether the specified structure is compatible with this version
      * of NTScalarMultiChannel through introspection interface.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if (is not, is) a compatible NTScalarMultiChannel
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
@@ -206,10 +212,11 @@ public class NTScalarMultiChannel
 
     /**
      * Checks if the specified structure is a valid NTScalarMultiChannel.
-     *
+     * <p>
      * Checks whether the wrapped structure is valid with respect to this
-     * version of NTScalar
-     * @return (false,true) if (is not, is) a valid NTScalarMultiChannel.
+     * version of NTScalar.
+     *
+     * @return (false,true) if (is not, is) a valid NTScalarMultiChannel
      */
     public boolean isValid()
     {
@@ -230,8 +237,9 @@ public class NTScalarMultiChannel
     }
 
     /**
-     * Create a NTScalarMultiChannelBuilder instance
-     * @return builder instance.
+     * Create a NTScalarMultiChannelBuilder instance.
+     *
+     * @return builder instance
      */
     public static NTScalarMultiChannelBuilder createBuilder()
     {
@@ -239,8 +247,9 @@ public class NTScalarMultiChannel
     }
 
     /**
-     * Get the pvStructure.
-     * @return PVStructure.
+     * Get the PVStructure.
+     *
+     * @return PVStructure
      */
     public PVStructure getPVStructure()
     {
@@ -248,8 +257,9 @@ public class NTScalarMultiChannel
     }
 
     /**
-     * Get the display field.
-     * @return PVStructure which may be null.
+     * Get the value field.
+     *
+     * @return PVStructure which may be null
      */
     public PVScalarArray getValue()
     {
@@ -257,8 +267,10 @@ public class NTScalarMultiChannel
     }
 
     /* Get the value field of a specified type (e.g. PVDoubleArray).
-     * @param c expected class of a requested field.
-     * @return The PVField or null if the subfield does not exist, or the field is not of <code>c</code> type.
+     * 
+     * @param <T> the expected type of the value field
+     * @param c class object modeling the class T
+     * @return the PVField or null if the subfield does not exist, or the field is not of <code>c</code> type
      */
     public <T extends PVScalarArray> T getValue(Class<T> c)
     {
@@ -270,6 +282,7 @@ public class NTScalarMultiChannel
 
     /**
      * Get the channelName of each channel.
+     * 
      * @return PVStringArray
      */
     public PVStringArray getChannelName()
@@ -279,7 +292,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the severity of each channel.
-     * @return PVIntArray which may be null.
+     * 
+     * @return PVIntArray, which may be null
      */
     public PVIntArray getSeverity()
     {
@@ -288,7 +302,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the status of each channel.
-     * @return PVIntArray which may be null.
+     * 
+     * @return PVIntArray, which may be null
      */
     public PVIntArray getStatus()
     {
@@ -297,7 +312,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the message of each channel.
-     * @return PVStringArray which may be null.
+     * 
+     * @return PVStringArray, which may be null
      */
     public PVStringArray getMessage()
     {
@@ -306,7 +322,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the secondsPastEpoch of each channel.
-     * @return PVLongArray which may be null.
+     * 
+     * @return PVLongArray, which may be null
      */
     public PVLongArray getSecondsPastEpoch()
     {
@@ -315,7 +332,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the nanoseconds of each channel.
-     * @return PVIntArray which may be null.
+     * 
+     * @return PVIntArray, which may be null
      */
     public PVIntArray getNanoseconds()
     {
@@ -324,7 +342,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the userTag of each channel.
-     * @return PVIntArray which may be null.
+     * 
+     * @return PVIntArray, which may be null
      */
     public PVIntArray getUserTag()
     {
@@ -333,7 +352,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the connection state of each channel.
-     * @return PVBooleanArray, which may be null.
+     * 
+     * @return PVBooleanArray, which may be null
      */
     public PVBooleanArray getIsConnected()
     {
@@ -342,7 +362,8 @@ public class NTScalarMultiChannel
 
     /**
      * Get the descriptor.
-     * @return PVString which may be null.
+     * 
+     * @return PVString which may be null
      */
     public PVString getDescriptor()
     {
@@ -399,7 +420,7 @@ public class NTScalarMultiChannel
 
     /**
      * Constructor
-     * @param pvStructure The PVStructure to be wrapped.
+     * @param pvStructure the PVStructure to be wrapped
      */
     NTScalarMultiChannel(PVStructure pvStructure)
     {

@@ -27,10 +27,11 @@ import java.util.ArrayList;
 public class NTUnionBuilder
 {
     /**
-     * specify the union for the value field.
+     * Specify the union for the value field.
      * If this is not called then a variantUnion is the default.
-     * @param value the introspection object for the union value field.
-     * @return this instance of  <b>NTUnionBuilder</b>.
+     *
+     * @param value the introspection object for the union value field
+     * @return this instance of  <b>NTUnionBuilder</b>
      */
     public NTUnionBuilder value(Union value)
     {
@@ -40,6 +41,7 @@ public class NTUnionBuilder
 
     /**
      * Add descriptor field to the NTUnion.
+     *
      * @return this instance of <b>NTUnionBuilder</b>.
      */
     public NTUnionBuilder addDescriptor()
@@ -50,6 +52,7 @@ public class NTUnionBuilder
 
     /**
      * Add alarm structure to the NTUnion.
+     *
      * @return this instance of <b>NTUnionBuilder</b>.
      */
     public NTUnionBuilder addAlarm()
@@ -60,6 +63,7 @@ public class NTUnionBuilder
 
     /**
      * Add timeStamp structure to the NTUnion.
+     *
      * @return this instance of <b>NTUnionBuilder</b>.
      */
     public NTUnionBuilder addTimeStamp()
@@ -71,7 +75,8 @@ public class NTUnionBuilder
     /**
      * Create a <b>Structure</b> that represents NTUnion.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>Structure</b>.
+     *
+     * @return a new instance of a <b>Structure</b>
      */
     public Structure createStructure()
     {
@@ -107,6 +112,7 @@ public class NTUnionBuilder
     /**
      * Create a <b>PVStructure</b> that represents NTUnion.
      * This resets this instance state and allows new instance to be created.
+     *
      * @return a new instance of a <b>PVStructure</b>.
      */
     public PVStructure createPVStructure()
@@ -117,7 +123,8 @@ public class NTUnionBuilder
     /**
      * Create an <b>NTUnion</b> instance.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of an <b>NTUnion</b>.
+     *
+     * @return a new instance of an <b>NTUnion</b>
      */
     public NTUnion create()
     {
@@ -126,9 +133,10 @@ public class NTUnionBuilder
 
     /**
      * Add extra <b>Field</b> to the type.
-     * @param name name of the field.
-     * @param field a field to add.
-     * @return this instance of <b>NTUnionBuilder</b>.
+     *
+     * @param name the name of the field
+     * @param field the field to add
+     * @return this instance of <b>NTUnionBuilder</b>
      */
     public NTUnionBuilder add(String name, Field field)
     {

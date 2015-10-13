@@ -40,7 +40,8 @@ public class NTNDArrayBuilder
 {
     /**
      * Add descriptor field to the NTNDArray.
-     * @return this instance of <b>NTNDArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTNDArrayBuilder</b>
      */
     public NTNDArrayBuilder addDescriptor()
     {
@@ -50,7 +51,8 @@ public class NTNDArrayBuilder
 
     /**
      * Add alarm structure to the NTNDArray.
-     * @return this instance of <b>NTNDArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTNDArrayBuilder</b>
      */
     public NTNDArrayBuilder addAlarm()
     {
@@ -60,7 +62,8 @@ public class NTNDArrayBuilder
 
     /**
      * Add timeStamp structure to the NTNDArray.
-     * @return this instance of <b>NTNDArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTNDArrayBuilder</b>
      */
     public NTNDArrayBuilder addTimeStamp()
     {
@@ -70,7 +73,8 @@ public class NTNDArrayBuilder
 
     /**
      * Add display structure to the NTNDArray.
-     * @return this instance of <b>NTNDArrayBuilder</b>.
+     * 
+     * @return this instance of <b>NTNDArrayBuilder</b>
      */
     public NTNDArrayBuilder addDisplay()
     {
@@ -80,8 +84,9 @@ public class NTNDArrayBuilder
 
     /**
      * Create a <b>Structure</b> that represents NTNDArray.
-     * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>Structure</b>.
+     * This resets this instance state and allows new instance to be created
+     * 
+     * @return a new instance of a <b>Structure</b>
      */
     public Structure createStructure()
     {
@@ -137,9 +142,10 @@ public class NTNDArrayBuilder
     }
 
     /**
-      * Create a <b>NTNDArray</b> instance.
-      * This resets this instance state and allows new instance to be created.
-      * @return a new instance of a <b>NTNDArray</b>
+     * Create a <b>NTNDArray</b> instance.
+     * This resets this instance state and allows new instance to be created.
+     * 
+     * @return a new instance of a <b>NTNDArray</b>
      */
     public NTNDArray create()
     {
@@ -147,9 +153,10 @@ public class NTNDArrayBuilder
     }
     /**
      * Add extra <b>Field</b> to the type.
-     * @param name name of the field.
-     * @param field a field to add.
-     * @return this instance of <b>NTNDArrayBuilder</b>.
+     * 
+     * @param name name of the field
+     * @param field a field to add
+     * @return this instance of <b>NTNDArrayBuilder</b>
      */
     public NTNDArrayBuilder add(String name, Field field) 
     {

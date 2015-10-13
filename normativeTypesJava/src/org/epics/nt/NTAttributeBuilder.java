@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 /**
  * Interface for in-line creating of NTAttribute.
- *
+ * 
  * One instance can be used to create multiple instances.
  * An instance of this object must not be used concurrently (an object has a state).
  * @author dgh
@@ -26,7 +26,8 @@ public class NTAttributeBuilder
 {
     /**
      * Add tags field to the NTAttribute.
-     * @return this instance of <b>NTAttributeBuilder</b>.
+     *
+     * @return this instance of <b>NTAttributeBuilder</b>
      */
     public NTAttributeBuilder addTags()
     {
@@ -36,7 +37,8 @@ public class NTAttributeBuilder
 
     /**
      * Add descriptor field to the NTAttribute.
-     * @return this instance of <b>NTAttributeBuilder</b>.
+     *
+     * @return this instance of <b>NTAttributeBuilder</b>
      */
     public NTAttributeBuilder addDescriptor()
     {
@@ -46,7 +48,8 @@ public class NTAttributeBuilder
 
     /**
      * Add alarm structure to the NTAttribute.
-     * @return this instance of <b>NTAttributeBuilder</b>.
+     *
+     * @return this instance of <b>NTAttributeBuilder</b>
      */
     public NTAttributeBuilder addAlarm()
     {
@@ -56,7 +59,8 @@ public class NTAttributeBuilder
 
     /**
      * Add timeStamp structure to the NTAttribute.
-     * @return this instance of <b>NTAttributeBuilder</b>.
+     *
+     * @return this instance of <b>NTAttributeBuilder</b>
      */
     public NTAttributeBuilder addTimeStamp()
     {
@@ -67,7 +71,8 @@ public class NTAttributeBuilder
     /**
      * Create a <b>Structure</b> that represents NTAttribute.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>Structure</b>.
+     *
+     * @return a new instance of a <b>Structure</b>
      */
     public Structure createStructure()
     {
@@ -104,7 +109,8 @@ public class NTAttributeBuilder
     /**
      * Create a <b>PVStructure</b> that represents NTAttribute.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>PVStructure</b>.
+     *
+     * @return a new instance of a <b>PVStructure</b>
      */
     public PVStructure createPVStructure()
     {
@@ -114,7 +120,8 @@ public class NTAttributeBuilder
     /**
      * Create an <b>NTAttribute</b> instance.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of an <b>NTAttribute</b>.
+     *
+     * @return a new instance of an <b>NTAttribute</b>
      */
     public NTAttribute create()
     {
@@ -123,9 +130,10 @@ public class NTAttributeBuilder
 
     /**
      * Add extra <b>Field</b> to the type.
-     * @param name name of the field.
-     * @param field a field to add.
-     * @return this instance of <b>NTAttributeBuilder</b>.
+     *
+     * @param name name of the field
+     * @param field a field to add
+     * @return this instance of <b>NTAttributeBuilder</b>
      */
     public NTAttributeBuilder add(String name, Field field) 
     {

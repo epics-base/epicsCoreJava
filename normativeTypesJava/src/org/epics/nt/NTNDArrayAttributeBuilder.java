@@ -26,7 +26,8 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
 {
     /**
      * Add tags field to the NTNDArrayAttribute.
-     * @return this instance of <b>NTNDArrayAttributeBuilder</b>.
+     * 
+     * @return this instance of <b>NTNDArrayAttributeBuilder</b>
      */
     public NTNDArrayAttributeBuilder addTags()
     {
@@ -36,7 +37,8 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
 
     /**
      * Add descriptor field to the NTNDArrayAttribute.
-     * @return this instance of <b>NTNDArrayAttributeBuilder</b>.
+     * 
+     * @return this instance of <b>NTNDArrayAttributeBuilder</b>
      */
     public NTNDArrayAttributeBuilder addDescriptor()
     {
@@ -56,7 +58,8 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
 
     /**
      * Add timeStamp structure to the NTNDArrayAttribute.
-     * @return this instance of <b>NTNDArrayAttributeBuilder</b>.
+     * 
+     * @return this instance of <b>NTNDArrayAttributeBuilder</b>
      */
     public NTNDArrayAttributeBuilder addTimeStamp()
     {
@@ -67,7 +70,8 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
     /**
      * Create a <b>Structure</b> that represents NTAttribute.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>Structure</b>.
+     * 
+     * @return a new instance of a <b>Structure</b>
      */
     public Structure createStructure()
     {
@@ -107,7 +111,8 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
     /**
      * Create a <b>PVStructure</b> that represents NTAttribute.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>PVStructure</b>.
+     * 
+     * @return a new instance of a <b>PVStructure</b>
      */
     public PVStructure createPVStructure()
     {
@@ -117,7 +122,8 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
     /**
      * Create an <b>NTNDArrayAttribute</b> instance.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of an <b>NTNDArrayAttribute</b>.
+     * 
+     * @return a new instance of an <b>NTNDArrayAttribute</b>
      */
     public NTNDArrayAttribute create()
     {
@@ -126,9 +132,10 @@ public class NTNDArrayAttributeBuilder extends NTAttributeBuilder
 
     /**
      * Add extra <b>Field</b> to the type.
-     * @param name name of the field.
-     * @param field a field to add.
-     * @return this instance of <b>NTNDArrayAttributeBuilder</b>.
+     * 
+     * @param name name of the field
+     * @param field a field to add
+     * @return this instance of <b>NTNDArrayAttributeBuilder</b>
      */
     public NTNDArrayAttributeBuilder add(String name, Field field) 
     {

@@ -19,16 +19,17 @@ public interface HasControl
 {
      /**
       * Attach a PVControl.
-      *
       * Will return false if no control field.
-      * @param pvControl The PVControl that will be attached.
-      * @return true if the operation was successfull, otherwise false.
+      *
+      * @param pvControl the PVControl to be attached
+      * @return true if the operation was successfull, otherwise false
       */
     public boolean attachControl(PVControl pvControl);
 
     /**
      * Get the control field.
-     * @return PVStructure which may be null.
+     *
+     * @return the control field PVStructure, which may be null
      */
     public PVStructure getControl();
 }

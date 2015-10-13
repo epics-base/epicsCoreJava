@@ -26,7 +26,8 @@ public class NTEnumBuilder
 {
     /**
      * Add descriptor field to the NTEnum.
-     * @return this instance of <b>NTEnumBuilder</b>.
+     *
+     * @return this instance of <b>NTEnumBuilder</b>
      */
     public NTEnumBuilder addDescriptor()
     {
@@ -36,7 +37,8 @@ public class NTEnumBuilder
 
     /**
      * Add alarm structure to the NTEnum.
-     * @return this instance of <b>NTEnumBuilder</b>.
+     *
+     * @return this instance of <b>NTEnumBuilder</b>
      */
     public NTEnumBuilder addAlarm()
     {
@@ -46,7 +48,8 @@ public class NTEnumBuilder
 
     /**
      * Add timeStamp structure to the NTEnum.
-     * @return this instance of <b>NTEnumBuilder</b>.
+     *
+     * @return this instance of <b>NTEnumBuilder</b>
      */
     public NTEnumBuilder addTimeStamp()
     {
@@ -57,7 +60,8 @@ public class NTEnumBuilder
     /**
      * Create a <b>Structure</b> that represents NTEnum.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>Structure</b>.
+     *
+     * @return a new instance of a <b>Structure</b>
      */
     public Structure createStructure()
     {
@@ -90,7 +94,8 @@ public class NTEnumBuilder
     /**
      * Create a <b>PVStructure</b> that represents NTEnum.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>PVStructure</b>.
+     *
+     * @return a new instance of a <b>PVStructure</b>
      */
     public PVStructure createPVStructure()
     {
@@ -100,7 +105,8 @@ public class NTEnumBuilder
     /**
      * Create an <b>NTEnum</b> instance.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of an <b>NTEnum</b>.
+     *
+     * @return a new instance of an <b>NTEnum</b>
      */
     public NTEnum create()
     {
@@ -109,9 +115,10 @@ public class NTEnumBuilder
 
     /**
      * Add extra <b>Field</b> to the type.
-     * @param name name of the field.
-     * @param field a field to add.
-     * @return this instance of <b>NTEnumBuilder</b>.
+     *
+     * @param name name of the field
+     * @param field a field to add
+     * @return this instance of <b>NTEnumBuilder</b>
      */
     public NTEnumBuilder add(String name, Field field) 
     {

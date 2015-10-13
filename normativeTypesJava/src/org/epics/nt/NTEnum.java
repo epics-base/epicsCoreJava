@@ -22,7 +22,7 @@ import org.epics.pvdata.property.PVDisplay;
 import org.epics.pvdata.property.PVControl;
 
 /**
- * Wrapper class for NTEnum
+ * Wrapper class for NTEnum.
  *
  * @author dgh
  */
@@ -33,13 +33,14 @@ public class NTEnum
 
     /**
      * Creates an NTEnum wrapping the specified PVStructure if the latter is compatible.
-     *
+     * <p>
      * Checks the supplied structure is compatible with NTEnum
      * and if so returns a NTEnum which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
-     * @param pvStructure The PVStructure to be wrapped.
-     * @return NTEnum instance on success, null otherwise.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTEnum instance on success, null otherwise
      */
     public static NTEnum wrap(PVStructure pvStructure)
     {
@@ -50,11 +51,12 @@ public class NTEnum
 
     /**
      * Creates an NTEnum wrapping the specified PVStructure, regardless of the latter's compatibility.
-     *
+     * <p>
      * No checks are made as to whether the specified PVStructure
      * is compatible with NTEnum or is non-null.
-     * @param pvStructure The PVStructure to be wrapped.
-     * @return NTEnum instance.
+     *
+     * @param pvStructure the PVStructure to be wrapped
+     * @return NTEnum instance
      */
     public static NTEnum wrapUnsafe(PVStructure pvStructure)
     {
@@ -63,12 +65,13 @@ public class NTEnum
 
     /**
      * Checks if the specified structure reports to be a compatible NTEnum.
-     *
+     * <p>
      * Checks whether the specified structure reports compatibility with this
      * version of NTEnum through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
-     * compatible in terms of its introspection type
-     * @param structure The Structure to test.
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test.
      * @return (false,true) if (is not, is) a compatible NTEnum.
      */
     public static boolean is_a(Structure structure)
@@ -78,13 +81,14 @@ public class NTEnum
 
     /**
      * Checks if the specified structure reports to be a compatible NTEnum.
-     *
+     * <p>
      * Checks whether the specified structure reports compatibility with this
      * version of NTEnum through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
-     * compatible in terms of its introspection type
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) a compatible NTEnum.
+     * compatible in terms of its introspection type.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if (is not, is) a compatible NTEnum
      */
     public static boolean is_a(PVStructure pvStructure)
     {
@@ -93,11 +97,12 @@ public class NTEnum
 
     /**
      * Checks if the specified structure is compatible with NTEnum.
-     *
+     * <p>
      * Checks whether the specified structure is compatible with this version
      * of NTEnum through introspection interface.
-     * @param structure The Structure to test.
-     * @return (false,true) if (is not, is) a compatible NTEnum.
+     *
+     * @param structure The Structure to test
+     * @return (false,true) if (is not, is) a compatible NTEnum
      */
     public static boolean isCompatible(Structure structure)
     {
@@ -130,11 +135,12 @@ public class NTEnum
 
     /**
      * Checks if the specified structure is compatible with NTEnum.
-     *
+     * <p>
      * Checks whether the specified structure is compatible with this version
      * of NTEnum through introspection interface.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) a compatible NTEnum.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if (is not, is) a compatible NTEnum
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
@@ -147,8 +153,9 @@ public class NTEnum
      * Checks if the specified structure is a valid NTEnum.
      *
      * Checks whether the wrapped structure is valid with respect to this
-     * version of NTEnum
-     * @return (false,true) if (is not, is) a valid NTEnum.
+     * version of NTEnum.
+     *
+     * @return (false,true) if (is not, is) a valid NTEnum
      */
     public boolean isValid()
     {
@@ -157,7 +164,8 @@ public class NTEnum
 
     /**
      * Create an NTEnum builder instance.
-     * @return builder instance.
+     *
+     * @return builder instance
      */
     public static NTEnumBuilder createBuilder()
     {
@@ -166,7 +174,8 @@ public class NTEnum
 
     /**
      * Get the pvStructure.
-     * @return PVStructure.
+     *
+     * @return PVStructure
      */
     public PVStructure getPVStructure()
     {
@@ -175,7 +184,8 @@ public class NTEnum
 
     /**
      * Get the value field.
-     * @return The PVStructure for the values.
+     *
+     * @return the PVStructure for the values
      */
     public PVStructure getValue()
     {
@@ -184,7 +194,8 @@ public class NTEnum
 
     /**
      * Get the descriptor field.
-     * @return The pvString or null if no function field.
+     *
+     * @return the PVString or null if no descriptor field
      */
     public PVString getDescriptor()
     {
@@ -241,7 +252,8 @@ public class NTEnum
 
     /**
      * Constructor
-     * @param pvStructure The PVStructure to be wrapped.
+     *
+     * @param pvStructure the PVStructure to be wrapped
      */
     NTEnum(PVStructure pvStructure)
     {

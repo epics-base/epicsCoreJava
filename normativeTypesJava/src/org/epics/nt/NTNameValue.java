@@ -21,7 +21,7 @@ import org.epics.pvdata.property.PVDisplay;
 import org.epics.pvdata.property.PVControl;
 
 /**
- * Wrapper class for NTNameValue
+ * Wrapper class for NTNameValue.
  *
  * @author dgh
  */
@@ -32,12 +32,13 @@ public class NTNameValue
 
     /**
      * Creates an NTNameValue wrapping the specified PVStructure if the latter is compatible.
-     *
+     * <p>
      * Checks the supplied structure is compatible with NTNameValue
      * and if so returns a NTNameValue which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
-     * @param pvStructure The PVStructure to be wrapped.
+     *
+     * @param pvStructure the PVStructure to be wrapped.
      * @return NTNameValue instance on success, null otherwise.
      */
     public static NTNameValue wrap(PVStructure pvStructure)
@@ -49,10 +50,11 @@ public class NTNameValue
 
     /**
      * Creates an NTNameValue wrapping the specified PVStructure, regardless of the latter's compatibility.
-     *
+     * <p>
      * No checks are made as to whether the specified PVStructure
      * is compatible with NTNameValue or is non-null.
-     * @param pvStructure The PVStructure to be wrapped.
+     *
+     * @param pvStructure the PVStructure to be wrapped.
      * @return NTNameValue instance.
      */
     public static NTNameValue wrapUnsafe(PVStructure pvStructure)
@@ -62,12 +64,13 @@ public class NTNameValue
 
     /**
      * Checks if the specified structure reports to be a compatible NTNameValue.
-     *
+     * <p>
      * Checks whether the specified structure reports compatibility with this
      * version of NTNameValue through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
-     * compatible in terms of its introspection type
-     * @param structure The Structure to test.
+     * compatible in terms of its introspection type.
+     *
+     * @param structure the Structure to test.
      * @return (false,true) if (is not, is) a compatible NTNameValue.
      */
     public static boolean is_a(Structure structure)
@@ -77,7 +80,7 @@ public class NTNameValue
 
     /**
      * Checks if the specified structure reports to be a compatible NTNameValue.
-     *
+     * <p>
      * Checks whether the specified structure reports compatibility with this
      * version of NTNameValue through type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
@@ -92,10 +95,10 @@ public class NTNameValue
 
     /**
      * Checks if the specified structure is compatible with NTNameValue.
-     *
+     * <p>
      * Checks whether the specified structure is compatible with this version
      * of NTNameValue through introspection interface.
-     * @param structure The Structure to test.
+     * @param structure the Structure to test.
      * @return (false,true) if (is not, is) a compatible NTNameValue.
      */
     public static boolean isCompatible(Structure structure)
@@ -135,11 +138,12 @@ public class NTNameValue
 
     /**
      * Checks if the specified structure is compatible with NTNameValue.
-     *
+     * <p>
      * Checks whether the specified structure is compatible with this version
      * of NTNameValue through introspection interface.
-     * @param pvStructure The PVStructure to test.
-     * @return (false,true) if (is not, is) a compatible NTNameValue.
+     *
+     * @param pvStructure the PVStructure to test
+     * @return (false,true) if (is not, is) a compatible NTNameValue
      */
     public static boolean isCompatible(PVStructure pvStructure)
     {
@@ -150,10 +154,11 @@ public class NTNameValue
 
     /**
      * Checks if the specified structure is a valid NTNameValue.
-     *
+     * <p>
      * Checks whether the wrapped structure is valid with respect to this
-     * version of NTNameValue
-     * @return (false,true) if (is not, is) a valid NTNameValue.
+     * version of NTNameValue.
+     *
+     * @return (false,true) if (is not, is) a valid NTNameValue
      */
     public boolean isValid()
     {
@@ -162,7 +167,8 @@ public class NTNameValue
 
     /**
      * Create a NTNameValue builder instance.
-     * @return builder instance.
+     *
+     * @return builder instance
      */
     public static NTNameValueBuilder createBuilder()
     {
@@ -170,8 +176,9 @@ public class NTNameValue
     }
 
     /**
-     * Get the pvStructure.
-     * @return PVStructure.
+     * Get the PVStructure.
+     *
+     * @return PVStructure
      */
     public PVStructure getPVStructure()
     {
@@ -180,7 +187,8 @@ public class NTNameValue
 
     /**
      * Get the value field.
-     * @return The PVField for the values.
+     *
+     * @return the PVScalarArray for the value field
      */
     public PVScalarArray getValue()
     {
@@ -188,8 +196,10 @@ public class NTNameValue
     }
 
     /* Get the value field of a specified type (e.g. PVDoubleArray).
-     * @param c expected class of a requested field.
-     * @return The PVScalarArray or null if the subfield does not exist, or the field is not of <code>c</code> type.
+     *
+     * @param <T> the expected type of the value field
+     * @param c class object modeling the class T
+     * @return the PVScalarArray or null if the subfield does not exist, or the field is not of <code>c</code> type
      */
     public <T extends PVScalarArray> T getValue(Class<T> c)
     {
@@ -201,7 +211,8 @@ public class NTNameValue
 
     /**
      * Get the name array field.
-     * @return The PVStringArray for the name.
+     * 
+     * @return the PVStringArray for the name field
      */
     PVStringArray getName()
     {
@@ -210,7 +221,8 @@ public class NTNameValue
 
     /**
      * Get the descriptor field.
-     * @return The pvString or null if no function field.
+     * 
+     * @return the PVString or null if no descriptor field
      */
     public PVString getDescriptor()
     {
@@ -266,8 +278,9 @@ public class NTNameValue
     }
 
     /**
-     * Constructor
-     * @param pvStructure The PVStructure to be wrapped.
+     * Constructor.
+     * 
+     * @param pvStructure the PVStructure to be wrapped
      */
     NTNameValue(PVStructure pvStructure)
     {

@@ -6,8 +6,8 @@
 
 package org.epics.nt;
 /**
- * Utility class for parsing an ID following the NT type ID conventions
- *
+ * Utility class for parsing an ID following the NT type ID conventions.
+ * 
  * An NT type ID will be of the from epics:nt/&lt;type-name&gt;:&lt;Major&gt;.&lt;Minor&gt;,
  * e.g. epics:nt/NTNDArray:1.2
  * @author dgh
@@ -15,9 +15,9 @@ package org.epics.nt;
 public class NTID
 {
     /**
-     * Creates an NTID from the specified type ID
+     * Creates an NTID from the specified type ID.
      *
-     * @param id The the id to be parsed.
+     * @param id the ID to be parsed
      */
     public NTID(String id)
     {
@@ -32,17 +32,19 @@ public class NTID
     }
 
     /**
-     * Get the full name of the id, i.e. the original ID
+     * Get the full name of the ID, that is, the original ID.
+     * <p>
+     * For example above returns "epics:nt/NTNDArray:1.2".
      *
-     * For example above returns "epics:nt/NTNDArray:1.2"
      * @return the full name
      */
     public String getFullName() { return fullName; }
 
     /**
      * Get the fully qualified name including namespaces, but excluding version numbers
+     * <p>
+     * For example above return "epics:nt/NTNDArray".
      *
-     * For example above return "epics:nt/NTNDArray"
      * @return the fully qualified name
      */ 
     public String getQualifiedName()
@@ -57,8 +59,9 @@ public class NTID
 
     /**
      * Get the namespace
+     * <p>
+     * For example above return "epics:nt".
      *
-     * For example above return "epics:nt"
      * @return the namespace
      */
     public String getNamespace()
@@ -73,8 +76,9 @@ public class NTID
 
     /**
      * Get the unqualified name, without namespace or version
+     * <p>
+     * For example above return "NTNDArray".
      *
-     * For example above return "NTNDArray"
      * @return the unqualified name
      */
     public String getName()
@@ -99,9 +103,10 @@ public class NTID
     }
 
     /**
-     * Get the version number as a string
+     * Get the version number as a string.
+     * <p>
+     * For example above return "1.2".
      *
-     * For example above return "1.2"
      * @return the unqualified name
      */
     public String getVersion()
@@ -114,9 +119,10 @@ public class NTID
     }
 
     /**
-     * Get the Major version as a string
+     * Get the Major version as a string.
+     * <p>
+     * For example above return "1".
      *
-     * For example above return "1"
      * @return the Major string
      */
     public String getMajorVersionString()
@@ -137,7 +143,7 @@ public class NTID
     }
 
     /**
-     * Does the ID contain a major version and is it a number
+     * Does the ID contain a major version and is it a number?
      *
      * @return true if it contains a major version number
      */
@@ -155,11 +161,12 @@ public class NTID
     }
 
     /**
-     * Get the Major version as an integer
-     *
-     * For example above return 1
+     * Get the Major version as an integer.
+     * <p>
+     * For example above return 1.
      * If hasMajorVersion() returns true then this method returns
      * the integer version number, else it returns 0. 
+     *
      * @return the Major version
      */
     public int getMajorVersion()
@@ -170,9 +177,10 @@ public class NTID
     }
 
     /**
-     * Get the Minor version as a string
+     * Get the Minor version as a string.
+     * <p>
+     * For example above return "2".
      *
-     * For example above return "2"
      * @return the Minor string
      */
     public String getMinorVersionString()
@@ -195,7 +203,7 @@ public class NTID
     }
 
     /**
-     * Does the ID contain a minor version and is it a number
+     * Does the ID contain a minor version and is it a number?
      *
      * @return true if it contains a minor version number
      */
@@ -213,11 +221,12 @@ public class NTID
     }
 
     /**
-     * Get the Minor version as an integer
-     *
-     * For example above return 2
+     * Get the Minor version as an integer.
+     * <p>
+     * For example above return 2.
      * If hasMinorVersion() returns true then this method returns
      * the integer version number, else it returns 0. 
+     *
      * @return the Minor string
      */
     public int getMinorVersion()

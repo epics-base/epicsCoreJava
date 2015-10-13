@@ -19,16 +19,17 @@ public interface HasDisplay
 {
      /**
       * Attach a PVDisplay.
-      *
       * Will return false if no display field.
-      * @param pvDisplay The PVDisplay that will be attached.
-      * @return true if the operation was successfull, otherwise false.
+      *
+      * @param pvDisplay the PVDisplay that will be attached
+      * @return true if the operation was successfull, otherwise false
       */
     public boolean attachDisplay(PVDisplay pvDisplay);
 
     /**
      * Get the display field.
-     * @return PVStructure which may be null.
+     *
+     * @return PVStructure which may be null
      */
     public PVStructure getDisplay();
 }
