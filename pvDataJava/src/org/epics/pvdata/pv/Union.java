@@ -40,15 +40,15 @@ public interface Union extends Field{
     /**
      * Get a list of union fields (members).
      * 
-     * @return an array of fields (can be empty), non-<code>null</code>.
+     * @return an array of fields (can be empty), non-<code>null</code>
      */
     Field[] getFields();
 
     /**
      * Get a sub fields by index.
      * 
-     * @param fieldIndex the field index.
-     * @return the field at specified index.
+     * @param fieldIndex the field index
+     * @return the field at specified index
      */
     Field getField(int fieldIndex);
 
@@ -58,7 +58,7 @@ public interface Union extends Field{
      * @param <T> the expected type of the Field of the requested field
      * @param c class object modeling the class T of expected type of the requested field
      * @param fieldName the fieldName
-     * @return The Field or null if the field does not exist, or the field is not of <code>c</code> type
+     * @return the Field or null if the field does not exist, or the field is not of <code>c</code> type
      */
     <T extends Field> T getField(Class<T> c, String fieldName);
 
@@ -68,12 +68,13 @@ public interface Union extends Field{
      * @param <T> the expected type of the Field of the requested field
      * @param c class object modeling the class T of expected type of the requested field
      * @param fieldIndex the index
-     * @return The Field or null if the index is invalid, or the field is not of <code>c</code> type
+     * @return the Field or null if the index is invalid, or the field is not of <code>c</code> type
      */
     <T extends Field> T getField(Class<T> c, int fieldIndex);
     /**
-     * Get the array of the subfield names.
-     * @return The array.
+     * Get the array of the subfield names
+     *
+     * @return the array of the subfield names
      */
     String[] getFieldNames();
 

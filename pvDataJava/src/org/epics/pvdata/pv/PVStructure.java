@@ -29,12 +29,12 @@ public interface PVStructure extends PVField, BitSetSerializable {
 
     /**
      * Get the PVField subfield with name fieldName.
-     * <p>fieldName is the full name of the field relative to this PVStructure.
+     * <p>fieldName is the name of the field relative to this PVStructure.
      * So it consists of one or more strings separated by periods (.s).
      * The last of these strings is the name of the field. The other
      * strings are the names of the structure subfields containing the requested
-     * field starting with the top subfield and descending to the leaf field, e.g.
-     * current.alarm.status.
+     * field starting with the highest-level subfield and descending to the leaf
+     * field, e.g. current.alarm.status.
      *
      * @param fieldName the fieldName
      * @return the PVField or null if the subfield does not exist
@@ -51,12 +51,12 @@ public interface PVStructure extends PVField, BitSetSerializable {
     
     /**
      * Get the PVField subfield with name fieldName.
-     * <p>fieldName is the full name of the field relative to this PVStructure.
+     * <p>fieldName is the name of the field relative to this PVStructure.
      * So it consists of one or more strings separated by periods (.s).
      * The last of these strings is the name of the field. The other
      * strings are the names of the structure subfields containing the requested
-     * field starting with the top subfield and descending to the leaf field, e.g.
-     * current.alarm.status.
+     * field starting with the highest-level subfield and descending to the leaf
+     * field, e.g. current.alarm.status.
      *
      * @param <T> the expected type of the PVField of the requested field
      * @param c class object modeling the class T of expected type of the requested field
