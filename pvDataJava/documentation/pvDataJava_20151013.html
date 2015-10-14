@@ -76,7 +76,7 @@ V4 control system programming environment:<br />
 <h2 class="nocount">Status of this Document</h2>
 
 <p>This is the 13-Oct-2015 version of the Java implementation of pvData.
-This version adds the dscription of new template <code>getField</code> methods added to <code>Structure</code> and <code>Union</code>, and updates and improves the description of the pvData meta language.</p>
+This version adds the description of new template <code>getField</code> methods added to <code>Structure</code> and <code>Union</code>, adds the new methods to Control and updates and improves the description of the pvData meta language.</p>
 <p> The text describes software which is a complete implementation of pvData as
 currently planned by the EPICS V4 Working Group.
 </p>
@@ -339,7 +339,7 @@ union
 </pre>
 <p>for example</p>
 <pre>
-union value // a heterogenous attribute
+union value // a heterogeneous attribute
     int intValue
     double doubleValue
     string stringValue
@@ -364,7 +364,7 @@ union[] &lt;fieldName&gt;[ // comment]
         {&lt;field&gt;}1+</pre>
 <p>for example</p>
 <pre>
-union value // a heterogenous attribute
+union value // a heterogeneous attribute
     int intValue
     double doubleValue
     string stringValue
@@ -1038,7 +1038,7 @@ See <code>org.epics.pvdata.pv.Convert</code> for details.</p>
 implementation is in Java but the functionality is also implemented in C++ (See pvDataCPP for details).</p>
 
 <p>pvData is distributed as a sourceforge mercurial project named pvDataJava.
-It consists of the following java packages:</p>
+It consists of the following Java packages:</p>
 
 <h3>org.epics.pvdata.pv</h3>
 
@@ -2663,7 +2663,7 @@ Often this field has the name <b>value</b>
 A record can have multiple value
 fields, which can appear in the top-level structure of a record or in a
 substructure. All other fields in the structure containing a value field are
-considered properties of the value field. The fieldname is also the property
+considered properties of the value field. The field name is also the property
 name. The value field can have any type, i.e. scalar, scalarArray, or
 structure. Typical property fields are timeStamp, alarm, display, control, and
 history. The timeStamp is a special case. If it appears anywhere in the
@@ -2786,7 +2786,7 @@ examples are:</p>
   <dt>output</dt>
     <dd>A field with support that reads the current value and sends it
       somewhere else. This can be anything. It can be a channel access link. It
-      can write a value to hardware. Etc.</dd>
+      can write a value to hardware etc.</dd>
 </dl>
 
 <p>The model allows for device records. A device record has structure fields
@@ -3960,7 +3960,7 @@ provides a language independent overview of <b>copy</b> and <b>monitor</b>.
      <dd>
       The Channel create methods in pvAccess all have an argument
       <b>PVStructure pvRequest</b>.<br />
-      Given an ascii string createRequest creates a <code>PVStructure</code> that provides
+      Given an ASCII string createRequest creates a <code>PVStructure</code> that provides
       a pvData representation of the information from the ascii string.
       It is this structure that can be passed to the channel create methods.<br />
       The information in a pvRequest selects an arbitrary subset of the
