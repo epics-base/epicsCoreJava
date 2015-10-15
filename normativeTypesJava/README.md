@@ -39,7 +39,7 @@ To clean
 
     mvn clean
 
-Building the module will generate a jars of the .class files, the source
+Building the module will generate jars of the .class files, the source
 and the javadoc.
 
 To unzip the a jar, for example the javadoc jar, type
