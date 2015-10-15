@@ -14,7 +14,7 @@ Status
 
 The current version implements fully the
 [16 Mar 2015 version](http://epics-pvdata.sourceforge.net/alpha/normativeTypes/normativeTypes_20150316.html)
- of the normativeTypes specification.
+ of the Normative Types Specification.
 
 The module status is alpha and the API and behaviour may change signifcantly
 in future versions.
@@ -32,9 +32,11 @@ Build
 Building normativeTypesJava from the source module requires maven.
 
 To build type
+
     mvn compile install
 
 To clean
+
     mvn clean
 
 Building the module will generate a jars of the .class files, the source
@@ -44,6 +46,7 @@ To unzip the a jar, for example the javadoc jar, type
 
     java xf <name-of-jar>
 e.g.
+
     java xf normativeTypesJava-0.2.0-SNAPSHOT-javadoc.jar
 
 from the directory containing the jar.
