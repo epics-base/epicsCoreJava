@@ -31,7 +31,7 @@ public class NTMultiChannelBuilder
      * If this is not called then a variant union is the default.
      *
      * @param value the introspection object for the union value field
-     * @return this instance of  <b>NTMultiChannelBuilder</b>
+     * @return this instance of  NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder value(Union value)
     {
@@ -40,9 +40,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add descriptor field to the NTMultiChannel.
+     * Adds descriptor field to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addDescriptor()
     {
@@ -51,9 +51,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add alarm structure to the NTMultiChannel.
+     * Adds alarm field to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addAlarm()
     {
@@ -62,9 +62,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add timeStamp structure to the NTMultiChannel.
+     * Adds timeStamp field to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addTimeStamp()
     {
@@ -73,9 +73,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add severity array to the NTMultiChannel.
+     * Adds severity array to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addSeverity()
     {
@@ -84,9 +84,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add status array to the NTMultiChannel.
+     * Adds status array to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addStatus()
     {
@@ -95,9 +95,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add message array to the NTMultiChannel.
+     * Adds message array to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addMessage()
     {
@@ -106,9 +106,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add secondsPastEpoch array to the NTMultiChannel.
+     * Adds secondsPastEpoch array to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addSecondsPastEpoch()
     {
@@ -117,9 +117,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add nanoseconds array to the NTMultiChannel.
+     * Adds nanoseconds array to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addNanoseconds()
     {
@@ -128,9 +128,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add userTag array to the NTMultiChannel.
+     * Adds userTag array to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addUserTag()
     {
@@ -139,9 +139,9 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add isConnected array to the NTMultiChannel.
+     * Adds isConnected array to the NTMultiChannel.
      *
-     * @return this instance of <b>NTMultiChannelBuilder</b>
+     * @return this instance of NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder addIsConnected()
     {
@@ -150,10 +150,10 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTMultiChannel.
+     * Creates a Structure that represents NTMultiChannel.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>Structure</b>
+     * @return a new instance of a Structure
      */
     public Structure createStructure()
     {
@@ -234,10 +234,10 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Create a <b>PVStructure</b> that represents NTMultiChannel.
+     * Creates a PVStructure that represents NTMultiChannel.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>PVStructure</b>
+     * @return a new instance of a PVStructure
      */
     public PVStructure createPVStructure()
     {
@@ -245,10 +245,10 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Create a <b>NTMultiChannel</b> instance.
+     * Creates an NTMultiChannel instance.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>NTMultiChannel</b>
+     * @return a new instance of an NTMultiChannel
      */
     public NTMultiChannel create()
     {
@@ -256,11 +256,11 @@ public class NTMultiChannelBuilder
     }
 
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      *
      * @param name name of the field
      * @param field a field to add
-     * @return this instance of a <b>NTMultiChannelBuilder</b>
+     * @return this instance of an NTMultiChannelBuilder
      */
     public NTMultiChannelBuilder add(String name, Field field)
     {

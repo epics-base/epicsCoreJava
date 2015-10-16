@@ -25,9 +25,9 @@ import java.util.ArrayList;
 public class NTURIBuilder
 {
     /**
-     * Add authority field to the NTURI.
+     * Adds authority field to the NTURI.
      *
-     * @return this instance of <b>NTURIBuilder</b>
+     * @return this instance of NTURIBuilder
      */
     public NTURIBuilder addAuthority()
     {
@@ -36,10 +36,10 @@ public class NTURIBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTURI.
+     * Creates a Structure that represents NTURI.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>Structure</b>
+     * @return a new instance of a Structure
      */
     public Structure createStructure()
     {
@@ -75,10 +75,10 @@ public class NTURIBuilder
     }
 
     /**
-     * Create a <b>PVStructure</b> that represents NTURI.
+     * Creates a PVStructure that represents NTURI.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>PVStructure</b>
+     * @return a new instance of a PVStructure
      */
     public PVStructure createPVStructure()
     {
@@ -86,10 +86,10 @@ public class NTURIBuilder
     }
 
     /**
-     * Create an <b>NTURI</b> instance.
+     * Creates an NTURI instance.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of an <b>NTURI</b>
+     * @return a new instance of an NTURI
      */
     public NTURI create()
     {
@@ -97,11 +97,11 @@ public class NTURIBuilder
     }
 
     /**
-     * Add extra <b>Scalar</b> of ScalarType pvString
+     * Adds extra Scalar of ScalarType pvString
      * to the query field of the type.
      *
      * @param name the name of the field
-     * @return this instance of <b>NTURIBuilder</b>
+     * @return this instance of NTURIBuilder
      */
     public NTURIBuilder addQueryString(String name) 
     {
@@ -112,11 +112,11 @@ public class NTURIBuilder
     }
 
     /**
-     * Add extra <b>Scalar</b> of ScalarType pvDouble
+     * Adds extra Scalar of ScalarType pvDouble
      * to the query field of the type.
      *
      * @param name the name of the field
-     * @return this instance of <b>NTURIBuilder</b>
+     * @return this instance of NTURIBuilder
      */
     public NTURIBuilder addQueryDouble(String name) 
     {
@@ -127,11 +127,11 @@ public class NTURIBuilder
     }
 
     /**
-     * Add extra <b>Scalar</b> of ScalarType pvInt
+     * Adds extra Scalar of ScalarType pvInt
      * to the query field of the type.
      *
      * @param name the name of the field
-     * @return this instance of <b>NTURIBuilder</b>
+     * @return this instance of NTURIBuilder
      */
     public NTURIBuilder addQueryInt(String name) 
     {
@@ -142,11 +142,11 @@ public class NTURIBuilder
     }
 
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      *
      * @param name the name of the field
      * @param field the field to add
-     * @return this instance of <b>NTUnionBuilder</b>
+     * @return this instance of NTUnionBuilder
      */
     public NTURIBuilder add(String name, Field field) 
     {

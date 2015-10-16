@@ -25,9 +25,10 @@ import java.util.ArrayList;
 public class NTScalarBuilder
 {
     /**
-     * Set a value type of an NTScalar.
-     * @param scalarType the scalar type of the value field.
-     * @return this instance of <b>NTScalarBuilder</b>.
+     * Sets the value type of an NTScalar.
+     *
+     * @param scalarType the ScalarType of the value field
+     * @return this instance of NTScalarBuilder.
      */
     public NTScalarBuilder value(ScalarType scalarType)
     {
@@ -37,8 +38,8 @@ public class NTScalarBuilder
     }
 
     /**
-     * Add descriptor field to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.
+     * Adds descriptor field to the NTScalar.
+     * @return this instance of NTScalarBuilder.
      */
     public NTScalarBuilder addDescriptor()
     {
@@ -47,8 +48,8 @@ public class NTScalarBuilder
     }
 
     /**
-     * Add alarm structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.
+     * Adds alarm structure to the NTScalar.
+     * @return this instance of NTScalarBuilder.
      */
     public NTScalarBuilder addAlarm()
     {
@@ -57,8 +58,8 @@ public class NTScalarBuilder
     }
 
     /**
-     * Add timeStamp structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.
+     * Adds timeStamp field to the NTScalar.
+     * @return this instance of NTScalarBuilder.
      */
     public NTScalarBuilder addTimeStamp()
     {
@@ -67,8 +68,8 @@ public class NTScalarBuilder
     }
 
     /**
-     * Add display structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.
+     * Adds display field to the NTScalar.
+     * @return this instance of NTScalarBuilder.
      */
     public NTScalarBuilder addDisplay()
     {
@@ -77,8 +78,8 @@ public class NTScalarBuilder
     }
 
     /**
-     * Add control structure to the NTScalar.
-     * @return this instance of <b>NTScalarBuilder</b>.
+     * Adds control field to the NTScalar.
+     * @return this instance of NTScalarBuilder.
      */
     public NTScalarBuilder addControl()
     {
@@ -87,9 +88,9 @@ public class NTScalarBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTScalar.
+     * Creates a Structure that represents NTScalar.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>Structure</b>.
+     * @return a new instance of a Structure.
      */
     public Structure createStructure()
     {
@@ -129,9 +130,9 @@ public class NTScalarBuilder
     }
 
     /**
-     * Create a <b>PVStructure</b> that represents NTScalar.
+     * Creates a PVStructure that represents NTScalar.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>PVStructure</b>.
+     * @return a new instance of a PVStructure.
      */
     public PVStructure createPVStructure()
     {
@@ -139,9 +140,9 @@ public class NTScalarBuilder
     }
 
     /**
-     * Create an <b>NTScalar</b> instance.
+     * Creates an NTScalar instance.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of an <b>NTScalar</b>.
+     * @return a new instance of an NTScalar.
      */
     public NTScalar create()
     {
@@ -149,10 +150,10 @@ public class NTScalarBuilder
     }
 
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      * @param name name of the field.
      * @param field a field to add.
-     * @return this instance of <b>NTScalarBuilder</b>.
+     * @return this instance of NTScalarBuilder.
      */
     public NTScalarBuilder add(String name, Field field) 
     {

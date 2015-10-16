@@ -36,8 +36,8 @@ public class NTMultiChannel
     /**
      * Creates an NTMultiChannel wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTMultiChannel
-     * and if so returns a NTMultiChannel which wraps it.
+     * Checks the supplied PVStructure is compatible with NTMultiChannel
+     * and if so returns an NTMultiChannel which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      *
@@ -66,10 +66,10 @@ public class NTMultiChannel
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTMultiChannel.
+     * Returns whether the specified Structure reports to be a compatible NTMultiChannel.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTMultiChannel through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTMultiChannel through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -82,10 +82,10 @@ public class NTMultiChannel
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTMultiChannel.
+     * Returns whether the specified PVStructure reports to be a compatible NTMultiChannel.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTMultiChannel through type ID, including checking version numbers.
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTMultiChannel through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -98,10 +98,10 @@ public class NTMultiChannel
     }
 
     /**
-     * Checks if the specified structure is compatible with NTMultiChannel.
+     * Returns whether the specified Structure is compatible with NTMultiChannel.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTMultiChannel through introspection interface.
+     * Checks if the specified Structure is compatible with this version
+     * of NTMultiChannel through the introspection interface.
      *
      * @param structure the Structure to test
      * @return (false,true) if (is not, is) a compatible NTMultiChannel
@@ -194,10 +194,10 @@ public class NTMultiChannel
     }
 
     /**
-     * Checks if the specified structure is compatible with NTMultiChannel.
+     * Returns whether the specified PVStructure is compatible with NTMultiChannel.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTMultiChannel through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTMultiChannel through the introspection interface.
      *
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTMultiChannel
@@ -210,12 +210,13 @@ public class NTMultiChannel
     }
 
     /**
-     * Checks if the specified structure is a valid NTMultiChannel.
-     *
-     * Checks whether the wrapped structure is valid with respect to this
+     * Returns whether the wrapped PVStructure is valid with respect to this
      * version of NTMultiChannel.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTMultiChannel
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTMultiChannel
      */
     public boolean isValid()
     {
@@ -236,7 +237,8 @@ public class NTMultiChannel
     }
 
     /**
-     * Create a NTMultiChannelBuilder instance
+     * Creates an NTMultiChannelBuilder instance
+     *
      * @return builder instance.
      */
     public static NTMultiChannelBuilder createBuilder()
@@ -245,9 +247,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the pvStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -255,9 +257,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the value of each channel.
+     * Returns the field with the value of each channel.
      *
-     * @return PVUnionArray
+     * @return the value field
      */
     public PVUnionArray getValue()
     {
@@ -265,9 +267,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the channelName of each channel.
+     * Returns the field with the channelName of each channel.
      *
-     * @return PVStringArray
+     * @return the channelName field 
      */
     public PVStringArray getChannelName()
     {
@@ -275,9 +277,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the severity of each channel.
+     * Returns the field with the connection state of each channel.
      *
-     * @return PVIntArray which may be null
+     * @return the isConnected field or null if no such field
      */
     public PVIntArray getSeverity()
     {
@@ -285,9 +287,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the status of each channel.
+     * Returns the field with the status of each channel.
      *
-     * @return PVIntArray which may be null
+     * @return the status field or null if no such field
      */
     public PVIntArray getStatus()
     {
@@ -295,9 +297,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the message of each channel.
+     * Returns the field with the message of each channel.
      *
-     * @return PVStringArray which may be null
+     * @return message field or null if no such field
      */
     public PVStringArray getMessage()
     {
@@ -305,9 +307,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the secondsPastEpoch of each channel.
+     * Returns the field with the secondsPastEpoch of each channel.
      *
-     * @return PVLongArray which may be null
+     * @return the secondsPastEpoch  field or null if no such field
      */
     public PVLongArray getSecondsPastEpoch()
     {
@@ -315,8 +317,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the nanoseconds of each channel.
-     * @return PVIntArray which may be null.
+     * Returns the field with the nanoseconds of each channel.
+     *
+     * @return nanoseconds field or null if no such field
      */
     public PVIntArray getNanoseconds()
     {
@@ -324,9 +327,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the userTag of each channel.
+     * Returns the field with the userTag of each channel.
      *
-     * @return PVIntArray which may be null
+     * @return the userTag field or null if no such field
      */
     public PVIntArray getUserTag()
     {
@@ -334,9 +337,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the connection state of each channel.
+     * Returns the field with the connection state of each channel.
      *
-     * @return PVBooleanArray, which may be null
+     * @return the isConnected field or null if no such field
      */
     public PVBooleanArray getIsConnected()
     {
@@ -344,9 +347,9 @@ public class NTMultiChannel
     }
 
     /**
-     * Get the descriptor.
+     * Returns the descriptor field.
      *
-     * @return PVString which may be null
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

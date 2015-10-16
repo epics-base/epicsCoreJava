@@ -41,7 +41,7 @@ public class NTID
     public String getFullName() { return fullName; }
 
     /**
-     * Get the fully qualified name including namespaces, but excluding version numbers
+     * Returns the fully qualified name including namespaces, but excluding version numbers
      * <p>
      * For example above return "epics:nt/NTNDArray".
      *
@@ -58,7 +58,7 @@ public class NTID
     }
 
     /**
-     * Get the namespace
+     * Returns the namespace
      * <p>
      * For example above return "epics:nt".
      *
@@ -75,7 +75,7 @@ public class NTID
     }
 
     /**
-     * Get the unqualified name, without namespace or version
+     * Returns the unqualified name, without namespace or version
      * <p>
      * For example above return "NTNDArray".
      *
@@ -103,7 +103,7 @@ public class NTID
     }
 
     /**
-     * Get the version number as a string.
+     * Returns the version number as a string.
      * <p>
      * For example above return "1.2".
      *
@@ -119,7 +119,7 @@ public class NTID
     }
 
     /**
-     * Get the Major version as a string.
+     * Returns the Major version as a string.
      * <p>
      * For example above return "1".
      *
@@ -161,7 +161,7 @@ public class NTID
     }
 
     /**
-     * Get the Major version as an integer.
+     * Returns the Major version as an integer.
      * <p>
      * For example above return 1.
      * If hasMajorVersion() returns true then this method returns
@@ -177,7 +177,7 @@ public class NTID
     }
 
     /**
-     * Get the Minor version as a string.
+     * Returns the Minor version as a string.
      * <p>
      * For example above return "2".
      *
@@ -221,7 +221,7 @@ public class NTID
     }
 
     /**
-     * Get the Minor version as an integer.
+     * Returns the Minor version as an integer.
      * <p>
      * For example above return 2.
      * If hasMinorVersion() returns true then this method returns

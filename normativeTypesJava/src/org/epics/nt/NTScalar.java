@@ -31,8 +31,8 @@ public class NTScalar
     /**
      * Creates an NTScalar wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTScalar
-     * and if so returns a NTScalar which wraps it.
+     * Checks the supplied PVStructure is compatible with NTScalar
+     * and if so returns an NTScalar which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      *
@@ -61,10 +61,10 @@ public class NTScalar
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTScalar.
+     * Returns whether the specified Structure reports to be a compatible NTScalar.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTScalar through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTScalar through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -77,10 +77,10 @@ public class NTScalar
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTScalar.
+     * Returns whether the specified PVStructure reports to be a compatible NTScalar.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTScalar through type ID, including checking version numbers.
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTScalar through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -93,10 +93,10 @@ public class NTScalar
     }
 
     /**
-     * Checks if the specified structure is compatible with NTScalar.
+     * Returns whether the specified Structure is compatible with NTScalar.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTScalar through introspection interface.
+     * Checks if the specified Structure is compatible with this version
+     * of NTScalar through the introspection interface.
      *
      * @param structure the Structure to test
      * @return (false,true) if (is not, is) a compatible NTScalar
@@ -139,10 +139,10 @@ public class NTScalar
     }
 
     /**
-     * Checks if the specified structure is compatible with NTScalar.
+     * Returns whether the specified PVStructure is compatible with NTScalar.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTScalar through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTScalar through the introspection interface.
      *
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTScalar
@@ -155,12 +155,13 @@ public class NTScalar
     }
 
     /**
-     * Checks if the specified structure is a valid NTScalar.
-     * <p>
-     * Checks whether the wrapped structure is valid with respect to this
+     * Returns whether the wrapped PVStructure is valid with respect to this
      * version of NTScalar.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTScalar
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTScalar
      */
     public boolean isValid()
     {
@@ -168,7 +169,7 @@ public class NTScalar
     }
 
     /**
-     * Create an NTScalar builder instance.
+     * Creates an NTScalar builder instance.
      *
      * @return builder instance
      */
@@ -178,9 +179,9 @@ public class NTScalar
     }
 
     /**
-     * Get the PVStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -188,7 +189,7 @@ public class NTScalar
     }
 
     /**
-     * Get the value field.
+     * Returns the value field.
      *
      * @return the PVScalar for the value field
      */
@@ -197,11 +198,12 @@ public class NTScalar
         return pvValue;
     }
 
-    /* Get the value field of a specified type (e.g. PVDouble).
+    /**
+     * Returns the value field of a specified type (e.g. PVDouble).
      *
      * @param <T> the expected type of the value field
      * @param c class object modeling the class T
-     * @return the PVScalar or null if the subfield does not exist, or the field is not of <code>c</code> type
+     * @return the value field or null the field is not of <code>c</code> type
      */
     public <T extends PVScalar> T getValue(Class<T> c)
     {
@@ -212,9 +214,9 @@ public class NTScalar
     }
 
     /**
-     * Get the descriptor field.
+     * Returns the descriptor field.
      *
-     * @return the PVString or null if no descriptor field
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

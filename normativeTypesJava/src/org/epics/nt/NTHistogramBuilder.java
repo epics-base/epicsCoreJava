@@ -26,10 +26,10 @@ import java.util.ArrayList;
 public class NTHistogramBuilder
 {
     /**
-     * Set the type of the value field of an NTHistogram.
+     * Sets the type of the value field of an NTHistogram.
      *
-     * @param scalarType the scalar type of the value field
-     * @return this instance of <b>NTHistogramBuilder</b>
+     * @param scalarType the scalar type of the value field elements
+     * @return this instance of NTHistogramBuilder
      */
     public NTHistogramBuilder value(ScalarType scalarType)
     {
@@ -39,9 +39,9 @@ public class NTHistogramBuilder
     }
 
     /**
-     * Add descriptor field to the NTHistogram.
+     * Adds descriptor field to the NTHistogram.
      *
-     * @return this instance of <b>NTHistogramBuilder</b>
+     * @return this instance of NTHistogramBuilder
      */
     public NTHistogramBuilder addDescriptor()
     {
@@ -50,9 +50,9 @@ public class NTHistogramBuilder
     }
 
     /**
-     * Add alarm structure to the NTHistogram.
+     * Adds alarm structure to the NTHistogram.
      *
-     * @return this instance of <b>NTHistogramBuilder</b>
+     * @return this instance of NTHistogramBuilder
      */
     public NTHistogramBuilder addAlarm()
     {
@@ -61,9 +61,9 @@ public class NTHistogramBuilder
     }
 
     /**
-     * Add timeStamp structure to the NTHistogram.
+     * Adds timeStamp field to the NTHistogram.
      *
-     * @return this instance of <b>NTHistogramBuilder</b>
+     * @return this instance of NTHistogramBuilder
      */
     public NTHistogramBuilder addTimeStamp()
     {
@@ -72,10 +72,10 @@ public class NTHistogramBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTHistogram.
+     * Creates a Structure that represents NTHistogram.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>Structure</b>
+     * @return a new instance of a Structure
      */
     public Structure createStructure()
     {
@@ -110,10 +110,10 @@ public class NTHistogramBuilder
     }
 
     /**
-     * Create a <b>PVStructure</b> that represents NTHistogram.
+     * Creates a PVStructure that represents NTHistogram.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>PVStructure</b>
+     * @return a new instance of a PVStructure
      */
     public PVStructure createPVStructure()
     {
@@ -121,10 +121,10 @@ public class NTHistogramBuilder
     }
 
     /**
-     * Create a <b>NTHistogram</b> instance.
+     * Creates an NTHistogram instance.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>NTHistogram</b>
+     * @return a new instance of an NTHistogram
      */
     public NTHistogram create()
     {
@@ -132,11 +132,11 @@ public class NTHistogramBuilder
     }
 
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      *
      * @param name the name of the field
      * @param field the field to add
-     * @return this instance of <b>NTHistogramBuilder</b>
+     * @return this instance of NTHistogramBuilder
      */
     public NTHistogramBuilder add(String name, Field field) 
     {

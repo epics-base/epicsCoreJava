@@ -33,8 +33,8 @@ public class NTUnion
     /**
      * Creates an NTUnion wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTUnion
-     * and if so returns a NTUnion which wraps it.
+     * Checks the supplied PVStructure is compatible with NTUnion
+     * and if so returns an NTUnion which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      *
@@ -62,10 +62,10 @@ public class NTUnion
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTUnion.
+     * Returns whether the specified Structure reports to be a compatible NTUnion.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTUnion through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTUnion through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -78,10 +78,10 @@ public class NTUnion
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTUnion.
-     *
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTUnion through type ID, including checking version numbers.
+     * Returns whether the specified PVStructure reports to be a compatible NTUnion.
+     * <p>
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTUnion through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -94,10 +94,10 @@ public class NTUnion
     }
 
     /**
-     * Checks if the specified structure is compatible with NTUnion.
+     * Returns whether the specified Structure is compatible with NTUnion.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTUnion through introspection interface.
+     * Checks if the specified Structure is compatible with this version
+     * of NTUnion through the introspection interface.
      * @param structure the Structure to test
      * @return (false,true) if (is not, is) a compatible NTUnion
      */
@@ -131,10 +131,10 @@ public class NTUnion
     }
 
     /**
-     * Checks if the specified structure is compatible with NTUnion.
+     * Returns whether the specified PVStructure is compatible with NTUnion.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTUnion through introspection interface
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTUnion through the introspection interface
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTUnion
      */
@@ -146,12 +146,12 @@ public class NTUnion
     }
 
     /**
-     * Checks if the specified structure is a valid NTUnion.
+     * Returns whether the wrapped PVStructure is a valid NTUnion.
      * <p>
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTUnion.
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTUnion
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTUnion
      */
     public boolean isValid()
     {
@@ -159,7 +159,7 @@ public class NTUnion
     }
 
     /**
-     * Create a NTUnionBuilder instance.
+     * Creates an NTUnionBuilder instance.
      *
      * @return builder instance
      */
@@ -169,9 +169,9 @@ public class NTUnion
     }
 
     /**
-     * Get the pvStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -179,19 +179,19 @@ public class NTUnion
     }
 
     /**
-     * Get the value of each channel
-     *
-     * @return PVUnion
+     * Returns the value field.
+     * 
+     * @return the value field
      */
     public PVUnion getValue()
     {
         return pvValue;
     }
 
-   /**
-     * Get the descriptor.
+    /**
+     * Returns the descriptor field.
      *
-     * @return PVString which may be null
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

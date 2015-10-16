@@ -40,8 +40,8 @@ public class NTNDArray
     /**
      * Creates an NTNDArray wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTNDArray
-     * and if so returns a NTNDArray which wraps it.
+     * Checks the supplied PVStructure is compatible with NTNDArray
+     * and if so returns an NTNDArray which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      * 
@@ -71,10 +71,10 @@ public class NTNDArray
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTNDArray.
+     * Returns whether the specified Structure reports to be a compatible NTNDArray.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTNDArray through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTNDArray through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      * 
@@ -87,14 +87,14 @@ public class NTNDArray
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTNDArray.
-     *
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTNDArray through type ID, including checking version numbers.
+     * Returns whether the specified PVStructure reports to be a compatible NTNDArray.
+     * <p>
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTNDArray through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      * 
-     * @param pvStructure the PVStructure to test.
+     * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTNDArray
      */
     public static boolean is_a(PVStructure pvStructure)
@@ -103,10 +103,10 @@ public class NTNDArray
     }
 
     /**
-     * Checks if the specified structure is compatible with NTNDArray.
+     * Returns whether the specified Structure is compatible with NTNDArray.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTNDArray through introspection interface.
+     * Checks if the specified Structure is compatible with this version
+     * of NTNDArray through the introspection interface.
      * 
      * @param structure the Structure to test
      * @return (false,true) if (is not, is) a compatible NTNDArray
@@ -209,10 +209,10 @@ public class NTNDArray
     }
 
     /**
-     * Checks if the specified structure is compatible with NTNDArray.
+     * Returns whether the specified PVStructure is compatible with NTNDArray.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTNDArray through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTNDArray through the introspection interface.
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTNDArray
      */
@@ -224,12 +224,13 @@ public class NTNDArray
     }
 
     /**
-     * Checks if the specified structure is a valid NTNDArray.
-     * <p>
-     * Checks whether the wrapped structure is valid with respect to this
+     * Returns whether the wrapped PVStructure is valid with respect to this
      * version of NTNDArray.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTNDArray.
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTNDArray
      */
     public boolean isValid()
     {
@@ -268,9 +269,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the pvStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -278,9 +279,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the value field.
+     * Returns the value field.
      *
-     * @return the PVField for the values
+     * @return the value field
      */
     public PVUnion getValue()
     {
@@ -288,9 +289,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the codec field.
+     * Returns the codec field.
      *
-     * @return the PVStructure
+     * @return the codec field
      */
     public PVStructure getCodec()
     {
@@ -298,9 +299,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the compressedDataSize field.
+     * Returns the compressedDataSize field.
      *
-     * @return PVStructure.
+     * @return the compressedDataSize field
      */
     public PVLong getCompressedDataSize()
     {
@@ -308,9 +309,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the uncompressedDataSize field.
+     * Returns the uncompressedDataSize field.
      *
-     * @return PVStructure
+     * @return the uncompressedDataSize field
      */
     public PVLong getUncompressedDataSize()
     {
@@ -318,9 +319,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the dimension field.
+     * Returns the dimension field.
      *
-     * @return the PVStructure
+     * @return dimension field
      */
     public PVStructureArray getDimension()
     {
@@ -328,9 +329,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the uniqueId field.
+     * Returns the uniqueId field.
      *
-     * @return the PVInt
+     * @return the uniqueId field
      */
     public PVInt getUniqueId()
     {
@@ -338,9 +339,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the data timeStamp field.
+     * Returns the dataTimeStamp field.
      *
-     * @return the PVStructure.
+     * @return dataTimeStamp field
      */
     public PVStructure getDataTimeStamp()
     {    
@@ -348,9 +349,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the attribute field.
+     * Returns the attribute field.
      *
-     * @return the PVStructure
+     * @return the attribute field
      */
     public PVStructureArray getAttribute()
     {
@@ -358,8 +359,9 @@ public class NTNDArray
     }
 
     /**
-     * Get the descriptor field.
-     * @return the PVString or null if no descriptor field
+     * Returns the descriptor field.
+     *
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

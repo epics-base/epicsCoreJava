@@ -38,14 +38,14 @@ import org.epics.pvdata.property.PVControl;
 public class PVNTField
 {
     /**
-     * get the single implementation of this class.
+     * Returns the single implementation of this class.
      *
      * @return the implementation
      */
     public static PVNTField get() { return pvntField; }
 
     /**
-     * Create an enumerated PVStructure.
+     * Creates an enumerated PVStructure.
      *
      * @param choices the array of choices
      * @return an enumerated PVStructure
@@ -57,7 +57,7 @@ public class PVNTField
     }
 
     /**
-     * Create a timeStamp PVStructure.
+     * Creates a timeStamp PVStructure.
      *
      * @return a timeStamp PVStructure
      */
@@ -68,7 +68,7 @@ public class PVNTField
     }
 
     /**
-     * Create an alarm PVStructure.
+     * Creates an alarm PVStructure.
      *
      * @return an alarm PVStructure
      */
@@ -79,7 +79,7 @@ public class PVNTField
     }
 
     /**
-     * Create an alarmLimit PVStructure.
+     * Creates an alarmLimit PVStructure.
      *
      * @return an alarmLimit PVStructure
      */
@@ -90,7 +90,7 @@ public class PVNTField
     }
 
     /**
-     * Create a display PVStructure.
+     * Creates a display PVStructure.
      *
      * @return a display PVStructure
      */
@@ -101,7 +101,7 @@ public class PVNTField
     }
 
     /**
-     * Create a control PVStructure.
+     * Creates a control PVStructure.
      *
      * @return a control PVStructure
      */
@@ -112,7 +112,7 @@ public class PVNTField
     }
 
     /**
-     * Create an enumerated PVStructureArray.
+     * Creates an enumerated PVStructureArray.
      *
      * @return an enumerated PVStructureArray
      */
@@ -124,7 +124,7 @@ public class PVNTField
     }
 
     /**
-     * Create a timeStamp PVStructureArray.
+     * Creates a timeStamp PVStructureArray.
      *
      * @return a timeStamp PVStructureArray
      */
@@ -136,7 +136,7 @@ public class PVNTField
     }
 
     /**
-     * Create an alarm PVStructureArray.
+     * Creates an alarm PVStructureArray.
      *
      * @return an alarm PVStructureArray
      */

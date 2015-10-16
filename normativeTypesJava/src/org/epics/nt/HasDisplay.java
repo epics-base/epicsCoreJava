@@ -10,6 +10,7 @@ import org.epics.pvdata.property.PVDisplay;
 
 /**
  * Interface for pvData type wrappers with, possibly optional, display field.
+ * <p>
  * The display field should be a PVStructure conformant to the display
  * type display_t described in the NormativeTypes specification, which may or
  * may not have field name "display".
@@ -17,19 +18,19 @@ import org.epics.pvdata.property.PVDisplay;
  */
 public interface HasDisplay
 {
-     /**
-      * Attach a PVDisplay.
-      * Will return false if no display field.
-      *
-      * @param pvDisplay the PVDisplay that will be attached
-      * @return true if the operation was successfull, otherwise false
-      */
+    /**
+     * Attaches a PVDisplay to the display field.
+     * Will return false if there is no display field.
+     *
+     * @param pvDisplay the PVDisplay that will be attached
+     * @return true if the operation was successfull, otherwise false
+     */
     public boolean attachDisplay(PVDisplay pvDisplay);
 
     /**
-     * Get the display field.
+     * Returns the display field.
      *
-     * @return PVStructure which may be null
+     * @return the display field or null if there is no display field
      */
     public PVStructure getDisplay();
 }

@@ -32,10 +32,11 @@ public class NTAggregate
     /**
      * Creates an NTAggregate wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTAggregate
-     * and if so returns a NTAggregate which wraps it.
+     * Checks the supplied PVStructure is compatible with NTAggregate
+     * and if so returns an NTAggregate which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
+     *
      * @param pvStructure the PVStructure to be wrapped
      * @return the NTAggregate instance on success, null otherwise
      */
@@ -61,10 +62,10 @@ public class NTAggregate
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTAggregate.
+     * Returns whether the specified Structure reports to be a compatible NTAggregate.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTAggregate through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTAggregate through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -77,10 +78,10 @@ public class NTAggregate
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTAggregate.
+     * Returns whether the specified PVStructure reports to be a compatible NTAggregate.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTAggregate through type ID, including checking version numbers.
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTAggregate through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -93,10 +94,10 @@ public class NTAggregate
     }
 
     /**
-     * Checks if the specified structure is compatible with NTAggregate.
+     * Returns whether the specified Structure is compatible with NTAggregate.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTAggregate through introspection interface.
+     * Checks if the specified Structure is compatible with this version
+     * of NTAggregate through the introspection interface.
      *
      * @param structure the Structure to test
      * @return (false,true) if (is not, is) a compatible NTAggregate
@@ -181,10 +182,10 @@ public class NTAggregate
     }
 
     /**
-     * Checks if the specified structure is compatible with NTAggregate.
+     * Returns whether the specified PVStructure is compatible with NTAggregate.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTAggregate through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTAggregate through the introspection interface.
      *
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTAggregate
@@ -197,12 +198,13 @@ public class NTAggregate
     }
 
     /**
-     * Checks if the specified structure is a valid NTAggregate.
-     * <p>
-     * Checks whether the wrapped structure is valid with respect to this
+     * Returns whether the wrapped PVStructure is valid with respect to this
      * version of NTAggregate.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTAggregate
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTAggregate
      */
     public boolean isValid()
     {
@@ -210,7 +212,7 @@ public class NTAggregate
     }
 
     /**
-     * Create an NTAggregate builder instance.
+     * Creates an NTAggregate builder instance.
      *
      * @return builder instance.
      */
@@ -220,9 +222,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the pvStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -230,9 +232,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the value field.
+     * Returns the value field.
      *
-     * @return the PVDouble for the aggregate
+     * @return the value field
      */
     public PVDouble getValue()
     {
@@ -240,9 +242,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the N field.
+     * Returns the N field.
      *
-     * @return the PVLong for the aggregate
+     * @return the N field
      */
     public PVLong getN()
     {
@@ -250,9 +252,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the dispersion field.
+     * Returns the dispersion field.
      *
-     * @return the PVDouble for the aggregate
+     * @return the dispersion or null if no such field
      */
     public PVDouble getDispersion()
     {
@@ -260,9 +262,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the first field.
-     *
-     * @return the last value for the aggregate
+     * Returns the first field.
+
+     * @return the first field or null if no such field
      */
     public PVDouble getFirst()
     {
@@ -270,9 +272,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the firstTimeStamp field.
+     * Returns the firstTimeStamp field.
      *
-     * @return the timeStamp for the first value of the aggregate
+     * @return the firstTimeStamp field or null if no such field
      */
     public PVStructure getFirstTimeStamp()
     {
@@ -280,9 +282,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the last field.
+     * Returns the last field.
      *
-     * @return the last value for the aggregate
+     * @return the last field or null if no such field
      */
     public PVDouble getLast()
     {
@@ -290,9 +292,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the lastTimeStamp field.
+     * Returns the lastTimeStamp field.
      *
-     * @return the timeStamp for the last value of the aggregate
+     * @return the lastTimeStamp field or null if no such field
      */
     public PVStructure getLastTimeStamp()
     {
@@ -300,9 +302,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the max field.
+     * Returns the max field.
      *
-     * @return the max for the aggregate
+     * @return the max field or null if no such field
      */
     public PVDouble getMax()
     {
@@ -310,9 +312,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the min field.
+     * Returns the min field.
      *
-     * @return the max for the aggregate
+     * @return the min field or null if no such field
      */
     public PVDouble getMin()
     {
@@ -320,9 +322,9 @@ public class NTAggregate
     }
 
     /**
-     * Get the descriptor field.
+     * Returns the descriptor field.
      *
-     * @return the PVString or null if no descriptor field
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

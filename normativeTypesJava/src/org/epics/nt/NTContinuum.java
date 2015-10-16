@@ -32,7 +32,7 @@ public class NTContinuum
      * Creates an NTContinuum wrapping the specified PVStructure if the latter is compatible.
      * <p>
      * Checks the supplied structure is compatible with NTContinuum
-     * and if so returns a NTContinuum which wraps it.
+     * and if so returns an NTContinuum which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      *
@@ -61,10 +61,10 @@ public class NTContinuum
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTContinuum.
+     * Returns whether the specified Structure reports to be a compatible NTContinuum.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTContinuum through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTContinuum through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type
      *
@@ -77,10 +77,10 @@ public class NTContinuum
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTContinuum.
+     * Returns whether the specified PVStructure reports to be a compatible NTContinuum.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTContinuum through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTContinuum through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type
      *
@@ -93,10 +93,10 @@ public class NTContinuum
     }
 
     /**
-     * Checks if the specified structure is compatible with NTContinuum.
+     * Returns whether the specified Structure is compatible with NTContinuum.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTContinuum through introspection interface.
+     * Checks if the specified Structure is compatible with this version
+     * of NTContinuum through the introspection interface.
      *
      * @param structure The Structure to test
      * @return (false,true) if (is not, is) a compatible NTContinuum
@@ -148,10 +148,10 @@ public class NTContinuum
     }
 
     /**
-     * Checks if the specified structure is compatible with NTContinuum.
+     * Returns whether the specified PVStructure is compatible with NTContinuum.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTContinuum through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTContinuum through the introspection interface.
      *
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTContinuum
@@ -164,12 +164,13 @@ public class NTContinuum
     }
 
     /**
-     * Checks if the specified structure is a valid NTContinuum.
-     * <p>
-     * Checks whether the wrapped structure is valid with respect to this
+     * Returns whether the wrapped structure is valid with respect to this
      * version of NTContinuum.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTContinuum
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTContinuum
      */
     public boolean isValid()
     {
@@ -178,7 +179,7 @@ public class NTContinuum
     }
 
     /**
-     * Create a NTContinuum builder instance.
+     * Creates an NTContinuum builder instance.
      *
      * @return builder instance
      */
@@ -188,9 +189,9 @@ public class NTContinuum
     }
 
     /**
-     * Get the pvStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -198,9 +199,9 @@ public class NTContinuum
     }
 
     /**
-     * Get the base field.
+     * Returns the base field.
      *
-     * @return the PVDoubleArray for the values
+     * @return the base field
      */
     public PVDoubleArray getBase()
     {
@@ -208,9 +209,9 @@ public class NTContinuum
     }
 
     /**
-     * Get the value field.
+     * Returns the value field.
      *
-     * @return the PVDoubleArray for the value field
+     * @return the value field
      */
     public PVDoubleArray getValue()
     {
@@ -218,9 +219,9 @@ public class NTContinuum
     }
 
     /**
-     * Get the units field.
+     * Returns the units field.
      *
-     * @return the PVStringArray or null if no units field
+     * @return the units field
      */
     public PVStringArray getUnits()
     {
@@ -228,9 +229,9 @@ public class NTContinuum
     }
 
     /**
-     * Get the descriptor field.
+     * Returns the descriptor field.
      *
-     * @return the PVString or null if no descriptor field
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

@@ -18,8 +18,8 @@ public class NTUtils
      * Checks whether NT types are compatible by checking their IDs,
      * i.e. their names and major version must match.
      *
-     * @param u1 the first uri
-     * @param u2 the second uri
+     * @param u1 the first URI
+     * @param u2 the second URI
      * @return true if URIs are compatible, false otherwise
      */
     public static boolean is_a(String u1, String u2)

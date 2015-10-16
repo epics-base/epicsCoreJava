@@ -33,8 +33,8 @@ public class NTTable
     /**
      * Creates an NTTable wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTTable
-     * and if so returns a NTTable which wraps it.
+     * Checks the supplied PVStructure is compatible with NTTable
+     * and if so returns an NTTable which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      *
@@ -63,10 +63,10 @@ public class NTTable
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTTable.
+     * Returns whether the specified Structure reports to be a compatible NTTable.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTTable through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTTable through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -80,10 +80,10 @@ public class NTTable
 
 
     /**
-     * Checks if the specified structure reports to be a compatible NTTable.
+     * Returns whether the specified PVStructure reports to be a compatible NTTable.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTTable through type ID, including checking version numbers.
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTTable through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -96,10 +96,10 @@ public class NTTable
     }
 
     /**
-     * Checks if the specified structure is compatible with NTTable.
+     * Returns whether the specified Structure is compatible with NTTable.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTTable through introspection interface.
+     * Checks if the specified Structure is compatible with this version
+     * of NTTable through the introspection interface.
      *
      * @param structure the Structure to test
      * @return (false,true) if (is not, is) a compatible NTTable
@@ -146,12 +146,12 @@ public class NTTable
     }
 
     /**
-     * Checks if the specified structure is compatible with NTTable.
+     * Returns whether the specified PVStructure is compatible with NTTable.
      *
-     * Checks whether the specified structure is compatible with this version
-     * of NTTable through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTTable through the introspection interface.
      *
-     * @param pvStructure The PVStructure to test
+     * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTTable
      */
     public static boolean isCompatible(PVStructure pvStructure)
@@ -162,12 +162,12 @@ public class NTTable
     }
 
     /**
-     * Checks if the specified structure is a valid NTTable.
+     * Returns whether the wrapped PVStructure is a valid NTTable.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * Checks whether the wrapped structure is valid with respect to this
-     * version of NTTable.
-     *
-     * @return (false,true) if (is not, is) a valid NTTable
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTTable
      */
     public boolean isValid()
     {
@@ -199,7 +199,7 @@ public class NTTable
     }
 
     /**
-     * Create a NTTable builder instance.
+     * Creates an NTTable builder instance.
      *
      * @return builder instance.
      */
@@ -209,9 +209,9 @@ public class NTTable
     }
 
     /**
-     * Get the PVStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -219,9 +219,9 @@ public class NTTable
     }
 
     /**
-     * Get the value field.
+     * Returns the value field.
      *
-     * @return the PVStructure for the values
+     * @return the PVScalar for the value field
      */
     public PVStructure getValue()
     {
@@ -229,9 +229,9 @@ public class NTTable
     }
 
     /**
-     * Get the labels field.
+     * Returns the labels field.
      *
-     * @return The PVStringArray for the labels
+     * @return the labels field
      */
     public PVStringArray getLabels()
     {
@@ -239,10 +239,10 @@ public class NTTable
     }
 
     /**
-     * Get the column names for the table.
-     * For each name, calling getColumn should return the column, which should not be null.
+     * Returns the column names for the table.
      *
-     * @return the column names
+     * For each name, calling getColumn should return the column, which should not be null.
+     * @return the column names.
      */
     public String[] getColumnNames()
     {
@@ -250,22 +250,24 @@ public class NTTable
     }
 
     /**
-     * Get the PVScalarArray field representing the column for the specified column name.
+     * Returns the the column with the specified colum name.
      *
-     * @param columnName the name of the column
-     * @return the PVScalarArray for the field for the column
+     * @param columnName the name of the column.
+     * @return the field for the column or null if column does not exist.
      */
     public PVScalarArray getColumn(String columnName)
     {
        return pvValue.getSubField(PVScalarArray.class, columnName);
     }
 
-    /* Get a column of a specified type (e.g. PVDoubleArray).
+    /**
+     * Returns the the column with the specified colum name of a
+     * specified type (e.g. PVDoubleArray).
      *
      * @param <T> the expected type of the column
      * @param c class object modeling the class T
      * @param columnName the name of the column
-     * @return the PVField or null if the column does not exist, or the field is not of <code>c</code> type.
+     * @return the field for the column or null if the column does not exist or the field is not of <code>c</code> type.
      */
     public <T extends PVScalarArray> T getColumn(Class<T> c, String columnName)
     {
@@ -277,9 +279,9 @@ public class NTTable
     }
 
     /**
-     * Get the descriptor field.
+     * Returns the descriptor field.
      *
-     * @return The PVString or null if no descriptor field
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

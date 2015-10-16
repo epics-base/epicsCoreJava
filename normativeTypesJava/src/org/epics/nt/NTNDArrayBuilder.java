@@ -39,9 +39,9 @@ import org.epics.pvdata.property.PVDisplay;
 public class NTNDArrayBuilder
 {
     /**
-     * Add descriptor field to the NTNDArray.
+     * Adds descriptor field to the NTNDArray.
      * 
-     * @return this instance of <b>NTNDArrayBuilder</b>
+     * @return this instance of NTNDArrayBuilder
      */
     public NTNDArrayBuilder addDescriptor()
     {
@@ -50,9 +50,9 @@ public class NTNDArrayBuilder
     }
 
     /**
-     * Add alarm structure to the NTNDArray.
+     * Adds alarm field to the NTNDArray.
      * 
-     * @return this instance of <b>NTNDArrayBuilder</b>
+     * @return this instance of NTNDArrayBuilder
      */
     public NTNDArrayBuilder addAlarm()
     {
@@ -61,9 +61,9 @@ public class NTNDArrayBuilder
     }
 
     /**
-     * Add timeStamp structure to the NTNDArray.
+     * Adds timeStamp field to the NTNDArray.
      * 
-     * @return this instance of <b>NTNDArrayBuilder</b>
+     * @return this instance of NTNDArrayBuilder
      */
     public NTNDArrayBuilder addTimeStamp()
     {
@@ -72,9 +72,9 @@ public class NTNDArrayBuilder
     }
 
     /**
-     * Add display structure to the NTNDArray.
+     * Adds display field to the NTNDArray.
      * 
-     * @return this instance of <b>NTNDArrayBuilder</b>
+     * @return this instance of NTNDArrayBuilder
      */
     public NTNDArrayBuilder addDisplay()
     {
@@ -83,10 +83,10 @@ public class NTNDArrayBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTNDArray.
+     * Creates a Structure that represents NTNDArray.
      * This resets this instance state and allows new instance to be created
      * 
-     * @return a new instance of a <b>Structure</b>
+     * @return a new instance of a Structure
      */
     public Structure createStructure()
     {
@@ -132,9 +132,9 @@ public class NTNDArrayBuilder
 
 
     /**
-     * Create a <b>PVStructure</b> that represents NTNDArray.
+     * Creates a PVStructure that represents NTNDArray.
      * This resets this instance state and allows new instance to be created.
-     * @return a new instance of a <b>PVStructure</b>.
+     * @return a new instance of a PVStructure.
      */
     public PVStructure createPVStructure()
     {
@@ -142,21 +142,21 @@ public class NTNDArrayBuilder
     }
 
     /**
-     * Create a <b>NTNDArray</b> instance.
+     * Creates an NTNDArray instance.
      * This resets this instance state and allows new instance to be created.
      * 
-     * @return a new instance of a <b>NTNDArray</b>
+     * @return a new instance of an NTNDArray
      */
     public NTNDArray create()
     {
         return new NTNDArray(createPVStructure());
     }
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      * 
      * @param name name of the field
      * @param field a field to add
-     * @return this instance of <b>NTNDArrayBuilder</b>
+     * @return this instance of NTNDArrayBuilder
      */
     public NTNDArrayBuilder add(String name, Field field) 
     {

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 /**
  * Interface for in-line creating of NTAggregate.
- *
+ * <p>
  * One instance can be used to create multiple instances.
  * An instance of this object must not be used concurrently (an object has a state).
  * @author dgh
@@ -25,9 +25,9 @@ import java.util.ArrayList;
 public class NTAggregateBuilder
 {
     /**
-     * Add dispersion field to the NTAggregate.
+     * Adds dispersion field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addDispersion()
     {
@@ -36,9 +36,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add first field to the NTAggregate.
+     * Adds first field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addFirst()
     {
@@ -47,9 +47,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add firstTimeStamp field to the NTAggregate.
+     * Adds firstTimeStamp field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addFirstTimeStamp()
     {
@@ -58,9 +58,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add last field to the NTAggregate.
+     * Adds last field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addLast()
     {
@@ -69,9 +69,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add lastTimeStamp field to the NTAggregate.
+     * Adds lastTimeStamp field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addLastTimeStamp()
     {
@@ -80,9 +80,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add max field to the NTAggregate.
+     * Adds max field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addMax()
     {
@@ -91,9 +91,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add min field to the NTAggregate.
+     * Adds min field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addMin()
     {
@@ -102,9 +102,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add descriptor field to the NTAggregate.
+     * Adds descriptor field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addDescriptor()
     {
@@ -113,9 +113,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add alarm structure to the NTAggregate.
+     * Adds alarm field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addAlarm()
     {
@@ -124,9 +124,9 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add timeStamp structure to the NTAggregate.
+     * Adds timeStamp field to the NTAggregate.
      *
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder addTimeStamp()
     {
@@ -135,10 +135,10 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTAggregate.
-     * This resets this instance state and allows new instance to be created.
+     * Creates a Structure that represents NTAggregate.
+     * This resets this instance state and allows a new instance to be created.
      *
-     * @return a new instance of a <b>Structure</b>
+     * @return a new instance of a Structure
      */
     public Structure createStructure()
     {
@@ -191,10 +191,10 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Create a <b>PVStructure</b> that represents NTAggregate.
-     * This resets this instance state and allows new instance to be created.
+     * Creates a PVStructure that represents NTAggregate.
+     * This resets this instance state and allows a new instance to be created.
      *
-     * @return a new instance of a <b>PVStructure</b>
+     * @return a new instance of a PVStructure
      */
     public PVStructure createPVStructure()
     {
@@ -202,10 +202,10 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Create an <b>NTAggregate</b> instance.
-     * This resets this instance state and allows new instance to be created.
+     * Creates an NTAggregate instance.
+     * This resets this instance state and allows a new instance to be created.
      *
-     * @return a new instance of an <b>NTAggregate</b>
+     * @return a new instance of an NTAggregate
      */
     public NTAggregate create()
     {
@@ -213,11 +213,11 @@ public class NTAggregateBuilder
     }
 
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      *
      * @param name the name of the field
      * @param field the field to add
-     * @return this instance of <b>NTAggregateBuilder</b>
+     * @return this instance of NTAggregateBuilder
      */
     public NTAggregateBuilder add(String name, Field field) 
     {

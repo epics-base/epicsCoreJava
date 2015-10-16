@@ -36,8 +36,8 @@ public class NTAttribute
     /**
      * Creates an NTAttribute wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTAttribute
-     * and if so returns a NTAttribute which wraps it.
+     * Checks the supplied PVStructure is compatible with NTAttribute
+     * and if so returns an NTAttribute which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      *
@@ -53,7 +53,7 @@ public class NTAttribute
 
     /**
      * Creates an NTAttribute wrapping the specified PVStructure, regardless of the latter's compatibility.
-     * 
+     * <p> 
      * No checks are made as to whether the specified PVStructure
      * is compatible with NTAttribute or is non-null.
      *
@@ -66,10 +66,10 @@ public class NTAttribute
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTAttribute.
+     * Returns whether the specified Structure reports to be a compatible NTAttribute.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTAttribute through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTAttribute through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -82,10 +82,10 @@ public class NTAttribute
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTAttribute.
+     * Returns whether the specified PVStructure reports to be a compatible NTAttribute.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTAttribute through type ID, including checking version numbers.
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTAttribute through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -98,10 +98,10 @@ public class NTAttribute
     }
 
     /**
-     * Checks if the specified structure is compatible with NTAttribute.
-     *
-     * Checks whether the specified structure is compatible with this version
-     * of NTAttribute through introspection interface.
+     * Returns whether the specified Structure is compatible with NTAttribute.
+     * <p>
+     * Checks if the specified Structure is compatible with this version
+     * of NTAttribute through the introspection interface.
      *
      * @param structure the Structure to test
      * @return (false,true) if (is not, is) a compatible NTAttribute
@@ -154,10 +154,10 @@ public class NTAttribute
     }
 
     /**
-     * Checks if the specified structure is compatible with NTAttribute.
-     *
-     * Checks whether the specified structure is compatible with this version
-     * of NTAttribute through introspection interface.
+     * Returns whether the specified PVStructure is compatible with NTAttribute.
+     * <p>
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTAttribute through the introspection interface.
      *
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTAttribute
@@ -170,12 +170,13 @@ public class NTAttribute
     }
 
     /**
-     * Checks if the specified structure is a valid NTAttribute.
-     * <p>
-     * Checks whether the wrapped structure is valid with respect to this
+     * Returns whether the wrapped PVStructure is valid with respect to this
      * version of NTAttribute.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTAttribute
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTAttribute
      */
     public boolean isValid()
     {
@@ -183,7 +184,7 @@ public class NTAttribute
     }
 
     /**
-     * Create an NTAttribute builder instance.
+     * Creates an NTAttribute builder instance.
      *
      * @return builder instance.
      */
@@ -193,9 +194,9 @@ public class NTAttribute
     }
 
     /**
-     * Get the pvStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance
      */
     public PVStructure getPVStructure()
     {
@@ -203,9 +204,9 @@ public class NTAttribute
     }
 
     /**
-     * Get the name field.
+     * Returns the name field.
      *
-     * @return the PVString for the name
+     * @return the name field
      */
     public PVString getName()
     {
@@ -213,9 +214,9 @@ public class NTAttribute
     }
 
     /**
-     * Get the value field.
+     * Returns the value field.
      *
-     * @return the PVUnion for the value
+     * @return the value field
      */
     public PVUnion getValue()
     {
@@ -223,9 +224,9 @@ public class NTAttribute
     }
 
     /**
-     * Get the tags field.
+     * Returns the tags field.
      *
-     * @return the PVStringArray for the tags, or null if not present
+     * @return the tags field or null if no such field
      */
     public PVStringArray getTags()
     {
@@ -233,9 +234,9 @@ public class NTAttribute
     }
 
     /**
-     * Get the descriptor field.
+     * Returns the descriptor field.
      *
-     * @return the PVString or null if no descriptor field
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

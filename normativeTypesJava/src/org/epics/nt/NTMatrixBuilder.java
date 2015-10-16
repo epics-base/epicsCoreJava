@@ -26,9 +26,9 @@ import java.util.ArrayList;
 public class NTMatrixBuilder
 {
     /**
-     * Add dim field to the NTMatrix.
+     * Adds dim field to the NTMatrix.
      *
-     * @return this instance of <b>NTMatrixBuilder</b>
+     * @return this instance of NTMatrixBuilder
      */
     public NTMatrixBuilder addDim()
     {
@@ -37,9 +37,9 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Add descriptor field to the NTMatrix.
+     * Adds descriptor field to the NTMatrix.
      *
-     * @return this instance of <b>NTMatrixBuilder</b>
+     * @return this instance of NTMatrixBuilder
      */
     public NTMatrixBuilder addDescriptor()
     {
@@ -48,9 +48,9 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Add alarm structure to the NTMatrix.
+     * Adds alarm field to the NTMatrix.
      *
-     * @return this instance of <b>NTMatrixBuilder</b>
+     * @return this instance of NTMatrixBuilder
      */
     public NTMatrixBuilder addAlarm()
     {
@@ -59,9 +59,9 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Add timeStamp structure to the NTMatrix.
+     * Adds timeStamp field to the NTMatrix.
      *
-     * @return this instance of <b>NTMatrixBuilder</b>
+     * @return this instance of NTMatrixBuilder
      */
     public NTMatrixBuilder addTimeStamp()
     {
@@ -70,9 +70,9 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Add display structure to the NTMatrix.
+     * Adds display field to the NTMatrix.
      *
-     * @return this instance of <b>NTMatrixBuilder</b>
+     * @return this instance of NTMatrixBuilder
      */
     public NTMatrixBuilder addDisplay()
     {
@@ -81,10 +81,10 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTMatrix.
+     * Creates a Structure that represents NTMatrix.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>Structure</b>
+     * @return a new instance of a Structure
      */
     public Structure createStructure()
     {
@@ -121,10 +121,10 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Create a <b>PVStructure</b> that represents NTMatrix.
+     * Creates a PVStructure that represents NTMatrix.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>PVStructure</b>
+     * @return a new instance of a PVStructure
      */
     public PVStructure createPVStructure()
     {
@@ -132,10 +132,10 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Create a <b>NTMatrix</b> instance.
+     * Creates a NTMatrix instance.
      * This resets this instance state and allows new instance to be created.
      *
-     * @return a new instance of a <b>NTMatrix</b>
+     * @return a new instance of a NTMatrix
      */
     public NTMatrix create()
     {
@@ -143,11 +143,11 @@ public class NTMatrixBuilder
     }
 
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      *
      * @param name name of the field
      * @param field a field to add
-     * @return this instance of <b>NTMatrixBuilder</b>
+     * @return this instance of NTMatrixBuilder
      */
     public NTMatrixBuilder add(String name, Field field) 
     {

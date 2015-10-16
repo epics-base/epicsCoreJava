@@ -26,11 +26,11 @@ import java.util.ArrayList;
 public class NTTableBuilder
 {
     /**
-     * Add a column of a given <b>ScalarType</b> to the NTTable.
+     * Adds a column of a given ScalarType to the NTTable.
      *
      * @param name the name of the column
      * @param elementType the type of the scalar array elements of the column
-     * @return this instance of <b>NTTableBuilder</b>
+     * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addColumn(String name, ScalarType elementType)
     {
@@ -43,11 +43,11 @@ public class NTTableBuilder
     }
 
     /**
-     * Add columns, each of a given <b>ScalarType</b>, to the NTTable.
+     * Adds columns, each of a given ScalarType, to the NTTable.
      * 
      * @param names the names of the columns
      * @param elementTypes the types of the scalar array elements of the columns
-     * @return this instance of <b>NTTableBuilder</b>
+     * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addColumns(String[] names, ScalarType[] elementTypes)
     {
@@ -63,9 +63,9 @@ public class NTTableBuilder
     }
 
     /**
-     * Add descriptor field to the NTTable.
+     * Adds descriptor field to the NTTable.
      * 
-     * @return this instance of <b>NTTableBuilder</b>
+     * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addDescriptor()
     {
@@ -74,9 +74,9 @@ public class NTTableBuilder
     }
 
     /**
-     * Add alarm structure to the NTTable.
+     * Adds alarm field to the NTTable.
      * 
-     * @return this instance of <b>NTTableBuilder</b>
+     * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addAlarm()
     {
@@ -85,9 +85,9 @@ public class NTTableBuilder
     }
 
     /**
-     * Add timeStamp structure to the NTTable.
+     * Adds timeStamp field to the NTTable.
      * 
-     * @return this instance of <b>NTTableBuilder</b>
+     * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addTimeStamp()
     {
@@ -96,10 +96,10 @@ public class NTTableBuilder
     }
 
     /**
-     * Create a <b>Structure</b> that represents NTTable.
+     * Creates a Structure that represents NTTable.
      * This resets this instance state and allows new instance to be created.
      * 
-     * @return a new instance of a <b>Structure</b>
+     * @return a new instance of a Structure
      */
     public Structure createStructure()
     {
@@ -139,10 +139,10 @@ public class NTTableBuilder
     }
 
     /**
-     * Create a <b>PVStructure</b> that represents NTTable.
+     * Creates a PVStructure that represents NTTable.
      * This resets this instance state and allows new instance to be created
      *
-     * @return a new instance of a <b>PVStructure</b>
+     * @return a new instance of a PVStructure
      */
     public PVStructure createPVStructure()
     {
@@ -159,10 +159,10 @@ public class NTTableBuilder
     }
 
     /**
-     * Create a <b>NTTable</b> instance.
+     * Creates an NTTable instance.
      * This resets this instance state and allows new instance to be created
      *
-     * @return a new instance of an <b>NTTable</b>
+     * @return a new instance of an NTTable
      */
     public NTTable create()
     {
@@ -170,11 +170,11 @@ public class NTTableBuilder
     }
 
     /**
-     * Add extra <b>Field</b> to the type.
+     * Adds extra Field to the type.
      *
      * @param name the name of the field
      * @param field the field to add
-     * @return this instance of <b>NTTableBuilder</b>
+     * @return this instance of NTTableBuilder
      */
     public NTTableBuilder add(String name, Field field) 
     {

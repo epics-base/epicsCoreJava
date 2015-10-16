@@ -33,8 +33,8 @@ public class NTNameValue
     /**
      * Creates an NTNameValue wrapping the specified PVStructure if the latter is compatible.
      * <p>
-     * Checks the supplied structure is compatible with NTNameValue
-     * and if so returns a NTNameValue which wraps it.
+     * Checks the supplied PVStructure is compatible with NTNameValue
+     * and if so returns an NTNameValue which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
      *
@@ -63,10 +63,10 @@ public class NTNameValue
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTNameValue.
+     * Returns whether the specified Structure reports to be a compatible NTNameValue.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTNameValue through type ID, including checking version numbers.
+     * Checks if the specified Structure reports compatibility with this
+     * version of NTNameValue through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
      *
@@ -79,10 +79,10 @@ public class NTNameValue
     }
 
     /**
-     * Checks if the specified structure reports to be a compatible NTNameValue.
+     * Returns whether the specified PVStructure reports to be a compatible NTNameValue.
      * <p>
-     * Checks whether the specified structure reports compatibility with this
-     * version of NTNameValue through type ID, including checking version numbers.
+     * Checks if the specified PVStructure reports compatibility with this
+     * version of NTNameValue through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type
      * @param pvStructure The PVStructure to test.
@@ -94,10 +94,10 @@ public class NTNameValue
     }
 
     /**
-     * Checks if the specified structure is compatible with NTNameValue.
+     * Returns whether the specified Structure is compatible with NTNameValue.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTNameValue through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTNameValue through the introspection interface.
      * @param structure the Structure to test.
      * @return (false,true) if (is not, is) a compatible NTNameValue.
      */
@@ -137,10 +137,10 @@ public class NTNameValue
     }
 
     /**
-     * Checks if the specified structure is compatible with NTNameValue.
+     * Returns whether the specified PVStructure is compatible with NTNameValue.
      * <p>
-     * Checks whether the specified structure is compatible with this version
-     * of NTNameValue through introspection interface.
+     * Checks if the specified PVStructure is compatible with this version
+     * of NTNameValue through the introspection interface.
      *
      * @param pvStructure the PVStructure to test
      * @return (false,true) if (is not, is) a compatible NTNameValue
@@ -153,12 +153,13 @@ public class NTNameValue
     }
 
     /**
-     * Checks if the specified structure is a valid NTNameValue.
-     * <p>
-     * Checks whether the wrapped structure is valid with respect to this
+     * Returns whether the wrapped PVStructure is valid with respect to this
      * version of NTNameValue.
+     * <p>
+     * Unlike isCompatible(), isValid() may perform checks on the value
+     * data as well as the introspection data.
      *
-     * @return (false,true) if (is not, is) a valid NTNameValue
+     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTNameValue
      */
     public boolean isValid()
     {
@@ -166,7 +167,7 @@ public class NTNameValue
     }
 
     /**
-     * Create a NTNameValue builder instance.
+     * Creates an NTNameValue builder instance.
      *
      * @return builder instance
      */
@@ -176,9 +177,9 @@ public class NTNameValue
     }
 
     /**
-     * Get the PVStructure.
+     * Returns the PVStructure wrapped by this instance.
      *
-     * @return PVStructure
+     * @return the PVStructure wrapped by this instance.
      */
     public PVStructure getPVStructure()
     {
@@ -186,20 +187,21 @@ public class NTNameValue
     }
 
     /**
-     * Get the value field.
+     * Returns the value field.
      *
-     * @return the PVScalarArray for the value field
+     * @return the value field
      */
     public PVScalarArray getValue()
     {
         return pvValue;
     }
 
-    /* Get the value field of a specified type (e.g. PVDoubleArray).
+    /**
+     * Returns the value field of a specified type (e.g. PVDoubleArray).
      *
      * @param <T> the expected type of the value field
      * @param c class object modeling the class T
-     * @return the PVScalarArray or null if the subfield does not exist, or the field is not of <code>c</code> type
+     * @return the value field or null the value field is not of <code>c</code> type
      */
     public <T extends PVScalarArray> T getValue(Class<T> c)
     {
@@ -210,7 +212,7 @@ public class NTNameValue
     }
 
     /**
-     * Get the name array field.
+     * Returns the name array field.
      * 
      * @return the PVStringArray for the name field
      */
@@ -220,9 +222,9 @@ public class NTNameValue
     }
 
     /**
-     * Get the descriptor field.
-     * 
-     * @return the PVString or null if no descriptor field
+     * Returns the descriptor field.
+     *
+     * @return the descriptor field or null if no such field
      */
     public PVString getDescriptor()
     {

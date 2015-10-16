@@ -34,7 +34,7 @@ import org.epics.pvdata.property.PVControl;
 public class NTField {
 
     /**
-     * Get the single implementation of this class.
+     * Returns the single implementation of this class.
      *
      * @return the implementation
      */
@@ -246,7 +246,7 @@ public class NTField {
     }
 
     /**
-     * Is field a control structure.
+     * Is field a control structure?
      *
      * @param field the field to test
      * @return (false,true) if field (is not,is) a control structure
@@ -282,7 +282,7 @@ public class NTField {
     }
 
     /**
-     * Create an enumerated structure.
+     * Creates an enumerated structure.
      *
      * @return an enumerated structure
      */
@@ -292,7 +292,7 @@ public class NTField {
     }
 
     /**
-     * Create a timeStamp structure.
+     * Creates a timeStamp structure.
      *
      * @return a timeStamp structure
      */
@@ -301,7 +301,7 @@ public class NTField {
         return standardField.timeStamp();
     }
     /**
-     * Create an alarm structure.
+     * Creates an alarm structure.
      *
      * @return an alarm structure
      */
@@ -311,7 +311,7 @@ public class NTField {
     }
 
     /**
-     * Create an alarmLimit structure.
+     * Creates an alarmLimit structure.
      *
      * @return an alarmLimit structure
      */
@@ -333,7 +333,7 @@ public class NTField {
     }
 
     /**
-     * Create a display structure.
+     * Creates a display structure.
      *
      * @return a display structure
      */
@@ -344,7 +344,7 @@ public class NTField {
     }
 
     /**
-     * Create a control structure.
+     * Creates a control structure.
      *
      * @return a control structure
      */
@@ -354,7 +354,7 @@ public class NTField {
     }
 
     /**
-     * Create an array of enumerated structures.
+     * Creates an array of enumerated structures.
      *
      * @return an array of enumerated structures
      */
@@ -364,7 +364,7 @@ public class NTField {
     }
 
     /**
-     * Create an array of timeStamp structures.
+     * Creates an array of timeStamp structures.
      *
      * @return an array of timeStamp structures
      */
@@ -375,7 +375,7 @@ public class NTField {
     }
 
     /**
-     * Create an array of alarm structures.
+     * Creates an array of alarm structures.
      *
      * @return an array of alarm structures
      */
