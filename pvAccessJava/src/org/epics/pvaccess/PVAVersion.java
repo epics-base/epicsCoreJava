@@ -29,7 +29,7 @@ public interface PVAVersion {
     /**
      * Minor version.
      */
-    public static final int VERSION_MINOR = 1;
+    public static final int VERSION_MINOR = 2;
 
     /**
      * Maintenance version.

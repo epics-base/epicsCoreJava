@@ -13,6 +13,8 @@ import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVByteArray;
 import org.epics.pvdata.pv.PVDataCreate;
+import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.SerializableControl;
@@ -163,17 +165,34 @@ public class SerializationExamples {
 		
 		// TODO access via PVFactory?
 		StandardField standardField = StandardFieldFactory.getStandardField();
-			
-        Field[] fields = new Field[3];
-        fields[0] = fieldCreate.createScalarArray(ScalarType.pvByte);
-        fields[1] = standardField.timeStamp();
-        fields[2] = standardField.alarm();
+		
+		Structure structure = fieldCreate.createFieldBuilder().
+				setId("exampleStructure").
+				addArray("value", ScalarType.pvByte).
+				addBoundedArray("boundedSizeArray", ScalarType.pvByte, 16).
+				addFixedArray("fixedSizeArray", ScalarType.pvByte, 4).
+				add("timeStamp", standardField.timeStamp()).
+				add("alarm", standardField.alarm()).
+				addNestedUnion("valueUnion").
+					add("stringValue", ScalarType.pvString).
+					add("intValue", ScalarType.pvInt).
+					add("doubleValue", ScalarType.pvDouble).
+					endNested().
+				add("variantUnion", fieldCreate.createVariantUnion()).
+				createStructure();
         
-        PVStructure pvStructure = pvDataCreate.createPVStructure(fieldCreate.createStructure("exampleStructure", new String[] { "value", "timeStamp", "alarm" }, fields)
-        );
+        PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
         
         PVByteArray ba = (PVByteArray)pvStructure.getSubField("value");
         byte[] toPut = new byte[] { (byte)1, (byte)2, (byte)3 };
+        ba.put(0, toPut.length, toPut, 0);
+
+        ba = (PVByteArray)pvStructure.getSubField("boundedSizeArray");
+        toPut = new byte[] { (byte)4, (byte)5, (byte)6, (byte)7, (byte)8  };
+        ba.put(0, toPut.length, toPut, 0);
+
+        ba = (PVByteArray)pvStructure.getSubField("fixedSizeArray");
+        toPut = new byte[] { (byte)9, (byte)10, (byte)11, (byte)12 };
         ba.put(0, toPut.length, toPut, 0);
 
         PVStructure timeStampStructure = pvStructure.getStructureField("timeStamp");
@@ -186,9 +205,13 @@ public class SerializationExamples {
 		alarmStructure.getIntField("status").put(0x22222222);
 		alarmStructure.getStringField("message").put("Allo, Allo!");
 
+		((PVInt)pvStructure.getUnionField("valueUnion").select("intValue")).put(0x33333333);
+		
+		PVString pvString = (PVString)pvDataCreate.createPVScalar(ScalarType.pvString);
+		pvString.put("String inside variant union.");
+		pvStructure.getUnionField("variantUnion").set(pvString);
 			
-			IntrospectionRegistry ir = new IntrospectionRegistry();
-			ir.serialize(pvStructure.getStructure(), bb, control);
+			control.outgoingIR.serialize(pvStructure.getStructure(), bb, control);
 			
 	        System.out.println(pvStructure.getStructure());
 	        System.out.println();
@@ -251,8 +274,8 @@ public class SerializationExamples {
 	public static void main(String[] args) {
 		//bitSetExamples();
 		//statusExamples();
-		//structureExample();
-		structureAbbotExample();
+		structureExample();
+		//structureAbbotExample();
 	}
 
 }
