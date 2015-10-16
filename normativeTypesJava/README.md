@@ -19,6 +19,7 @@ The current version implements fully the
 The module status is alpha and the API and behaviour may change signifcantly
 in future versions.
 
+The is no documentation (i.e. ntJava.html) yet.
 
 Dependencies
 ------------
