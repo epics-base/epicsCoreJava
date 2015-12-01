@@ -130,6 +130,7 @@ public final class FieldFactory {
          */
         public Structure createStructure(String[] fieldNames, Field[] fields)
         {
+            validateFieldNames(fieldNames);
             return new BaseStructure(fieldNames,fields);
         }
         
@@ -138,6 +139,7 @@ public final class FieldFactory {
 		 */
 		@Override
 		public Structure createStructure(String id, String[] fieldNames, Field[] fields) {
+            validateFieldNames(fieldNames);
             return new BaseStructure(id,fieldNames,fields);
 		}
 		/* (non-Javadoc)
@@ -164,6 +166,7 @@ public final class FieldFactory {
          */
         @Override
         public Structure appendField(Structure structure, String fieldName, Field field) {
+		    validateFieldName(fieldName);
 		    String[] oldNames = structure.getFieldNames();
 		    Field[] oldFields = structure.getFields();
                     String oldID = structure.getID();
@@ -184,6 +187,7 @@ public final class FieldFactory {
          */
         @Override
         public Structure appendFields(Structure structure, String[] fieldNames,Field[] fields) {
+            validateFieldNames(fieldNames);
             String[] oldNames = structure.getFieldNames();
             Field[] oldFields = structure.getFields();
             String oldID = structure.getID();
@@ -215,6 +219,7 @@ public final class FieldFactory {
 		 */
 		@Override
 		public Union createUnion(String[] fieldNames, Field[] fields) {
+			validateFieldNames(fieldNames);
 			return new BaseUnion(fieldNames, fields);
 		}
 		/* (non-Javadoc)
@@ -222,6 +227,7 @@ public final class FieldFactory {
 		 */
 		@Override
 		public Union createUnion(String id, String[] fieldNames, Field[] fields) {
+			validateFieldNames(fieldNames);
 			return new BaseUnion(id, fieldNames, fields);
 		}
 
@@ -367,7 +373,18 @@ public final class FieldFactory {
     				throw new IllegalArgumentException("invalid type encoding");
     		}
 		}  
-        
-        
+
+		private void validateFieldNames(String[] names)
+		{
+			for(String name : names) {
+				validateFieldName(name);
+			}
+		}
+
+		private void validateFieldName(String name)
+		{
+			if(!name.matches("[_a-zA-Z][_a-zA-Z0-9]*"))
+					throw new IllegalArgumentException("Invalid field name '"+name+"'");
+		}
     }
 }
