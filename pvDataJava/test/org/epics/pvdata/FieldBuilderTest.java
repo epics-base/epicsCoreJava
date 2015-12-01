@@ -361,4 +361,27 @@ public class FieldBuilderTest extends TestCase {
 			// ok
 		}
 	}
+
+	public void testBadFieldName()
+	{
+		try {
+			fieldCreate.createFieldBuilder()
+				.add("ok", ScalarType.pvByte)
+				.add("0bad", ScalarType.pvBoolean)
+				.createStructure();
+			fail("Missed expected exception");
+		} catch (IllegalArgumentException ex) {
+			// ok
+		}
+
+		try {
+			fieldCreate.createFieldBuilder()
+				.add("ok", ScalarType.pvByte)
+				.add("also.bad", ScalarType.pvBoolean)
+				.createUnion();
+			fail("Missed expected exception");
+		} catch (IllegalArgumentException ex) {
+			// ok
+		}
+	}
 }
