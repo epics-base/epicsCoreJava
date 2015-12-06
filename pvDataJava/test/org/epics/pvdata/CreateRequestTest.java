@@ -118,8 +118,8 @@ public class CreateRequestTest extends TestCase {
         System.out.printf("request %s%n%s%n",request,pvRequest.toString());
         
         request = "field(alarm,timeStamp[algorithm=onChange,causeMonitor=false],supply[xxx=aaa,yyy=bbb]{" 
-                + "0{voltage[aaa=bbb,xxx=yyy].value,current.value,power.value},"
-                + "1{voltage.value[aaa=bbb,xxx=yyy],current.value,power.value}"
+                + "zero{voltage[aaa=bbb,xxx=yyy].value,current.value,power.value},"
+                + "one{voltage.value[aaa=bbb,xxx=yyy],current.value,power.value}"
                 + "})";
         pvRequest = createRequest.createRequest(request);
         if(pvRequest==null) requester.message(createRequest.getMessage(), MessageType.error);
