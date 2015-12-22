@@ -42,6 +42,7 @@ public class NetworkInfo {
 			throws SocketException {
 		console.printf("Display name: %s%n", netint.getDisplayName());
 		console.printf("Name: %s%n", netint.getName());
+		console.printf("Index: %d%n", netint.getIndex());
 		Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
 		for (InetAddress inetAddress : Collections.list(inetAddresses)) {
 			console.printf("InetAddress: %s%n", inetAddress);
@@ -53,7 +54,7 @@ public class NetworkInfo {
 			console.printf("Up? %s%n", netint.isUp());
 			console.printf("Loopback? %s%n", netint.isLoopback());
 			console.printf("PointToPoint? %s%n", netint.isPointToPoint());
-			console.printf("Supports multicast? %s%n", netint.isVirtual());
+			console.printf("Supports multicast? %s%n", netint.supportsMulticast());
 			console.printf("Virtual? %s%n", netint.isVirtual());
 			final byte[] hwAddr = netint.getHardwareAddress();
 			if (hwAddr != null)
