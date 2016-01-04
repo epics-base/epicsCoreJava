@@ -81,6 +81,8 @@ fi
 echo ${releaseName} is composed of ${modulesa[*]}
 
 echo "Creating ${parentPom}"
+rm -fr links
+mkdir -p links
 mkdir -p "$parentPomDir"
 rm -fr ${parentPom}
 echo "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"
@@ -130,6 +132,7 @@ do
       <classifier>sources</classifier>
     </dependency>" >>${parentPom}
 
+    ln -s ../${modulei}/${tag} links/${modulei}
 done
 
 echo "
