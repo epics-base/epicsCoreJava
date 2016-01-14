@@ -207,7 +207,10 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		{
 			// write introspection data
 			if (value == null)
+			{
+				flusher.ensureBuffer(1);
 				buffer.put((byte)-1);
+			}
 			else
 			{
 				flusher.cachedSerialize(value.getField(), buffer);
