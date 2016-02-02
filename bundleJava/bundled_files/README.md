@@ -1,3 +1,4 @@
+
 EPICS VERSION 4 JAVA IMPLEMENTATION README
 ==========================================
 
@@ -5,7 +6,12 @@ This README is a guide to the build of the Java implementation of EPICS Version 
 
 Status: This README is up-to-date with respect to release v4.5.0.1 of EPICS Version 4.
 
-Auth:   Greg White, SLAC, 28-Oct-2015
+Auth:  
+Greg White, SLAC, 28-Oct-2015  
+
+Mod:  
+Dave Hickin, Diamond, 01-Feb-2016  
+Update for 4.5.0.1.  
 
 
 Prerequisites
@@ -17,7 +23,7 @@ The EPICS V4 Java bundle requires recent versions of the following software:
  
 Note that support for Channel Access operations through the pvAccess API
 "Channel Provider" interface is provided by CAJ and JCA, which are bundled
-in the EPICS-Java tar. 
+in the EPICS-Java tar.
 
 Build
 -----
