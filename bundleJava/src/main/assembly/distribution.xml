@@ -36,8 +36,6 @@ and open the template in the editor.
             <source>LICENSE.txt</source>
             <outputDirectory>.</outputDirectory>
         </file>
-    </files>
-    <files>
         <file>
             <source>bundled_files/README.md</source>
             <outputDirectory>.</outputDirectory>
