@@ -37,7 +37,16 @@ and open the template in the editor.
             <outputDirectory>.</outputDirectory>
         </file>
     </files>
-
+    <files>
+        <file>
+            <source>bundled_files/README.md</source>
+            <outputDirectory>.</outputDirectory>
+        </file>
+        <file>
+            <source>bundled_files/RELEASE_NOTES.md</source>
+            <outputDirectory>.</outputDirectory>
+        </file>
+    </files>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
