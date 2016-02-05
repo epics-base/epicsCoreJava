@@ -4,7 +4,8 @@ EPICS VERSION 4 JAVA IMPLEMENTATION README
 
 This README is a guide to the build of the Java implementation of EPICS Version 4. 
 
-Status: This README is up-to-date with respect to release v4.5.0.1 of EPICS Version 4.
+Status: This README is up-to-date with respect to release v4.5.0.1 of EPICS 
+Version 4.
 
 Auth:  
 Greg White, SLAC, 28-Oct-2015  
