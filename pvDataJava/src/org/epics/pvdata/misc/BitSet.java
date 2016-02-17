@@ -947,7 +947,8 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
 
         // ensure capacity
         if (wordsInUse < inUse) {
-            words = Arrays.copyOf(words, inUse);
+            if (inUse > words.length)
+            	words = Arrays.copyOf(words, inUse);
             wordsInUse = inUse;
         }
         
