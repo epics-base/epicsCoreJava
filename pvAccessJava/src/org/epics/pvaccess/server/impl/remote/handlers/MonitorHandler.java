@@ -274,6 +274,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			final boolean ack = QoS.GET_PUT.isSet(qosCode);
 	        if (ack)
 	        {
+	        	transport.ensureData(4);
 	            int nfree = payloadBuffer.getInt();
 				MonitorRequesterImpl request = (MonitorRequesterImpl)channel.getRequest(ioid);
 				Monitor channelMonitor = request.getChannelMonitor();
@@ -297,6 +298,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			// pipelining monitor (i.e. w/ flow control)
 	        if (ack)
 	        {
+	        	transport.ensureData(4);
 	            int nfree = payloadBuffer.getInt();
 	            Monitor channelMonitor = request.getChannelMonitor();
 				if (channelMonitor instanceof PipelineMonitor)
