@@ -22,6 +22,7 @@ import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
+import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.misc.BitSetUtil;
@@ -59,10 +60,14 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 
 	protected AtomicBoolean started = new AtomicBoolean(false);
 
+	protected final int queueSize;
+	protected final boolean pipeline;
+	protected final int ackAny;
 
 	private interface MonitorStrategy extends Monitor {
 		void init(Structure structure);
 		void response(Transport transport, ByteBuffer payloadBuffer);
+		void unlisten();
 	}
 	
 	private final MonitorStrategy monitorStrategy;
@@ -85,29 +90,66 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		
 		this.callback = callback;
 		
-		int queueSize = 2;
+		int qs = 2;
+		boolean pl = false;
+		int aa = 1;
+		
 		PVField pvField = pvRequest.getSubField("record._options");
-		if(pvField!=null) {
+		if (pvField!=null) {
 		    PVStructure pvOptions = (PVStructure)pvField;
-		    pvField = pvOptions.getSubField("queueSize");
-		    if(pvField!=null) {
-		        PVString pvString = (PVString)pvField;
+	        PVString pvString = pvOptions.getStringField("queueSize");
+		    if (pvString!=null) {
 		        String value = pvString.get();
 	            try {
-	                queueSize = Integer.parseInt(value);
+	                qs = Integer.parseInt(value);
+	                if (qs < 2) qs = 2;
 	            } catch (NumberFormatException e) {
 	                callback.monitorConnect(
-	                        PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "queueSize type is not a valid integer", e),
+	                        PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "queueSize is not a valid integer", e),
 	                        this, null);
-	                monitorStrategy = null;
+	                monitorStrategy = null; queueSize = 2; pipeline = false; ackAny = 1;
 	                destroy(true);
 	                return;
 	            }
 		    }
+
+		    pvString = pvOptions.getStringField("pipeline");
+		    if (pvString!=null) {
+		        String value = pvString.get();
+                pl = Boolean.parseBoolean(value);
+                
+                // pipeline options
+                if (pl)
+                {
+                	// defaults to queueSize/2;
+                	aa = qs / 2;
+                	
+        		    pvString = pvOptions.getStringField("ackAny");
+        		    if (pvString!=null) {
+        		        value = pvString.get();
+        	            try {
+        	                aa = Integer.parseInt(value);
+        	                if (aa <= 0) qs = 1;		// > 0 check
+        	                if (aa > qs) aa = qs;		// <= queueSize check
+        	            } catch (NumberFormatException e) {
+        	                callback.monitorConnect(
+        	                        PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "ackAny is not a valid integer", e),
+        	                        this, null);
+        	                monitorStrategy = null; queueSize = 2; pipeline = false; ackAny = 1;
+        	                destroy(true);
+        	                return;
+        	            }
+        		    }
+                	
+                }
+		    }
 		}
 		
-        if (queueSize<2) queueSize = 2;
-        monitorStrategy = new MonitorStrategyQueue(queueSize);
+        queueSize = qs;
+        pipeline = pl;
+        ackAny = aa;
+        
+        monitorStrategy = new MonitorStrategyQueue(queueSize, pipeline, ackAny);
 	}
 
 
@@ -124,11 +166,23 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		}
 	}
 		
-    private static final BitSetUtil bitSetUtil = BitSetUtilFactory.getCompressBitSet();
+	// override default impl. to provide pipeline QoS flag
+	@Override
+	public void resubscribeSubscription(Transport transport) {
+		// NOTE: transport is null if channel was never connected
+		if (transport != null && !subscribed &&
+			startRequest(pipeline ? (QoS.INIT.getMaskValue() | QoS.GET_PUT.getMaskValue()) : QoS.INIT.getMaskValue()))
+		{
+			subscribed = true;
+			transport.enqueueSendRequest(this);
+		}
+	}
+
+	private static final BitSetUtil bitSetUtil = BitSetUtilFactory.getCompressBitSet();
     private static final Convert convert = ConvertFactory.getConvert();
 
     // TODO fix sync
-    private final class MonitorStrategyQueue implements MonitorStrategy {
+    private final class MonitorStrategyQueue implements MonitorStrategy, TransportSender {
 		private final int queueSize;
 
 		private MonitorElement monitorElement = null;
@@ -142,14 +196,26 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	    private final Object monitorSync = new Object();
 	    
 	    private boolean needToReleaseFirst = false;
-
-
-		public MonitorStrategyQueue(int queueSize)
+	    
+	    private int releasedCount = 0;
+	    private boolean reportQueueStateInProgress = false;
+	    
+	    private final boolean pipeline;
+	    private final int ackAny;
+	    
+	    private boolean unlisten;
+	    
+		public MonitorStrategyQueue(
+				int queueSize,
+				boolean pipeline, int ackAny)
 		{
 			if (queueSize <= 1)
 				throw new IllegalArgumentException("queueSize <= 1");
 			
 			this.queueSize = queueSize;
+			this.pipeline = pipeline;
+			this.ackAny = ackAny;
+			
 		}
 		
 		@Override
@@ -157,6 +223,10 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 			synchronized (monitorSync)
 			{
+				releasedCount = 0;
+				reportQueueStateInProgress = false;
+				unlisten = false;
+				
 				// reuse on reconnect
 				if (lastStructure == null || !lastStructure.equals(structure))
 				{
@@ -169,6 +239,23 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		            lastStructure = structure;
 				}
 			}
+		}
+		
+		@Override
+		public void unlisten()
+		{
+			boolean notify = false;
+			
+			synchronized (monitorSync)
+			{
+				// awkward way of checking "is empty"
+				//notify = monitorQueue.empty();
+				notify = (monitorQueue.getNumberFree() == monitorQueue.capacity());
+				unlisten = !notify;
+			}
+			
+			if (notify)
+				callback.unlisten(this);
 		}
 		
 		@Override
@@ -269,6 +356,8 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		@Override
 		public MonitorElement poll()
 		{
+			boolean notifyUnlisten = false;
+			
             synchronized(monitorSync) {
             	if (needToReleaseFirst)
             		return null;
@@ -304,8 +393,21 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	            		return null;		// should never happen since queueSize >= 2, but a client not calling release can do this
 	            }
 	            else
-	            	return null;
+	            {
+	            	if (unlisten)
+	            	{
+	            		notifyUnlisten = true;
+	            		unlisten = false;
+	            	}
+	            	else
+	            		return null;
+	            }
             }
+            
+
+            if (notifyUnlisten)
+            	callback.unlisten(this);
+            return null;
 		}
 
 		@Override
@@ -314,7 +416,58 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	        synchronized(monitorSync) {
 	            monitorQueue.releaseUsed(monitorElement);
 	            needToReleaseFirst = false;
+	        
+		        if (pipeline)
+		        {
+		        	boolean sendAck = false;
+
+		        	releasedCount++;
+		        	if (!reportQueueStateInProgress && releasedCount > ackAny)
+		        	{
+		        		sendAck = true;
+		        		reportQueueStateInProgress = true;
+		        	}
+		        	
+		        	if (sendAck)
+		        	{
+		        		try
+		        		{
+		        			channel.checkAndGetTransport().enqueueSendRequest(this);
+		        		}
+		        		finally 
+		        		{
+		        			reportQueueStateInProgress = false;
+		        		}
+		        	}
+		        }
+		        
 	        }
+		}
+
+		@Override
+		public void lock() {
+			// noop
+		}
+
+		@Override
+		public void unlock() {
+			// noop
+		}
+
+		@Override
+		public void send(ByteBuffer buffer, TransportSendControl control) {
+			control.startMessage((byte)13, 9);
+			buffer.putInt(channel.getServerChannelID());
+			buffer.putInt(ioid);
+			buffer.put((byte)QoS.GET_PUT.getMaskValue());
+			
+			synchronized (monitorSync) {
+				buffer.putInt(releasedCount);
+				releasedCount = 0;
+				reportQueueStateInProgress = false;
+			}
+			
+			control.flush(true);
 		}
 
 		@Override
@@ -362,6 +515,13 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		{
 			// pvRequest
 			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
+			
+			// if pipeline
+			if (pipeline)
+			{
+				control.ensureBuffer(4);
+				buffer.putInt(queueSize);
+			}
 		}
 
 		stopRequest();
@@ -394,6 +554,16 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		if (QoS.GET.isSet(qos))
 		{
 			// TODO not supported by IF yet...
+		}
+		else if (QoS.DESTROY.isSet(qos))
+		{
+			// TODO for now status is ignored
+			
+			if (payloadBuffer.hasRemaining())
+				monitorStrategy.response(transport, payloadBuffer);
+
+			// unlisten will be called when all the elements in the queue gets processed 
+			monitorStrategy.unlisten();
 		}
 		else
 		{

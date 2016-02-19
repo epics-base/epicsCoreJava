@@ -17,6 +17,7 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.epics.pvaccess.impl.remote.PipelineMonitor;
 import org.epics.pvaccess.impl.remote.QoS;
 import org.epics.pvaccess.impl.remote.SerializationHelper;
 import org.epics.pvaccess.impl.remote.Transport;
@@ -25,6 +26,7 @@ import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.server.ChannelHostingTransport;
 import org.epics.pvaccess.server.impl.remote.ServerChannelImpl;
 import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
+import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorElement;
@@ -54,6 +56,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 		private Status status;
 		private volatile Structure structure;
 		private volatile Monitor monitor;
+		private volatile boolean unlisten = false;
 
 		public MonitorRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				 PVStructure pvRequest) {
@@ -74,7 +77,8 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 
 		@Override
 		public void unlisten(Monitor monitor) {
-			// TODO !!!
+			unlisten = true;
+			transport.enqueueSendRequest(this);
 		}
 		
 		@Override
@@ -201,6 +205,17 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 					
 					monitor.release(element);
 				}
+				else
+				{
+					// TODO should I latch unlisten
+					if (unlisten)
+					{
+						control.startMessage((byte)13, Integer.SIZE/Byte.SIZE + 1);
+						buffer.putInt(ioid);
+						buffer.put((byte)QoS.DESTROY.getMaskValue());
+						StatusFactory.getStatusCreate().getStatusOK().serialize(buffer, control);
+					}
+				}
 			}
 
 			//stopRequest();
@@ -254,12 +269,24 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			
 			// create...
 			new MonitorRequesterImpl(context, channel, ioid, transport, pvRequest);
-		}
+			
+			// pipelining monitor (i.e. w/ flow control)
+			final boolean ack = QoS.GET_PUT.isSet(qosCode);
+	        if (ack)
+	        {
+	            int nfree = payloadBuffer.getInt();
+				MonitorRequesterImpl request = (MonitorRequesterImpl)channel.getRequest(ioid);
+				Monitor channelMonitor = request.getChannelMonitor();
+				if (channelMonitor instanceof PipelineMonitor)
+					((PipelineMonitor)channelMonitor).reportRemoteQueueStatus(nfree);
+	        }
+	    }
 		else
 		{
 			final boolean lastRequest = QoS.DESTROY.isSet(qosCode);
 			final boolean get = QoS.GET.isSet(qosCode);
 			final boolean process = QoS.PROCESS.isSet(qosCode);
+			final boolean ack = QoS.GET_PUT.isSet(qosCode);
 			
 			MonitorRequesterImpl request = (MonitorRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
@@ -267,7 +294,18 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 				return;
 			}
 			
-			/*
+			// pipelining monitor (i.e. w/ flow control)
+	        if (ack)
+	        {
+	            int nfree = payloadBuffer.getInt();
+	            Monitor channelMonitor = request.getChannelMonitor();
+				if (channelMonitor instanceof PipelineMonitor)
+					((PipelineMonitor)channelMonitor).reportRemoteQueueStatus(nfree);
+				return;
+	            // note: not possible to ack and destroy
+			}
+
+	        /*
 			if (!request.startRequest(qosCode)) {
 				BaseChannelRequester.sendFailureMessage((byte)13, transport, ioid, qosCode, BaseChannelRequester.otherRequestPendingStatus);
 				return;
