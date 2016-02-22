@@ -897,6 +897,17 @@ public abstract class AbstractCodec
 			// automatic end (to set payload size)
 			endMessage(false);
 		}
+		catch (ConnectionClosedException cce) {
+			// silence cce
+			
+			try {
+				close();
+			} catch (IOException e) {
+				// noop
+			}
+
+    		throw new ConnectionClosedException("exception caught: " + cce.getMessage());
+		}
 		catch (Throwable th) {
 			logger.log(Level.FINE, "exception caught while processing send message", th);
 

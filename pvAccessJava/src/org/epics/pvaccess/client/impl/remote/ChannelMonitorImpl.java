@@ -130,7 +130,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
         	            try {
         	                aa = Integer.parseInt(value);
         	                if (aa <= 0) qs = 1;		// > 0 check
-        	                if (aa > qs) aa = qs;		// <= queueSize check
+        	                if (aa > qs) aa = qs-1;		// <= queueSize check; -1 for monitorElement taken in advance
         	            } catch (NumberFormatException e) {
         	                callback.monitorConnect(
         	                        PVFactory.getStatusCreate().createStatus(StatusType.ERROR, "ackAny is not a valid integer", e),
@@ -248,9 +248,9 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			
 			synchronized (monitorSync)
 			{
-				// awkward way of checking "is empty"
+				// awkward way of checking "is empty", -1 since one free monitorElement is take in advance
 				//notify = monitorQueue.empty();
-				notify = (monitorQueue.getNumberFree() == monitorQueue.capacity());
+				notify = (monitorQueue.getNumberFree() == (monitorQueue.capacity()-1));
 				unlisten = !notify;
 			}
 			

@@ -28,6 +28,9 @@ import org.epics.pvaccess.util.logging.LoggingUtils;
 import org.epics.pvdata.copy.CreateRequest;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.monitor.Monitor;
+import org.epics.pvdata.monitor.MonitorElement;
+import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVBoolean;
 import org.epics.pvdata.pv.PVByte;
@@ -297,7 +300,6 @@ public class PVGet {
 
 		int opt; /* getopt() current option */
 		boolean debug = false;
-		@SuppressWarnings("unused")
 		boolean monitor = false;
 		@SuppressWarnings("unused")
 		boolean quiet = false;
@@ -395,33 +397,96 @@ public class PVGet {
             Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
             channels.add(channel);
         }
-        
-        // do get
-        for (Channel channel : channels)
+       
+        CreateRequest createRequest = CreateRequest.create();
+        PVStructure pvRequest = createRequest.createRequest(request);
+        if (pvRequest != null)
         {
-	        CountDownLatch doneSignal = new CountDownLatch(1);
-	        
-	        ChannelGetRequester channelGetRequester =
-	        		new ChannelGetRequesterImpl(logger, channel, doneSignal, printMode, fieldSeparator);
-	        CreateRequest createRequest = CreateRequest.create();
-	        PVStructure pvRequest = createRequest.createRequest(request);
-	        if(pvRequest==null) {
-	        	String message = "createRequest failed " + createRequest.getMessage();
-	        	logger.info(message);
-	        } else {
-	        	channel.createChannelGet(channelGetRequester,pvRequest);
-	
-	        	// wait up-to 3 seconds for completion
-	        	if (!doneSignal.await((long)(DEFAULT_TIMEOUT*1000), TimeUnit.MILLISECONDS))
-	        		logger.info("[" + channel.getChannelName() + "] connection timeout");
+	        // do monitor
+	        if (monitor)
+	        {
+		        CountDownLatch doneSignal = new CountDownLatch(channels.size());
+		        
+		        // do get
+		        for (Channel channel : channels)
+		        {
+			        
+			        MonitorRequester monitorRequester =
+			        		new MonitorRequesterImpl(logger, channel, doneSignal, printMode, fieldSeparator);
+		        	channel.createMonitor(monitorRequester, pvRequest);
+		        }
+
+		        // infinite wait
+	        	doneSignal.await();
 	        }
+	        else
+	        {
+		        // do get
+		        for (Channel channel : channels)
+		        {
+			        CountDownLatch doneSignal = new CountDownLatch(1);
+			        
+			        ChannelGetRequester channelGetRequester =
+			        		new ChannelGetRequesterImpl(logger, channel, doneSignal, printMode, fieldSeparator);
+		        	channel.createChannelGet(channelGetRequester,pvRequest);
+		
+		        	// wait up-to 3 seconds for completion
+		        	if (!doneSignal.await((long)(DEFAULT_TIMEOUT*1000), TimeUnit.MILLISECONDS))
+		        		logger.info("[" + channel.getChannelName() + "] connection timeout");
+		        }
+	        }
+        }
+        else
+        {
+        	logger.info("createRequest failed " + createRequest.getMessage());
         }
         
         // stop pvAccess client
         org.epics.pvaccess.ClientFactory.stop();
     }
     
-    static class ChannelRequesterImpl implements ChannelRequester
+    private static void printData(Channel channel,
+			PrintMode printMode, char fieldSeparator, PVStructure pvStructure) {
+		if (printMode == PrintMode.ValueOnlyMode)
+		{
+			PVField value = pvStructure.getSubField("value");
+			if (value == null)
+			{
+				System.err.println("no 'value' field");
+				System.out.println(channel.getChannelName() + "\n" + pvStructure + "\n");
+			}
+			else
+			{
+				Type valueType = value.getField().getType();
+				if (valueType != Type.scalar && valueType != Type.scalarArray)
+				{
+					// switch to structure mode
+					System.out.println(channel.getChannelName() + "\n" + pvStructure + "\n");
+				}
+				else
+				{
+					if (fieldSeparator == ' ' && value.getField().getType() == Type.scalar)
+						System.out.printf("%-30s", channel.getChannelName());
+					else
+						System.out.print(channel.getChannelName());
+					
+					System.out.print(fieldSeparator);
+					
+					terse(System.out, value, fieldSeparator);
+					System.out.println();
+				}
+			}
+		}
+		else if (printMode == PrintMode.TerseMode)
+		{
+			terse(System.out, pvStructure, fieldSeparator);
+			System.out.println();
+		}
+		else // if (printMode == PrintMode.StructureMode)
+			System.out.println(channel.getChannelName() + "\n" + pvStructure + "\n");
+	}
+
+	static class ChannelRequesterImpl implements ChannelRequester
     {
     	private final Logger logger;
     	public ChannelRequesterImpl(Logger logger)
@@ -496,48 +561,74 @@ public class PVGet {
 			logger.fine("getDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
 
 			if (status.isSuccess())
-			{
-				if (printMode == PrintMode.ValueOnlyMode)
-				{
-					PVField value = pvStructure.getSubField("value");
-					if (value == null)
-					{
-						System.err.println("no 'value' field");
-						System.out.println(channel.getChannelName() + "\n" + pvStructure + "\n");
-					}
-					else
-					{
-						Type valueType = value.getField().getType();
-						if (valueType != Type.scalar && valueType != Type.scalarArray)
-						{
-							// switch to structure mode
-							System.out.println(channel.getChannelName() + "\n" + pvStructure + "\n");
-						}
-						else
-						{
-							if (fieldSeparator == ' ' && value.getField().getType() == Type.scalar)
-								System.out.printf("%-30s", channel.getChannelName());
-							else
-								System.out.print(channel.getChannelName());
-							
-							System.out.print(fieldSeparator);
-							
-							terse(System.out, value, fieldSeparator);
-							System.out.println();
-						}
-					}
-				}
-				else if (printMode == PrintMode.TerseMode)
-				{
-					terse(System.out, pvStructure, fieldSeparator);
-					System.out.println();
-				}
-				else // if (printMode == PrintMode.StructureMode)
-					System.out.println(channel.getChannelName() + "\n" + pvStructure + "\n");
-			}	
+				printData(channel, printMode, fieldSeparator, pvStructure);
 			
 			doneSignaler.countDown();
 		}
     }
     
+    static class MonitorRequesterImpl implements MonitorRequester
+    {
+    	private final Logger logger;
+    	private final Channel channel;
+    	private final CountDownLatch doneSignaler;
+    	private final PrintMode printMode;
+    	private final char fieldSeparator;
+    	
+    	public MonitorRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler,
+    			PrintMode printMode, char fieldSeparator)
+    	{
+    		this.logger = logger;
+    		this.channel = channel;
+    		this.doneSignaler = doneSignaler;
+    		this.printMode = printMode;
+    		this.fieldSeparator = fieldSeparator;
+    	}
+    	
+		@Override
+		public String getRequesterName() {
+			return getClass().getName();
+		}
+
+		@Override
+		public void message(String message, MessageType messageType) {
+			logger.log(LoggingUtils.toLevel(messageType), message);
+		}
+		
+		@Override
+		public void monitorConnect(Status status, Monitor monitor, Structure structure) {
+			logger.fine("Monitor for '" + channel.getChannelName() + "' connected with status: " + status + ".");
+			if (status.isSuccess())
+			{
+				status = monitor.start();
+				if (status.isSuccess())
+					return;
+				else
+				{
+					logger.fine("Monitor::start() for '" + channel.getChannelName() + "' status: " + status + ".");
+					doneSignaler.countDown();
+				}	
+			}
+			else
+				doneSignaler.countDown();
+		}
+		
+		@Override
+		public void monitorEvent(Monitor monitor) {
+			MonitorElement element;
+			while ((element = monitor.poll()) != null)
+			{
+				printData(channel, printMode, fieldSeparator, element.getPVStructure());
+
+				monitor.release(element);
+			}
+		}
+		
+		@Override
+		public void unlisten(Monitor monitor) {
+			logger.log(Level.FINE, "unlisten");
+			doneSignaler.countDown();
+		}
+
+    }
 }
