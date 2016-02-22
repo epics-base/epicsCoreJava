@@ -127,9 +127,14 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
         		    pvString = pvOptions.getStringField("ackAny");
         		    if (pvString!=null) {
         		        value = pvString.get();
+        		        boolean percentage = value.endsWith("%");
+        		        if (percentage)
+        		        	value = value.substring(0, value.length()-1);
         	            try {
         	                aa = Integer.parseInt(value);
-        	                if (aa <= 0) qs = 1;		// > 0 check
+        	                if (percentage)
+        	                	aa = (qs * aa) / 100;
+        	                if (aa <= 1) aa = 1;		// > 0 check
         	                if (aa > qs) aa = qs-1;		// <= queueSize check; -1 for monitorElement taken in advance
         	            } catch (NumberFormatException e) {
         	                callback.monitorConnect(
