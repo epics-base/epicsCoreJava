@@ -309,11 +309,10 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 			// check only major version for compatibility
 			final byte version = receiveBuffer.get(); 
 			
-			// only data for UDP
 			final byte flags = receiveBuffer.get();
-			if (flags < 0)
+			if ((flags & 0x80) != 0)
 			{
-				// 7-bit is set
+				// 7th bit is set
 				receiveBuffer.order(ByteOrder.BIG_ENDIAN);
 			}
 			else
@@ -324,6 +323,11 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 			// command ID and paylaod
 			final byte command = receiveBuffer.get();
 			final int payloadSize = receiveBuffer.getInt();
+			
+			// control message check (skip message)
+			if ((flags & 0x01) != 0)
+				continue;
+			
 			final int nextRequestPosition = receiveBuffer.position() + payloadSize;
 			
 			// payload size check
