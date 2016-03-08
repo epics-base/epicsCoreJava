@@ -44,6 +44,35 @@ public class BitSetTest extends TestCase {
 		assertEquals(src, dest);
 	}
 	
+	public void testOrAndBitSet() {
+	{
+		BitSet b1 = new BitSet(16);
+		assertEquals(0, b1.length());
+		b1.set(0);
+		assertEquals(1, b1.length());
+		
+
+		BitSet b2 = new BitSet(72);
+		b2.set(70);
+		b2.set(71);
+
+		BitSet b3 = new BitSet(72);
+		b3.set(71);
+		
+		// b1 will be expanded (reallocation)
+		b1.or_and(b2, b3);
+		assertEquals(2, b1.cardinality());
+		assertEquals(72, b1.length());
+		
+		// b1 will be expanded (no reallocation needed)
+		b1.clear();
+		b1.or_and(b2, b3);
+		assertEquals(1, b1.cardinality());
+		assertEquals(72, b1.length());
+	}
+
+	}
+	
 	static class SerControl implements SerializableControl, DeserializableControl
 	{
 
