@@ -123,7 +123,6 @@ public abstract class NonBlockingTCPTransport extends NonBlockingSocketAbstractC
 	// TODO
 	/**
 	 * Called to any resources just before closing transport
-	 * @param forced	flag indicating if forced (e.g. forced disconnect) is required
 	 */
 	protected void internalClose()
 	{

@@ -337,7 +337,7 @@ import java.text.MessageFormat;
   *          break;
   *     }
   * //
-  * for (int i = g.getOptind(); i < argv.length ; i++)
+  * for (int i = g.getOptind(); i &lt; argv.length ; i++)
   *   System.out.println("Non option argv element: " + argv[i] + "\n");
   * </pre>
   * <p>
@@ -842,8 +842,6 @@ exchange(String[] argv)
   * Check to see if an option is a valid long option.  Called by getopt().
   * Put in a separate method because this needs to be done twice.  (The
   * C getopt authors just copy-pasted the code!).
-  *
-  * @param longind A buffer in which to store the 'val' field of found LongOpt
   *
   * @return Various things depending on circumstances
   */

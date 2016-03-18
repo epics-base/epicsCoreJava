@@ -75,10 +75,10 @@ public class WildcharMatcher
 	 * [!]?(-{CHAR})?(({CHAR}-{CHAR})|({CHAR}))({CHAR}-)?\] Result of
 	 * optimized NDFA is Character classes: class 0: [0-'
 	 * ']['"'-',']['.'-'\']['^'-65535]  class 1: [']']  class 2: ['!']  class
-	 * 3: ['-']  Transition graph (for class goto state) State 0: 0 -> 1, 1 ->
-	 * 2, 2 -> 3, 3 -> 4 State 1: 0 -> 1, 1 -> 2, 3 -> 5 State [FINAL] State
-	 * 3: 0 -> 1, 1 -> 2, 3 -> 4 State 4: 0 -> 6 State 5: 0 -> 6, 1 -> 2 State
-	 * 6: 0 -> 1, 1 -> 2
+	 * 3: ['-']  Transition graph (for class goto state) State 0: 0 -&gt; 1, 1 -&gt;
+	 * 2, 2 -&gt; 3, 3 -&gt; 4 State 1: 0 -&gt; 1, 1 -&gt; 2, 3 -&gt; 5 State [FINAL] State
+	 * 3: 0 -&gt; 1, 1 -&gt; 2, 3 -&gt; 4 State 4: 0 -&gt; 6 State 5: 0 -&gt; 6, 1 -&gt; 2 State
+	 * 6: 0 -&gt; 1, 1 -&gt; 2
 	 *
 	 * @param pattern DOCUMENT ME!
 	 * @param offset DOCUMENT ME!
@@ -191,9 +191,9 @@ public class WildcharMatcher
 	 * the method accepts offset indices into both parameters.
 	 *
 	 * @param pattern Pattern used in parsing
-	 * @param ofp Offset into pattern string (ofp > 0)
+	 * @param ofp Offset into pattern string (ofp &gt; 0)
 	 * @param str String to test
-	 * @param ofs Offset into test string (ofs > 0);
+	 * @param ofs Offset into test string (ofs &gt; 0);
 	 *
 	 * @return boolean Do the strings match
 	 */

@@ -92,7 +92,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	protected final short priority;
 
 	/**
-	 * List of fixed addresses, if <code<null</code> name resolution will be used.
+	 * List of fixed addresses, if <code>null</code> name resolution will be used.
 	 */
 	protected final InetSocketAddress[] addresses;
 	
@@ -152,7 +152,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	 * Constructor.
 	 * @param context
 	 * @param name
-	 * @param listener
+	 * @param requester
 	 * @throws PVAException
 	 */
 	protected ChannelImpl(ClientContextImpl context, int channelID, String name,

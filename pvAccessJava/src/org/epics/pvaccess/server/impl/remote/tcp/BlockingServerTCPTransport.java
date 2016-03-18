@@ -87,7 +87,7 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport
 	
 	
 	/**
-	 * @see org.epics.pvaccess.impl.remote.tcp.TCPTransport#internalClose()
+	 * @see org.epics.pvaccess.impl.remote.tcp.BlockingTCPTransport#internalClose()
 	 */
 	@Override
 	protected void internalClose() {

@@ -112,7 +112,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	}
 	
 	/**
-	 * @see org.epics.pvaccess.impl.remote.tcp.TCPTransport#internalClose()
+	 * @see org.epics.pvaccess.impl.remote.tcp.NonBlockingTCPTransport#internalClose()
 	 */
 	@Override
 	protected void internalClose() {

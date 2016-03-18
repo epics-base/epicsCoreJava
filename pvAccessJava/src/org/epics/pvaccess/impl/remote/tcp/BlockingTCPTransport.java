@@ -119,7 +119,6 @@ public abstract class BlockingTCPTransport extends BlockingSocketAbstractCodec i
 	// TODO
 	/**
 	 * Called to any resources just before closing transport
-	 * @param forced	flag indicating if forced (e.g. forced disconnect) is required
 	 */
 	protected void internalClose()
 	{
