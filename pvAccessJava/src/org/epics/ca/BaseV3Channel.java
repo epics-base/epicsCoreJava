@@ -110,7 +110,8 @@ V3Channel,ConnectionListener
             	channelFindRequester.channelFindResult(
             		statusCreate.createStatus(StatusType.FATAL, "failed to create channel", e),
             		this, false);
-            channelRequester.channelCreated(channelNotConnectedStatus, null);
+            else
+            	channelRequester.channelCreated(channelNotConnectedStatus, null);
             jcaChannel = null;
         };
     }
@@ -407,7 +408,11 @@ V3Channel,ConnectionListener
      */
     @Override
     public boolean isConnected() {
-        return (jcaChannel.getConnectionState()==Channel.ConnectionState.CONNECTED ? true : false);
+    	Channel ch = jcaChannel;
+    	if (ch != null)
+    		return (ch.getConnectionState() == Channel.ConnectionState.CONNECTED);
+    	else
+    		return false;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Requester#getRequesterName()
