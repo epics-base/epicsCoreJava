@@ -23,6 +23,7 @@ import org.epics.pvaccess.client.impl.remote.handlers.ConnectionValidatedHandler
 import org.epics.pvaccess.client.impl.remote.handlers.ConnectionValidationHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.CreateChannelHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.DataResponseHandler;
+import org.epics.pvaccess.client.impl.remote.handlers.DestroyChannelHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.EchoResponse;
 import org.epics.pvaccess.client.impl.remote.handlers.MessageHandler;
 import org.epics.pvaccess.client.impl.remote.handlers.MultipleDataResponseHandler;
@@ -70,7 +71,7 @@ public class ClientResponseHandler implements ResponseHandler {
 				new AuthNZHandler(context.getDebugLevel() >= 3), /*  5 */
 				new NoopResponse(context, "Access rights change"), /*  6 - access rights change */
 				new CreateChannelHandler(context), /*  7 */
-				new NoopResponse(context, "Destroy channel"), /*  8 */ // TODO it might be useful to implement this...
+				new DestroyChannelHandler(context), /*  8 */
 				new ConnectionValidatedHandler(context), /*  9 */
 				dataResponse, /* 10 - get response */
 				dataResponse, /* 11 - put response */

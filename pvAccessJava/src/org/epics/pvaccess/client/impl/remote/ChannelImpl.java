@@ -264,6 +264,11 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			cancel();
 		}
 	}
+	
+	public void channelDestroyedOnServer()
+	{
+        disconnect(true, false);
+	}
 
 	/**
 	 * @param force force destruction regardless of reference count
