@@ -37,6 +37,7 @@ import org.epics.pvaccess.PVAVersion;
 import org.epics.pvaccess.Version;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderRegistry;
+import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
 import org.epics.pvaccess.impl.remote.ConnectionException;
 import org.epics.pvaccess.impl.remote.Context;
 import org.epics.pvaccess.impl.remote.ProtocolType;
@@ -354,7 +355,12 @@ public class ServerContextImpl implements ServerContext, Context {
 		channelProviderNames = config.getPropertyAsString("EPICS_PVAS_PROVIDER_NAMES", channelProviderNames);
 		
 	}
-
+	
+	public void setChannelProviderNames(String providerNames)
+	{
+		channelProviderNames = providerNames;
+	}
+	
 	/**
 	 * Check context state and tries to establish necessary state.
 	 * @throws PVAException
@@ -1032,5 +1038,51 @@ public class ServerContextImpl implements ServerContext, Context {
 		return serverResponseHandler;
 	}
 	
+	/**
+	 * Create <code>ServerContextImpl</code> instance and start server.
+	 * @param providerNames providers to use, <code>null<code> to use defaults or
+	 * 			<code>PVAConstants.PVA_ALL_PROVIDERS</code> to use all providers.
+	 * @param timeToRun time (in seconds) to run, <code>0</code> until {@link #destroy()} is called.
+	 * @param runInSeparateThread run in separate thread flag.
+	 * @param printInfoStream stream instance where to print context info, can be <code>null</code>
+	 * @return the server context instance.
+	 * @throws PVAException thrown on exception.
+	 */
+	public static ServerContextImpl startPVAServer(String providerNames, final int timeToRun,
+			boolean runInSeparateThread, PrintStream printInfoStream)
+			throws PVAException
+	{
+		final ServerContextImpl context = new ServerContextImpl();
+		if (providerNames != null)
+			context.setChannelProviderNames(providerNames);
+		
+		context.initialize(ChannelProviderRegistryFactory.getChannelProviderRegistry());
+
+		if (printInfoStream != null)
+		{
+			printInfoStream.println(context.getVersion().getVersionString());
+		    context.printInfo(printInfoStream);
+		}
+		
+		if (runInSeparateThread)
+		{
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						context.run(timeToRun);
+					} catch (Throwable th) {
+						Logger logger = Logger.getLogger(this.getClass().getName());
+						logger.log(Level.SEVERE, "Unhandled exception caught.", th);
+					}
+				}
+			}, "startPVAServer").start();
+		}
+		else
+			context.run(timeToRun);
+		
+		return context;
+	}
 
 }
