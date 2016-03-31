@@ -45,11 +45,6 @@ public class ChannelProviderRegistryFactory {
          */
         @Override
         public ChannelProvider getProvider(String providerName) {
-
-        	// TODO remove, backward compatibility
-        	if (providerName.equals("pvAccess"))
-        		providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
-        	
             synchronized(channelProviderMap) {
             	ChannelProviderFactory cpf = channelProviderMap.get(providerName);
             	if (cpf != null)
@@ -63,11 +58,6 @@ public class ChannelProviderRegistryFactory {
 		 */
 		@Override
 		public ChannelProvider createProvider(String providerName) {
-
-        	// TODO remove, backward compatibility
-        	if (providerName.equals("pvAccess"))
-        		providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
-        	
             synchronized(channelProviderMap) {
             	ChannelProviderFactory cpf = channelProviderMap.get(providerName);
             	if (cpf != null)
