@@ -280,7 +280,7 @@ public class ServerRPCService implements RPCService {
 		public PVStructure execute() throws RPCRequestException {
 		
 			ChannelListRequesterImpl listListener = new ChannelListRequesterImpl();
-			serverContext.getChannelProvider().channelList(listListener);
+			serverContext.getChannelProviders().get(0).channelList(listListener);
 			if (!listListener.waitForCompletion(TIMEOUT_SEC))
 				throw new RPCRequestException(StatusType.ERROR, "failed to fetch channel list due to timeout");
 			

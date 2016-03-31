@@ -20,7 +20,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -206,19 +209,20 @@ public class ServerContextImpl implements ServerContext, Context {
 	protected TransportRegistry transportRegistry = null;
 
 	/**
-	 * Channel access.
-	 */
-	protected ChannelProviderRegistry channelProviderRegistry;
-
-	/**
 	 * Channel provider name.
 	 */
-	protected String channelProviderName = PVAConstants.PVA_DEFAULT_PROVIDER;
+	protected String channelProviderNames = PVAConstants.PVA_DEFAULT_PROVIDER;
 	
 	/**
 	 * Channel provider.
 	 */
-	protected ChannelProvider channelProvider;
+	protected final ArrayList<ChannelProvider> channelProviders = new ArrayList<ChannelProvider>();
+
+	/**
+	 * Channel (name) to provider mapping.
+	 * Used when there are more that one provider used.
+	 */
+	protected final Map<String, ChannelProvider> channelNameToProvider = new HashMap<String, ChannelProvider>();
 	
 	/**
 	 * Response handler.
@@ -240,21 +244,11 @@ public class ServerContextImpl implements ServerContext, Context {
 	 */
 	public ServerContextImpl()
 	{
-		this(null);
-	}
-	
-	/**
-	 * Create server instance serving given channel provider only.
-	 * @param channelProvider channel provider to serve.
-	 */
-	public ServerContextImpl(ChannelProvider channelProvider)
-	{
 		generateGUID();
 		loadConfiguration();
 		initializeLogger();
 		initializeSecutiryPlugins();
 		
-		this.channelProvider = channelProvider;
 		this.serverResponseHandler = new ServerResponseHandler(this);
 	}
 
@@ -356,8 +350,8 @@ public class ServerContextImpl implements ServerContext, Context {
 		receiveBufferSize = config.getPropertyAsInteger("EPICS_PVA_MAX_ARRAY_BYTES", receiveBufferSize);
 		receiveBufferSize = config.getPropertyAsInteger("EPICS_PVAS_MAX_ARRAY_BYTES", receiveBufferSize);
 		
-		channelProviderName = config.getPropertyAsString("EPICS_PVA_PROVIDER_NAME", channelProviderName);
-		channelProviderName = config.getPropertyAsString("EPICS_PVAS_PROVIDER_NAME", channelProviderName);
+		channelProviderNames = config.getPropertyAsString("EPICS_PVA_PROVIDER_NAMES", channelProviderNames);
+		channelProviderNames = config.getPropertyAsString("EPICS_PVAS_PROVIDER_NAMES", channelProviderNames);
 		
 	}
 
@@ -371,24 +365,29 @@ public class ServerContextImpl implements ServerContext, Context {
 			throw new IllegalStateException("Context destroyed.");
 	}
 
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.server.ServerContext#initialize(org.epics.pvaccess.client.ChannelAccess)
-	 */
-	public synchronized void initialize(ChannelProviderRegistry channelAccess) throws PVAException, IllegalStateException
+	@Override
+	public synchronized void initialize(ChannelProviderRegistry providerRegistry) throws PVAException, IllegalStateException
 	{
-		if (channelAccess == null)
-			throw new IllegalArgumentException("non-null channelAccess expected");
+		if (providerRegistry == null)
+			throw new IllegalArgumentException("non-null providerRegistry expected");
 		
 		if (state == State.DESTROYED)
 			throw new IllegalStateException("Context destroyed.");
 		else if (state != State.NOT_INITIALIZED)
 			throw new IllegalStateException("Context already initialized.");
 
-		this.channelProviderRegistry = channelAccess;
-		
-		this.channelProvider = this.channelProviderRegistry.getProvider(channelProviderName);
-		if (this.channelProvider == null)
-			throw new RuntimeException("Channel provider with name '" + channelProviderName + "' not available.");
+		String[] names = channelProviderNames.split("\\s+");
+		for (String name : names)
+		{
+			ChannelProvider channelProvider = providerRegistry.getProvider(name);
+			if (channelProvider == null)
+				logger.warning("Channel provider with name '" + name + "' not available.");
+			else
+				channelProviders.add(channelProvider);
+		}
+
+		if (channelProviders.isEmpty())
+			throw new RuntimeException("None of the specified channel providers are available: " + channelProviderNames + ".");
 		
 		internalInitialize();
 		
@@ -408,8 +407,8 @@ public class ServerContextImpl implements ServerContext, Context {
 		else if (state != State.NOT_INITIALIZED)
 			throw new IllegalStateException("Context already initialized.");
 
-		this.channelProviderRegistry = null;
-		this.channelProvider = channelProvider;
+		channelProviders.add(channelProvider);
+		channelProviderNames = channelProvider.getProviderName();
 		
 		internalInitialize();
 		
@@ -760,12 +759,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	public void printInfo(PrintStream out) {
 	    out.println("CLASS   : "+getClass().getName());
 	    out.println("VERSION : "+getVersion());
-		//out.println("CHANNEL ACCESS : " + (channelAccess != null ? channelAccess.getClass().getName() : null));
-		//out.println("CHANNEL PROVIDERS : " + (channelAccess != null ? Arrays.toString(channelAccess.getProviderNames()) : "[]"));
-		if (channelProvider != null)
-		    out.println("CHANNEL PROVIDER : " + channelProvider.getProviderName());
-		else
-			out.println("CHANNEL PROVIDER : " + channelProviderName);
+	    out.println("PROVIDER_NAMES : " + channelProviderNames);
 		out.println("BEACON_ADDR_LIST : " + beaconAddressList);
 		out.println("AUTO_BEACON_ADDR_LIST : " + autoBeaconAddressList);
 		out.println("BEACON_PERIOD : " + beaconPeriod);
@@ -993,27 +987,27 @@ public class ServerContextImpl implements ServerContext, Context {
     }*/
 
 	/**
-	 * Get channel provider registry implementation.
-	 * @return channel provider registry implementation.
-	 */
-	public ChannelProviderRegistry getChannelChannelProviderRegistry() {
-		return channelProviderRegistry;
-	}
-	
-	/**
 	 * Get channel provider name.
 	 * @return channel provider name.
 	 */
-	public String getChannelProviderName() {
-		return channelProviderName;
+	public String getChannelProviderNames() {
+		return channelProviderNames;
 	}
 
 	/**
-	 * Get channel provider.
+	 * Get channel providers.
 	 * @return channel provider.
 	 */
-	public ChannelProvider getChannelProvider() {
-		return channelProvider;
+	public List<ChannelProvider> getChannelProviders() {
+		return channelProviders;
+	}
+
+	/**
+	 * Retrun channel (name) to provider mapping.
+	 * @return the map.
+	 */
+	public Map<String, ChannelProvider> getChannelNameToProviderMap() {
+		return channelNameToProvider;
 	}
 
 	/**

@@ -38,13 +38,13 @@ public interface ServerContext {
 	/**
 	 * Set <code>ChannelAccess</code> implementation and initialize server.
 	 * Served <code>ChannelProvider</code>(s) is read from configuration.
-	 * @param channelAccess implementation of channel access to be served.
+	 * @param providerRegistry channel provider registry to use.
 	 */
-	public void initialize(ChannelProviderRegistry channelAccess) throws PVAException, IllegalStateException;
+	public void initialize(ChannelProviderRegistry providerRegistry) throws PVAException, IllegalStateException;
  
 	/**
 	 * Set <code>ChannelProvider</code> implementation and initialize server.
-	 * @param channelProvider implementation of channel access to be served.
+	 * @param channelProvider provider to be served.
 	 */
 	public void initialize(ChannelProvider channelProvider) throws PVAException, IllegalStateException;
 

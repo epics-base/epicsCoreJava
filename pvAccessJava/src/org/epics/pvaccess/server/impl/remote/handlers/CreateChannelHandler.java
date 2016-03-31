@@ -17,6 +17,7 @@ package org.epics.pvaccess.server.impl.remote.handlers;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.epics.pvaccess.PVAConstants;
@@ -120,8 +121,23 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		}
 		else
 		{
-			final ChannelProvider provider = context.getChannelProvider();
-			provider.createChannel(channelName, cr, transport.getPriority());
+			final List<ChannelProvider> providers = context.getChannelProviders();
+			if (providers.size() == 1)
+				providers.get(0).createChannel(channelName, cr, transport.getPriority());
+			else
+			{
+				ChannelProvider provider = context.getChannelNameToProviderMap().get(channelName);
+				if (provider != null)
+					provider.createChannel(channelName, cr, transport.getPriority());
+				else
+				{
+					// TODO try to find the appropriate provider
+					Status asStatus = StatusFactory.getStatusCreate().
+							createStatus(StatusType.ERROR, "Multiple providers installed, but there is no channel to provider mapping available (not implemented).", null);
+					cr.channelCreated(asStatus, null);
+					return;
+				}
+			}
 		}
 	}
 

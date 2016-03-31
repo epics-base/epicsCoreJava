@@ -19,8 +19,10 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.epics.pvaccess.client.ChannelFind;
 import org.epics.pvaccess.client.ChannelFindRequester;
@@ -48,7 +50,7 @@ import org.epics.pvdata.pv.Status;
 public class SearchHandler extends AbstractServerResponseHandler {
 
 	private final ChannelFindRequesterImplObjectPool objectPool = new ChannelFindRequesterImplObjectPool();
-
+	
 	private final Random random = new Random();
 	private static final int MAX_SERVER_SEARCH_RESPONSE_DELAY_MS = 100;
 	
@@ -147,8 +149,6 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		
 		// TODO bloom filter or similar server selection (by GUID)
 		
-		ChannelProvider provider = context.getChannelProvider();
-
 		if (count > 0)
 		{
 			for (int i = 0; i < count; i++) {
@@ -158,7 +158,12 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				// no name check here...
 	
 				if (allowed) 
-					provider.channelFind(name, objectPool.get().set(searchSequenceId, cid, responseFrom, responseRequired));
+				{
+					List<ChannelProvider> providers = context.getChannelProviders();
+					ChannelFindRequesterImpl cfri = objectPool.get().set(context.getLogger(), searchSequenceId, name, cid, responseFrom, responseRequired, providers.size());
+					for (ChannelProvider provider : providers)
+						provider.channelFind(name, cfri);
+				}
 			}
 		}
 		else
@@ -177,7 +182,7 @@ public class SearchHandler extends AbstractServerResponseHandler {
 					
 					@Override
 					public void callback() {
-						objectPool.get().set(searchSequenceId, rf).channelFindResult(StatusFactory.getStatusCreate().getStatusOK(), null, false);
+						objectPool.get().set(context.getLogger(), searchSequenceId, rf).channelFindResult(StatusFactory.getStatusCreate().getStatusOK(), null, false);
 					}
 				});
 				// delay response to avoid "UDP search storms"
@@ -188,13 +193,19 @@ public class SearchHandler extends AbstractServerResponseHandler {
 
 	private class ChannelFindRequesterImpl implements ChannelFindRequester, TransportSender {
 		
+		private Logger logger;
+		
 		private boolean serverSearch;
 		private int searchSequenceId;
+		private String channelName;
 		private int cid;
 		private InetSocketAddress sendTo;
 		private boolean responseRequired;
 		
 		private boolean wasFound;
+		
+		private int expectedResponseCount;
+		private int responseCount;
 		
 		public ChannelFindRequesterImpl() {
 			// noop
@@ -203,30 +214,40 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		public void clear()
 		{
 			synchronized (this) {
+				logger = null;
+				channelName = null;
 				sendTo = null;
+				responseCount = 0;
+				wasFound = false;
 			}
 		}
 		
-		public ChannelFindRequesterImpl set(int searchSequenceId, int cid, InetSocketAddress sendTo, boolean responseRequired)
+		public ChannelFindRequesterImpl set(Logger logger, int searchSequenceId, String channelName, int cid, InetSocketAddress sendTo, boolean responseRequired, int expectedResponseCount)
 		{
 			synchronized (this) {
 				this.serverSearch = false;
 				this.searchSequenceId = searchSequenceId;
+				this.channelName = channelName;
 				this.cid = cid;
 				this.sendTo = sendTo;
 				this.responseRequired = responseRequired;
+				this.expectedResponseCount = expectedResponseCount;
 			}
 			return this;
 		}
 		
-		public ChannelFindRequesterImpl set(int searchSequenceId, InetSocketAddress sendTo)
+		// server search
+		public ChannelFindRequesterImpl set(Logger logger, int searchSequenceId, InetSocketAddress sendTo)
 		{
 			synchronized (this) {
+				this.logger = logger;
 				this.serverSearch = true;
 				this.searchSequenceId = searchSequenceId;
+				this.channelName = null;
 				this.cid = 0;
 				this.sendTo = sendTo;
 				this.responseRequired = true;
+				this.expectedResponseCount = 1;
 			}
 			return this;
 		}
@@ -236,8 +257,26 @@ public class SearchHandler extends AbstractServerResponseHandler {
 			// TODO status
 			synchronized (this)
 			{
-				if (wasFound || responseRequired)
+				responseCount++;
+				if (responseCount > expectedResponseCount)
 				{
+					if ((responseCount+1) == expectedResponseCount)
+						logger.fine("More responses received than expected for channel '" + channelName + "'!");
+					return;
+				}
+				
+				if (this.wasFound && wasFound)
+				{
+			        logger.fine("Channel '" + channelName + "' is hosted by different channel providers!");
+			        return;
+			    }
+				
+			    if (wasFound || (responseRequired && (responseCount == expectedResponseCount)))
+			    {
+			    	// register mapping
+			        if (wasFound && expectedResponseCount > 1)
+			            context.getChannelNameToProviderMap().put(channelName, channelFind.getChannelProvider());
+
 					this.wasFound = wasFound;
 					context.getBroadcastTransport().enqueueSendRequest(this);
 				}
