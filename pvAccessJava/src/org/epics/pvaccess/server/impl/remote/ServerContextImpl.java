@@ -376,16 +376,30 @@ public class ServerContextImpl implements ServerContext, Context {
 		else if (state != State.NOT_INITIALIZED)
 			throw new IllegalStateException("Context already initialized.");
 
-		String[] names = channelProviderNames.split("\\s+");
-		for (String name : names)
+		if (channelProviderNames.equals(PVAConstants.PVA_ALL_PROVIDERS))
 		{
-			ChannelProvider channelProvider = providerRegistry.getProvider(name);
-			if (channelProvider == null)
-				logger.warning("Channel provider with name '" + name + "' not available.");
-			else
-				channelProviders.add(channelProvider);
+			StringBuffer names = new StringBuffer(64);
+			for (String name : providerRegistry.getProviderNames())
+			{
+				channelProviders.add(providerRegistry.getProvider(name));
+				if (names.length() > 0) names.append(' ');
+				names.append(name);
+			}
+			channelProviderNames = names.toString();
 		}
-
+		else
+		{
+			String[] names = channelProviderNames.split("\\s+");
+			for (String name : names)
+			{
+				ChannelProvider channelProvider = providerRegistry.getProvider(name);
+				if (channelProvider == null)
+					logger.warning("Channel provider with name '" + name + "' not available.");
+				else
+					channelProviders.add(channelProvider);
+			}
+		}
+		
 		if (channelProviders.isEmpty())
 			throw new RuntimeException("None of the specified channel providers are available: " + channelProviderNames + ".");
 		
