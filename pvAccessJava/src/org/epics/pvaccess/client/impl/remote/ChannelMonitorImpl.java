@@ -418,6 +418,12 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		@Override
 		public void release(MonitorElement monitorElement)
 		{
+	        // fast sanity check check if monitorElement->pvStructurePtr->getStructure() matches
+	        // not to accept wrong structure (might happen on monitor reconnect with different type)
+	        // silent return
+			if (monitorElement.getPVStructure().getStructure() != lastStructure)
+				return;
+			
 	        synchronized(monitorSync) {
 	            monitorQueue.releaseUsed(monitorElement);
 	            needToReleaseFirst = false;
