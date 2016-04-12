@@ -1258,7 +1258,11 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     	StatusFactory.getStatusCreate()
     		.createStatus(StatusType.ERROR, "channelList not supported", null);
 
+    private static final Status findNotSupported = 
+        	StatusFactory.getStatusCreate()
+        		.createStatus(StatusType.ERROR, "channelFind not supported", null);
 
+    
     private class ChannelProviderImpl implements ChannelProvider
 	{
     	private class ChannelFindImpl implements ChannelFind, SearchInstance
@@ -1268,7 +1272,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     		final int channelID;
     		final AtomicInteger userValue = new AtomicInteger();
 
-    		public ChannelFindImpl(String channelName, ChannelFindRequester requester) {
+    		@SuppressWarnings("unused")
+			public ChannelFindImpl(String channelName, ChannelFindRequester requester) {
 				this.channelName = channelName;
 				this.requester = requester;
 				
@@ -1335,7 +1340,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		@Override
 		public ChannelFind channelFind(String channelName,
 				ChannelFindRequester channelFindRequester) {
-
+/*
 			checkChannelName(channelName);
 
 			if (channelFindRequester == null)
@@ -1350,6 +1355,12 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 					return null;
 				}
 			}
+*/
+			// code above is commented-out to avoid server->client->server looks when
+			// this provider is used by server provider serving it
+			channelFindRequester.channelFindResult(findNotSupported, null, false);
+			return null;
+			
 		}
 	
         @Override

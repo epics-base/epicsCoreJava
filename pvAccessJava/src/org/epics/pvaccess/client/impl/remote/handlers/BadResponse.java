@@ -17,6 +17,7 @@ package org.epics.pvaccess.client.impl.remote.handlers;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
+import org.epics.pvaccess.PVAConstants;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.Transport;
 import org.epics.pvaccess.util.HexDump;
@@ -50,7 +51,10 @@ public class BadResponse extends AbstractClientResponseHandler {
 
 		// TODO remove debug output
 		if (payloadBuffer.hasArray())
-			HexDump.hexDump(description, payloadBuffer.array());
+		{
+			int start = Math.max(0, payloadBuffer.position() - PVAConstants.PVA_MESSAGE_HEADER_SIZE);
+			HexDump.hexDump(description, payloadBuffer.array(), start, payloadBuffer.limit());
+		}
 	}
 
 }
