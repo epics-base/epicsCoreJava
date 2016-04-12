@@ -1265,14 +1265,14 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
     
     private class ChannelProviderImpl implements ChannelProvider
 	{
-    	private class ChannelFindImpl implements ChannelFind, SearchInstance
+    	@SuppressWarnings("unused")
+		private class ChannelFindImpl implements ChannelFind, SearchInstance
     	{
     		final String channelName;
     		final ChannelFindRequester requester;
     		final int channelID;
     		final AtomicInteger userValue = new AtomicInteger();
 
-    		@SuppressWarnings("unused")
 			public ChannelFindImpl(String channelName, ChannelFindRequester requester) {
 				this.channelName = channelName;
 				this.requester = requester;
@@ -1340,12 +1340,12 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		@Override
 		public ChannelFind channelFind(String channelName,
 				ChannelFindRequester channelFindRequester) {
-/*
+
 			checkChannelName(channelName);
 
 			if (channelFindRequester == null)
 				throw new IllegalArgumentException("null requester");
-			
+/*			
 			synchronized (this) {
 				try {
 					checkState();

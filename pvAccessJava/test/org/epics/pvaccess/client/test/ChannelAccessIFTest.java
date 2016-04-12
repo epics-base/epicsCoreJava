@@ -311,7 +311,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		//
 		try
 		{
-			provider.channelFind("someName", null);
+			ChannelFind cf = provider.channelFind("someName", null);
+			if (cf == null)
+				return;	// not supported/implemented (e.g. client provider)
 			fail("null ChannelFindRequester accepted");
 		} catch (AssertionFailedError afe) {
 			throw afe;
@@ -347,7 +349,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		cfrti = new ChannelFindRequesterTestImpl();
 		synchronized (cfrti) {
 			channelFind = provider.channelFind("counter", cfrti);
-			assertNotNull(channelFind);
+			if (channelFind == null)
+				return;	// not supported/implemented (e.g. client provider)
+			//assertNotNull(channelFind);
 			
 			if (cfrti.findCount == 0)
 				cfrti.wait(getTimeoutMs());
