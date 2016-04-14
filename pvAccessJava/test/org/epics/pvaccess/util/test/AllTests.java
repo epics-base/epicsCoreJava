@@ -32,6 +32,7 @@ public class AllTests {
         suite.addTestSuite(HexDumpTest.class);
         suite.addTestSuite(CircularBufferTest.class);
         suite.addTestSuite(GrowingCircularBufferTest.class);
+        suite.addTestSuite(WildcardMatcherTest.class);
         //$JUnit-END$
         return suite;
     }

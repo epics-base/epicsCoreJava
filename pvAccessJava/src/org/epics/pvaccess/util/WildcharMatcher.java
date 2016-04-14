@@ -366,46 +366,6 @@ public class WildcharMatcher
 		return parse(pattern, 0, str, 0);
 	}
 
-	/**
-	 * TODO translate to JUnit
-	 * Run test.
-	 *
-	 * @param args command line parameters
-	 */
-	public static void main(String[] args)
-	{
-		System.out.println("[-az-]* == 01 abAZ : true = "
-		    + WildcharMatcher.match("[-aa-]*", "01 abAZ"));
-		System.out.println("[\\!a\\-bc]* == !!!b-bb- : true = "
-		    + WildcharMatcher.match("[\\!a\\-bc]*", "!!!b-bb-"));
-
-		System.out.println("*zz == zz : true = "
-		    + WildcharMatcher.match("*zz", "zz"));
-		System.out.println("[abc]*zz == zz : true = "
-		    + WildcharMatcher.match("[abc]*zz", "zz"));
-
-		System.out.println("[!abc]*a[def] == xyzbd : false = "
-		    + WildcharMatcher.match("[!abc]*a[def]", "xyzbd"));
-		System.out.println("[!abc]*a[def] == xyzad : true = "
-		    + WildcharMatcher.match("[!abc]*a[def]", "xyzad"));
-		System.out.println("[a-g]l*i?n == florian : true = "
-		    + WildcharMatcher.match("[a-g]l*i?n", "florian"));
-		System.out.println("[!abc]*e == smile : true = "
-		    + WildcharMatcher.match("[!abc]*e", "smile"));
-		System.out.println("[-z] == a : true = "
-		    + WildcharMatcher.match("[-z]", "a"));
-		System.out.println("[] == '' : false = "
-		    + WildcharMatcher.match("[]", ""));
-		System.out.println("[a-z]* == java : true = "
-		    + WildcharMatcher.match("[a-z]*", "java"));
-		System.out.println("*.* == command.com : true = "
-		    + WildcharMatcher.match("*.*", "command.com"));
-		System.out.println("*.* == /var/etc : false = "
-		    + WildcharMatcher.match("*.*", "/var/etc"));
-		System.out.println("**?*x*[abh-]*Q == XYZxabbauuZQ : true = "
-		    + WildcharMatcher.match("**?*x*[abh-]*Q", "XYZxabbauuZQ"));
-	}
-	
 }
 
 /* __oOo__ */
