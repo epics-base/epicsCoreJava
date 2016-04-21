@@ -85,7 +85,7 @@ public class ClientResponseHandler implements ResponseHandler {
 				new MultipleDataResponseHandler(context), /* 19 - grouped monitors */
 				dataResponse, /* 20 - RPC response */
 				badResponse, /* 21 - cancel request */
-				badResponse, /* 22 */
+				new NoopResponse(context, "Origin tag"), /* 22 - origin tag (unsupported) */
 				badResponse, /* 23 */
 				badResponse, /* 24 */
 				badResponse, /* 25 */

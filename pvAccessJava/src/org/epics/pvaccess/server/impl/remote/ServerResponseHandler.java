@@ -88,7 +88,7 @@ public final class ServerResponseHandler implements ResponseHandler {
 				badResponse, /* 19 */
 				new RPCHandler(context), /* 20 */
 				new CancelRequestHandler(context), /* 21 */
-				badResponse, /* 22 */
+				new NoopResponse(context, "Origin tag"), /* 22 - origin tag (unsupported) */
 				badResponse, /* 23 */
 				badResponse, /* 24 */
 				badResponse, /* 25 */
