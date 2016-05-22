@@ -1040,7 +1040,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	
 	/**
 	 * Create <code>ServerContextImpl</code> instance and start server.
-	 * @param providerNames providers to use, <code>null<code> to use defaults or
+	 * @param providerNames providers to use, <code>null</code> to use defaults or
 	 * 			<code>PVAConstants.PVA_ALL_PROVIDERS</code> to use all providers.
 	 * @param timeToRun time (in seconds) to run, <code>0</code> until {@link #destroy()} is called.
 	 * @param runInSeparateThread run in separate thread flag.
