@@ -13,7 +13,7 @@ import org.epics.pvdata.pv.PVStructure;
 public class RPCClientFactory {
 	/**
 	 * Create a RPCClient and connect to the service.
-	 * @param serviceName The service name. This is the name of a PVRecord with associated support that implements the service.
+	 * @param serviceName The service name. This is the name of the channel that connects to the service.
 	 * @return The RPCClient interface.
 	 */
 	public static RPCClient create(String serviceName) {
@@ -22,7 +22,7 @@ public class RPCClientFactory {
 
 	/**
 	 * Create a RPCClient and connect to the service.
-	 * @param serviceName The service name. This is the name of a PVRecord with associated support that implements the service.
+	 * @param serviceName The service name. This is the name of the channel that connects to the service.
 	 * @param requester The RPCClientRequester interface implemented by the requester.
 	 * @return The RPCClient interface.
 	 */
@@ -32,7 +32,7 @@ public class RPCClientFactory {
 
 	/**
 	 * Create a RPCClient and connect to the service.
-	 * @param serviceName The service name. This is the name of a PVRecord with associated support that implements the service.
+	 * @param serviceName The service name. This is the name of the channel that connects to the service.
 	 * @param pvRequest  The structure sent in the request to create the Channel RPC.
 	 * @return The RPCClient interface.
 	 */
@@ -42,7 +42,7 @@ public class RPCClientFactory {
 
 	/**
 	 * Create a RPCClient and connect to the service.
-	 * @param serviceName The service name. This is the name of a PVRecord with associated support that implements the service.
+	 * @param serviceName The service name. This is the name of the channel that connects to the service.
 	 * @param pvRequest  The structure sent in the request to create the Channel RPC.
 	 * @param requester The RPCClientRequester interface implemented by the requester.
 	 * @return The RPCClient interface.
