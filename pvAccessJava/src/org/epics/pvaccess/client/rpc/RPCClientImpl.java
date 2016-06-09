@@ -22,6 +22,7 @@ import org.epics.pvdata.pv.MessageType;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
+import org.epics.pvdata.copy.CreateRequest;
 
 /**
  * @author msekoranja
@@ -30,6 +31,7 @@ import org.epics.pvdata.pv.Status.StatusType;
 public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCRequester {
 
     private static final Logger logger = Logger.getLogger(RPCClientImpl.class.getName());
+    private static final PVStructure defaultPVRequest = CreateRequest.create().createRequest("");
 
     private final RPCClientRequester serviceRequester;
 	private final Channel channel;
@@ -38,18 +40,28 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 	private final AtomicBoolean requestPending = new AtomicBoolean(false);
 
 	private volatile ChannelRPC channelRPC = null;
+	private final PVStructure pvRequest;
 	
 	private final Object resultMonitor = new Object();
 	private Status status = null;
 	private PVStructure result = null;
 
     public RPCClientImpl(String serviceName) {
-		this(serviceName, null);
+		this(serviceName, defaultPVRequest, null);
 	}
 
+	public RPCClientImpl(String serviceName, PVStructure pvRequest) {
+		this(serviceName, pvRequest, null);
+    }
+
 	public RPCClientImpl(String serviceName, RPCClientRequester requester) {
+		this(serviceName, defaultPVRequest, requester);
+    }
+
+	public RPCClientImpl(String serviceName, PVStructure pvRequest, RPCClientRequester requester) {
 		
 		this.serviceRequester = requester;
+		this.pvRequest = pvRequest;
 
 		org.epics.pvaccess.ClientFactory.start();
         
@@ -58,7 +70,7 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
         		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
  
         this.channel = channelProvider.createChannel(serviceName, this, ChannelProvider.PRIORITY_DEFAULT);
-		channel.createChannelRPC(this, null);
+		channel.createChannelRPC(this, pvRequest);
 	}
 
 	/* (non-Javadoc)
