@@ -33,6 +33,7 @@ public class ExampleChannelPutDoubleValue {
     /**
      * main.
      * @param  args is a sequence of flags and filenames.
+     * @throws PVAException PVA exception. 
      */
     public static void main(String[] args) throws PVAException {
         org.epics.pvaccess.ClientFactory.start();

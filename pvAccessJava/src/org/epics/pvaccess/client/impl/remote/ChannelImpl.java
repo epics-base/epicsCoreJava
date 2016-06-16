@@ -148,13 +148,6 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 
 	/* ****************** */
 
-	/**
-	 * Constructor.
-	 * @param context
-	 * @param name
-	 * @param requester
-	 * @throws PVAException
-	 */
 	protected ChannelImpl(ClientContextImpl context, int channelID, String name,
 			ChannelRequester requester, short priority, InetSocketAddress[] addresses) throws PVAException
 	{
@@ -175,7 +168,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	/**
 	 * Create a channel, i.e. submit create channel request to the server.
 	 * This method is called after search is complete.
-	 * @param transport
+	 * @param transport on what transport to create channel.
 	 */
 	public synchronized void createChannel(Transport transport) 
 	{
@@ -236,8 +229,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	/**
 	 * Called when channel created succeeded on the server.
 	 * <code>sid</code> might not be valid, this depends on protocol revision.
-	 * @param sid
-	 * @throws IllegalStateException
+	 * @param sid server-side channel ID.
+	 * @throws IllegalStateException when called in wrong state.
 	 */
 	public synchronized void connectionCompleted(int sid/*,  rights*/) 
 		throws IllegalStateException
@@ -272,8 +265,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 
 	/**
 	 * @param force force destruction regardless of reference count
-	 * @throws PVAException
-	 * @throws IllegalStateException
+	 * @throws PVAException thrown on unexpected exception.
+	 * @throws IllegalStateException thrown if channel is already destroyed.
 	 */
 	public synchronized void destroy(boolean force) throws PVAException, IllegalStateException {
 		
@@ -295,9 +288,9 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	/**
 	 * Actual destroy method, to be called <code>CAJContext</code>.
 	 * @param force force destruction regardless of reference count
-	 * @throws PVAException
-	 * @throws IllegalStateException
-	 * @throws IOException
+	 * @throws PVAException thrown on unexpected exception.
+	 * @throws IllegalStateException thrown when channel is destroyed.
+	 * @throws IOException thrown if IO exception occurs.
 	 */
 	public synchronized void destroyChannel(boolean force) throws PVAException, IllegalStateException, IOException {
 
@@ -385,6 +378,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	
 	/**
 	 * Initiate search (connect) procedure.
+	 * @param penalize register with penalty.
 	 */
 	public synchronized void initiateSearch(boolean penalize)
 	{
@@ -565,6 +559,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 
 	/**
 	 * Get context.
+	 * @return context.
 	 */
 	public ClientContextImpl getContext() {
 		return context;
@@ -582,6 +577,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 
 	/**
 	 * Checks if channel is in connected state and returns transport.
+	 * @return used transport.
 	 * @throws IllegalStateException if not connected.
 	 */
 	public synchronized final Transport checkAndGetTransport()
@@ -595,6 +591,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 
 	/**
 	 * Checks if channel is destroyed and returns transport, <code>null</code> not connected.
+	 * @return used transport.
 	 * @throws IllegalStateException if not connected
 	 */
 	public synchronized final Transport checkDestroyedAndGetTransport()

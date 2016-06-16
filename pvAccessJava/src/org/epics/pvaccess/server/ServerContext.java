@@ -18,8 +18,8 @@ import java.io.PrintStream;
 
 import org.epics.pvaccess.PVAException;
 import org.epics.pvaccess.Version;
-import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.client.ChannelProvider;
+import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.server.plugins.BeaconServerStatusProvider;
 
 /**
@@ -39,12 +39,16 @@ public interface ServerContext {
 	 * Set <code>ChannelAccess</code> implementation and initialize server.
 	 * Served <code>ChannelProvider</code>(s) is read from configuration.
 	 * @param providerRegistry channel provider registry to use.
+	 * @throws PVAException any other PVA exception.
+	 * @throws IllegalStateException thrown in instance is in illegal state (e.g. destroyed).
 	 */
 	public void initialize(ChannelProviderRegistry providerRegistry) throws PVAException, IllegalStateException;
  
 	/**
 	 * Set <code>ChannelProvider</code> implementation and initialize server.
 	 * @param channelProvider provider to be served.
+	 * @throws PVAException any other PVA exception.
+	 * @throws IllegalStateException thrown in instance is in illegal state (e.g. destroyed).
 	 */
 	public void initialize(ChannelProvider channelProvider) throws PVAException, IllegalStateException;
 
@@ -53,19 +57,21 @@ public interface ServerContext {
 	 * @param	seconds	time in seconds the server will process events (method will block), if <code>0</code>
 	 * 				the method would block until <code>destroy()</code> is called.
 	 * @throws IllegalStateException	if server is already destroyed.
-	 * @throws PVAException
+	 * @throws PVAException any other PVA exception.
 	 */
 	public void run(int seconds) throws PVAException, IllegalStateException;
   
 	/**
 	 * Shutdown (stop executing run() method) of this context.
 	 * After shutdown Context cannot be rerun again, destroy() has to be called to clear all used resources.
+	 * @throws PVAException any other PVA exception.
 	 * @throws IllegalStateException if the context has been destroyed.
 	 */
 	public void shutdown() throws PVAException, IllegalStateException;
 
 	/**
 	 * Clear all resources attached to this context.
+	 * @throws PVAException any other PVA exception.
 	 * @throws IllegalStateException if the context has been destroyed.
 	 */
 	public void destroy() throws PVAException, IllegalStateException;
@@ -77,6 +83,7 @@ public interface ServerContext {
 
 	/**
 	 * Prints detailed information about the context to the specified output stream.
+	 * @param out output stream.
 	 */
 	public void printInfo(PrintStream out);
 

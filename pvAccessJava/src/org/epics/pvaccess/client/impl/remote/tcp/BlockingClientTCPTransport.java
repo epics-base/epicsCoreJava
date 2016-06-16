@@ -87,6 +87,7 @@ public class BlockingClientTCPTransport extends BlockingTCPTransport
 	 * @param remoteTransportRevision remote transport revision.
 	 * @param heartbeatInterval heartbeat interval in seconds.
 	 * @param priority transport priority.
+	 * @throws SocketException thrown on any socket exception. 
 	 */
 	public BlockingClientTCPTransport(Context context, SocketChannel channel,
 					ResponseHandler responseHandler, int receiveBufferSize, 

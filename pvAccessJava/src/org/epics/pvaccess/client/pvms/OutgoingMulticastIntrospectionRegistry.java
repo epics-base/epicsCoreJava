@@ -58,7 +58,7 @@ public final class OutgoingMulticastIntrospectionRegistry {
 	/**
 	 * Register introspection interface and get it's ID.
 	 * If it is already registered only preassigned ID is returned.
-	 * @param field
+	 * @param field field to register.
 	 * @return id of given <code>Field</code>
 	 */
 	public short registerIntrospectionInterface(Field field)

@@ -24,6 +24,7 @@ public class SerializationHelper {
 	/**
 	 * Deserialize PVRequest.
 	 * @param payloadBuffer data buffer.
+	 * @param control deserialization control.
 	 * @return deserialized PVRequest, can be <code>null</code>.
 	 */
 	public static final PVStructure deserializePVRequest(ByteBuffer payloadBuffer, DeserializableControl control) {
@@ -63,6 +64,7 @@ public class SerializationHelper {
 	/**
 	 * Deserialize optional PVStructrue.
 	 * @param payloadBuffer data buffer.
+	 * @param control deserialization control.
 	 * @return deserialized PVStructure, can be <code>null</code>.
 	 */
 	public static final PVStructure deserializeStructureFull(ByteBuffer payloadBuffer, DeserializableControl control) {
@@ -72,6 +74,7 @@ public class SerializationHelper {
 	/**
 	 * Deserialize optional PVField.
 	 * @param payloadBuffer data buffer.
+	 * @param control deserialization control.
 	 * @return deserialized PVField, can be <code>null</code>.
 	 */
 	public static final PVField deserializeFull(ByteBuffer payloadBuffer, DeserializableControl control) {
@@ -94,6 +97,8 @@ public class SerializationHelper {
 	/**
 	 * Serialize PVRequest.
 	 * @param buffer data buffer.
+	 * @param control serialization control.
+	 * @param pvRequest pvRequest to serialize.
 	 */
 	public static final void serializePVRequest(ByteBuffer buffer, SerializableControl control, PVStructure pvRequest) {
 		// for now ordinary structure, later can be changed
@@ -103,6 +108,8 @@ public class SerializationHelper {
 	/**
 	 * Serialize optional PVStructrue.
 	 * @param buffer data buffer.
+	 * @param control serialization control.
+	 * @param pvStructure PVStructure to fully serialize.
 	 */
 	public static final void serializeStructureFull(ByteBuffer buffer, SerializableControl control, PVStructure pvStructure) {
 		serializeFull(buffer, control, pvStructure);
@@ -111,6 +118,8 @@ public class SerializationHelper {
 	/**
 	 * Serialize optional PVField.
 	 * @param buffer data buffer.
+	 * @param control serialization control.
+	 * @param pvField PVField to fully serialize.
 	 */
 	public static final void serializeFull(ByteBuffer buffer, SerializableControl control, PVField pvField) {
 	

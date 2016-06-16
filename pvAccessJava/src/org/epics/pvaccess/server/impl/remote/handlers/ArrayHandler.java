@@ -48,9 +48,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 					StatusType.ERROR, 
 					"fixed sized array returned as a ChannelArray array instance", 
 					null);
-	/**
-	 * @param context
-	 */
+
 	public ArrayHandler(ServerContextImpl context) {
 		super(context, "Array request");
 	}

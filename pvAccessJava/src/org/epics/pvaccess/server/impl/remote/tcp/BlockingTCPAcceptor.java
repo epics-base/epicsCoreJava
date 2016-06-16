@@ -62,12 +62,7 @@ public class BlockingTCPAcceptor {
 	private AtomicBoolean destroyed = new AtomicBoolean(false);
 
 	//private final PollerImpl poller;
-	/**
-	 * @param context
-	 * @param port
-	 * @param receiveBufferSize
-	 * @throws PVAException
-	 */
+
 	public BlockingTCPAcceptor(Context context, int port, int receiveBufferSize) throws PVAException {
 		this.context = context;
 		this.receiveBufferSize = receiveBufferSize;

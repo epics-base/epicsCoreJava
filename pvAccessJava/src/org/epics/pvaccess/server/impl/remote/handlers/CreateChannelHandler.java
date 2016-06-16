@@ -50,9 +50,6 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 
 	private static final String SERVER_CHANNEL_NAME = "server";
 
-	/**
-	 * @param context
-	 */
 	public CreateChannelHandler(ServerContextImpl context) {
 		super(context, "Create channel request");
 	}
@@ -168,11 +165,6 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		private Status status;
 		private Channel channel;
 		
-		/**
-		 * @param transport
-		 * @param channelName
-		 * @param cid
-		 */
 		public ChannelRequesterImpl(Transport transport, String channelName, int cid, ChannelSecuritySession css) {
 			this.transport = transport;
 			this.channelName = channelName;

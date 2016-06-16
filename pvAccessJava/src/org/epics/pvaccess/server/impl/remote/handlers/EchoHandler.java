@@ -30,9 +30,6 @@ import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
  */
 public class EchoHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public EchoHandler(ServerContextImpl context) {
 		super(context, "Echo request");
 	}

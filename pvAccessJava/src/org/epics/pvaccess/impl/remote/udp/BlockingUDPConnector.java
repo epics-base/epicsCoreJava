@@ -54,9 +54,6 @@ public class BlockingUDPConnector implements Connector {
 	 */
 	private boolean broadcast;
 
-	/**
-	 * @param context
-	 */
 	public BlockingUDPConnector(Context context, boolean reuseSocket, InetSocketAddress[] sendAddresses, boolean broadcast) {
 		this.context = context;
 		this.reuseSocket = reuseSocket;

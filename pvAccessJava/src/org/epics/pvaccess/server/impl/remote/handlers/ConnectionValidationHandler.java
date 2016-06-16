@@ -31,9 +31,6 @@ import org.epics.pvdata.pv.PVField;
  */
 public class ConnectionValidationHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public ConnectionValidationHandler(ServerContextImpl context) {
 		super(context, "Connection validation");
 	}

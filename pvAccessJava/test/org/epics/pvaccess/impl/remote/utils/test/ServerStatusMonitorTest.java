@@ -20,21 +20,13 @@ import org.epics.pvaccess.impl.remote.utils.ServerStatusMonitor;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class ServerStatusMonitorTest extends TestCase {
 
-   	/**
-	 * Constructor for InetAddressUtilTest.
-	 * @param methodName
-	 */
 	public ServerStatusMonitorTest(String methodName) {
 		super(methodName);
 	}
 
-	/**
-	 * Conversion test.
-	 */
 	public void testServerStatusMonitor() throws Throwable
 	{
 		ServerStatusMonitor ssm = new ServerStatusMonitor();

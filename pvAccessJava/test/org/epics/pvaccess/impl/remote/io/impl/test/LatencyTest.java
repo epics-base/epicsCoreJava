@@ -304,9 +304,6 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		
 	};
 	
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Throwable {
 		
 		final PollerImpl poller = new PollerImpl();

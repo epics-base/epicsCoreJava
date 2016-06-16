@@ -41,6 +41,7 @@ import java.text.MessageFormat;
   * int that contains the value of the option character parsed from the
   * command line.  When there are no more options to be parsed, it
   * returns -1.
+  * </p>
   * <p>
   * A command line option can be defined to take an argument.  If an
   * option has an argument, the value of that argument is stored in an
@@ -49,6 +50,7 @@ import java.text.MessageFormat;
   * found, but there is no argument present, then an error message is
   * printed. Normally getopt() returns a '?' in this situation, but
   * that can be changed as described below.
+  * </p>
   * <p>
   * If an invalid option is encountered, an error message is printed
   * to the standard error and getopt() returns a '?'.  The value of the
@@ -57,12 +59,14 @@ import java.text.MessageFormat;
   * the printing of error messages for this or any other error, set
   * the value of the opterr instance variable to false using the 
   * setOpterr() method.
+  * </p>
   * <p>
   * Between calls to getopt(), the instance variable optind is used to
   * keep track of where the object is in the parsing process.  After all
   * options have been returned, optind is the index in argv of the first
   * non-option argument.  This variable can be accessed with the getOptind()
   * method.
+  * </p>
   * <p>
   * Note that this object expects command line options to be passed in the
   * traditional Unix manner.  That is, proceeded by a '-' character. 
@@ -78,15 +82,17 @@ import java.text.MessageFormat;
   * with an argument of "foo" while "-c foo" represents the option
   * character 'c' with no argument, and a first non-option argv element
   * of "foo".
+  * </p>
   * <p>
   * The user can stop getopt() from scanning any further into a command line
   * by using the special argument "--" by itself.  For example: 
   * "-a -- -d" would return an option character of 'a', then return -1
   * The "--" is discarded and "-d" is pointed to by optind as the first
   * non-option argv element.
+  * </p>
   * <p>
   * Here is a basic example of using Getopt:
-  * <p>
+  * </p>
   * <pre>
   * Getopt g = new Getopt("testprog", argv, "ab:c::d");
   * //
@@ -128,16 +134,19 @@ import java.text.MessageFormat;
   * option.  If the character is followed by a single colon, then that
   * option has a required argument.  If the character is followed by two
   * colons, then that option has an argument that is not required.
+  * </p>
   * <p>
   * Note in this example that the value returned from getopt() is cast to
   * a char prior to printing.  This is required in order to make the value
   * display correctly as a character instead of an integer.
+  * </p>
   * <p>
   * If the first character in the option string is a colon, for example
   * ":abc::d", then getopt() will return a ':' instead of a '?' when it
   * encounters an option with a missing required argument.  This allows the
   * caller to distinguish between invalid options and valid options that
   * are simply incomplete.
+  * </p>
   * <p>
   * In the traditional Unix getopt(), -1 is returned when the first non-option
   * charcter is encountered.  In GNU getopt(), the default behavior is to
@@ -148,6 +157,7 @@ import java.text.MessageFormat;
   * of "-a foo bar -d" returns options 'a' and 'd', then sets optind to 
   * point to "foo".  The program would read the last two argv elements as
   * "foo" and "bar", just as if the user had typed "-a -d foo bar". 
+  * </p>
   * <p> 
   * The user can force getopt() to stop scanning the command line with
   * the special argument "--" by itself.  Any elements occuring before the
@@ -156,6 +166,7 @@ import java.text.MessageFormat;
   * "foo -a -- bar -d" would return  option 'a' then -1.  optind would point 
   * to "foo", "bar" and "-d" as the non-option argv elements.  The "--"
   * is discarded by getopt().
+  * </p>
   * <p>
   * There are two ways this default behavior can be modified.  The first is
   * to specify traditional Unix getopt() behavior (which is also POSIX
@@ -174,6 +185,7 @@ import java.text.MessageFormat;
   * integer 1 with optarg set to "foo", then 'b', then -1.  optind would
   * then point to "bar" as the first non-option argv element.  The "--"
   * is discarded.
+  * </p>
   * <p>
   * The POSIX/traditional behavior is enabled by either setting the 
   * property "gnu.posixly_correct" or by putting a '+' sign as the first
@@ -186,12 +198,14 @@ import java.text.MessageFormat;
   * placed as the second character after one of those two will still cause
   * getopt() to return a ':' instead of a '?' if a required option
   * argument is missing.
+  * </p>
   * <p>
   * In addition to traditional single character options, GNU Getopt also
   * supports long options.  These are preceeded by a "--" sequence and
   * can be as long as desired.  Long options provide a more user-friendly
   * way of entering command line options.  For example, in addition to a
   * "-h" for help, a program could support also "--help".  
+  * </p>
   * <p>
   * Like short options, long options can also take a required or non-required 
   * argument.  Required arguments can either be specified by placing an
@@ -204,6 +218,7 @@ import java.text.MessageFormat;
   * "--outputdir=foo" would represent option outputdir with an argument of
   * "foo" while "--outputdir foo" would represent the option outputdir
   * with no argument and a first non-option argv element of "foo".
+  * </p>
   * <p>
   * Long options can also be specified using a special POSIX argument 
   * format (one that I highly discourage).  This form of entry is 
@@ -216,18 +231,21 @@ import java.text.MessageFormat;
   * "-W" that does not represent a valid long option, then getopt() returns
   * 'W' and the caller must decide what to do.  Otherwise getopt() returns
   * a long option value as described below.
+  * </p>
   * <p>
   * While long options offer convenience, they can also be tedious to type
   * in full.  So it is permissible to abbreviate the option name to as
   * few characters as required to uniquely identify it.  If the name can
   * represent multiple long options, then an error message is printed and
   * getopt() returns a '?'.  
+  * </p>
   * <p>
   * If an invalid option is specified or a required option argument is 
   * missing, getopt() prints an error and returns a '?' or ':' exactly
   * as for short options.  Note that when an invalid long option is
   * encountered, the optopt variable is set to integer 0 and so cannot
   * be used to identify the incorrect option the user entered.
+  * </p>
   * <p>
   * Long options are defined by LongOpt objects.  These objects are created
   * with a contructor that takes four params: a String representing the
@@ -235,11 +253,13 @@ import java.text.MessageFormat;
   * (the value is one of LongOpt.NO_ARGUMENT, LongOpt.REQUIRED_ARGUMENT,
   * or LongOpt.OPTIONAL_ARGUMENT), a StringBuffer flag object (described
   * below), and an integer value (described below).
+  * </p>
   * <p>
   * To enable long option parsing, create an array of LongOpt's representing
   * the legal options and pass it to the Getopt() constructor.  WARNING: If
   * all elements of the array are not populated with LongOpt objects, the
   * getopt() method will throw a NullPointerException.
+  * </p>
   * <p>
   * When getopt() is called and a long option is encountered, one of two
   * things can be returned.  If the flag field in the LongOpt object 
@@ -252,16 +272,18 @@ import java.text.MessageFormat;
   * of the LongOpt is returned.  This can be the character of a short option.
   * This allows an app to have both a long and short option sequence 
   * (say, "-h" and "--help") that do the exact same thing.
+  * </p>
   * <p>
   * With long options, there is an alternative method of determining 
   * which option was selected.  The method getLongind() will return the
   * the index in the long option array (NOT argv) of the long option found.
   * So if multiple long options are configured to return the same value,
   * the application can use getLongind() to distinguish between them. 
+  * </p>
   * <p>
   * Here is an expanded Getopt example using long options and various
   * techniques described above:
-  * <p>
+  * </p>
   * <pre>
   * int c;
   * String arg;
@@ -351,18 +373,20 @@ import java.text.MessageFormat;
   * the name given to this option - long_only - is very counter-intuitive.
   * It does not cause only long options to be parsed but instead enables
   * the behavior described above.
+  * </p>
   * <p> 
   * Note that the functionality and variable names used are driven from 
   * the C lib version as this object is a port of the C code, not a 
   * new implementation.  This should aid in porting existing C/C++ code,
   * as well as helping programmers familiar with the glibc version to
   * adapt to the Java version even if it seems very non-Java at times.
+  * </p>
   * <p>
   * In this release I made all instance variables protected due to
   * overwhelming public demand.  Any code which relied on optarg,
   * opterr, optind, or optopt being public will need to be modified to
   * use the appropriate access methods.
-  * <p>
+  * </p>
   * Please send all bug reports, requests, and comments to
   * <a href="mailto:arenn@urbanophile.com">arenn@urbanophile.com</a>.
   *
@@ -682,6 +706,7 @@ setOptstring(String optstring)
   *
   * Otherwise, `optind' communicates from one call to the next
   * how much of ARGV has been scanned so far.  
+  * @return next element option index. 
   */
 public int
 getOptind()
@@ -731,6 +756,7 @@ setArgv(String[] argv)
   * Also, when `ordering' is RETURN_IN_ORDER,
   * each non-option ARGV-element is returned here.
   * No set method is provided because setting this variable has no effect.
+  * @return option argument.
   */
 public String
 getOptarg()
@@ -745,6 +771,7 @@ getOptarg()
   * invalid option is encountered.  This can be suppressed (or re-enabled)
   * by calling this method.  There is no get method for this variable 
   * because if you can't remember the state you set this to, why should I?
+  * @param opterr option error.
   */
 public void
 setOpterr(boolean opterr)
@@ -758,6 +785,7 @@ setOpterr(boolean opterr)
   * When getopt() encounters an invalid option, it stores the value of that
   * option in optopt which can be retrieved with this method.  There is
   * no corresponding set method because setting this variable has no effect.
+  * @return option option. 
   */
 public int
 getOptopt()
@@ -770,6 +798,7 @@ getOptopt()
 /**
   * Returns the index into the array of long options (NOT argv) representing
   * the long option that was found.
+  * @return long option index. 
   */
 public int
 getLongind()
@@ -785,6 +814,7 @@ getLongind()
   * It leaves the longer segment in the right place overall,
   * but it consists of two parts that need to be swapped next.
   * This method is used by getopt() for argument permutation.
+  * @param argv arguments.
   */
 protected void
 exchange(String[] argv)

@@ -28,9 +28,6 @@ import org.epics.pvaccess.util.logging.ConsoleLogFormatter;
  */
 public class ConsoleLogFormatterTest extends TestCase {
 
-    /**
-     * @param methodName
-     */
     public ConsoleLogFormatterTest(String methodName) {
         super(methodName);
     }

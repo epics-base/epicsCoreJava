@@ -19,7 +19,7 @@ package org.epics.pvaccess.util;
  * If buffer is full, the oldest element is replaced with the new one.
  * Instance is not a bit synchronized.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
+ * @param <T> buffer element type.
  */
 public final class CircularBuffer<T> {
 
@@ -45,6 +45,7 @@ public final class CircularBuffer<T> {
 	
 	/**
 	 * Create a BoundedBuffer with the given capacity.
+	 * @param capacity buffer capacity.
 	 * @exception IllegalArgumentException if capacity less or equal to zero
 	 **/
 	@SuppressWarnings("unchecked")

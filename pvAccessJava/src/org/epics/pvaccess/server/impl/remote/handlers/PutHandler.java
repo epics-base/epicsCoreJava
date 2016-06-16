@@ -37,13 +37,9 @@ import org.epics.pvdata.pv.Structure;
 /**
  * Put request handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class PutHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public PutHandler(ServerContextImpl context) {
 		super(context, "Put request");
 	}

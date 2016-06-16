@@ -53,9 +53,6 @@ public class ClientResponseHandler implements ResponseHandler {
 	 */
 	private final ClientContextImpl context;
 	
-	/**
-	 * @param context
-	 */
 	public ClientResponseHandler(ClientContextImpl context) {
 		this.context = context;
 		final ResponseHandler badResponse = new BadResponse(context);

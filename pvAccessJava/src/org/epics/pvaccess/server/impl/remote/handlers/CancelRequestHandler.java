@@ -33,9 +33,6 @@ import org.epics.pvdata.pv.Status;
  */
 public class CancelRequestHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public CancelRequestHandler(ServerContextImpl context) {
 		super(context, "Cancel request");
 	}

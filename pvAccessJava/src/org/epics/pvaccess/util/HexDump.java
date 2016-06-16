@@ -150,7 +150,7 @@ public class HexDump {
 
 	/**
 	 * Get hex representation of byte.
-	 * @param b
+	 * @param b byte to hex.
 	 * @return string hex representation of byte.
 	 */
 	public static final String toHex( byte b )
@@ -168,7 +168,7 @@ public class HexDump {
 
 	/**
 	 * Get ASCII representation of byte, dot if non-readable.
-	 * @param b
+	 * @param b byte to ASCII.
 	 * @return ASCII representation of byte, dot if non-readable.
 	 */
 	public static final char toAscii(byte b)

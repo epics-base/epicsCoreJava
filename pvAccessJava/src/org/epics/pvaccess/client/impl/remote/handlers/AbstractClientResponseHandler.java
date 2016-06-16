@@ -29,10 +29,6 @@ public abstract class AbstractClientResponseHandler extends AbstractResponseHand
 	 */
 	protected final ClientContextImpl context;
 
-	/**
-	 * @param context
-	 * @param description
-	 */
 	public AbstractClientResponseHandler(ClientContextImpl context, String description) {
 		super(description, context.getDebugLevel() >= 3);
 		this.context = context;

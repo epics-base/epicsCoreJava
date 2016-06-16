@@ -21,9 +21,6 @@ public class PVMSDetectorExample {
 			addArray("data", ScalarType.pvByte).
 			createStructure();
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Throwable
 	{
 		final String topicId = "DAQ";

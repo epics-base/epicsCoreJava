@@ -263,6 +263,7 @@ public class IntHashMap {
      * key is only valid if method returns true.
      * 
      * @param      value   a value to search for.
+     * @param      key will contain key fo an object, if the method returs true. 
      * @return     <code>true</code> if and only if some key maps to the
      *             <code>value</code> argument in this hashtable as
      *             determined by the <tt>equals</tt> method;

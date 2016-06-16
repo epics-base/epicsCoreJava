@@ -32,22 +32,22 @@ public class PVAException extends Exception {
 	}
 
 	/**
-	 * @param message
+	 * @param message exception message.
 	 */
 	public PVAException(String message) {
 		super(message);
 	}
 
 	/**
-	 * @param cause
+	 * @param cause exception cause.
 	 */
 	public PVAException(Throwable cause) {
 		super(cause);
 	}
 
 	/**
-	 * @param message
-	 * @param cause
+	 * @param message exception message.
+	 * @param cause exception cause.
 	 */
 	public PVAException(String message, Throwable cause) {
 		super(message, cause);

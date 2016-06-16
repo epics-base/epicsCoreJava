@@ -24,13 +24,9 @@ import org.epics.pvaccess.impl.remote.request.DataResponse;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class MultipleDataResponseHandler extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public MultipleDataResponseHandler(ClientContextImpl context) {
 		super(context, "Multiple data response");
 	}

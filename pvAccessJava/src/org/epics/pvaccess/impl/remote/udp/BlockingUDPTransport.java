@@ -121,9 +121,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
      * Client/server flag (including big endian flag).
      */
     private final int clientServerWithBigEndianFlag;
-    /**
-	 * @param context
-	 */
+    
 	public BlockingUDPTransport(Context context, ResponseHandler responseHandler, DatagramChannel channel,
 							  InetSocketAddress bindAddress, InetSocketAddress[] sendAddresses, 
 							  short remoteTransportRevision) {
@@ -493,6 +491,7 @@ public class BlockingUDPTransport implements Transport, TransportSendControl {
 
 	/**
 	 * Flush...
+	 * @return success status.
 	 */
 	public boolean flush() {
 		// noop since all UDP reqeuests are sent immediately

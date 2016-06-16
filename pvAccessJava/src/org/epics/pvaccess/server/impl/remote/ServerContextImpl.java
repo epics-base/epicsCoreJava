@@ -314,6 +314,7 @@ public class ServerContextImpl implements ServerContext, Context {
 
 	/**
 	 * Get configuration instance.
+	 * @return the configuration. 
 	 */
 	public Configuration getConfiguration()
 	{
@@ -363,8 +364,8 @@ public class ServerContextImpl implements ServerContext, Context {
 	
 	/**
 	 * Check context state and tries to establish necessary state.
-	 * @throws PVAException
-	 * @throws IllegalStateException
+	 * @throws PVAException any PVA exception.
+	 * @throws IllegalStateException thrown if context was already destroyed.
 	 */
 	protected final void checkState() throws PVAException, IllegalStateException {
 		if (state == State.DESTROYED)
@@ -602,7 +603,7 @@ public class ServerContextImpl implements ServerContext, Context {
 	 * @param	seconds	time in seconds the server will process events (method will block), if <code>0</code>
 	 * 				the method would block until <code>destory()</code> is called.
 	 * @throws IllegalStateException	if server is already destroyed.
-	 * @throws PVAException
+	 * @throws PVAException exception.
 	 */
 	public void run(int seconds) throws PVAException, IllegalStateException
 	{

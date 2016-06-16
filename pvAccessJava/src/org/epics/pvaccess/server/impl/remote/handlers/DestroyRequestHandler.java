@@ -32,9 +32,6 @@ import org.epics.pvdata.pv.Status;
  */
 public class DestroyRequestHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public DestroyRequestHandler(ServerContextImpl context) {
 		super(context, "Destroy request");
 	}

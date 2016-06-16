@@ -24,9 +24,6 @@ import org.epics.pvaccess.util.HexDump;
  */
 public class HexDumpTest extends TestCase {
 
-    /**
-     * @param methodName
-     */
     public HexDumpTest(String methodName) {
         super(methodName);
     }

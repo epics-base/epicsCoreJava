@@ -27,9 +27,6 @@ import org.epics.pvaccess.impl.remote.Transport;
  */
 public class EchoResponse extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public EchoResponse(ClientContextImpl context) {
 		super(context, "Echo");
 	}

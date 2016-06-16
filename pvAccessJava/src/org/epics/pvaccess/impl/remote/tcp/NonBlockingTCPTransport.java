@@ -83,10 +83,12 @@ public abstract class NonBlockingTCPTransport extends NonBlockingSocketAbstractC
 	/**
 	 * TCP transport constructor.
 	 * @param context context where transport lives in.
+	 * @param poller poller to use. 
 	 * @param channel used socket channel.
 	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
 	 * @param priority transport priority.
+	 * @throws SocketException thrown on any socket exception.
 	 */
 	public NonBlockingTCPTransport(Context context, 
 			// TODO

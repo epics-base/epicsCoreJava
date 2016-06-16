@@ -48,17 +48,11 @@ public interface SecurityPlugin {
 	/**
 	 * Check whether the remote instance with given network address is 
 	 * valid to use this security plug-in to authNZ.
-	 * @param remoteAddress
+	 * @param remoteAddress address to validate.
 	 * @return <code>true</code> if this security plugin can be used for remote instance.
 	 */
 	public boolean isValidFor(InetSocketAddress remoteAddress);
 	
-	/**
-	 * 
-	 * @param remoteAddress
-	 * @return a new session.
-	 * @throws SecurityException
-	 */
 	// authentication must be done immediately when connection is established (timeout 3seconds),
 	// later on authentication process can be repeated
 	// the server and the client can exchange (arbitrary number) of messages using SecurityPluginControl.sendMessage()

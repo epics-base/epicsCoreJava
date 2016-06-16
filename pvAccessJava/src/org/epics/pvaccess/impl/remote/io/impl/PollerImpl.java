@@ -25,9 +25,6 @@ public class PollerImpl implements Poller, Runnable {
 	// wake-up time kills low-latency, this mechanism loops selectNow for some time
 	private int trottle = 0;
 
-	/**
-	 * 
-	 */
 	public PollerImpl() throws IOException {
 		selector = Selector.open();
 	}

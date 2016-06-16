@@ -47,9 +47,6 @@ public class BeaconHandler extends AbstractClientResponseHandler {
 	 */
 	private static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
 
-	/**
-	 * @param context
-	 */
 	public BeaconHandler(ClientContextImpl context) {
 		super(context, "Beacon");
 	}

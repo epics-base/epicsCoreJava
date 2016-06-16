@@ -118,13 +118,14 @@ public interface Transport extends DeserializableControl, Channel {
 
 	/**
 	 * Enqueue send request.
-	 * @param sender
+	 * @param sender sender to enqueue.
 	 */
 	void enqueueSendRequest(TransportSender sender);
 
 	/**
 	 * Waits (if needed) until transport is verified, i.e. verified() method is being called.
 	 * @param timeoutMs timeout to wait for verification, infinite if 0.
+	 * @return completion status.
 	 */
 	boolean verify(long timeoutMs);
 	
@@ -150,7 +151,7 @@ public interface Transport extends DeserializableControl, Channel {
 
 	/**
 	 * Used to initialize authNZ (select security plug-in).
-	 * @param data
+	 * @param data any data.
 	 */
 	void authNZInitialize(Object data);
 	

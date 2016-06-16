@@ -20,14 +20,9 @@ import org.epics.pvaccess.util.WildcharMatcher;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class WildcardMatcherTest extends TestCase {
 
-   	/**
-	 * Constructor for WildcardMatcherTest.
-	 * @param methodName
-	 */
 	public WildcardMatcherTest(String methodName) {
 		super(methodName);
 	}

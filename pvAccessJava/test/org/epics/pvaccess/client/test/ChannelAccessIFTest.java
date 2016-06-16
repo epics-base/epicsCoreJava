@@ -103,7 +103,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	/**
 	 * If provider cannot be destroyed,
 	 * channel must be registered so that is destroyed by tearDown().
-	 * @param channel
+	 * @param channel channel to destroy.
 	 */
 	public void registerChannelForDestruction(Channel channel)
 	{
@@ -2819,7 +2819,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    ch.destroy();
 	}	
 	
-	/** ----------------- stress tests -------------- **/
+	// ----------------- stress tests -------------- 
 	
     public void testStressConnectDisconnect() throws Throwable
     {
@@ -2897,7 +2897,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    
     }
 	
-	/** ----------------- ... and at last destroy() -------------- **/
+	// ----------------- ... and at last destroy() -------------- 
 	
 	public void testDestroy() throws Throwable
 	{

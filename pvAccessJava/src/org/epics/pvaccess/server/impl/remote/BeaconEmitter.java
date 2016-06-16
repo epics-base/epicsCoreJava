@@ -118,6 +118,7 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	
 	/**
 	 * Constructor.
+	 * @param protocol what protocol to "beacon".
 	 * @param transport	transport to be used to send beacons.
 	 * @param context PVA context.
 	 */

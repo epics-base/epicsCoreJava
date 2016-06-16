@@ -27,9 +27,6 @@ import org.epics.pvaccess.impl.remote.request.DataResponse;
  */
 public class DataResponseHandler extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public DataResponseHandler(ClientContextImpl context) {
 		super(context, "Data response");
 	}

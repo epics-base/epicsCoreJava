@@ -40,9 +40,6 @@ import org.epics.pvdata.pv.Structure;
  */
 public class GetHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public GetHandler(ServerContextImpl context) {
 		super(context, "Get request");
 	}

@@ -35,9 +35,6 @@ import org.epics.pvdata.pv.Status;
  */
 public class GetFieldHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public GetFieldHandler(ServerContextImpl context) {
 		super(context, "Get field request");
 	}

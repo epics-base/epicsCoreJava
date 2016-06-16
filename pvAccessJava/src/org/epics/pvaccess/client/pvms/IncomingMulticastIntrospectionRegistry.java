@@ -77,7 +77,7 @@ public final class IncomingMulticastIntrospectionRegistry {
 	
 	/**
 	 * Get introspection interface for given ID.
-	 * @param id
+	 * @param id the ID.
 	 * @return <code>Field</code> instance for given ID.
 	 */
 	public FieldEntry getIntrospectionInterface(short id)
@@ -87,8 +87,8 @@ public final class IncomingMulticastIntrospectionRegistry {
 
 	/**
 	 * Register introspection interface with given ID. 
-	 * @param id
-	 * @param fieldEntry
+	 * @param id the ID to use.
+	 * @param fieldEntry entry to register.
 	 */
 	public void registerIntrospectionInterface(short id, FieldEntry fieldEntry)
 	{

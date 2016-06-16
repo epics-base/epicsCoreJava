@@ -56,6 +56,7 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	/**
 	 * Constructor.
 	 * @param context context ot handle.
+	 * @param protocol that protocol this handles.
 	 * @param responseFrom server to handle.
 	 */
 	public BeaconHandlerImpl(ClientContextImpl context, String protocol, InetSocketAddress responseFrom)

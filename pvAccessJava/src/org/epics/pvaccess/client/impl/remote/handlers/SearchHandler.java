@@ -28,13 +28,9 @@ import org.epics.pvaccess.util.InetAddressUtil;
 /**
  * Search request handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class SearchHandler extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public SearchHandler(ClientContextImpl context) {
 		super(context, "Search request");
 	}

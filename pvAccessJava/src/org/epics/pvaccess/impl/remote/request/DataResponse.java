@@ -26,9 +26,9 @@ public interface DataResponse extends ResponseRequest {
 
 	/**
 	 * Notification response.
-	 * @param transport
-	 * @param version
-	 * @param payloadBuffer
+	 * @param transport transport to use.
+	 * @param version protocol version.
+	 * @param payloadBuffer the data.
 	 */
 	public void response(Transport transport, byte version, ByteBuffer payloadBuffer);
 

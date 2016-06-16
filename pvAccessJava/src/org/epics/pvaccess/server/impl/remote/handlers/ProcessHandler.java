@@ -34,13 +34,9 @@ import org.epics.pvdata.pv.Status.StatusType;
 /**
  * Process request handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class ProcessHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public ProcessHandler(ServerContextImpl context) {
 		super(context, "Process request");
 	}

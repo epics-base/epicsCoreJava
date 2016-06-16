@@ -36,9 +36,6 @@ public class CreateChannelHandler extends AbstractClientResponseHandler {
 	 */
     private static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 
-    /**
-	 * @param context
-	 */
 	public CreateChannelHandler(ClientContextImpl context) {
 		super(context, "Create channel");
 	}

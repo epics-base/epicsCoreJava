@@ -268,9 +268,6 @@ public class SerializationExamples {
 		System.out.println();
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		//bitSetExamples();
 		//statusExamples();

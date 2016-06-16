@@ -34,13 +34,9 @@ import org.epics.pvdata.pv.Status.StatusType;
 /**
  * RPC handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class RPCHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public RPCHandler(ServerContextImpl context) {
 		super(context, "RPC request");
 	}

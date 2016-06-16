@@ -25,20 +25,16 @@ import org.epics.pvaccess.util.InetAddressUtil;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class InetAddressUtilTest extends TestCase {
 
-   	/**
-	 * Constructor for InetAddressUtilTest.
-	 * @param methodName
-	 */
 	public InetAddressUtilTest(String methodName) {
 		super(methodName);
 	}
 
 	/**
-	 * Tests Java support for IPv4 and IPv6 comparsion.
+	 * Tests Java support for IPv4 and IPv6 comparison.
+	 * @throws Throwable rethrown exception.
 	 */
 	public void testJavaIPv4v6Comparison() throws Throwable
 	{
@@ -52,6 +48,7 @@ public class InetAddressUtilTest extends TestCase {
 	
 	/**
 	 * Test integer into an IPv4 INET address conversion.
+	 * @throws UnknownHostException rethrown exception.
 	 */
 	public void testIntToIPv4Address() throws UnknownHostException {
 	    assertEquals(InetAddressUtil.intToIPv4Address(127*256*256*256+1), InetAddress.getByName("127.0.0.1"));
@@ -61,6 +58,7 @@ public class InetAddressUtilTest extends TestCase {
 
 	/**
 	 * Test IPv4 INET address to an integer address conversion.
+	 * @throws UnknownHostException rethrown exception.
 	 */
 	public void testIPv4AddressToInt() throws UnknownHostException {
 	    assertEquals(InetAddressUtil.ipv4AddressToInt(InetAddress.getByName("127.0.0.1")), 127*256*256*256+1);

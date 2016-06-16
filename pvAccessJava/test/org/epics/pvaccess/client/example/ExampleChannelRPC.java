@@ -155,7 +155,7 @@ public class ExampleChannelRPC {
          * @param timeout  the maximum time to wait
 		 * @param unit the time unit of the timeout argument
 		 * @return true on success.
-		 * @throws InterruptedException
+		 * @throws InterruptedException interrupted exception.
 		 */
 		public boolean waitUntilConnected(long timeout, TimeUnit unit) throws InterruptedException
 		{
@@ -174,7 +174,7 @@ public class ExampleChannelRPC {
 		 * Issue an RPC request (blocking, one-at-the time).
 		 * @param pvArgument RPC arguments.
 		 * @return RPC result, <code>null</code> in case of error.
-		 * @throws InterruptedException
+		 * @throws InterruptedException interrupted exception.
 		 */
 		public synchronized PVStructure request(PVStructure pvArgument) throws InterruptedException
 		{

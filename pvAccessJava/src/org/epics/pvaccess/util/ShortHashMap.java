@@ -262,6 +262,7 @@ public class ShortHashMap {
      * key is only valid if method returns true.
      * 
      * @param      value   a value to search for.
+     * @param      key contains objet key, if the method returns true.
      * @return     <code>true</code> if and only if some key maps to the
      *             <code>value</code> argument in this hashtable as
      *             determined by the <tt>equals</tt> method;

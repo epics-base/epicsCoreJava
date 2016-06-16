@@ -91,12 +91,6 @@ public class ServerList  {
 		final Set<InetSocketAddress> addresses = new HashSet<InetSocketAddress>();
 		byte version;
 		
-		/**
-		 * @param guid
-		 * @param protocol
-		 * @param address
-		 * @param version
-		 */
 		public ServerEntry(GUID guid, String protocol,
 				InetSocketAddress address, byte version) {
 			this.guid = guid;
@@ -189,10 +183,6 @@ public class ServerList  {
 			serverMap.put(g, new ServerEntry(g, protocol, responseFrom, version));
 	}
 	
-	/**
-	 * Program entry point. 
-	 * @param args	command-line arguments
-	 */
 	public static void main(String[] args) throws Throwable {
 		
 		final ConfigurationProvider configurationProvider = ConfigurationFactory.getProvider();

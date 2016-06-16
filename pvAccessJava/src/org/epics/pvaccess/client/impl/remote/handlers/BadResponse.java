@@ -30,9 +30,6 @@ import org.epics.pvaccess.util.HexDump;
  */
 public class BadResponse extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public BadResponse(ClientContextImpl context) {
 		super(context, "Bad response");
 	}

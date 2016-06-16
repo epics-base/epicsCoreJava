@@ -76,9 +76,6 @@ public class BlockingTCPConnector implements Connector {
 	 */
 	private final TransportFactory transportFactory; 
 
-	/**
-	 * @param context
-	 */
 	public BlockingTCPConnector(Context context, TransportFactory transportFactory, int receiveBufferSize, float heartbeatInterval) {
 		this.context = context;
 		this.transportFactory = transportFactory;

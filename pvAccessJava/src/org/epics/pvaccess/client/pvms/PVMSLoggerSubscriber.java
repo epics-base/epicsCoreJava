@@ -87,9 +87,6 @@ public class PVMSLoggerSubscriber {
 		return new String(sb);
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Throwable
 	{
 		final InetAddress address = InetAddress.getByName("224.0.0.1");

@@ -31,6 +31,7 @@ public interface ResponseHandler {
 	 * @param responseFrom	remove address of the responder, <code>null</code> if unknown. 
 	 * @param transport	response source transport.
 	 * @param version message version.
+	 * @param command command.
 	 * @param payloadSize size of this message data available in the <code>payloadBuffer</code>.
 	 * @param payloadBuffer	message payload data.
 	 * 						Note that this might not be the only message in the buffer.

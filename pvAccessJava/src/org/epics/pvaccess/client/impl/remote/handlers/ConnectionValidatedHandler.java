@@ -33,10 +33,7 @@ public class ConnectionValidatedHandler extends AbstractClientResponseHandler {
 
     protected static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 
-    /**
-	 * @param context
-	 */
-	public ConnectionValidatedHandler(ClientContextImpl context) {
+ 	public ConnectionValidatedHandler(ClientContextImpl context) {
 		super(context, "Connection validated");
 	}
 

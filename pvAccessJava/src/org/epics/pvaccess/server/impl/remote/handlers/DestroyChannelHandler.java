@@ -32,9 +32,6 @@ import org.epics.pvaccess.server.impl.remote.ServerContextImpl;
  */
 public class DestroyChannelHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public DestroyChannelHandler(ServerContextImpl context) {
 		super(context, "Destroy channel request");
 	}

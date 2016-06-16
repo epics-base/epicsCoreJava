@@ -205,7 +205,7 @@ public class InetAddressUtil {
 	 * Encode address as IPv6 address.
 	 * @param buffer byte-buffer where to put encoded data.
 	 * @param address address to encode.
-	 * @throws RuntimeException
+	 * @throws RuntimeException thrown if address is unsupported.
 	 */
 	public static final void encodeAsIPv6Address(ByteBuffer buffer, InetAddress address) throws RuntimeException {
 		if (address instanceof Inet6Address)

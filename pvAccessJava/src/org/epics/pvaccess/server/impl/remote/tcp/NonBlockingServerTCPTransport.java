@@ -68,9 +68,11 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	/**
 	 * Server TCP transport constructor.
 	 * @param context context where transport lives in.
+	 * @param poller poller to use.
 	 * @param channel used socket channel.
 	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
+	 * @throws SocketException thrown on any socket exception.
 	 */
 	public NonBlockingServerTCPTransport(Context context, 
 		// TODO

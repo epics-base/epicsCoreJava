@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author msekoranja
+ * @param <E> element type.
  */
 public class Mailbox<E> {
 

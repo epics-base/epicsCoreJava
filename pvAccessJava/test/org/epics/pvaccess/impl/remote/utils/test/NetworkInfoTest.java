@@ -20,20 +20,16 @@ import org.epics.pvaccess.impl.remote.utils.NetworkInfo;
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class NetworkInfoTest extends TestCase {
 
-   	/**
-	 * Constructor for InetAddressUtilTest.
-	 * @param methodName
-	 */
 	public NetworkInfoTest(String methodName) {
 		super(methodName);
 	}
 
 	/**
 	 * Conversion test.
+	 * @throws Throwable rethrown exception. 
 	 */
 	public void testNetworkInfo() throws Throwable
 	{

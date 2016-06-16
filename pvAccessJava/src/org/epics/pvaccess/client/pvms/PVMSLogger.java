@@ -271,6 +271,9 @@ public class PVMSLogger {
 	/**
 	 * Setup this handler as the only one root handler.
 	 * @param logLevel root log level to be set.
+	 * @param sendAddress where to send.
+	 * @param port address port.
+	 * @throws IOException rethrown IO exception.
 	 */
 	public static void installPVMSLogging(Level logLevel, InetAddress sendAddress, int port) throws IOException
 	{
@@ -282,9 +285,6 @@ public class PVMSLogger {
 		rootLogger.addHandler(handler);
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Throwable
 	{
 		final InetAddress address = InetAddress.getByName("224.0.0.1");

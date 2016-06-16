@@ -230,9 +230,6 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		field.serialize(buffer, this);
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Throwable {
 		
 		final PollerImpl poller = new PollerImpl();

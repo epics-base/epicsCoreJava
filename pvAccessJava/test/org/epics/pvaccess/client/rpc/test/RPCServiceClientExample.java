@@ -25,9 +25,6 @@ public class RPCServiceClientExample {
 				add("b", ScalarType.pvString).
 				createStructure();
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) throws Throwable {
 		try
 		{

@@ -70,6 +70,7 @@ public final class TransportRegistry {
 
 	/**
 	 * Lookup for a transport for given address.
+	 * @param type 	protocol type.
 	 * @param address	address of the host computer.
 	 * @param priority  priority of the transport.
 	 * @return corresponding transport, <code>null</code> if none found.
@@ -111,6 +112,7 @@ public final class TransportRegistry {
 
 	/**
 	 * Remove transport from the registry.
+	 * @param transport transport to remove.
 	 * @return removed transport, <code>null</code> if none found.
 	 */
 	public Transport remove(Transport transport)

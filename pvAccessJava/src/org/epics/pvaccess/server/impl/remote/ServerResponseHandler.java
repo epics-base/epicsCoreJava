@@ -42,7 +42,6 @@ import org.epics.pvaccess.util.HexDump;
 /**
  * PVAS request handler - main handler which dispatches requests to appropriate handlers.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public final class ServerResponseHandler implements ResponseHandler {
 
@@ -56,9 +55,6 @@ public final class ServerResponseHandler implements ResponseHandler {
 	 */
 	private final ServerContextImpl context;
 	
-	/**
-	 * @param context
-	 */
 	public ServerResponseHandler(ServerContextImpl context) {
 		this.context = context;
 

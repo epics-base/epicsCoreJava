@@ -78,10 +78,6 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	private final short responsePort;
 	private final InetAddress responseAddress;
 
-    /**
-	 * Constructor.
-	 * @param context
-	 */
 	public SimpleChannelSearchManagerImpl(ClientContextImpl context)
 	{
 		this.context = context;
@@ -323,7 +319,8 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	
 	/**
 	 * Register channel.
-	 * @param channel
+	 * @param channel channel to register.
+	 * @param penalize register with penalty (do not issue search immediately).
 	 */
 	public void register(SearchInstance channel, boolean penalize)
 	{
@@ -348,7 +345,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 
 	/**
 	 * Unregister channel.
-	 * @param channel
+	 * @param channel channel to unregister.
 	 */
 	public void unregister(SearchInstance channel)
 	{

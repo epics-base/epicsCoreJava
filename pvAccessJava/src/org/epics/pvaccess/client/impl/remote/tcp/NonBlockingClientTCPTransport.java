@@ -81,6 +81,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	/**
 	 * Client TCP transport constructor.
 	 * @param context context where transport lives in.
+	 * @param poller poller to use.
 	 * @param channel used socker channel.
 	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
@@ -88,6 +89,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	 * @param remoteTransportRevision remote transport revision.
 	 * @param heartbeatInterval heartbeat interval in seconds.
 	 * @param priority transport priority.
+	 * @throws SocketException thrown on any socket exception.
 	 */
 	public NonBlockingClientTCPTransport(Context context, /* TODO */ Poller poller, SocketChannel channel,
 					ResponseHandler responseHandler, int receiveBufferSize, 

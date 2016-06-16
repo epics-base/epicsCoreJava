@@ -28,9 +28,6 @@ import org.epics.pvaccess.impl.remote.Transport;
  */
 public class DestroyChannelHandler extends AbstractClientResponseHandler {
 
-    /**
-	 * @param context
-	 */
 	public DestroyChannelHandler(ClientContextImpl context) {
 		super(context, "Destroy channel");
 	}

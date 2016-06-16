@@ -65,7 +65,7 @@ public class ServerChannelImpl implements ServerChannel {
 	 * @param channel local channel.
 	 * @param cid channel CID.
 	 * @param sid channel SID.
-	 * @param css
+	 * @param css channel security session.
 	 */
 	public ServerChannelImpl(Channel channel, 
 						 int cid, int sid,

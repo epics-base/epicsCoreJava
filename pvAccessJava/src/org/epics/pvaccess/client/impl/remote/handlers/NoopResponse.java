@@ -19,14 +19,9 @@ import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 /**
  * NOOP response.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class NoopResponse extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 * @param description
-	 */
 	public NoopResponse(ClientContextImpl context, String description) {
 		super(context, description);
 	}

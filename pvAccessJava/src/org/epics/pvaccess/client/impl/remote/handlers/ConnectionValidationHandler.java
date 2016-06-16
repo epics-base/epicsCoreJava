@@ -31,9 +31,6 @@ import org.epics.pvdata.misc.SerializeHelper;
  */
 public class ConnectionValidationHandler extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public ConnectionValidationHandler(ClientContextImpl context) {
 		super(context, "Connection validation");
 	}

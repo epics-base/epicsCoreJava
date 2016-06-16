@@ -37,9 +37,6 @@ public abstract class AbstractResponseHandler implements ResponseHandler {
 	 */
 	protected final boolean debug;
 
-	/**
-	 * @param description
-	 */
 	public AbstractResponseHandler(String description, boolean debug) {
 		this.description = description;
 		// dump messages flag

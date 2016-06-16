@@ -750,7 +750,7 @@ public abstract class AbstractCodec
 	 * Send a buffer through the transport.
 	 * NOTE: TCP sent buffer/sending has to be synchronized (not done by this method).
 	 * @param buffer	buffer to be sent
-	 * @throws IOException 
+	 * @throws IOException IO exception rethrown. 
 	 */
 	protected void send(ByteBuffer buffer) throws IOException
 	{

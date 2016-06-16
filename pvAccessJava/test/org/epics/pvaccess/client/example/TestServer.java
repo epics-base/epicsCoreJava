@@ -6,9 +6,6 @@ import org.epics.pvaccess.server.test.TestChannelProviderImpl;
 
 public class TestServer {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
 		// Create a context with default configuration values.
 		final ServerContextImpl context = new ServerContextImpl();

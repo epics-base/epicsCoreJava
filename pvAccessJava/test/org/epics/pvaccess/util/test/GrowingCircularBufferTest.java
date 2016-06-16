@@ -24,10 +24,6 @@ import org.epics.pvaccess.util.GrowingCircularBuffer;
  */
 public class GrowingCircularBufferTest extends TestCase {
 
-   	/**
-	 * Constructor for InetAddressUtilTest.
-	 * @param methodName
-	 */
 	public GrowingCircularBufferTest(String methodName) {
 		super(methodName);
 	}

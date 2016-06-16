@@ -30,9 +30,6 @@ import org.epics.pvdata.pv.Requester;
  */
 public class MessageHandler extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public MessageHandler(ClientContextImpl context) {
 		super(context, "Message");
 	}

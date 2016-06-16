@@ -53,7 +53,7 @@ public final class IntrospectionRegistry {
 	}
 	/**
 	 * Get introspection interface for given ID.
-	 * @param id
+	 * @param id the ID.
 	 * @return <code>Field</code> instance for given ID.
 	 */
 	public Field getIntrospectionInterface(short id)
@@ -63,8 +63,8 @@ public final class IntrospectionRegistry {
 
 	/**
 	 * Register introspection interface with given ID. 
-	 * @param id
-	 * @param field
+	 * @param id ID to use to register.
+	 * @param field field to register.
 	 */
 	public void registerIntrospectionInterface(short id, Field field)
 	{
@@ -79,7 +79,8 @@ public final class IntrospectionRegistry {
 	/**
 	 * Register introspection interface and get it's ID. Always OUTGOING.
 	 * If it is already registered only preassigned ID is returned.
-	 * @param field
+	 * @param field field to register.
+	 * @param existing indication whether the field was already registered.
 	 * @return id of given <code>Field</code>
 	 */
 	public short registerIntrospectionInterface(Field field, BooleanHolder existing)

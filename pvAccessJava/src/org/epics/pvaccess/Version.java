@@ -98,6 +98,7 @@ public class Version {
     
     /**
      * Name of product: Xalan.
+     * @return product name.
      */
     public String getProductName()
     {
@@ -106,6 +107,7 @@ public class Version {
 
     /**
      * Implementation Language: Java.
+     * @return the implementation language. 
      */
     public String getImplementationLanguage()
     {
@@ -119,6 +121,7 @@ public class Version {
      * 
      * Clients should carefully consider the implications of new versions as
      * external interfaces and behaviour may have changed.
+     * @return major version.
      */
     public int getMajorVersion()
     {
@@ -133,6 +136,7 @@ public class Version {
      * <li>API or behaviour change</li>
      * <li>its designated as a reference release</li>
      * </ul>
+     * @return minor version. 
      */
     public int getMinorVersion()
     {
@@ -145,6 +149,7 @@ public class Version {
      * defects reported. It maintains compatibility with the release and
      * contains no API changes. When missing, it designates the final and
      * complete development drop for a release.
+     * @return maintenance version.
      */
     public int getMaintenanceVersion()
     {
@@ -159,6 +164,7 @@ public class Version {
      * aspects of a new feature, which may take several development drops to
      * complete. At the point of the final drop for the release, the -SNAPSHOT suffix
      * will be omitted.
+     * @return development version flag.
      */
     public boolean isDevelopmentVersion()
     {

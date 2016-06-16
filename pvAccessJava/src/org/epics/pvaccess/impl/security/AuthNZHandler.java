@@ -28,8 +28,6 @@ import org.epics.pvdata.pv.PVField;
  */
 public class AuthNZHandler extends AbstractResponseHandler {
 
-	/**
-	 */
 	public AuthNZHandler(boolean debug) {
 		super("authNZ message", debug);
 	}

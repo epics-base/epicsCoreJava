@@ -45,7 +45,6 @@ import org.epics.pvdata.pv.Status;
 /**
  * Search request handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class SearchHandler extends AbstractServerResponseHandler {
 
@@ -54,9 +53,6 @@ public class SearchHandler extends AbstractServerResponseHandler {
 	private final Random random = new Random();
 	private static final int MAX_SERVER_SEARCH_RESPONSE_DELAY_MS = 100;
 	
-	/**
-	 * @param context
-	 */
 	public SearchHandler(ServerContextImpl context) {
 		super(context, "Search request");
 	}

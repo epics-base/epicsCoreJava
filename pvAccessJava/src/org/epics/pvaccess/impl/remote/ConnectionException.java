@@ -38,8 +38,8 @@ public class ConnectionException extends Exception {
 	/**
 	 * @param address remote address.
 	 * @param type protocol type (tcp, udp, ssl, etc.)
-	 * @param message
-	 * @param cause
+	 * @param message exception message.
+	 * @param cause the cause.
 	 */
 	public ConnectionException(String message, InetSocketAddress address, String type, Throwable cause) {
 		super(message, cause);

@@ -97,10 +97,10 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 
 	/**
 	 * Send message.
-	 * @param transport
-	 * @param ioid
-	 * @param message
-	 * @param messageType
+	 * @param transport transport to use.
+	 * @param ioid request IO ID.
+	 * @param message the message.
+	 * @param messageType message type.
 	 */
 	public static void message(final Transport transport, final int ioid, final String message, final MessageType messageType) {
 		transport.enqueueSendRequest(
@@ -129,11 +129,11 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 	
 	/**
 	 * Send failure message.
-	 * @param command
-	 * @param transport
-	 * @param ioid
-	 * @param qos
-	 * @param status
+	 * @param command failed command.
+	 * @param transport transport to use.
+	 * @param ioid request IO ID.
+	 * @param qos requested QoS.
+	 * @param status completion status (failure).
 	 */
 	public static void sendFailureMessage(final byte command, final Transport transport, final int ioid, final byte qos, final Status status) {
 		transport.enqueueSendRequest(

@@ -328,6 +328,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	
 	/**
 	 * Get configuration instance.
+	 * @return the configuration.
 	 */
 	public Configuration getConfiguration()
 	{
@@ -357,8 +358,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 
 	/**
 	 * Check context state and tries to establish necessary state.
-	 * @throws PVAException
-	 * @throws IllegalStateException
+	 * @throws PVAException any PVA exception.
+	 * @throws IllegalStateException thrown if context is already destroyed.
 	 */
 	protected void checkState() throws PVAException, IllegalStateException {
 		if (state == State.DESTROYED)
@@ -709,9 +710,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 		else if (name.length() > PVAConstants.MAX_CHANNEL_NAME_LENGTH)
 			throw new IllegalArgumentException("name too long");
 	}
-	/**
-	 * Internal create channel.
-	 */
+
 	// TODO no minor version with the addresses
 	// TODO what if there is an channel with the same name, but on different host!
 	public Channel createChannelInternal(String name, ChannelRequester requester, short priority,
@@ -767,10 +766,10 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 	
 	/**
 	 * Destroy channel.
-	 * @param channel
-	 * @param force
-	 * @throws PVAException
-	 * @throws IllegalStateException
+	 * @param channel the channel to destroy.
+	 * @param force force-full (non-user) destruction.
+	 * @throws PVAException unexpected exception.
+	 * @throws IllegalStateException if channel is already destroyed.
 	 */
 	public void destroyChannel(ChannelImpl channel, boolean force)
 		throws PVAException, IllegalStateException {
@@ -1189,7 +1188,7 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 
 	/**
 	 * Unregister response request.
-	 * @param request
+	 * @param request request to unregister.
 	 * @return removed object, can be <code>null</code>
 	 */
 	public ResponseRequest unregisterResponseRequest(ResponseRequest request)

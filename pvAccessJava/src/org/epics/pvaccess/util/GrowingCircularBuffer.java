@@ -18,7 +18,7 @@ package org.epics.pvaccess.util;
  * Implementaton of circular FIFO unbouded buffer.
  * Instance is not a bit synchronized.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
+ * @param <T> buffer element type.
  */
 public final class GrowingCircularBuffer<T> {
 
@@ -44,6 +44,7 @@ public final class GrowingCircularBuffer<T> {
 	
 	/**
 	 * Create a BoundedBuffer with the given capacity.
+	 * @param capacity buffer capacity.
 	 * @exception IllegalArgumentException if capacity less or equal to zero
 	 **/
 	@SuppressWarnings("unchecked")

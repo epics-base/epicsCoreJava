@@ -33,7 +33,7 @@ public interface Connector {
 	 * @param transportRevision	transport revision to be used.
 	 * @param priority process priority.
 	 * @return transport instance.
-	 * @throws ConnectionException
+	 * @throws ConnectionException thrown if connect fails.
 	 */
 	public Transport connect(TransportClient client, ResponseHandler responseHandler, 
 							 InetSocketAddress address, byte transportRevision, short priority) throws ConnectionException;

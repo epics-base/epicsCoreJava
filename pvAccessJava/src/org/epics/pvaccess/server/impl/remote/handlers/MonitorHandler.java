@@ -39,13 +39,9 @@ import org.epics.pvdata.pv.Structure;
 /**
  * Monitor request handler.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class MonitorHandler extends AbstractServerResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public MonitorHandler(ServerContextImpl context) {
 		super(context, "Monitor request");
 	}

@@ -29,13 +29,9 @@ import org.epics.pvdata.misc.SerializeHelper;
 /**
  * Search response.
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
- * @version $Id$
  */
 public class SearchResponseHandler extends AbstractClientResponseHandler {
 
-	/**
-	 * @param context
-	 */
 	public SearchResponseHandler(ClientContextImpl context) {
 		super(context, "Search response");
 	}

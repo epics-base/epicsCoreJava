@@ -70,6 +70,7 @@ public class BlockingServerTCPTransport extends BlockingTCPTransport
 	 * @param channel used socket channel.
 	 * @param responseHandler response handler used to process PVA headers.
 	 * @param receiveBufferSize receive buffer size.
+	 * @throws SocketException thrown on any socket exception.
 	 */
 	public BlockingServerTCPTransport(Context context, 
 			   SocketChannel channel,
