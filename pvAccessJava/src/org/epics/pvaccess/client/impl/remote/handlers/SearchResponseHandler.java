@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.client.impl.remote.search.ChannelSearchManager;
 import org.epics.pvaccess.impl.remote.Transport;
+import org.epics.pvaccess.impl.remote.utils.GUID;
 import org.epics.pvdata.misc.SerializeHelper;
 
 
@@ -83,13 +84,14 @@ public class SearchResponseHandler extends AbstractClientResponseHandler {
 			return;
 
 		// reads CIDs
+		final GUID serverGUID = new GUID(guid);
 		final ChannelSearchManager csm = context.getChannelSearchManager();
 		final int count = payloadBuffer.getShort() & 0xFFFF;
 		for (int i = 0; i < count; i++)
 		{
 			transport.ensureData(4);
 			final int cid = payloadBuffer.getInt();
-			csm.searchResponse(cid, searchSequenceId, version, responseFrom);
+			csm.searchResponse(serverGUID, cid, searchSequenceId, version, responseFrom);
 		}
 	}
 }

@@ -16,6 +16,8 @@ package org.epics.pvaccess.client.impl.remote.search;
 
 import java.net.InetSocketAddress;
 
+import org.epics.pvaccess.impl.remote.utils.GUID;
+
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
@@ -49,12 +51,13 @@ public interface ChannelSearchManager {
 	
 	/**
 	 * Search response from server (channel found).
+	 * @param guid server GUID.
 	 * @param cid	client channel ID.
 	 * @param seqNo	search sequence number.
 	 * @param minorRevision	server minor PVA revision.
 	 * @param serverAddress	server address.
 	 */
-	public void searchResponse(int cid, int seqNo, byte minorRevision, InetSocketAddress serverAddress);
+	public void searchResponse(GUID guid, int cid, int seqNo, byte minorRevision, InetSocketAddress serverAddress);
 
 	/**
 	 * Beacon anomaly detected.

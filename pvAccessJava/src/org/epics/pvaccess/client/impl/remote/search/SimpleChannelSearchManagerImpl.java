@@ -26,6 +26,7 @@ import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
 import org.epics.pvaccess.impl.remote.ProtocolType;
 import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport.InetAddressType;
+import org.epics.pvaccess.impl.remote.utils.GUID;
 import org.epics.pvaccess.util.InetAddressUtil;
 import org.epics.pvaccess.util.IntHashMap;
 import org.epics.pvdata.misc.SerializeHelper;
@@ -357,12 +358,13 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	
 	/**
 	 * Search response from server (channel found).
+	 * @param guid server GUID.
 	 * @param cid	client channel ID.
 	 * @param seqNo	search sequence number.
 	 * @param minorRevision	server minor PVA revision.
 	 * @param serverAddress	server address.
 	 */
-	public void searchResponse(int cid, int seqNo, byte minorRevision, InetSocketAddress serverAddress)
+	public void searchResponse(GUID guid, int cid, int seqNo, byte minorRevision, InetSocketAddress serverAddress)
 	{
 		// first remove
 		SearchInstance si;
@@ -374,12 +376,12 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 			// minor hack to enable duplicate reports
 			si = context.getChannel(cid);
 			if (si != null)
-				si.searchResponse(minorRevision, serverAddress);
+				si.searchResponse(guid, minorRevision, serverAddress);
 			return;
 		}
 		
 		// then notify SearchInstance
-		si.searchResponse(minorRevision, serverAddress);
+		si.searchResponse(guid, minorRevision, serverAddress);
 	}
 	
 	/**

@@ -51,6 +51,7 @@ import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.TransportSender;
 import org.epics.pvaccess.impl.remote.request.ResponseRequest;
 import org.epics.pvaccess.impl.remote.request.SubscriptionRequest;
+import org.epics.pvaccess.impl.remote.utils.GUID;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.misc.TimerFactory;
 import org.epics.pvdata.misc.Timer.TimerCallback;
@@ -145,6 +146,11 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	 * User value used by SearchInstance.
 	 */
 	private final AtomicInteger userValue = new AtomicInteger();
+	
+	/**
+	 * GUID of the server hosting the channel.
+	 */
+	private GUID serverGUID = null;
 
 	/* ****************** */
 
@@ -398,6 +404,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 	private final static int STATIC_SEARCH_BASE_DELAY_SEC = 5;
 	private final static int STATIC_SEARCH_MAX_MULTIPLIER = 10;
 	
+	private static final GUID dummyGUID = new GUID(new byte[12]);
+	
 	@Override
 	public void callback() {
 		// TODO not in this timer thread !!!
@@ -408,7 +416,7 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			addressIndex = addresses.length*STATIC_SEARCH_MAX_MULTIPLIER;
 		
 		// NOTE: calls channelConnectFailed() on failure
-		searchResponse(PVAConstants.PVA_PROTOCOL_REVISION, addresses[ix]);
+		searchResponse(dummyGUID, PVAConstants.PVA_PROTOCOL_REVISION, addresses[ix]);
 	}
 
 	@Override
@@ -424,11 +432,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		return userValue;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.epics.pvaccess.client.impl.remote.ChannelSearchManager.SearchInstance#searchResponse(byte, java.net.InetSocketAddress)
-	 */
 	@Override
-	public synchronized void searchResponse(byte minorRevision, InetSocketAddress serverAddress) {
+	public synchronized void searchResponse(GUID guid, byte minorRevision, InetSocketAddress serverAddress) {
 		// channel is already automatically unregistered
 		
 		Transport transport = getTransport();
@@ -436,7 +441,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 		{
 			// TODO use GUID to determine whether there are multiple servers with the same channel
 			// multiple defined PV or reconnect request (same server address)
-			if (!transport.getRemoteAddress().equals(serverAddress))
+			if (!transport.getRemoteAddress().equals(serverAddress) &&
+				!guid.equals(serverGUID))
 			{
 				requester.message("More than one channel with name '" + name +
 							 "' detected, connected to: " + transport.getRemoteAddress() + ", ignored: " + serverAddress, MessageType.warning);
@@ -451,6 +457,9 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			return;
 		}
 
+		// remember GUID
+		serverGUID = guid;
+		
 		// create channel
 		createChannel(transport);
 	}

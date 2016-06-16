@@ -17,6 +17,8 @@ package org.epics.pvaccess.client.impl.remote.search;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.epics.pvaccess.impl.remote.utils.GUID;
+
 public interface SearchInstance {
 	int getChannelID();
 	String getChannelName();
@@ -25,9 +27,10 @@ public interface SearchInstance {
 
 	/**
 	 * Search response from server (channel found).
+	 * @param guid server GUID
 	 * @param minorRevision	server minor PVA revision.
 	 * @param serverAddress	server address.
 	 */
 	// TODO make InetSocketAddress an URI or similar
-	 void searchResponse(byte minorRevision, InetSocketAddress serverAddress);
+	 void searchResponse(GUID guid, byte minorRevision, InetSocketAddress serverAddress);
 }
