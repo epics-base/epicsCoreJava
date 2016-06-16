@@ -60,6 +60,7 @@ import org.epics.pvaccess.impl.remote.request.ResponseHandler;
 import org.epics.pvaccess.impl.remote.request.ResponseRequest;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPConnector;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport;
+import org.epics.pvaccess.impl.remote.utils.GUID;
 import org.epics.pvaccess.plugins.SecurityPlugin;
 import org.epics.pvaccess.plugins.impl.client.CAClientSecurityPlugin;
 import org.epics.pvaccess.util.InetAddressUtil;
@@ -1297,11 +1298,8 @@ public class ClientContextImpl implements Context/*, Configurable*/ {
 				return channelName;
 			}
 
-			/* (non-Javadoc)
-			 * @see org.epics.pvaccess.client.impl.remote.ChannelSearchManager.SearchInstance#searchResponse(byte, java.net.InetSocketAddress)
-			 */
 			@Override
-			public void searchResponse(byte minorRevision, InetSocketAddress serverAddress) {
+			public void searchResponse(GUID guid, byte minorRevision, InetSocketAddress serverAddress) {
 				freeCID(channelID);
 				requester.channelFindResult(okStatus, this, true);
 			}
