@@ -14,4 +14,13 @@
     <name>pvDataJava</name>
     <url>https://github.com/epics-base/pvDataJava</url>
 
+    <!-- Explicitly declare snapshot repository -->
+    <repositories>
+        <repository>
+            <id>ossrh</id>
+            <name>OSS Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
 </project>
