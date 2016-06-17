@@ -14,6 +14,15 @@
     <name>pvAccessJava</name>
     <url>https://github.com/epics-base/pvAccessJava</url>
 
+    <!-- Explicitly declare snapshot repository -->
+    <repositories>
+        <repository>
+            <id>ossrh</id>
+            <name>OSS Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
