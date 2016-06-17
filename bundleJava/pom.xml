@@ -1,73 +1,367 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>org.epics</groupId>
-    <artifactId>EPICS-Java</artifactId>
-  
-    <packaging>pom</packaging>
-
-    <organization>
-        <name>EPICS</name>
-    </organization>
-
-    <name>bundleRelease - Java</name>
-    <inceptionYear>2015</inceptionYear>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <parent>
         <groupId>org.epics</groupId>
-        <artifactId>ev4-java-bundle</artifactId>
-        <version>1.1</version>
-        <relativePath>config</relativePath>
+        <artifactId>epics-parent</artifactId>
+        <version>4.6.0-SNAPSHOT</version>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>epics</id>
-            <name>EPICS Repository</name>
-            <url>http://epics.sourceforge.net/maven2/</url>
-        </repository>
-    </repositories>
+    <artifactId>epics-bundle-java</artifactId>
+    <packaging>pom</packaging>
 
-    <distributionManagement>
-    	<!-- To be able to deploy, set login/passwd in your m2 settings.xml, <servers> section
-    	(id values there should match ids below) -->
-        <repository>
-            <id>epics.releases</id>
-            <name>EPICS Repository</name>
-            <url>scp://shell.sourceforge.net/home/project-web/epics/htdocs/maven2</url>
-        </repository>
-    </distributionManagement>
-  
+    <name>EPICS Core Distribution Bundle</name>
+    <url>https://github.com/epics-base/bundleJava</url>
+
+    <properties>
+        <!-- Versions of additional modules to be bundled -->
+        <epics-directoryService.version>0.5.0-SNAPSHOT</epics-directoryService.version>
+        <epics-examples.version>4.2.0-SNAPSHOT</epics-examples.version>
+        <!-- Set the name for the release bundle -->
+        <releaseName>EPICS-Java-${project.version}</releaseName>
+    </properties>
+
+    <!-- The assembly is built through dependencies, as the regular moduleSet
+         does not allow to include sources and javadoc as jars -->
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvdata</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvdata</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvdata</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-ntypes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-ntypes</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-ntypes</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvaccess</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvaccess</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvaccess</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvaclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvaclient</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvaclient</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvdatabase</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvdatabase</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvdatabase</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>jca</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>jca</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>jca</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>caj</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>caj</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>caj</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-directoryService</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-directoryService</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-directoryService</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-arrayPerformance</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-arrayPerformance</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-arrayPerformance</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-database</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-database</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-database</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-exampleClient</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-exampleClient</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-exampleClient</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-exampleLink</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-exampleLink</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-exampleLink</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-helloPutGet</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-helloPutGet</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-helloPutGet</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-helloRPC</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-helloRPC</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-helloRPC</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-powerSupply</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-powerSupply</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-powerSupply</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-pvDatabaseRPC</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-pvDatabaseRPC</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-pvDatabaseRPC</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-serviceAPI</artifactId>
+            <version>${epics-examples.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-serviceAPI</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-examples-serviceAPI</artifactId>
+            <version>${epics-examples.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
+
+    </dependencies>
+
     <build>
         <plugins>
+
+            <plugin> 
+                <artifactId>maven-deploy-plugin</artifactId> 
+                <version>2.8.2</version> 
+                <dependencies> 
+                    <dependency> 
+                        <groupId>org.apache.maven.wagon</groupId> 
+                        <artifactId>wagon-ssh</artifactId> 
+                        <version>2.8</version> 
+                    </dependency> 
+                </dependencies> 
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.5.3</version>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/distribution.xml</descriptor>
-                    </descriptors>
-                </configuration>
+                <version>2.6</version>
                 <executions>
                     <execution>
-                        <id>make-assembly</id>
+                        <id>distro-assembly</id>
                         <phase>package</phase>
                         <goals>
                           <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>${bundleVersion}</finalName>
+                            <finalName>${releaseName}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/assembly/distribution.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
               </executions>
+            </plugin>
+
+            <!-- Do not install the distribution tar in Maven repository -->
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>2.5.2</version>
+                <configuration>
+                  <skip>true</skip>
+                </configuration>
+            </plugin>
+
+            <!-- Do not deploy the distribution tar to remote repository -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <configuration>
+                    <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                </configuration>
             </plugin>
 
         </plugins>
