@@ -1,0 +1,24 @@
+[submodule "bundleJava"]
+	path = bundleJava
+	url = https://github.com/epics-base/bundleJava
+[submodule "pvDataJava"]
+	path = pvDataJava
+	url = https://github.com/epics-base/pvDataJava
+[submodule "pvAccessJava"]
+	path = pvAccessJava
+	url = https://github.com/epics-base/pvAccessJava
+[submodule "normativeTypesJava"]
+	path = normativeTypesJava
+	url = https://github.com/epics-base/normativeTypesJava
+[submodule "pvaClientJava"]
+	path = pvaClientJava
+	url = https://github.com/epics-base/pvaClientJava
+[submodule "pvDatabaseJava"]
+	path = pvDatabaseJava
+	url = https://github.com/epics-base/pvDatabaseJava
+[submodule "exampleJava"]
+	path = exampleJava
+	url = https://github.com/epics-base/exampleJava
+[submodule "directoryService"]
+	path = directoryService
+	url = https://github.com/epics-base/directoryService
