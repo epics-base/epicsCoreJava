@@ -11,7 +11,7 @@
     <artifactId>epics-core</artifactId>
     <packaging>pom</packaging>
 
-    <name>EPICS Core Libraries</name>
+    <name>EPICS Core Libraries POM</name>
     <description>The EPICS Core Libraries contain the Java implementation of EPICS.</description>
     <url>https://github.com/epics-base/epicsCoreJava</url>
 

@@ -34,6 +34,7 @@
         <module>pvaClientJava</module>
         <module>pvDatabaseJava</module>
         <module>epics-core</module>
+        <module>epics-deploy</module>
     </modules>
 
     <organization>
