@@ -22,6 +22,15 @@
         <releaseName>EPICS-Java-${project.version}</releaseName>
     </properties>
 
+    <!-- Explicitly declare snapshot repository -->
+    <repositories>
+        <repository>
+            <id>ossrh</id>
+            <name>OSS Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
     <!-- The assembly is built through dependencies, as the regular moduleSet
          does not allow to include sources and javadoc as jars -->
     <dependencies>
