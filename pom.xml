@@ -98,7 +98,7 @@
         <!-- To be able to deploy, set login/passwd in your m2 settings.xml, <servers> section
         (id values there should match ids below) -->
         <snapshotRepository>
-            <id>ossrh</id>
+            <id>sonatype-nexus-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
@@ -106,7 +106,7 @@
     <!-- Explicitly declare snapshot repository -->
     <repositories>
         <repository>
-            <id>ossrh</id>
+            <id>sonatype-nexus-snapshots</id>
             <name>OSS Snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
