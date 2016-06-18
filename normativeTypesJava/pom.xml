@@ -17,7 +17,7 @@
     <!-- Explicitly declare snapshot repository -->
     <repositories>
         <repository>
-            <id>ossrh</id>
+            <id>sonatype-nexus-snapshots</id>
             <name>OSS Snapshots</name>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
