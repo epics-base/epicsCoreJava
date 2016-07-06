@@ -57,12 +57,6 @@ public interface PVField extends Serializable {
     int getNumberFields();
 
     /**
-     * Get the PVAuxInfo interface for the PVField.
-     * @return the PVAuxInfo interface.
-     */
-    PVAuxInfo getPVAuxInfo();
-
-    /**
      * Is the field immutable - that is, does it not allow changes?
      *
      * @return (false,true) if it (is not, is) immutable

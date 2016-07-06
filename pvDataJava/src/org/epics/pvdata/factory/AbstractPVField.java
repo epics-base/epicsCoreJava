@@ -8,7 +8,6 @@ package org.epics.pvdata.factory;
 
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.PVAuxInfo;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.PostHandler;
@@ -24,7 +23,6 @@ import org.epics.pvdata.pv.Type;
 public abstract class AbstractPVField implements PVField{
     private int fieldOffset = 0;
     private int nextFieldOffset = 0;
-    private PVAuxInfo pvAuxInfo = null;
     private boolean isImmutable = false;
     private String fieldName = null;
     private Field field;
@@ -128,14 +126,6 @@ public abstract class AbstractPVField implements PVField{
     	if(nextFieldOffset==0) computeOffset();
         return (nextFieldOffset - fieldOffset);
     }
-    /* (non-Javadoc)
-     * @see org.epics.pvdata.pv.PVField#getPVAuxInfo()
-     */
-    @Override
-    public PVAuxInfo getPVAuxInfo() {
-        if(pvAuxInfo==null) pvAuxInfo = new BasePVAuxInfo(this);
-        return pvAuxInfo;
-    }
     
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVField#isImmutable()
@@ -178,7 +168,6 @@ public abstract class AbstractPVField implements PVField{
     @Override
     public void toString(StringBuilder buf,int indentLevel) {
         convert.getString(buf,this,indentLevel);
-        if(pvAuxInfo!=null) pvAuxInfo.toString(buf,indentLevel+1);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()

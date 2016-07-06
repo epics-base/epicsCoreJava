@@ -6,13 +6,11 @@
 package org.epics.pvdata.factory;
 
 import java.util.Formatter;
-import java.util.Map;
 import java.util.Set;
 
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.PVAuxInfo;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVScalar;
@@ -143,15 +141,6 @@ public class PVDataFactory {
         public PVScalar createPVScalar(PVScalar scalarToClone) {
             PVScalar pvScalar = createPVScalar(scalarToClone.getScalar().getScalarType());
             convert.copyScalar(scalarToClone, pvScalar);
-            Map<String,PVScalar> attributes = scalarToClone.getPVAuxInfo().getInfos();
-            PVAuxInfo pvAttribute = pvScalar.getPVAuxInfo();
-            Set<Map.Entry<String, PVScalar>> set = attributes.entrySet();
-            for(Map.Entry<String,PVScalar> entry : set) {
-                String key = entry.getKey();
-                PVScalar fromAttribute = attributes.get(key);
-                PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
-                convert.copyScalar(fromAttribute, toAttribute);
-            }
             return pvScalar;
         }
         /* (non-Javadoc)
@@ -191,15 +180,6 @@ public class PVDataFactory {
         public PVScalarArray createPVScalarArray(PVScalarArray arrayToClone) {
             PVScalarArray pvArray = createPVScalarArray(arrayToClone.getScalarArray().getElementType());
             convert.copyScalarArray(arrayToClone,0, pvArray,0,arrayToClone.getLength());
-            Map<String,PVScalar> attributes = arrayToClone.getPVAuxInfo().getInfos();
-            PVAuxInfo pvAttribute = pvArray.getPVAuxInfo();
-            Set<Map.Entry<String, PVScalar>> set = attributes.entrySet();
-            for(Map.Entry<String,PVScalar> entry : set) {
-                String key = entry.getKey();
-                PVScalar fromAttribute = attributes.get(key);
-                PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
-                convert.copyScalar(fromAttribute, toAttribute);
-            }
             return pvArray;
         }
         /* (non-Javadoc)
@@ -354,15 +334,6 @@ public class PVDataFactory {
         
         private boolean copyStructure(PVStructure from,PVStructure to)  {
             boolean result = true;
-            Map<String,PVScalar> attributes = from.getPVAuxInfo().getInfos();
-            PVAuxInfo pvAttribute = to.getPVAuxInfo();
-            Set<Map.Entry<String, PVScalar>> set = attributes.entrySet();
-            for(Map.Entry<String,PVScalar> entry : set) {
-                String key = entry.getKey();
-                PVScalar fromAttribute = attributes.get(key);
-                PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
-                convert.copyScalar(fromAttribute, toAttribute);
-            }
             PVField[] fromFields = from.getPVFields();
             PVField[] toFields = to.getPVFields();
             if(fromFields.length!=toFields.length) {
@@ -383,15 +354,6 @@ public class PVDataFactory {
             		if(result) result = xxx;
             		continue;
             	}
-            	attributes = fromPV.getPVAuxInfo().getInfos();
-            	pvAttribute = toPV.getPVAuxInfo();
-            	set = attributes.entrySet();
-                for(Map.Entry<String,PVScalar> entry : set) {
-                    String key = entry.getKey();
-                    PVScalar fromAttribute = attributes.get(key);
-                    PVScalar toAttribute = pvAttribute.createInfo(key, fromAttribute.getScalar().getScalarType());
-                    convert.copyScalar(fromAttribute, toAttribute);
-                }
                 if(type==Type.scalar) {
                 	convert.copyScalar((PVScalar)fromPV, (PVScalar)toPV);
                 } else if(type==Type.scalarArray) {
