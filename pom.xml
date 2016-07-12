@@ -13,7 +13,7 @@
 
     <properties>
         <!-- Matching versions of Core modules -->
-        <epics-pvdata.version>5.1.0-SNAPSHOT</epics-pvdata.version>
+        <epics-pvdata.version>6.0.0-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.2.0-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>4.2.0-SNAPSHOT</epics-pvaccess.version>
         <epics-pvaclient.version>4.2.0-SNAPSHOT</epics-pvaclient.version>
