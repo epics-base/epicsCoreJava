@@ -1,4 +1,17 @@
-Release release/3.1 IN DEVELOPMENT
+Release 5.0.0
+===========
+
+* Duplicate channel response from the same server warning removed
+* Server "all providers" support
+* ServerContextImpl.startPVAServer method added
+* "pvAccess" provider name deprecated, use "pva" instead
+* Server-side channel destroy
+* pipeline: ackAny parameter percentage support
+* PVGet utility monitor support
+* pvDS code removed
+* pipeline support added
+
+Release release/3.1
 ===========
 
 The main changes since release 3.0.2 are:
