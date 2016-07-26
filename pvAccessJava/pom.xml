@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>epics-pvaccess</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>5.1.0-SNAPSHOT</version>
 
     <name>pvAccessJava</name>
     <url>https://github.com/epics-base/pvAccessJava</url>
