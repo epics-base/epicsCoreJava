@@ -19,6 +19,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>epics-bundle-java</artifactId>
+            <type>pom</type>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
