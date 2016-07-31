@@ -253,25 +253,6 @@
                 <classifier>javadoc</classifier>
             </dependency>
 
-            <!-- Examples bundled with EPICS Core -->
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-directoryService</artifactId>
-                <version>${epics-directoryService.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-directoryService</artifactId>
-                <version>${epics-directoryService.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-directoryService</artifactId>
-                <version>${epics-directoryService.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 
