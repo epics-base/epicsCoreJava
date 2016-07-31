@@ -16,7 +16,7 @@
 
     <properties>
         <!-- Versions of additional modules to be bundled -->
-        <epics-directoryService.version>0.5.0-SNAPSHOT</epics-directoryService.version>
+        <epics-directoryservice.version>0.5.0-SNAPSHOT</epics-directoryservice.version>
         <epics-examples.version>4.2.0-SNAPSHOT</epics-examples.version>
         <!-- Set the name for the release bundle -->
         <releaseName>EPICS-Java-${project.version}</releaseName>
@@ -142,15 +142,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>epics-directoryService</artifactId>
+            <version>${epics-directoryservice.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>epics-directoryService</artifactId>
+            <version>${epics-directoryservice.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>epics-directoryService</artifactId>
+            <version>${epics-directoryservice.version}</version>
             <classifier>javadoc</classifier>
         </dependency>
 
