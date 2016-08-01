@@ -49,6 +49,12 @@
         </license>
     </licenses>
 
+    <scm>
+        <connection>scm:git:https://github.com/epics-base/epicsCoreJava.git</connection>
+        <developerConnection>scm:git:https://github.com/epics-base/epicsCoreJava.git</developerConnection>
+        <url>https://github.com/epics-base/epicsCoreJava</url>
+    </scm>
+
     <!-- Project developers (alphabetically) taken from SCM logs -->
     <developers>
         <developer>
