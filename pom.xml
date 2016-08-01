@@ -116,15 +116,6 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <!-- Explicitly declare snapshot repository -->
-    <repositories>
-        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>OSS Snapshots</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
-
     <!-- Common depoendencies -->
     <dependencies>
         <dependency>
