@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>epics-parent</artifactId>
-        <version>4.6.0-SNAPSHOT</version>
+        <version>4.7.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>epics-bundle-java</artifactId>
@@ -16,8 +16,8 @@
 
     <properties>
         <!-- Versions of additional modules to be bundled -->
-        <epics-directoryservice.version>0.5.0-SNAPSHOT</epics-directoryservice.version>
-        <epics-examples.version>4.2.0-SNAPSHOT</epics-examples.version>
+        <epics-directoryservice.version>0.6.0-SNAPSHOT</epics-directoryservice.version>
+        <epics-examples.version>4.3.0-SNAPSHOT</epics-examples.version>
         <!-- Set the name for the release bundle -->
         <releaseName>EPICS-Java-${project.version}</releaseName>
     </properties>
