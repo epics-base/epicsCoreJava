@@ -42,6 +42,13 @@
         <url>http://www.aps.anl.gov/epics/</url>
     </organization>
 
+    <licenses>
+        <license>
+            <name>The EPICS V4 License</name>
+            <url>http://epics-pvdata.sourceforge.net/LICENSE.txt</url>
+        </license>
+    </licenses>
+
     <!-- Project developers (alphabetically) taken from SCM logs -->
     <developers>
         <developer>
