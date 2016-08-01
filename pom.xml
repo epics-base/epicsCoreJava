@@ -4,7 +4,7 @@
 
     <groupId>org.epics</groupId>
     <artifactId>epics-parent</artifactId>
-    <version>4.6.0-SNAPSHOT</version>
+    <version>4.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>EPICS Core Build</name>
@@ -13,11 +13,11 @@
 
     <properties>
         <!-- Matching versions of Core modules -->
-        <epics-pvdata.version>6.0.0-SNAPSHOT</epics-pvdata.version>
-        <epics-ntypes.version>0.2.0-SNAPSHOT</epics-ntypes.version>
-        <epics-pvaccess.version>4.2.0-SNAPSHOT</epics-pvaccess.version>
-        <epics-pvaclient.version>4.2.0-SNAPSHOT</epics-pvaclient.version>
-        <epics-pvdatabase.version>4.2.0-SNAPSHOT</epics-pvdatabase.version>
+        <epics-pvdata.version>6.1.0-SNAPSHOT</epics-pvdata.version>
+        <epics-ntypes.version>0.3.0-SNAPSHOT</epics-ntypes.version>
+        <epics-pvaccess.version>5.1.0-SNAPSHOT</epics-pvaccess.version>
+        <epics-pvaclient.version>4.3.0-SNAPSHOT</epics-pvaclient.version>
+        <epics-pvdatabase.version>4.3.0-SNAPSHOT</epics-pvdatabase.version>
         <jca.version>2.3.6</jca.version>
         <caj.version>1.1.15</caj.version>
         <!-- Versions of examples bundled with Core -->
