@@ -44,8 +44,8 @@
 
     <licenses>
         <license>
-            <name>The EPICS V4 License</name>
-            <url>http://epics-pvdata.sourceforge.net/LICENSE.txt</url>
+            <name>The MIT License</name>
+            <url>https://tldrlegal.com/license/mit-license</url>
         </license>
     </licenses>
 
