@@ -455,13 +455,16 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 		// TODO anything else?
 		if (obj instanceof PVStructure) {
 			PVStructure b = (PVStructure)obj;
+			if (!getStructure().equals(b.getStructure()))
+			    return false;
+
 			final PVField[] bfields = b.getPVFields(); 
 			if (bfields.length == pvFields.length)
 			{
 		        for (int i = 0; i < pvFields.length; i++)
 		        	if (!pvFields[i].equals(bfields[i]))
 		        		return false;
-		        
+
 		        return true;
 			}
 			else
