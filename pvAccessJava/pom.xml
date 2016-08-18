@@ -44,6 +44,22 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <!-- Use lower case for bundle name, as agreed upon with CS-Studio devs -->
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>org.epics.pvaccess</Bundle-SymbolicName>
+                        <Import-Package>sun.misc;resolution:=optional,*</Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>with-japex</id>
