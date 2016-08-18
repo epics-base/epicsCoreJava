@@ -23,4 +23,19 @@
         </repository>
     </repositories>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <!-- Use lower case for bundle name, as agreed upon with CS-Studio devs -->
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>org.epics.pvdata</Bundle-SymbolicName>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
