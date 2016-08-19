@@ -98,6 +98,14 @@
             </roles>
         </developer>
         <developer>
+            <name>Guobao Shen</name>
+            <email>shen@frib.msu.edu</email>
+            <organization>FRIB</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
             <name>Gregory White</name>
             <email>greg@slac.stanford.edu</email>
             <organization>SLAC</organization>
