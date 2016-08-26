@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>epics-parent</artifactId>
-        <version>4.6.0-rc1</version>
+        <version>4.6.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>epics-deploy</artifactId>
@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>epics-bundle-java</artifactId>
+            <artifactId>epics-core</artifactId>
             <type>pom</type>
             <version>${project.version}</version>
         </dependency>
