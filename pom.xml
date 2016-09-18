@@ -414,6 +414,7 @@
                         <configuration>
                             <tagNameFormat>@{project.version}</tagNameFormat>
                             <commitByProject>true</commitByProject>
+                            <pushChanges>false</pushChanges>
                         </configuration>
                     </plugin>
 
