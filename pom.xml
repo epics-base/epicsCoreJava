@@ -19,7 +19,6 @@
         <epics-pvdatabase.version>4.2.2-SNAPSHOT</epics-pvdatabase.version>
         <jca.version>2.3.6</jca.version>
         <caj.version>1.1.15</caj.version>
-        <!-- Versions of examples bundled with Core -->
         
         <!-- Name of javadoc overview page -->
         <mainpage.name>${project.name}</mainpage.name>
@@ -414,6 +413,7 @@
                         <version>2.5.3</version>
                         <configuration>
                             <tagNameFormat>@{project.version}</tagNameFormat>
+                            <commitByProject>true</commitByProject>
                         </configuration>
                     </plugin>
 
