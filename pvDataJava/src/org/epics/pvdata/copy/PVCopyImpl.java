@@ -1,5 +1,5 @@
 /*
- * Copyright information and license terms for this software can be
+ * The License for this software can be
  * found in the file LICENSE that is included with the distribution
  */
 package org.epics.pvdata.copy;
@@ -15,6 +15,7 @@ import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Type;
@@ -36,8 +37,9 @@ class PVCopyImpl {
 			pvStruct = pvRequest.getStructureField("field");
 		}
 		boolean result = impl.init(pvStruct);
-		if(result) return impl;
-		return null;
+		if(!result) return null;
+		impl.traverseMasterInitPlugin();
+		return impl;
 	}
 	
 	private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
@@ -45,20 +47,18 @@ class PVCopyImpl {
     private static final Convert convert = ConvertFactory.getConvert();
     
     static class Node {
+    	PVField masterPVField;
         boolean isStructure = false;
         int structureOffset = 0; // In the copy
         int nfields = 0;
         PVStructure options = null;
+        PVFilter[] pvFilters = null;
     }
-    
-    static class MasterNode extends Node{
-        PVField masterPVField;
-    }
+
     
     static class StructureNode extends Node {
         Node[] nodes;
-    }
-    
+    }    
     
     private static final class ThePVCopyImpl implements PVCopy{
         private final PVStructure pvMaster;
@@ -85,8 +85,7 @@ class PVCopyImpl {
         {
             Node node = innode;
             if(!node.isStructure) {
-                MasterNode masterNode = (MasterNode)node;
-                callback.nextMasterPVField(masterNode.masterPVField);
+                callback.nextMasterPVField(node.masterPVField);
                 return;
             }
             StructureNode structNode = (StructureNode)node;
@@ -122,10 +121,7 @@ class PVCopyImpl {
             if(fieldOffset==0) return headNode.options;
             Node node = headNode;
             while(true) {
-                if(!node.isStructure) {
-                    if(node.structureOffset==fieldOffset) return node.options;
-                    return null;
-                }
+                if(node.structureOffset==fieldOffset) return node.options;
                 StructureNode structNode = (StructureNode)node;
                 Node[] nodes = structNode.nodes;
                 boolean okToContinue = false;
@@ -158,7 +154,7 @@ class PVCopyImpl {
             if(node.isStructure) {
                 kind = "structureNode";
             } else {
-                kind = "masterNode";
+                kind = "node";
             }
             builder.append(kind);
             builder.append((" isStructure " + (node.isStructure ? "true" : "false")));
@@ -170,12 +166,17 @@ class PVCopyImpl {
                 options.toString(builder, indentLevel+1);
                 convert.newLine(builder, indentLevel);
             }
-            if(!node.isStructure) {
-                MasterNode masterNode = (MasterNode)node;
-                String name = masterNode.masterPVField.getFullName();
-                builder.append(" masterField " + name);
-                return;
+            String name = node.masterPVField.getFullName();
+            convert.newLine(builder, indentLevel+1);
+            builder.append(" masterField " + name);
+            convert.newLine(builder, indentLevel+1);
+            PVFilter[] pvFilters = node.pvFilters;
+            if(pvFilters!=null) {
+            	builder.append(" filters:");
+            	for(int i=0; i< pvFilters.length; ++i) builder.append(" " +pvFilters[i].getName());
+            	convert.newLine(builder, indentLevel+1);
             }
+            if(!node.isStructure) return;
             StructureNode structureNode = (StructureNode)node;
             Node[] nodes =structureNode.nodes;
             for(int i=0 ; i<nodes.length; i++){
@@ -190,7 +191,7 @@ class PVCopyImpl {
         @Override
         public int getCopyOffset(PVField masterPVField) {
             if(!headNode.isStructure) {
-                MasterNode masterNode = (MasterNode)headNode;
+                Node masterNode = headNode;
                 if(masterNode.masterPVField.equals(masterPVField)) return headNode.structureOffset;
                 PVStructure parent = masterPVField.getParent();
                 int offsetParent = parent.getFieldOffset();
@@ -199,7 +200,7 @@ class PVCopyImpl {
                 if(offdiff<masterNode.nfields) return headNode.structureOffset + offdiff;
                 return -1;
             }
-            MasterNode masterNode = getCopyOffset((StructureNode)headNode,masterPVField);
+            Node masterNode = getCopyOffset((StructureNode)headNode,masterPVField);
             if(masterNode!=null) {
                 int offset = masterPVField.getFieldOffset() - masterNode.masterPVField.getFieldOffset();
                 return masterNode.structureOffset + offset;
@@ -208,9 +209,9 @@ class PVCopyImpl {
         }
         
         public int getCopyOffset(PVStructure masterPVStructure,PVField masterPVField) {
-            MasterNode masterNode = null;
+            Node masterNode = null;
             if(!headNode.isStructure) {
-                masterNode = (MasterNode)headNode;
+                masterNode = headNode;
                 if(masterNode.masterPVField!=masterPVStructure) {
                     return headNode.structureOffset + 1;
                 }
@@ -223,10 +224,10 @@ class PVCopyImpl {
         }
         
         
-        private MasterNode getMasterNode(StructureNode structureNode,int structureOffset) {
+        private Node getMasterNode(StructureNode structureNode,int structureOffset) {
             for(Node node : structureNode.nodes) {
                 if(structureOffset>=(node.structureOffset + node.nfields)) continue;
-                if(!node.isStructure) return (MasterNode)node; 
+                if(!node.isStructure) return node; 
                 StructureNode subNode = (StructureNode)node;
                 return  getMasterNode(subNode,structureOffset);
             }
@@ -238,9 +239,9 @@ class PVCopyImpl {
         @Override
         public PVField getMasterPVField(int structureOffset)
         {
-            MasterNode masterNode = null;
+            Node masterNode = null;
             if(!headNode.isStructure) {
-                masterNode = (MasterNode)headNode;
+                masterNode = headNode;
             } else {
                 masterNode = getMasterNode((StructureNode)headNode,structureOffset);
             }
@@ -269,23 +270,7 @@ class PVCopyImpl {
         @Override
         public void updateCopySetBitSet(PVStructure copyPVStructure,BitSet bitSet)
         {
-            if(headNode.isStructure) {
-                updateStructureNodeSetBitSet(copyPVStructure,(StructureNode)headNode,bitSet);
-            } else {
-                MasterNode masterNode = (MasterNode)headNode;
-                PVField pvMasterField= masterNode.masterPVField;
-                PVField copyPVField = copyPVStructure;
-                PVField  pvField = pvMasterField;
-                if(pvField.getField().getType()==Type.structure) {
-                    updateSubFieldSetBitSet(copyPVField,pvMasterField,bitSet);
-                    return;
-                }
-                boolean isEqual = copyPVField.equals(pvField);
-                if(!isEqual) {
-                    convert.copy(pvField, copyPVField);
-                    bitSet.set(copyPVField.getFieldOffset());
-                }
-            }
+        	updateCopySetBitSet(copyPVStructure,headNode,bitSet);
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pvCopy.PVCopy#updateCopyFromBitSet(org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)
@@ -296,7 +281,7 @@ class PVCopyImpl {
             if(headNode.isStructure) {
                 updateStructureNodeFromBitSet(copyPVStructure,(StructureNode)headNode,bitSet, true,doAll);
             } else {
-                MasterNode masterNode = (MasterNode)headNode;
+                Node masterNode = headNode;
                 updateSubFieldFromBitSet(copyPVStructure,masterNode.masterPVField,bitSet, true,doAll);
             }
         }
@@ -310,16 +295,52 @@ class PVCopyImpl {
             if(headNode.isStructure) {
                 updateStructureNodeFromBitSet(copyPVStructure,(StructureNode)headNode,bitSet, false,doAll);
             } else {
-                MasterNode masterNode = (MasterNode)headNode;
+                Node masterNode = headNode;
                 updateSubFieldFromBitSet(copyPVStructure,masterNode.masterPVField,bitSet,false,doAll);
             }
         }
+        
+        private void initPlugin(Node node,PVStructure pvOptions,PVField pvMasterField)
+        {
+        	PVField[] pvFields = pvOptions.getPVFields();
+        	int num = pvFields.length;
+        	PVFilter[] pvFilters = new PVFilter[num];
+        	int numfilter = 0;;
+        	for(int i=0; i<num; ++i) {
+        		PVString pvOption = (PVString)(pvFields[i]);
+        		String name = pvOption.getFieldName();
+        		String value = pvOption.get();
+            	PVPlugin pvPlugin = PVPluginRegistry.find(name);
+            	if(pvPlugin==null) continue;
+            	pvFilters[numfilter] = pvPlugin.create(value,this,pvMasterField);
+            	if(pvFilters[numfilter]!=null) ++numfilter;
+        	}
+        	if(numfilter==0) return;
+        	node.pvFilters = new PVFilter[numfilter];
+        	for(int i=0; i<numfilter; ++i) node.pvFilters[i] = pvFilters[i];
+        	
+        }
          
+        private void traverseMasterInitPlugin()
+        {
+        	traverseMasterInitPlugin(headNode);     
+        }
+        private void traverseMasterInitPlugin(Node node)
+        {
+        	PVField pvField = node.masterPVField;
+            PVStructure pvOptions = node.options;
+            if(pvOptions!=null) initPlugin(node,pvOptions,pvField);	
+            if(!node.isStructure) return;
+            StructureNode structNode = (StructureNode)node;
+            Node[] nodes = structNode.nodes;
+            for(int i=0; i< nodes.length; ++i) {
+                node = nodes[i];
+                traverseMasterInitPlugin(node);
+            }
+        }
         
         private boolean  init(PVStructure pvRequest) {
             PVStructure pvMasterStructure = pvMaster;
-//System.out.println("pvMaster");
-//System.out.println(pvMasterStructure.getPVStructure());
             int len = pvRequest.getPVFields().length;
             boolean entireRecord = false;
             if(len==0) entireRecord = true;
@@ -331,7 +352,7 @@ class PVCopyImpl {
             if(entireRecord) {
                 // asking for entire record is special case.
                 structure = pvMasterStructure.getStructure();
-                MasterNode masterNode = new MasterNode();
+                Node masterNode = new Node();
                 headNode = masterNode;
                 masterNode.options = pvOptions;
                 masterNode.isStructure = false;
@@ -426,7 +447,7 @@ class PVCopyImpl {
                             (PVStructure)pvMasterField,requestPVStructure,(PVStructure)copyPVField));
                     continue;
                 }
-                MasterNode masterNode = new MasterNode();
+                Node masterNode = new Node();
                 masterNode.options = pvSubFieldOptions;
                 masterNode.isStructure = false;
                 masterNode.masterPVField = pvMasterField;
@@ -437,6 +458,7 @@ class PVCopyImpl {
             StructureNode structureNode = new StructureNode();
             Node[] nodes = new Node[number];
             nodeList.toArray(nodes);
+            structureNode.masterPVField = pvMasterStructure;
             structureNode.isStructure = true;
             structureNode.nodes = nodes;
             structureNode.structureOffset = pvFromCopy.getFieldOffset();
@@ -446,42 +468,61 @@ class PVCopyImpl {
 
         }
 
-        private void updateStructureNodeSetBitSet(PVStructure pvCopy,StructureNode structureNode,BitSet bitSet) {
-            for(int i=0; i<structureNode.nodes.length; i++) {
-                Node node = structureNode.nodes[i];
-                PVField pvField = pvCopy.getSubField(node.structureOffset);
-                if(node.isStructure) {
-                    updateStructureNodeSetBitSet((PVStructure)pvField,(StructureNode)node,bitSet); 
-                } else {
-                    MasterNode masterNode = (MasterNode)node;
-                    updateSubFieldSetBitSet(pvField,masterNode.masterPVField,bitSet);
-                }
-            }
-        }
+//        private void updateStructureNodeSetBitSet(PVStructure pvCopy,StructureNode structureNode,BitSet bitSet) {
+//        	if(structureNode.pvFilters!=null) {
+//        		boolean result = false;
+//        		for(int i=0; i< structureNode.pvFilters.length; ++i) {
+//        			PVFilter pvFilter = structureNode.pvFilters[i];
+//        			if(pvFilter.filter(pvCopy,bitSet)) result = true;
+//        		}
+//        		if(!result) {
+//        			convert.copy(structureNode.masterPVField, pvCopy);
+//        			bitSet.set(pvCopy.getFieldOffset());
+//        		}
+//        		return;
+//        	}
+//            for(int i=0; i<structureNode.nodes.length; i++) {
+//                Node node = structureNode.nodes[i];
+//                PVField pvField = pvCopy.getSubField(node.structureOffset);
+//                if(node.isStructure) {
+//                    updateStructureNodeSetBitSet((PVStructure)pvField,(StructureNode)node,bitSet); 
+//                } else {
+//                    updateSubFieldSetBitSet(pvField,node,bitSet);
+//                }
+//            }
+//        }
         
-        private void updateSubFieldSetBitSet(PVField pvCopy,PVField pvMaster,BitSet bitSet) {
+        private void updateCopySetBitSet(PVField pvCopy,Node node,BitSet bitSet) {
+        	boolean result = false;
+        	if(node.pvFilters!=null) {
+        		for(int i=0; i< node.pvFilters.length; ++i) {
+        			PVFilter pvFilter = node.pvFilters[i];
+        			if(pvFilter.filter(pvCopy,bitSet)) result = true;
+        		}
+        	}
+        	PVField pvMaster = node.masterPVField;
         	Field field = pvCopy.getField();
         	Type type = field.getType();
-            if(type!=Type.structure) {
-            	boolean isEqual = pvCopy.equals(pvMaster);
-            	if(isEqual) {
-            		if(type==Type.structureArray) {
-            			// always act as though a change occurred. Note that array elements are shared.
+        	if(!node.isStructure) {
+        		if(result) return;
+        		boolean isEqual = pvCopy.equals(pvMaster);
+        		if(isEqual) {
+        			if(type==Type.structureArray) {
+        				// always act as though a change occurred. Note that array elements are shared.
         				bitSet.set(pvCopy.getFieldOffset());
-            		}
-            	}
-                if(isEqual) return;
-                convert.copy(pvMaster, pvCopy);
-                bitSet.set(pvCopy.getFieldOffset());
-                return;
-            }
+        			}
+        		}
+        		if(isEqual) return;
+        			convert.copy(pvMaster, pvCopy);
+        			bitSet.set(pvCopy.getFieldOffset());
+        		return;
+        	}
+            StructureNode structureNode = (StructureNode)(node);
             PVStructure pvCopyStructure = (PVStructure)pvCopy;
             PVField[] pvCopyFields = pvCopyStructure.getPVFields();
-            PVStructure pvMasterStructure = (PVStructure)pvMaster;
-            PVField[] pvMasterFields = pvMasterStructure.getPVFields();
             int length = pvCopyFields.length;
             for(int i=0; i<length; i++) {
-                updateSubFieldSetBitSet(pvCopyFields[i],pvMasterFields[i],bitSet);
+                updateCopySetBitSet(pvCopyFields[i],structureNode.nodes[i],bitSet);
             }
         }
         
@@ -501,8 +542,7 @@ class PVCopyImpl {
                     StructureNode subStructureNode = (StructureNode)node;
                     updateStructureNodeFromBitSet((PVStructure)pvField,subStructureNode,bitSet,toCopy,doAll);
                 } else {
-                    MasterNode masterNode = (MasterNode)node;
-                    updateSubFieldFromBitSet(pvField,masterNode.masterPVField,bitSet,toCopy,doAll);
+                    updateSubFieldFromBitSet(pvField,node.masterPVField,bitSet,toCopy,doAll);
                 }
             }
         }
@@ -538,21 +578,20 @@ class PVCopyImpl {
             }
         }
         
-        private MasterNode getCopyOffset(StructureNode structureNode,PVField masterPVField)
+        private Node getCopyOffset(StructureNode structureNode,PVField masterPVField)
         {
             int offset = masterPVField.getFieldOffset();
             Node[] nodes = structureNode.nodes;
             for(int i=0; i< nodes.length; i++) {
                 Node node = nodes[i];
                 if(!node.isStructure) {
-                    MasterNode masterNode = (MasterNode)node;
-                    int off = masterNode.masterPVField.getFieldOffset();
-                    int nextOffset = masterNode.masterPVField.getNextFieldOffset();
-                    if(offset>= off && offset<nextOffset) return masterNode;
+                    int off = node.masterPVField.getFieldOffset();
+                    int nextOffset = node.masterPVField.getNextFieldOffset();
+                    if(offset>= off && offset<nextOffset) return node;
                 } else {
                     StructureNode subNode = (StructureNode)node;
-                    MasterNode masterNode = getCopyOffset(subNode,masterPVField);
-                    if(masterNode!=null) return masterNode;
+                    node = getCopyOffset(subNode,masterPVField);
+                    if(node!=null) return node;
                 }
             }
             return null;
