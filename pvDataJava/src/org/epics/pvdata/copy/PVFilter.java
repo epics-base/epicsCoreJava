@@ -9,20 +9,20 @@ import org.epics.pvdata.pv.*;
 /**
  * A Filter that is called when a copy PVStructure is being updated.
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  *
  * This interface define a filter to update a copy of a field from a master PVStructure.
  * of the data in the master.
  */
 public interface PVFilter {
 	/**
-	 * Update copy from master.
-	 * @param master The data from master.
+	 * Update copy or master.
 	 * @param copy The data for copy.
 	 * @param bitSet The BitSet for copy.
-	 * @return (true,false) if filter modified copy.
+	 * @param toCopy (true,false) means copy (from master to copy,from copy to master)
+	 * @return (true,false) if filter modified destination.
 	 */
-	boolean filter(PVField copy,BitSet bitSet);
+	boolean filter(PVField copy,BitSet bitSet,boolean toCopy);
 	/**
 	 * Get the filter name.
 	 * This is the name part of a request name=value pair.

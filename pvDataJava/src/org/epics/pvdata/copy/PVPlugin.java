@@ -8,7 +8,7 @@ import org.epics.pvdata.pv.PVField;
  * A filter plugin that attaches to a field of a PVStrcture.
  * PVCopy looks for plugins defined in pvRequest and calls the filter when a pvCopy is updated.
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  * 
  * Interface for a filter plugin for PVCopy.
  *

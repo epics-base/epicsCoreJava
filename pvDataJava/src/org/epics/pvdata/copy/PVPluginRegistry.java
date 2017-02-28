@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 /**
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  * 
  * A registry for filter plugins for PVCopy.
  *

@@ -1,3 +1,6 @@
+/*
+ * The License for this software can be found in the file LICENSE that is included with the distribution.
+ */
 package org.epics.pvdata.copy.arrayPlugin;
 
 import org.epics.pvdata.copy.PVCopy;
@@ -10,7 +13,7 @@ import org.epics.pvdata.pv.Type;
 /**
  * A filter that gets a sub array from a PVScalarArray.
  * @author mrk
- * @date 2017.02.23
+ * @since date 2017.02.23
  */
 public class ArrayPlugin implements PVPlugin
 {

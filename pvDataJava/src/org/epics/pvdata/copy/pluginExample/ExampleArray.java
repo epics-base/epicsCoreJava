@@ -26,7 +26,7 @@ import org.epics.pvdata.pv.Structure;
 /**
  * An example that uses the array plugin
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  */
 
 

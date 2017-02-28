@@ -24,7 +24,7 @@ import org.epics.pvdata.pv.*;
 /**
  * An example that uses options.
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  */
 
 
@@ -75,7 +75,7 @@ public class ExampleOption
         pvMessage.put("test message");
         System.out.println("pvMaster\n" + pvMaster);
         try {
-            exampleCopy("field(alarm,timeStamp[hello=true,timestamp=current],double.value[array=0:-1,hello=true])",pvMaster);
+            exampleCopy("field([hello=true]alarm,timeStamp[hello=true,timestamp=current],double.value[array=0:-1,hello=true])",pvMaster);
            
         }
         catch (Exception e)

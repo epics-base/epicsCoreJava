@@ -12,7 +12,7 @@ import org.epics.pvdata.pv.*;
 /**
  * A filter that says hello with the full fieldName.
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  */
 public class  HelloFilter implements PVFilter{
 	static final Convert convert = ConvertFactory.getConvert();
@@ -24,9 +24,9 @@ public class  HelloFilter implements PVFilter{
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.epics.pvdata.copy.PVFilter#filter(org.epics.pvdata.pv.PVField, org.epics.pvdata.misc.BitSet)
+	 * @see org.epics.pvdata.copy.PVFilter#filter(org.epics.pvdata.pv.PVField, org.epics.pvdata.misc.BitSet, boolean)
 	 */
-	public boolean filter(PVField pvCopy,BitSet bitSet)
+	public boolean filter(PVField pvCopy,BitSet bitSet,boolean toCopy)
 	{
 		if(sayHello) {
 			System.out.println("hello " + pvCopy.getFullName());

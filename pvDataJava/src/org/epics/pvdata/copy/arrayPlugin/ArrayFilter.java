@@ -12,7 +12,7 @@ import org.epics.pvdata.pv.*;
 /**
  * A Plugin for a filter that gets a sub array from a PVScalarArray.
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  */
 public class  ArrayFilter implements PVFilter{
 	static final Convert convert = ConvertFactory.getConvert();
@@ -30,38 +30,61 @@ public class  ArrayFilter implements PVFilter{
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.epics.pvdata.copy.PVFilter#filter(org.epics.pvdata.pv.PVField, org.epics.pvdata.misc.BitSet)
+	 * @see org.epics.pvdata.copy.PVFilter#filter(org.epics.pvdata.pv.PVField, org.epics.pvdata.misc.BitSet, boolean)
 	 */
-	public boolean filter(PVField pvCopy,BitSet bitSet)
+	public boolean filter(PVField pvCopy,BitSet bitSet,boolean toCopy)
 	{
 		PVScalarArray copyArray = (PVScalarArray)(pvCopy);
 		int len = 0;
 		int start = this.start;
 		int end = this.end;
+		if(toCopy) {
+			int no_elements = masterArray.getLength();
+			if(start<0) start = no_elements+start;
+			if(start<0) start = 0;
+			if(start>no_elements) start = no_elements;
+			if (end < 0) end = no_elements + end;
+			if (end < 0) end = 0;
+			if (end >= no_elements) end = no_elements - 1;
+
+			if (end - start >= 0) len = 1 + (end - start) / increment;
+			if(len<=0) return false;
+			int indfrom = start;
+			int indto = 0;
+			copyArray.setCapacity(len);
+			if(increment==1) {
+				convert.copyScalarArray(masterArray,indfrom,copyArray,indto,len);
+			} else {
+				for(int i=0; i<len; ++i) {
+					convert.copyScalarArray(masterArray,indfrom,copyArray,indto,1);
+					indfrom += increment;
+					indto += 1;
+				}
+			}
+			copyArray.setLength(len);
+			bitSet.set(pvCopy.getFieldOffset());
+			return true;
+		}
 		int no_elements = masterArray.getLength();
 		if(start<0) start = no_elements+start;
 		if(start<0) start = 0;
-		if(start>no_elements) start = no_elements;
+		if(start>no_elements) return false;
 		if (end < 0) end = no_elements + end;
-	    if (end < 0) end = 0;
-	    if (end >= no_elements) end = no_elements - 1;
-
-	    if (end - start >= 0) len = 1 + (end - start) / increment;
-	    if(len<=0) return false;
-		int indfrom = start;
-		int indto = 0;
-		copyArray.setCapacity(len);
+		if (end < 0) end = 0;
+		if (end - start >= 0) len = 1 + (end - start) / increment;
+		if(len<=0) return false;
+		if(no_elements<len) masterArray.setLength(len);
+		int indfrom = 0;
+		int indto = start;
 		if(increment==1) {
-			convert.copyScalarArray(masterArray,indfrom,copyArray,indto,len);
+			convert.copyScalarArray(copyArray,indfrom,masterArray,indto,len);
 		} else {
 			for(int i=0; i<len; ++i) {
-				convert.copyScalarArray(masterArray,indfrom,copyArray,indto,1);
+				convert.copyScalarArray(copyArray,indfrom,masterArray,indto,1);
 				indfrom += increment;
 				indto += 1;
 			}
 		}
-		copyArray.setLength(len);
-		bitSet.set(pvCopy.getFieldOffset());
 		return true;
 	}
 	/* (non-Javadoc)

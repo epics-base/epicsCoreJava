@@ -8,7 +8,7 @@ import org.epics.pvdata.pv.PVField;
 /**
  * A filter that just says hello with the full field name.
  * @author mrk
- * @date 2017.02.23
+ * @since 2017.02.23
  */
 public class HelloPlugin implements PVPlugin
 {
