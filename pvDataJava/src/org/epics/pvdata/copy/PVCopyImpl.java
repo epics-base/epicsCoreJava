@@ -162,23 +162,29 @@ class PVCopyImpl {
          * @see org.epics.pvdata.pvCopy.PVCopy#initCopy(org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)
          */
         public void initCopy(PVStructure copyPVStructure, BitSet bitSet) {
+//System.out.println("begin initCopy");
             bitSet.clear();
             bitSet.set(0);
             updateCopyFromBitSet(copyPVStructure,bitSet);
+//System.out.println("begin initCopy bitSet " + bitSet);
         }
         /* (non-Javadoc)
          * @see org.epics.pvioc.pvCopy.PVCopy#updateCopySetBitSet(org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)
          */
         public void updateCopySetBitSet(PVStructure copyPVStructure,BitSet bitSet)
         {
+//System.out.println("begin updateCopySetBitSet bitSet " + bitSet);
             updateCopy(copyPVStructure,headNode,bitSet,true,true,true);
+//System.out.println("end updateCopySetBitSet bitSet " + bitSet);
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pvCopy.PVCopy#updateCopyFromBitSet(org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)
          */
         public void updateCopyFromBitSet(PVStructure copyPVStructure,BitSet bitSet) {
+//System.out.println("begin updateCopyFromBitSet bitSet " + bitSet);
             boolean doAll = bitSet.get(0);
             updateCopy(copyPVStructure,headNode,bitSet,true,doAll,false);
+//System.out.println("end updateCopyFromBitSet bitSet " + bitSet);
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pvCopy.PVCopy#updateRecord(org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)

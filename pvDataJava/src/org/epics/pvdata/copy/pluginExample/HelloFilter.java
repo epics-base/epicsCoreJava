@@ -8,7 +8,7 @@ import org.epics.pvdata.copy.PVFilter;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
 import org.epics.pvdata.pv.Convert;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.PVField;
 /**
  * A filter that says hello with the full fieldName.
  * @author mrk
@@ -18,7 +18,14 @@ public class  HelloFilter implements PVFilter{
 	static final Convert convert = ConvertFactory.getConvert();
 	boolean sayHello;
 	
-	HelloFilter(boolean sayHello,PVField pvField)
+	public static HelloFilter create(String requestValue,PVField master)
+	{
+		boolean sayHello = false;
+		if(requestValue.equals("true")) sayHello = true;
+	    return new HelloFilter(sayHello,master);
+	}
+	
+	private HelloFilter(boolean sayHello,PVField pvField)
 	{
 		this.sayHello = sayHello;
 	}

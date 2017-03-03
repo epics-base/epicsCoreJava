@@ -7,7 +7,6 @@ package org.epics.pvdata.copy.arrayPlugin;
 import org.epics.pvdata.copy.PVFilter;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.*;
 /**
  * A Plugin for a filter that gets a sub array from a PVScalarArray.
@@ -21,7 +20,57 @@ public class  ArrayFilter implements PVFilter{
 	int increment;
 	int end;
 	
-	ArrayFilter(int start,int increment,int end,PVScalarArray masterArray)
+	public static ArrayFilter create(String requestValue,PVField master)
+	{
+		Type type = master.getField().getType();
+		if(type!=Type.scalarArray) {
+			return null;
+		}
+		int start =0;
+		int increment =1;
+		int end = -1;
+		String[] values = requestValue.split(":");
+		int num = values.length;
+		if(num==1) {
+			String value = values[0];
+			try{
+				int result = Integer.parseInt(value);
+				start = result;
+		    }catch(NumberFormatException e){}
+		}
+		if(num==2){
+			String value = values[0];
+			try{
+				int result = Integer.parseInt(value);
+				start = result;
+		    }catch(NumberFormatException e){}
+			value = values[1];
+			try{
+				int result = Integer.parseInt(value);
+				end = result;
+		    }catch(NumberFormatException e){}
+		}
+		if(num==3){
+			String value = values[0];
+			try{
+				int result = Integer.parseInt(value);
+				start = result;
+		    }catch(NumberFormatException e){}
+			value = values[1];
+			try{
+				int result = Integer.parseInt(value);
+				if(result>0) increment = result;
+		    }catch(NumberFormatException e){}
+			value = values[2];
+			try{
+				int result = Integer.parseInt(value);
+				end = result;
+		    }catch(NumberFormatException e){}
+		}
+		return new ArrayFilter(start,increment,end,(PVScalarArray)(master));
+	}
+	
+	private ArrayFilter(int start,int increment,int end,PVScalarArray masterArray)
 	{
 		this.start = start;
 		this.increment = increment;

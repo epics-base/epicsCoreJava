@@ -148,7 +148,9 @@ public class CreateRequest {
 	                    return null;
 	                }
 	                if(closeParan>openParan+1) {
-	                    createSubNode(node,request.substring(openParan+1,closeParan));
+	                	request = request.substring(openParan+1,closeParan);
+	                	request = createTopOption(node,request);
+	                    createSubNode(node,request);
 	                }
 	                top.add(node);
 	            }
@@ -163,7 +165,9 @@ public class CreateRequest {
 	                    return null;
 	                }
 	                if(closeParan>openParan+1) {
-	                    createSubNode(node,request.substring(openParan+1,closeParan));
+	                	request = request.substring(openParan+1,closeParan);
+	                	request = createTopOption(node,request);
+	                    createSubNode(node,request);
 	                }
 	                top.add(node);
 	            }
@@ -178,7 +182,9 @@ public class CreateRequest {
 	                    return null;
 	                }
 	                if(closeParan>openParan+1) {
-	                    createSubNode(node,request.substring(openParan+1,closeParan));
+	                	request = request.substring(openParan+1,closeParan);
+	                	request = createTopOption(node,request);
+	                    createSubNode(node,request);
 	                }
 	                top.add(node);
 	            }
@@ -299,6 +305,25 @@ public class CreateRequest {
 	    node.nodes = top;
 	    
 	    return node;
+	}
+	
+	private String createTopOption(Node node,String request) {
+		int length = request.length();
+		if(length<=0) return request;
+		char open = request.charAt(0);
+		if(open!='[') return request;
+		int end = 0;
+		for(int i=0; i<length; ++i) {
+			char chr= request.charAt(i);
+            if(chr==']') {end = i; break;}
+		}
+		if(end==0)return request;
+		String options = request.substring(1,end);
+        Node optionNode = createRequestOptions(options);
+        if(optionNode==null) return request;
+        node.nodes.add(optionNode);
+        if(end+1<length && request.charAt(end+1)==',') end = end+1;
+        return request.substring(end+1) ;
 	}
 	
     private void createSubNode(Node node,String request) {

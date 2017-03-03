@@ -27,9 +27,7 @@ public class HelloPlugin implements PVPlugin
 	 */
 	public PVFilter create(String requestValue,PVCopy pvCopy,PVField master)
 	{
-		boolean sayHello = false;
-		if(requestValue.equals("true")) sayHello = true;
-	    return new HelloFilter(sayHello,master);
+		return HelloFilter.create(requestValue,master);
 	}
 
 }

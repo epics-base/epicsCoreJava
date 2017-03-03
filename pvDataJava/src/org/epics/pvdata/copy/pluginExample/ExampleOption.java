@@ -17,10 +17,11 @@ import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVDataCreate;
 import org.epics.pvdata.pv.PVDouble;
+import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.StandardField;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.Structure;
 /**
  * An example that uses options.
  * @author mrk
@@ -31,20 +32,21 @@ import org.epics.pvdata.pv.*;
 public class ExampleOption
 {
     static final Convert convert = ConvertFactory.getConvert();
-    static final CreateRequest createRequest = CreateRequest.create();
 
     static void exampleCopy(String request,PVStructure master)
     {
+    	CreateRequest createRequest = CreateRequest.create();
     	System.out.println("\nrequest " + request);
     	PVStructure pvRequest = createRequest.createRequest(request);
     	if(pvRequest==null) {
     		System.out.println("createRequest failed " + createRequest.getMessage());
     		return;
     	}
-//System.out.println("pvRequest\n" + pvRequest);
+System.out.println("pvRequest\n" + pvRequest);
     	PVCopy pvCopy = PVCopyFactory.create(master,pvRequest,"");
-//System.out.println(pvCopy.dump());
+System.out.println("dump " + pvCopy.dump());
     	PVStructure copy = pvCopy.createPVStructure();
+System.out.println("copy " + copy);
     	BitSet bitSet = new BitSet(copy.getNumberFields());
     	pvCopy.updateCopySetBitSet(copy,bitSet);
     	System.out.println("bitSet " + bitSet.toString());
@@ -75,7 +77,14 @@ public class ExampleOption
         pvMessage.put("test message");
         System.out.println("pvMaster\n" + pvMaster);
         try {
-            exampleCopy("field([hello=true]alarm,timeStamp[hello=true,timestamp=current],double.value[array=0:-1,hello=true])",pvMaster);
+        	exampleCopy("field([hello=true],alarm)",pvMaster);
+//        	exampleCopy("field(double.value[array=0:-1,hello=true])",pvMaster);
+//        	exampleCopy("field(alarm,timeStamp,double.value[array=0:-1,hello=true])",pvMaster);
+//        	exampleCopy("field(alarm,timeStamp[hello=true,timestamp=current],double.value[array=0:-1,hello=true])",pvMaster);
+        	exampleCopy("field(alarm[hello=true],timeStamp[hello=true,timestamp=current],double.value[array=0:-1,hello=true])",pvMaster);
+        	
+//            exampleCopy("field(alarm,timeStamp[hello=true,timestamp=current],double.value[array=0:-1,hello=true])",pvMaster);
+            exampleCopy("field([hello=true],double.value)",pvMaster);
            
         }
         catch (Exception e)

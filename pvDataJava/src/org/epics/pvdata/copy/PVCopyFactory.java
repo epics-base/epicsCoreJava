@@ -26,6 +26,7 @@ public class PVCopyFactory {
     		firstTime = false;
     		new org.epics.pvdata.copy.arrayPlugin.ArrayPlugin();
     		new org.epics.pvdata.copy.timestampPlugin.TimestampPlugin();
+    		new org.epics.pvdata.copy.deadbandPlugin.DeadbandPlugin();
     	}
     	return PVCopyImpl.create(pvMaster, pvRequest,structureName);
     }

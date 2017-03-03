@@ -25,7 +25,23 @@ public class  TimestampFilter implements PVFilter{
 	boolean copy;
 	PVField master;
 	
-	TimestampFilter(boolean current,boolean copy,PVField pvField)
+	public static TimestampFilter create(String requestValue,PVField master)
+	{
+		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
+		if(!pvTimeStamp.attach(master)) return null;
+		boolean current = false;
+		boolean copy = false;
+		if(requestValue.equals("current")) {
+			current = true;
+		} else if(requestValue.equals("copy")){
+			copy = true;
+		} else {
+			return null;
+		}
+		return new TimestampFilter(current,copy,master);
+	}
+	
+	private TimestampFilter(boolean current,boolean copy,PVField pvField)
 	{
 		this.current = current;
 		this.copy = copy;
