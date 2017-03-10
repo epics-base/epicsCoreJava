@@ -148,9 +148,9 @@ public class CreateRequest {
 	                    return null;
 	                }
 	                if(closeParan>openParan+1) {
-	                	request = request.substring(openParan+1,closeParan);
-	                	request = createTopOption(node,request);
-	                    createSubNode(node,request);
+	                	String req = request.substring(openParan+1,closeParan);
+	                	req = createTopOption(node,req);
+	                    createSubNode(node,req);
 	                }
 	                top.add(node);
 	            }
@@ -165,9 +165,9 @@ public class CreateRequest {
 	                    return null;
 	                }
 	                if(closeParan>openParan+1) {
-	                	request = request.substring(openParan+1,closeParan);
-	                	request = createTopOption(node,request);
-	                    createSubNode(node,request);
+	                	String req = request.substring(openParan+1,closeParan);
+	                	req = createTopOption(node,req);
+	                    createSubNode(node,req);
 	                }
 	                top.add(node);
 	            }
@@ -182,9 +182,9 @@ public class CreateRequest {
 	                    return null;
 	                }
 	                if(closeParan>openParan+1) {
-	                	request = request.substring(openParan+1,closeParan);
-	                	request = createTopOption(node,request);
-	                    createSubNode(node,request);
+	                	String req = request.substring(openParan+1,closeParan);
+	                	req = createTopOption(node,req);
+	                    createSubNode(node,req);
 	                }
 	                top.add(node);
 	            }
