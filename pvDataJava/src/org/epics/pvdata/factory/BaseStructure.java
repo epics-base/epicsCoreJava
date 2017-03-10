@@ -13,10 +13,10 @@ import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Structure;
-import org.epics.pvdata.pv.Union;
 import org.epics.pvdata.pv.StructureArray;
-import org.epics.pvdata.pv.UnionArray;
 import org.epics.pvdata.pv.Type;
+import org.epics.pvdata.pv.Union;
+import org.epics.pvdata.pv.UnionArray;
 
 /**
  * Base interface for a Structure.

@@ -4,7 +4,7 @@
 package org.epics.pvdata.copy;
 
 import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.PVField;
 
 /**
  * A Filter that is called when a copy PVStructure is being updated.

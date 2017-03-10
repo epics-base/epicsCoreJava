@@ -7,7 +7,10 @@ package org.epics.pvdata.copy.arrayPlugin;
 import org.epics.pvdata.copy.PVFilter;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.Convert;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVScalarArray;
+import org.epics.pvdata.pv.Type;
 /**
  * A Plugin for a filter that gets a sub array from a PVScalarArray.
  * @author mrk
@@ -87,17 +90,23 @@ public class  ArrayFilter implements PVFilter{
 		int len = 0;
 		int start = this.start;
 		int end = this.end;
-		if(toCopy) {
-			int no_elements = masterArray.getLength();
-			if(start<0) start = no_elements+start;
+		int no_elements = masterArray.getLength();
+		if(start<0) {
+			start = no_elements+start;
 			if(start<0) start = 0;
-			if(start>no_elements) start = no_elements;
-			if (end < 0) end = no_elements + end;
+		}
+		if (end < 0) {
+			end = no_elements + end;
 			if (end < 0) end = 0;
-			if (end >= no_elements) end = no_elements - 1;
 
+		}
+		if(toCopy) {	
+			if (end >= no_elements) end = no_elements - 1;
 			if (end - start >= 0) len = 1 + (end - start) / increment;
-			if(len<=0) return false;
+			if(len<=0 || start>=no_elements) {
+				copyArray.setLength(0);
+				return true;
+			}
 			int indfrom = start;
 			int indto = 0;
 			copyArray.setCapacity(len);
@@ -114,15 +123,9 @@ public class  ArrayFilter implements PVFilter{
 			bitSet.set(pvCopy.getFieldOffset());
 			return true;
 		}
-		int no_elements = masterArray.getLength();
-		if(start<0) start = no_elements+start;
-		if(start<0) start = 0;
-		if(start>no_elements) return false;
-		if (end < 0) end = no_elements + end;
-		if (end < 0) end = 0;
 		if (end - start >= 0) len = 1 + (end - start) / increment;
-		if(len<=0) return false;
-		if(no_elements<len) masterArray.setLength(len);
+		if(len<=0) return true;
+		if(no_elements<=end) masterArray.setLength(end+1);
 		int indfrom = 0;
 		int indto = start;
 		if(increment==1) {

@@ -7,7 +7,12 @@ package org.epics.pvdata.copy.deadbandPlugin;
 import org.epics.pvdata.copy.PVFilter;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.pv.*;
+import org.epics.pvdata.pv.Convert;
+import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVScalar;
+import org.epics.pvdata.pv.Scalar;
+import org.epics.pvdata.pv.Type;
 /**
  * A Plugin for a filter that gets a sub array from a PVScalarArray.
  * @author mrk
