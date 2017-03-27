@@ -15,12 +15,12 @@ import org.epics.pvdata.pv.PVField;
  */
 
 public interface PVPlugin {
-	/**
-	 * Create a PVFilter.
-	 * @param requestValue The value part of a name=value request option.
-	 * @param pvCopy The PVCopy to which the PVFilter will be attached.
-	 * @param master The field in the master PVStructure to which the PVFilter will be attached.
-	 * @return The PVFilter. A null is returned if master of requestValue is not appropriate for the plugin.
-	 */
-	public PVFilter create(String requestValue,PVCopy pvCopy,PVField master);
+    /**
+     * Create a PVFilter.
+     * @param requestValue The value part of a name=value request option.
+     * @param pvCopy The PVCopy to which the PVFilter will be attached.
+     * @param master The field in the master PVStructure to which the PVFilter will be attached.
+     * @return The PVFilter. A null is returned if master or requestValue is not appropriate for the plugin.
+     */
+    public PVFilter create(String requestValue,PVCopy pvCopy,PVField master);
 }

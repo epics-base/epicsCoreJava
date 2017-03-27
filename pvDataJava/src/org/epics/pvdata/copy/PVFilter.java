@@ -15,18 +15,18 @@ import org.epics.pvdata.pv.PVField;
  * of the data in the master.
  */
 public interface PVFilter {
-	/**
-	 * Update copy or master.
-	 * @param copy The data for copy.
-	 * @param bitSet The BitSet for copy.
-	 * @param toCopy (true,false) means copy (from master to copy,from copy to master)
-	 * @return (true,false) if filter modified destination.
-	 */
-	boolean filter(PVField copy,BitSet bitSet,boolean toCopy);
-	/**
-	 * Get the filter name.
-	 * This is the name part of a request name=value pair.
-	 * @return The name.
-	 */
-	String getName();
+    /**
+     * Update copy or master.
+     * @param copy The data for copy.
+     * @param bitSet The BitSet for copy.
+     * @param toCopy (true,false) means copy (from master to copy,from copy to master)
+     * @return (true,false) if filter (modified, did not modify) destination.
+     */
+    boolean filter(PVField copy,BitSet bitSet,boolean toCopy);
+    /**
+     * Get the filter name.
+     * This is the name part of a request name=value pair.
+     * @return The name.
+     */
+    String getName();
 }

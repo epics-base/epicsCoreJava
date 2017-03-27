@@ -88,7 +88,7 @@ public interface PVCopy {
      * @param bitSet The offsets within PVStructure that have new data.
      */
     void updateMaster(PVStructure copyPVStructure,BitSet bitSet);
-     /**
+    /**
      * Get options for a field in a PVStructure created by pvCopy
      * @param fieldOffset The field offset.
      * @return The pvStructure containing the options or null if the field did not have options.

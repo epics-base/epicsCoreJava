@@ -15,22 +15,19 @@ import org.epics.pvdata.pv.PVField;
  */
 public class TimestampPlugin implements PVPlugin
 {
-	static String name = "timestamp";
-	
-	/**
-	 * Constructor
-	 */
-	public TimestampPlugin()
-	{
-		PVPluginRegistry.registerPlugin(name,this);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.epics.pvdata.copy.PVPlugin#create(java.lang.String, org.epics.pvdata.copy.PVCopy, org.epics.pvdata.pv.PVField)
-	 */
-	public PVFilter create(String requestValue,PVCopy pvCopy,PVField master)
-	{
-		return TimestampFilter.create(requestValue,master);
-	}
-
+    static String name = "timestamp";
+    /**
+     * Constructor
+     */
+    public TimestampPlugin()
+    {
+        PVPluginRegistry.registerPlugin(name,this);
+    }
+    /* (non-Javadoc)
+     * @see org.epics.pvdata.copy.PVPlugin#create(java.lang.String, org.epics.pvdata.copy.PVCopy, org.epics.pvdata.pv.PVField)
+     */
+    public PVFilter create(String requestValue,PVCopy pvCopy,PVField master)
+    {
+        return TimestampFilter.create(requestValue,master);
+    }
 }
