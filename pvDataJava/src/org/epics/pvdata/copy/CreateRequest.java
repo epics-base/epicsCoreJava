@@ -82,6 +82,9 @@ public class CreateRequest {
     private PVStructure createRequestInternal(String request)
     {
         try {
+            message = "";
+            fullFieldName = "";
+            optionList.clear();
             if(request!=null) request = request.replaceAll("\\s+","");
             if(request==null || request.length()<=0) {
                 PVStructure pvStructure =  pvDataCreate.createPVStructure(emptyStructure);

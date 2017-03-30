@@ -248,6 +248,22 @@ class PVCopyImpl implements PVCopy{
             traverseMaster(node,callback);
         }
     }
+    
+    private void updateCopySetBitSet(PVField pvCopy,PVField pvMaster,BitSet bitSet) {
+        if(pvCopy.getField().getType()!=Type.structure) {
+            if(pvCopy.equals(pvMaster)) return;
+            convert.copy(pvMaster, pvCopy);
+            bitSet.set(pvCopy.getFieldOffset());
+            return;
+        }
+        PVStructure pvCopyStructure = (PVStructure)pvCopy;
+        PVField[] pvCopyFields = pvCopyStructure.getPVFields();
+        int length = pvCopyFields.length;
+        for(int i=0; i<length; i++) {
+            pvMaster = getMasterPVField(pvCopyFields[i].getFieldOffset());
+            updateCopySetBitSet(pvCopyFields[i],pvMaster,bitSet);
+        }
+    }
 
     private void updateCopySetBitSet(PVField pvCopy,Node node,BitSet bitSet) {
         boolean result = false;
@@ -259,10 +275,7 @@ class PVCopyImpl implements PVCopy{
         }
         if(!node.isStructure) {
             if(result) return;
-            PVField pvMaster = node.masterPVField;
-            if(pvCopy.equals(pvMaster)) return;
-            convert.copy(pvMaster, pvCopy);
-            bitSet.set(pvCopy.getFieldOffset());
+            updateCopySetBitSet(pvCopy,node.masterPVField,bitSet);
             return;
         }
         StructureNode structureNode = (StructureNode)(node);
@@ -520,19 +533,18 @@ class PVCopyImpl implements PVCopy{
 
     private void checkIgnore(PVStructure copyPVStructure,BitSet bitSet) {
         if(ignorechangeBitSet==null) return;
-        if(ignorechangeBitSet.cardinality()>0  && ignorechangeBitSet.intersects(bitSet)) {
-            int numFields = copyPVStructure.getNumberFields();
-            BitSet temp = bitSet.get(0,numFields);
-            int ind = 0;
-            while(true) {
-                ind = ignorechangeBitSet.nextSetBit(ind);
-                if(ind<0) break;
-                temp.clear(ind);
-                ind++;
-                if(ind>=numFields) break;
-            }
-            if(temp.cardinality()==0) bitSet.clear();
+        int numFields = copyPVStructure.getNumberFields();
+        BitSet temp = new BitSet(numFields);
+        temp.set(bitSet);
+        int ind = 0;
+        while(true) {
+            ind = ignorechangeBitSet.nextSetBit(ind);
+            if(ind<0) break;
+            temp.clear(ind);
+            ind++;
+            if(ind>=numFields) break;
         }
+        if(temp.nextSetBit(0)<0)  bitSet.clear();
     }
 
     private void setIgnore(Node node) {
