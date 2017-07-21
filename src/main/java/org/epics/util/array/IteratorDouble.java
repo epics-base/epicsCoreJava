@@ -9,30 +9,30 @@ package org.epics.util.array;
  *
  * @author Gabriele Carcassi
  */
-public abstract class IteratorDouble implements IteratorNumber {
+public interface IteratorDouble extends IteratorNumber {
 
     @Override
-    public float nextFloat() {
+    public default float nextFloat() {
         return (float) nextDouble();
     }
 
     @Override
-    public byte nextByte() {
+    public default byte nextByte() {
         return (byte) nextDouble();
     }
 
     @Override
-    public short nextShort() {
+    public default short nextShort() {
         return (short) nextDouble();
     }
 
     @Override
-    public int nextInt() {
+    public default int nextInt() {
         return (int) nextDouble();
     }
 
     @Override
-    public long nextLong() {
+    public default long nextLong() {
         return (long) nextDouble();
     }
 
