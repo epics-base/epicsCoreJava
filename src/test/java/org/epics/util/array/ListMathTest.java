@@ -4,11 +4,11 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ListLong;
-import org.epics.util.array.ListDouble;
 import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ListNumber;
 import org.epics.util.array.ListMath;
+import org.epics.util.array.ListLong;
+import org.epics.util.array.ListNumber;
+import org.epics.util.array.ListDouble;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.CollectionNumbers;
 import java.util.List;
@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.*;
  * @author carcassi
  */
 public class ListMathTest {
-    
+
     public ListMathTest() {
     }
 
@@ -31,7 +31,7 @@ public class ListMathTest {
         ListDouble rescaled = ListMath.rescale(array1, 2.5, -5.0);
         assertThat(CollectionNumbers.doubleArrayCopyOf(rescaled), equalTo(new double[] {-5.0, -2.5, 0, 2.5, 5.0, 7.5}));
     }
-    
+
     @Test
     public void rescaleWithfactor1() {
         ArrayDouble array1 = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5});

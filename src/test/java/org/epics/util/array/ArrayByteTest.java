@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.*;
  * @author carcassi
  */
 public class ArrayByteTest {
-    
+
     public ArrayByteTest() {
     }
 
@@ -42,7 +42,7 @@ public class ArrayByteTest {
         array.setDouble(5, 0);
         assertThat(CollectionNumbers.doubleArrayCopyOf(array), equalTo(new double[] {5, 1, 2, 3, 4, 0}));
     }
-    
+
     @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

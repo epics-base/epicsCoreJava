@@ -4,8 +4,8 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ArrayShort;
 import org.epics.util.array.ListShort;
+import org.epics.util.array.ArrayShort;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -22,10 +22,10 @@ import static org.epics.util.array.ListTest.testList;
  * @author carcassi
  */
 public class ListShortTest {
-    
+
     public ListShortTest() {
     }
-    
+
     @Test
     public void list1() {
         ListShort coll = new ListShort() {
@@ -43,7 +43,7 @@ public class ListShortTest {
         testCollection(coll);
         testList(coll);
     }
-    
+
     @Test
     public void equals1() {
         ListShort coll = new ListShort() {
@@ -62,7 +62,7 @@ public class ListShortTest {
         assertThat(coll, equalTo(other));
         assertThat(other, equalTo(coll));
     }
-    
+
     @Test
     public void hashcode1() {
         ListShort coll = new ListShort() {
@@ -81,7 +81,7 @@ public class ListShortTest {
         assertThat(coll.hashCode(), equalTo(other.hashCode()));
         assertThat(coll.hashCode(), equalTo(Arrays.hashCode(new short[] {0,1,2,3,4,5,6,7,8,9})));
     }
-    
+
     @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -93,5 +93,5 @@ public class ListShortTest {
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
     }
-    
+
 }

@@ -4,13 +4,13 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.IteratorByte;
-import org.epics.util.array.IteratorShort;
-import org.epics.util.array.IteratorInt;
-import org.epics.util.array.IteratorNumber;
 import org.epics.util.array.IteratorFloat;
-import org.epics.util.array.IteratorDouble;
+import org.epics.util.array.IteratorShort;
 import org.epics.util.array.IteratorLong;
+import org.epics.util.array.IteratorDouble;
+import org.epics.util.array.IteratorByte;
+import org.epics.util.array.IteratorNumber;
+import org.epics.util.array.IteratorInt;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  * @author carcassi
  */
 public class IteratorTest {
-    
+
     public IteratorTest() {
     }
 
@@ -30,7 +30,7 @@ public class IteratorTest {
     @org.junit.AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Test
     public void testIteratorDouble() {
         IteratorDouble iter = new IteratorDouble() {
@@ -45,7 +45,7 @@ public class IteratorTest {
         };
         testIterator(iter);
     }
-    
+
     @Test
     public void testIteratorFloat() {
         IteratorFloat iter = new IteratorFloat() {
@@ -60,7 +60,7 @@ public class IteratorTest {
         };
         testIterator(iter);
     }
-    
+
     @Test
     public void testIteratorLong() {
         IteratorLong iter = new IteratorLong() {
@@ -75,7 +75,7 @@ public class IteratorTest {
         };
         testIterator(iter);
     }
-    
+
     @Test
     public void testIteratorInt() {
         IteratorInt iter = new IteratorInt() {
@@ -90,7 +90,7 @@ public class IteratorTest {
         };
         testIterator(iter);
     }
-    
+
     @Test
     public void testIteratorShort() {
         IteratorShort iter = new IteratorShort() {
@@ -105,7 +105,7 @@ public class IteratorTest {
         };
         testIterator(iter);
     }
-    
+
     @Test
     public void testIteratorByte() {
         IteratorByte iter = new IteratorByte() {
@@ -120,7 +120,7 @@ public class IteratorTest {
         };
         testIterator(iter);
     }
-    
+
     public void testIterator(IteratorNumber iter) {
         for (int i = 0; i < 20; i++) {
             assertTrue(iter.hasNext());

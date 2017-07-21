@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.*;
  * @author carcassi
  */
 public class ArrayShortTest {
-    
+
     public ArrayShortTest() {
     }
 

@@ -4,8 +4,8 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ListInt;
 import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ListInt;
 import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -18,10 +18,10 @@ import static org.epics.util.array.ListTest.testList;
  * @author carcassi
  */
 public class ListIntTest {
-    
+
     public ListIntTest() {
     }
-    
+
     @Test
     public void list1() {
         ListInt coll = new ListInt() {
@@ -39,7 +39,7 @@ public class ListIntTest {
         testCollection(coll);
         testList(coll);
     }
-    
+
     @Test
     public void equals1() {
         ListInt coll = new ListInt() {
@@ -58,7 +58,7 @@ public class ListIntTest {
         assertThat(coll, equalTo(other));
         assertThat(other, equalTo(coll));
     }
-    
+
     @Test
     public void hashcode1() {
         ListInt coll = new ListInt() {
@@ -77,7 +77,7 @@ public class ListIntTest {
         assertThat(coll.hashCode(), equalTo(other.hashCode()));
         assertThat(coll.hashCode(), equalTo(Arrays.hashCode(new int[] {0,1,2,3,4,5,6,7,8,9})));
     }
-    
+
     @Test
     public void toString1() {
         ListInt coll = new ListInt() {
@@ -94,5 +94,5 @@ public class ListIntTest {
         };
         assertThat(coll.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
     }
-    
+
 }

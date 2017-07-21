@@ -4,20 +4,20 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.CollectionByte;
-import org.epics.util.array.IteratorShort;
-import org.epics.util.array.CollectionFloat;
-import org.epics.util.array.IteratorInt;
-import org.epics.util.array.IteratorDouble;
-import org.epics.util.array.IteratorLong;
-import org.epics.util.array.CollectionShort;
-import org.epics.util.array.IteratorByte;
-import org.epics.util.array.CollectionDouble;
-import org.epics.util.array.CollectionLong;
-import org.epics.util.array.IteratorNumber;
-import org.epics.util.array.CollectionInt;
 import org.epics.util.array.IteratorFloat;
+import org.epics.util.array.CollectionShort;
+import org.epics.util.array.CollectionInt;
+import org.epics.util.array.IteratorInt;
+import org.epics.util.array.CollectionFloat;
 import org.epics.util.array.CollectionNumber;
+import org.epics.util.array.IteratorShort;
+import org.epics.util.array.CollectionLong;
+import org.epics.util.array.CollectionDouble;
+import org.epics.util.array.CollectionByte;
+import org.epics.util.array.IteratorLong;
+import org.epics.util.array.IteratorDouble;
+import org.epics.util.array.IteratorByte;
+import org.epics.util.array.IteratorNumber;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
  * @author carcassi
  */
 public class CollectionTest {
-    
+
     public CollectionTest() {
     }
 
@@ -37,14 +37,14 @@ public class CollectionTest {
     @org.junit.AfterClass
     public static void tearDownClass() throws Exception {
     }
-    
+
     @Test
     public void testCollectionDouble() {
         CollectionDouble coll = new CollectionDouble() {
 
             public IteratorDouble iterator() {
                 return new IteratorDouble() {
-                    
+
                     int n=0;
 
                     public boolean hasNext() {
@@ -64,14 +64,14 @@ public class CollectionTest {
         };
         testCollection(coll);
     }
-    
+
     @Test
     public void testCollectionFloat() {
         CollectionFloat coll = new CollectionFloat() {
 
             public IteratorFloat iterator() {
                 return new IteratorFloat() {
-                    
+
                     int n=0;
 
                     public boolean hasNext() {
@@ -91,14 +91,14 @@ public class CollectionTest {
         };
         testCollection(coll);
     }
-    
+
     @Test
     public void testCollectionLong() {
         CollectionLong coll = new CollectionLong() {
 
             public IteratorLong iterator() {
                 return new IteratorLong() {
-                    
+
                     int n=0;
 
                     public boolean hasNext() {
@@ -118,14 +118,14 @@ public class CollectionTest {
         };
         testCollection(coll);
     }
-    
+
     @Test
     public void testCollectionInt() {
         CollectionInt coll = new CollectionInt() {
 
             public IteratorInt iterator() {
                 return new IteratorInt() {
-                    
+
                     int n=0;
 
                     public boolean hasNext() {
@@ -145,14 +145,14 @@ public class CollectionTest {
         };
         testCollection(coll);
     }
-    
+
     @Test
     public void testCollectionShort() {
         CollectionShort coll = new CollectionShort() {
 
             public IteratorShort iterator() {
                 return new IteratorShort() {
-                    
+
                     int n=0;
 
                     public boolean hasNext() {
@@ -172,14 +172,14 @@ public class CollectionTest {
         };
         testCollection(coll);
     }
-    
+
     @Test
     public void testCollectionByte() {
         CollectionByte coll = new CollectionByte() {
 
             public IteratorByte iterator() {
                 return new IteratorByte() {
-                    
+
                     int n=0;
 
                     public boolean hasNext() {
@@ -199,7 +199,7 @@ public class CollectionTest {
         };
         testCollection(coll);
     }
-    
+
     public static void testCollection(CollectionNumber coll) {
         assertEquals(10, coll.size());
         IteratorNumber iter = coll.iterator();

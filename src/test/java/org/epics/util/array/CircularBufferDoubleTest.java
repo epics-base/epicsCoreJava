@@ -4,16 +4,12 @@
  */
 package org.epics.util.array;
 
+import org.epics.util.array.CircularBufferDouble;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.CircularBufferDouble;
-import java.util.ArrayList;
-import java.util.List;
-import org.junit.AfterClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import org.junit.BeforeClass;
 import static org.epics.util.array.CollectionTest.testCollection;
 import static org.epics.util.array.ListTest.testList;
 
@@ -22,10 +18,10 @@ import static org.epics.util.array.ListTest.testList;
  * @author carcassi
  */
 public class CircularBufferDoubleTest {
-    
+
     public CircularBufferDoubleTest() {
     }
-    
+
     @Test
     public void iteration1() {
         CircularBufferDouble coll = new CircularBufferDouble(15);
@@ -35,7 +31,7 @@ public class CircularBufferDoubleTest {
         testCollection(coll);
         testList(coll);
     }
-    
+
     @Test
     public void add1() {
         CircularBufferDouble coll = new CircularBufferDouble(10);
@@ -52,7 +48,7 @@ public class CircularBufferDoubleTest {
         }
         assertThat(coll.size(), equalTo(10));
     }
-    
+
     @Test
     public void add2() {
         CircularBufferDouble coll = new CircularBufferDouble(10);
@@ -62,7 +58,7 @@ public class CircularBufferDoubleTest {
         ListDouble reference = new ArrayDouble(new double[] {1,2,3,4,5,6,7,8,9,10});
         assertThat(coll, equalTo(reference));
     }
-    
+
     @Test
     public void add3() {
         CircularBufferDouble coll = new CircularBufferDouble(10);
@@ -72,7 +68,7 @@ public class CircularBufferDoubleTest {
         ListDouble reference = new ArrayDouble(new double[] {0,1,2,3,4});
         assertThat(coll, equalTo(reference));
     }
-    
+
     @Test
     public void add4() {
         CircularBufferDouble coll = new CircularBufferDouble(3);
@@ -82,7 +78,7 @@ public class CircularBufferDoubleTest {
         ListDouble reference = new ArrayDouble(new double[] {2,3,4});
         assertThat(coll, equalTo(reference));
     }
-    
+
     @Test
     public void add5() {
         CircularBufferDouble coll = new CircularBufferDouble(25);
@@ -102,7 +98,7 @@ public class CircularBufferDoubleTest {
         assertThat(coll.size(), equalTo(20));
         assertThat(coll.getCurrentCapacity(), equalTo(25));
     }
-    
+
     @Test
     public void clear1() {
         CircularBufferDouble coll = new CircularBufferDouble(10);
