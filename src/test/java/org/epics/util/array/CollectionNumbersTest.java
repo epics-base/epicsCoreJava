@@ -18,6 +18,30 @@ public class CollectionNumbersTest {
     }
 
     @Test
+    public void arrayCopyLong1(){
+        ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        long[] dst = new long[10];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+        assertThat(dst, equalTo(new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+    }
+
+    @Test
+    public void arrayCopyLong2(){
+        ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        long[] dst = new long[15];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+        assertThat(dst, equalTo(new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0}));
+    }
+
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void arrayCopyLong3(){
+        ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        long[] dst = new long[5];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+        assertThat(dst, equalTo(new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0}));
+    }
+
+    @Test
     public void floatArrayCopyOf1(){
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         ArrayFloat coll = new ArrayFloat(array);
