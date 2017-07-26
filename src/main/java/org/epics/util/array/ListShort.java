@@ -31,7 +31,7 @@ public abstract class ListShort implements ListNumber, CollectionShort {
 
     @Override
     public double getDouble(int index) {
-        return (float) getShort(index);
+        return (double) getShort(index);
     }
 
     @Override

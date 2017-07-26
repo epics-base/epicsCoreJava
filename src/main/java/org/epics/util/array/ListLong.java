@@ -31,7 +31,7 @@ public abstract class ListLong implements ListNumber, CollectionLong {
 
     @Override
     public double getDouble(int index) {
-        return (float) getLong(index);
+        return (double) getLong(index);
     }
 
     @Override

@@ -31,7 +31,7 @@ public abstract class ListInt implements ListNumber, CollectionInt {
 
     @Override
     public double getDouble(int index) {
-        return (float) getInt(index);
+        return (double) getInt(index);
     }
 
     @Override
