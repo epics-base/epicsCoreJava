@@ -18,6 +18,52 @@ public class CollectionNumbersTest {
     }
 
     @Test
+    public void arrayCopyDouble1(){
+        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        double[] dst = new double[10];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+        assertThat(dst, equalTo(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}));
+    }
+
+    @Test
+    public void arrayCopyDouble2(){
+        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        double[] dst = new double[15];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+        assertThat(dst, equalTo(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0, 0, 0, 0, 0}));
+    }
+
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void arrayCopyDouble3(){
+        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        double[] dst = new double[5];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+    }
+
+    @Test
+    public void arrayCopyFloat1(){
+        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        float[] dst = new float[10];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+        assertThat(dst, equalTo(new float[] {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f}));
+    }
+
+    @Test
+    public void arrayCopyFloat2(){
+        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        float[] dst = new float[15];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+        assertThat(dst, equalTo(new float[] {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 0, 0, 0, 0, 0}));
+    }
+
+    @Test(expected=IndexOutOfBoundsException.class)
+    public void arrayCopyFloat3(){
+        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        float[] dst = new float[5];
+        CollectionNumbers.arrayCopy(coll, dst, 0);
+    }
+
+    @Test
     public void arrayCopyLong1(){
         ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         long[] dst = new long[10];
@@ -38,7 +84,6 @@ public class CollectionNumbersTest {
         ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         long[] dst = new long[5];
         CollectionNumbers.arrayCopy(coll, dst, 0);
-        assertThat(dst, equalTo(new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0}));
     }
 
     @Test
@@ -62,7 +107,6 @@ public class CollectionNumbersTest {
         ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         int[] dst = new int[5];
         CollectionNumbers.arrayCopy(coll, dst, 0);
-        assertThat(dst, equalTo(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0}));
     }
 
     @Test
@@ -86,7 +130,6 @@ public class CollectionNumbersTest {
         ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         short[] dst = new short[5];
         CollectionNumbers.arrayCopy(coll, dst, 0);
-        assertThat(dst, equalTo(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0}));
     }
 
     @Test
@@ -110,7 +153,6 @@ public class CollectionNumbersTest {
         ArrayLong coll = new ArrayLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         byte[] dst = new byte[5];
         CollectionNumbers.arrayCopy(coll, dst, 0);
-        assertThat(dst, equalTo(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0}));
     }
 
     @Test
