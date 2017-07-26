@@ -24,7 +24,6 @@ public final class ArrayShort extends ListShort implements Serializable {
      *
      * @param array an array
      */
-
     public ArrayShort(short... array) {
         this(array, true);
     }
@@ -35,7 +34,6 @@ public final class ArrayShort extends ListShort implements Serializable {
      * @param array an array
      * @param readOnly if false the wrapper allows writes to the array
      */
-
     public ArrayShort(short[] array, boolean readOnly) {
         this.array = array;
         this.readOnly = readOnly;
