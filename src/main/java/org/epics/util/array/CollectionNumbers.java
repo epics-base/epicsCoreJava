@@ -141,4 +141,79 @@ public class CollectionNumbers {
             index++;
         }
     }
+
+    /**
+     * Copies the content of the collection to an array at the desired position.
+     *
+     * @param src the source number collection.
+     * @param dest the destination array.
+     * @param destPos starting position in the destination array.
+     * @exception  IndexOutOfBoundsException  if copying would cause
+     *               access of data outside array bounds.
+     * @exception  NullPointerException if either <code>src</code> or
+     *               <code>dest</code> is <code>null</code>.
+     */
+    public static void arrayCopy(CollectionNumber src, int[] dest, int destPos) {
+        // Check boundaries
+        if (destPos + src.size() > dest.length) {
+            throw new IndexOutOfBoundsException("Length of target array too small");
+        }
+        
+        IteratorNumber iter = src.iterator();
+        int index = destPos;
+        while (iter.hasNext()) {
+            dest[index] = iter.nextInt();
+            index++;
+        }
+    }
+
+    /**
+     * Copies the content of the collection to an array at the desired position.
+     *
+     * @param src the source number collection.
+     * @param dest the destination array.
+     * @param destPos starting position in the destination array.
+     * @exception  IndexOutOfBoundsException  if copying would cause
+     *               access of data outside array bounds.
+     * @exception  NullPointerException if either <code>src</code> or
+     *               <code>dest</code> is <code>null</code>.
+     */
+    public static void arrayCopy(CollectionNumber src, short[] dest, int destPos) {
+        // Check boundaries
+        if (destPos + src.size() > dest.length) {
+            throw new IndexOutOfBoundsException("Length of target array too small");
+        }
+        
+        IteratorNumber iter = src.iterator();
+        int index = destPos;
+        while (iter.hasNext()) {
+            dest[index] = iter.nextShort();
+            index++;
+        }
+    }
+
+    /**
+     * Copies the content of the collection to an array at the desired position.
+     *
+     * @param src the source number collection.
+     * @param dest the destination array.
+     * @param destPos starting position in the destination array.
+     * @exception  IndexOutOfBoundsException  if copying would cause
+     *               access of data outside array bounds.
+     * @exception  NullPointerException if either <code>src</code> or
+     *               <code>dest</code> is <code>null</code>.
+     */
+    public static void arrayCopy(CollectionNumber src, byte[] dest, int destPos) {
+        // Check boundaries
+        if (destPos + src.size() > dest.length) {
+            throw new IndexOutOfBoundsException("Length of target array too small");
+        }
+        
+        IteratorNumber iter = src.iterator();
+        int index = destPos;
+        while (iter.hasNext()) {
+            dest[index] = iter.nextByte();
+            index++;
+        }
+    }
 }
