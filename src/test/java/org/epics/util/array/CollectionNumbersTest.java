@@ -17,6 +17,60 @@ public class CollectionNumbersTest {
     public CollectionNumbersTest() {
     }
 
+    @Test(expected=NullPointerException.class)
+    public void defaultToArrayError1(){
+        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumbers.defaultToArray(coll, null);
+    }
+
+    @Test(expected=ArrayStoreException.class)
+    public void defaultToArrayError2(){
+        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumbers.defaultToArray(coll, new Object());
+    }
+
+    @Test
+    public void defaultToArrayDouble1(){
+        CollectionNumber coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        double[] longArray = coll.toArray(new double[coll.size()]);
+        assertThat(longArray, equalTo(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}));
+    }
+
+    @Test
+    public void defaultToArrayFloat1(){
+        CollectionNumber coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        float[] longArray = coll.toArray(new float[coll.size()]);
+        assertThat(longArray, equalTo(new float[] {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f}));
+    }
+
+    @Test
+    public void defaultToArrayLong1(){
+        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        long[] longArray = CollectionNumbers.defaultToArray(coll, new long[coll.size()]);
+        assertThat(longArray, equalTo(new long[] {0,1,2,3,4,5,6,7,8,9}));
+    }
+
+    @Test
+    public void defaultToArrayInt1(){
+        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        int[] longArray = coll.toArray(new int[coll.size()]);
+        assertThat(longArray, equalTo(new int[] {0,1,2,3,4,5,6,7,8,9}));
+    }
+
+    @Test
+    public void defaultToArrayShort1(){
+        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        short[] longArray = coll.toArray(new short[coll.size()]);
+        assertThat(longArray, equalTo(new short[] {0,1,2,3,4,5,6,7,8,9}));
+    }
+
+    @Test
+    public void defaultToArrayByte1(){
+        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        byte[] longArray = coll.toArray(new byte[coll.size()]);
+        assertThat(longArray, equalTo(new byte[] {0,1,2,3,4,5,6,7,8,9}));
+    }
+
     @Test
     public void arrayCopyDouble1(){
         ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);

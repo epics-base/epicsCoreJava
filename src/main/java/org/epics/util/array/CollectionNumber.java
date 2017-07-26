@@ -32,4 +32,17 @@ public interface CollectionNumber {
      * @return the number of elements in the collection
      */
     int size();
+
+    /**
+     * 
+     * @param <T>
+     * @param array
+     * @throws ArrayStoreException if the type of the specified array
+     *         is not a primitive number array
+     * @throws NullPointerException if the specified array is null
+     * @return 
+     */
+    default <T> T toArray(T array) {
+        return CollectionNumbers.defaultToArray(this, array);
+    }
 }
