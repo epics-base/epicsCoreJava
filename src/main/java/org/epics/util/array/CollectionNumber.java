@@ -35,12 +35,14 @@ public interface CollectionNumber {
 
     /**
      * 
-     * @param <T>
-     * @param array
+     * @param <T> the type of the array
+     * @param array the array into which the elements of this list are to
+     *          be stored, if it is big enough; otherwise, a new array of the
+     *          same runtime type is allocated for this purpose.
      * @throws ArrayStoreException if the type of the specified array
      *         is not a primitive number array
      * @throws NullPointerException if the specified array is null
-     * @return 
+     * @return an array containing the elements
      */
     default <T> T toArray(T array) {
         return CollectionNumbers.defaultToArray(this, array);
