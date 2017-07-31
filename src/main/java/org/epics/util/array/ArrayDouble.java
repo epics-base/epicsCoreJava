@@ -86,7 +86,7 @@ public final class ArrayDouble extends ListDouble implements Serializable {
             if (index < 0 || index > this.size)
                 throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
         }
-        return array[index];
+        return array[startIndex + index];
     }
 
     @Override
@@ -96,7 +96,7 @@ public final class ArrayDouble extends ListDouble implements Serializable {
                 if (index < 0 || index > this.size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
             }
-            array[index] = value;
+            array[startIndex + index] = value;
         } else {
             throw new UnsupportedOperationException("Read only list.");
         }
