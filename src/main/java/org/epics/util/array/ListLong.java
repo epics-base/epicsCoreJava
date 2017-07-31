@@ -85,6 +85,16 @@ public abstract class ListLong implements ListNumber, CollectionLong {
     }
 
     @Override
+    public void setAll(int index, ListNumber list) {
+        if ((index+list.size()) >= size()) {
+            throw new IndexOutOfBoundsException("Index: "+index+", Elements: "+list.size()+", Size: "+size());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            setLong(index + i, list.getLong(i));
+        }
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == this)
             return true;

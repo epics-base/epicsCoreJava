@@ -137,4 +137,15 @@ public interface ListNumber extends CollectionNumber {
      */
     void setByte(int index, byte value);
 
+    /**
+     * Changes the elements starting at the specified position, taking them
+     * based on the internal representation.
+     * 
+     * @param index position of the first element to change
+     * @param list the new values
+     * @throws IndexOutOfBoundsException if the index is out of range
+     *         (<tt>index &lt; 0 || index &gt;= size()</tt>) or if this
+     *         list is too short to hold the data.
+     */
+    void setAll(int index, ListNumber list);
 }

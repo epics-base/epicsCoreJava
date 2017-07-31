@@ -85,6 +85,16 @@ public abstract class ListShort implements ListNumber, CollectionShort {
     }
 
     @Override
+    public void setAll(int index, ListNumber list) {
+        if ((index+list.size()) >= size()) {
+            throw new IndexOutOfBoundsException("Index: "+index+", Elements: "+list.size()+", Size: "+size());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            setShort(index + i, list.getShort(i));
+        }
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == this)
             return true;

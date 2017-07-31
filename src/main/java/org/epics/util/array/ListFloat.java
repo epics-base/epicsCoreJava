@@ -85,6 +85,16 @@ public abstract class ListFloat implements ListNumber, CollectionFloat {
     }
 
     @Override
+    public void setAll(int index, ListNumber list) {
+        if ((index+list.size()) >= size()) {
+            throw new IndexOutOfBoundsException("Index: "+index+", Elements: "+list.size()+", Size: "+size());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            setFloat(index + i, list.getFloat(i));
+        }
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == this)
             return true;

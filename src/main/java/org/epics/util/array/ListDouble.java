@@ -4,6 +4,8 @@
  */
 package org.epics.util.array;
 
+import java.util.ArrayList;
+
 /**
  * An ordered collection of {@code double}s.
  *
@@ -82,6 +84,16 @@ public abstract class ListDouble implements ListNumber, CollectionDouble {
     @Override
     public void setByte(int index, byte value) {
         setDouble(index, (double) value);
+    }
+
+    @Override
+    public void setAll(int index, ListNumber list) {
+        if ((index+list.size()) >= size()) {
+            throw new IndexOutOfBoundsException("Index: "+index+", Elements: "+list.size()+", Size: "+size());
+        }
+        for (int i = 0; i < list.size(); i++) {
+            setDouble(index + i, list.getDouble(i));
+        }
     }
 
     /**
