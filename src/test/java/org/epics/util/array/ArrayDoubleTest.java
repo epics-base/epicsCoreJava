@@ -10,6 +10,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
+import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -79,5 +81,33 @@ public class ArrayDoubleTest {
         ArrayDouble read = (ArrayDouble) inStream.readObject();
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
+    }
+    
+    @Test
+    public void setAll1() {
+        Random rand = new Random(0);
+        double[] array = rand.doubles(100).toArray();
+        double[] otherArray = new double[100];
+        ArrayDouble list = new ArrayDouble(array);
+        ArrayDouble otherList = new ArrayDouble(otherArray, false);
+        otherList.setAll(0, list);
+        assertThat(array, equalTo(otherArray));
+    }
+    
+    @Test
+    public void setAll2() {
+        double[] array = new double[50];
+        Arrays.fill(array, 0.1);
+        double[] otherArray = new double[100];
+        ArrayDouble list = new ArrayDouble(array);
+        ArrayDouble otherList = new ArrayDouble(otherArray, false);
+        otherList.setAll(25, list);
+        for (int i = 0; i < otherList.size(); i++) {
+            if (i < 25 || i >= 75) {
+                assertThat(otherList.getDouble(i), equalTo(0.0));
+            } else {
+                assertThat(otherList.getDouble(i), equalTo(0.1));
+            }
+        }
     }
 }
