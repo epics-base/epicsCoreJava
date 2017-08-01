@@ -108,4 +108,26 @@ public class ArrayDoubleTest {
             }
         }
     }
+
+    @Test
+    public void subList1() {
+        ArrayDouble array = new ArrayDouble(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+        ArrayDouble subList = array.subList(3, 5);
+        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{3.0, 4.0}));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void subList2() {
+        ArrayDouble array = new ArrayDouble(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+        ListDouble subList = array.subList(3, 11);
+    }
+
+    @Test
+    public void subList3() {
+        ArrayDouble array = new ArrayDouble(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
+        ArrayDouble subList = array.subList(1, 9);
+        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}));
+        ArrayDouble subSubList = subList.subList(1, 7);
+        assertThat(subSubList.toArray(new double[subList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
+    }
 }

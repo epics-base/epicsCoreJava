@@ -183,4 +183,18 @@ public class ListDoubleTest {
         ListDouble concatenated = ListDouble.concatenate( lists );
         ListDouble subList = concatenated.subList(3, 11);
     }
+
+    @Test
+    public void subList3() {
+        // Create a sublist that is not an array by concatenation
+        ArrayDouble[] lists = new ArrayDouble[ 10 ];
+        for ( int i=0 ; i<lists.length ; i++ ) {
+            lists[ i ] = new ArrayDouble( new double[]{ i } );
+        }
+        ListDouble concatenated = ListDouble.concatenate( lists );
+        ListDouble subList = concatenated.subList(1, 9);
+        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}));
+        ListDouble subSubList = subList.subList(1, 7);
+        assertThat(subSubList.toArray(new double[subList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
+    }
 }

@@ -103,6 +103,11 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     }
 
     @Override
+    public ArrayDouble subList(int fromIndex, int toIndex) {
+        return new ArrayDouble(array, fromIndex + startIndex, toIndex - fromIndex, readOnly);
+    }
+
+    @Override
     public void setAll(int index, ListNumber list) {
         if (list instanceof ArrayDouble) {
             ArrayDouble other = (ArrayDouble) list;
