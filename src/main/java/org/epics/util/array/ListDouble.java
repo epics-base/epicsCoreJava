@@ -187,5 +187,27 @@ public abstract class ListDouble implements ListNumber, CollectionDouble {
         builder.append(getDouble(i)).append("]");
         return builder.toString();
     }
+    
+    public ListDouble subList(final int fromIndex, final int toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
+        }
+        final int size = toIndex - fromIndex;
+        return new ListDouble() {
+            @Override
+            public double getDouble(int index) {
+                return ListDouble.this.getDouble(fromIndex + index);
+            }
 
+            @Override
+            public void setDouble(int index, double value) {
+                ListDouble.this.setDouble(fromIndex + index, value);
+            }
+
+            @Override
+            public int size() {
+                return size;
+            }
+        };
+    }
 }

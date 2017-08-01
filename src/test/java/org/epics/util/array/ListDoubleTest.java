@@ -160,4 +160,27 @@ public class ListDoubleTest {
             assertThat( expValues[ i ] , equalTo( concatenated.getDouble( i ) ) );
         }
     }
+
+    @Test
+    public void subList1() {
+        // Create a sublist that is not an array by concatenation
+        ArrayDouble[] lists = new ArrayDouble[ 10 ];
+        for ( int i=0 ; i<lists.length ; i++ ) {
+            lists[ i ] = new ArrayDouble( new double[]{ i } );
+        }
+        ListDouble concatenated = ListDouble.concatenate( lists );
+        ListDouble subList = concatenated.subList(3, 5);
+        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{3.0, 4.0}));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void subList2() {
+        // Create a sublist that is not an array by concatenation
+        ArrayDouble[] lists = new ArrayDouble[ 10 ];
+        for ( int i=0 ; i<lists.length ; i++ ) {
+            lists[ i ] = new ArrayDouble( new double[]{ i } );
+        }
+        ListDouble concatenated = ListDouble.concatenate( lists );
+        ListDouble subList = concatenated.subList(3, 11);
+    }
 }
