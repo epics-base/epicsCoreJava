@@ -4,8 +4,6 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.CollectionNumbers;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
