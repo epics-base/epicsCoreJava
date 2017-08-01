@@ -103,6 +103,16 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     }
 
     @Override
+    public void setAll(int index, ListNumber list) {
+        if (list instanceof ArrayDouble) {
+            ArrayDouble other = (ArrayDouble) list;
+            System.arraycopy(other.array, other.startIndex, array, startIndex + index, other.size);
+        } else {
+            super.setAll(index, list);
+        }
+    }
+
+    @Override
     public boolean equals(Object obj) {
 
         if (obj instanceof ArrayDouble) {
