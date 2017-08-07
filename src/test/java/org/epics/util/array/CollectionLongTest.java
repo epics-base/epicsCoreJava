@@ -12,14 +12,14 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class CollectionFloatTest extends CollectionNumberTestBase<CollectionFloat> {
+public class CollectionLongTest extends CollectionNumberTestBase<CollectionLong> {
 
-    public CollectionFloatTest() {
-        super(new CollectionFloat() {
+    public CollectionLongTest() {
+        super(new CollectionLong() {
 
             @Override
-            public IteratorFloat iterator() {
-                return new IteratorFloat() {
+            public IteratorLong iterator() {
+                return new IteratorLong() {
 
                     int n=0;
 
@@ -29,9 +29,9 @@ public class CollectionFloatTest extends CollectionNumberTestBase<CollectionFloa
                     }
 
                     @Override
-                    public float nextFloat() {
+                    public long nextLong() {
                         n++;
-                        return (float) 1.0;
+                        return 1L;
                     }
                 };
             }

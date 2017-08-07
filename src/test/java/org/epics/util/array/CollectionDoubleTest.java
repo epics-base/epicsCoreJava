@@ -12,47 +12,34 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class CollectionDoubleTest {
+public class CollectionDoubleTest extends CollectionNumberTestBase<CollectionDouble> {
 
-    CollectionDouble doubles = new CollectionDouble() {
+    public CollectionDoubleTest() {
+        super(new CollectionDouble() {
 
-        @Override
-        public IteratorDouble iterator() {
-            return new IteratorDouble() {
+            @Override
+            public IteratorDouble iterator() {
+                return new IteratorDouble() {
 
-                int n=0;
+                    int n=0;
 
-                @Override
-                public boolean hasNext() {
-                    return n < 10;
-                }
+                    @Override
+                    public boolean hasNext() {
+                        return n < 10;
+                    }
 
-                @Override
-                public double nextDouble() {
-                    n++;
-                    return 1.0;
-                }
-            };
-        }
+                    @Override
+                    public double nextDouble() {
+                        n++;
+                        return 1.0;
+                    }
+                };
+            }
 
-        @Override
-        public int size() {
-            return 10;
-        }
-    };
-
-    @Test
-    public void iteration() {
-        CollectionTest.testIterationForAllTypes(doubles);
-    }
-
-    @Test
-    public void toArray() {
-        CollectionTest.testToArrayForAllTypes(doubles);
-    }
-    
-    @Test(expected=ArrayStoreException.class)
-    public void toArrayInvalid() {
-        doubles.toArray(new Object());
+            @Override
+            public int size() {
+                return 10;
+            }
+        });
     }
 }
