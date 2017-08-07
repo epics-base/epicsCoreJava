@@ -12,7 +12,7 @@ import org.epics.util.array.ListByte;
 import org.epics.util.array.ListInt;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static org.epics.util.array.CollectionTest.testIterationForAllTypes;
+import static org.epics.util.array.CollectionNumberTestBase.testIterationForAllTypes;
 
 /**
  *

@@ -18,12 +18,12 @@ public class CollectionNumberTestBase<T extends CollectionNumber> {
 
     @Test
     public void iteration() {
-        CollectionTest.testIterationForAllTypes(collection);
+        testIterationForAllTypes(collection);
     }
 
     @Test
     public void toArray() {
-        CollectionTest.testToArrayForAllTypes(collection);
+        testToArrayForAllTypes(collection);
     }
     
     @Test(expected=ArrayStoreException.class)
