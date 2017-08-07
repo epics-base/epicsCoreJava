@@ -12,7 +12,7 @@ import org.epics.util.array.ListByte;
 import org.epics.util.array.ListInt;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static org.epics.util.array.CollectionTest.testCollection;
+import static org.epics.util.array.CollectionTest.testIterationForAllTypes;
 
 /**
  *
@@ -43,7 +43,7 @@ public class ListTest {
                 return (float) 1.0;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class ListTest {
             }
 
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 
@@ -75,7 +75,7 @@ public class ListTest {
                 return 1;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 
@@ -91,7 +91,7 @@ public class ListTest {
                 return (short) 1;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 
@@ -108,7 +108,7 @@ public class ListTest {
             }
 
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 

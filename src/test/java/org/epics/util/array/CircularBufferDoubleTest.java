@@ -10,8 +10,8 @@ import org.epics.util.array.ArrayDouble;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.CollectionTest.testCollection;
 import static org.epics.util.array.ListTest.testList;
+import static org.epics.util.array.CollectionTest.testIterationForAllTypes;
 
 /**
  *
@@ -28,7 +28,7 @@ public class CircularBufferDoubleTest {
         for (int i = 0; i < 10; i++) {
             coll.addDouble(1.0);
         }
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 

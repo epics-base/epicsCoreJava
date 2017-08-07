@@ -125,9 +125,9 @@ public class CollectionNumbers {
         if (array instanceof double[]) {
             double[] doubleArray;
             if (((double[]) array).length < coll.size()) {
-                doubleArray = (double[]) array;
-            } else {
                 doubleArray = new double[coll.size()];
+            } else {
+                doubleArray = (double[]) array;
             }
             arrayCopy(coll, doubleArray, 0);
             return (T) doubleArray;

@@ -12,8 +12,8 @@ import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.CollectionTest.testCollection;
 import static org.epics.util.array.ListTest.testList;
+import static org.epics.util.array.CollectionTest.testIterationForAllTypes;
 
 /**
  *
@@ -38,7 +38,7 @@ public class ListDoubleTest {
                 return 1.0;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 
@@ -195,6 +195,6 @@ public class ListDoubleTest {
         ListDouble subList = concatenated.subList(1, 9);
         assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}));
         ListDouble subSubList = subList.subList(1, 7);
-        assertThat(subSubList.toArray(new double[subList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
+        assertThat(subSubList.toArray(new double[subSubList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
     }
 }

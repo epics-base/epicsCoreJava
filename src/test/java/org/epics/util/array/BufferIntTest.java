@@ -10,8 +10,8 @@ import org.epics.util.array.ListInt;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.CollectionTest.testCollection;
 import static org.epics.util.array.ListTest.testList;
+import static org.epics.util.array.CollectionTest.testIterationForAllTypes;
 
 /**
  *
@@ -28,7 +28,7 @@ public class BufferIntTest {
         for (int i = 0; i < 10; i++) {
             coll.addInt(1);
         }
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 

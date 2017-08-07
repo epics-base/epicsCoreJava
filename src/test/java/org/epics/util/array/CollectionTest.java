@@ -20,6 +20,7 @@ import org.epics.util.array.IteratorByte;
 import org.epics.util.array.IteratorNumber;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -27,84 +28,87 @@ import static org.junit.Assert.*;
  */
 public class CollectionTest {
 
-    public CollectionTest() {
-    }
+    CollectionDouble doubles = new CollectionDouble() {
 
-    @org.junit.BeforeClass
-    public static void setUpClass() throws Exception {
-    }
+        @Override
+        public IteratorDouble iterator() {
+            return new IteratorDouble() {
 
-    @org.junit.AfterClass
-    public static void tearDownClass() throws Exception {
-    }
+                int n=0;
+
+                @Override
+                public boolean hasNext() {
+                    return n < 10;
+                }
+
+                @Override
+                public double nextDouble() {
+                    n++;
+                    return 1.0;
+                }
+            };
+        }
+
+        @Override
+        public int size() {
+            return 10;
+        }
+    };
 
     @Test
     public void testCollectionDouble() {
-        CollectionDouble coll = new CollectionDouble() {
-
-            public IteratorDouble iterator() {
-                return new IteratorDouble() {
-
-                    int n=0;
-
-                    public boolean hasNext() {
-                        return n < 10;
-                    }
-
-                    public double nextDouble() {
-                        n++;
-                        return 1.0;
-                    }
-                };
-            }
-
-            public int size() {
-                return 10;
-            }
-        };
-        testCollection(coll);
+        testIterationForAllTypes(doubles);
+        testToArrayForAllTypes(doubles);
     }
+    
+    CollectionFloat floats = new CollectionFloat() {
+
+        @Override
+        public IteratorFloat iterator() {
+            return new IteratorFloat() {
+
+                int n=0;
+
+                @Override
+                public boolean hasNext() {
+                    return n < 10;
+                }
+
+                @Override
+                public float nextFloat() {
+                    n++;
+                    return (float) 1.0;
+                }
+            };
+        }
+
+        @Override
+        public int size() {
+            return 10;
+        }
+    };
 
     @Test
     public void testCollectionFloat() {
-        CollectionFloat coll = new CollectionFloat() {
-
-            public IteratorFloat iterator() {
-                return new IteratorFloat() {
-
-                    int n=0;
-
-                    public boolean hasNext() {
-                        return n < 10;
-                    }
-
-                    public float nextFloat() {
-                        n++;
-                        return (float) 1.0;
-                    }
-                };
-            }
-
-            public int size() {
-                return 10;
-            }
-        };
-        testCollection(coll);
+        testIterationForAllTypes(floats);
     }
 
     @Test
     public void testCollectionLong() {
         CollectionLong coll = new CollectionLong() {
 
+            @Override
             public IteratorLong iterator() {
                 return new IteratorLong() {
 
                     int n=0;
 
+                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
+                    @Override
                     public long nextLong() {
                         n++;
                         return 1L;
@@ -112,26 +116,30 @@ public class CollectionTest {
                 };
             }
 
+            @Override
             public int size() {
                 return 10;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
     }
 
     @Test
     public void testCollectionInt() {
         CollectionInt coll = new CollectionInt() {
 
+            @Override
             public IteratorInt iterator() {
                 return new IteratorInt() {
 
                     int n=0;
 
+                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
+                    @Override
                     public int nextInt() {
                         n++;
                         return 1;
@@ -139,26 +147,30 @@ public class CollectionTest {
                 };
             }
 
+            @Override
             public int size() {
                 return 10;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
     }
 
     @Test
     public void testCollectionShort() {
         CollectionShort coll = new CollectionShort() {
 
+            @Override
             public IteratorShort iterator() {
                 return new IteratorShort() {
 
                     int n=0;
 
+                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
+                    @Override
                     public short nextShort() {
                         n++;
                         return (short) 1;
@@ -166,26 +178,30 @@ public class CollectionTest {
                 };
             }
 
+            @Override
             public int size() {
                 return 10;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
     }
 
     @Test
     public void testCollectionByte() {
         CollectionByte coll = new CollectionByte() {
 
+            @Override
             public IteratorByte iterator() {
                 return new IteratorByte() {
 
                     int n=0;
 
+                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
+                    @Override
                     public byte nextByte() {
                         n++;
                         return (byte) 1;
@@ -193,14 +209,15 @@ public class CollectionTest {
                 };
             }
 
+            @Override
             public int size() {
                 return 10;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
     }
 
-    public static void testCollection(CollectionNumber coll) {
+    public static void testIterationForAllTypes(CollectionNumber coll) {
         assertEquals(10, coll.size());
         IteratorNumber iter = coll.iterator();
         while (iter.hasNext()) {
@@ -225,6 +242,29 @@ public class CollectionTest {
         iter = coll.iterator();
         while (iter.hasNext()) {
             assertEquals((byte) 1, iter.nextByte());
+        }
+    }
+
+    public static void testToArrayForAllTypes(CollectionNumber coll) {
+        assertEquals(10, coll.size());
+        
+        {
+            // Double copies
+            double[] shorter = new double[8];
+            double[] correct = new double[10];
+            double[] longer = new double[12];
+            longer[11] = -12;
+            
+            double[] shorterCopy = coll.toArray(shorter);
+            double[] correctCopy = coll.toArray(correct);
+            double[] longerCopy = coll.toArray(longer);
+            
+            assertThat(shorterCopy, not(sameInstance(shorter)));
+            assertThat(correctCopy, sameInstance(correct));
+            assertThat(longerCopy, sameInstance(longer));
+            assertThat(shorterCopy, equalTo(new double[] {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}));
+            assertThat(correctCopy, equalTo(new double[] {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}));
+            assertThat(longerCopy, equalTo(new double[] {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -12.0}));
         }
     }
 }

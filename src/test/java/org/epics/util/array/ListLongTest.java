@@ -10,8 +10,8 @@ import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.CollectionTest.testCollection;
 import static org.epics.util.array.ListTest.testList;
+import static org.epics.util.array.CollectionTest.testIterationForAllTypes;
 
 /**
  *
@@ -36,7 +36,7 @@ public class ListLongTest {
                 return 1L;
             }
         };
-        testCollection(coll);
+        testIterationForAllTypes(coll);
         testList(coll);
     }
 
