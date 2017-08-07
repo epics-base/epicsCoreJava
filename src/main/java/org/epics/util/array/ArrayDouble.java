@@ -135,6 +135,21 @@ public final class ArrayDouble extends ListDouble implements Serializable {
         return super.equals(obj);
     }
 
+    @Override
+    public <T> T toArray(T arrat) {
+        if (arrat instanceof double[]) {
+            double[] doubleArray;
+            if (((double[]) arrat).length < size()) {
+                doubleArray = (double[]) arrat;
+            } else {
+                doubleArray = new double[size()];
+            }
+            System.arraycopy(this.array, startIndex, doubleArray, 0, size);
+            return (T) doubleArray;
+        }        
+        return super.toArray(arrat);
+    }
+
     double[] wrappedArray() {
         return array;
     }
