@@ -4,61 +4,40 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.ListTest.testList;
-import static org.epics.util.array.CollectionNumberTestBase.testIterationForAllTypes;
 
 /**
  *
  * @author carcassi
  */
-public class ListDoubleTest {
+public class ListDoubleTest extends ListNumberTestBase<ListDouble>{
 
     public ListDoubleTest() {
-    }
+        super(new ListDouble() {
+                @Override
+                public int size() {
+                    return 10;
+                }
 
-    @Test
-    public void testListDouble() {
-        ListDouble coll = new ListDouble() {
+                @Override
+                public double getDouble(int index) {
+                    return 1.0;
+                }
+            },
+            new ListDouble() {
+                @Override
+                public int size() {
+                    return 10;
+                }
 
-            @Override
-            public int size() {
-                return 10;
-            }
-
-            @Override
-            public double getDouble(int index) {
-                return 1.0;
-            }
-        };
-        testIterationForAllTypes(coll);
-        testList(coll);
-    }
-
-    @Test
-    public void equals1() {
-        ListDouble coll = new ListDouble() {
-
-            @Override
-            public int size() {
-                return 10;
-            }
-
-            @Override
-            public double getDouble(int index) {
-                return index;
-            }
-        };
-        ListDouble other = new ArrayDouble(new double[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll, equalTo(other));
-        assertThat(other, equalTo(coll));
+                @Override
+                public double getDouble(int index) {
+                    return index;
+                }
+            },
+            new ArrayDouble(new double[] {0,1,2,3,4,5,6,7,8,9}));
     }
 
     @Test
@@ -70,39 +49,8 @@ public class ListDoubleTest {
     }
 
     @Test
-    public void hashcode1() {
-        ListDouble coll = new ListDouble() {
-
-            @Override
-            public int size() {
-                return 10;
-            }
-
-            @Override
-            public double getDouble(int index) {
-                return index;
-            }
-        };
-        ListDouble other = new ArrayDouble(new double[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll.hashCode(), equalTo(other.hashCode()));
-        assertThat(coll.hashCode(), equalTo(Arrays.hashCode(new double[] {0,1,2,3,4,5,6,7,8,9})));
-    }
-
-    @Test
     public void toString1() {
-        ListDouble coll = new ListDouble() {
-
-            @Override
-            public int size() {
-                return 10;
-            }
-
-            @Override
-            public double getDouble(int index) {
-                return index;
-            }
-        };
-        assertThat(coll.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
+        assertThat(incrementCollection.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
     }
 
     @Test
