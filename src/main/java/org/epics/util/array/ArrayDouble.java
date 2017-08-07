@@ -21,6 +21,10 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     private final int size;
     private final boolean checkBoundaries;
     private final boolean readOnly;
+    
+    public ArrayDouble(ListNumber array) {
+        this(array.toArray(new double[array.size()]), false);
+    }
 
     /**
      * A new read-only {@code ArrayDouble} that wraps around the given array.
