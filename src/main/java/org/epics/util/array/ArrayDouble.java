@@ -110,6 +110,9 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     @Override
     public void setAll(int index, ListNumber list) {
         if (list instanceof ArrayDouble) {
+            if (readOnly) {
+                throw new UnsupportedOperationException("Read only list.");
+            }
             ArrayDouble other = (ArrayDouble) list;
             System.arraycopy(other.array, other.startIndex, array, startIndex + index, other.size);
         } else {

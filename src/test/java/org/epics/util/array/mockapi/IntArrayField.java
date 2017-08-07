@@ -28,6 +28,6 @@ public class IntArrayField implements NumericArrayField {
 
     @Override
     public void put(int index, ListNumber data) {
-        new ArrayInt(backendArray).setAll(index, data);
+        new ArrayInt(backendArray, false).setAll(index, data);
     }
 }

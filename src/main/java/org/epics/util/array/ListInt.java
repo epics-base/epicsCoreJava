@@ -85,7 +85,7 @@ public abstract class ListInt implements ListNumber, CollectionInt {
 
     @Override
     public void setAll(int index, ListNumber list) {
-        if ((index+list.size()) >= size()) {
+        if ((index+list.size()) > size()) {
             throw new IndexOutOfBoundsException("Index: "+index+", Elements: "+list.size()+", Size: "+size());
         }
         for (int i = 0; i < list.size(); i++) {

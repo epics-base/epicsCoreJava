@@ -28,7 +28,7 @@ public class DoubleArrayField implements NumericArrayField {
 
     @Override
     public void put(int index, ListNumber data) {
-        new ArrayDouble(backendArray).setAll(index, data);
+        new ArrayDouble(backendArray, false).setAll(index, data);
     }
     
 }
