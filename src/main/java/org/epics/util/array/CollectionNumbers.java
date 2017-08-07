@@ -134,45 +134,45 @@ public class CollectionNumbers {
         } else if (array instanceof float[]) {
             float[] floatArray;
             if (((float[]) array).length < coll.size()) {
-                floatArray = (float[]) array;
-            } else {
                 floatArray = new float[coll.size()];
+            } else {
+                floatArray = (float[]) array;
             }
             arrayCopy(coll, floatArray, 0);
             return (T) floatArray;
         } else if (array instanceof long[]) {
             long[] longArray;
             if (((long[]) array).length < coll.size()) {
-                longArray = (long[]) array;
-            } else {
                 longArray = new long[coll.size()];
+            } else {
+                longArray = (long[]) array;
             }
             arrayCopy(coll, longArray, 0);
             return (T) longArray;
         } else if (array instanceof int[]) {
             int[] intArray;
             if (((int[]) array).length < coll.size()) {
-                intArray = (int[]) array;
-            } else {
                 intArray = new int[coll.size()];
+            } else {
+                intArray = (int[]) array;
             }
             arrayCopy(coll, intArray, 0);
             return (T) intArray;
         } else if (array instanceof short[]) {
             short[] shortArray;
             if (((short[]) array).length < coll.size()) {
-                shortArray = (short[]) array;
-            } else {
                 shortArray = new short[coll.size()];
+            } else {
+                shortArray = (short[]) array;
             }
             arrayCopy(coll, shortArray, 0);
             return (T) shortArray;
         } else if (array instanceof byte[]) {
             byte[] byteArray;
             if (((byte[]) array).length < coll.size()) {
-                byteArray = (byte[]) array;
-            } else {
                 byteArray = new byte[coll.size()];
+            } else {
+                byteArray = (byte[]) array;
             }
             arrayCopy(coll, byteArray, 0);
             return (T) byteArray;

@@ -28,71 +28,6 @@ import static org.hamcrest.Matchers.*;
  */
 public class CollectionTest {
 
-    CollectionDouble doubles = new CollectionDouble() {
-
-        @Override
-        public IteratorDouble iterator() {
-            return new IteratorDouble() {
-
-                int n=0;
-
-                @Override
-                public boolean hasNext() {
-                    return n < 10;
-                }
-
-                @Override
-                public double nextDouble() {
-                    n++;
-                    return 1.0;
-                }
-            };
-        }
-
-        @Override
-        public int size() {
-            return 10;
-        }
-    };
-
-    @Test
-    public void testCollectionDouble() {
-        testIterationForAllTypes(doubles);
-        testToArrayForAllTypes(doubles);
-    }
-    
-    CollectionFloat floats = new CollectionFloat() {
-
-        @Override
-        public IteratorFloat iterator() {
-            return new IteratorFloat() {
-
-                int n=0;
-
-                @Override
-                public boolean hasNext() {
-                    return n < 10;
-                }
-
-                @Override
-                public float nextFloat() {
-                    n++;
-                    return (float) 1.0;
-                }
-            };
-        }
-
-        @Override
-        public int size() {
-            return 10;
-        }
-    };
-
-    @Test
-    public void testCollectionFloat() {
-        testIterationForAllTypes(floats);
-    }
-
     @Test
     public void testCollectionLong() {
         CollectionLong coll = new CollectionLong() {
@@ -250,7 +185,7 @@ public class CollectionTest {
         
         {
             // Double copies
-            double[] shorter = new double[8];
+            double[] shorter = new double[9];
             double[] correct = new double[10];
             double[] longer = new double[12];
             longer[11] = -12;
@@ -265,6 +200,101 @@ public class CollectionTest {
             assertThat(shorterCopy, equalTo(new double[] {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}));
             assertThat(correctCopy, equalTo(new double[] {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}));
             assertThat(longerCopy, equalTo(new double[] {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, -12.0}));
+        }
+        
+        {
+            // Float copies
+            float[] shorter = new float[9];
+            float[] correct = new float[10];
+            float[] longer = new float[12];
+            longer[11] = -12;
+            
+            float[] shorterCopy = coll.toArray(shorter);
+            float[] correctCopy = coll.toArray(correct);
+            float[] longerCopy = coll.toArray(longer);
+            
+            assertThat(shorterCopy, not(sameInstance(shorter)));
+            assertThat(correctCopy, sameInstance(correct));
+            assertThat(longerCopy, sameInstance(longer));
+            assertThat(shorterCopy, equalTo(new float[] {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}));
+            assertThat(correctCopy, equalTo(new float[] {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f}));
+            assertThat(longerCopy, equalTo(new float[] {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, -12.0f}));
+        }
+        
+        {
+            // Long copies
+            long[] shorter = new long[9];
+            long[] correct = new long[10];
+            long[] longer = new long[12];
+            longer[11] = -12;
+            
+            long[] shorterCopy = coll.toArray(shorter);
+            long[] correctCopy = coll.toArray(correct);
+            long[] longerCopy = coll.toArray(longer);
+            
+            assertThat(shorterCopy, not(sameInstance(shorter)));
+            assertThat(correctCopy, sameInstance(correct));
+            assertThat(longerCopy, sameInstance(longer));
+            assertThat(shorterCopy, equalTo(new long[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(correctCopy, equalTo(new long[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(longerCopy, equalTo(new long[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, -12}));
+        }
+        
+        {
+            // Int copies
+            int[] shorter = new int[9];
+            int[] correct = new int[10];
+            int[] longer = new int[12];
+            longer[11] = -12;
+            
+            int[] shorterCopy = coll.toArray(shorter);
+            int[] correctCopy = coll.toArray(correct);
+            int[] longerCopy = coll.toArray(longer);
+            
+            assertThat(shorterCopy, not(sameInstance(shorter)));
+            assertThat(correctCopy, sameInstance(correct));
+            assertThat(longerCopy, sameInstance(longer));
+            assertThat(shorterCopy, equalTo(new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(correctCopy, equalTo(new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(longerCopy, equalTo(new int[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, -12}));
+        }
+        
+        {
+            // Short copies
+            short[] shorter = new short[9];
+            short[] correct = new short[10];
+            short[] longer = new short[12];
+            longer[11] = -12;
+            
+            short[] shorterCopy = coll.toArray(shorter);
+            short[] correctCopy = coll.toArray(correct);
+            short[] longerCopy = coll.toArray(longer);
+            
+            assertThat(shorterCopy, not(sameInstance(shorter)));
+            assertThat(correctCopy, sameInstance(correct));
+            assertThat(longerCopy, sameInstance(longer));
+            assertThat(shorterCopy, equalTo(new short[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(correctCopy, equalTo(new short[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(longerCopy, equalTo(new short[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, -12}));
+        }
+        
+        {
+            // Byte copies
+            byte[] shorter = new byte[9];
+            byte[] correct = new byte[10];
+            byte[] longer = new byte[12];
+            longer[11] = -12;
+            
+            byte[] shorterCopy = coll.toArray(shorter);
+            byte[] correctCopy = coll.toArray(correct);
+            byte[] longerCopy = coll.toArray(longer);
+            
+            assertThat(shorterCopy, not(sameInstance(shorter)));
+            assertThat(correctCopy, sameInstance(correct));
+            assertThat(longerCopy, sameInstance(longer));
+            assertThat(shorterCopy, equalTo(new byte[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(correctCopy, equalTo(new byte[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+            assertThat(longerCopy, equalTo(new byte[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, -12}));
         }
     }
 }
