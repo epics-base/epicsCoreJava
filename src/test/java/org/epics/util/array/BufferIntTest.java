@@ -10,7 +10,7 @@ import org.epics.util.array.ListInt;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.ListTest.testList;
+import static org.epics.util.array.ListNumberTestBase.testList;
 import static org.epics.util.array.CollectionNumberTestBase.testIterationForAllTypes;
 
 /**
