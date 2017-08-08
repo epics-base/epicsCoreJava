@@ -41,6 +41,41 @@ public class ListNumberTestBase<T extends ListNumber> extends CollectionNumberTe
         assertThat(incrementCollection.hashCode(), equalTo(referenceIncrementCollection.hashCode()));
         assertThat(referenceIncrementCollection.hashCode(), equalTo(incrementCollection.hashCode()));
     }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void defaultSetAll() {
+        incrementCollection.setAll(0, new ArrayDouble(0.0));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void defaultSetDouble() {
+        incrementCollection.setDouble(0, 0.0);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void defaultSetFloat() {
+        incrementCollection.setFloat(0, 0.0F);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void defaultSetLong() {
+        incrementCollection.setLong(0, 0L);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void defaultSetInt() {
+        incrementCollection.setInt(0, 0);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void defaultSetShort() {
+        incrementCollection.setShort(0, (short) 0);
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void defaultSetByte() {
+        incrementCollection.setByte(0, (byte) 0);
+    }
 
     public static void testList(ListNumber coll) {
         assertEquals(10, coll.size());
