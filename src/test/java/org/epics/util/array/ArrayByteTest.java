@@ -18,29 +18,21 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ArrayByteTest {
+public class ArrayByteTest extends FeatureTestListByte {
 
-    public ArrayByteTest() {
+    @Override
+    public ArrayByte createConstantCollection() {
+        return new ArrayByte(new byte[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
     }
 
-    @Test
-    public void wrap1() {
-        ArrayByte array = new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5});
-        assertThat(CollectionNumbers.doubleArrayCopyOf(array), equalTo(new double[] {0, 1, 2, 3, 4, 5}));
+    @Override
+    public ArrayByte createRampCollection() {
+        return new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
     }
 
-    @Test(expected=UnsupportedOperationException.class)
-    public void wrap2() {
-        ArrayByte array = new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5});
-        array.setDouble(0, 0);
-    }
-
-    @Test
-    public void wrap3() {
-        ArrayByte array = new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5}, false);
-        array.setDouble(0, 5);
-        array.setDouble(5, 0);
-        assertThat(CollectionNumbers.doubleArrayCopyOf(array), equalTo(new double[] {5, 1, 2, 3, 4, 0}));
+    @Override
+    public ArrayByte createModifiableCollection() {
+        return new ArrayByte(new byte[10], false);
     }
 
     @Test

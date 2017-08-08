@@ -18,29 +18,21 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ArrayLongTest {
+public class ArrayLongTest extends FeatureTestListLong{
 
-    public ArrayLongTest() {
+    @Override
+    public ArrayLong createConstantCollection() {
+        return new ArrayLong(new long[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
     }
 
-    @Test
-    public void wrap1() {
-        ArrayLong array = new ArrayLong(new long[] {0, 1, 2, 3, 4, 5});
-        assertThat(CollectionNumbers.doubleArrayCopyOf(array), equalTo(new double[] {0, 1, 2, 3, 4, 5}));
+    @Override
+    public ArrayLong createRampCollection() {
+        return new ArrayLong(new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
     }
 
-    @Test(expected=UnsupportedOperationException.class)
-    public void wrap2() {
-        ArrayLong array = new ArrayLong(0, 1, 2, 3, 4, 5);
-        array.setDouble(0, 0);
-    }
-
-    @Test
-    public void wrap3() {
-        ArrayLong array = new ArrayLong(new long[] {0, 1, 2, 3, 4, 5}, false);
-        array.setDouble(0, 5);
-        array.setDouble(5, 0);
-        assertThat(CollectionNumbers.doubleArrayCopyOf(array), equalTo(new double[] {5, 1, 2, 3, 4, 0}));
+    @Override
+    public ArrayLong createModifiableCollection() {
+        return new ArrayLong(new long[10], false);
     }
 
     @Test
