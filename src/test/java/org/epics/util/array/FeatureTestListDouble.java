@@ -71,6 +71,6 @@ public abstract class FeatureTestListDouble extends FeatureTestListNumber {
         ListDouble subList = array.subList(1, 9);
         assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}));
         ListDouble subSubList = subList.subList(1, 7);
-        assertThat(subSubList.toArray(new double[subList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
+        assertThat(subSubList.toArray(new double[subSubList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
     }
 }

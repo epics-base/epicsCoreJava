@@ -140,9 +140,9 @@ public final class ArrayDouble extends ListDouble implements Serializable {
         if (array instanceof double[]) {
             double[] doubleArray;
             if (((double[]) array).length < size()) {
-                doubleArray = (double[]) array;
-            } else {
                 doubleArray = new double[size()];
+            } else {
+                doubleArray = (double[]) array;
             }
             System.arraycopy(this.array, startIndex, doubleArray, 0, size);
             return (T) doubleArray;

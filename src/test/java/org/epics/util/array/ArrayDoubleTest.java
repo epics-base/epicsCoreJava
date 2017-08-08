@@ -18,9 +18,21 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ArrayDoubleTest {
+public class ArrayDoubleTest extends FeatureTestListDouble {
 
-    public ArrayDoubleTest() {
+    @Override
+    public ArrayDouble createConstantCollection() {
+        return new ArrayDouble(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+    }
+
+    @Override
+    public ArrayDouble createRampCollection() {
+        return new ArrayDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+    }
+
+    @Override
+    public ArrayDouble createModifiableCollection() {
+        return new ArrayDouble(new double[10], false);
     }
 
     @Test
@@ -44,90 +56,14 @@ public class ArrayDoubleTest {
     }
 
     @Test
-    public void equals1() {
-        ArrayDouble array = new ArrayDouble(new double[] {Double.MIN_VALUE}, false);
-        assertThat(array, equalTo(array));
-    }
-
-    @Test
-    public void equals2() {
-        ArrayDouble array = new ArrayDouble(new double[] {Double.MIN_VALUE}, false);
-        assertThat(array, not(equalTo(null)));
-    }
-
-    @Test
-    public void equals3() {
-        ArrayDouble array = new ArrayDouble(new double[] {Double.MIN_VALUE}, false);
-        ArrayDouble array2 = new ArrayDouble(new double[] {Double.MIN_VALUE}, false);
-        assertThat(array, equalTo(array2));
-    }
-
-    @Test
-    public void equals4() {
-        ArrayDouble array = new ArrayDouble(new double[] {Double.MIN_VALUE}, false);
-        ArrayDouble array2 = new ArrayDouble(new double[] {Double.MAX_VALUE}, false);
-        assertThat(array, not(equalTo(array2)));
-    }
-
-    @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(buffer);
-        ArrayDouble array = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ArrayDouble array = createRampCollection();
         stream.writeObject(array);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray()));
         ArrayDouble read = (ArrayDouble) inStream.readObject();
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
-    }
-    
-    @Test
-    public void setAll1() {
-        Random rand = new Random(0);
-        double[] array = rand.doubles(100).toArray();
-        double[] otherArray = new double[100];
-        ArrayDouble list = new ArrayDouble(array);
-        ArrayDouble otherList = new ArrayDouble(otherArray, false);
-        otherList.setAll(0, list);
-        assertThat(array, equalTo(otherArray));
-    }
-    
-    @Test
-    public void setAll2() {
-        double[] array = new double[50];
-        Arrays.fill(array, 0.1);
-        double[] otherArray = new double[100];
-        ArrayDouble list = new ArrayDouble(array);
-        ArrayDouble otherList = new ArrayDouble(otherArray, false);
-        otherList.setAll(25, list);
-        for (int i = 0; i < otherList.size(); i++) {
-            if (i < 25 || i >= 75) {
-                assertThat(otherList.getDouble(i), equalTo(0.0));
-            } else {
-                assertThat(otherList.getDouble(i), equalTo(0.1));
-            }
-        }
-    }
-
-    @Test
-    public void subList1() {
-        ArrayDouble array = new ArrayDouble(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
-        ArrayDouble subList = array.subList(3, 5);
-        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{3.0, 4.0}));
-    }
-
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void subList2() {
-        ArrayDouble array = new ArrayDouble(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
-        ListDouble subList = array.subList(3, 11);
-    }
-
-    @Test
-    public void subList3() {
-        ArrayDouble array = new ArrayDouble(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
-        ArrayDouble subList = array.subList(1, 9);
-        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}));
-        ArrayDouble subSubList = subList.subList(1, 7);
-        assertThat(subSubList.toArray(new double[subList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
     }
 }
