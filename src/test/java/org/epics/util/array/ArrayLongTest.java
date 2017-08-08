@@ -39,7 +39,7 @@ public class ArrayLongTest extends FeatureTestListLong{
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(buffer);
-        ArrayLong array = new ArrayLong(new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ArrayLong array = createRampCollection();
         stream.writeObject(array);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray()));
         ArrayLong read = (ArrayLong) inStream.readObject();

@@ -39,7 +39,7 @@ public class ArrayByteTest extends FeatureTestListByte {
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(buffer);
-        ArrayByte array = new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ArrayByte array = createRampCollection();
         stream.writeObject(array);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray()));
         ArrayByte read = (ArrayByte) inStream.readObject();

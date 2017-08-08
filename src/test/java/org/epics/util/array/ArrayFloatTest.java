@@ -39,7 +39,7 @@ public class ArrayFloatTest extends FeatureTestListFloat {
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(buffer);
-        ArrayFloat array = new ArrayFloat(new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ArrayFloat array = createRampCollection();
         stream.writeObject(array);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray()));
         ArrayFloat read = (ArrayFloat) inStream.readObject();
