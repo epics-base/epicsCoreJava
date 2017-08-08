@@ -95,6 +95,54 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     }
     
     @Test
+    public void setAllDouble() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        list.setAll(0, data);
+        testRamp(list);
+    }
+    
+    @Test
+    public void setAllFloat() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayFloat(0.0F, 1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F, 9.0F);
+        list.setAll(0, data);
+        testRamp(list);
+    }
+    
+    @Test
+    public void setAllLong() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayLong(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L);
+        list.setAll(0, data);
+        testRamp(list);
+    }
+    
+    @Test
+    public void setAllInt() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        list.setAll(0, data);
+        testRamp(list);
+    }
+    
+    @Test
+    public void setAllShort() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        list.setAll(0, data);
+        testRamp(list);
+    }
+    
+    @Test
+    public void setAllByte() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        list.setAll(0, data);
+        testRamp(list);
+    }
+    
+    @Test
     public void setDouble() {
         ListNumber list = createModifiableCollection();
         for (int i = 0; i < list.size(); i++) {
@@ -163,6 +211,18 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             assertEquals(1, coll.getInt(i));
             assertEquals((short) 1, coll.getShort(i));
             assertEquals((byte) 1, coll.getByte(i));
+        }
+    }
+
+    public static void testRamp(ListNumber coll) {
+        assertEquals(10, coll.size());
+        for (int i = 0; i < coll.size(); i++) {
+            assertThat(coll.getDouble(i), equalTo((double) i));
+            assertThat(coll.getFloat(i), equalTo((float) i));
+            assertThat(coll.getLong(i), equalTo((long) i));
+            assertThat(coll.getInt(i), equalTo((int) i));
+            assertThat(coll.getShort(i), equalTo((short) i));
+            assertThat(coll.getByte(i), equalTo((byte) i));
         }
     }
     
