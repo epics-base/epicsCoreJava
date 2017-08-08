@@ -4,31 +4,22 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ListShort;
-import org.epics.util.array.ArrayShort;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.ListTest.testList;
-import static org.epics.util.array.CollectionNumberTestBase.testIterationForAllTypes;
 
 /**
  *
  * @author carcassi
  */
-public class ListShortTest {
+public class ListShortTest extends ListNumberTestBase<ListShort> {
 
     public ListShortTest() {
-    }
-
-    @Test
-    public void list1() {
-        ListShort coll = new ListShort() {
+        super(new ListShort() {
 
             @Override
             public int size() {
@@ -39,14 +30,8 @@ public class ListShortTest {
             public short getShort(int index) {
                 return 1;
             }
-        };
-        testIterationForAllTypes(coll);
-        testList(coll);
-    }
-
-    @Test
-    public void equals1() {
-        ListShort coll = new ListShort() {
+        },
+        new ListShort() {
 
             @Override
             public int size() {
@@ -57,29 +42,13 @@ public class ListShortTest {
             public short getShort(int index) {
                 return (short) index;
             }
-        };
-        ListShort other = new ArrayShort(new short[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll, equalTo(other));
-        assertThat(other, equalTo(coll));
+        },
+        new ArrayShort(new short[] {0,1,2,3,4,5,6,7,8,9}));
     }
 
     @Test
-    public void hashcode1() {
-        ListShort coll = new ListShort() {
-
-            @Override
-            public int size() {
-                return 10;
-            }
-
-            @Override
-            public short getShort(int index) {
-                return (short) index;
-            }
-        };
-        ListShort other = new ArrayShort(new short[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll.hashCode(), equalTo(other.hashCode()));
-        assertThat(coll.hashCode(), equalTo(Arrays.hashCode(new short[] {0,1,2,3,4,5,6,7,8,9})));
+    public void toString1() {
+        assertThat(incrementCollection.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
     }
 
     @Test

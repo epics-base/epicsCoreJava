@@ -4,27 +4,18 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ListFloat;
-import org.epics.util.array.ArrayFloat;
-import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.ListTest.testList;
-import static org.epics.util.array.CollectionNumberTestBase.testIterationForAllTypes;
 
 /**
  *
  * @author carcassi
  */
-public class ListFloatTest {
+public class ListFloatTest extends ListNumberTestBase<ListFloat> {
 
     public ListFloatTest() {
-    }
-
-    @Test
-    public void list1() {
-        ListFloat coll = new ListFloat() {
+        super(new ListFloat() {
 
             @Override
             public int size() {
@@ -35,14 +26,8 @@ public class ListFloatTest {
             public float getFloat(int index) {
                 return 1.0F;
             }
-        };
-        testIterationForAllTypes(coll);
-        testList(coll);
-    }
-
-    @Test
-    public void equals1() {
-        ListFloat coll = new ListFloat() {
+        },
+        new ListFloat() {
 
             @Override
             public int size() {
@@ -53,29 +38,13 @@ public class ListFloatTest {
             public float getFloat(int index) {
                 return index;
             }
-        };
-        ListFloat other = new ArrayFloat(new float[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll, equalTo(other));
-        assertThat(other, equalTo(coll));
+        },
+        new ArrayFloat(new float[] {0,1,2,3,4,5,6,7,8,9}));
     }
 
     @Test
-    public void hashcode1() {
-        ListFloat coll = new ListFloat() {
-
-            @Override
-            public int size() {
-                return 10;
-            }
-
-            @Override
-            public float getFloat(int index) {
-                return index;
-            }
-        };
-        ListFloat other = new ArrayFloat(new float[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll.hashCode(), equalTo(other.hashCode()));
-        assertThat(coll.hashCode(), equalTo(Arrays.hashCode(new float[] {0,1,2,3,4,5,6,7,8,9})));
+    public void toString1() {
+        assertThat(incrementCollection.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
     }
 
 }

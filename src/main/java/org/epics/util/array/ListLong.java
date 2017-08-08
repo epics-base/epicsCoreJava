@@ -126,5 +126,16 @@ public abstract class ListLong implements ListNumber, CollectionLong {
         }
         return result;
     }
-
+    
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        int i = 0;
+        for (; i < size() - 1; i++) {
+            builder.append(getLong(i)).append(", ");
+        }
+        builder.append(getLong(i)).append("]");
+        return builder.toString();
+    }
 }

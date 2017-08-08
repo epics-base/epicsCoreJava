@@ -124,4 +124,16 @@ public abstract class ListFloat implements ListNumber, CollectionFloat {
         }
         return result;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        int i = 0;
+        for (; i < size() - 1; i++) {
+            builder.append(getFloat(i)).append(", ");
+        }
+        builder.append(getFloat(i)).append("]");
+        return builder.toString();
+    }
 }

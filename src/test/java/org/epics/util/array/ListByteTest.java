@@ -4,27 +4,18 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ListByte;
-import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.util.array.ListTest.testList;
-import static org.epics.util.array.CollectionNumberTestBase.testIterationForAllTypes;
 
 /**
  *
  * @author carcassi
  */
-public class ListByteTest {
+public class ListByteTest extends ListNumberTestBase<ListByte> {
 
     public ListByteTest() {
-    }
-
-    @Test
-    public void list1() {
-        ListByte coll = new ListByte() {
+        super(new ListByte() {
 
             @Override
             public int size() {
@@ -35,14 +26,7 @@ public class ListByteTest {
             public byte getByte(int index) {
                 return 1;
             }
-        };
-        testIterationForAllTypes(coll);
-        testList(coll);
-    }
-
-    @Test
-    public void equals1() {
-        ListByte coll = new ListByte() {
+        }, new ListByte() {
 
             @Override
             public int size() {
@@ -53,29 +37,13 @@ public class ListByteTest {
             public byte getByte(int index) {
                 return (byte) index;
             }
-        };
-        ListByte other = new ArrayByte(new byte[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll, equalTo(other));
-        assertThat(other, equalTo(coll));
+        },
+        new ArrayByte(new byte[] {0,1,2,3,4,5,6,7,8,9}));
     }
 
     @Test
-    public void hashcode1() {
-        ListByte coll = new ListByte() {
-
-            @Override
-            public int size() {
-                return 10;
-            }
-
-            @Override
-            public byte getByte(int index) {
-                return (byte) index;
-            }
-        };
-        ListByte other = new ArrayByte(new byte[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(coll.hashCode(), equalTo(other.hashCode()));
-        assertThat(coll.hashCode(), equalTo(Arrays.hashCode(new byte[] {0,1,2,3,4,5,6,7,8,9})));
+    public void toString1() {
+        assertThat(incrementCollection.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
     }
 
 }

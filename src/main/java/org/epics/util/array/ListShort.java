@@ -125,4 +125,15 @@ public abstract class ListShort implements ListNumber, CollectionShort {
         return result;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("[");
+        int i = 0;
+        for (; i < size() - 1; i++) {
+            builder.append(getShort(i)).append(", ");
+        }
+        builder.append(getShort(i)).append("]");
+        return builder.toString();
+    }
 }

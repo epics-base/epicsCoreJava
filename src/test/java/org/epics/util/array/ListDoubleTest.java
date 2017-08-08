@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ListDoubleTest extends ListNumberTestBase<ListDouble>{
+public class ListDoubleTest extends ListNumberTestBase<ListDouble> {
 
     public ListDoubleTest() {
         super(new ListDouble() {
