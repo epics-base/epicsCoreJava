@@ -12,10 +12,11 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class CollectionByteTest extends CollectionNumberTestBase<CollectionByte> {
+public class CollectionByteTest extends FeatureTestCollectionNumber {
 
-    public CollectionByteTest() {
-        super(new CollectionByte() {
+    @Override
+    public CollectionNumber createConstantCollection() {
+        return new CollectionByte() {
 
             @Override
             public IteratorByte iterator() {
@@ -40,6 +41,6 @@ public class CollectionByteTest extends CollectionNumberTestBase<CollectionByte>
             public int size() {
                 return 10;
             }
-        });
+        };
     }
 }

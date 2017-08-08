@@ -16,10 +16,11 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ListShortTest extends ListNumberTestBase<ListShort> {
+public class ListShortTest extends FeatureTestListShort {
 
-    public ListShortTest() {
-        super(new ListShort() {
+    @Override
+    public ListShort createConstantCollection() {
+        return new ListShort() {
 
             @Override
             public int size() {
@@ -30,8 +31,12 @@ public class ListShortTest extends ListNumberTestBase<ListShort> {
             public short getShort(int index) {
                 return 1;
             }
-        },
-        new ListShort() {
+        };
+    }
+
+    @Override
+    public ListShort createRampCollection() {
+        return new ListShort() {
 
             @Override
             public int size() {
@@ -42,13 +47,7 @@ public class ListShortTest extends ListNumberTestBase<ListShort> {
             public short getShort(int index) {
                 return (short) index;
             }
-        },
-        new ArrayShort(new short[] {0,1,2,3,4,5,6,7,8,9}));
-    }
-
-    @Test
-    public void toString1() {
-        assertThat(incrementCollection.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
+        };
     }
 
     @Test

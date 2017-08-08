@@ -8,27 +8,23 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
-public class CollectionNumberTestBase<T extends CollectionNumber> {
+public abstract class FeatureTestCollectionNumber {
 
-    public T collection;
-    
-    public CollectionNumberTestBase(T collection) {
-        this.collection = collection;
-    }
+    abstract public CollectionNumber createConstantCollection();
 
     @Test
     public void iteration() {
-        testIterationForAllTypes(collection);
+        testIterationForAllTypes(createConstantCollection());
     }
 
     @Test
     public void toArray() {
-        testToArrayForAllTypes(collection);
+        testToArrayForAllTypes(createConstantCollection());
     }
     
     @Test(expected=ArrayStoreException.class)
     public void toArrayInvalid() {
-        collection.toArray(new Object());
+        createConstantCollection().toArray(new Object());
     }
 
     public static void testIterationForAllTypes(CollectionNumber coll) {

@@ -8,73 +8,82 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 
-public class ListNumberTestBase<T extends ListNumber> extends CollectionNumberTestBase<T> {
+public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber {
 
-    public T incrementCollection;
-    public T referenceIncrementCollection;
+    @Override
+    abstract public ListNumber createConstantCollection();
     
-    public ListNumberTestBase(T collection, T incrementCollection, T referenceIncrementCollection) {
-        super(collection);
-        this.incrementCollection = incrementCollection;
-        this.referenceIncrementCollection = referenceIncrementCollection;
-    }
+    abstract public ListNumber createRampCollection();
     
     @Test
     public void getXxx() {
-        testList(collection);
+        testList(createConstantCollection());
     }
     
     @Test
     public void equals() {
-        assertThat(incrementCollection, equalTo(referenceIncrementCollection));
-        assertThat(referenceIncrementCollection, equalTo(incrementCollection));
+        ListNumber a = createRampCollection();
+        ListNumber b = createRampCollection();
+        assertThat(a, not(sameInstance(b)));
+        assertThat(a, equalTo(b));
+        assertThat(b, equalTo(a));
+    }
+    
+    @Test
+    public void equalsSame() {
+        ListNumber a = createRampCollection();
+        assertThat(a, equalTo(a));
     }
     
     @Test
     public void notEquals() {
-        assertThat(incrementCollection, not(equalTo(collection)));
-        assertThat(collection, not(equalTo(incrementCollection)));
+        ListNumber a = createConstantCollection();
+        ListNumber b = createRampCollection();
+        assertThat(a, not(equalTo(b)));
+        assertThat(b, not(equalTo(a)));
     }
     
     @Test
     public void hashcodeConsistency() {
-        assertThat(incrementCollection.hashCode(), equalTo(referenceIncrementCollection.hashCode()));
-        assertThat(referenceIncrementCollection.hashCode(), equalTo(incrementCollection.hashCode()));
+        ListNumber a = createRampCollection();
+        ListNumber b = createRampCollection();
+        assertThat(a.hashCode(), equalTo(b.hashCode()));
+        assertThat(b.hashCode(), equalTo(a.hashCode()));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetAll() {
-        incrementCollection.setAll(0, new ArrayDouble(0.0));
+        createRampCollection().setAll(0, new ArrayDouble(0.0));
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetDouble() {
-        incrementCollection.setDouble(0, 0.0);
+        createRampCollection().setDouble(0, 0.0);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetFloat() {
-        incrementCollection.setFloat(0, 0.0F);
+        createRampCollection().setFloat(0, 0.0F);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetLong() {
-        incrementCollection.setLong(0, 0L);
+        createRampCollection().setLong(0, 0L);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetInt() {
-        incrementCollection.setInt(0, 0);
+        createRampCollection().setInt(0, 0);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetShort() {
-        incrementCollection.setShort(0, (short) 0);
+        createRampCollection().setShort(0, (short) 0);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetByte() {
-        incrementCollection.setByte(0, (byte) 0);
+        createRampCollection().setByte(0, (byte) 0);
     }
 
     public static void testList(ListNumber coll) {

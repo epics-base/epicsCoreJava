@@ -12,45 +12,36 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ListDoubleTest extends ListNumberTestBase<ListDouble> {
+public class ListDoubleTest extends FeatureTestListDouble {
 
-    public ListDoubleTest() {
-        super(new ListDouble() {
-                @Override
-                public int size() {
-                    return 10;
-                }
+    @Override
+    public ListDouble createConstantCollection() {
+        return new ListDouble() {
+            @Override
+            public int size() {
+                return 10;
+            }
 
-                @Override
-                public double getDouble(int index) {
-                    return 1.0;
-                }
-            },
-            new ListDouble() {
-                @Override
-                public int size() {
-                    return 10;
-                }
-
-                @Override
-                public double getDouble(int index) {
-                    return index;
-                }
-            },
-            new ArrayDouble(new double[] {0,1,2,3,4,5,6,7,8,9}));
+            @Override
+            public double getDouble(int index) {
+                return 1.0;
+            }
+        };
     }
 
-    @Test
-    public void equals2() {
-        ListNumber coll = new ArrayDouble(new double[] {0,1,2,3,4,5,6,7,8,9});
-        ListNumber other = new ArrayFloat(new float[] {0,1,2,3,4,5,6,7,8,9});
-        assertThat(other, not(equalTo(coll)));
-        assertThat(coll, not(equalTo(other)));
-    }
+    @Override
+    public ListDouble createRampCollection() {
+        return new ListDouble() {
+            @Override
+            public int size() {
+                return 10;
+            }
 
-    @Test
-    public void toString1() {
-        assertThat(incrementCollection.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
+            @Override
+            public double getDouble(int index) {
+                return index;
+            }
+        };
     }
 
     @Test

@@ -12,10 +12,11 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ListByteTest extends ListNumberTestBase<ListByte> {
+public class ListByteTest extends FeatureTestListByte {
 
-    public ListByteTest() {
-        super(new ListByte() {
+    @Override
+    public ListByte createConstantCollection() {
+        return new ListByte() {
 
             @Override
             public int size() {
@@ -26,7 +27,12 @@ public class ListByteTest extends ListNumberTestBase<ListByte> {
             public byte getByte(int index) {
                 return 1;
             }
-        }, new ListByte() {
+        };
+    }
+
+    @Override
+    public ListByte createRampCollection() {
+        return new ListByte() {
 
             @Override
             public int size() {
@@ -37,13 +43,7 @@ public class ListByteTest extends ListNumberTestBase<ListByte> {
             public byte getByte(int index) {
                 return (byte) index;
             }
-        },
-        new ArrayByte(new byte[] {0,1,2,3,4,5,6,7,8,9}));
-    }
-
-    @Test
-    public void toString1() {
-        assertThat(incrementCollection.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
+        };
     }
 
 }

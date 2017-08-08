@@ -12,10 +12,11 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ListFloatTest extends ListNumberTestBase<ListFloat> {
+public class ListFloatTest extends FeatureTestListFloat {
 
-    public ListFloatTest() {
-        super(new ListFloat() {
+    @Override
+    public ListFloat createConstantCollection() {
+        return new ListFloat() {
 
             @Override
             public int size() {
@@ -26,8 +27,12 @@ public class ListFloatTest extends ListNumberTestBase<ListFloat> {
             public float getFloat(int index) {
                 return 1.0F;
             }
-        },
-        new ListFloat() {
+        };
+    }
+
+    @Override
+    public ListFloat createRampCollection() {
+        return new ListFloat() {
 
             @Override
             public int size() {
@@ -38,13 +43,7 @@ public class ListFloatTest extends ListNumberTestBase<ListFloat> {
             public float getFloat(int index) {
                 return index;
             }
-        },
-        new ArrayFloat(new float[] {0,1,2,3,4,5,6,7,8,9}));
-    }
-
-    @Test
-    public void toString1() {
-        assertThat(incrementCollection.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
+        };
     }
 
 }
