@@ -46,4 +46,26 @@ public class ListFloatTest extends FeatureTestListFloat {
         };
     }
 
+    @Override
+    public ListNumber createModifiableCollection() {
+        return new ListFloat() {
+            
+            private float[] array = new float[10];
+            
+            @Override
+            public float getFloat(int index) {
+                return array[index];
+            }
+
+            @Override
+            public void setFloat(int index, float value) {
+                array[index] = value;
+            }
+
+            @Override
+            public int size() {
+                return array.length;
+            }
+        };
+    }
 }

@@ -46,4 +46,26 @@ public class ListIntTest extends FeatureTestListInt {
         };
     }
 
+    @Override
+    public ListNumber createModifiableCollection() {
+        return new ListInt() {
+            
+            private int[] array = new int[10];
+            
+            @Override
+            public int getInt(int index) {
+                return array[index];
+            }
+
+            @Override
+            public void setInt(int index, int value) {
+                array[index] = value;
+            }
+
+            @Override
+            public int size() {
+                return array.length;
+            }
+        };
+    }
 }

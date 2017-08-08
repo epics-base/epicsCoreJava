@@ -46,4 +46,26 @@ public class ListLongTest extends FeatureTestListLong {
         };
     }
 
+    @Override
+    public ListNumber createModifiableCollection() {
+        return new ListLong() {
+            
+            private long[] array = new long[10];
+            
+            @Override
+            public long getLong(int index) {
+                return array[index];
+            }
+
+            @Override
+            public void setLong(int index, long value) {
+                array[index] = value;
+            }
+
+            @Override
+            public int size() {
+                return array.length;
+            }
+        };
+    }
 }

@@ -50,6 +50,28 @@ public class ListShortTest extends FeatureTestListShort {
         };
     }
 
+    @Override
+    public ListNumber createModifiableCollection() {
+        return new ListShort() {
+            
+            private short[] array = new short[10];
+            
+            @Override
+            public short getShort(int index) {
+                return array[index];
+            }
+
+            @Override
+            public void setShort(int index, short value) {
+                array[index] = value;
+            }
+
+            @Override
+            public int size() {
+                return array.length;
+            }
+        };
+    }
     @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

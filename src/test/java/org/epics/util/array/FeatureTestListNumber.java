@@ -15,6 +15,8 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     
     abstract public ListNumber createRampCollection();
     
+    abstract public ListNumber createModifiableCollection();
+    
     @Test
     public void getXxx() {
         testList(createConstantCollection());
@@ -90,6 +92,66 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetByte() {
         createRampCollection().setByte(0, (byte) 0);
+    }
+    
+    @Test
+    public void setDouble() {
+        ListNumber list = createModifiableCollection();
+        for (int i = 0; i < list.size(); i++) {
+            list.setDouble(i, 1.0);
+        }
+        testList(list);
+        testIterationForAllTypes(list);
+    }
+    
+    @Test
+    public void setFloat() {
+        ListNumber list = createModifiableCollection();
+        for (int i = 0; i < list.size(); i++) {
+            list.setFloat(i, 1.0F);
+        }
+        testList(list);
+        testIterationForAllTypes(list);
+    }
+    
+    @Test
+    public void setLong() {
+        ListNumber list = createModifiableCollection();
+        for (int i = 0; i < list.size(); i++) {
+            list.setLong(i, 1L);
+        }
+        testList(list);
+        testIterationForAllTypes(list);
+    }
+    
+    @Test
+    public void setInt() {
+        ListNumber list = createModifiableCollection();
+        for (int i = 0; i < list.size(); i++) {
+            list.setInt(i, 1);
+        }
+        testList(list);
+        testIterationForAllTypes(list);
+    }
+    
+    @Test
+    public void setShort() {
+        ListNumber list = createModifiableCollection();
+        for (int i = 0; i < list.size(); i++) {
+            list.setShort(i, (short) 1);
+        }
+        testList(list);
+        testIterationForAllTypes(list);
+    }
+    
+    @Test
+    public void setByte() {
+        ListNumber list = createModifiableCollection();
+        for (int i = 0; i < list.size(); i++) {
+            list.setByte(i, (byte) 1);
+        }
+        testList(list);
+        testIterationForAllTypes(list);
     }
 
     public static void testList(ListNumber coll) {

@@ -44,6 +44,29 @@ public class ListDoubleTest extends FeatureTestListDouble {
         };
     }
 
+    @Override
+    public ListNumber createModifiableCollection() {
+        return new ListDouble() {
+            
+            private double[] array = new double[10];
+            
+            @Override
+            public double getDouble(int index) {
+                return array[index];
+            }
+
+            @Override
+            public void setDouble(int index, double value) {
+                array[index] = value;
+            }
+
+            @Override
+            public int size() {
+                return array.length;
+            }
+        };
+    }
+
     @Test
     public void testConcatenation1() {
         //straightforward test to check if concatenation seems to work
