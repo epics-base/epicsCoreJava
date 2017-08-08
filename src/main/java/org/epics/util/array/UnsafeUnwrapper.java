@@ -4,13 +4,6 @@
  */
 package org.epics.util.array;
 
-import static org.epics.util.array.CollectionNumbers.byteArrayCopyOf;
-import static org.epics.util.array.CollectionNumbers.doubleArrayCopyOf;
-import static org.epics.util.array.CollectionNumbers.floatArrayCopyOf;
-import static org.epics.util.array.CollectionNumbers.intArrayCopyOf;
-import static org.epics.util.array.CollectionNumbers.longArrayCopyOf;
-import static org.epics.util.array.CollectionNumbers.shortArrayCopyOf;
-
 /**
  * Utilities to work with number collections.
  *
@@ -177,7 +170,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return floatArrayCopyOf(coll);
+        return coll.toArray(new float[coll.size()]);
     }
 
     /**
@@ -193,7 +186,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return doubleArrayCopyOf(coll);
+        return coll.toArray(new double[coll.size()]);
     }
 
     /**
@@ -209,7 +202,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return byteArrayCopyOf(coll);
+        return coll.toArray(new byte[coll.size()]);
     }
 
     /**
@@ -225,7 +218,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return shortArrayCopyOf(coll);
+        return coll.toArray(new short[coll.size()]);
     }
 
     /**
@@ -241,7 +234,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return intArrayCopyOf(coll);
+        return coll.toArray(new int[coll.size()]);
     }
 
     /**
@@ -257,7 +250,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return longArrayCopyOf(coll);
+        return coll.toArray(new long[coll.size()]);
     }
     
 }
