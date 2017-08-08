@@ -4,13 +4,6 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ListMath;
-import org.epics.util.array.ListLong;
-import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.CollectionNumbers;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -29,21 +22,21 @@ public class ListMathTest {
     public void rescale1() {
         ArrayDouble array1 = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5});
         ListDouble rescaled = ListMath.rescale(array1, 2.5, -5.0);
-        assertThat(CollectionNumbers.doubleArrayCopyOf(rescaled), equalTo(new double[] {-5.0, -2.5, 0, 2.5, 5.0, 7.5}));
+        assertThat(rescaled, equalTo(new ArrayDouble(-5.0, -2.5, 0, 2.5, 5.0, 7.5)));
     }
 
     @Test
     public void rescaleWithfactor1() {
         ArrayDouble array1 = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5});
         ListDouble rescaled = ListMath.rescale(array1, 1, 1);
-        assertThat(CollectionNumbers.doubleArrayCopyOf(rescaled), equalTo(new double[] {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}));
+        assertThat(rescaled, equalTo(new ArrayDouble(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)));
     }
 
     @Test
     public void sum1() {
         ArrayDouble array1 = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5});
         ListDouble summed = ListMath.add(array1, ListMath.rescale(array1, -1.0, 0.0));
-        assertThat(CollectionNumbers.doubleArrayCopyOf(summed), equalTo(new double[] {0, 0, 0, 0, 0, 0}));
+        assertThat(summed, equalTo(new ArrayDouble(0, 0, 0, 0, 0, 0)));
     }
 
     @Test
