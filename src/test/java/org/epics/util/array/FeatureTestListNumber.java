@@ -143,6 +143,54 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     }
     
     @Test
+    public void setAllDouble2() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayDouble(4.0, 5.0);
+        list.setAll(4, data);
+        testMiddleInsert(list);
+    }
+    
+    @Test
+    public void setAllFloat2() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayFloat(4.0F, 5.0F);
+        list.setAll(4, data);
+        testMiddleInsert(list);
+    }
+    
+    @Test
+    public void setAllLong2() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayLong(4L, 5L);
+        list.setAll(4, data);
+        testMiddleInsert(list);
+    }
+    
+    @Test
+    public void setAllInt2() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayInt(4, 5);
+        list.setAll(4, data);
+        testMiddleInsert(list);
+    }
+    
+    @Test
+    public void setAllShort2() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayShort(new short[] {4, 5});
+        list.setAll(4, data);
+        testMiddleInsert(list);
+    }
+    
+    @Test
+    public void setAllByte2() {
+        ListNumber list = createModifiableCollection();
+        ListNumber data = new ArrayByte(new byte[] {4, 5});
+        list.setAll(4, data);
+        testMiddleInsert(list);
+    }
+    
+    @Test
     public void setDouble() {
         ListNumber list = createModifiableCollection();
         for (int i = 0; i < list.size(); i++) {
@@ -223,6 +271,27 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             assertThat(coll.getInt(i), equalTo((int) i));
             assertThat(coll.getShort(i), equalTo((short) i));
             assertThat(coll.getByte(i), equalTo((byte) i));
+        }
+    }
+
+    public static void testMiddleInsert(ListNumber coll) {
+        assertEquals(10, coll.size());
+        for (int i = 0; i < coll.size(); i++) {
+            if (i >= 4 && i < 6) {
+                assertThat(coll.getDouble(i), equalTo((double) i));
+                assertThat(coll.getFloat(i), equalTo((float) i));
+                assertThat(coll.getLong(i), equalTo((long) i));
+                assertThat(coll.getInt(i), equalTo((int) i));
+                assertThat(coll.getShort(i), equalTo((short) i));
+                assertThat(coll.getByte(i), equalTo((byte) i));
+            } else {
+                assertThat(coll.getDouble(i), equalTo((double) 0));
+                assertThat(coll.getFloat(i), equalTo((float) 0));
+                assertThat(coll.getLong(i), equalTo((long) 0));
+                assertThat(coll.getInt(i), equalTo((int) 0));
+                assertThat(coll.getShort(i), equalTo((short) 0));
+                assertThat(coll.getByte(i), equalTo((byte) 0));
+            }
         }
     }
     
