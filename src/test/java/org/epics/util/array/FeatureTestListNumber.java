@@ -205,12 +205,12 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     public static void testList(ListNumber coll) {
         assertEquals(10, coll.size());
         for (int i = 0; i < coll.size(); i++) {
-            assertEquals(1.0, coll.getDouble(i), 0.00001);
-            assertEquals((float) 1.0, coll.getFloat(i), 0.00001);
-            assertEquals(1L, coll.getLong(i));
-            assertEquals(1, coll.getInt(i));
-            assertEquals((short) 1, coll.getShort(i));
-            assertEquals((byte) 1, coll.getByte(i));
+            assertThat(coll.getDouble(i), equalTo((double) 1));
+            assertThat(coll.getFloat(i), equalTo((float) 1));
+            assertThat(coll.getLong(i), equalTo((long) 1));
+            assertThat(coll.getInt(i), equalTo((int) 1));
+            assertThat(coll.getShort(i), equalTo((short) 1));
+            assertThat(coll.getByte(i), equalTo((byte) 1));
         }
     }
 
