@@ -36,6 +36,12 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     }
     
     @Test
+    public void equalsNull() {
+        ListNumber a = createRampCollection();
+        assertThat(a, not(equalTo(null)));
+    }
+    
+    @Test
     public void notEquals() {
         ListNumber a = createConstantCollection();
         ListNumber b = createRampCollection();
