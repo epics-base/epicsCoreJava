@@ -250,6 +250,28 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         testIterationForAllTypes(list);
     }
 
+    @Test
+    public void subList1() {
+        ListNumber array = createRampCollection();
+        ListNumber subList = array.subList(3, 5);
+        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{3.0, 4.0}));
+    }
+
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void subList2() {
+        ListNumber array = createRampCollection();
+        ListNumber subList = array.subList(3, 11);
+    }
+
+    @Test
+    public void subList3() {
+        ListNumber array = createRampCollection();
+        ListNumber subList = array.subList(1, 9);
+        assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0}));
+        ListNumber subSubList = subList.subList(1, 7);
+        assertThat(subSubList.toArray(new double[subSubList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
+    }
+
     public static void testList(ListNumber coll) {
         assertEquals(10, coll.size());
         for (int i = 0; i < coll.size(); i++) {

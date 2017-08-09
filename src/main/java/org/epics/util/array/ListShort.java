@@ -136,4 +136,28 @@ public abstract class ListShort implements ListNumber, CollectionShort {
         builder.append(getShort(i)).append("]");
         return builder.toString();
     }
+    
+    @Override
+    public ListShort subList(final int fromIndex, final int toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
+        }
+        final int size = toIndex - fromIndex;
+        return new ListShort() {
+            @Override
+            public short getShort(int index) {
+                return ListShort.this.getShort(fromIndex + index);
+            }
+
+            @Override
+            public void setShort(int index, short value) {
+                ListShort.this.setShort(fromIndex + index, value);
+            }
+
+            @Override
+            public int size() {
+                return size;
+            }
+        };
+    }
 }

@@ -135,5 +135,28 @@ public abstract class ListInt implements ListNumber, CollectionInt {
         builder.append(getInt(i)).append("]");
         return builder.toString();
     }
+    
+    @Override
+    public ListInt subList(final int fromIndex, final int toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
+        }
+        final int size = toIndex - fromIndex;
+        return new ListInt() {
+            @Override
+            public int getInt(int index) {
+                return ListInt.this.getInt(fromIndex + index);
+            }
 
+            @Override
+            public void setInt(int index, int value) {
+                ListInt.this.setInt(fromIndex + index, value);
+            }
+
+            @Override
+            public int size() {
+                return size;
+            }
+        };
+    }
 }

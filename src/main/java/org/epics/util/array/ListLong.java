@@ -138,4 +138,28 @@ public abstract class ListLong implements ListNumber, CollectionLong {
         builder.append(getLong(i)).append("]");
         return builder.toString();
     }
+    
+    @Override
+    public ListLong subList(final int fromIndex, final int toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
+        }
+        final int size = toIndex - fromIndex;
+        return new ListLong() {
+            @Override
+            public long getLong(int index) {
+                return ListLong.this.getLong(fromIndex + index);
+            }
+
+            @Override
+            public void setLong(int index, long value) {
+                ListLong.this.setLong(fromIndex + index, value);
+            }
+
+            @Override
+            public int size() {
+                return size;
+            }
+        };
+    }
 }

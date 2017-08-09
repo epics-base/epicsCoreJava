@@ -148,4 +148,15 @@ public interface ListNumber extends CollectionNumber {
      *         list is too short to hold the data.
      */
     void setAll(int index, ListNumber list);
+    
+    /**
+     * Returns a view of the portion of this list between the specified
+     * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive.
+     * 
+     * @param fromIndex
+     * @param toIndex
+     * @return 
+     */
+    ListNumber subList(int fromIndex, int toIndex);
+
 }

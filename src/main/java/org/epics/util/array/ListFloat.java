@@ -136,4 +136,28 @@ public abstract class ListFloat implements ListNumber, CollectionFloat {
         builder.append(getFloat(i)).append("]");
         return builder.toString();
     }
+    
+    @Override
+    public ListFloat subList(final int fromIndex, final int toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
+        }
+        final int size = toIndex - fromIndex;
+        return new ListFloat() {
+            @Override
+            public float getFloat(int index) {
+                return ListFloat.this.getFloat(fromIndex + index);
+            }
+
+            @Override
+            public void setFloat(int index, float value) {
+                ListFloat.this.setFloat(fromIndex + index, value);
+            }
+
+            @Override
+            public int size() {
+                return size;
+            }
+        };
+    }
 }

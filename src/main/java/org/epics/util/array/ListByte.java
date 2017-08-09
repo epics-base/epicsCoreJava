@@ -143,4 +143,28 @@ public abstract class ListByte implements ListNumber, CollectionByte {
         builder.append(getByte(i)).append("]");
         return builder.toString();
     }
+    
+    @Override
+    public ListByte subList(final int fromIndex, final int toIndex) {
+        if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
+            throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
+        }
+        final int size = toIndex - fromIndex;
+        return new ListByte() {
+            @Override
+            public byte getByte(int index) {
+                return ListByte.this.getByte(fromIndex + index);
+            }
+
+            @Override
+            public void setByte(int index, byte value) {
+                ListByte.this.setByte(fromIndex + index, value);
+            }
+
+            @Override
+            public int size() {
+                return size;
+            }
+        };
+    }
 }
