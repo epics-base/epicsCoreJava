@@ -51,7 +51,7 @@ public final class ArrayDouble extends ListDouble implements Serializable {
      * @param array an array
      * @param readOnly if false the wrapper allows writes to the array
      */
-    public ArrayDouble(double[] array, int startIndex, int size, boolean readOnly) {
+    ArrayDouble(double[] array, int startIndex, int size, boolean readOnly) {
         if (startIndex < 0 || startIndex + size > array.length)
             throw new IndexOutOfBoundsException("Start index: "+startIndex+", Size: "+size+", Array length: "+array.length);
         this.array = array;

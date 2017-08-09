@@ -42,7 +42,7 @@ public class ArraySlicePerformanceMeasurement {
         }
 
         ArrayDouble doubleCollection = new ArrayDouble(doubleArray);
-        ArrayDouble doubleCollectionBig = new ArrayDouble(doubleArrayBig, arraySize/4, arraySize, true);
+        ArrayDouble doubleCollectionBig = new ArrayDouble(doubleArrayBig, true).subList(arraySize/2, arraySize *3/2);
 
         System.out.println("");
         System.out.println("Benchmark direct arrays");
@@ -68,8 +68,8 @@ public class ArraySlicePerformanceMeasurement {
         System.out.println("Benchmark array wrappers using loop");
         System.out.print("Full array - ");
         profileArrayLoop(doubleCollection, nIterations);
-        System.out.print("Sliced array - ");
-        profileArrayLoop(doubleCollectionBig, nIterations);
+        System.out.print("Sliced array warmup - ");
+        profileArrayLoop(doubleCollectionBig, 10);
         System.out.print("Sliced array after warmup - ");
         profileArrayLoop(doubleCollectionBig, nIterations);
         
