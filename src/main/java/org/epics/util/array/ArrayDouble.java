@@ -49,6 +49,8 @@ public final class ArrayDouble extends ListDouble implements Serializable {
      * A new {@code ArrayDouble} that wraps around the given array.
      *
      * @param array an array
+     * @param startIndex first element
+     * @param size number of elements
      * @param readOnly if false the wrapper allows writes to the array
      */
     ArrayDouble(double[] array, int startIndex, int size, boolean readOnly) {
@@ -126,10 +128,14 @@ public final class ArrayDouble extends ListDouble implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
 
         if (obj instanceof ArrayDouble) {
             ArrayDouble other = (ArrayDouble) obj;
-            return Arrays.equals(array, other.array) && startIndex == other.startIndex && size == other.size;
+            
+            if ((array == other.array) && startIndex == other.startIndex && size == other.size)
+                return true;
         }
 
         return super.equals(obj);

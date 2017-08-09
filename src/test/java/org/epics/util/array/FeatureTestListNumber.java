@@ -271,6 +271,16 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         ListNumber subSubList = subList.subList(1, 7);
         assertThat(subSubList.toArray(new double[subSubList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
     }
+    
+    @Test
+    public void subListEquals() {
+        ListNumber ramp = createRampCollection();
+        ListNumber list = createModifiableCollection();
+        list.setDouble(0, 0);
+        list.setDouble(1, 1);
+        list.setDouble(2, 2);
+        assertThat(list.subList(0, 3), equalTo(ramp.subList(0, 3)));
+    }
 
     public static void testList(ListNumber coll) {
         assertEquals(10, coll.size());
