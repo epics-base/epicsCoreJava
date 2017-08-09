@@ -74,9 +74,11 @@ public class ArraySlicePerformanceMeasurement {
         profileArrayIterator(doubleCollection, nIterations);
         System.out.print("Sliced array - ");
         profileArrayIterator(doubleCollectionBig, nIterations);
-        System.out.print("Full array - ");
+        System.out.print("Full array warmup - ");
+        profileArrayIterator(intCollection, 10);
+        System.out.print("Full array after warmup - ");
         profileArrayIterator(intCollection, nIterations);
-        System.out.print("Sliced array - ");
+        System.out.print("Sliced array after warmup - ");
         profileArrayIterator(intCollectionBig, nIterations);
 
         // Using a for loop introduces some extra operations: a sum and a boundary check
@@ -123,9 +125,9 @@ public class ArraySlicePerformanceMeasurement {
     private static void profileArrayLoop(ArrayInt array, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            double sum = 0;
+            int sum = 0;
             for (int j = 0; j < array.size(); j++) {
-                sum += array.getDouble(j);
+                sum += array.getInt(j);
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -159,9 +161,9 @@ public class ArraySlicePerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             IteratorNumber iter = array.iterator();
-            double sum = 0;
+            int sum = 0;
             while (iter.hasNext()) {
-                sum += iter.nextDouble();
+                sum += iter.nextInt();
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -193,7 +195,7 @@ public class ArraySlicePerformanceMeasurement {
     private static void profileJavaArray(int[] array, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            double sum = 0;
+            int sum = 0;
             for (int j = 0; j < array.length; j++) {
                 sum += array[j];
             }
