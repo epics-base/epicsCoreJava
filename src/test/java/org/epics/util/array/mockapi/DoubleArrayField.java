@@ -22,7 +22,7 @@ public class DoubleArrayField implements NumericArrayField {
     double[] backendArray;
 
     @Override
-    public ListDouble get() {
+    public ArrayDouble get() {
         return new ArrayDouble(backendArray);
     }
 

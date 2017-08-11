@@ -22,7 +22,7 @@ public class IntArrayField implements NumericArrayField {
     int[] backendArray;
 
     @Override
-    public ListInt get() {
+    public ArrayInt get() {
         return new ArrayInt(backendArray);
     }
 
