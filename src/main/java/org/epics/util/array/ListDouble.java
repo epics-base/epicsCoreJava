@@ -196,11 +196,15 @@ public abstract class ListDouble implements ListNumber, CollectionDouble {
         return new ListDouble() {
             @Override
             public double getDouble(int index) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 return ListDouble.this.getDouble(fromIndex + index);
             }
 
             @Override
             public void setDouble(int index, double value) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 ListDouble.this.setDouble(fromIndex + index, value);
             }
 

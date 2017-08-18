@@ -148,11 +148,15 @@ public abstract class ListLong implements ListNumber, CollectionLong {
         return new ListLong() {
             @Override
             public long getLong(int index) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 return ListLong.this.getLong(fromIndex + index);
             }
 
             @Override
             public void setLong(int index, long value) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 ListLong.this.setLong(fromIndex + index, value);
             }
 

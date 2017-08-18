@@ -145,11 +145,15 @@ public abstract class ListInt implements ListNumber, CollectionInt {
         return new ListInt() {
             @Override
             public int getInt(int index) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 return ListInt.this.getInt(fromIndex + index);
             }
 
             @Override
             public void setInt(int index, int value) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 ListInt.this.setInt(fromIndex + index, value);
             }
 

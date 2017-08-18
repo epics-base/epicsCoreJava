@@ -89,7 +89,7 @@ public final class ArrayLong extends ListLong implements Serializable {
     @Override
     public long getLong(int index) {
         if (checkBoundaries) {
-            if (index < 0 || index > this.size)
+            if (index < 0 || index >= this.size)
                 throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
         }
         return array[startIndex + index];
@@ -99,7 +99,7 @@ public final class ArrayLong extends ListLong implements Serializable {
     public void setLong(int index, long value) {
         if (!readOnly) {
             if (checkBoundaries) {
-                if (index < 0 || index > this.size)
+                if (index < 0 || index >= this.size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
             }
             array[startIndex + index] = value;

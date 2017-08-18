@@ -153,11 +153,15 @@ public abstract class ListByte implements ListNumber, CollectionByte {
         return new ListByte() {
             @Override
             public byte getByte(int index) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 return ListByte.this.getByte(fromIndex + index);
             }
 
             @Override
             public void setByte(int index, byte value) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 ListByte.this.setByte(fromIndex + index, value);
             }
 

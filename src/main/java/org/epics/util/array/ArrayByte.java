@@ -88,7 +88,7 @@ public final class ArrayByte extends ListByte implements Serializable {
     @Override
     public final byte getByte(int index) {
         if (checkBoundaries) {
-            if (index < 0 || index > this.size)
+            if (index < 0 || index >= this.size)
                 throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
         }
         return array[index];
@@ -98,7 +98,7 @@ public final class ArrayByte extends ListByte implements Serializable {
     public void setByte(int index, byte value) {
         if (!readOnly) {
             if (checkBoundaries) {
-                if (index < 0 || index > this.size)
+                if (index < 0 || index >= this.size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
             }
             array[startIndex + index] = value;

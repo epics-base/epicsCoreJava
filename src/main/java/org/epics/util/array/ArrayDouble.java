@@ -89,7 +89,7 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     @Override
     public double getDouble(int index) {
         if (checkBoundaries) {
-            if (index < 0 || index > this.size)
+            if (index < 0 || index >= this.size)
                 throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
         }
         return array[startIndex + index];
@@ -99,7 +99,7 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     public void setDouble(int index, double value) {
         if (!readOnly) {
             if (checkBoundaries) {
-                if (index < 0 || index > this.size)
+                if (index < 0 || index >= this.size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
             }
             array[startIndex + index] = value;

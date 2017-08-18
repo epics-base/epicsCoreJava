@@ -146,11 +146,15 @@ public abstract class ListFloat implements ListNumber, CollectionFloat {
         return new ListFloat() {
             @Override
             public float getFloat(int index) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 return ListFloat.this.getFloat(fromIndex + index);
             }
 
             @Override
             public void setFloat(int index, float value) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 ListFloat.this.setFloat(fromIndex + index, value);
             }
 

@@ -90,7 +90,7 @@ public final class ArrayFloat extends ListFloat implements Serializable {
     @Override
     public float getFloat(int index) {
         if (checkBoundaries) {
-            if (index < 0 || index > this.size)
+            if (index < 0 || index >= this.size)
                 throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
         }
         return array[startIndex + index];
@@ -100,7 +100,7 @@ public final class ArrayFloat extends ListFloat implements Serializable {
     public void setFloat(int index, float value) {
         if (!readOnly) {
             if (checkBoundaries) {
-                if (index < 0 || index > this.size)
+                if (index < 0 || index >= this.size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
             }
             array[startIndex + index] = value;

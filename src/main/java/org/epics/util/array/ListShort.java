@@ -146,11 +146,15 @@ public abstract class ListShort implements ListNumber, CollectionShort {
         return new ListShort() {
             @Override
             public short getShort(int index) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 return ListShort.this.getShort(fromIndex + index);
             }
 
             @Override
             public void setShort(int index, short value) {
+                if (index < 0 || index >= size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
                 ListShort.this.setShort(fromIndex + index, value);
             }
 
