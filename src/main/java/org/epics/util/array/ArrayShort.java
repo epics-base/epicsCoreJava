@@ -17,7 +17,14 @@ public final class ArrayShort extends ListShort implements Serializable {
     private static final long serialVersionUID = 7493025761455302921L;
 
     private final short[] array;
+    private final int startIndex;
+    private final int size;
+    private final boolean checkBoundaries;
     private final boolean readOnly;
+    
+    public ArrayShort(ListNumber array) {
+        this(array.toArray(new short[array.size()]), false);
+    }
 
     /**
      * A new {@code ArrayShort} that wraps around the given array.
@@ -35,19 +42,36 @@ public final class ArrayShort extends ListShort implements Serializable {
      * @param readOnly if false the wrapper allows writes to the array
      */
     public ArrayShort(short[] array, boolean readOnly) {
+        this(array, 0, array.length, readOnly);
+    }
+
+    /**
+     * A new {@code ArrayShort} that wraps around the given array.
+     *
+     * @param array an array
+     * @param startIndex first element
+     * @param size number of elements
+     * @param readOnly if false the wrapper allows writes to the array
+     */
+    ArrayShort(short[] array, int startIndex, int size, boolean readOnly) {
+        if (startIndex < 0 || startIndex + size > array.length)
+            throw new IndexOutOfBoundsException("Start index: "+startIndex+", Size: "+size+", Array length: "+array.length);
         this.array = array;
         this.readOnly = readOnly;
+        this.startIndex = startIndex;
+        this.size = size;
+        this.checkBoundaries = startIndex != 0 || size != array.length;
     }
 
     @Override
     public final IteratorShort iterator() {
         return new IteratorShort() {
 
-            private int index;
+            private int index = startIndex;
 
             @Override
             public boolean hasNext() {
-                return index < array.length;
+                return index < startIndex + size;
             }
 
             @Override
@@ -59,31 +83,77 @@ public final class ArrayShort extends ListShort implements Serializable {
 
     @Override
     public final int size() {
-        return array.length;
+        return size;
     }
 
     @Override
     public short getShort(int index) {
-        return array[index];
+        if (checkBoundaries) {
+            if (index < 0 || index > this.size)
+                throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
+        }
+        return array[startIndex + index];
     }
 
     @Override
     public void setShort(int index, short value) {
         if (!readOnly) {
-            array[index] = value;
+            if (checkBoundaries) {
+                if (index < 0 || index > this.size)
+                    throw new IndexOutOfBoundsException("Index: "+index+", Size: "+this.size);
+            }
+            array[startIndex + index] = value;
         } else {
             throw new UnsupportedOperationException("Read only list.");
         }
     }
 
     @Override
+    public ArrayShort subList(int fromIndex, int toIndex) {
+        return new ArrayShort(array, fromIndex + startIndex, toIndex - fromIndex, readOnly);
+    }
+
+    @Override
+    public void setAll(int index, ListNumber list) {
+        if (list instanceof ArrayShort) {
+            if (readOnly) {
+                throw new UnsupportedOperationException("Read only list.");
+            }
+            ArrayShort other = (ArrayShort) list;
+            System.arraycopy(other.array, other.startIndex, array, startIndex + index, other.size);
+        } else {
+            super.setAll(index, list);
+        }
+    }
+
+    @Override
     public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
 
         if (obj instanceof ArrayShort) {
-            return Arrays.equals(array, ((ArrayShort) obj).array);
+            ArrayShort other = (ArrayShort) obj;
+            
+            if ((array == other.array) && startIndex == other.startIndex && size == other.size)
+                return true;
         }
 
         return super.equals(obj);
+    }
+
+    @Override
+    public <T> T toArray(T array) {
+        if (array instanceof short[]) {
+            short[] shortArray;
+            if (((short[]) array).length < size()) {
+                shortArray = new short[size()];
+            } else {
+                shortArray = (short[]) array;
+            }
+            System.arraycopy(this.array, startIndex, shortArray, 0, size);
+            return (T) shortArray;
+        }        
+        return super.toArray(array);
     }
 
     short[] wrappedArray() {

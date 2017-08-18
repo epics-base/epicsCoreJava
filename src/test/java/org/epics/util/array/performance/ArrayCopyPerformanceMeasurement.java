@@ -6,13 +6,11 @@ package org.epics.util.array.performance;
 
 import org.epics.util.array.ArrayShort;
 import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.CollectionNumber;
 import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayInt;
 import java.util.Random;
 import org.epics.util.array.ArrayLong;
-import org.epics.util.array.IteratorNumber;
 
 /**
  * Benchmark and example of how to use the util.array package without losing
@@ -32,28 +30,54 @@ public class ArrayCopyPerformanceMeasurement {
         System.out.println("");
         System.out.println("Preparing data");
         double[] doubleArray = new double[arraySize];
+        float[] floatArray = new float[arraySize];
+        long[] longArray = new long[arraySize];
+        int[] intArray = new int[arraySize];
+        short[] shortArray = new short[arraySize];
+        byte[] byteArray = new byte[arraySize];
         Random rand = new Random();
         for (int i = 0; i < doubleArray.length; i++) {
             doubleArray[i] = rand.nextGaussian();
+            floatArray[i] = (float) rand.nextGaussian();
+            longArray[i] = rand.nextInt(100);
+            intArray[i] = rand.nextInt(100);
+            shortArray[i] = (short) rand.nextInt(100);
         }
-        double[] doubleArrayBig = new double[2*arraySize];
-        for (int i = 0; i < doubleArrayBig.length; i++) {
-            doubleArrayBig[i] = rand.nextGaussian();
-        }
+        rand.nextBytes(byteArray);
 
         ArrayDouble doubleCollection = new ArrayDouble(doubleArray);
+        ArrayFloat floatCollection = new ArrayFloat(floatArray);
+        ArrayLong longCollection = new ArrayLong(longArray);
+        ArrayInt intCollection = new ArrayInt(intArray);
+        ArrayShort shortCollection = new ArrayShort(shortArray);
+        ArrayByte byteCollection = new ArrayByte(byteArray);
 
         System.out.println("");
         System.out.println("Benchmark array copy");
         profileJavaArrayCopy(doubleArray, new double[arraySize], nIterations);
+        profileJavaArrayCopy(floatArray, new float[arraySize], nIterations);
+        profileJavaArrayCopy(longArray, new long[arraySize], nIterations);
+        profileJavaArrayCopy(intArray, new int[arraySize], nIterations);
+        profileJavaArrayCopy(shortArray, new short[arraySize], nIterations);
+        profileJavaArrayCopy(byteArray, new byte[arraySize], nIterations);
 
         System.out.println("");
         System.out.println("Benchmark loop copy");
         profileJavaArrayLoop(doubleArray, new double[arraySize], nIterations);
+        profileJavaArrayLoop(floatArray, new float[arraySize], nIterations);
+        profileJavaArrayLoop(longArray, new long[arraySize], nIterations);
+        profileJavaArrayLoop(intArray, new int[arraySize], nIterations);
+        profileJavaArrayLoop(shortArray, new short[arraySize], nIterations);
+        profileJavaArrayLoop(byteArray, new byte[arraySize], nIterations);
 
         System.out.println("");
         System.out.println("Benchmark setAll");
         profileArraySetAll(doubleCollection, new ArrayDouble(new double[arraySize], false), nIterations);
+        profileArraySetAll(floatCollection, new ArrayFloat(new float[arraySize], false), nIterations);
+        profileArraySetAll(longCollection, new ArrayLong(new long[arraySize], false), nIterations);
+        profileArraySetAll(intCollection, new ArrayInt(new int[arraySize], false), nIterations);
+        profileArraySetAll(shortCollection, new ArrayShort(new short[arraySize], false), nIterations);
+        profileArraySetAll(byteCollection, new ArrayByte(new byte[arraySize], false), nIterations);
     }
 
     private static void profileArraySetAll(ArrayDouble src, ArrayDouble dst, int nIterations) {
@@ -68,6 +92,76 @@ public class ArrayCopyPerformanceMeasurement {
         long stopTime = System.nanoTime();
 
         System.out.println("Copy using ArrayDouble.setAll: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileArraySetAll(ArrayFloat src, ArrayFloat dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            dst.setAll(0, src);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst.getDouble(0) == 0) {
+                System.out.println("Unexpected value " + dst.getDouble(0));
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using ArrayFloat.setAll: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileArraySetAll(ArrayLong src, ArrayLong dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            dst.setAll(0, src);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst.getDouble(0) == 0) {
+                System.out.println("Unexpected value " + dst.getDouble(0));
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using ArrayLong.setAll: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileArraySetAll(ArrayInt src, ArrayInt dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            dst.setAll(0, src);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst.getDouble(0) == 0) {
+                System.out.println("Unexpected value " + dst.getDouble(0));
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using ArrayInt.setAll: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileArraySetAll(ArrayShort src, ArrayShort dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            dst.setAll(0, src);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst.getDouble(0) == 0) {
+                System.out.println("Unexpected value " + dst.getDouble(0));
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using ArrayShort.setAll: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileArraySetAll(ArrayByte src, ArrayByte dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            dst.setAll(0, src);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst.getDouble(0) == 0) {
+                System.out.println("Unexpected value " + dst.getDouble(0));
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using ArrayByte.setAll: ns " + (stopTime - startTime) / nIterations);
     }
 
     private static void profileJavaArrayLoop(double[] src, double[] dst, int nIterations) {
@@ -86,6 +180,86 @@ public class ArrayCopyPerformanceMeasurement {
         System.out.println("Copy using loop copy on double[]: ns " + (stopTime - startTime) / nIterations);
     }
 
+    private static void profileJavaArrayLoop(float[] src, float[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            for (int j = 0; j < src.length; j++) {
+                dst[j]= src[j];
+            }
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using loop copy on float[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayLoop(long[] src, long[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            for (int j = 0; j < src.length; j++) {
+                dst[j]= src[j];
+            }
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using loop copy on long[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayLoop(int[] src, int[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            for (int j = 0; j < src.length; j++) {
+                dst[j]= src[j];
+            }
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using loop copy on int[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayLoop(short[] src, short[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            for (int j = 0; j < src.length; j++) {
+                dst[j]= src[j];
+            }
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using loop copy on short[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayLoop(byte[] src, byte[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            for (int j = 0; j < src.length; j++) {
+                dst[j]= src[j];
+            }
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using loop copy on byte[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
     private static void profileJavaArrayCopy(double[] src, double[] dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
@@ -98,5 +272,75 @@ public class ArrayCopyPerformanceMeasurement {
         long stopTime = System.nanoTime();
 
         System.out.println("Copy using System.arraycopy on double[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayCopy(float[] src, float[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            System.arraycopy(src, 0, dst, 0, src.length);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using System.arraycopy on float[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayCopy(long[] src, long[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            System.arraycopy(src, 0, dst, 0, src.length);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using System.arraycopy on long[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayCopy(int[] src, int[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            System.arraycopy(src, 0, dst, 0, src.length);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using System.arraycopy on int[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayCopy(short[] src, short[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            System.arraycopy(src, 0, dst, 0, src.length);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using System.arraycopy on short[]: ns " + (stopTime - startTime) / nIterations);
+    }
+
+    private static void profileJavaArrayCopy(byte[] src, byte[] dst, int nIterations) {
+        long startTime = System.nanoTime();
+        for (int i = 0; i < nIterations; i++) {
+            System.arraycopy(src, 0, dst, 0, src.length);
+            // NOTE: this check is required or the whole computation will be optimized away
+            if (dst[0] == 0) {
+                System.out.println("Unexpected value " + dst[0]);
+            }
+        }
+        long stopTime = System.nanoTime();
+
+        System.out.println("Copy using System.arraycopy on byte[]: ns " + (stopTime - startTime) / nIterations);
     }
 }
