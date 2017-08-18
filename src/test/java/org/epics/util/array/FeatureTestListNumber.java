@@ -255,6 +255,11 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         ListNumber array = createRampCollection();
         ListNumber subList = array.subList(3, 5);
         assertThat(subList.toArray(new double[subList.size()]), equalTo(new double[]{3.0, 4.0}));
+        assertThat(subList.toArray(new float[subList.size()]), equalTo(new float[]{3.0F, 4.0F}));
+        assertThat(subList.toArray(new long[subList.size()]), equalTo(new long[]{3, 4}));
+        assertThat(subList.toArray(new int[subList.size()]), equalTo(new int[]{3, 4}));
+        assertThat(subList.toArray(new short[subList.size()]), equalTo(new short[]{3, 4}));
+        assertThat(subList.toArray(new byte[subList.size()]), equalTo(new byte[]{3, 4}));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
