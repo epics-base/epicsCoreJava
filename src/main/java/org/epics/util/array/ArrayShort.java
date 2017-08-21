@@ -159,4 +159,8 @@ public final class ArrayShort extends ListShort implements Serializable {
     short[] wrappedArray() {
         return array;
     }
+    
+    int startIndex() {
+        return startIndex;
+    }
 }

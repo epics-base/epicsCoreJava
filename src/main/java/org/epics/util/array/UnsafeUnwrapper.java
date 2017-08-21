@@ -10,6 +10,19 @@ package org.epics.util.array;
  * @author carcassi
  */
 public class UnsafeUnwrapper {
+    
+    public static final class Array<T> {
+        public final T array;
+        public final int startIndex;
+        public final int size;
+
+        Array(T array, int startIndex, int size) {
+            this.array = array;
+            this.startIndex = startIndex;
+            this.size = size;
+        }
+        
+    }
 
     /**
      * If available, return the array wrapped by the collection - USE WITH
@@ -21,8 +34,8 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array or null
      */
-    public static Object wrappedArray(CollectionNumber coll) {
-        Object data = wrappedFloatArray(coll);
+    public static Array<?> wrappedArray(CollectionNumber coll) {
+        Array<?> data = wrappedFloatArray(coll);
         if (data != null) {
             return data;
         }
@@ -59,9 +72,10 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array or null
      */
-    public static float[] wrappedFloatArray(CollectionNumber coll) {
+    public static Array<float[]> wrappedFloatArray(CollectionNumber coll) {
         if (coll instanceof ArrayFloat) {
-            return ((ArrayFloat) coll).wrappedArray();
+            ArrayFloat wrapper = (ArrayFloat) coll;
+            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -77,9 +91,10 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array or null
      */
-    public static double[] wrappedDoubleArray(CollectionNumber coll) {
+    public static Array<double[]> wrappedDoubleArray(CollectionNumber coll) {
         if (coll instanceof ArrayDouble) {
-            return ((ArrayDouble) coll).wrappedArray();
+            ArrayDouble wrapper = (ArrayDouble) coll;
+            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -95,9 +110,10 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array or null
      */
-    public static byte[] wrappedByteArray(CollectionNumber coll) {
+    public static Array<byte[]> wrappedByteArray(CollectionNumber coll) {
         if (coll instanceof ArrayByte) {
-            return ((ArrayByte) coll).wrappedArray();
+            ArrayByte wrapper = (ArrayByte) coll;
+            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -113,9 +129,10 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array or null
      */
-    public static short[] wrappedShortArray(CollectionNumber coll) {
+    public static Array<short[]> wrappedShortArray(CollectionNumber coll) {
         if (coll instanceof ArrayShort) {
-            return ((ArrayShort) coll).wrappedArray();
+            ArrayShort wrapper = (ArrayShort) coll;
+            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -131,9 +148,10 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array or null
      */
-    public static int[] wrappedIntArray(CollectionNumber coll) {
+    public static Array<int[]> wrappedIntArray(CollectionNumber coll) {
         if (coll instanceof ArrayInt) {
-            return ((ArrayInt) coll).wrappedArray();
+            ArrayInt wrapper = (ArrayInt) coll;
+            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -149,9 +167,10 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array or null
      */
-    public static long[] wrappedLongArray(CollectionNumber coll) {
+    public static Array<long[]> wrappedLongArray(CollectionNumber coll) {
         if (coll instanceof ArrayLong) {
-            return ((ArrayLong) coll).wrappedArray();
+            ArrayLong wrapper = (ArrayLong) coll;
+            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -165,12 +184,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static float[] floatArrayWrappedOrCopy(CollectionNumber coll) {
-        float[] array = wrappedFloatArray(coll);
+    public static Array<float[]> floatArrayWrappedOrCopy(CollectionNumber coll) {
+        Array<float[]> array = wrappedFloatArray(coll);
         if (array != null) {
             return array;
         }
-        return coll.toArray(new float[coll.size()]);
+        return new Array<>(coll.toArray(new float[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -181,12 +200,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static double[] doubleArrayWrappedOrCopy(CollectionNumber coll) {
-        double[] array = wrappedDoubleArray(coll);
+    public static Array<double[]> doubleArrayWrappedOrCopy(CollectionNumber coll) {
+        Array<double[]> array = wrappedDoubleArray(coll);
         if (array != null) {
             return array;
         }
-        return coll.toArray(new double[coll.size()]);
+        return new Array<>(coll.toArray(new double[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -197,12 +216,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static byte[] byteArrayWrappedOrCopy(CollectionNumber coll) {
-        byte[] array = wrappedByteArray(coll);
+    public static Array<byte[]> byteArrayWrappedOrCopy(CollectionNumber coll) {
+        Array<byte[]> array = wrappedByteArray(coll);
         if (array != null) {
             return array;
         }
-        return coll.toArray(new byte[coll.size()]);
+        return new Array<>(coll.toArray(new byte[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -213,12 +232,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static short[] shortArrayWrappedOrCopy(CollectionNumber coll) {
-        short[] array = wrappedShortArray(coll);
+    public static Array<short[]> shortArrayWrappedOrCopy(CollectionNumber coll) {
+        Array<short[]> array = wrappedShortArray(coll);
         if (array != null) {
             return array;
         }
-        return coll.toArray(new short[coll.size()]);
+        return new Array<>(coll.toArray(new short[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -229,12 +248,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static int[] intArrayWrappedOrCopy(CollectionNumber coll) {
-        int[] array = wrappedIntArray(coll);
+    public static Array<int[]> intArrayWrappedOrCopy(CollectionNumber coll) {
+        Array<int[]> array = wrappedIntArray(coll);
         if (array != null) {
             return array;
         }
-        return coll.toArray(new int[coll.size()]);
+        return new Array<>(coll.toArray(new int[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -245,12 +264,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static long[] longArrayWrappedOrCopy(CollectionNumber coll) {
-        long[] array = wrappedLongArray(coll);
+    public static Array<long[]> longArrayWrappedOrCopy(CollectionNumber coll) {
+        Array<long[]> array = wrappedLongArray(coll);
         if (array != null) {
             return array;
         }
-        return coll.toArray(new long[coll.size()]);
+        return new Array<>(coll.toArray(new long[coll.size()]), 0, coll.size());
     }
     
 }

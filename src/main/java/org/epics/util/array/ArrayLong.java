@@ -159,4 +159,8 @@ public final class ArrayLong extends ListLong implements Serializable {
     long[] wrappedArray() {
         return array;
     }
+    
+    int startIndex() {
+        return startIndex;
+    }
 }

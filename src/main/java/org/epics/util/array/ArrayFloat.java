@@ -160,4 +160,8 @@ public final class ArrayFloat extends ListFloat implements Serializable {
     float[] wrappedArray() {
         return array;
     }
+    
+    int startIndex() {
+        return startIndex;
+    }
 }

@@ -25,7 +25,7 @@ public class MockApiTest {
         DoubleArrayField field = client.createArrayField(new Random(0).doubles(100, 0, 1.0));
         assertThat(field.get().size(), equalTo(100));
         assertThat(field.get().getDouble(0), equalTo(0.730967787376657));
-        assertThat(UnsafeUnwrapper.wrappedDoubleArray(field.get()), sameInstance(field.backendArray));
+        assertThat(UnsafeUnwrapper.wrappedDoubleArray(field.get()).array, sameInstance(field.backendArray));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class MockApiTest {
         IntArrayField field = client.createArrayField(new Random(0).ints(100, 0, 100));
         assertThat(field.get().size(), equalTo(100));
         assertThat(field.get().getInt(0), equalTo(60));
-        assertThat(UnsafeUnwrapper.wrappedIntArray(field.get()), sameInstance(field.backendArray));
+        assertThat(UnsafeUnwrapper.wrappedIntArray(field.get()).array, sameInstance(field.backendArray));
     }
 
     @Test

@@ -159,4 +159,8 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     double[] wrappedArray() {
         return array;
     }
+    
+    int startIndex() {
+        return startIndex;
+    }
 }

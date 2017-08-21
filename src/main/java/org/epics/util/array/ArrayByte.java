@@ -158,5 +158,8 @@ public final class ArrayByte extends ListByte implements Serializable {
     byte[] wrappedArray() {
         return array;
     }
-
+    
+    int startIndex() {
+        return startIndex;
+    }
 }

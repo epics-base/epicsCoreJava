@@ -140,4 +140,8 @@ public final class ArrayInt extends ListInt implements Serializable {
     int[] wrappedArray() {
         return array;
     }
+    
+    int startIndex() {
+        return startIndex;
+    }
 }
