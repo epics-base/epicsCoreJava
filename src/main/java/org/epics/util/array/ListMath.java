@@ -268,9 +268,9 @@ public class ListMath {
                 resX[i] = resX[i] / size;
                 resY[i] = resY[i] / size;
             }
-            return Arrays.<ListNumber>asList(new ArrayDouble(resX), new ArrayDouble(resY));
+            return Arrays.<ListNumber>asList(ListNumbers.unmodifiableList(resX), ListNumbers.unmodifiableList(resY));
         } else {
-            return Arrays.<ListNumber>asList(new ArrayDouble(resY), new ArrayDouble(resX));
+            return Arrays.<ListNumber>asList(ListNumbers.unmodifiableList(resY), ListNumbers.unmodifiableList(resX));
         }
     }
 }

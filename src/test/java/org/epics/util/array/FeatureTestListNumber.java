@@ -61,7 +61,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetAll() {
-        createRampCollection().setAll(0, new ArrayDouble(0.0));
+        createRampCollection().setAll(0, ListNumbers.unmodifiableListDouble(0.0));
     }
     
     @Test(expected = UnsupportedOperationException.class)
@@ -97,7 +97,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllDouble() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        ListNumber data = ListNumbers.unmodifiableList(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
         list.setAll(0, data);
         testRamp(list);
     }
@@ -145,7 +145,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllDouble2() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayDouble(4.0, 5.0);
+        ListNumber data = ListNumbers.unmodifiableList(new double[] {4.0, 5.0});
         list.setAll(4, data);
         testMiddleInsert(list);
     }

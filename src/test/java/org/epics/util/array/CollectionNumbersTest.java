@@ -31,14 +31,14 @@ public class CollectionNumbersTest {
 
     @Test
     public void defaultToArrayDouble1(){
-        CollectionNumber coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        CollectionNumber coll = ListNumbers.unmodifiableList(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9});
         double[] longArray = coll.toArray(new double[coll.size()]);
         assertThat(longArray, equalTo(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}));
     }
 
     @Test
     public void defaultToArrayFloat1(){
-        CollectionNumber coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        CollectionNumber coll = ListNumbers.unmodifiableList(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9});
         float[] longArray = coll.toArray(new float[coll.size()]);
         assertThat(longArray, equalTo(new float[] {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f}));
     }
@@ -73,7 +73,7 @@ public class CollectionNumbersTest {
 
     @Test
     public void arrayCopyDouble1(){
-        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        ArrayDouble coll = ListNumbers.unmodifiableListDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
         double[] dst = new double[10];
         CollectionNumbers.arrayCopy(coll, dst, 0);
         assertThat(dst, equalTo(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}));
@@ -81,7 +81,7 @@ public class CollectionNumbersTest {
 
     @Test
     public void arrayCopyDouble2(){
-        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        ArrayDouble coll = ListNumbers.unmodifiableListDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
         double[] dst = new double[15];
         CollectionNumbers.arrayCopy(coll, dst, 0);
         assertThat(dst, equalTo(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0, 0, 0, 0, 0}));
@@ -89,14 +89,14 @@ public class CollectionNumbersTest {
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void arrayCopyDouble3(){
-        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        ArrayDouble coll = ListNumbers.unmodifiableListDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
         double[] dst = new double[5];
         CollectionNumbers.arrayCopy(coll, dst, 0);
     }
 
     @Test
     public void arrayCopyFloat1(){
-        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        ArrayDouble coll = ListNumbers.unmodifiableListDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
         float[] dst = new float[10];
         CollectionNumbers.arrayCopy(coll, dst, 0);
         assertThat(dst, equalTo(new float[] {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f}));
@@ -104,7 +104,7 @@ public class CollectionNumbersTest {
 
     @Test
     public void arrayCopyFloat2(){
-        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        ArrayDouble coll = ListNumbers.unmodifiableListDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
         float[] dst = new float[15];
         CollectionNumbers.arrayCopy(coll, dst, 0);
         assertThat(dst, equalTo(new float[] {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f, 0, 0, 0, 0, 0}));
@@ -112,7 +112,7 @@ public class CollectionNumbersTest {
 
     @Test(expected=IndexOutOfBoundsException.class)
     public void arrayCopyFloat3(){
-        ArrayDouble coll = new ArrayDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        ArrayDouble coll = ListNumbers.unmodifiableListDouble(0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
         float[] dst = new float[5];
         CollectionNumbers.arrayCopy(coll, dst, 0);
     }

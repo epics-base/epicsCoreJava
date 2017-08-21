@@ -7,6 +7,7 @@ package org.epics.util.array.performance;
 import java.util.Random;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.CircularBufferDouble;
+import org.epics.util.array.ListNumbers;
 
 /**
  *
@@ -33,7 +34,7 @@ public class CircularBufferBenchmark {
 
         ListBenchmark.profileListDouble(list, nIterations);
 
-        ArrayDouble array = new ArrayDouble(doubleArray);
+        ArrayDouble array = ListNumbers.unmodifiableListDouble(doubleArray);
 
         ListBenchmark.profileListDouble(array, nIterations);
 

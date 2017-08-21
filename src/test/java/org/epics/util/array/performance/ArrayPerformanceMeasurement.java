@@ -13,6 +13,7 @@ import org.epics.util.array.ArrayInt;
 import java.util.Random;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.IteratorNumber;
+import org.epics.util.array.ListNumbers;
 
 /**
  * Benchmark and example of how to use the util.array package without losing
@@ -52,7 +53,7 @@ public class ArrayPerformanceMeasurement {
         }
         rand.nextBytes(byteArray);
 
-        ArrayDouble doubleCollection = new ArrayDouble(doubleArray);
+        ArrayDouble doubleCollection = ListNumbers.unmodifiableListDouble(doubleArray);
         ArrayFloat floatCollection = new ArrayFloat(floatArray);
         ArrayLong longCollection = new ArrayLong(longArray);
         ArrayInt intCollection = new ArrayInt(intArray);

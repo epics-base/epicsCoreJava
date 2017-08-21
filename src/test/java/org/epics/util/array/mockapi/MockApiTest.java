@@ -49,7 +49,7 @@ public class MockApiTest {
     public void writeDoubles() {
         MockClient client = new MockClient();
         DoubleArrayField field = client.createArrayField(new Random(0).doubles(10, 0, 1.0));
-        ArrayDouble doubles = new ArrayDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        ArrayDouble doubles = ListNumbers.unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
         field.put(0, doubles);
         assertThat(field.get(), equalTo(doubles));
     }
@@ -60,7 +60,7 @@ public class MockApiTest {
         DoubleArrayField field = client.createArrayField(new Random(0).doubles(10, 0, 1.0));
         ArrayInt ints = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         field.put(0, ints);
-        assertThat(field.get(), equalTo(new ArrayDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)));
+        assertThat(field.get(), equalTo(ListNumbers.unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class MockApiTest {
     public void writeDoublesOverInts() {
         MockClient client = new MockClient();
         IntArrayField field = client.createArrayField(new Random(0).ints(10, 0, 100));
-        ArrayDouble doubles = new ArrayDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        ArrayDouble doubles = ListNumbers.unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
         field.put(0, doubles);
         assertThat(field.get(), equalTo(new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)));
     }
@@ -85,21 +85,21 @@ public class MockApiTest {
     public void readAndWriteDoubles1() {
         MockClient client = new MockClient();
         DoubleArrayField field = client.createArrayField(new Random(0).doubles(10, 0, 1.0));
-        assertThat(field.get(), equalTo(new ArrayDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 0.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
+        assertThat(field.get(), equalTo(ListNumbers.unmodifiableListDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 0.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
         ListDouble doubles = new ArrayDouble(field.get());
         doubles.setDouble(5, 1.0 + doubles.getDouble(5));
         field.put(0, doubles);
-        assertThat(field.get(), equalTo(new ArrayDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 1.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
+        assertThat(field.get(), equalTo(ListNumbers.unmodifiableListDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 1.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
     }
 
     @Test
     public void readAndWriteDoubles2() {
         MockClient client = new MockClient();
         DoubleArrayField field = client.createArrayField(new Random(0).doubles(10, 0, 1.0));
-        assertThat(field.get(), equalTo(new ArrayDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 0.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
+        assertThat(field.get(), equalTo(ListNumbers.unmodifiableListDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 0.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
         ListDouble doubles = new ArrayDouble(field.get().subList(5, 6));
         doubles.setDouble(0, 1.0 + doubles.getDouble(0));
         field.put(5, doubles);
-        assertThat(field.get(), equalTo(new ArrayDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 1.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
+        assertThat(field.get(), equalTo(ListNumbers.unmodifiableListDouble(0.730967787376657, 0.24053641567148587, 0.6374174253501083, 0.5504370051176339, 0.5975452777972018, 1.3332183994766498, 0.3851891847407185, 0.984841540199809, 0.8791825178724801, 0.9412491794821144)));
     }
 }

@@ -22,27 +22,8 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     private final boolean checkBoundaries;
     private final boolean readOnly;
     
-    public ArrayDouble(ListNumber array) {
-        this(array.toArray(new double[array.size()]), false);
-    }
-
-    /**
-     * A new read-only {@code ArrayDouble} that wraps around the given array.
-     *
-     * @param array an array
-     */
-    public ArrayDouble(double... array) {
-        this(array, true);
-    }
-
-    /**
-     * A new {@code ArrayDouble} that wraps around the given array.
-     *
-     * @param array an array
-     * @param readOnly if false the wrapper allows writes to the array
-     */
-    public ArrayDouble(double[] array, boolean readOnly) {
-        this(array, 0, array.length, readOnly);
+    public ArrayDouble(CollectionNumber coll) {
+        this(coll.toArray(new double[coll.size()]), 0, coll.size(), false);
     }
 
     /**

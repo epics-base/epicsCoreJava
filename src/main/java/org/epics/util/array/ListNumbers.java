@@ -10,6 +10,34 @@ package org.epics.util.array;
  * @author carcassi
  */
 public class ListNumbers {
+    
+    public static ListNumber toList(Object primitiveArray) {
+        if (primitiveArray instanceof double[]) {
+            return toListDouble((double[]) primitiveArray);
+        } else {
+            throw new IllegalArgumentException(primitiveArray + " is not a an array of primitive numbers");
+        }
+    }
+    
+    public static ArrayDouble toListDouble(double... doubles) {
+        return new ArrayDouble(doubles, 0, doubles.length, false);
+    }
+    
+    public static ListNumber unmodifiableList(Object primitiveArray) {
+        if (primitiveArray instanceof double[]) {
+            return unmodifiableListDouble((double[]) primitiveArray);
+        } else {
+            throw new IllegalArgumentException(primitiveArray + " is not a an array of primitive numbers");
+        }
+    }
+    
+    public static ArrayDouble unmodifiableListDouble(double... doubles) {
+        return new ArrayDouble(doubles, 0, doubles.length, true);
+    }
+    
+    public static ArrayDouble unmodifiableList(ArrayDouble doubles) {
+        return new ArrayDouble(doubles.wrappedArray(), doubles.startIndex(), doubles.size(), true);
+    }
 
     /**
      * Creates a sorted view of the given ListNumber.
@@ -217,7 +245,7 @@ public class ListNumbers {
         } else if (primitiveArray instanceof float[]) {
             return new ArrayFloat((float[]) primitiveArray);
         } else if (primitiveArray instanceof double[]) {
-            return new ArrayDouble((double[]) primitiveArray);
+            return unmodifiableList((double[]) primitiveArray);
         } else {
             throw new IllegalArgumentException(primitiveArray + " is not a an array of primitive numbers");
         }

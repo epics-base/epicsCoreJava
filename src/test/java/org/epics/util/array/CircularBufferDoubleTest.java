@@ -55,7 +55,7 @@ public class CircularBufferDoubleTest {
         for (int i = 0; i < 11; i++) {
             coll.addDouble(i);
         }
-        ListDouble reference = new ArrayDouble(new double[] {1,2,3,4,5,6,7,8,9,10});
+        ListDouble reference = ListNumbers.unmodifiableListDouble(new double[] {1,2,3,4,5,6,7,8,9,10});
         assertThat(coll, equalTo(reference));
     }
 
@@ -65,7 +65,7 @@ public class CircularBufferDoubleTest {
         for (int i = 0; i < 5; i++) {
             coll.addDouble(i);
         }
-        ListDouble reference = new ArrayDouble(new double[] {0,1,2,3,4});
+        ListDouble reference = ListNumbers.unmodifiableListDouble(new double[] {0,1,2,3,4});
         assertThat(coll, equalTo(reference));
     }
 
@@ -75,7 +75,7 @@ public class CircularBufferDoubleTest {
         for (int i = 0; i < 5; i++) {
             coll.addDouble(i);
         }
-        ListDouble reference = new ArrayDouble(new double[] {2,3,4});
+        ListDouble reference = ListNumbers.unmodifiableListDouble(new double[] {2,3,4});
         assertThat(coll, equalTo(reference));
     }
 

@@ -20,29 +20,29 @@ public class ListMathTest {
 
     @Test
     public void rescale1() {
-        ArrayDouble array1 = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5});
+        ArrayDouble array1 = ListNumbers.unmodifiableListDouble(0, 1, 2, 3, 4, 5);
         ListDouble rescaled = ListMath.rescale(array1, 2.5, -5.0);
-        assertThat(rescaled, equalTo(new ArrayDouble(-5.0, -2.5, 0, 2.5, 5.0, 7.5)));
+        assertThat(rescaled, equalTo(ListNumbers.unmodifiableListDouble(-5.0, -2.5, 0, 2.5, 5.0, 7.5)));
     }
 
     @Test
     public void rescaleWithfactor1() {
-        ArrayDouble array1 = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5});
+        ArrayDouble array1 = ListNumbers.unmodifiableListDouble(0, 1, 2, 3, 4, 5);
         ListDouble rescaled = ListMath.rescale(array1, 1, 1);
-        assertThat(rescaled, equalTo(new ArrayDouble(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)));
+        assertThat(rescaled, equalTo(ListNumbers.unmodifiableListDouble(1.0, 2.0, 3.0, 4.0, 5.0, 6.0)));
     }
 
     @Test
     public void sum1() {
-        ArrayDouble array1 = new ArrayDouble(new double[] {0, 1, 2, 3, 4, 5});
+        ArrayDouble array1 = ListNumbers.unmodifiableListDouble(0, 1, 2, 3, 4, 5);
         ListDouble summed = ListMath.add(array1, ListMath.rescale(array1, -1.0, 0.0));
-        assertThat(summed, equalTo(new ArrayDouble(0, 0, 0, 0, 0, 0)));
+        assertThat(summed, equalTo(ListNumbers.unmodifiableListDouble(0, 0, 0, 0, 0, 0)));
     }
 
     @Test
     public void dft1() {
-        ListDouble x = new ArrayDouble(0, 1.0, 0, -1.0, 0, 1, 0, -1);
-        ListDouble y = new ArrayDouble(0, 0, 0, 0, 0, 0, 0, 0);
+        ListDouble x = ListNumbers.unmodifiableListDouble(0, 1.0, 0, -1.0, 0, 1, 0, -1);
+        ListDouble y = ListNumbers.unmodifiableListDouble(0, 0, 0, 0, 0, 0, 0, 0);
         List<ListNumber> res = ListMath.dft(x, y);
     }
 }
