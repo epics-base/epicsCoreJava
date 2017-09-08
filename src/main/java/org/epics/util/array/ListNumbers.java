@@ -11,24 +11,121 @@ package org.epics.util.array;
  */
 public class ListNumbers {
     
-    public static ListNumber toList(Object primitiveArray) {
-        if (primitiveArray instanceof double[]) {
-            return toListDouble((double[]) primitiveArray);
+    /**
+     * Takes a primitive array and wraps it into the appropriate mutable
+     * array wrapper.
+     * 
+     * @param values a primitive array (e.g. int[])
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ListNumber toList(Object values) {
+        if (values instanceof double[]) {
+            return toListDouble((double[]) values);
+        } else if (values instanceof float[]) {
+            return toListFloat((float[]) values);
+        } else if (values instanceof long[]) {
+            return toListLong((long[]) values);
+        } else if (values instanceof int[]) {
+            return toListInt((int[]) values);
+        } else if (values instanceof short[]) {
+            return toListShort((short[]) values);
+        } else if (values instanceof byte[]) {
+            return toListByte((byte[]) values);
         } else {
-            throw new IllegalArgumentException(primitiveArray + " is not a an array of primitive numbers");
+            throw new IllegalArgumentException(values + " is not a an array of primitive numbers");
         }
     }
     
-    public static ArrayDouble toListDouble(double... doubles) {
-        return new ArrayDouble(doubles, 0, doubles.length, false);
+    
+    // Design tradeoff:
+    // Ideally, it would have been better to have all the methods named
+    // the same (i.e. toList) and let the compiler pick the correct one. Unfortunately,
+    // varargs, primitives, casting and overriding do not play together as one
+    // would expect. First, the generic method must have signature toList(Object).
+    // This means that any vararg calls with one argument (i.e. toList(1) ) goes
+    // to the generic method which expects an actual array. One would have to
+    // implement the methods with a signle primitive (i.e. toList(int) ) to have
+    // the correct behavior. Moreover, the vararg method is chosen depending
+    // on the wider primitive in the list, which may make it confusing to use.
+    // Last, byte and short can't really use varargs as one would have to cast
+    // every single element of the list. This remains a somewhat imperfect solution.
+    
+    /**
+     * Takes a double array and wraps it into an ArrayDouble.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayDouble toListDouble(double... values) {
+        return new ArrayDouble(values, 0, values.length, false);
     }
     
-    public static ListNumber unmodifiableList(Object primitiveArray) {
-        if (primitiveArray instanceof double[]) {
-            return unmodifiableListDouble((double[]) primitiveArray);
-        } else {
-            throw new IllegalArgumentException(primitiveArray + " is not a an array of primitive numbers");
-        }
+    /**
+     * Takes a float array and wraps it into an ArrayFloat.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayFloat toListFloat(float... values) {
+        return new ArrayFloat(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes a long array and wraps it into an ArrayLong.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayLong toListLong(long... values) {
+        return new ArrayLong(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes an int array and wraps it into an ArrayInt.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayInt toListInt(int... values) {
+        return new ArrayInt(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes a short array and wraps it into an ArrayShort.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayShort toListShort(short... values) {
+        return new ArrayShort(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes a byte array and wraps it into an ArrayByte.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayByte toListByte(byte... values) {
+        return new ArrayByte(values, 0, values.length, false);
+    }
+    
+    public static ListNumber unmodifiableList(ListNumber list) {
+        throw new UnsupportedOperationException("Not implemented yet");
     }
     
     public static ArrayDouble unmodifiableListDouble(double... doubles) {
@@ -37,6 +134,45 @@ public class ListNumbers {
     
     public static ArrayDouble unmodifiableList(ArrayDouble doubles) {
         return new ArrayDouble(doubles.wrappedArray(), doubles.startIndex(), doubles.size(), true);
+    }
+    
+    public static void main(String[] args) {
+        ArrayDouble a = test(1.0,2,3);
+        ArrayFloat b = test(1.0f,2,3);
+        ArrayLong c = test(1L,2,3);
+        ArrayInt d = test(1);
+    }
+    
+    public static Object test(Object array) {
+        return new Object();
+    }
+    
+    public static ArrayDouble test(double... doubles) {
+        return new ArrayDouble(doubles, 0, doubles.length, true);
+    }
+    
+    public static ArrayFloat test(float... doubles) {
+        return new ArrayFloat(doubles, 0, doubles.length, true);
+    }
+    
+    public static ArrayLong test(long... doubles) {
+        return new ArrayLong(doubles, 0, doubles.length, true);
+    }
+    
+    public static ArrayInt test(int... doubles) {
+        return new ArrayInt(doubles, 0, doubles.length, true);
+    }
+    
+    public static ArrayInt test(int value) {
+        return new ArrayInt(new int[] {value}, 0, 1, true);
+    }
+    
+    public static ArrayShort test(short... doubles) {
+        return new ArrayShort(doubles, 0, doubles.length, true);
+    }
+    
+    public static ArrayByte test(byte... doubles) {
+        return new ArrayByte(doubles, 0, doubles.length, true);
     }
 
     /**
@@ -223,32 +359,6 @@ public class ListNumbers {
             }
         }
         return true;
-    }
-
-    /**
-     * Converts an array of primitive numbers to the appropriate ListNumber
-     * implementation.
-     *
-     * @param primitiveArray must be an array of primitive numbers (byte[],
-     *        short[], int[], long[], float[] or double[])
-     * @return the wrapped array
-     */
-    public static ListNumber toListNumber(Object primitiveArray) {
-        if (primitiveArray instanceof byte[]) {
-            return new ArrayByte((byte[]) primitiveArray);
-        } else if (primitiveArray instanceof short[]) {
-            return new ArrayShort((short[]) primitiveArray);
-        } else if (primitiveArray instanceof int[]) {
-            return new ArrayInt((int[]) primitiveArray);
-        } else if (primitiveArray instanceof long[]) {
-            return new ArrayLong((long[]) primitiveArray);
-        } else if (primitiveArray instanceof float[]) {
-            return new ArrayFloat((float[]) primitiveArray);
-        } else if (primitiveArray instanceof double[]) {
-            return unmodifiableList((double[]) primitiveArray);
-        } else {
-            throw new IllegalArgumentException(primitiveArray + " is not a an array of primitive numbers");
-        }
     }
 
     private static class LinearListDoubleFromRange extends ListDouble {

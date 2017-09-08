@@ -185,39 +185,39 @@ public class ListNumbersTest {
     }
 
     @Test
-    public void toListNumber1() {
+    public void toList1() {
         byte[] array = new byte[]{1,2,3};
-        assertThat(ListNumbers.toListNumber(array), equalTo((ListNumber) new ArrayByte(array)));
+        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListByte(array)));
     }
 
     @Test
-    public void toListNumber2() {
+    public void toList2() {
         short[] array = new short[]{1,2,3};
-        assertThat(ListNumbers.toListNumber(array), equalTo((ListNumber) new ArrayShort(array)));
+        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListShort(array)));
     }
 
     @Test
-    public void toListNumber3() {
+    public void toList3() {
         int[] array = new int[]{1,2,3};
-        assertThat(ListNumbers.toListNumber(array), equalTo((ListNumber) new ArrayInt(array)));
+        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListInt(array)));
     }
 
     @Test
-    public void toListNumber4() {
+    public void toList4() {
         long[] array = new long[]{1,2,3};
-        assertThat(ListNumbers.toListNumber(array), equalTo((ListNumber) new ArrayLong(array)));
+        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListLong(array)));
     }
 
     @Test
-    public void toListNumber5() {
+    public void toList5() {
         float[] array = new float[]{1,2,3};
-        assertThat(ListNumbers.toListNumber(array), equalTo((ListNumber) new ArrayFloat(array)));
+        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListFloat(array)));
     }
 
     @Test
-    public void toListNumber6() {
+    public void toList6() {
         double[] array = new double[]{1,2,3};
-        assertThat(ListNumbers.toListNumber(array), equalTo(ListNumbers.unmodifiableList(array)));
+        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListDouble(array)));
     }
 
     @Test

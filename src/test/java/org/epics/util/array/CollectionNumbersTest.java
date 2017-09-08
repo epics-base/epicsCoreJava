@@ -31,14 +31,14 @@ public class CollectionNumbersTest {
 
     @Test
     public void defaultToArrayDouble1(){
-        CollectionNumber coll = ListNumbers.unmodifiableList(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9});
+        CollectionNumber coll = ListNumbers.toList(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9});
         double[] longArray = coll.toArray(new double[coll.size()]);
         assertThat(longArray, equalTo(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9}));
     }
 
     @Test
     public void defaultToArrayFloat1(){
-        CollectionNumber coll = ListNumbers.unmodifiableList(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9});
+        CollectionNumber coll = ListNumbers.toList(new double[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9});
         float[] longArray = coll.toArray(new float[coll.size()]);
         assertThat(longArray, equalTo(new float[] {0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 0.8f, 0.9f}));
     }

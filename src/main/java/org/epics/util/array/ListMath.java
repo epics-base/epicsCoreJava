@@ -6,6 +6,7 @@ package org.epics.util.array;
 
 import java.util.Arrays;
 import java.util.List;
+import static org.epics.util.array.ListNumbers.*;
 
 /**
  * Math operations defined on lists of numbers.
@@ -268,9 +269,9 @@ public class ListMath {
                 resX[i] = resX[i] / size;
                 resY[i] = resY[i] / size;
             }
-            return Arrays.<ListNumber>asList(ListNumbers.unmodifiableList(resX), ListNumbers.unmodifiableList(resY));
+            return Arrays.<ListNumber>asList(unmodifiableList(toListDouble(resX)), unmodifiableList(toListDouble(resY)));
         } else {
-            return Arrays.<ListNumber>asList(ListNumbers.unmodifiableList(resY), ListNumbers.unmodifiableList(resX));
+            return Arrays.<ListNumber>asList(unmodifiableList(toListDouble(resY)), unmodifiableList(toListDouble(resX)));
         }
     }
 }
