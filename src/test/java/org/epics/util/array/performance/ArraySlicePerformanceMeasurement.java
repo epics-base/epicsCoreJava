@@ -15,6 +15,7 @@ import org.epics.util.array.ArrayLong;
 import org.epics.util.array.IteratorNumber;
 import org.epics.util.array.ListInt;
 import org.epics.util.array.ListNumbers;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  * Benchmark and example of how to use the util.array package without losing
@@ -63,13 +64,13 @@ public class ArraySlicePerformanceMeasurement {
         }
         rand.nextBytes(byteArrayBig);
 
-        ArrayDouble doubleCollection = ListNumbers.unmodifiableListDouble(doubleArray);
+        ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
         ArrayFloat floatCollection = new ArrayFloat(floatArray);
         ArrayLong longCollection = new ArrayLong(longArray);
         ArrayInt intCollection = new ArrayInt(intArray);
         ArrayShort shortCollection = new ArrayShort(shortArray);
         ArrayByte byteCollection = new ArrayByte(byteArray);
-        ArrayDouble doubleCollectionBig = ListNumbers.toListDouble(doubleArrayBig).subList(arraySize/2, arraySize *3/2);
+        ArrayDouble doubleCollectionBig = unmodifiableListDouble(doubleArrayBig).subList(arraySize/2, arraySize *3/2);
         ArrayFloat floatCollectionBig = new ArrayFloat(floatArrayBig, true).subList(arraySize/2, arraySize *3/2);
         ArrayLong longCollectionBig = new ArrayLong(longArrayBig, true).subList(arraySize/2, arraySize *3/2);
         ArrayInt intCollectionBig = new ArrayInt(intArrayBig, true).subList(arraySize/2, arraySize *3/2);

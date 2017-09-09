@@ -7,6 +7,7 @@ package org.epics.util.array;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  *
@@ -53,7 +54,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void wrappedFloatArray2() {
         double[] array = new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = ListNumbers.toList(array);
+        ListNumber coll = toList(array);
         assertThat(UnsafeUnwrapper.wrappedFloatArray(coll), nullValue());
     }
 
@@ -67,14 +68,14 @@ public class UnsafeUnwrapperTest {
     @Test
     public void floatArrayWrappedOrCopy2(){
         double[] array = new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = ListNumbers.toList(array);
+        ListNumber coll = toList(array);
         testArrayEquals(UnsafeUnwrapper.floatArrayWrappedOrCopy(coll), new float[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
 
     @Test
     public void wrappedDoubleArray1() {
         double[] array = new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = ListNumbers.toList(array);
+        ListNumber coll = toList(array);
         testArraySame(UnsafeUnwrapper.wrappedDoubleArray(coll), array, 0, 10);
     }
 
@@ -88,7 +89,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void doubleArrayWrappedOrCopy1(){
         double[] array = new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = ListNumbers.toList(array);
+        ListNumber coll = toList(array);
         testArraySame(UnsafeUnwrapper.doubleArrayWrappedOrCopy(coll), array, 0, 10);
     }
 

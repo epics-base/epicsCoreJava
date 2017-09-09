@@ -8,6 +8,7 @@ import java.util.Random;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.CircularBufferDouble;
 import org.epics.util.array.ListNumbers;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  *
@@ -34,7 +35,7 @@ public class CircularBufferBenchmark {
 
         ListBenchmark.profileListDouble(list, nIterations);
 
-        ArrayDouble array = ListNumbers.unmodifiableListDouble(doubleArray);
+        ArrayDouble array = unmodifiableListDouble(doubleArray);
 
         ListBenchmark.profileListDouble(array, nIterations);
 

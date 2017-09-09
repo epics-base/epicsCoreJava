@@ -16,6 +16,243 @@ public class CollectionNumbers {
     }
     
     /**
+     * Takes a primitive array and wraps it into the appropriate mutable
+     * array wrapper.
+     * 
+     * @param values a primitive array (e.g. int[])
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ListNumber toList(Object values) {
+        if (values instanceof double[]) {
+            return toListDouble((double[]) values);
+        } else if (values instanceof float[]) {
+            return toListFloat((float[]) values);
+        } else if (values instanceof long[]) {
+            return toListLong((long[]) values);
+        } else if (values instanceof int[]) {
+            return toListInt((int[]) values);
+        } else if (values instanceof short[]) {
+            return toListShort((short[]) values);
+        } else if (values instanceof byte[]) {
+            return toListByte((byte[]) values);
+        } else {
+            throw new IllegalArgumentException(values + " is not a an array of primitive numbers");
+        }
+    }
+    
+    
+    // Design tradeoff:
+    // Ideally, it would have been better to have all the methods named
+    // the same (i.e. toList) and let the compiler pick the correct one. Unfortunately,
+    // varargs, primitives, casting and overriding do not play together as one
+    // would expect. First, the generic method must have signature toList(Object).
+    // This means that any vararg calls with one argument (i.e. toList(1) ) goes
+    // to the generic method which expects an actual array. One would have to
+    // implement the methods with a signle primitive (i.e. toList(int) ) to have
+    // the correct behavior. Moreover, the vararg method is chosen depending
+    // on the wider primitive in the list, which may make it confusing to use.
+    // Last, byte and short can't really use varargs as one would have to cast
+    // every single element of the list. This remains a somewhat imperfect solution.
+    
+    /**
+     * Takes a double array and wraps it into an ArrayDouble.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayDouble toListDouble(double... values) {
+        return new ArrayDouble(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes a float array and wraps it into an ArrayFloat.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayFloat toListFloat(float... values) {
+        return new ArrayFloat(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes a long array and wraps it into an ArrayLong.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayLong toListLong(long... values) {
+        return new ArrayLong(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes an int array and wraps it into an ArrayInt.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayInt toListInt(int... values) {
+        return new ArrayInt(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes a short array and wraps it into an ArrayShort.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayShort toListShort(short... values) {
+        return new ArrayShort(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes a byte array and wraps it into an ArrayByte.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayByte toListByte(byte... values) {
+        return new ArrayByte(values, 0, values.length, false);
+    }
+    
+    public static ListNumber unmodifiableList(ListNumber list) {
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ArrayDouble unmodifiableList(ArrayDouble list) {
+        return new ArrayDouble(list.wrappedArray(), list.startIndex(), list.size(), true);
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ArrayFloat unmodifiableList(ArrayFloat list) {
+        return new ArrayFloat(list.wrappedArray(), list.startIndex(), list.size(), true);
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ArrayLong unmodifiableList(ArrayLong list) {
+        return new ArrayLong(list.wrappedArray(), list.startIndex(), list.size(), true);
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ArrayInt unmodifiableList(ArrayInt list) {
+        return new ArrayInt(list.wrappedArray(), list.startIndex(), list.size(), true);
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ArrayShort unmodifiableList(ArrayShort list) {
+        return new ArrayShort(list.wrappedArray(), list.startIndex(), list.size(), true);
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ArrayByte unmodifiableList(ArrayByte list) {
+        return new ArrayByte(list.wrappedArray(), list.startIndex(), list.size(), true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayDouble} wrapper for the given {@code double} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayDouble unmodifiableListDouble(double... values) {
+        return new ArrayDouble(values, 0, values.length, true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayFloat} wrapper for the given {@code float} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayFloat unmodifiableListFloat(float... values) {
+        return new ArrayFloat(values, 0, values.length, true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayLong} wrapper for the given {@code long} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayLong unmodifiableListLong(long... values) {
+        return new ArrayLong(values, 0, values.length, true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayInt} wrapper for the given {@code int} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayInt unmodifiableListInt(int... values) {
+        return new ArrayInt(values, 0, values.length, true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayShort} wrapper for the given {@code short} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayShort unmodifiableListShort(short... values) {
+        return new ArrayShort(values, 0, values.length, true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayByte} wrapper for the given {@code byte} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayByte unmodifiableListByte(byte... values) {
+        return new ArrayByte(values, 0, values.length, true);
+    }
+    
+    /**
      * This is the implementation of the default CollectionNumber.toArray(array).
      * See that method for the specification.
      */

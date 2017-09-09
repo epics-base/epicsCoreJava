@@ -22,17 +22,17 @@ public class ArrayDoubleTest extends FeatureTestListDouble {
 
     @Override
     public ArrayDouble createConstantCollection() {
-        return ListNumbers.unmodifiableListDouble(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+        return CollectionNumbers.unmodifiableListDouble(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
     }
 
     @Override
     public ArrayDouble createRampCollection() {
-        return ListNumbers.unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        return CollectionNumbers.unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
     }
 
     @Override
     public ArrayDouble createModifiableCollection() {
-        return ListNumbers.toListDouble(new double[10]);
+        return CollectionNumbers.toListDouble(new double[10]);
     }
 
     @Test

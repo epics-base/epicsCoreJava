@@ -7,6 +7,7 @@ package org.epics.util.array;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  *
@@ -70,8 +71,8 @@ public class ListDoubleTest extends FeatureTestListDouble {
     @Test
     public void testConcatenation1() {
         //straightforward test to check if concatenation seems to work
-        ArrayDouble l1 = ListNumbers.unmodifiableListDouble(0, 1, 2, 3, 4);
-        ArrayDouble l2 = ListNumbers.unmodifiableListDouble(5, 6, 7, 8, 9);
+        ArrayDouble l1 = unmodifiableListDouble(0, 1, 2, 3, 4);
+        ArrayDouble l2 = unmodifiableListDouble(5, 6, 7, 8, 9);
         ListDouble combined = ListDouble.concatenate( l1 , l2 );
         for ( int i=0 ; i<9 ; i++ ) {
             assertThat( (int) combined.getDouble( i ) , equalTo( i ) );
@@ -83,7 +84,7 @@ public class ListDoubleTest extends FeatureTestListDouble {
         //test concatenating lists of just 1 element
         ArrayDouble[] lists = new ArrayDouble[ 10 ];
         for ( int i=0 ; i<lists.length ; i++ ) {
-            lists[ i ] = ListNumbers.unmodifiableListDouble(i);
+            lists[ i ] = unmodifiableListDouble(i);
         }
         ListDouble concatenated = ListDouble.concatenate( lists );
         assertThat( concatenated.toString() , equalTo( "[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]" ) );
@@ -94,7 +95,7 @@ public class ListDoubleTest extends FeatureTestListDouble {
         //test concatenating empty lists
         ArrayDouble[] lists = new ArrayDouble[ 10 ];
         for ( int i=0 ; i<lists.length ; i++ ) {
-            lists[ i ] = ListNumbers.unmodifiableListDouble();
+            lists[ i ] = unmodifiableListDouble();
         }
         ListDouble concatenated = ListDouble.concatenate( lists );
         assertThat( concatenated.size() , equalTo( 0 ) );
@@ -110,11 +111,11 @@ public class ListDoubleTest extends FeatureTestListDouble {
     @Test
     public void testConcatenation4() {
         //test concatenating lists of varying sizes
-        ArrayDouble l1 = ListNumbers.unmodifiableListDouble(1);
-        ArrayDouble l2 = ListNumbers.unmodifiableListDouble(1, 2);
-        ArrayDouble l3 = ListNumbers.unmodifiableListDouble(1, 2, 3);
-        ArrayDouble l4 = ListNumbers.unmodifiableListDouble(1, 2, 3, 4);
-        ArrayDouble l5 = ListNumbers.unmodifiableListDouble(1, 2, 3, 4, 5);
+        ArrayDouble l1 = unmodifiableListDouble(1);
+        ArrayDouble l2 = unmodifiableListDouble(1, 2);
+        ArrayDouble l3 = unmodifiableListDouble(1, 2, 3);
+        ArrayDouble l4 = unmodifiableListDouble(1, 2, 3, 4);
+        ArrayDouble l5 = unmodifiableListDouble(1, 2, 3, 4, 5);
 
         ListDouble concatenated = ListDouble.concatenate( l1 , l2 , l3 , l4 , l5 );
         double[] expValues = { 1 , 1 , 2 , 1 , 2 , 3 , 1 , 2 , 3 , 4 , 1 , 2 , 3 , 4 , 5 };
@@ -128,7 +129,7 @@ public class ListDoubleTest extends FeatureTestListDouble {
         // Create a sublist that is not an array by concatenation
         ArrayDouble[] lists = new ArrayDouble[ 10 ];
         for ( int i=0 ; i<lists.length ; i++ ) {
-            lists[ i ] = ListNumbers.unmodifiableListDouble(i);
+            lists[ i ] = unmodifiableListDouble(i);
         }
         ListDouble concatenated = ListDouble.concatenate( lists );
         ListDouble subList = concatenated.subList(3, 5);
@@ -140,7 +141,7 @@ public class ListDoubleTest extends FeatureTestListDouble {
         // Create a sublist that is not an array by concatenation
         ArrayDouble[] lists = new ArrayDouble[ 10 ];
         for ( int i=0 ; i<lists.length ; i++ ) {
-            lists[ i ] = ListNumbers.unmodifiableListDouble(i);
+            lists[ i ] = unmodifiableListDouble(i);
         }
         ListDouble concatenated = ListDouble.concatenate( lists );
         ListDouble subList = concatenated.subList(3, 11);
@@ -151,7 +152,7 @@ public class ListDoubleTest extends FeatureTestListDouble {
         // Create a sublist that is not an array by concatenation
         ArrayDouble[] lists = new ArrayDouble[ 10 ];
         for ( int i=0 ; i<lists.length ; i++ ) {
-            lists[ i ] = ListNumbers.unmodifiableListDouble(i);
+            lists[ i ] = unmodifiableListDouble(i);
         }
         ListDouble concatenated = ListDouble.concatenate( lists );
         ListDouble subList = concatenated.subList(1, 9);

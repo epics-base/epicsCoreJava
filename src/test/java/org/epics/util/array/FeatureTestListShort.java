@@ -7,6 +7,7 @@ package org.epics.util.array;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import static org.epics.util.array.CollectionNumbers.*;
 
 public abstract class FeatureTestListShort extends FeatureTestListNumber {
 
@@ -18,7 +19,7 @@ public abstract class FeatureTestListShort extends FeatureTestListNumber {
     
     @Test
     public void equalsDouble() {
-        assertThat(createRampCollection(), not(equalTo(ListNumbers.toList(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}))));
+        assertThat(createRampCollection(), not(equalTo(toList(new double[] {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}))));
     }
     
     @Test

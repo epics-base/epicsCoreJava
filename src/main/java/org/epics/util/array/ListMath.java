@@ -6,7 +6,7 @@ package org.epics.util.array;
 
 import java.util.Arrays;
 import java.util.List;
-import static org.epics.util.array.ListNumbers.*;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  * Math operations defined on lists of numbers.

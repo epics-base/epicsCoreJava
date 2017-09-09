@@ -24,6 +24,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import static org.epics.util.array.ListNumbers.*;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  *
@@ -33,42 +34,42 @@ public class ListNumbersTest {
 
     @Test
     public void sortedView1() {
-        ArrayDouble values = ListNumbers.unmodifiableListDouble(5,3,1,4,2,0);
+        ArrayDouble values = unmodifiableListDouble(5,3,1,4,2,0);
         SortedListView sortedView = ListNumbers.sortedView(values);
-        assertThat(values, equalTo(ListNumbers.unmodifiableListDouble(5,3,1,4,2,0)));
-        assertThat(sortedView, equalTo((ListNumber) ListNumbers.unmodifiableListDouble(0,1,2,3,4,5)));
+        assertThat(values, equalTo(unmodifiableListDouble(5,3,1,4,2,0)));
+        assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(0,1,2,3,4,5)));
         assertThat(sortedView.getIndexes(), equalTo((ListInt) new ArrayInt(5,2,4,1,3,0)));
     }
 
     @Test
     public void sortedView2() {
-        ArrayDouble values = ListNumbers.unmodifiableListDouble(5,3,1,4,2,0);
+        ArrayDouble values = unmodifiableListDouble(5,3,1,4,2,0);
         ArrayInt indexes = new ArrayInt(0,3,1,4,2,5);
         SortedListView sortedView = ListNumbers.sortedView(values, indexes);
-        assertThat(values, equalTo(ListNumbers.unmodifiableListDouble(5,3,1,4,2,0)));
-        assertThat(sortedView, equalTo((ListNumber) ListNumbers.unmodifiableListDouble(5,4,3,2,1,0)));
+        assertThat(values, equalTo(unmodifiableListDouble(5,3,1,4,2,0)));
+        assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(5,4,3,2,1,0)));
         assertThat(sortedView.getIndexes(), equalTo((ListInt) new ArrayInt(0,3,1,4,2,5)));
     }
 
     @Test
     public void sortedView3() {
-        ArrayDouble values = ListNumbers.unmodifiableListDouble(-1.7178013239620846, 0.5200744839822301, 0.638091980352644, 0.093683130487196, -1.2967630810250952, 0.7040257444802407, -0.4166241363846508, 2.9610862677876244, 0.03636268292097817, -0.35530274977371445);
+        ArrayDouble values = unmodifiableListDouble(-1.7178013239620846, 0.5200744839822301, 0.638091980352644, 0.093683130487196, -1.2967630810250952, 0.7040257444802407, -0.4166241363846508, 2.9610862677876244, 0.03636268292097817, -0.35530274977371445);
         SortedListView sortedView = ListNumbers.sortedView(values);
-        assertThat(sortedView, equalTo((ListNumber) ListNumbers.unmodifiableListDouble(-1.7178013239620846, -1.2967630810250952, -0.4166241363846508, -0.35530274977371445, 0.03636268292097817, 0.093683130487196, 0.5200744839822301, 0.638091980352644, 0.7040257444802407, 2.9610862677876244)));
+        assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(-1.7178013239620846, -1.2967630810250952, -0.4166241363846508, -0.35530274977371445, 0.03636268292097817, 0.093683130487196, 0.5200744839822301, 0.638091980352644, 0.7040257444802407, 2.9610862677876244)));
     }
 
     @Test
     public void sortedView4() {
-        ArrayDouble values = ListNumbers.unmodifiableListDouble(0,1,2,4,3,5);
+        ArrayDouble values = unmodifiableListDouble(0,1,2,4,3,5);
         SortedListView sortedView = ListNumbers.sortedView(values);
-        assertThat(values, equalTo(ListNumbers.unmodifiableListDouble(0,1,2,4,3,5)));
-        assertThat(sortedView, equalTo((ListNumber) ListNumbers.unmodifiableListDouble(0,1,2,3,4,5)));
+        assertThat(values, equalTo(unmodifiableListDouble(0,1,2,4,3,5)));
+        assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(0,1,2,3,4,5)));
         assertThat(sortedView.getIndexes(), equalTo((ListInt) new ArrayInt(0,1,2,4,3,5)));
     }
 
     @Test
     public void binarySearchValueOrLower1() {
-        ListNumber values = ListNumbers.unmodifiableListDouble(1,2,3,3,4,5,5,6,7,8,10);
+        ListNumber values = unmodifiableListDouble(1,2,3,3,4,5,5,6,7,8,10);
         assertThat(ListNumbers.binarySearchValueOrLower(values, 1), equalTo(0));
         assertThat(ListNumbers.binarySearchValueOrLower(values, 10), equalTo(10));
         assertThat(ListNumbers.binarySearchValueOrLower(values, 2), equalTo(1));
@@ -82,13 +83,13 @@ public class ListNumbersTest {
 
     @Test
     public void binarySearchValueOrLower2() {
-        ListNumber values = ListNumbers.unmodifiableListDouble(1,2,2,2,2,2,2,2,2,2,3);
+        ListNumber values = unmodifiableListDouble(1,2,2,2,2,2,2,2,2,2,3);
         assertThat(ListNumbers.binarySearchValueOrLower(values, 2), equalTo(1));
    }
 
     @Test
     public void binarySearchValueOrHigher1() {
-        ListNumber values = ListNumbers.unmodifiableListDouble(1,2,3,3,4,5,5,6,7,8,10);
+        ListNumber values = unmodifiableListDouble(1,2,3,3,4,5,5,6,7,8,10);
         assertThat(ListNumbers.binarySearchValueOrHigher(values, 1), equalTo(0));
         assertThat(ListNumbers.binarySearchValueOrHigher(values, 10), equalTo(10));
         assertThat(ListNumbers.binarySearchValueOrHigher(values, 2), equalTo(1));
@@ -100,7 +101,7 @@ public class ListNumbersTest {
 
     @Test
     public void binarySearchValueOrHigher2() {
-        ListNumber values = ListNumbers.unmodifiableListDouble(1,2,2,2,2,2,2,2,2,2,3);
+        ListNumber values = unmodifiableListDouble(1,2,2,2,2,2,2,2,2,2,3);
         assertThat(ListNumbers.binarySearchValueOrHigher(values, 2), equalTo(9));
    }
 
@@ -185,59 +186,23 @@ public class ListNumbersTest {
     }
 
     @Test
-    public void toList1() {
-        byte[] array = new byte[]{1,2,3};
-        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListByte(array)));
-    }
-
-    @Test
-    public void toList2() {
-        short[] array = new short[]{1,2,3};
-        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListShort(array)));
-    }
-
-    @Test
-    public void toList3() {
-        int[] array = new int[]{1,2,3};
-        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListInt(array)));
-    }
-
-    @Test
-    public void toList4() {
-        long[] array = new long[]{1,2,3};
-        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListLong(array)));
-    }
-
-    @Test
-    public void toList5() {
-        float[] array = new float[]{1,2,3};
-        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListFloat(array)));
-    }
-
-    @Test
-    public void toList6() {
-        double[] array = new double[]{1,2,3};
-        assertThat(ListNumbers.toList(array), equalTo(ListNumbers.toListDouble(array)));
-    }
-
-    @Test
     public void isLinear1() {
         assertThat(isLinear(linearList(0, 0.1, 100000)), equalTo(true));
         assertThat(isLinear(linearListFromRange(0, 100, 10000)), equalTo(true));
         assertThat(isLinear(ListMath.add(linearList(0, 0.00001, 10000), 3.0)), equalTo(true));
         assertThat(isLinear(linearListFromRange(0, 100, 10000)), equalTo(true));
-        assertThat(isLinear(ListNumbers.unmodifiableListDouble(0,1,2,3,4,5)), equalTo(true));
-        assertThat(isLinear(ListNumbers.unmodifiableListDouble(0,1.00001,2,3,4,5)), equalTo(false));
+        assertThat(isLinear(unmodifiableListDouble(0,1,2,3,4,5)), equalTo(true));
+        assertThat(isLinear(unmodifiableListDouble(0,1.00001,2,3,4,5)), equalTo(false));
     }
 
     @Test
     public void listView1() {
-        ArrayDouble values = ListNumbers.unmodifiableListDouble(5,3,1,4,2,0);
+        ArrayDouble values = unmodifiableListDouble(5,3,1,4,2,0);
         ArrayInt indexes = new ArrayInt(0,3,1,4,2,5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
         assertThat(sortedView, instanceOf(ListDouble.class));
-        assertThat(values, equalTo(ListNumbers.unmodifiableListDouble(5,3,1,4,2,0)));
-        assertThat(sortedView, equalTo((ListNumber) ListNumbers.unmodifiableListDouble(5,4,3,2,1,0)));
+        assertThat(values, equalTo(unmodifiableListDouble(5,3,1,4,2,0)));
+        assertThat(sortedView, equalTo(unmodifiableListDouble(5,4,3,2,1,0)));
     }
 
     @Test

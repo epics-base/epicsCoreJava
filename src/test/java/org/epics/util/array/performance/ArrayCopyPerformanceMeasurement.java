@@ -12,6 +12,7 @@ import org.epics.util.array.ArrayInt;
 import java.util.Random;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.ListNumbers;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  * Benchmark and example of how to use the util.array package without losing
@@ -46,7 +47,7 @@ public class ArrayCopyPerformanceMeasurement {
         }
         rand.nextBytes(byteArray);
 
-        ArrayDouble doubleCollection = ListNumbers.unmodifiableListDouble(doubleArray);
+        ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
         ArrayFloat floatCollection = new ArrayFloat(floatArray);
         ArrayLong longCollection = new ArrayLong(longArray);
         ArrayInt intCollection = new ArrayInt(intArray);
@@ -73,7 +74,7 @@ public class ArrayCopyPerformanceMeasurement {
 
         System.out.println("");
         System.out.println("Benchmark setAll");
-        profileArraySetAll(doubleCollection, ListNumbers.toListDouble(new double[arraySize]), nIterations);
+        profileArraySetAll(doubleCollection, toListDouble(new double[arraySize]), nIterations);
         profileArraySetAll(floatCollection, new ArrayFloat(new float[arraySize], false), nIterations);
         profileArraySetAll(longCollection, new ArrayLong(new long[arraySize], false), nIterations);
         profileArraySetAll(intCollection, new ArrayInt(new int[arraySize], false), nIterations);
