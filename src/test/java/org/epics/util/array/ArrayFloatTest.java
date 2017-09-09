@@ -22,17 +22,17 @@ public class ArrayFloatTest extends FeatureTestListFloat {
 
     @Override
     public ArrayFloat createConstantCollection() {
-        return new ArrayFloat(new float[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+        return CollectionNumbers.unmodifiableListFloat(1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
     }
 
     @Override
     public ArrayFloat createRampCollection() {
-        return new ArrayFloat(new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        return CollectionNumbers.unmodifiableListFloat(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 
     @Override
     public ArrayFloat createModifiableCollection() {
-        return new ArrayFloat(new float[10], false);
+        return CollectionNumbers.toListFloat(new float[10]);
     }
 
     @Test

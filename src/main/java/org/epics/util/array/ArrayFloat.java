@@ -5,16 +5,15 @@
 package org.epics.util.array;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
- * Wraps a {@code float[]} into a {@link ListFloat}.
+ * Non-resizable {@link ListFloat} implementation backed by a {@code float[]}.
  *
  * @author Gabriele Carcassi
  */
 public final class ArrayFloat extends ListFloat implements Serializable {
 
-    private static final long serialVersionUID = 7493025761455302918L;
+    private static final long serialVersionUID = 1L;
 
     private final float[] array;
     private final int startIndex;
@@ -22,28 +21,14 @@ public final class ArrayFloat extends ListFloat implements Serializable {
     private final boolean checkBoundaries;
     private final boolean readOnly;
     
-    public ArrayFloat(ListNumber array) {
-        this(array.toArray(new float[array.size()]), false);
-    }
-
     /**
-     * A new read-only {@code ArrayFloat} that wraps around the given array.
-     *
-     * @param array an array
-     */
-
-    public ArrayFloat(float... array) {
-        this(array, true);
-    }
-
-    /**
-     * A new {@code ArrayFloat} that wraps around the given array.
-     *
-     * @param array an array
-     * @param readOnly if false the wrapper allows writes to the array
-     */
-    public ArrayFloat(float[] array, boolean readOnly) {
-        this(array, 0, array.length, readOnly);
+     * Constructs a list containing the values provided by the specified collection
+     * in the order returned by its iterator.
+     * 
+     * @param coll the collection whose values will be placed in this list
+     */    
+    public ArrayFloat(ListNumber coll) {
+        this(coll.toArray(new float[coll.size()]), 0, coll.size(), false);
     }
 
     /**

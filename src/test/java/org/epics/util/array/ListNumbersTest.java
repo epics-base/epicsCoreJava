@@ -207,12 +207,12 @@ public class ListNumbersTest {
 
     @Test
     public void listView2() {
-        ArrayFloat values = new ArrayFloat(5,3,1,4,2,0);
-        ArrayInt indexes = new ArrayInt(0,3,1,4,2,5);
+        ArrayFloat values = unmodifiableListFloat(5, 3, 1, 4, 2, 0);
+        ArrayInt indexes = new ArrayInt(0, 3, 1, 4, 2, 5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
         assertThat(sortedView, instanceOf(ListFloat.class));
-        assertThat(values, equalTo(new ArrayFloat(5,3,1,4,2,0)));
-        assertThat(sortedView, equalTo((ListNumber) new ArrayFloat(5,4,3,2,1,0)));
+        assertThat(values, equalTo(unmodifiableListFloat(5, 3, 1, 4, 2, 0)));
+        assertThat(sortedView, equalTo(unmodifiableListFloat(5, 4, 3, 2, 1, 0)));
     }
 
     @Test

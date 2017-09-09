@@ -13,7 +13,7 @@ import java.io.Serializable;
  */
 public final class ArrayDouble extends ListDouble implements Serializable {
 
-    private static final long serialVersionUID = 7493025761455302917L;
+    private static final long serialVersionUID = 1L;
 
     private final double[] array;
     private final int startIndex;

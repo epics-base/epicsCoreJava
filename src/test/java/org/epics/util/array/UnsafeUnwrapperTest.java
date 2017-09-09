@@ -33,7 +33,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void wrappedArray1() {
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = new ArrayFloat(array);
+        ListNumber coll = unmodifiableListFloat(array);
         testArraySame(UnsafeUnwrapper.wrappedArray(coll), array, 0, 10);
     }
 
@@ -47,7 +47,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void wrappedFloatArray1() {
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = new ArrayFloat(array);
+        ListNumber coll = unmodifiableListFloat(array);
         testArraySame(UnsafeUnwrapper.wrappedFloatArray(coll), array, 0, 10);
     }
 
@@ -61,7 +61,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void floatArrayWrappedOrCopy1(){
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = new ArrayFloat(array);
+        ListNumber coll = unmodifiableListFloat(array);
         testArraySame(UnsafeUnwrapper.floatArrayWrappedOrCopy(coll), array, 0, 10);
     }
 
@@ -82,7 +82,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void wrappedDoubleArray2() {
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = new ArrayFloat(array);
+        ListNumber coll = unmodifiableListFloat(array);
         assertThat(UnsafeUnwrapper.wrappedDoubleArray(coll), nullValue());
     }
 
@@ -96,7 +96,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void doubleArrayWrappedOrCopy2(){
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = new ArrayFloat(array);
+        ListNumber coll = unmodifiableListFloat(array);
         testArrayEquals(UnsafeUnwrapper.doubleArrayWrappedOrCopy(coll), new double[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
 
