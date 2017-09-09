@@ -60,6 +60,77 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         assertThat(b.hashCode(), equalTo(a.hashCode()));
     }
     
+    @Test
+    public void equalsDouble() {
+        ListNumber list = createRampCollection();
+        ListNumber doubleList = unmodifiableListDouble(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        if (list instanceof ListDouble) {
+            assertThat(createRampCollection(), equalTo(doubleList));
+        } else {
+            assertThat(createRampCollection(), not(equalTo(doubleList)));
+        }
+    }
+    
+    @Test
+    public void equalsFloat() {
+        ListNumber list = createRampCollection();
+        ListNumber floatList = unmodifiableListFloat(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        if (list instanceof ListFloat) {
+            assertThat(createRampCollection(), equalTo(floatList));
+        } else {
+            assertThat(createRampCollection(), not(equalTo(floatList)));
+        }
+    }
+    
+    @Test
+    public void equalsLong() {
+        ListNumber list = createRampCollection();
+        ListNumber longList = unmodifiableListLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        if (list instanceof ListLong) {
+            assertThat(createRampCollection(), equalTo(longList));
+        } else {
+            assertThat(createRampCollection(), not(equalTo(longList)));
+        }
+    }
+    
+    @Test
+    public void equalsInt() {
+        ListNumber list = createRampCollection();
+        ListNumber intList = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        if (list instanceof ListInt) {
+            assertThat(createRampCollection(), equalTo(intList));
+        } else {
+            assertThat(createRampCollection(), not(equalTo(intList)));
+        }
+    }
+    
+    @Test
+    public void equalsShort() {
+        ListNumber list = createRampCollection();
+        ListNumber shortList = unmodifiableListShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        if (list instanceof ListShort) {
+            assertThat(createRampCollection(), equalTo(shortList));
+        } else {
+            assertThat(createRampCollection(), not(equalTo(shortList)));
+        }
+    }
+    
+    @Test
+    public void equalsByte() {
+        ListNumber list = createRampCollection();
+        ListNumber byteList = unmodifiableListByte(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        if (list instanceof ListByte) {
+            assertThat(createRampCollection(), equalTo(byteList));
+        } else {
+            assertThat(createRampCollection(), not(equalTo(byteList)));
+        }
+    }
+
+    @Test
+    public void toString1() {
+        assertThat(createRampCollection().toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
+    }
+    
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetAll() {
         createRampCollection().setAll(0, unmodifiableListDouble(0.0));
@@ -106,7 +177,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllFloat() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayFloat(0.0F, 1.0F, 2.0F, 3.0F, 4.0F, 5.0F, 6.0F, 7.0F, 8.0F, 9.0F);
+        ListNumber data = unmodifiableListFloat(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         list.setAll(0, data);
         testRamp(list);
     }
@@ -154,7 +225,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllFloat2() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayFloat(4.0F, 5.0F);
+        ListNumber data = unmodifiableListFloat(4, 5);
         list.setAll(4, data);
         testMiddleInsert(list);
     }
