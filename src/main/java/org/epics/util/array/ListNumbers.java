@@ -273,4 +273,72 @@ public class ListNumbers {
         }
         throw new UnsupportedOperationException("Not yet supported");
     }
+    
+
+    /**
+     * Concatenates a sequence of lists into a single one. The returned list
+     * is a view on the previous lists. This means that no copy is performed
+     * during the concatenation and that changes in the arguments will
+     * be seen through the concatenation. When reading and writing, the
+     * type is always cast to a double.
+     *
+     * @param lists the lists to concatenate.
+     * @return the concatenated list.
+     */
+    public static ListDouble concatenate(final ListNumber... lists) {
+        if (lists.length == 0) {
+            return CollectionNumbers.unmodifiableListDouble(new double[0]);
+        }
+        
+        return new ListDouble() {
+
+            @Override
+            public int size() {
+                int size = 0;
+                for (ListNumber list : lists) {
+                    size += list.size();
+                }
+                return size;
+            }
+
+            @Override
+            public double getDouble( int index ) {
+                if (index < 0 || index >= size()) {
+                    throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
+                }
+                
+                // Iterate through the lists until the right spot is found
+                int currentListStart = 0;
+                for (ListNumber list : lists) {
+                    int currentListEnd = currentListStart + list.size();
+                    if (index < currentListEnd) {
+                        return list.getDouble(index - currentListStart);
+                    }
+                    currentListStart = currentListEnd;
+                }
+
+                throw new RuntimeException("Reached unreachable code - please contact developers");
+            }
+
+            @Override
+            public void setDouble(int index, double value) {
+                if (index < 0 || index >= size()) {
+                    throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
+                }
+                
+                // Iterate through the lists until the right spot is found
+                int currentListStart = 0;
+                for (ListNumber list : lists) {
+                    int currentListEnd = currentListStart + list.size();
+                    if (index < currentListEnd) {
+                        list.setDouble(index - currentListStart, value);
+                        return;
+                    }
+                    currentListStart = currentListEnd;
+                }
+
+                throw new RuntimeException("Reached unreachable code - please contact developers");
+            }
+        };
+    }
 }

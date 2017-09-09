@@ -94,69 +94,6 @@ public abstract class ListDouble implements ListNumber, CollectionDouble {
         }
     }
 
-    /**
-     * Concatenates a sequence of lists into a single one.
-     *
-     * @param lists the lists to concatenate.
-     * @return the concatenated list.
-     */
-    public static ListDouble concatenate(final ListNumber... lists) {
-        if (lists.length == 0) {
-            return CollectionNumbers.unmodifiableListDouble(new double[0]);
-        }
-        
-        return new ListDouble() {
-
-            @Override
-            public int size() {
-                int size = 0;
-                for (ListNumber list : lists) {
-                    size += list.size();
-                }
-                return size;
-            }
-
-            @Override
-            public double getDouble( int index ) {
-                if (index < 0 || index >= size()) {
-                    throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
-                }
-                
-                // Iterate through the lists until the right spot is found
-                int currentListStart = 0;
-                for (ListNumber list : lists) {
-                    int currentListEnd = currentListStart + list.size();
-                    if (index < currentListEnd) {
-                        return list.getDouble(index - currentListStart);
-                    }
-                    currentListStart = currentListEnd;
-                }
-
-                throw new RuntimeException("Reached unreachable code - please contact developers");
-            }
-
-            @Override
-            public void setDouble(int index, double value) {
-                if (index < 0 || index >= size()) {
-                    throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
-                }
-                
-                // Iterate through the lists until the right spot is found
-                int currentListStart = 0;
-                for (ListNumber list : lists) {
-                    int currentListEnd = currentListStart + list.size();
-                    if (index < currentListEnd) {
-                        list.setDouble(index - currentListStart, value);
-                        return;
-                    }
-                    currentListStart = currentListEnd;
-                }
-
-                throw new RuntimeException("Reached unreachable code - please contact developers");
-            }
-        };
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == this)

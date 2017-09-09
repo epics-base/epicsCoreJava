@@ -19,21 +19,21 @@ public class ConcatenatedListDoubleTest extends FeatureTestListDouble {
     public ListDouble createConstantCollection() {
         ArrayDouble list1 = unmodifiableListDouble(1, 1, 1, 1, 1);
         ArrayDouble list2 = unmodifiableListDouble(1, 1, 1, 1, 1);
-        return ListDouble.concatenate(list1 , list2);
+        return ListNumbers.concatenate(list1 , list2);
     }
 
     @Override
     public ListDouble createRampCollection() {
         ArrayDouble list1 = unmodifiableListDouble(0, 1, 2, 3, 4);
         ArrayDouble list2 = unmodifiableListDouble(5, 6, 7, 8, 9);
-        return ListDouble.concatenate(list1 , list2);
+        return ListNumbers.concatenate(list1 , list2);
     }
 
     @Override
     public ListNumber createModifiableCollection() {
         ArrayDouble list1 = toListDouble(new double[5]);
         ArrayDouble list2 = toListDouble(new double[5]);
-        return ListDouble.concatenate(list1 , list2);
+        return ListNumbers.concatenate(list1 , list2);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class ConcatenatedListDoubleTest extends FeatureTestListDouble {
         for (int i = 0; i < lists.length; i++) {
             lists[i] = unmodifiableListDouble(i);
         }
-        ListDouble concatenated = ListDouble.concatenate(lists);
+        ListDouble concatenated = ListNumbers.concatenate(lists);
         assertThat(concatenated.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
     }
 
@@ -52,7 +52,7 @@ public class ConcatenatedListDoubleTest extends FeatureTestListDouble {
         for (int i = 0; i < lists.length; i++) {
             lists[i] = unmodifiableListDouble();
         }
-        ListDouble concatenated = ListDouble.concatenate(lists);
+        ListDouble concatenated = ListNumbers.concatenate(lists);
         assertThat(concatenated.size(), equalTo(0));
     }
 
@@ -64,7 +64,7 @@ public class ConcatenatedListDoubleTest extends FeatureTestListDouble {
         ArrayDouble l4 = unmodifiableListDouble(1, 2, 3, 4);
         ArrayDouble l5 = unmodifiableListDouble(1, 2, 3, 4, 5);
 
-        ListDouble concatenated = ListDouble.concatenate(l1, l2, l3, l4, l5);
+        ListDouble concatenated = ListNumbers.concatenate(l1, l2, l3, l4, l5);
         assertThat(concatenated, equalTo(unmodifiableListDouble(1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5)));
     }
 }
