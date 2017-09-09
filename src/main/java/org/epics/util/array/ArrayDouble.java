@@ -5,10 +5,9 @@
 package org.epics.util.array;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
- * Wraps a {@code double[]} into a {@link ListDouble}.
+ * Non-resizable {@link ListDouble} implementation backed by a {@code double[]}.
  *
  * @author Gabriele Carcassi
  */
@@ -21,7 +20,13 @@ public final class ArrayDouble extends ListDouble implements Serializable {
     private final int size;
     private final boolean checkBoundaries;
     private final boolean readOnly;
-    
+
+    /**
+     * Constructs a list containing the values provided by the specified collection
+     * in the order returned by its iterator.
+     * 
+     * @param coll the collection whose values will be placed in this list
+     */    
     public ArrayDouble(CollectionNumber coll) {
         this(coll.toArray(new double[coll.size()]), 0, coll.size(), false);
     }
