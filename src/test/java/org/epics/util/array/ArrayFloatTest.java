@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ArrayFloatTest extends FeatureTestListFloat {
+public class ArrayFloatTest extends FeatureTestListNumber {
 
     @Override
     public ArrayFloat createConstantCollection() {

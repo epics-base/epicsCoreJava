@@ -12,7 +12,7 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ListIntTest extends FeatureTestListInt {
+public class ListIntTest extends FeatureTestListNumber {
 
     @Override
     public ListInt createConstantCollection() {

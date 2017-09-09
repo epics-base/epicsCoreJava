@@ -128,7 +128,12 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
 
     @Test
     public void toString1() {
-        assertThat(createRampCollection().toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
+        ListNumber list = createRampCollection();
+        if (list instanceof ListDouble || list instanceof ListFloat) {
+            assertThat(list.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
+        } else {
+            assertThat(list.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));        
+        }
     }
     
     @Test(expected = UnsupportedOperationException.class)

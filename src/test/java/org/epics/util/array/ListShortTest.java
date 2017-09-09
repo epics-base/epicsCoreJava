@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.*;
  *
  * @author carcassi
  */
-public class ListShortTest extends FeatureTestListShort {
+public class ListShortTest extends FeatureTestListNumber {
 
     @Override
     public ListShort createConstantCollection() {

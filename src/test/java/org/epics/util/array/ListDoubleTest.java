@@ -13,7 +13,7 @@ import static org.epics.util.array.CollectionNumbers.*;
  *
  * @author carcassi
  */
-public class ListDoubleTest extends FeatureTestListDouble {
+public class ListDoubleTest extends FeatureTestListNumber {
 
     @Override
     public ListDouble createConstantCollection() {
