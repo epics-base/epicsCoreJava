@@ -95,51 +95,64 @@ public abstract class ListDouble implements ListNumber, CollectionDouble {
     }
 
     /**
-     * Concatenates a several lists of numbers into a single list
+     * Concatenates a sequence of lists into a single one.
      *
-     * @param lists the lists to concatenate
-     * @return the given lists concatenated together
-     * @author mjchao
+     * @param lists the lists to concatenate.
+     * @return the concatenated list.
      */
-    public static ListDouble concatenate( final ListNumber... lists ) {
-
-        //since these lists are read-only, we precompute the size
-        int size = 0;
-        for ( ListNumber l : lists ) {
-            size += l.size();
+    public static ListDouble concatenate(final ListNumber... lists) {
+        if (lists.length == 0) {
+            return CollectionNumbers.unmodifiableListDouble(new double[0]);
         }
-        final int sizeCopy = size;
-
+        
         return new ListDouble() {
 
             @Override
             public int size() {
-                return sizeCopy;
+                int size = 0;
+                for (ListNumber list : lists) {
+                    size += list.size();
+                }
+                return size;
             }
 
             @Override
             public double getDouble( int index ) {
-                if ( index < 0 || index >= size() ) {
-                    throw new IndexOutOfBoundsException( "Index out of bounds: " + index + ", size: " + size() );
+                if (index < 0 || index >= size()) {
+                    throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
                 }
-                //treat the lists we concatenated as a whole set - that is
-                //we never start back at index 0 after traversing through one
-                //of the concatenated lists
-
-                //for example, {a, b, c} {d, e, f} used to be indexed as
-                //             {0, 1, 2} {0, 1, 2} and they are now indexed as
-                //             {0, 1, 2} {3, 4, 5}
-                int startIdx = 0;
-                for ( ListNumber l : lists ) {
-                    int endIdx = startIdx + l.size()-1;
-                    if ( startIdx <= index && index <= endIdx ) {
-                        return l.getDouble( index - startIdx );
+                
+                // Iterate through the lists until the right spot is found
+                int currentListStart = 0;
+                for (ListNumber list : lists) {
+                    int currentListEnd = currentListStart + list.size();
+                    if (index < currentListEnd) {
+                        return list.getDouble(index - currentListStart);
                     }
-                    startIdx += l.size();
+                    currentListStart = currentListEnd;
                 }
 
-                //should never happpen
-                return 0;
+                throw new RuntimeException("Reached unreachable code - please contact developers");
+            }
+
+            @Override
+            public void setDouble(int index, double value) {
+                if (index < 0 || index >= size()) {
+                    throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
+                }
+                
+                // Iterate through the lists until the right spot is found
+                int currentListStart = 0;
+                for (ListNumber list : lists) {
+                    int currentListEnd = currentListStart + list.size();
+                    if (index < currentListEnd) {
+                        list.setDouble(index - currentListStart, value);
+                        return;
+                    }
+                    currentListStart = currentListEnd;
+                }
+
+                throw new RuntimeException("Reached unreachable code - please contact developers");
             }
         };
     }
