@@ -48,11 +48,11 @@ public class ArrayCopyPerformanceMeasurement {
         rand.nextBytes(byteArray);
 
         ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
-        ArrayFloat floatCollection = new ArrayFloat(floatArray);
-        ArrayLong longCollection = new ArrayLong(longArray);
-        ArrayInt intCollection = new ArrayInt(intArray);
-        ArrayShort shortCollection = new ArrayShort(shortArray);
-        ArrayByte byteCollection = new ArrayByte(byteArray);
+        ArrayFloat floatCollection = unmodifiableListFloat(floatArray);
+        ArrayLong longCollection = unmodifiableListLong(longArray);
+        ArrayInt intCollection = unmodifiableListInt(intArray);
+        ArrayShort shortCollection = unmodifiableListShort(shortArray);
+        ArrayByte byteCollection = unmodifiableListByte(byteArray);
 
         System.out.println("");
         System.out.println("Benchmark array copy");
@@ -75,11 +75,11 @@ public class ArrayCopyPerformanceMeasurement {
         System.out.println("");
         System.out.println("Benchmark setAll");
         profileArraySetAll(doubleCollection, toListDouble(new double[arraySize]), nIterations);
-        profileArraySetAll(floatCollection, new ArrayFloat(new float[arraySize], false), nIterations);
-        profileArraySetAll(longCollection, new ArrayLong(new long[arraySize], false), nIterations);
-        profileArraySetAll(intCollection, new ArrayInt(new int[arraySize], false), nIterations);
-        profileArraySetAll(shortCollection, new ArrayShort(new short[arraySize], false), nIterations);
-        profileArraySetAll(byteCollection, new ArrayByte(new byte[arraySize], false), nIterations);
+        profileArraySetAll(floatCollection, toListFloat(new float[arraySize]), nIterations);
+        profileArraySetAll(longCollection, toListLong(new long[arraySize]), nIterations);
+        profileArraySetAll(intCollection, toListInt(new int[arraySize]), nIterations);
+        profileArraySetAll(shortCollection, toListShort(new short[arraySize]), nIterations);
+        profileArraySetAll(byteCollection, toListByte(new byte[arraySize]), nIterations);
     }
 
     private static void profileArraySetAll(ArrayDouble src, ArrayDouble dst, int nIterations) {

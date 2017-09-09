@@ -65,17 +65,17 @@ public class ArraySlicePerformanceMeasurement {
         rand.nextBytes(byteArrayBig);
 
         ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
-        ArrayFloat floatCollection = new ArrayFloat(floatArray);
-        ArrayLong longCollection = new ArrayLong(longArray);
-        ArrayInt intCollection = new ArrayInt(intArray);
-        ArrayShort shortCollection = new ArrayShort(shortArray);
-        ArrayByte byteCollection = new ArrayByte(byteArray);
+        ArrayFloat floatCollection = unmodifiableListFloat(floatArray);
+        ArrayLong longCollection = unmodifiableListLong(longArray);
+        ArrayInt intCollection = unmodifiableListInt(intArray);
+        ArrayShort shortCollection = unmodifiableListShort(shortArray);
+        ArrayByte byteCollection = unmodifiableListByte(byteArray);
         ArrayDouble doubleCollectionBig = unmodifiableListDouble(doubleArrayBig).subList(arraySize/2, arraySize *3/2);
-        ArrayFloat floatCollectionBig = new ArrayFloat(floatArrayBig, true).subList(arraySize/2, arraySize *3/2);
-        ArrayLong longCollectionBig = new ArrayLong(longArrayBig, true).subList(arraySize/2, arraySize *3/2);
-        ArrayInt intCollectionBig = new ArrayInt(intArrayBig, true).subList(arraySize/2, arraySize *3/2);
-        ArrayShort shortCollectionBig = new ArrayShort(shortArrayBig, true).subList(arraySize/2, arraySize *3/2);
-        ArrayByte byteCollectionBig = new ArrayByte(byteArrayBig, true).subList(arraySize/2, arraySize *3/2);
+        ArrayFloat floatCollectionBig = unmodifiableListFloat(floatArrayBig).subList(arraySize/2, arraySize *3/2);
+        ArrayLong longCollectionBig = unmodifiableListLong(longArrayBig).subList(arraySize/2, arraySize *3/2);
+        ArrayInt intCollectionBig = unmodifiableListInt(intArrayBig).subList(arraySize/2, arraySize *3/2);
+        ArrayShort shortCollectionBig = unmodifiableListShort(shortArrayBig).subList(arraySize/2, arraySize *3/2);
+        ArrayByte byteCollectionBig = unmodifiableListByte(byteArrayBig).subList(arraySize/2, arraySize *3/2);
 
         System.out.println("");
         System.out.println("Benchmark direct arrays");

@@ -55,11 +55,11 @@ public class ArrayPerformanceMeasurement {
         rand.nextBytes(byteArray);
 
         ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
-        ArrayFloat floatCollection = new ArrayFloat(floatArray);
-        ArrayLong longCollection = new ArrayLong(longArray);
-        ArrayInt intCollection = new ArrayInt(intArray);
-        ArrayShort shortCollection = new ArrayShort(shortArray);
-        ArrayByte byteCollection = new ArrayByte(byteArray);
+        ArrayFloat floatCollection = unmodifiableListFloat(floatArray);
+        ArrayLong longCollection = unmodifiableListLong(longArray);
+        ArrayInt intCollection = unmodifiableListInt(intArray);
+        ArrayShort shortCollection = unmodifiableListShort(shortArray);
+        ArrayByte byteCollection = unmodifiableListByte(byteArray);
 
         System.out.println("");
         System.out.println("Benchmark direct arrays");
