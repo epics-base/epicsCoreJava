@@ -11,9 +11,9 @@ import java.util.NoSuchElementException;
  * the value casted in the type you prefer. This class allows to implement
  * a single binding for iterating over a collection instead of six different
  * binding. If the original type is required, instanceof can be used to
- * differentiate between {@link IteratorByte}, {@link IteratorShort},
- * {@link IteratorInt}, {@link IteratorLong}, {@link IteratorFloat} and
- * {@link IteratorDouble}.
+ * differentiate between {@link IteratorDouble}, {@link IteratorFloat},
+ * {@link IteratorLong}, {@link IteratorInt}, {@link IteratorShort}
+ * and {@link IteratorByte}.
  * <p>
  * We looked into making this class implement Iterator, but unfortunately,
  * because of generics being invariant, we cannot provide a scheme that would work naturally

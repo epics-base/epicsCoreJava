@@ -5,9 +5,12 @@
 package org.epics.util.array;
 
 /**
- * An ordered collection of numeric (primitive) elements.
+ * An ordered collection of numeric (primitive) elements. This class allows to implement
+ * a single binding for a list of primitive values of six different
+ * binding. If the original type is required, instanceof can be used to
+ * differentiate between {@link ListDouble}, {@link ListFloat}, {@link ListLong},
+ * {@link ListInt}, {@link ListShort} and {@link ListByte}.
  *
- * @author Gabriele Carcassi
  */
 public interface ListNumber extends CollectionNumber {
 
@@ -153,9 +156,12 @@ public interface ListNumber extends CollectionNumber {
      * Returns a view of the portion of this list between the specified
      * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive.
      * 
-     * @param fromIndex
-     * @param toIndex
-     * @return 
+     * @param fromIndex low endpoint (inclusive) of the subList
+     * @param toIndex high endpoint (exclusive) of the subList
+     * @return a view of the specified range within this list
+     * @throws IndexOutOfBoundsException for an illegal endpoint index value
+     *         (<tt>fromIndex &lt; 0 || toIndex &gt; size ||
+     *         fromIndex &gt; toIndex</tt>)
      */
     ListNumber subList(int fromIndex, int toIndex);
 

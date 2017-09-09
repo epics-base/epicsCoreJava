@@ -7,15 +7,14 @@ package org.epics.util.array;
 import java.util.Collection;
 
 /**
- * A collection of numeric (primitive) elements. It provides a size and
- * can be iterated more than once.
+ * A collection of numeric (primitive) elements. It provides basis iteration and
+ * copy to array.
  * <p>
  * The method names are taken from {@link Collection}, though not all
  * methods are specified. At this moment, the class is read-only. If in the
  * future the class is extended, the new methods should match the names from
  * {@link Collection}.
- *
- * @author Gabriele Carcassi
+ * 
  */
 public interface CollectionNumber {
 

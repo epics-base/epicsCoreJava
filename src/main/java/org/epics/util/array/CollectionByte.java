@@ -7,7 +7,6 @@ package org.epics.util.array;
 /**
  * A collection of {@code byte}s.
  *
- * @author Gabriele Carcassi
  */
 public interface CollectionByte extends CollectionNumber {
 

@@ -7,7 +7,6 @@ package org.epics.util.array;
 /**
  * An iterator of {@code int}s.
  *
- * @author Gabriele Carcassi
  */
 public interface IteratorInt extends IteratorNumber {
 
