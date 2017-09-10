@@ -20,12 +20,12 @@ public class ArrayDoubleTest extends FeatureTestListNumber {
 
     @Override
     public ArrayDouble createConstantCollection() {
-        return CollectionNumbers.unmodifiableListDouble(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+        return CollectionNumbers.unmodifiableListDouble(1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
     }
 
     @Override
     public ArrayDouble createRampCollection() {
-        return CollectionNumbers.unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
+        return CollectionNumbers.unmodifiableListDouble(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 
     @Override

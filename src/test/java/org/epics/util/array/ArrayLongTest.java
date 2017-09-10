@@ -22,17 +22,17 @@ public class ArrayLongTest extends FeatureTestListNumber {
 
     @Override
     public ArrayLong createConstantCollection() {
-        return new ArrayLong(new long[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+        return CollectionNumbers.unmodifiableListLong(1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
     }
 
     @Override
     public ArrayLong createRampCollection() {
-        return new ArrayLong(new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        return CollectionNumbers.unmodifiableListLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
     }
 
     @Override
     public ArrayLong createModifiableCollection() {
-        return new ArrayLong(new long[10], false);
+        return CollectionNumbers.toListLong(new long[10]);
     }
 
     @Test

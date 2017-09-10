@@ -22,17 +22,17 @@ public class ArrayShortTest extends FeatureTestListNumber {
 
     @Override
     public ArrayShort createConstantCollection() {
-        return new ArrayShort(new short[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+        return CollectionNumbers.unmodifiableListShort(new short[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
     }
 
     @Override
     public ArrayShort createRampCollection() {
-        return new ArrayShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        return CollectionNumbers.unmodifiableListShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
     }
 
     @Override
     public ArrayShort createModifiableCollection() {
-        return new ArrayShort(new short[10], false);
+        return CollectionNumbers.toListShort(new short[10]);
     }
 
     @Test

@@ -190,7 +190,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllLong() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayLong(0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L);
+        ListNumber data = unmodifiableListLong(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         list.setAll(0, data);
         testRamp(list);
     }
@@ -198,7 +198,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllInt() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ListNumber data = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         list.setAll(0, data);
         testRamp(list);
     }
@@ -206,7 +206,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllShort() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ListNumber data = unmodifiableListShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         list.setAll(0, data);
         testRamp(list);
     }
@@ -214,7 +214,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllByte() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ListNumber data = unmodifiableListByte(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         list.setAll(0, data);
         testRamp(list);
     }
@@ -222,7 +222,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllDouble2() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = toList(new double[] {4.0, 5.0});
+        ListNumber data = unmodifiableListDouble(4, 5);
         list.setAll(4, data);
         testMiddleInsert(list);
     }
@@ -238,7 +238,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllLong2() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayLong(4L, 5L);
+        ListNumber data = unmodifiableListLong(4, 5);
         list.setAll(4, data);
         testMiddleInsert(list);
     }
@@ -246,7 +246,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllInt2() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayInt(4, 5);
+        ListNumber data = unmodifiableListInt(4, 5);
         list.setAll(4, data);
         testMiddleInsert(list);
     }
@@ -254,7 +254,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllShort2() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayShort(new short[] {4, 5});
+        ListNumber data = unmodifiableListShort(new short[] {4, 5});
         list.setAll(4, data);
         testMiddleInsert(list);
     }
@@ -262,7 +262,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     @Test
     public void setAllByte2() {
         ListNumber list = createModifiableCollection();
-        ListNumber data = new ArrayByte(new byte[] {4, 5});
+        ListNumber data = unmodifiableListByte(new byte[] {4, 5});
         list.setAll(4, data);
         testMiddleInsert(list);
     }
