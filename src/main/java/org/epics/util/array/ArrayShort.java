@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public final class ArrayShort extends ListShort implements Serializable {
 
-    private static final long serialVersionUID = 7493025761455302921L;
+    private static final long serialVersionUID = 1L;
 
     private final short[] array;
     private final int startIndex;

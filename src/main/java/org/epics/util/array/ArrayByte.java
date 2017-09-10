@@ -11,7 +11,7 @@ import java.io.Serializable;
  */
 public final class ArrayByte extends ListByte implements Serializable {
 
-    private static final long serialVersionUID = 7493025761455302916L;
+    private static final long serialVersionUID = 1L;
 
     private final byte[] array;
     private final int startIndex;
