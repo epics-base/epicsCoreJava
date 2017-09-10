@@ -8,8 +8,6 @@ import java.io.Serializable;
 
 /**
  * Non-resizable {@link ListDouble} implementation backed by a {@code double[]}.
- *
- * @author Gabriele Carcassi
  */
 public final class ArrayDouble extends ListDouble implements Serializable {
 
@@ -38,6 +36,8 @@ public final class ArrayDouble extends ListDouble implements Serializable {
      * @param startIndex first element
      * @param size number of elements
      * @param readOnly if false the wrapper allows writes to the array
+     * @throws IndexOutOfBoundsException if startIndex and size are out of range
+     *         (@code{startIndex < 0 || startIndex + size > array.length})
      */
     ArrayDouble(double[] array, int startIndex, int size, boolean readOnly) {
         if (startIndex < 0 || startIndex + size > array.length)

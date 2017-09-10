@@ -8,8 +8,6 @@ import java.io.Serializable;
 
 /**
  * Non-resizable {@link ListFloat} implementation backed by a {@code float[]}.
- *
- * @author Gabriele Carcassi
  */
 public final class ArrayFloat extends ListFloat implements Serializable {
 

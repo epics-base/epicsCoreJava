@@ -40,7 +40,7 @@ public class UnsafeUnwrapperTest {
     @Test
     public void wrappedArray2() {
         byte[] array = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-        ListNumber coll = new ArrayByte(array);
+        ListNumber coll = unmodifiableListByte(array);
         testArraySame(UnsafeUnwrapper.wrappedArray(coll), array, 0, 10);
     }
 

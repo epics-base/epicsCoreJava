@@ -6,8 +6,8 @@
 package org.epics.util.array.mockapi;
 
 import org.epics.util.array.ArrayInt;
-import org.epics.util.array.ListInt;
 import org.epics.util.array.ListNumber;
+import static org.epics.util.array.CollectionNumbers.*;
 
 /**
  *
@@ -23,11 +23,11 @@ public class IntArrayField implements NumericArrayField {
 
     @Override
     public ArrayInt get() {
-        return new ArrayInt(backendArray);
+        return unmodifiableListInt(backendArray);
     }
 
     @Override
     public void put(int index, ListNumber data) {
-        new ArrayInt(backendArray, false).setAll(index, data);
+        toListInt(backendArray).setAll(index, data);
     }
 }

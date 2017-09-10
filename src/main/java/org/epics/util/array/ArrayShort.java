@@ -5,12 +5,9 @@
 package org.epics.util.array;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
- * Wraps a {@code short[]} into a {@link ListShort}.
- *
- * @author Gabriele Carcassi
+ * Non-resizable {@link ListShort} implementation backed by a {@code short[]}.
  */
 public final class ArrayShort extends ListShort implements Serializable {
 
@@ -21,37 +18,26 @@ public final class ArrayShort extends ListShort implements Serializable {
     private final int size;
     private final boolean checkBoundaries;
     private final boolean readOnly;
-    
-    public ArrayShort(ListNumber array) {
-        this(array.toArray(new short[array.size()]), false);
+
+    /**
+     * Constructs a list containing the values provided by the specified collection
+     * in the order returned by its iterator.
+     * 
+     * @param coll the collection whose values will be placed in this list
+     */    
+    public ArrayShort(CollectionNumber coll) {
+        this(coll.toArray(new short[coll.size()]), 0, coll.size(), false);
     }
 
     /**
-     * A new {@code ArrayShort} that wraps around the given array.
-     *
-     * @param array an array
-     */
-    public ArrayShort(short... array) {
-        this(array, true);
-    }
-
-    /**
-     * A new {@code ArrayShort} that wraps around the given array.
-     *
-     * @param array an array
-     * @param readOnly if false the wrapper allows writes to the array
-     */
-    public ArrayShort(short[] array, boolean readOnly) {
-        this(array, 0, array.length, readOnly);
-    }
-
-    /**
-     * A new {@code ArrayShort} that wraps around the given array.
+     * A new {@code ArrayDouble} that wraps around the given array.
      *
      * @param array an array
      * @param startIndex first element
      * @param size number of elements
      * @param readOnly if false the wrapper allows writes to the array
+     * @throws IndexOutOfBoundsException if startIndex and size are out of range
+     *         (@code{startIndex < 0 || startIndex + size > array.length})
      */
     ArrayShort(short[] array, int startIndex, int size, boolean readOnly) {
         if (startIndex < 0 || startIndex + size > array.length)

@@ -21,7 +21,7 @@ public class SortedListView extends ListDouble {
         for (int i = 0; i < indexArray.length; i++) {
             indexArray[i] = i;
         }
-        this.indexes = new ArrayInt(indexArray);
+        this.indexes = CollectionNumbers.unmodifiableListInt(indexArray);
     }
 
     SortedListView(ListNumber values, ListInt indexes) {

@@ -56,13 +56,13 @@ public class CollectionNumbersTest {
 
     @Test(expected=NullPointerException.class)
     public void defaultToArrayError1(){
-        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumber coll = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         CollectionNumbers.defaultToArray(coll, null);
     }
 
     @Test(expected=ArrayStoreException.class)
     public void defaultToArrayError2(){
-        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumber coll = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         CollectionNumbers.defaultToArray(coll, new Object());
     }
 
@@ -82,28 +82,28 @@ public class CollectionNumbersTest {
 
     @Test
     public void defaultToArrayLong1(){
-        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumber coll = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         long[] longArray = CollectionNumbers.defaultToArray(coll, new long[coll.size()]);
         assertThat(longArray, equalTo(new long[] {0,1,2,3,4,5,6,7,8,9}));
     }
 
     @Test
     public void defaultToArrayInt1(){
-        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumber coll = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         int[] longArray = coll.toArray(new int[coll.size()]);
         assertThat(longArray, equalTo(new int[] {0,1,2,3,4,5,6,7,8,9}));
     }
 
     @Test
     public void defaultToArrayShort1(){
-        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumber coll = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         short[] longArray = coll.toArray(new short[coll.size()]);
         assertThat(longArray, equalTo(new short[] {0,1,2,3,4,5,6,7,8,9}));
     }
 
     @Test
     public void defaultToArrayByte1(){
-        CollectionNumber coll = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        CollectionNumber coll = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         byte[] longArray = coll.toArray(new byte[coll.size()]);
         assertThat(longArray, equalTo(new byte[] {0,1,2,3,4,5,6,7,8,9}));
     }

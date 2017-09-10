@@ -38,17 +38,17 @@ public class ListNumbersTest {
         SortedListView sortedView = ListNumbers.sortedView(values);
         assertThat(values, equalTo(unmodifiableListDouble(5,3,1,4,2,0)));
         assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(0,1,2,3,4,5)));
-        assertThat(sortedView.getIndexes(), equalTo((ListInt) new ArrayInt(5,2,4,1,3,0)));
+        assertThat(sortedView.getIndexes(), equalTo(unmodifiableListInt(5,2,4,1,3,0)));
     }
 
     @Test
     public void sortedView2() {
         ArrayDouble values = unmodifiableListDouble(5,3,1,4,2,0);
-        ArrayInt indexes = new ArrayInt(0,3,1,4,2,5);
+        ArrayInt indexes = unmodifiableListInt(0,3,1,4,2,5);
         SortedListView sortedView = ListNumbers.sortedView(values, indexes);
         assertThat(values, equalTo(unmodifiableListDouble(5,3,1,4,2,0)));
         assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(5,4,3,2,1,0)));
-        assertThat(sortedView.getIndexes(), equalTo((ListInt) new ArrayInt(0,3,1,4,2,5)));
+        assertThat(sortedView.getIndexes(), equalTo(unmodifiableListInt(0,3,1,4,2,5)));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class ListNumbersTest {
         SortedListView sortedView = ListNumbers.sortedView(values);
         assertThat(values, equalTo(unmodifiableListDouble(0,1,2,4,3,5)));
         assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(0,1,2,3,4,5)));
-        assertThat(sortedView.getIndexes(), equalTo((ListInt) new ArrayInt(0,1,2,4,3,5)));
+        assertThat(sortedView.getIndexes(), equalTo(unmodifiableListInt(0,1,2,4,3,5)));
     }
 
     @Test

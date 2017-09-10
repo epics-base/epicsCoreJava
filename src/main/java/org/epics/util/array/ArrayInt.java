@@ -5,16 +5,13 @@
 package org.epics.util.array;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
- * Wraps a {@code int[]} into a {@link ListInt}.
- *
- * @author Gabriele Carcassi
+ * Non-resizable {@link ListInt} implementation backed by a {@code int[]}.
  */
 public final class ArrayInt extends ListInt implements Serializable {
 
-    private static final long serialVersionUID = 7493025761455302919L;
+    private static final long serialVersionUID = 1L;
 
     private final int[] array;
     private final int startIndex;
@@ -23,22 +20,13 @@ public final class ArrayInt extends ListInt implements Serializable {
     private final boolean readOnly;
 
     /**
-     * A new {@code ArrayInt} that wraps around the given array.
-     *
-     * @param array an array
-     */
-    public ArrayInt(int... array) {
-        this(array, true);
-    }
-
-    /**
-     * A new {@code ArrayInt} that wraps around the given array.
-     *
-     * @param array an array
-     * @param readOnly if false the wrapper allows writes to the array
-     */
-    public ArrayInt(int[] array, boolean readOnly) {
-        this(array, 0, array.length, readOnly);
+     * Constructs a list containing the values provided by the specified collection
+     * in the order returned by its iterator.
+     * 
+     * @param coll the collection whose values will be placed in this list
+     */    
+    public ArrayInt(CollectionNumber coll) {
+        this(coll.toArray(new int[coll.size()]), 0, coll.size(), false);
     }
 
     /**
@@ -48,6 +36,8 @@ public final class ArrayInt extends ListInt implements Serializable {
      * @param startIndex first element
      * @param size number of elements
      * @param readOnly if false the wrapper allows writes to the array
+     * @throws IndexOutOfBoundsException if startIndex and size are out of range
+     *         (@code{startIndex < 0 || startIndex + size > array.length})
      */
     ArrayInt(int[] array, int startIndex, int size, boolean readOnly) {
         if (startIndex < 0 || startIndex + size > array.length)

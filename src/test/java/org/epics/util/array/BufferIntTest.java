@@ -55,7 +55,7 @@ public class BufferIntTest {
         for (int i = 0; i < 11; i++) {
             coll.addInt(i);
         }
-        ListInt reference = new ArrayInt(new int[] {0, 1,2,3,4,5,6,7,8,9,10});
+        ListInt reference = CollectionNumbers.unmodifiableListInt(0,1,2,3,4,5,6,7,8,9,10);
         assertThat(coll, equalTo(reference));
     }
 
@@ -65,7 +65,7 @@ public class BufferIntTest {
         for (int i = 0; i < 5; i++) {
             coll.addInt(i);
         }
-        ListInt reference = new ArrayInt(new int[] {0,1,2,3,4});
+        ListInt reference = CollectionNumbers.unmodifiableListInt(0,1,2,3,4);
         assertThat(coll, equalTo(reference));
     }
 

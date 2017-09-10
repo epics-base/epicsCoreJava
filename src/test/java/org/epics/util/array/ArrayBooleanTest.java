@@ -47,10 +47,10 @@ public class ArrayBooleanTest {
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(buffer);
-        ArrayByte array = new ArrayByte(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ArrayBoolean array = new ArrayBoolean(new boolean[] {true, false, true, false});
         stream.writeObject(array);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray()));
-        ArrayByte read = (ArrayByte) inStream.readObject();
+        ArrayBoolean read = (ArrayBoolean) inStream.readObject();
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
     }

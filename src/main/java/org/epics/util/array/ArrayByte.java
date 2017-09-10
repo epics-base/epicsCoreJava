@@ -7,9 +7,7 @@ package org.epics.util.array;
 import java.io.Serializable;
 
 /**
- * Wraps a {@code byte[]} into a {@link ListByte}.
- *
- * @author Gabriele Carcassi
+ * Non-resizable {@link ListByte} implementation backed by a {@code byte[]}.
  */
 public final class ArrayByte extends ListByte implements Serializable {
 
@@ -21,36 +19,26 @@ public final class ArrayByte extends ListByte implements Serializable {
     private final boolean checkBoundaries;
     private final boolean readOnly;
     
-    public ArrayByte(ListNumber array) {
-        this(array.toArray(new byte[array.size()]), false);
+
+    /**
+     * Constructs a list containing the values provided by the specified collection
+     * in the order returned by its iterator.
+     * 
+     * @param coll the collection whose values will be placed in this list
+     */    
+    public ArrayByte(CollectionNumber coll) {
+        this(coll.toArray(new byte[coll.size()]), 0, coll.size(), false);
     }
 
     /**
-     * A new read-only {@code ArrayByte} that wraps around the given array.
-     *
-     * @param array an array
-     */
-    public ArrayByte(byte... array) {
-        this(array, true);
-    }
-
-    /**
-     * A new {@code ArrayByte} that wraps around the given array.
-     *
-     * @param array an array
-     * @param readOnly if false the wrapper allows writes to the array
-     */
-    public ArrayByte(byte[] array, boolean readOnly) {
-        this(array, 0, array.length, readOnly);
-    }
-
-    /**
-     * A new {@code ArrayByte} that wraps around the given array.
+     * A new {@code ArrayDouble} that wraps around the given array.
      *
      * @param array an array
      * @param startIndex first element
      * @param size number of elements
      * @param readOnly if false the wrapper allows writes to the array
+     * @throws IndexOutOfBoundsException if startIndex and size are out of range
+     *         (@code{startIndex < 0 || startIndex + size > array.length})
      */
     ArrayByte(byte[] array, int startIndex, int size, boolean readOnly) {
         if (startIndex < 0 || startIndex + size > array.length)

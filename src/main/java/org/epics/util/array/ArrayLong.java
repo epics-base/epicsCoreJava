@@ -5,44 +5,28 @@
 package org.epics.util.array;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
- * Wraps a {@code long[]} into a {@link ListLong}.
- *
- * @author Gabriele Carcassi
+ * Non-resizable {@link ListLong} implementation backed by a {@code long[]}.
  */
 public final class ArrayLong extends ListLong implements Serializable {
 
-    private static final long serialVersionUID = 7493025761455302920L;
+    private static final long serialVersionUID = 1L;
 
     private final long[] array;
     private final int startIndex;
     private final int size;
     private final boolean checkBoundaries;
     private final boolean readOnly;
-    
-    public ArrayLong(ListNumber array) {
-        this(array.toArray(new long[array.size()]), false);
-    }
 
     /**
-     * A new {@code ArrayLong} that wraps around the given array.
-     *
-     * @param array an array
-     */
-    public ArrayLong(long... array) {
-        this(array, true);
-    }
-
-    /**
-     * A new {@code ArrayLong} that wraps around the given array.
-     *
-     * @param array an array
-     * @param readOnly if false the wrapper allows writes to the array
-     */
-    public ArrayLong(long[] array, boolean readOnly) {
-        this(array, 0, array.length, readOnly);
+     * Constructs a list containing the values provided by the specified collection
+     * in the order returned by its iterator.
+     * 
+     * @param coll the collection whose values will be placed in this list
+     */    
+    public ArrayLong(CollectionNumber coll) {
+        this(coll.toArray(new long[coll.size()]), 0, coll.size(), false);
     }
 
     /**
@@ -52,6 +36,8 @@ public final class ArrayLong extends ListLong implements Serializable {
      * @param startIndex first element
      * @param size number of elements
      * @param readOnly if false the wrapper allows writes to the array
+     * @throws IndexOutOfBoundsException if startIndex and size are out of range
+     *         (@code{startIndex < 0 || startIndex + size > array.length})
      */
     ArrayLong(long[] array, int startIndex, int size, boolean readOnly) {
         if (startIndex < 0 || startIndex + size > array.length)

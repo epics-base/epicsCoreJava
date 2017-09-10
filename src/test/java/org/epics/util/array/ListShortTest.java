@@ -76,7 +76,7 @@ public class ListShortTest extends FeatureTestListNumber {
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         ObjectOutputStream stream = new ObjectOutputStream(buffer);
-        ArrayShort array = new ArrayShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        ArrayShort array = CollectionNumbers.unmodifiableListShort(new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
         stream.writeObject(array);
         ObjectInputStream inStream = new ObjectInputStream(new ByteArrayInputStream(buffer.toByteArray()));
         ArrayShort read = (ArrayShort) inStream.readObject();

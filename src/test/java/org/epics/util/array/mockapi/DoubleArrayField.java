@@ -6,9 +6,7 @@
 package org.epics.util.array.mockapi;
 
 import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListNumbers;
 import static org.epics.util.array.CollectionNumbers.*;
 
 /**

@@ -59,7 +59,7 @@ public class MockApiTest {
     public void writeIntsOverDoubles() {
         MockClient client = new MockClient();
         DoubleArrayField field = client.createArrayField(new Random(0).doubles(10, 0, 1.0));
-        ArrayInt ints = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ArrayInt ints = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         field.put(0, ints);
         assertThat(field.get(), equalTo(unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0)));
     }
@@ -68,7 +68,7 @@ public class MockApiTest {
     public void writeInts() {
         MockClient client = new MockClient();
         IntArrayField field = client.createArrayField(new Random(0).ints(10, 0, 100));
-        ArrayInt ints = new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+        ArrayInt ints = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
         field.put(0, ints);
         assertThat(field.get(), equalTo(ints));
     }
@@ -79,7 +79,7 @@ public class MockApiTest {
         IntArrayField field = client.createArrayField(new Random(0).ints(10, 0, 100));
         ArrayDouble doubles = unmodifiableListDouble(0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0);
         field.put(0, doubles);
-        assertThat(field.get(), equalTo(new ArrayInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)));
+        assertThat(field.get(), equalTo(unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)));
     }
 
     @Test
