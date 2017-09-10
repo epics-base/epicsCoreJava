@@ -5,12 +5,22 @@
 package org.epics.util.array;
 
 /**
- * Utilities to work with number collections.
- *
- * @author carcassi
+ * A set of utilities that allows, when really needed, to get the primitive
+ * array wrapped by the {@code ArrayXxx} classes.
+ * <p>
+ * These methods should only be used when the data stored in the array classes
+ * needs to be passed to other libraries that operate directly on primitive
+ * array. In these cases, the only choice is to break encapsulation and
+ * expose the internal state. USE WITH CAUTION.
  */
 public class UnsafeUnwrapper {
     
+    /**
+     * A primitive array together with the starting index and the number
+     * of elements to be read from the starting index.
+     * 
+     * @param <T> the array type
+     */
     public static final class Array<T> {
         public final T array;
         public final int startIndex;
