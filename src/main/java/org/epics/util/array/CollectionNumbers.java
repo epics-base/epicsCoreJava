@@ -138,6 +138,126 @@ public class CollectionNumbers {
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
+    public static ListDouble unmodifiableList(final ListDouble list) {
+        return new ListDouble() {
+            @Override
+            public double getDouble(int index) {
+                return list.getDouble(index);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+        };
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ListFloat unmodifiableList(final ListFloat list) {
+        return new ListFloat() {
+            @Override
+            public float getFloat(int index) {
+                return list.getFloat(index);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+        };
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ListLong unmodifiableList(final ListLong list) {
+        return new ListLong() {
+            @Override
+            public long getLong(int index) {
+                return list.getLong(index);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+        };
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ListInt unmodifiableList(final ListInt list) {
+        return new ListInt() {
+            @Override
+            public int getInt(int index) {
+                return list.getInt(index);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+        };
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ListShort unmodifiableList(final ListShort list) {
+        return new ListShort() {
+            @Override
+            public short getShort(int index) {
+                return list.getShort(index);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+        };
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ListByte unmodifiableList(final ListByte list) {
+        return new ListByte() {
+            @Override
+            public byte getByte(int index) {
+                return list.getByte(index);
+            }
+
+            @Override
+            public int size() {
+                return list.size();
+            }
+        };
+    }
+    
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
     public static ArrayDouble unmodifiableList(ArrayDouble list) {
         return new ArrayDouble(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
