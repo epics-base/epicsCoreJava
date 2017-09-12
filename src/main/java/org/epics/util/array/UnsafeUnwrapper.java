@@ -12,6 +12,12 @@ package org.epics.util.array;
  * needs to be passed to other libraries that operate directly on primitive
  * array. In these cases, the only choice is to break encapsulation and
  * expose the internal state. USE WITH CAUTION.
+ * <p>
+ * There are three type of methods. {@code wrappedXxxArray} returns the array
+ * the {@link CollectionNumber} is wrapping or null if no array is being wrapped.
+ * {@code readSafeXxxArray} returns an array, possibly a copy, that is always
+ * safe to read. {@code writeSafeXxxArray} returns an array, possibly a copy, that is always
+ * safe to write to.
  */
 public class UnsafeUnwrapper {
     
@@ -194,23 +200,7 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static Array<float[]> floatArrayWrappedOrCopy(CollectionNumber coll) {
-        Array<float[]> array = wrappedFloatArray(coll);
-        if (array != null) {
-            return array;
-        }
-        return new Array<>(coll.toArray(new float[coll.size()]), 0, coll.size());
-    }
-
-    /**
-     * Returns either the wrapped array (if exists and matches the type)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
-     *
-     * @param coll the collection
-     * @return the array
-     */
-    public static Array<double[]> doubleArrayWrappedOrCopy(CollectionNumber coll) {
+    public static Array<double[]> readSafeDoubleArray(CollectionNumber coll) {
         Array<double[]> array = wrappedDoubleArray(coll);
         if (array != null) {
             return array;
@@ -226,12 +216,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static Array<byte[]> byteArrayWrappedOrCopy(CollectionNumber coll) {
-        Array<byte[]> array = wrappedByteArray(coll);
+    public static Array<float[]> readSafeFloatArray(CollectionNumber coll) {
+        Array<float[]> array = wrappedFloatArray(coll);
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new byte[coll.size()]), 0, coll.size());
+        return new Array<>(coll.toArray(new float[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -242,12 +232,12 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static Array<short[]> shortArrayWrappedOrCopy(CollectionNumber coll) {
-        Array<short[]> array = wrappedShortArray(coll);
+    public static Array<long[]> readSafeLongArray(CollectionNumber coll) {
+        Array<long[]> array = wrappedLongArray(coll);
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new short[coll.size()]), 0, coll.size());
+        return new Array<>(coll.toArray(new long[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -258,7 +248,7 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static Array<int[]> intArrayWrappedOrCopy(CollectionNumber coll) {
+    public static Array<int[]> readSafeIntArray(CollectionNumber coll) {
         Array<int[]> array = wrappedIntArray(coll);
         if (array != null) {
             return array;
@@ -274,12 +264,28 @@ public class UnsafeUnwrapper {
      * @param coll the collection
      * @return the array
      */
-    public static Array<long[]> longArrayWrappedOrCopy(CollectionNumber coll) {
-        Array<long[]> array = wrappedLongArray(coll);
+    public static Array<short[]> readSafeShortArray(CollectionNumber coll) {
+        Array<short[]> array = wrappedShortArray(coll);
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new long[coll.size()]), 0, coll.size());
+        return new Array<>(coll.toArray(new short[coll.size()]), 0, coll.size());
+    }
+
+    /**
+     * Returns either the wrapped array (if exists and matches the type)
+     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION.
+     *
+     * @param coll the collection
+     * @return the array
+     */
+    public static Array<byte[]> readSafeByteArray(CollectionNumber coll) {
+        Array<byte[]> array = wrappedByteArray(coll);
+        if (array != null) {
+            return array;
+        }
+        return new Array<>(coll.toArray(new byte[coll.size()]), 0, coll.size());
     }
     
 }
