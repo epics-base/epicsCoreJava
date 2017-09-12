@@ -128,8 +128,28 @@ public class CollectionNumbers {
         return new ArrayByte(values, 0, values.length, false);
     }
     
-    public static ListNumber unmodifiableList(ListNumber list) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    /**
+     * Returns an unmodifiable view of the specified list.
+     * 
+     * @param list the list for which an unmodifiable view is to be returned.
+     * @return an unmodifiable view of the specified list.
+     */
+    public static ListNumber unmodifiableList(final ListNumber list) {
+        if (list instanceof ListDouble) {
+            return unmodifiableList((ListDouble) list);
+        } else if (list instanceof ListFloat) {
+            return unmodifiableList((ListFloat) list);
+        } else if (list instanceof ListLong) {
+            return unmodifiableList((ListLong) list);
+        } else if (list instanceof ListInt) {
+            return unmodifiableList((ListInt) list);
+        } else if (list instanceof ListShort) {
+            return unmodifiableList((ListShort) list);
+        } else if (list instanceof ListByte) {
+            return unmodifiableList((ListByte) list);
+        } else {
+            throw new IllegalArgumentException(list + " does not implement a particular ListXxx type");
+        }
     }
     
     /**
