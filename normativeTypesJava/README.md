@@ -1,4 +1,4 @@
-normativeTypesJava
+normativeTypesJava  [![Build Status](https://travis-ci.org/epics-base/normativeTypesJava.svg?branch=master)](https://travis-ci.org/epics-base/normativeTypesJava)
 ==================
 
 normativeTypesJava is a Java module containing helper classes which implement
