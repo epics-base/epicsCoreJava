@@ -147,4 +147,8 @@ public final class ArrayFloat extends ListFloat implements Serializable {
     int startIndex() {
         return startIndex;
     }
+    
+    boolean isReadOnly() {
+        return readOnly;
+    }
 }

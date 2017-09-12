@@ -287,5 +287,21 @@ public class UnsafeUnwrapper {
         }
         return new Array<>(coll.toArray(new byte[coll.size()]), 0, coll.size());
     }
+
+    /**
+     * Returns either the wrapped array (if exists, matches the type and can be written to)
+     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION.
+     *
+     * @param coll the collection
+     * @return the array
+     */
+    public static Array<double[]> writeSafeDoubleArray(CollectionNumber coll) {
+        Array<double[]> array = wrappedDoubleArray(coll);
+        if (array != null && !((ArrayDouble) coll).isReadOnly()) {
+            return array;
+        }
+        return new Array<>(coll.toArray(new double[coll.size()]), 0, coll.size());
+    }
     
 }

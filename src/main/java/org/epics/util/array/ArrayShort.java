@@ -149,4 +149,8 @@ public final class ArrayShort extends ListShort implements Serializable {
     int startIndex() {
         return startIndex;
     }
+    
+    boolean isReadOnly() {
+        return readOnly;
+    }
 }

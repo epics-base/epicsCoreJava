@@ -150,4 +150,8 @@ public final class ArrayByte extends ListByte implements Serializable {
     int startIndex() {
         return startIndex;
     }
+    
+    boolean isReadOnly() {
+        return readOnly;
+    }
 }

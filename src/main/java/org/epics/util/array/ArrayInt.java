@@ -134,4 +134,8 @@ public final class ArrayInt extends ListInt implements Serializable {
     int startIndex() {
         return startIndex;
     }
+    
+    boolean isReadOnly() {
+        return readOnly;
+    }
 }

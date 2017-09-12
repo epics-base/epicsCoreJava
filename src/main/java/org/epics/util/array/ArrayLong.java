@@ -149,4 +149,8 @@ public final class ArrayLong extends ListLong implements Serializable {
     int startIndex() {
         return startIndex;
     }
+    
+    boolean isReadOnly() {
+        return readOnly;
+    }
 }
