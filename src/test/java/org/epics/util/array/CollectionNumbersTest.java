@@ -245,4 +245,14 @@ public class CollectionNumbersTest {
         byte[] dst = new byte[5];
         CollectionNumbers.arrayCopy(coll, dst, 0);
     }
+
+    @Test
+    public void unmodifiableListOptimizations(){
+        assertThat(unmodifiableList((ListDouble) toListDouble(1, 2, 3)), instanceOf(ArrayDouble.class));
+        assertThat(unmodifiableList((ListFloat) toListFloat(1, 2, 3)), instanceOf(ArrayFloat.class));
+        assertThat(unmodifiableList((ListLong) toListLong(1, 2, 3)), instanceOf(ArrayLong.class));
+        assertThat(unmodifiableList((ListInt) toListInt(1, 2, 3)), instanceOf(ArrayInt.class));
+        assertThat(unmodifiableList((ListShort) toListShort(new short[] {1, 2, 3})), instanceOf(ArrayShort.class));
+        assertThat(unmodifiableList((ListByte) toListByte(new byte[] {1, 2, 3})), instanceOf(ArrayByte.class));
+    }
 }

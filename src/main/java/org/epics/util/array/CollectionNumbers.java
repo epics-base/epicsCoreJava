@@ -139,6 +139,10 @@ public class CollectionNumbers {
      * @return an unmodifiable view of the specified list.
      */
     public static ListDouble unmodifiableList(final ListDouble list) {
+        if (list instanceof ArrayDouble) {
+            return unmodifiableList((ArrayDouble) list);
+        }
+        
         return new ListDouble() {
             @Override
             public double getDouble(int index) {
@@ -159,6 +163,9 @@ public class CollectionNumbers {
      * @return an unmodifiable view of the specified list.
      */
     public static ListFloat unmodifiableList(final ListFloat list) {
+        if (list instanceof ArrayFloat) {
+            return unmodifiableList((ArrayFloat) list);
+        }
         return new ListFloat() {
             @Override
             public float getFloat(int index) {
@@ -179,6 +186,10 @@ public class CollectionNumbers {
      * @return an unmodifiable view of the specified list.
      */
     public static ListLong unmodifiableList(final ListLong list) {
+        if (list instanceof ArrayLong) {
+            return unmodifiableList((ArrayLong) list);
+        }
+        
         return new ListLong() {
             @Override
             public long getLong(int index) {
@@ -199,6 +210,10 @@ public class CollectionNumbers {
      * @return an unmodifiable view of the specified list.
      */
     public static ListInt unmodifiableList(final ListInt list) {
+        if (list instanceof ArrayInt) {
+            return unmodifiableList((ArrayInt) list);
+        }
+
         return new ListInt() {
             @Override
             public int getInt(int index) {
@@ -219,6 +234,10 @@ public class CollectionNumbers {
      * @return an unmodifiable view of the specified list.
      */
     public static ListShort unmodifiableList(final ListShort list) {
+        if (list instanceof ArrayShort) {
+            return unmodifiableList((ArrayShort) list);
+        }
+
         return new ListShort() {
             @Override
             public short getShort(int index) {
@@ -239,6 +258,10 @@ public class CollectionNumbers {
      * @return an unmodifiable view of the specified list.
      */
     public static ListByte unmodifiableList(final ListByte list) {
+        if (list instanceof ArrayByte) {
+            return unmodifiableList((ArrayByte) list);
+        }
+
         return new ListByte() {
             @Override
             public byte getByte(int index) {
