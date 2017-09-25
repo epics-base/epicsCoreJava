@@ -317,5 +317,41 @@ public class UnsafeUnwrapper {
         }
         return new Array<>(coll.toArray(new double[coll.size()]), 0, coll.size());
     }
+
+    /**
+     * Returns a float array that contains the elements of the collection
+     * meant - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
+     * Returns either the wrapped array (if exists and matches the type and the
+     * collection is modifiable) or a copy.
+     *
+     * @param coll the collection
+     * @return the array
+     */
+    public static Array<float[]> writeSafeFloatArray(CollectionNumber coll) {
+        Array<float[]> array = wrappedFloatArray(coll);
+        if (array != null && !((ArrayFloat) coll).isReadOnly()) {
+            return array;
+        }
+        return new Array<>(coll.toArray(new float[coll.size()]), 0, coll.size());
+    }
+
+    /**
+     * Returns a byte array that contains the elements of the collection
+     * meant - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
+     * Returns either the wrapped array (if exists and matches the type and the
+     * collection is modifiable) or a copy.
+     *
+     * @param coll the collection
+     * @return the array
+     */
+    public static Array<byte[]> writeSafeByteArray(CollectionNumber coll) {
+        Array<byte[]> array = wrappedByteArray(coll);
+        if (array != null && !((ArrayByte) coll).isReadOnly()) {
+            return array;
+        }
+        return new Array<>(coll.toArray(new byte[coll.size()]), 0, coll.size());
+    }
     
 }

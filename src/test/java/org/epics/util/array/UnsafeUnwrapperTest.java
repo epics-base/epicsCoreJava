@@ -90,8 +90,9 @@ public class UnsafeUnwrapperTest {
     public void writeSafeDoubleArray3(){
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         ListNumber coll = unmodifiableListFloat(array);
-        testArrayEquals(UnsafeUnwrapper.readSafeDoubleArray(coll), new double[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
+        testArrayEquals(UnsafeUnwrapper.writeSafeDoubleArray(coll), new double[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
+    
 
     @Test
     public void wrappedFloatArray1() {
@@ -108,19 +109,41 @@ public class UnsafeUnwrapperTest {
     }
 
     @Test
-    public void floatArrayWrappedOrCopy1(){
+    public void readSafeFloatArray1(){
         float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         ListNumber coll = unmodifiableListFloat(array);
         testArraySame(UnsafeUnwrapper.readSafeFloatArray(coll), array, 0, 10);
     }
 
     @Test
-    public void floatArrayWrappedOrCopy2(){
+    public void readSafeFloatArray2(){
         double[] array = new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         ListNumber coll = toList(array);
         testArrayEquals(UnsafeUnwrapper.readSafeFloatArray(coll), new float[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
 
+    @Test
+    public void writeSafeFloatArray1(){
+        float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ListNumber coll = toList(array);
+        testArraySame(UnsafeUnwrapper.writeSafeFloatArray(coll), array, 0, 10);
+    }
+
+    @Test
+    public void writeSafeFloatArray2(){
+        float[] array = new float[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ListNumber coll = unmodifiableListFloat(array);
+        testArrayEquals(UnsafeUnwrapper.writeSafeFloatArray(coll), array, 0, 10);
+    }
+
+    @Test
+    public void writeSafeFloatArray3(){
+        double[] array = new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ListNumber coll = unmodifiableListDouble(array);
+        testArrayEquals(UnsafeUnwrapper.writeSafeFloatArray(coll), new float[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
+    }
+    
+    
     @Test
     public void wrappedByteArray1() {
         byte[] array = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -136,18 +159,40 @@ public class UnsafeUnwrapperTest {
     }
 
     @Test
-    public void byteArrayWrappedOrCopy1(){
+    public void readSafeByteArray1(){
         byte[] array = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         ListNumber coll = unmodifiableListByte(array);
         testArraySame(UnsafeUnwrapper.readSafeByteArray(coll), array, 0, 10);
     }
 
     @Test
-    public void byteArrayWrappedOrCopy2(){
+    public void readSafeByteArray2(){
         long[] array = new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
         ListNumber coll = unmodifiableListLong(array);
         testArrayEquals(UnsafeUnwrapper.readSafeByteArray(coll), new byte[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
+
+    @Test
+    public void writeSafeByteArray1(){
+        byte[] array = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ListNumber coll = toList(array);
+        testArraySame(UnsafeUnwrapper.writeSafeByteArray(coll), array, 0, 10);
+    }
+
+    @Test
+    public void writeSafeByteArray2(){
+        byte[] array = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ListNumber coll = unmodifiableListByte(array);
+        testArrayEquals(UnsafeUnwrapper.writeSafeByteArray(coll), array, 0, 10);
+    }
+
+    @Test
+    public void writeSafeByteArray3(){
+        long[] array = new long[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+        ListNumber coll = unmodifiableListLong(array);
+        testArrayEquals(UnsafeUnwrapper.writeSafeByteArray(coll), new byte[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
+    }
+    
 
     @Test
     public void wrappedShortArray1() {
