@@ -193,9 +193,11 @@ public class UnsafeUnwrapper {
     }
 
     /**
+     * Returns a double array that contains the elements of the collection
+     * meant for read-only - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
      * Returns either the wrapped array (if exists and matches the type)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
+     * or a copy. It may return the array protected by an unmodifiable view.
      *
      * @param coll the collection
      * @return the array
@@ -209,9 +211,11 @@ public class UnsafeUnwrapper {
     }
 
     /**
+     * Returns a float array that contains the elements of the collection
+     * meant for read-only - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
      * Returns either the wrapped array (if exists and matches the type)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
+     * or a copy. It may return the array protected by an unmodifiable view.
      *
      * @param coll the collection
      * @return the array
@@ -225,9 +229,11 @@ public class UnsafeUnwrapper {
     }
 
     /**
+     * Returns a long array that contains the elements of the collection
+     * meant for read-only - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
      * Returns either the wrapped array (if exists and matches the type)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
+     * or a copy. It may return the array protected by an unmodifiable view.
      *
      * @param coll the collection
      * @return the array
@@ -241,9 +247,11 @@ public class UnsafeUnwrapper {
     }
 
     /**
+     * Returns a int array that contains the elements of the collection
+     * meant for read-only - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
      * Returns either the wrapped array (if exists and matches the type)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
+     * or a copy. It may return the array protected by an unmodifiable view.
      *
      * @param coll the collection
      * @return the array
@@ -257,9 +265,11 @@ public class UnsafeUnwrapper {
     }
 
     /**
+     * Returns a short array that contains the elements of the collection
+     * meant for read-only - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
      * Returns either the wrapped array (if exists and matches the type)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
+     * or a copy. It may return the array protected by an unmodifiable view.
      *
      * @param coll the collection
      * @return the array
@@ -273,9 +283,11 @@ public class UnsafeUnwrapper {
     }
 
     /**
+     * Returns a byte array that contains the elements of the collection
+     * meant for read-only - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
      * Returns either the wrapped array (if exists and matches the type)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
+     * or a copy. It may return the array protected by an unmodifiable view.
      *
      * @param coll the collection
      * @return the array
@@ -289,9 +301,11 @@ public class UnsafeUnwrapper {
     }
 
     /**
-     * Returns either the wrapped array (if exists, matches the type and can be written to)
-     * or a copy - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
-     * OF THE COLLECTION.
+     * Returns a double array that contains the elements of the collection
+     * meant - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
+     * Returns either the wrapped array (if exists and matches the type and the
+     * collection is modifiable) or a copy.
      *
      * @param coll the collection
      * @return the array
