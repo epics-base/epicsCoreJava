@@ -44,4 +44,10 @@ public class ArrayDoubleTest extends FeatureTestListNumber {
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
     }
+    
+    @Test
+    public void testEmptyList() {
+        ListDouble empty = CollectionNumbers.toListDouble(new double[0]);
+        assertThat(empty.toString(), equalTo("[]"));
+    }
 }
