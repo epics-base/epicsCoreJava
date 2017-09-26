@@ -337,6 +337,60 @@ public class UnsafeUnwrapper {
     }
 
     /**
+     * Returns a long array that contains the elements of the collection
+     * meant - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
+     * Returns either the wrapped array (if exists and matches the type and the
+     * collection is modifiable) or a copy.
+     *
+     * @param coll the collection
+     * @return the array
+     */
+    public static Array<long[]> writeSafeLongArray(CollectionNumber coll) {
+        Array<long[]> array = wrappedLongArray(coll);
+        if (array != null && !((ArrayLong) coll).isReadOnly()) {
+            return array;
+        }
+        return new Array<>(coll.toArray(new long[coll.size()]), 0, coll.size());
+    }
+
+    /**
+     * Returns a int array that contains the elements of the collection
+     * meant - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
+     * Returns either the wrapped array (if exists and matches the type and the
+     * collection is modifiable) or a copy.
+     *
+     * @param coll the collection
+     * @return the array
+     */
+    public static Array<int[]> writeSafeIntArray(CollectionNumber coll) {
+        Array<int[]> array = wrappedIntArray(coll);
+        if (array != null && !((ArrayInt) coll).isReadOnly()) {
+            return array;
+        }
+        return new Array<>(coll.toArray(new int[coll.size()]), 0, coll.size());
+    }
+
+    /**
+     * Returns a short array that contains the elements of the collection
+     * meant - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
+     * OF THE COLLECTION
+     * Returns either the wrapped array (if exists and matches the type and the
+     * collection is modifiable) or a copy.
+     *
+     * @param coll the collection
+     * @return the array
+     */
+    public static Array<short[]> writeSafeShortArray(CollectionNumber coll) {
+        Array<short[]> array = wrappedShortArray(coll);
+        if (array != null && !((ArrayShort) coll).isReadOnly()) {
+            return array;
+        }
+        return new Array<>(coll.toArray(new short[coll.size()]), 0, coll.size());
+    }
+
+    /**
      * Returns a byte array that contains the elements of the collection
      * meant - USE WITH CAUTION AS IT MAY EXPOSE THE INTERNAL STATE
      * OF THE COLLECTION
