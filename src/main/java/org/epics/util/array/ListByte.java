@@ -134,6 +134,7 @@ public abstract class ListByte implements ListNumber, CollectionByte {
 
     @Override
     public String toString() {
+        if (size() == 0) return "[]";
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         int i = 0;

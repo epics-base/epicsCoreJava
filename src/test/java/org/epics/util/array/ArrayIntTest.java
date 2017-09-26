@@ -35,6 +35,11 @@ public class ArrayIntTest extends FeatureTestListNumber {
         return CollectionNumbers.toListInt(new int[10]);
     }
 
+    @Override
+    public ListNumber createEmpty() {
+        return CollectionNumbers.toListInt(new int[0]);
+    }
+
     @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

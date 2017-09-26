@@ -67,4 +67,19 @@ public class ListDoubleTest extends FeatureTestListNumber {
             }
         };
     }
+
+    @Override
+    public ListNumber createEmpty() {
+        return new ListDouble() {
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public double getDouble(int index) {
+                return 1.0;
+            }
+        };
+    }
 }

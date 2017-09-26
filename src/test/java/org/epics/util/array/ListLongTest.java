@@ -68,4 +68,20 @@ public class ListLongTest extends FeatureTestListNumber {
             }
         };
     }
+
+    @Override
+    public ListNumber createEmpty() {
+        return new ListLong() {
+
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public long getLong(int index) {
+                return 1L;
+            }
+        };
+    }
 }

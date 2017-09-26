@@ -127,6 +127,7 @@ public abstract class ListFloat implements ListNumber, CollectionFloat {
 
     @Override
     public String toString() {
+        if (size() == 0) return "[]";
         StringBuilder builder = new StringBuilder();
         builder.append("[");
         int i = 0;

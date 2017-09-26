@@ -36,6 +36,13 @@ public class ConcatenatedListDoubleTest extends FeatureTestListNumber {
         return ListNumbers.concatenate(list1 , list2);
     }
 
+    @Override
+    public ListNumber createEmpty() {
+        ArrayDouble list1 = toListDouble(new double[0]);
+        ArrayDouble list2 = toListDouble(new double[0]);
+        return ListNumbers.concatenate(list1 , list2);
+    }
+
     @Test
     public void testConcatenation2() {
         ArrayDouble[] lists = new ArrayDouble[10];

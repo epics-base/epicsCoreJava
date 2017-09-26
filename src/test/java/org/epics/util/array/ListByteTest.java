@@ -69,4 +69,20 @@ public class ListByteTest extends FeatureTestListNumber {
         };
     }
 
+    @Override
+    public ListNumber createEmpty() {
+        return new ListByte() {
+
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public byte getByte(int index) {
+                return 1;
+            }
+        };
+    }
+    
 }

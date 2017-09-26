@@ -35,6 +35,11 @@ public class ArrayFloatTest extends FeatureTestListNumber {
         return CollectionNumbers.toListFloat(new float[10]);
     }
 
+    @Override
+    public ListNumber createEmpty() {
+        return CollectionNumbers.toListFloat(new float[0]);
+    }
+
     @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();

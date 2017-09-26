@@ -18,6 +18,8 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     
     abstract public ListNumber createModifiableCollection();
     
+    abstract public ListNumber createEmpty();
+    
     @Test
     public void getXxx() {
         testList(createConstantCollection());
@@ -134,6 +136,12 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         } else {
             assertThat(list.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));        
         }
+    }
+
+    @Test
+    public void toString2() {
+        ListNumber list = createEmpty();
+        assertThat(list.toString(), equalTo("[]"));
     }
     
     @Test(expected = UnsupportedOperationException.class)

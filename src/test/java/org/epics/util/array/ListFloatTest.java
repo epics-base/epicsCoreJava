@@ -68,4 +68,20 @@ public class ListFloatTest extends FeatureTestListNumber {
             }
         };
     }
+
+    @Override
+    public ListNumber createEmpty() {
+        return new ListFloat() {
+
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public float getFloat(int index) {
+                return 1.0F;
+            }
+        };
+    }
 }

@@ -33,6 +33,11 @@ public class ArrayDoubleTest extends FeatureTestListNumber {
         return CollectionNumbers.toListDouble(new double[10]);
     }
 
+    @Override
+    public ListNumber createEmpty() {
+        return CollectionNumbers.toListDouble(new double[0]);
+    }
+
     @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -43,11 +48,5 @@ public class ArrayDoubleTest extends FeatureTestListNumber {
         ArrayDouble read = (ArrayDouble) inStream.readObject();
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
-    }
-    
-    @Test
-    public void testEmptyList() {
-        ListDouble empty = CollectionNumbers.toListDouble(new double[0]);
-        assertThat(empty.toString(), equalTo("[]"));
     }
 }

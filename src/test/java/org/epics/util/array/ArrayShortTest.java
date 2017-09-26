@@ -35,6 +35,11 @@ public class ArrayShortTest extends FeatureTestListNumber {
         return CollectionNumbers.toListShort(new short[10]);
     }
 
+    @Override
+    public ListNumber createEmpty() {
+        return CollectionNumbers.toListShort(new short[0]);
+    }
+
     @Test
     public void serialization1() throws Exception {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
