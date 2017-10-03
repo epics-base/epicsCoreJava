@@ -93,6 +93,18 @@ public class CollectionNumbers {
     }
     
     /**
+     * Takes an unsigned long array and wraps it into an ArrayULong.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayULong toListULong(long... values) {
+        return new ArrayULong(values, 0, values.length, false);
+    }
+    
+    /**
      * Takes an int array and wraps it into an ArrayInt.
      * 
      * @param values a primitive array
@@ -102,6 +114,18 @@ public class CollectionNumbers {
      */
     public static ArrayInt toListInt(int... values) {
         return new ArrayInt(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes an unsigned int array and wraps it into an ArrayUInt.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayUInt toListUInt(int... values) {
+        return new ArrayUInt(values, 0, values.length, false);
     }
     
     /**
@@ -117,6 +141,18 @@ public class CollectionNumbers {
     }
     
     /**
+     * Takes an unsigned short array and wraps it into an ArrayUShort.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayUShort toListUShort(short... values) {
+        return new ArrayUShort(values, 0, values.length, false);
+    }
+    
+    /**
      * Takes a byte array and wraps it into an ArrayByte.
      * 
      * @param values a primitive array
@@ -126,6 +162,18 @@ public class CollectionNumbers {
      */
     public static ArrayByte toListByte(byte... values) {
         return new ArrayByte(values, 0, values.length, false);
+    }
+    
+    /**
+     * Takes an unsigned byte array and wraps it into an ArrayUByte.
+     * 
+     * @param values a primitive array
+     * @return a mutable wrapper
+     * @exception IllegalArgumentException  if the given object is not
+     *               a primitive array.
+     */
+    public static ArrayUByte toListUByte(byte... values) {
+        return new ArrayUByte(values, 0, values.length, false);
     }
     
     /**
@@ -386,6 +434,16 @@ public class CollectionNumbers {
     }
     
     /**
+     * Returns an unmodifiable {@link ArrayULong} wrapper for the given unsigned {@code long} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayULong unmodifiableListULong(long... values) {
+        return new ArrayULong(values, 0, values.length, true);
+    }
+    
+    /**
      * Returns an unmodifiable {@link ArrayInt} wrapper for the given {@code int} array.
      * 
      * @param values a primitive array.
@@ -393,6 +451,16 @@ public class CollectionNumbers {
      */
     public static ArrayInt unmodifiableListInt(int... values) {
         return new ArrayInt(values, 0, values.length, true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayUInt} wrapper for the given unsigned {@code int} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayUInt unmodifiableListUInt(int... values) {
+        return new ArrayUInt(values, 0, values.length, true);
     }
     
     /**
@@ -406,6 +474,16 @@ public class CollectionNumbers {
     }
     
     /**
+     * Returns an unmodifiable {@link ArrayUShort} wrapper for the given unsigned {@code short} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayUShort unmodifiableListUShort(short... values) {
+        return new ArrayUShort(values, 0, values.length, true);
+    }
+    
+    /**
      * Returns an unmodifiable {@link ArrayByte} wrapper for the given {@code byte} array.
      * 
      * @param values a primitive array.
@@ -413,6 +491,16 @@ public class CollectionNumbers {
      */
     public static ArrayByte unmodifiableListByte(byte... values) {
         return new ArrayByte(values, 0, values.length, true);
+    }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayUByte} wrapper for the given unsigned {@code byte} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayUByte unmodifiableListUByte(byte... values) {
+        return new ArrayUByte(values, 0, values.length, true);
     }
     
     /**
