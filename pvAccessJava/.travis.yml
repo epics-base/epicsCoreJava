@@ -1,0 +1,13 @@
+sudo: required
+language: java
+jdk: oraclejdk8
+
+env:
+  - EPICS_PVA_ADDR_LIST=127.255.255.255
+
+script:
+  - mvn clean verify
+
+after_failure:
+ - find ./ -type d -name "surefire-reports" -print0 | xargs -0 -I {} find {} -iname "*.txt" -type f | xargs cat
+ - find . -type f -name "*.log" -print0 -exec cat {} \;
