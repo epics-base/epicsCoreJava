@@ -93,10 +93,25 @@ public class PVTimeStampFactory implements PVTimeStamp {
             throw new IllegalStateException(notAttached);
         }
         if(pvSecs.isImmutable() || pvNano.isImmutable()) return false;
-        pvSecs.put(timeStamp.getSecondsPastEpoch());
-        pvUserTag.put(timeStamp.getUserTag());
-        pvNano.put(timeStamp.getNanoseconds());
-        return true;
+        TimeStamp current = TimeStampFactory.create();
+        get(current);
+        boolean returnValue = false;
+        if(current.getSecondsPastEpoch()!=timeStamp.getSecondsPastEpoch())
+        {
+            pvSecs.put(timeStamp.getSecondsPastEpoch());
+            returnValue = true;
+        }
+        if(current.getNanoseconds()!=timeStamp.getNanoseconds())
+        {
+            pvSecs.put(timeStamp.getSecondsPastEpoch());
+            returnValue = true;
+        }
+        if(current.getUserTag()!=timeStamp.getUserTag())
+        {
+            pvUserTag.put(timeStamp.getUserTag());
+            returnValue = true;
+        }
+        return returnValue;
     }
 
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 pvaDataJava
 ==========
 
@@ -40,3 +41,6 @@ e.g.
 
 from the directory containing the jar.
 
+=======
+# pvDataJava [![Build Status](https://travis-ci.org/epics-base/pvDataJava.svg?branch=master)](https://travis-ci.org/epics-base/pvDataJava)
+>>>>>>> 81ade9b8f2fdbfc1c12b415154e9b7808a35dc1a
