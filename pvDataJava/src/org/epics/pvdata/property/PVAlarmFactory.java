@@ -109,7 +109,7 @@ public final class PVAlarmFactory implements PVAlarm{
             pvStatus.put(alarm.getStatus().ordinal());
             returnValue = true;
         }
-        if(current.getMessage()!=alarm.getMessage())
+        if(!current.getMessage().equals(alarm.getMessage()))
         {
             pvMessage.put(alarm.getMessage());
             returnValue = true;

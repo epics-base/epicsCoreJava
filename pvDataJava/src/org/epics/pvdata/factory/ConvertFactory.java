@@ -6295,6 +6295,50 @@ public final class ConvertFactory {
                 pvto.shareData(longArray);
                 break;
             }
+            case pvUByte :{
+                PVUByteArray pvfrom = (PVUByteArray) from;
+                PVUByteArray pvto = (PVUByteArray) to;
+                byte[] byteArray = null;
+                synchronized (byteArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), byteArrayData);
+                    byteArray = byteArrayData.data;
+                }
+                pvto.shareData(byteArray);
+                break;
+            }
+            case pvUShort:{
+                PVUShortArray pvfrom = (PVUShortArray) from;
+                PVUShortArray pvto = (PVUShortArray) to;
+                short[] shortArray = null;
+                synchronized (shortArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), shortArrayData);
+                    shortArray = shortArrayData.data;
+                }
+                pvto.shareData(shortArray);
+                break;
+            }
+            case pvUInt: {
+                PVUIntArray pvfrom = (PVUIntArray) from;
+                PVUIntArray pvto = (PVUIntArray) to;
+                int[] intArray = null;
+                synchronized (intArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), intArrayData);
+                    intArray = intArrayData.data;
+                }
+                pvto.shareData(intArray);
+                break;
+            }
+            case pvULong: {
+                PVULongArray pvfrom = (PVULongArray) from;
+                PVULongArray pvto = (PVULongArray) to;
+                long[] longArray = null;
+                synchronized (longArrayData) {
+                    pvfrom.get(0, pvfrom.getLength(), longArrayData);
+                    longArray = longArrayData.data;
+                }
+                pvto.shareData(longArray);
+                break;
+            }
             case pvFloat: {
                 PVFloatArray pvfrom = (PVFloatArray) from;
                 PVFloatArray pvto = (PVFloatArray) to;
@@ -6338,6 +6382,10 @@ public final class ConvertFactory {
             ScalarType fromElementType = from.getScalarArray().getElementType();
             int ncopy = 0;
             switch (fromElementType) {
+            case pvBoolean :
+                throw new NumberFormatException("copyNumericArray not valid for element type pvBoolean");
+            case pvString:
+                throw new NumberFormatException("copyNumericArray not valid for element type pvString");
             case pvByte: {
                 PVByteArray pvfrom = (PVByteArray) from;
                 while (len > 0) {

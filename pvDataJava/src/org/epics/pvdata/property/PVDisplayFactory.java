@@ -111,17 +111,17 @@ public final class PVDisplayFactory implements PVDisplay{
         Display current = new Display();
         get(current);
         boolean returnValue = false;
-        if(current.getDescription()!=display.getDescription())
+        if(!current.getDescription().equals(display.getDescription()))
         {
             pvDescription.put(display.getDescription());
             returnValue = true;
         }    
-        if(current.getFormat()!=display.getFormat())
+        if(!current.getFormat().equals(display.getFormat()))
         {
             pvFormat.put(display.getFormat());
             returnValue = true;
         }    
-        if(current.getUnits()!=display.getUnits())
+        if(!current.getUnits().equals(display.getUnits()))
         {
             pvUnits.put(display.getUnits());
             returnValue = true;

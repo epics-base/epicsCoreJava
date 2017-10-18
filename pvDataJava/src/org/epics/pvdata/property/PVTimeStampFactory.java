@@ -103,7 +103,7 @@ public class PVTimeStampFactory implements PVTimeStamp {
         }
         if(current.getNanoseconds()!=timeStamp.getNanoseconds())
         {
-            pvSecs.put(timeStamp.getSecondsPastEpoch());
+            pvNano.put(timeStamp.getNanoseconds());
             returnValue = true;
         }
         if(current.getUserTag()!=timeStamp.getUserTag())
