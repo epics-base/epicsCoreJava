@@ -86,6 +86,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     private final AtomicBoolean isGetActive = new AtomicBoolean(false);
 
     private final PVStructure pvRequest;
+    private boolean block = false;
 
     /**
      * Constructor.
@@ -119,6 +120,11 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     
     protected void initializePut()
     {
+        PVString pvString = pvRequest.getSubField(PVString.class,"record._options.block");
+        if(pvString!=null) {
+            String value = pvString.get();
+            if(value.equals("true")) block = true;
+        }
         if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
             elementCount = 1;
             channelPutRequester.channelPutConnect(createChannelStructureStatus,this,null);
@@ -231,89 +237,89 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         	channelPutRequester.putDone(statusCreate.createStatus(StatusType.ERROR, "invalid bitSet, only value can be put for CA", null), this);
         	return;
         }
-        
+        PutListener callback = (block ? this : null);
         isActive.set(true);
         try {
             if(pvIndex!=null) {
                 short index = (short)pvIndex.get();
-                jcaChannel.put(index, this);
+                jcaChannel.put(index, callback);
             } else if(nativeDBRType==DBRType.BYTE) {
                 if(elementCount==1) {
                     PVByte pvFrom = (PVByte)pvField;
                     byte from = pvFrom.get();
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 } else {
                     PVByteArray fromArray =(PVByteArray)pvField;
                     int len = fromArray.get(0, elementCount, byteArrayData);
                     byte[] from = byteArrayData.data;
                     int capacity = fromArray.getCapacity();
                     for (int i=len; i<capacity; i++) from[i] = 0;
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 }
             } else if(nativeDBRType==DBRType.SHORT) {
                 if(elementCount==1) {
                     PVShort pvFrom = (PVShort)pvField;
                     short from = pvFrom.get();
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 } else {
                     PVShortArray fromArray =(PVShortArray)pvField;
                     int len = fromArray.get(0, elementCount, shortArrayData);
                     short[] from = shortArrayData.data;
                     int capacity = fromArray.getCapacity();
                     for (int i=len; i<capacity; i++) from[i] = 0;
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 }
             } else if(nativeDBRType==DBRType.INT) {
                 if(elementCount==1) {
                     PVInt pvFrom = (PVInt)pvField;
                     int from = pvFrom.get();
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 } else {
                     PVIntArray fromArray =(PVIntArray)pvField;
                     int len = fromArray.get(0, elementCount, intArrayData);
                     int[] from = intArrayData.data;
                     int capacity = fromArray.getCapacity();
                     for (int i=len; i<capacity; i++) from[i] = 0;
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 }
             } else if(nativeDBRType==DBRType.FLOAT) {
                 if(elementCount==1) {
                     PVFloat pvFrom = (PVFloat)pvField;
                     float from = pvFrom.get();
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 } else {
                     PVFloatArray fromArray =(PVFloatArray)pvField;
                     int len = fromArray.get(0, elementCount, floatArrayData);
                     float[] from = floatArrayData.data;
                     int capacity = fromArray.getCapacity();
                     for (int i=len; i<capacity; i++) from[i] = 0;
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 }
             } else if(nativeDBRType==DBRType.DOUBLE) {
                 if(elementCount==1) {
                     PVDouble pvFrom = (PVDouble)pvField;
                     double from = pvFrom.get();
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 } else {
                     PVDoubleArray fromArray =(PVDoubleArray)pvField;
                     int len = fromArray.get(0, elementCount, doubleArrayData);
                     double[] from = doubleArrayData.data;
                     int capacity = fromArray.getCapacity();
                     for (int i=len; i<capacity; i++) from[i] = 0;
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 }
             } else if(nativeDBRType==DBRType.STRING) {
                 if(elementCount==1) {
                     PVString pvFrom = (PVString)pvField;
                     String from = pvFrom.get();
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 } else {
                     PVStringArray fromArray =(PVStringArray)pvField;
                     int len = fromArray.get(0, elementCount, stringArrayData);
                     String[] from = stringArrayData.data;
                     int capacity = fromArray.getCapacity();
                     for (int i=len; i<capacity; i++) from[i] = "";
-                    jcaChannel.put(from, this);
+                    jcaChannel.put(from, callback);
                 }
             } else {
             	throw new IllegalArgumentException("unknown DBRType " + nativeDBRType.getName());
@@ -321,6 +327,9 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         } catch (Throwable th) {
             putDone(statusCreate.createStatus(StatusType.ERROR, "failed to put", th));
             return;
+        }
+        if(!block) {
+            putDone(okStatus);
         }
     }
     
