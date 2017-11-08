@@ -145,7 +145,7 @@ public final class ArrayInt extends ListInt implements Serializable {
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayInt of(int[] values) {
+    public static ArrayInt of(int... values) {
         return CollectionNumbers.unmodifiableListInt(values);
     }
 }

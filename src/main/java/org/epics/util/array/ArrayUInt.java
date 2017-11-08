@@ -145,7 +145,7 @@ public final class ArrayUInt extends ListUInt implements Serializable {
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayUInt of(int[] values) {
+    public static ArrayUInt of(int... values) {
         return CollectionNumbers.unmodifiableListUInt(values);
     }
 }

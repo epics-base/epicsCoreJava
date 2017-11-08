@@ -160,7 +160,7 @@ public final class ArrayDouble extends ListDouble implements Serializable {
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayDouble of(double[] values) {
+    public static ArrayDouble of(double... values) {
         return CollectionNumbers.unmodifiableListDouble(values);
     }
 }

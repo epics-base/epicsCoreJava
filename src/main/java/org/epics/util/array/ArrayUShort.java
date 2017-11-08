@@ -160,7 +160,7 @@ public final class ArrayUShort extends ListUShort implements Serializable {
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayUShort of(short[] values) {
+    public static ArrayUShort of(short... values) {
         return CollectionNumbers.unmodifiableListUShort(values);
     }
 }

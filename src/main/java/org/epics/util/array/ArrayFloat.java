@@ -158,7 +158,7 @@ public final class ArrayFloat extends ListFloat implements Serializable {
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayFloat of(float[] values) {
+    public static ArrayFloat of(float... values) {
         return CollectionNumbers.unmodifiableListFloat(values);
     }
 }

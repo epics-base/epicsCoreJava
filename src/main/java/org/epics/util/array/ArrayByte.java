@@ -161,7 +161,7 @@ public final class ArrayByte extends ListByte implements Serializable {
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayByte of(byte[] values) {
+    public static ArrayByte of(byte... values) {
         return CollectionNumbers.unmodifiableListByte(values);
     }
 }

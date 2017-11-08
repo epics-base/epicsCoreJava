@@ -160,7 +160,7 @@ public final class ArrayLong extends ListLong implements Serializable {
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayLong of(long[] values) {
+    public static ArrayLong of(long... values) {
         return CollectionNumbers.unmodifiableListLong(values);
     }
 }
