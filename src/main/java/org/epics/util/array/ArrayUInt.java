@@ -138,4 +138,14 @@ public final class ArrayUInt extends ListUInt implements Serializable {
     boolean isReadOnly() {
         return readOnly;
     }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayUInt} wrapper for the given {@code int} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayUInt of(int[] values) {
+        return CollectionNumbers.unmodifiableListUInt(values);
+    }
 }

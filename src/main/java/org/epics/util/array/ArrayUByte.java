@@ -154,4 +154,14 @@ public final class ArrayUByte extends ListUByte implements Serializable {
     boolean isReadOnly() {
         return readOnly;
     }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayDouble} wrapper for the given {@code double} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayDouble of(double[] values) {
+        return CollectionNumbers.unmodifiableListDouble(values);
+    }
 }

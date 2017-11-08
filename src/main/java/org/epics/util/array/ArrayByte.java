@@ -154,4 +154,14 @@ public final class ArrayByte extends ListByte implements Serializable {
     boolean isReadOnly() {
         return readOnly;
     }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayByte} wrapper for the given {@code byte} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayByte of(byte[] values) {
+        return CollectionNumbers.unmodifiableListByte(values);
+    }
 }

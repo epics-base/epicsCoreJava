@@ -153,4 +153,14 @@ public final class ArrayLong extends ListLong implements Serializable {
     boolean isReadOnly() {
         return readOnly;
     }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayLong} wrapper for the given {@code long} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayLong of(long[] values) {
+        return CollectionNumbers.unmodifiableListLong(values);
+    }
 }

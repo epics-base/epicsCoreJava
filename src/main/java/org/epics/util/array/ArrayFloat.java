@@ -151,4 +151,14 @@ public final class ArrayFloat extends ListFloat implements Serializable {
     boolean isReadOnly() {
         return readOnly;
     }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayFloat} wrapper for the given {@code float} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayFloat of(float[] values) {
+        return CollectionNumbers.unmodifiableListFloat(values);
+    }
 }

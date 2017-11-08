@@ -153,4 +153,14 @@ public final class ArrayUShort extends ListUShort implements Serializable {
     boolean isReadOnly() {
         return readOnly;
     }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayUShort} wrapper for the given {@code short} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayUShort of(short[] values) {
+        return CollectionNumbers.unmodifiableListUShort(values);
+    }
 }
