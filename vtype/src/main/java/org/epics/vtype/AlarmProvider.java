@@ -9,7 +9,7 @@ package org.epics.vtype;
  *
  * @author carcassi
  */
-interface AlarmProvider {
+public interface AlarmProvider {
     
     /**
      * The alarm associated with this value.

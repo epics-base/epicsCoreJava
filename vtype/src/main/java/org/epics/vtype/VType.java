@@ -58,34 +58,6 @@ public abstract class VType {
     }
     
     /**
-     * Returns the value with highest severity. null values can either be ignored or
-     * treated as disconnected/missing value ({@link Alarm#noValue()}).
-     * 
-     * @param values a list of values
-     * @param ignoreNull true to simply skip null values
-     * @return the value with highest alarm; can't be null
-     */
-    public static Alarm highestAlarmOf(final List<?> values, final boolean ignoreNull) {
-        Alarm finalAlarm = Alarm.none();
-        for (Object value : values) {
-            Alarm newAlarm;
-            if (value == null && !ignoreNull) {
-                newAlarm = Alarm.noValue();
-            } else {
-                newAlarm = Alarm.none();
-                if (value instanceof AlarmProvider) {
-                    newAlarm = ((AlarmProvider) value).getAlarm();
-                }
-            }
-            if (newAlarm.getSeverity().compareTo(finalAlarm.getSeverity()) > 0) {
-                finalAlarm = newAlarm;
-            }
-        }
-        
-        return finalAlarm;
-    }
-    
-    /**
      * Converts a standard java type to VTypes. Returns null if no conversion
      * is possible. Calls {@link #toVType(java.lang.Object, org.diirt.vtype.next.Alarm, org.diirt.vtype.next.Time, org.diirt.vtype.next.Display) } 
      * with no alarm, time now and no display.
@@ -168,46 +140,4 @@ public abstract class VType {
         }
     }
 
-    /**
-     * Null and non-VType safe utility to extracts alarm information.
-     * <ul>
-     * <li>If the value is an {@link AlarmProvider}, the associate alarm is returned.</li>
-     * <li>If the value is not an {@link AlarmProvider}, {@link Alarm#NONE} is returned.</li>
-     * <li>If the value is null, {@link Alarm#NO_VALUE} is returned.</li>
-     * </ul>
-     *
-     * @param value the value
-     * @return the alarm information for the value
-     */
-    public static Alarm alarmOf(Object value) {
-        return alarmOf(value, true);
-    }
-    
-    /**
-     * Null and non-VType safe utility to extracts alarm information for a 
-     * connection.
-     * <ul>
-     * <li>If the value is an {@link AlarmProvider}, the associate alarm is returned.</li>
-     * <li>If the value is not an {@link AlarmProvider}, {@link Alarm#NONE} is returned.</li>
-     * <li>If the value is null and connected is true, {@link Alarm#NO_VALUE} is returned.</li>
-     * <li>If the value is null and disconnected is true, {@link Alarm#DISCONNECTED} is returned.</li>
-     * </ul>
-     * 
-     * @param value a value
-     * @param connected the connection status
-     * @return the alarm information
-     */
-    public static Alarm alarmOf(Object value, boolean connected) {
-        if (value != null) {
-            if (value instanceof AlarmProvider) {
-                return ((AlarmProvider) value).getAlarm();
-            } else {
-                return Alarm.none();
-            }
-        } else if (connected) {
-            return Alarm.noValue();
-        } else {
-            return Alarm.disconnected();
-        }
-    }
 }

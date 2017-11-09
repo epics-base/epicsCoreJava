@@ -55,7 +55,7 @@ class VTypeJsonMapper implements JsonObject {
         if (alarm == null) {
             return null;
         }
-        return Alarm.create(AlarmSeverity.valueOf(alarm.getString("severity")), alarm.getString("status"));
+        return Alarm.of(AlarmSeverity.valueOf(alarm.getString("severity")), alarm.getString("status"));
     }
     
     public Time getTime() {

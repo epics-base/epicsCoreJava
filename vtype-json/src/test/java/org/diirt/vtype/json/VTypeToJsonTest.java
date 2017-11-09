@@ -57,7 +57,7 @@ public class VTypeToJsonTest {
     public void compareVType(VType expected, VType actual) {
         assertThat("Type mismatch", VType.typeOf(actual), equalTo(VType.typeOf(expected)));
 //        assertThat("Value mismatch", VTypeValueEquals.valueEquals(actual, expected), equalTo(true));
-        assertThat("Alarm mismatch", VType.alarmOf(expected), equalTo(VType.alarmOf(actual)));
+        assertThat("Alarm mismatch", Alarm.alarmOf(expected), equalTo(Alarm.alarmOf(actual)));
 //        if (expected instanceof Time) {
 //            assertThat("Time mismatch", VTypeValueEquals.timeEquals((Time) actual, (Time) expected), equalTo(true));
 //        }
@@ -69,19 +69,19 @@ public class VTypeToJsonTest {
         }
     }
     
-    public VDouble vDouble = VDouble.create(3.14, Alarm.create(AlarmSeverity.MINOR, "LOW"), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VDouble vDouble = VDouble.create(3.14, Alarm.of(AlarmSeverity.MINOR, "LOW"), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
     public String vDoubleJson = "{\"type\":{\"name\":\"VDouble\",\"version\":1},"
             + "\"value\":3.14,"
             + "\"alarm\":{\"severity\":\"MINOR\",\"status\":\"LOW\"},"
             + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
             + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VFloat vFloat = VFloat.create((float) 3.125, Alarm.create(AlarmSeverity.MINOR, "HIGH"), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VFloat vFloat = VFloat.create((float) 3.125, Alarm.of(AlarmSeverity.MINOR, "HIGH"), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
     public String vFloatJson = "{\"type\":{\"name\":\"VFloat\",\"version\":1},"
             + "\"value\":3.125,"
             + "\"alarm\":{\"severity\":\"MINOR\",\"status\":\"HIGH\"},"
             + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
             + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VLong vLong = VLong.create(313L, Alarm.create(AlarmSeverity.MINOR, "HIGH"), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VLong vLong = VLong.create(313L, Alarm.of(AlarmSeverity.MINOR, "HIGH"), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
     public String vLongJson = "{\"type\":{\"name\":\"VLong\",\"version\":1},"
             + "\"value\":313,"
             + "\"alarm\":{\"severity\":\"MINOR\",\"status\":\"HIGH\"},"
@@ -122,48 +122,48 @@ public class VTypeToJsonTest {
             + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
             + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
             + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VFloatArray vFloatArray = VFloatArray.create(ArrayFloat.of(new float[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+//    public VFloatArray vFloatArray = VFloatArray.create(Arrayofof(new float[] {0, 1, 2}), Alarm.none(), Time.create(Instant.oofSecond(0, 0)), Display.none());
 //    public String vFloatArrayJson = "{\"type\":{\"name\":\"VFloatArray\",\"version\":1},"
 //                + "\"value\":[0.0,1.0,2.0],"
 //                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VLongArray vLongArray = VLongArray.create(ArrayLong.of(new long[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+//    public VLongArray vLongArray = VLongArray.create(ArrayLong.of(ofng[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSeof, 0)), Display.none());
 //    public String vLongArrayJson = "{\"type\":{\"name\":\"VLongArray\",\"version\":1},"
 //                + "\"value\":[0,1,2],"
 //                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VIntArray vIntArray = VIntArray.create(ArrayInt.of(new int[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+//    public VIntArray vIntArray = VIntArray.create(ArrayInt.of(new int[]of, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, ofisplay.none());
 //    public String vIntArrayJson = "{\"type\":{\"name\":\"VIntArray\",\"version\":1},"
 //                + "\"value\":[0,1,2],"
 //                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VShortArray vShortArray = newVShortArray(ArrayShort.of(new short[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+//    public VShortArray vShortArray = newVShortArray(ArrayShort.of(new short[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)),ofay.none());
 //    public String vShortArrayJson = "{\"type\":{\"name\":\"VShortArray\",\"version\":1},"
 //                + "\"value\":[0,1,2],"
 //                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VNumberArray vByteArray = newVNumberArray(ArrayByte.of(new byte[]{0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)), Display.none());
+//    public VNumberArray vByteArray = newVNumberArray(ArrayByte.of(new byte[]{0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)), Disofone());
 //    public String vByteArrayJson = "{\"type\":{\"name\":\"VByteArray\",\"version\":1},"
 //            + "\"value\":[0,1,2],"
 //            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
 //    public VBooleanArray vBooleanArray = newVBooleanArray(new ArrayBoolean(true, false, true), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)));
-//    public String vBooleanArrayJson = "{\"type\":{\"name\":\"VBooleanArray\",\"version\":1},"
+//    of String vBooleanArrayJson = "{\"type\":{\"name\":\"VBooleanArray\",\"version\":1},"
 //            + "\"value\":[true,false,true],"
 //            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null}}";
 //    public VStringArray vStringArray = newVStringArray(Arrays.asList("A", "B", "C"), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)));
-//    public String vStringArrayJson = "{\"type\":{\"name\":\"VStringArray\",\"version\":1},"
+//    publofing vStringArrayJson = "{\"type\":{\"name\":\"VStringArray\",\"version\":1},"
 //            + "\"value\":[\"A\",\"B\",\"C\"],"
 //            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null}}";
 //    public VEnumArray vEnumArray = newVEnumArray(new ArrayInt(1,0,1), Arrays.asList("One", "Two", "Three"), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)));
-//    public String vEnumArrayJson = "{\"type\":{\"name\":\"VEnumArray\",\"version\":1},"
+//    public SofvEnumArrayJson = "{\"type\":{\"name\":\"VEnumArray\",\"version\":1},"
 //            + "\"value\":[1,0,1],\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //            + "\"enum\":{\"labels\":[\"One\",\"Two\",\"Three\"]}}";

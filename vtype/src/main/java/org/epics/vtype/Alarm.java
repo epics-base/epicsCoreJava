@@ -4,6 +4,7 @@
  */
 package org.epics.vtype;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -64,21 +65,6 @@ public abstract class Alarm {
     public final String toString() {
         return getSeverity() + "(" + getName() + ")";
     }
-
-    /**
-     * A null-safe method to retrieve a string version of an alarm of a
-     * value;
-     * 
-     * @param alarmProvider a value with an alarm; can be null
-     * @return string representation of the alarm; not null
-     */
-    public static String toString(AlarmProvider alarmProvider) {
-        if (alarmProvider == null) {
-            return "NONE";
-        }
-        
-        return alarmProvider.getAlarm().toString();
-    }
     
     /**
      * New alarm with the given severity and status.
@@ -87,13 +73,13 @@ public abstract class Alarm {
      * @param alarmName the alarm name
      * @return the new alarm
      */
-    public static Alarm create(final AlarmSeverity alarmSeverity, final String alarmName) {
+    public static Alarm of(final AlarmSeverity alarmSeverity, final String alarmName) {
         return new IAlarm(alarmSeverity, alarmName);
     }
     
-    private static final Alarm NONE = create(AlarmSeverity.NONE, "None");
-    private static final Alarm NO_VALUE = create(AlarmSeverity.INVALID, "No value");
-    private static final Alarm DISCONNECTED = create(AlarmSeverity.INVALID, "Disconnected");
+    private static final Alarm NONE = of(AlarmSeverity.NONE, "None");
+    private static final Alarm NO_VALUE = of(AlarmSeverity.INVALID, "No value");
+    private static final Alarm DISCONNECTED = of(AlarmSeverity.INVALID, "Disconnected");
     
     /**
      * No alarm. To be used whenever there is no alarm associated with the value.
@@ -126,6 +112,76 @@ public abstract class Alarm {
      */
     public static Alarm disconnected() {
         return DISCONNECTED;
+    }
+
+    /**
+     * Returns the value with highest severity. null values can either be ignored or
+     * treated as disconnected/missing value ({@link Alarm#noValue()}).
+     *
+     * @param values a list of values
+     * @param ignoreNull true to simply skip null values
+     * @return the value with highest alarm; can't be null
+     */
+    public static Alarm highestAlarmOf(final List<?> values, final boolean ignoreNull) {
+        Alarm finalAlarm = Alarm.none();
+        for (Object value : values) {
+            Alarm newAlarm;
+            if (value == null && !ignoreNull) {
+                newAlarm = Alarm.noValue();
+            } else {
+                newAlarm = Alarm.none();
+                if (value instanceof AlarmProvider) {
+                    newAlarm = ((AlarmProvider) value).getAlarm();
+                }
+            }
+            if (newAlarm.getSeverity().compareTo(finalAlarm.getSeverity()) > 0) {
+                finalAlarm = newAlarm;
+            }
+        }
+        return finalAlarm;
+    }
+
+    /**
+     * Null and non-VType safe utility to extracts alarm information.
+     * <ul>
+     * <li>If the value is an {@link AlarmProvider}, the associate alarm is returned.</li>
+     * <li>If the value is not an {@link AlarmProvider}, {@link Alarm#NONE} is returned.</li>
+     * <li>If the value is null, {@link Alarm#NO_VALUE} is returned.</li>
+     * </ul>
+     *
+     * @param value the value
+     * @return the alarm information for the value
+     */
+    public static Alarm alarmOf(Object value) {
+        return alarmOf(value, true);
+    }
+
+    /**
+     * Null and non-VType safe utility to extracts alarm information for a
+     * connection.
+     * <ul>
+     * <li>If the value is an {@link AlarmProvider}, the associate alarm is returned.</li>
+     * <li>If the value is not an {@link AlarmProvider}, {@link Alarm#NONE} is returned.</li>
+     * <li>If the value is null and connected is true, {@link Alarm#NO_VALUE} is returned.</li>
+     * <li>If the value is null and disconnected is true, {@link Alarm#DISCONNECTED} is returned.</li>
+     * </ul>
+     *
+     * @param value a value
+     * @param connected the connection status
+     * @return the alarm information
+     */
+    public static Alarm alarmOf(Object value, boolean connected) {
+        if (value != null) {
+            if (value instanceof AlarmProvider) {
+                return ((AlarmProvider) value).getAlarm();
+            } else {
+                return Alarm.none();
+            }
+        } else if (connected) {
+            return Alarm.noValue();
+        } else {
+            return Alarm.disconnected();
+        }
     }
     
 }
