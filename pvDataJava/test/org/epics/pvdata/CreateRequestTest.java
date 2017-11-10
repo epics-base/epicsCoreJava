@@ -180,6 +180,13 @@ public class CreateRequestTest extends TestCase {
             System.out.println(request);
         }
         assertTrue(pvRequest==null);
+        
+        request = "record[]field()getField()putField()";
+        System.out.printf("%nNo error Expected for next call!!%n");
+        pvRequest = createRequest.createRequest(request);
+        if(pvRequest==null) requester.message(createRequest.getMessage(), MessageType.error);
+        assertTrue(pvRequest!=null);
+        System.out.printf("request %s%n%s%n",request,pvRequest.toString());
     }
 }
 

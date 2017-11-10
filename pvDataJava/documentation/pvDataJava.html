@@ -34,7 +34,7 @@
 <div class="head">
 <h1>EPICS pvDataJava</h1>
 
-<h2 class="nocount">Release 5.1-DEV - 2016.03.18</h2>
+<h2 class="nocount">Release 5.1-DEV - 2017.03.29</h2>
 
   <dl>
     <dt>Editors:</dt>
@@ -61,8 +61,7 @@ V4 control system programming environment:<br />
 <h2 class="nocount">Status of this Document</h2>
 
 
-<p>This is the 18-March-2016 version for the 5.1-development release of the
-Java implementation of pvData.
+<p>This is the 29-March-2017 version of the Java implementation of pvData.
 </p>
 <p>RELEASE_NOTES.md provides changes since the last release.
 TODO.md describes things to do before the next release.
@@ -75,6 +74,22 @@ TODO.md describes things to do before the next release.
 <div id="contents" class="contents">
 
 <h2>Introduction</h2>
+
+<p>pvData is one of a set of related projects. It describes and implements
+data that the other projects support. Thus it is not useful by itself but
+understanding pvData is required in order to understand the other projects. The
+reader should also become familiar with project pvAccess, which is
+located via the same sourceforge site as this project.</p>
+
+<p>
+<a href="http://epics-pvdata.sourceforge.net/informative/developerGuide/developerGuide.html">developerGuide</a>
+briefly describes a set of application programming interfaces (APIs) for EPICS V4.
+It should be read before reading this manual.
+</p>
+
+
+<p>The Java and C++ implementation of pvData implement the same data model but
+differ in implementation because of the differences between Java and C++.</p>
 
 <p>pvData is one of a set of related packages in the EPICS V4 core software. It
 describes and implements the data management system to which the the other projects
@@ -118,571 +133,6 @@ store, access, and communicate memory resident data structures.</p>
       where each each subfield has a name and type.
       The types are defined next.</dd>
 </dl>
-<p>The pvData types are:</p>
-<dl>
-   <dt>scalar</dt>
-   <dd>
-      A scalar field has one of the following ScalarTypes:
-      <dl>
-         <dt>pvBoolean</dt>
-           <dd><b>false</b> or <b>true</b>.</dd>
-         <dt>pvByte, pvShort, pvInt, pvLong</dt>
-            <dd>Signed integers of size 8,16,32,64 bits.</dd>
-         <dt>pvUByte, pvUShort, pvUInt, pvULong</dt>
-            <dd> Unsigned integers of size 8,16,32,64 bits.</dd>
-         <dt>pvFloat, pvDouble</dt>
-            <dd><b>IEEE</b> floating point numbers  of size 32 and 64 bits.</dd>
-         <dt>pvString</dt>
-            <dd>In Java a String and in C++ std::string</dd>
-      </dl>
-    </dd>
-    <dt>scalarArray</dt>
-    <dd>
-      A scalar array field (of type scalarArray) is a one-dimensional array
-      where each the element has the same ScalarType.
-    </dd>
-    <dt>structure</dt>
-    <dd>
-      A structure field  (of type structure) is an ordered set of fields where each field has a
-      name and type.
-      Since a field can have type structure, structures of arbitrary complexity can be created.
-     </dd>
-     <dt>structureArray</dt>
-     <dd>
-      A structure array field  (of type structureArray) is an array of structures where each element
-      has the same structure introspection interface.
-     </dd>
-     <dt>union</dt>
-     <dd>
-      A union stores a single subfield with a variable type.
-      A variant union allows the type to be any type.
-      A regular union allows only a fixed set of types.
-      </dd>
-      <dt>union array</dt>
-      <dd>
-      A union array is an array where each element is a union, i.e. it stores a single
-      subfield. Each element
-      has the same introspection interface. Different elements can
-      have different types but each must have a type determined by the
-      union interface.
-      </dd>
-</dl>
-
-
-<p>pvData contains everything required by pvAccess to create and pass data
-between pvAccess clients and servers. </p>
-
-<h2>pvData Meta Language</h2>
-
-<p>This section describes a meta language for describing pvData.
-Currently there are no plans for a parser for the meta language.
-It is used for documentation. 
-The meta language is used to describe both introspection interfaces and data interfaces.</p>
-<p>The <code>toString</code>, introspection and data methods described below 
-present data in a format similar to the metadata syntax.
-The C++ implementation uses streams I/O instead of <code>toString</code>
-but it implements the same metadata syntax.
-</p>
-
-<h3>Definition</h3>
-
-<p>PVData supports structured data. All data appears via top-level structures.</p>
-
-<h4>Introspection objects</h4>
-
-<p>The introspection object of a structure has an ordered set of fields and is of the form
-<pre>
-structure
-    { &lt;field&gt; }0+
-</pre>
-
-Each &lt;field&gt;is of the general form:</p>
-<pre>&lt;fieldType&gt; &lt;fieldName&gt;[ // &lt;comment&gt;]
-    [ &lt;additionalInfo&gt; ]</pre>
-
-<p>where angle brackets (&lt;&gt;) denote a choice, square brackets ([]) denote that the contents may or may not be present.
-
-Here:
-<dl>
-   <dt>&lt;fieldType&gt</dt>
-     <dd>is described below</dd>
-   <dt> &lt;fieldName&gt;</dt>
-     <dd> is a string. Each subfield in a structure must have a different field name.</dd>
-   <dt>//</dt>
-     <dd> indicates the the rest of the line is a comment</dd>
-   <dt>&lt;comment&gt;</dt>
-     <dd>the comment</dd>
-   <dt>&lt;additionalInfo&gt;</dt>
-     <dd>depends on &lt;fieldType&gt;</dd></dl>
-
-Each field of a structure has has a pvData type - scalar, scalarArray, structureArray, structure, union or unionArray - and in each case &lt;field&gt; is one of the following based on the type: 
-</p>
-
-<dl>
-  <dt id = "metalang_scalar">scalar</dt>
-
-   <dd><p>A scalar field is of the form:</p>
-<pre>&lt;fieldType&gt; &lt;fieldName&gt;[ // comment]</pre>
-
-      <p>where &lt;fieldType&gt; can be any of the following:<p>
-      <p><b>boolean</b>, <b>byte</b>, <b>short</b>, <b>int</b>, <b>long</b>, <b>ubyte</b>, <b>ushort</b>,
-      <b>uint</b>, <b>ulong</b>, <b>float</b>, <b>double</b> or <b>string</b></p>
-      <p>For example:</p>
-<pre>double value // the value of the PV</pre>
-    </dd>
-
-  <dt id = "metalang_scalar_array">scalarArray</dt>
-    <dd>A scalar array field is of the form:
-<pre>&lt;fieldType&gt; &lt;fieldName&gt;[ // comment]</pre>
-
-      <p>where &lt;fieldType&gt; can be any of the following:</p>
-
-     <p> <b>boolean[]</b>, <b>byte[]</b>, <b>short[]</b>, <b>int[]</b>, <b>long[]</b>, <b>ubyte[]</b>, <b>ushort[]</b>,
-      <b>uint[]</b>, <b>ulong[]</b>, <b>float[]</b>, <b>double[]</b> or <b>string[]</b></p>
-      <p>(In arrays square brackets should be taken literally.)</p>
-      <p>For example:</p>
-<pre>int[] dim // the dimensions of the matrix</pre>
-    </dd>
-
-  <dt id = "metalang_structure">structure</dt>
-    <dd>A structure field has a similar definition to a top-level structure: 
-      <pre>
-structure &lt;fieldName&gt;[ // comment]
-    { &lt;field&gt; }0+ 
-</pre>
-      <p>Each &lt;field&gt; </b> is a field as per a top-level structure.</p>
-
-      <p>For example:</p>
-<pre>structure value // the value of the enumerated type PV
-    int index
-    string[] choices</pre>
-<p>If a structure has been previously defined</p>
-      <pre>
-xxx_t :=
-
-structure
-    field1
-    ..
-    fieldN
-</pre>
-then a structure field introspection object can be of the form
-<pre>
-xxx_t fieldName[ // comment]</pre>
-
-      <p>For example, if we define</p>
-<pre>enum_t :=
-
-structure
-    int index
-    string[] choices</pre>
-
-<p>then the same field above can be specified </p>
-
-<pre>enum_t value // the value of the enumerated type PV
-</pre>
-    </dd>
-
-  <dt id = "metalang_structure_array">structureArray</dt>
-    <dd>A structureArray field has the definition: 
-      <pre>
-structure[] &lt;fieldName&gt;[ // comment]
-    &lt;structureObject&gt;</pre>
-      <p>where &lt;structureObject&gt; is any top-level introspection object.</p>
-
-      <p>Or for a previously defined structure introspection object xxx_t a structureArray field can be</p>
-<pre>xxx_t[] fieldName
-    xxx_t</pre>
-
-      <p>For example:</p>
-<pre>structure[] value // the value of the enumerated type array PV
-    structure
-        int index
-        string[] choices</pre>
-      <p>or</p>
-<pre>enum_t[] value // the value of the enumerated type array PV
-    enum_t
-</pre>
-      <p>Thus a structure array is an array where each element is a structure
-      but all elements have the same introspection interface.</p>
-    </dd>
-
-   <dt id = "metalang_union">union</dt>
-      <dd>
-       <p>This has two flavors: a variant union or a union of a fixed set
-       of types (regular union).
-       A variant union can store single field that can be of any type.
-       A regular union can store a single field of a type that is from
-      a fixed set of types and a name associated with the type.</p>
-      <p>A variant union field introspection object has the form:</p>
-      <pre>
-any &lt;fieldName&gt;[ // comment]</pre>
-<p>for example</p>
-<pre>
-any value</pre>
-<p>and a regular union is of the form</p>
-<pre>
-union
-    {&lt;fieldDef&gt;}1+
-</pre>
-<p>for example</p>
-<pre>
-union value // a heterogeneous attribute
-    int intValue
-    double doubleValue
-    string stringValue
-</pre>
-      </dd>
-   <dt id = "metalang_union_array">unionArray</dt>
-       <dd>
-        <p>This is an array of unions.
-        Each element has the same introspection interface
-         but the subfield of each element can have a different type.
-        So either element each element is a variant union or each
-        element is a regular union with the same choice of fields.  
-       A variant union array is of the following form:</p>
-<pre>
-any[] &lt;fieldName&gt;
-    any
-</pre>
-<p>and a regular union array is of the form</p>
-<pre>
-union[] &lt;fieldName&gt;[ // comment]
-     union
-        {&lt;field&gt;}1+</pre>
-<p>for example</p>
-<pre>
-union value // a heterogeneous attribute
-    int intValue
-    double doubleValue
-    string stringValue
-    enum_t enumValue
-</pre>
-       </dd>
-</dl>
-
-<p>Note that the indentation of each line behaves as you might expect:
-A top-level structure's fields are indented.
-A structure field is indented relative to the top-level and its fields will be indented relative to it and so on for each structure field. The leaf fields of the resulting top-level structure will then be indented by the sum of all the indentation for each structure above it. The size of indentation is unimportant (as long as it is non-zero). Examples are given below. [It may help to think of the indentation of nested if statements in Python.]
-
-<h4>Data objects</h4>
-
-<p>The above is used to describe introspection objects. Data objects are
-describe in a similar way but each scalar field and each array field has data
-values. The definition of the data values depends on the type.</p>
-
-
-<p>For top-level structures the data object is the same as for an introspection object except for the fields introspection objects are replaced by data objects as follows:</p>
-
-<dl>
-  <dt id = "metalang_scalar">scalar</dt>
-  <dd>
-<p>For scalar fields the data object is of the form</p>
-
-<pre>&lt;fieldType&gt; &lt;fieldName&gt; &lt;value&gt; [ // comment]</pre>
-
-<p>&lt;value&gt is a valid value for &lt;fieldType&gt;</p>
-
-</p>
-<dl>
-  <dt>boolean</dt>
-    <dd>The value must be <span>true</span> or
-      <span>false</span> </dd>
-  <dt>byte,...,ulong</dt>
-    <dd>Any valid integer or hex value, e.g. <span
-     >3 and 0x0ff</span> are valid values</dd>
-  <dt>float,double</dt>
-    <dd>Any valid integer or real e.g. <span>3,
-      3.0, and 3e0</span> are valid values</dd>
-  <dt>string</dt>
-    <dd>The value can be an alphanumeric value or any set of characters
-      enclosed in <span>""</span> Within quotes a
-      quote is expressed as <span>\"</span>
-      Examples are <span>aValue "a value" "a\"
-      xxx"</span> are valid values. </dd>
-</dl>
-
-<p>For example</p>
-
-<pre>
-double value 3.14
-</pre>
-</dd>
-<dt>scalarArray</dt>
-<dd>
-<p>For scalar array fields the data object is of the form</p>
-
-<pre>&lt;fieldType&gt; &lt;fieldName&gt; &lt;value&gt; [ // comment]</pre>
-
-<p>where &lt;value&gt; is a comma-separated set of
-values enclosed in <span>[]</span>:</p>
-
-<pre>[&lt;value1&gt,...,&lt;valueN&gt]</pre>
-
-<p>For example</p>
-
-<pre>
-int[] dim [2,2]
-</pre>
-
-<p>Here each value is a valid
-scalar data value depending on the type (the square brackets,[], are to interpreted literally here). White space is permitted surrounding each comma.</p>
-</dd>
-<dt>structureArray</dt>
-<dd>
-<p>For structure arrays the data object is of the form:</p>
-
-<pre>
-structure &lt;fieldName&gt;[ // comment]
-    { &lt;structureDataObject&gt; }0+
-</pre>
-
-<p>where each &lt;structureDataObject&gt; is a (top-level) structure data object corresponding to the structure introspection object that forms part of the structure array introspection object.</p>
-<p>For example</p>
-
-<pre>
-structure[] value
-    structure 
-        int index 0
-        string[] choices [Off,On] 
-    structure 
-        int index 1
-        string[] choices [Off,On]
-</pre>
-
-</dd>
-<dt>union</dt>
-<dd>
-<p>For unions only a single stored subfield will appear. So it  will be of the form</p>
-<pre>
-any &lt;fieldName&gt;[ // comment]
-    &lt;dataObject&gt;
-</pre>
-<p>for variant unions and</p>
-
-<pre>
-union &lt;fieldName&gt;[ // comment]
-    &lt;dataObject&gt;
-</pre>
-
-<p>for regular unions. For example</p>
-
-<pre>
-any 
-    double  3.14
-</pre>
-<p>and</p>
-<pre>
-union value
-    int intValue 42
-</pre>
-
-<p>respectively. Note the variant union stores a top-level object (so like a top-level structure) its field name is empty.</p>
-
-</dd>
-<dt>unionArray</dt>
-<dd>
-
-<p>For a union array a single subfield will appear for each element.</p>
-
-<p>For variant unions arrays the data object is of the form</p>
-<pre>
-any[] &lt;fieldName&gt;[ // comment]
-    { &lt;variantUnionObject&gt; }0+
-</pre>
-
-<p>where in each case &lt;variantUnionDataObject&gt; is a variant union data
-object as described above.<p>
-
-<p>For regular union arrays the data object is of the form</p>
-<pre>
-union[] &lt;fieldName&gt;[ // comment]
-    { &lt;regularUnionDataObject&gt; }0+
-</pre>
-<p>where in each case &lt;regularUnionDataObject&gt; is a regular union data
-object as described above.<p>
-
-
-
-<p>The following are examples corresponding to the introspection objects of the previous section</p>
-
-<pre>
-any[] value
-
-any[] value
-    any 
-        double  3.14
-    any 
-        int  42
-
-union[] value
-
-union[] value
-    union
-        int intValue 42
-    union
-        enum_t enumValue
-            int index 1
-            string[] choices [Off,On]
-
-</pre>
-
-</dd>
-<dt>structure</dt>
-<dd>structure subfields behave similarly to top level structure. A data object
- will be of the form</p>
-
-<pre>
-structure &lt;fieldName&gt;[ // comment]
-    { &lt;dataObject&gt; }0+
-</pre>
-<p>where in each case &lt;dataObject&gt; is a data object for the
-corresponding field in the structure introspection object.</p>
-
-<p>For example for the field</p>
-<pre>
-structure value
-   int index 
-   string[] choices
-</pre>
-
-<p>the data object could be</p>
-
-<pre>
-structure value
-   int index 1
-   string[] choices [Off,On] 
-</pre>
-<p>Data objects can also be expressed in terms of pre-defined structures, in which case, unlike for introspection objects, the subfields appear (in order to accompany the values):</p>
-<pre>
-enum_t value
-   int index 1
-   string[] choices [Off,On] 
-</pre>
-
-</dd>
-</dl>
-
-<h3>Examples</h3>
-
-
-<p>Given the introspection object</p>
-<pre>
-structure
-    double value
-    structure timeStamp
-        long secondsPastEpoch
-        int  nanoseconds
-        int userTag
-</pre>
-<p>the following corresponding data object can be defined:</p>
-<pre>
-structure
-    double value 1.0
-    structure timeStamp
-        long secondsPastEpoch 1426259294
-        int nanoseconds 520088807
-        int userTag 0
-</pre>
-
-<p>If the following structure is defined:</p>
-
-<pre>
-time_t :=
-
-structure
-    long secondsPastEpoch
-    int nanoseconds
-    int userTag</pre>
-
-<p>then the following introspection object can be defined:</p>
-<pre>
-structure
-    double value
-    time_t  timeStamp</pre>
-
-<p>The following data object can also be defined:</p>
-<pre>
-structure
-    double value 1.0
-    time_t timeStamp
-         long secondsPastEpoch 0
-         int  nanoseconds 0</pre>
-
-<p>Given the introspection object</p>
-<pre>
-structure 
-    structure begin
-        double x
-        double y
-    structure end
-        double x
-        double y
-
-structure
-    structure[] points
-        structure point
-            double x
-            double y</pre>
-
-<p>the following corresponding data objects could be defined:</p>
-<pre>structure
-    structure begin
-        double x 0
-        double y 0
-    structure end
-        double x 10
-        double y 10
-
-structure
-    structure[] value
-        structure point
-            double x 0.0
-            double y 0.0
-        structure point
-            double x 10.0
-            double y 10.0</pre>
-
-
-<p>If the following structure is defined:</p>
-<pre>
-point_t :=
-
-structure
-    double x
-    double y</pre>
-
-<p>then the following introspection objects can be defined: </p>
-
-<pre>
-lineExample := 
-
-structure
-    point_t begin
-    point_t end
-
-pointArrayExample := 
-
-structure
-    point_t[] points
-    </pre> 
-
-<p>and the following data objects can be defined:</p>
-<pre>lineExample
-    point_t begin
-        double x 0.0
-        double y 0.0
-    point_t end
-        double x 10
-        double y 10
-
-pointArrayExample
-    point_t[] value
-        point
-            double x 0.0
-            double y 0.0
-        point
-            double x 10.0
-            double y 10.0</pre>
 
 
 <h2 >Interface Definitions</h2>
@@ -1922,7 +1372,7 @@ intermediate array.</p>
 arguments are:</p>
 <dl>
   <dt>offset</dt>
-<dd>The offset in the </ode>PVArray</code>.</dd>
+<dd>The offset in the <code>PVArray</code>.</dd>
   <dt>len</dt>
 <dd>The maximum number of elements to transfer. The number actually
   transferred will be less than or equal to this value.</dd>
@@ -3930,61 +3380,54 @@ receiving pvData over the network.</p>
     <dd>Deserialize a string.</dd>
 </dl>
 
-<h2>support for copy and monitor</h2>
-<p><b>copy</b> and <b>monitor</b> are not used in this project.
-They are intended for use by pvAccess and by pvAccess servers.
-They are provided with this project because the code depends only on
+
+<h2>src/copy</h2>
+<p><b>copy</b> is not used in this project.
+It is intended for use by pvAccess and by channel providers.
+It is provided with this project because the code depends only on
 pvData itself.
 </p>
-<p>This document describes Java specific code.
-<a href="http://epics-pvdata.sourceforge.net/informative/pvRequest.html">
-pvRequest.html</a>
-provides a language independent overview of <b>copy</b> and <b>monitor</b>.
+<p><b>copy</b> provides the ability to create a structure that has 
+a copy of an arbitrary subset of the fields in an existing top level
+structure. In addition it allows global options and field specific options.
+It has two main components: <b>createRequest</b> and <b>pvCopy</b>.
+Given a string createRequest creates a pvRequest, which is a PVStructure
+that has the format expected by <b>pvCopy</b>.
 </p>
+<p>In addition <b>pvCopy</b> supports filter plugins.
+<b>pvData</b> implements the following filters:
+<b>array</b>,
+<b>deadband</b>,
+<b>timestamp</b>,
+<b>ignore</b>.
+See the developerGuide for details.
+</p>
+<p>In addition the plugin API supports implementing additional plugins.
+</p>
+
 <p>Copy provides:</p>
 <dl>
    <dt>createRequest</dt>
      <dd>
       The Channel create methods in pvAccess all have an argument
       <b>PVStructure pvRequest</b>.<br />
-      Given an ASCII string createRequest creates a <code>PVStructure</code> that provides
+      Given an ascii string createRequest creates a PVStructure that provides
       a pvData representation of the information from the ascii string.
       It is this structure that can be passed to the channel create methods.<br />
       The information in a pvRequest selects an arbitrary subset of the
-      fields in a top-level structure that resides in the server.
+      fields in a top level structure that resides in the server.
       In addition options can be specified. Both global and field specific
       options can be specified.
       </dd>
    <dt>pvCopy</dt>
      <dd>This is a facility used by channel providers.
      It provides client specific code that manages a copy of an arbitrary
-     subset of the fields in a top-level structure that resides in the
+     subset of the fields in a top level structure that resides in the
      provider. It also allows provider access to options specified
-     by the client.
+     by the client.<br />
+     pvCopy also provides filter plugin support.
      </dd>
 </dl>
-Monitor provides:
-<dl>
-  <dt>monitor</dt>
-    <dd>This is support code for channel providers that implement channel
-    monitor. It, together with the queue facility, provides support for
-    monitor queues.
-    </dd>
-  <dt>monitorPlugin</dt>
-    <dd>This is support for implementing monitor plugins.
-     A monitor plugin can be developed that has no knowledge
-     of pvAccess but only pvData.
-    </dd>
-</dl>
-
-<h2>support for copy</h2>
-<p><b>copy</b> provides the ability to create a structure that has 
-a copy of an arbitrary subset of the fields in an existing top-level
-structure. In addition it allows global options and field specific options.
-It has two main components: <b>createRequest</b> and <b>pvCopy</b>.
-Given a string createRequest creates a pvRequest, which is a <code>PVStructure</code>
-that has the format expected by <b>pvCopy</b>.
-</p>
 
 <h3>createRequest</h3>
 <p>This is mainly used by pvAccess clients. Given a request string it creates
@@ -4143,17 +3586,16 @@ where
       </dd>
 </dl>
 
+<h2>src/monitor</h2>
+<p><b>monitor</b> is not used in this project.
+It is intended for use by pvAccess and by channelProviders.
+It provided with this project because the code depends only on
+pvData itself.
+It is support code for channel providers that implement channel
+monitor.
+It provides support for monitor queues.
+</p>
 
-
-
-<h2>support for monitor</h2>
-<p>This consists of two components:</p>
-<dl>
-   <dt>monitor</dt>
-     <dd>Used by code that implements pvAccess monitors.</dd>
-   <dt>monitorPlugin</dt>
-      <dd>Code that provides special semantics for monitors.</dd>
-</dl>
 <h3>monitor</h3>
 <pre>
 class MonitorElement {
@@ -4265,297 +3707,6 @@ It has the methods:</p>
       The channel is going away. The client cam no longer access the monitor.
      </dd>
 </dl>
-
-<h3>monitorPlugin</h3>
-<pre>
-class MonitorPlugin
-{
-    virtual String const &amp; getName() = 0;
-    virtual bool causeMonitor(
-        PVFieldPtr const &amp;pvField,
-        PVStructurePtr const &amp;pvTop,
-        MonitorElementPtr const &amp;monitorElement) = 0;
-    virtual void monitorDone(
-        MonitorElementPtr const &amp;monitorElement);
-    virtual void startMonitoring();
-    virtual void stopMonitoring();
-    virtual void beginGroupPut();
-    virtual void endGroupPut();
-};
-
-class MonitorPluginCreator
-{
-    virtual MonitorPluginPtr create(
-        FieldConstPtr const &amp;field,
-        StructureConstPtr const &amp;top,
-        PVStructurePtr const &amp;pvFieldOptions) = 0;
-     virtual String const &amp; getName() = 0;
-}
-
-class MonitorPluginManager
-{
-    static MonitorPluginManagerPtr get();
-    bool addPlugin(
-         String const &amp;pluginName,
-         MonitorPluginCreatorPtr const &amp;creator);
-    MonitorPluginCreatorPtr findPlugin(String const &amp;pluginName);
-    void showNames();
-};
-
-</pre>
-<h4>MonitorPlugin</h4>
-<p><b>MonitorPlugin</b> must be implemented by the plugin implementation.
-It has methods:</p>
-<dl>
-   <dt>getName</dt>
-     <dd>Get the name of the plugin.</dd>
-   <dt>causeMonitor</dt>
-     <dd>
-       Should the value of pvField cause a monitor to be raised.
-       pvField and pvTop are fields in the top-level structure
-       being monitored. monitorElement has the top-level structure
-       for the copy<br/>.
-       The implementation should <b>not</b> modify the fields in the structure
-        being monitored.
-        Called with pvTop locked.
-     </dd>
-   <dt>monitorDone</dt>
-     <dd>
-       Called just before monitorElement will be given to client.
-       The plugin can change the data values and bitSets in monitorElement.
-        Called with pvTop unlocked.
-    </dd>
-   <dt>startMonitoring</dt>
-     <dd>
-      Monitoring is starting.
-     </dd>
-   <dt>stopMonitoring</dt>
-     <dd>
-      Monitoring is being stopped.
-     </dd>
-   <dt>beginGroupPut</dt>
-     <dd>
-      A set of puts is starting.
-        Called with pvTop locked.
-     </dd>
-   <dt>endGroupPut</dt>
-     <dd>
-      The set of puts is complete.
-        Called with pvTop locked.
-     </dd>
-</dl>
-<h4>MonitorPluginCreator</h4>
-<p><b>MonitorPluginCreator</b> must also be implemented by the plugin implementation.
-It is called for each field instance that has options of the from
-<b>[plugin=name...]</b> where <b>name</b> is the name of the plugin.
-Note that a plugin instance will belong to a single client.
-It has methods:</p>
-<dl>
-   <dt>getName</dt>
-     <dd>Get the name of the plugin.</dd>
-   <dt>create</dt>
-     <dd>
-     Create a new plugin instance.
-     If the arguments are not compatible with the plugin a NULL shared pointer is
-     returned.<br/>
-    pvFieldOptions is
-      a structure with a set of <code>PVString</code> subfields that specify <b>name,value</b>
-      pairs. name is the subField name and value is the subField value.<br/>
-     Note that a plugin will below to a single client.
-    </dd>
-</dl>
-<h4>MonitorPluginManager</h4>
-<p><b>MonitorPluginManager</b> has the methods:</p>
-<dl>
-   <dt>get</dt>
-     <dd>
-     MonitorPluginManager is a singleton.
-     The first call to get will create the single instance.
-     Further calls will return the single instance.
-     </dd>
-   <dt>addPlugin</dt>
-     <dd>
-     Add a new plugin.
-     </dd>
-   <dt>findPlugin</dt>
-     <dd>
-      Find a plugin. A NULL shared pointer is returned if it has not been added.
-     </dd>
-   <dt>showNames</dt>
-     <dd>
-      Show the names of all plugins that have been added.
-     </dd>
-</dl>
-<p><b>NOTE:</b>
-Should the method <b>causeMonitor</b> 
-have arguments <b>pvField</b> and <b>pvTop</b>
-be defined so that they can not be modified.
-This would be possible if the following was defined:
-</p>
-<pre>
-typedef std::tr1::shared_ptr&lt;const PVField&gt; PVFieldConstPtr;
-typedef std::tr1::shared_ptr&lt;const PVStructure&gt; PVStructureConstPtr;
-</pre>
-then the definition for causeMonitor could be:
-<pre>
-virtual bool causeMonitor(
-        PVFieldConstPtr const &amp;pvField,
-        PVStructureConstPtr const &amp;pvTop,
-        MonitorElementPtr const &amp;monitorElement) = 0;
-</pre>
-But just adding these definitions is not sufficient.
-In addition all methods defined in pvDataCPP must be checked.
-In particular many of the methods in <b>Convert</b> must have
-their arguments modified.
-Big job.
-<h2>monitorPlugin example</h2>
-<h3>Example Plugin Overview</h3>
-<p>This section describes an example plugin that:</p>
-<ul>
-   <li>Only raises monitors when a field changes value.<br />
-     If no plugin is provided
-     the default is to raise a monitor when a put is issued to a field.</li>
-   <li>Optionally a change will not raise a monitor.<br />
-     The change will, however,
-     appear if a put to another field raise a monitor.</li>
-</ul>
-<p>As an example assume that a channel provided by pvAccess has a top-level structure
-that represents a power supply.</p>
-<pre>
-structure powerSupply
-    structure alarm
-    structure timeStamp
-    structure power
-       double value
-       structure alarm
-       structure display
-    structure voltage
-       double value
-       structure alarm
-       structure display
-    structure current
-       double value
-       structure alarm
-       structure display
-</pre>
-<p>A pvAccess client wants to create a monitor on the powerSupply as follows:
-The client wants a top-level structure that looks like:
-</p>
-<pre>
-structure powerSupply
-    structure alarm
-    structure timeStamp
-    structure power
-       double value
-    structure voltage
-       double value
-    structure current
-       double value
-</pre>
-In addition the client wants monitors to occur only when one of the monitored
-fields changes value but not just because a put occurred.
-Also if only the timeStamp changes value then that should not cause a monitor.
-<p>The example monitor plugin implements the semantics the
-client wants. It can be attached to any field via the following options:
-</p>
-<pre>
-[plugin=onChange,raiseMonitor=value]
-</pre>
-This plugin will trigger a monitor for the field only if the field changes
-value. In addition <b>value</b> equals <b>false</b> means do not raise a monitor
-for changes to this field.
-But if a change to another field does cause a monitor the change to this field
-will be passed to the client.
-<p>
-Assume that the client has already connected to the channel.
-The client can then issue the commands:</p>
-<pre>
-String request("field(alarm[plugin=onChange]");
-request += ",timeStamp[plugin=onChange,raiseMonitor=false]";
-request += ",power.value[plugin=onChange";
-request += ",voltage.value[plugin=onChange";
-request += ",current.value[plugin=onChange";
-
-PVStructurePtr pvRequest = createRequest-&gt;createRequest(request);
-
-MonitorPtr monitor = channel-&gt;createMonitor(monitorRequester,pvRequest);
-</pre>
-<h3>Example Plugin Code</h3>
-<p>The header file to create the example has the definition:</p>
-<pre>
-class ExampleMonitorPlugin{
-public:
-    static void create();
-};
-</pre>
-<p>The implementation is:</p>
-<pre>
-class OnChangePlugin : public MonitorPlugin
-{
-public:
-    virtual ~OnChangePlugin(){}
-    OnChangePlugin() {}
-    bool init(
-        FieldConstPtr const &amp;field,
-        StructureConstPtr const &amp;top,
-        PVStructurePtr const &amp;pvFieldOptions)
-   {
-        pvField = getPVDataCreate()-&gt;createPVField(field);
-        raiseMonitor = true;
-        if(pvFieldOptions!=NULL) {
-            PVStringPtr pvString =
-                pvFieldOptions-&gt;getSubField&lt;PVString&gt;("raiseMonitor");
-                if(pvString!=NULL) {
-                    String value = pvString-&gt;get();
-                    if(value.compare("false")==0) raiseMonitor = false;
-                }
-        }
-        return true;
-   }
-   virtual String &amp;getName(){return pluginName;}
-   virtual bool causeMonitor(
-        PVFieldPtr const &amp;pvNew,
-        PVStructurePtr const &amp;pvTop,
-        MonitorElementPtr const &amp;monitorElement)
-   {
-       bool isSame = convert-&gt;equals(pvNew,pvField);
-       if(isSame) return false;
-       convert-&gt;copy(pvNew,pvField);
-       return raiseMonitor;
-   }
-private:
-   PVFieldPtr pvField;
-   bool raiseMonitor;
-};
-class OnChangePluginCreator : public MonitorPluginCreator
-{
-public:
-    virtual String &amp;getName(){return pluginName;}
-    virtual MonitorPluginPtr create(
-        FieldConstPtr const &amp;field,
-        StructureConstPtr const &amp;top,
-        PVStructurePtr const &amp;pvFieldOptions)
-   {
-       OnChangePluginPtr plugin(new OnChangePlugin());
-       bool result = plugin-&gt;init(field,top,pvFieldOptions);
-       if(!result) return MonitorPluginPtr();
-       return plugin;
-   }
-
-};
-
-void ExampleMonitorPlugin::create()
-{
-    static OnChangePluginCreatorPtr plugin;
-    static Mutex mutex;
-    Lock xx(mutex);
-    if(plugin==NULL) {
-        plugin = OnChangePluginCreatorPtr(new OnChangePluginCreator());
-        MonitorPluginManager::get()-&gt;addPlugin(pluginName,plugin);
-    }
-}
-</pre>
-
 
 </div>
 </body>

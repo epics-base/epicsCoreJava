@@ -92,10 +92,25 @@ public final class PVControlFactory implements PVControl{
             throw new IllegalStateException(notAttached);
         }
         if(pvLow.isImmutable() || pvHigh.isImmutable()) return false;
-        pvLow.put(control.getLow());
-        pvHigh.put(control.getHigh());
-        pvMinStep.put(control.getMinStep());
-        return true;
+        Control current = new Control();
+        get(current);
+        boolean returnValue = false;
+        if(current.getLow()!=control.getLow())
+        {
+            pvLow.put(control.getLow());
+            returnValue = true;
+        }    
+        if(current.getHigh()!=control.getHigh())
+        {
+            pvHigh.put(control.getHigh());
+            returnValue = true;
+        } 
+        if(current.getMinStep()!=control.getMinStep())
+        {
+            pvMinStep.put(control.getMinStep());
+            returnValue = true;
+        }    
+        return returnValue;                            
     }
 
 }

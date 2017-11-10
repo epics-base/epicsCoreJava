@@ -96,10 +96,25 @@ public final class PVAlarmFactory implements PVAlarm{
             throw new IllegalStateException(notAttached);
         }
         if(pvSeverity.isImmutable() || pvMessage.isImmutable()) return false;
-        pvSeverity.put(alarm.getSeverity().ordinal());
-        pvStatus.put(alarm.getStatus().ordinal());
-        pvMessage.put(alarm.getMessage());
-        return true;
+        Alarm current = new Alarm();
+        get(current);
+        boolean returnValue = false;
+        if(current.getSeverity()!=alarm.getSeverity())
+        {
+            pvSeverity.put(alarm.getSeverity().ordinal());
+            returnValue = true;
+        }
+        if(current.getStatus()!=alarm.getStatus())
+        {
+            pvStatus.put(alarm.getStatus().ordinal());
+            returnValue = true;
+        }
+        if(!current.getMessage().equals(alarm.getMessage()))
+        {
+            pvMessage.put(alarm.getMessage());
+            returnValue = true;
+        }
+        return returnValue; 
     }
 
 }

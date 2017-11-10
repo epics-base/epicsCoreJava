@@ -5,7 +5,6 @@
 package org.epics.pvdata.factory;
 
 import java.util.Formatter;
-import java.util.Set;
 
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.Field;
