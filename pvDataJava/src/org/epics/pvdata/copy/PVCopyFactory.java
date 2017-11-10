@@ -1,5 +1,5 @@
 /*
- * The License for this software can be found in the file LICENSE that is included with the distribution.
+ * License terms for this software can be found in the file LICENSE that is included with the distribution
  */
 package org.epics.pvdata.copy;
 
@@ -11,7 +11,6 @@ import org.epics.pvdata.pv.PVStructure;
  *
  */
 public class PVCopyFactory {
-    private static boolean firstTime = true;
     /**
      * Map a subset of the fields within a PVRecord.
      * @param pvMaster The master PVStructure.
@@ -22,9 +21,6 @@ public class PVCopyFactory {
      * @return The PVCopy interface.
      */
     public static PVCopy create(PVStructure pvMaster,PVStructure pvRequest,String structureName) {
-        if(firstTime) {
-            firstTime = false;
-        }
-        return PVCopyImpl.create(pvMaster, pvRequest,structureName);
+    	return PVCopyImpl.create(pvMaster, pvRequest,structureName);
     }
 }
