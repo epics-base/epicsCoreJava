@@ -4,7 +4,7 @@
 
     <groupId>org.epics</groupId>
     <artifactId>epics-parent</artifactId>
-    <version>4.7.0-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>EPICS Core Build</name>
@@ -18,8 +18,7 @@
         <epics-pvaccess.version>5.1.0-SNAPSHOT</epics-pvaccess.version>
         <epics-pvaclient.version>4.3.0-SNAPSHOT</epics-pvaclient.version>
         <epics-pvdatabase.version>4.3.0-SNAPSHOT</epics-pvdatabase.version>
-        <jca.version>2.3.6</jca.version>
-        <caj.version>1.1.15</caj.version>
+        <jca.version>2.3.7-SNAPSHOT</jca.version>
         <!-- Versions of examples bundled with Core -->
         
         <!-- Name of javadoc overview page -->
@@ -76,7 +75,6 @@
         <developer>
             <name>Marty Kraimer</name>
             <email>mrkraimer@comcast.net</email>
-            <organization></organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -85,6 +83,13 @@
             <name>Ralph Lange</name>
             <email>ralph.lange@gmx.de</email>
             <organization>ITER Organization</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Kunal Shroff</name>
+            <email>kunalshroff9@gmail.com</email>
             <roles>
                 <role>developer</role>
             </roles>
@@ -239,24 +244,6 @@
                 <classifier>javadoc</classifier>
             </dependency>
 
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>caj</artifactId>
-                <version>${caj.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>caj</artifactId>
-                <version>${caj.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>caj</artifactId>
-                <version>${caj.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -270,7 +257,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.5.3</version>
+                <version>3.3.0</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
@@ -285,7 +272,7 @@
 
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>  
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -297,7 +284,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -307,7 +294,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -321,7 +308,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.1</version>
+                <version>3.0.0-M1</version>
                 <configuration>
                     <overview>documentation/${mainpage.name}.html</overview>
                 </configuration>
@@ -350,7 +337,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>1.6.8</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>sonatype-nexus-staging</serverId>
