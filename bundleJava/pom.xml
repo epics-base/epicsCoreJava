@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>epics-parent</artifactId>
-        <version>4.7.0-SNAPSHOT</version>
+        <version>7.0.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>epics-bundle-java</artifactId>
@@ -121,21 +121,6 @@
         <dependency>
             <groupId>org.epics</groupId>
             <artifactId>jca</artifactId>
-            <classifier>javadoc</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>caj</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>caj</artifactId>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>caj</artifactId>
             <classifier>javadoc</classifier>
         </dependency>
 
@@ -339,7 +324,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>distro-assembly</id>
