@@ -37,5 +37,9 @@
             </plugin>
         </plugins>
     </build>
-
+    <scm>
+    	<url>https://github.com/epics-base/pvDataJava</url>
+    	<connection>https://github.com/epics-base/pvDataJava</connection>
+    	<developerConnection>https://github.com/epics-base/pvDataJava</developerConnection>
+    </scm>
 </project>
