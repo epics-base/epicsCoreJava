@@ -7,7 +7,7 @@ package org.diirt.vtype.json;
 import java.util.List;
 import javax.json.JsonObject;
 import org.epics.util.array.ListNumber;
-import org.epics.vtype.EnumMetaData;
+import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VNumber;
 import org.epics.vtype.VNumberArray;
@@ -102,7 +102,7 @@ class VTypeToJsonV1 {
     static VEnum toVEnum(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
         List<String> labels = mapper.getJsonObject("enum").getListString("labels");
-        return VEnum.of(mapper.getInt("value"), EnumMetaData.create(labels), mapper.getAlarm(), mapper.getTime());
+        return VEnum.of(mapper.getInt("value"), EnumDisplay.of(labels), mapper.getAlarm(), mapper.getTime());
     }
     
     static VNumberArray toVNumberArray(JsonObject json) {

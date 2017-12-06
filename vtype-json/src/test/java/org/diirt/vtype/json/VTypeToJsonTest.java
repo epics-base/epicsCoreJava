@@ -24,7 +24,7 @@ import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
 import org.epics.vtype.Display;
-import org.epics.vtype.EnumMetaData;
+import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.Time;
 import org.epics.vtype.VByte;
 import org.epics.vtype.VDouble;
@@ -111,7 +111,7 @@ public class VTypeToJsonTest {
             + "\"value\":\"Flower\","
             + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
             + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null}}";
-    public VEnum vEnum = VEnum.of(1, EnumMetaData.create(Arrays.asList("One", "Two", "Three")), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
+    public VEnum vEnum = VEnum.of(1, EnumDisplay.of(Arrays.asList("One", "Two", "Three")), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
     public String vEnumJson = "{\"type\":{\"name\":\"VEnum\",\"version\":1},"
             + "\"value\":1,"
             + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"

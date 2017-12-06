@@ -14,21 +14,24 @@ class IVEnum extends VEnum {
     private final Alarm alarm;
     private final Time time;
     private final int index;
-    private final EnumMetaData metadata;
+    private final EnumDisplay enumDisplay;
 
-    IVEnum(int index, EnumMetaData metadata, Alarm alarm, Time time) {
-        if (index < 0 || index >= metadata.getLabels().size()) {
+    IVEnum(int index, EnumDisplay enumDisplay, Alarm alarm, Time time) {
+        VType.argumentNotNull("enumDisplay", enumDisplay);
+        VType.argumentNotNull("alarm", alarm);
+        VType.argumentNotNull("time", time);
+        if (index < 0 || index >= enumDisplay.getChoices().size()) {
             throw new IndexOutOfBoundsException("VEnum index must be within the label range");
         }
         this.index = index;
-        this.metadata = metadata;
+        this.enumDisplay = enumDisplay;
         this.alarm = alarm;
         this.time = time;
     }
 
     @Override
     public String getValue() {
-        return metadata.getLabels().get(index);
+        return enumDisplay.getChoices().get(index);
     }
 
     @Override
@@ -37,8 +40,8 @@ class IVEnum extends VEnum {
     }
 
     @Override
-    public EnumMetaData getMetaData() {
-        return metadata;
+    public EnumDisplay getDisplay() {
+        return enumDisplay;
     }
 
     @Override

@@ -132,7 +132,7 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
     
     public JsonVTypeBuilder addEnum(VEnum en) {
         return add("enum", new JsonVTypeBuilder()
-                .addListString("labels", en.getMetaData().getLabels()));
+                .addListString("labels", en.getDisplay().getChoices()));
     }
     
     public JsonVTypeBuilder addListString(String string, List<String> ls) {

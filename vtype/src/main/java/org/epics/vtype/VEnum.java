@@ -31,11 +31,11 @@ public abstract class VEnum extends Scalar {
     public abstract int getIndex();
     
     /**
-     * Returns the metadata, including all possible labels.
+     * Returns the display information, including all possible choice names.
      * 
-     * @return the metadata
+     * @return the enum display
      */
-    public abstract EnumMetaData getMetaData();
+    public abstract EnumDisplay getDisplay();
 
     /**
      * Create a new VEnum.
@@ -46,7 +46,7 @@ public abstract class VEnum extends Scalar {
      * @param time the time
      * @return the new value
      */
-    public static VEnum of(int index, EnumMetaData metaData, Alarm alarm, Time time) {
+    public static VEnum of(int index, EnumDisplay metaData, Alarm alarm, Time time) {
         return new IVEnum(index, metaData, alarm, time);
     }
 
