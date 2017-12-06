@@ -106,4 +106,32 @@ public abstract class Time {
         return Time.of(Instant.now(), null, true);
     }
     
+    /**
+     * New time with the current timestamp, no user tag and invalid data.
+     * 
+     * @return the new time
+     */
+    public static Time nowInvalid() {
+        return Time.of(Instant.now(), null, false);
+    }
+    
+    /**
+     * Null and non-VType safe utility to extract time information.
+     * <ul>
+     * <li>If the value has a time, the associated time is returned.</li>
+     * <li>If the value has no time, {@link #nowInvalid()} is returned.</li>
+     * <li>If the value is null, {@link #nowInvalid()} is returned.</li>
+     * </ul>
+     *
+     * @param value the value
+     * @return the time information for the value
+     */
+    public static Time timeOf(Object value) {
+        if (value instanceof TimeProvider) {
+            return ((TimeProvider) value).getTime();
+        }
+        
+        return nowInvalid();
+    }
+    
 }

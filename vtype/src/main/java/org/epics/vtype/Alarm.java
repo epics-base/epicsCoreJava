@@ -151,9 +151,9 @@ public abstract class Alarm {
     }
 
     /**
-     * Null and non-VType safe utility to extracts alarm information.
+     * Null and non-VType safe utility to extract alarm information.
      * <ul>
-     * <li>If the value is has an alarm, the associate alarm is returned.</li>
+     * <li>If the value is has an alarm, the associated alarm is returned.</li>
      * <li>If the value is does not have an alarm, {@link Alarm#none()} is returned.</li>
      * <li>If the value is null, {@link Alarm#noValue()} is returned.</li>
      * </ul>
@@ -166,10 +166,10 @@ public abstract class Alarm {
     }
 
     /**
-     * Null and non-VType safe utility to extracts alarm information for a
+     * Null and non-VType safe utility to extract alarm information for a
      * connection.
      * <ul>
-     * <li>If the value is has an alarm, the associate alarm is returned.</li>
+     * <li>If the value is has an alarm, the associated alarm is returned.</li>
      * <li>If the value is does not have an alarm, {@link Alarm#none()} is returned.</li>
      * <li>If the value is null and connected is true, {@link Alarm#noValue()} is returned.</li>
      * <li>If the value is null and disconnected is true, {@link Alarm#disconnected()} is returned.</li>

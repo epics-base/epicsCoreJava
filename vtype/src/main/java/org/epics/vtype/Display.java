@@ -129,9 +129,9 @@ public abstract class Display {
     }
     
     /**
-     * Null and non-VType safe utility to extracts alarm information.
+     * Null and non-VType safe utility to extract display information.
      * <ul>
-     * <li>If the value has a display, the associate display is returned.</li>
+     * <li>If the value has a display, the associated display is returned.</li>
      * <li>If the value has no display, {@link #none()} is returned.</li>
      * <li>If the value is null, {@link #none()} is returned.</li>
      * </ul>
