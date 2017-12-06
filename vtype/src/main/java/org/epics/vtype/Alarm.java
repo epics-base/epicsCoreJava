@@ -153,9 +153,9 @@ public abstract class Alarm {
     /**
      * Null and non-VType safe utility to extracts alarm information.
      * <ul>
-     * <li>If the value is an {@link AlarmProvider}, the associate alarm is returned.</li>
-     * <li>If the value is not an {@link AlarmProvider}, {@link Alarm#NONE} is returned.</li>
-     * <li>If the value is null, {@link Alarm#NO_VALUE} is returned.</li>
+     * <li>If the value is has an alarm, the associate alarm is returned.</li>
+     * <li>If the value is does not have an alarm, {@link Alarm#none()} is returned.</li>
+     * <li>If the value is null, {@link Alarm#noValue()} is returned.</li>
      * </ul>
      *
      * @param value the value
@@ -169,10 +169,10 @@ public abstract class Alarm {
      * Null and non-VType safe utility to extracts alarm information for a
      * connection.
      * <ul>
-     * <li>If the value is an {@link AlarmProvider}, the associate alarm is returned.</li>
-     * <li>If the value is not an {@link AlarmProvider}, {@link Alarm#NONE} is returned.</li>
-     * <li>If the value is null and connected is true, {@link Alarm#NO_VALUE} is returned.</li>
-     * <li>If the value is null and disconnected is true, {@link Alarm#DISCONNECTED} is returned.</li>
+     * <li>If the value is has an alarm, the associate alarm is returned.</li>
+     * <li>If the value is does not have an alarm, {@link Alarm#none()} is returned.</li>
+     * <li>If the value is null and connected is true, {@link Alarm#noValue()} is returned.</li>
+     * <li>If the value is null and disconnected is true, {@link Alarm#disconnected()} is returned.</li>
      * </ul>
      *
      * @param value a value
