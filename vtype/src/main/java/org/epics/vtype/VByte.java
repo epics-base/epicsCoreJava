@@ -28,7 +28,7 @@ public abstract class VByte extends VNumber {
      * @param display the display
      * @return the new value
      */
-    public static VByte create(final Byte value, final Alarm alarm, final Time time, final Display display) {
+    public static VByte of(final Byte value, final Alarm alarm, final Time time, final Display display) {
         return new IVByte(value, alarm, time, display);
     }
 }

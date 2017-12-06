@@ -104,9 +104,9 @@ public abstract class VType {
      */
     public static VType toVType(Object javaObject, Alarm alarm, Time time, Display display) {
         if (javaObject instanceof Number) {
-            return VNumber.create((Number) javaObject, alarm, time, display);
+            return VNumber.of((Number) javaObject, alarm, time, display);
         } else if (javaObject instanceof String) {
-            return VString.create((String) javaObject, alarm, time);
+            return VString.of((String) javaObject, alarm, time);
         } else if (javaObject instanceof Boolean) {
             return null;//newVBoolean((Boolean) javaObject, alarm, time);
         } else if (javaObject instanceof byte[]

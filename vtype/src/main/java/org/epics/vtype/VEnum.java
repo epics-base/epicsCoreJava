@@ -46,7 +46,7 @@ public abstract class VEnum extends Scalar {
      * @param time the time
      * @return the new value
      */
-    public static VEnum create(int index, EnumMetaData metaData, Alarm alarm, Time time) {
+    public static VEnum of(int index, EnumMetaData metaData, Alarm alarm, Time time) {
         return new IVEnum(index, metaData, alarm, time);
     }
 

@@ -28,7 +28,7 @@ public abstract class VDouble extends VNumber {
      * @param display the display
      * @return the new value
      */
-    public static VDouble create(final Double value, final Alarm alarm, final Time time, final Display display) {
+    public static VDouble of(final Double value, final Alarm alarm, final Time time, final Display display) {
         return new IVDouble(value, alarm, time, display);
     }
 }

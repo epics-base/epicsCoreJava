@@ -28,7 +28,7 @@ public abstract class VInt extends VNumber {
      * @param display the display
      * @return the new value
      */
-    public static VInt create(final Integer value, final Alarm alarm, final Time time, final Display display) {
+    public static VInt of(final Integer value, final Alarm alarm, final Time time, final Display display) {
         return new IVInt(value, alarm, time, display);
     }
 }

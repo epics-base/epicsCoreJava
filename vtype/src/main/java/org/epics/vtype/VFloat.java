@@ -28,7 +28,7 @@ public abstract class VFloat extends VNumber {
      * @param display the display
      * @return the new value
      */
-    public static VFloat create(final Float value, final Alarm alarm, final Time time, final Display display) {
+    public static VFloat of(final Float value, final Alarm alarm, final Time time, final Display display) {
         return new IVFloat(value, alarm, time, display);
     }
 }

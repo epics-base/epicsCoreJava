@@ -19,7 +19,7 @@ public class VDoubleTest {
     public void testCreate() {
         Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
         Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
-        VDouble value = VDouble.create(1.0, alarm, time, Display.none());
+        VDouble value = VDouble.of(1.0, alarm, time, Display.none());
         assertThat(value.getValue(), equalTo(1.0));
         assertThat(value.getAlarm(), equalTo(alarm));
         assertThat(value.getTime(), equalTo(time));

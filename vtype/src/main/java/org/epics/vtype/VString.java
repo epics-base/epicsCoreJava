@@ -26,7 +26,7 @@ public abstract class VString extends Scalar {
      * @param time the time
      * @return the new value
      */
-    public static VString create(final String value, final Alarm alarm, final Time time) {
+    public static VString of(final String value, final Alarm alarm, final Time time) {
         return new IVString(value, alarm, time);
     }
     

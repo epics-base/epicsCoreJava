@@ -91,18 +91,18 @@ class VTypeToJsonV1 {
             default:
                 throw new UnsupportedOperationException("Not implemented yet");
         }
-        return VNumber.create(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
+        return VNumber.of(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
     }
     
     static VString toVString(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
-        return VString.create(mapper.getString("value"), mapper.getAlarm(), mapper.getTime());
+        return VString.of(mapper.getString("value"), mapper.getAlarm(), mapper.getTime());
     }
     
     static VEnum toVEnum(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
         List<String> labels = mapper.getJsonObject("enum").getListString("labels");
-        return VEnum.create(mapper.getInt("value"), EnumMetaData.create(labels), mapper.getAlarm(), mapper.getTime());
+        return VEnum.of(mapper.getInt("value"), EnumMetaData.create(labels), mapper.getAlarm(), mapper.getTime());
     }
     
     static VNumberArray toVNumberArray(JsonObject json) {
