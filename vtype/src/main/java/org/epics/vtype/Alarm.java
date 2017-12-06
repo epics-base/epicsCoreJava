@@ -24,6 +24,14 @@ public abstract class Alarm {
     public abstract AlarmSeverity getSeverity();
     
     /**
+     * Returns the alarm status, which returns the source of the alarm.
+     * Never null.
+     * 
+     * @return the alarm status
+     */
+    public abstract AlarmStatus getStatus();
+    
+    /**
      * Returns a brief text representation of the highest currently active alarm.
      * Never null.
      *
@@ -70,16 +78,17 @@ public abstract class Alarm {
      * New alarm with the given severity and status.
      * 
      * @param alarmSeverity the alarm severity
+     * @param alarmStatus the alarm status
      * @param alarmName the alarm name
      * @return the new alarm
      */
-    public static Alarm of(final AlarmSeverity alarmSeverity, final String alarmName) {
-        return new IAlarm(alarmSeverity, alarmName);
+    public static Alarm of(final AlarmSeverity alarmSeverity, final AlarmStatus alarmStatus, final String alarmName) {
+        return new IAlarm(alarmSeverity, alarmStatus, alarmName);
     }
     
-    private static final Alarm NONE = of(AlarmSeverity.NONE, "None");
-    private static final Alarm NO_VALUE = of(AlarmSeverity.INVALID, "No value");
-    private static final Alarm DISCONNECTED = of(AlarmSeverity.INVALID, "Disconnected");
+    private static final Alarm NONE = of(AlarmSeverity.NONE, AlarmStatus.NONE, "None");
+    private static final Alarm NO_VALUE = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "No value");
+    private static final Alarm DISCONNECTED = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "Disconnected");
     
     /**
      * No alarm. To be used whenever there is no alarm associated with the value.

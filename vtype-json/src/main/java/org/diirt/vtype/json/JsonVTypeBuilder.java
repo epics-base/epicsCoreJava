@@ -108,7 +108,8 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
     public JsonVTypeBuilder addAlarm(Alarm alarm) {
         return add("alarm", new JsonVTypeBuilder()
                 .add("severity", alarm.getSeverity().toString())
-                .add("status", alarm.getName()));
+                .add("status", alarm.getStatus().toString())
+                .add("name", alarm.getName()));
     }
     
     public JsonVTypeBuilder addTime(Time time) {

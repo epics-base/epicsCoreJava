@@ -18,8 +18,9 @@ public class AlarmTest {
 
     @Test
     public void of1() {
-        Alarm alarm = Alarm.of(AlarmSeverity.MAJOR, "DEVICE");
+        Alarm alarm = Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DEVICE, "DEVICE");
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.MAJOR));
+        assertThat(alarm.getStatus(), equalTo(AlarmStatus.DEVICE));
         assertThat(alarm.getName(), equalTo("DEVICE"));
         assertThat(alarm.toString(), equalTo("MAJOR(DEVICE)"));
     }
@@ -28,6 +29,7 @@ public class AlarmTest {
     public void none1() {
         Alarm alarm = Alarm.none();
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.NONE));
+        assertThat(alarm.getStatus(), equalTo(AlarmStatus.NONE));
         assertThat(alarm.getName(), equalTo("None"));
         assertThat(alarm.toString(), equalTo("NONE(None)"));
     }
@@ -36,6 +38,7 @@ public class AlarmTest {
     public void noValue1() {
         Alarm alarm = Alarm.noValue();
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.INVALID));
+        assertThat(alarm.getStatus(), equalTo(AlarmStatus.CLIENT));
         assertThat(alarm.getName(), equalTo("No value"));
         assertThat(alarm.toString(), equalTo("INVALID(No value)"));
     }
@@ -44,43 +47,45 @@ public class AlarmTest {
     public void disconnected1() {
         Alarm alarm = Alarm.disconnected();
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.INVALID));
+        assertThat(alarm.getStatus(), equalTo(AlarmStatus.CLIENT));
         assertThat(alarm.getName(), equalTo("Disconnected"));
         assertThat(alarm.toString(), equalTo("INVALID(Disconnected)"));
     }
     
     @Test
     public void equals1() {
-        assertThat(Alarm.of(AlarmSeverity.MINOR, "HIGH"), equalTo(Alarm.of(AlarmSeverity.MINOR, "HIGH")));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH")));
         assertThat(Alarm.none(), equalTo(Alarm.none()));
         assertThat(Alarm.none(), not(equalTo(null)));
-        assertThat(Alarm.of(AlarmSeverity.MINOR, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MINOR, "LOW"))));
-        assertThat(Alarm.of(AlarmSeverity.MINOR, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MAJOR, "HIGH"))));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"))));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "LOW"))));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DB, "HIGH"))));
     }
     
     @Test
     public void alarmOf1() {
         assertThat(Alarm.alarmOf(null), equalTo(Alarm.noValue()));
         assertThat(Alarm.alarmOf(new Object()), equalTo(Alarm.none()));
-        assertThat(Alarm.alarmOf((AlarmProvider) () -> Alarm.of(AlarmSeverity.MINOR, "alarmOf1")),
-                equalTo(Alarm.of(AlarmSeverity.MINOR, "alarmOf1")));
+        assertThat(Alarm.alarmOf((AlarmProvider) () -> Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1")),
+                equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1")));
     }
     
     @Test
     public void alarmOf2() {
         assertThat(Alarm.alarmOf(null, false), equalTo(Alarm.disconnected()));
         assertThat(Alarm.alarmOf(new Object(), false), equalTo(Alarm.none()));
-        assertThat(Alarm.alarmOf((AlarmProvider) () -> Alarm.of(AlarmSeverity.MINOR, "alarmOf1"), false),
-                equalTo(Alarm.of(AlarmSeverity.MINOR, "alarmOf1")));
+        assertThat(Alarm.alarmOf((AlarmProvider) () -> Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1"), false),
+                equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1")));
     }
 
     @Test
     public void highestSeverityOf1() {
         Alarm none = Alarm.none();
-        Alarm minor = Alarm.of(AlarmSeverity.MINOR, "Minor alarm");
-        Alarm otherMinor = Alarm.of(AlarmSeverity.MINOR, "Other minor alarm");
-        Alarm major = Alarm.of(AlarmSeverity.MAJOR, "Major alarm");
-        Alarm invalid = Alarm.of(AlarmSeverity.INVALID, "Invalid alarm");
-        Alarm undefined = Alarm.of(AlarmSeverity.UNDEFINED, "Undefined alarm");
+        Alarm minor = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "Minor alarm");
+        Alarm otherMinor = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "Other minor alarm");
+        Alarm major = Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DB, "Major alarm");
+        Alarm invalid = Alarm.of(AlarmSeverity.INVALID, AlarmStatus.DRIVER, "Invalid alarm");
+        Alarm undefined = Alarm.of(AlarmSeverity.UNDEFINED, AlarmStatus.UNDEFINED, "Undefined alarm");
         assertThat(Alarm.highestAlarmOf(Arrays.asList(VType.toVType(0.0, none), VType.toVType(0.0, minor)), true), sameInstance(minor));
         assertThat(Alarm.highestAlarmOf(Arrays.asList(VType.toVType(0.0, none), VType.toVType(0.0, minor), VType.toVType(0.0, otherMinor)), true), sameInstance(minor));
         assertThat(Alarm.highestAlarmOf(Arrays.asList(null, VType.toVType(0.0, minor), VType.toVType(0.0, otherMinor)), true), sameInstance(minor));

@@ -26,9 +26,9 @@ import org.epics.util.array.ListLong;
 import org.epics.util.array.ListShort;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
+import org.epics.vtype.AlarmStatus;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
-import org.omg.CORBA.portable.ValueFactory;
 
 /**
  *
@@ -55,7 +55,7 @@ class VTypeJsonMapper implements JsonObject {
         if (alarm == null) {
             return null;
         }
-        return Alarm.of(AlarmSeverity.valueOf(alarm.getString("severity")), alarm.getString("status"));
+        return Alarm.of(AlarmSeverity.valueOf(alarm.getString("severity")), AlarmStatus.valueOf(alarm.getString("status")), alarm.getString("name"));
     }
     
     public Time getTime() {

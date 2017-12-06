@@ -4,11 +4,6 @@
  */
 package org.epics.vtype;
 
-import org.epics.vtype.Alarm;
-import org.epics.vtype.Display;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.Time;
-import org.epics.vtype.AlarmSeverity;
 import java.time.Instant;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -22,7 +17,7 @@ public class VDoubleTest {
 
     @Test
     public void testCreate() {
-        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, "LOW");
+        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
         Time time = Time.create(Instant.ofEpochSecond(1354719441, 521786982));
         VDouble value = VDouble.create(1.0, alarm, time, Display.none());
         assertThat(value.getValue(), equalTo(1.0));
