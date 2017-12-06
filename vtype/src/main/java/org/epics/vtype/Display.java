@@ -127,4 +127,23 @@ public abstract class Display {
     public static Display none() {
         return DISPLAY_NONE;
     }
+    
+    /**
+     * Null and non-VType safe utility to extracts alarm information.
+     * <ul>
+     * <li>If the value has a display, the associate display is returned.</li>
+     * <li>If the value has no display, {@link #none()} is returned.</li>
+     * <li>If the value is null, {@link #none()} is returned.</li>
+     * </ul>
+     *
+     * @param value the value
+     * @return the display information for the value
+     */
+    public static Display displayOf(Object value) {
+        if (value instanceof DisplayProvider) {
+            return ((DisplayProvider) value).getDisplay();
+        }
+        
+        return none();
+    }
 }
