@@ -63,7 +63,7 @@ class VTypeJsonMapper implements JsonObject {
         if (time == null) {
             return null;
         }
-        return Time.create(Instant.ofEpochSecond(time.getInt("unixSec"), time.getInt("nanoSec")), time.getInteger("userTag"), true);
+        return Time.of(Instant.ofEpochSecond(time.getInt("unixSec"), time.getInt("nanoSec")), time.getInteger("userTag"), true);
     }
     
     public Display getDisplay() {

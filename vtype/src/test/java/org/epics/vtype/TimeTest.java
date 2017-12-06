@@ -24,7 +24,7 @@ public class TimeTest {
     @Test
     public void create1() {
         Instant timestamp = Instant.ofEpochSecond(123, 123);
-        Time time = Time.create(timestamp, 4, false);
+        Time time = Time.of(timestamp, 4, false);
         assertThat(time.getTimestamp(), equalTo(timestamp));
         assertThat(time.getUserTag(), equalTo(4));
         assertThat(time.isValid(), equalTo(false));
@@ -42,13 +42,13 @@ public class TimeTest {
     }
     @Test
     public void equals1() {
-        assertThat(Time.create(Instant.ofEpochSecond(123, 123), 4, false), equalTo(Time.create(Instant.ofEpochSecond(123, 123), 4, false)));
+        assertThat(Time.of(Instant.ofEpochSecond(123, 123), 4, false), equalTo(Time.of(Instant.ofEpochSecond(123, 123), 4, false)));
         Time time = Time.now();
-        assertThat(time, equalTo(Time.create(time.getTimestamp(), null, true)));
+        assertThat(time, equalTo(Time.of(time.getTimestamp(), null, true)));
         assertThat(time, not(equalTo(null)));
-        assertThat(Time.create(Instant.ofEpochSecond(123, 123), 4, false), not(equalTo(Time.create(Instant.ofEpochSecond(123, 124), 4, false))));
-        assertThat(Time.create(Instant.ofEpochSecond(123, 123), 4, false), not(equalTo(Time.create(Instant.ofEpochSecond(123, 123), 3, false))));
-        assertThat(Time.create(Instant.ofEpochSecond(123, 123), 4, false), not(equalTo(Time.create(Instant.ofEpochSecond(123, 123), 4, true))));
+        assertThat(Time.of(Instant.ofEpochSecond(123, 123), 4, false), not(equalTo(Time.of(Instant.ofEpochSecond(123, 124), 4, false))));
+        assertThat(Time.of(Instant.ofEpochSecond(123, 123), 4, false), not(equalTo(Time.of(Instant.ofEpochSecond(123, 123), 3, false))));
+        assertThat(Time.of(Instant.ofEpochSecond(123, 123), 4, false), not(equalTo(Time.of(Instant.ofEpochSecond(123, 123), 4, true))));
     }
     
 }

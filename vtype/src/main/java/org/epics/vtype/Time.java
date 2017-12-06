@@ -83,7 +83,7 @@ public abstract class Time {
      * @param valid whether the time is valid
      * @return the new time
      */
-    public static Time create(final Instant timestamp, final Integer userTag, final boolean valid) {
+    public static Time of(final Instant timestamp, final Integer userTag, final boolean valid) {
         return new ITime(timestamp, userTag, valid);
     }
     
@@ -93,8 +93,8 @@ public abstract class Time {
      * @param timestamp the timestamp
      * @return the new time
      */
-    public static Time create(final Instant timestamp) {
-        return Time.create(timestamp, null, true);
+    public static Time of(final Instant timestamp) {
+        return Time.of(timestamp, null, true);
     }
     
     /**
@@ -103,7 +103,7 @@ public abstract class Time {
      * @return the new time
      */
     public static Time now() {
-        return Time.create(Instant.now(), null, true);
+        return Time.of(Instant.now(), null, true);
     }
     
 }
