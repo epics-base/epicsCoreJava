@@ -23,6 +23,12 @@ class IDisplay extends Display {
 
     public IDisplay(Range displayRange, Range warningRange, Range alarmRange,
             Range controlRange, String unit, NumberFormat format) {
+        VType.argumentNotNull("displayRange", displayRange);
+        VType.argumentNotNull("warningRange", warningRange);
+        VType.argumentNotNull("alarmRange", alarmRange);
+        VType.argumentNotNull("controlRange", controlRange);
+        VType.argumentNotNull("unit", unit);
+        VType.argumentNotNull("format", format);
         this.displayRange = displayRange;
         this.warningRange = warningRange;
         this.alarmRange = alarmRange;

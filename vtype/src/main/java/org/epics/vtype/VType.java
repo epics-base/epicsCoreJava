@@ -59,7 +59,7 @@ public abstract class VType {
     
     /**
      * Converts a standard java type to VTypes. Returns null if no conversion
-     * is possible. Calls {@link #toVType(java.lang.Object, org.diirt.vtype.next.Alarm, org.diirt.vtype.next.Time, org.diirt.vtype.next.Display) } 
+     * is possible. Calls {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display) } 
      * with no alarm, time now and no display.
      * 
      * @param javaObject the value to wrap
@@ -71,7 +71,7 @@ public abstract class VType {
     
     /**
      * Converts a standard java type to VTypes. Returns null if no conversion
-     * is possible. Calls {@link #toVType(java.lang.Object, org.diirt.vtype.next.Alarm, org.diirt.vtype.next.Time, org.diirt.vtype.next.Display) } 
+     * is possible. Calls {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display) } 
      * with the given alarm, time now and no display.
      * 
      * @param javaObject the value to wrap
@@ -140,4 +140,9 @@ public abstract class VType {
         }
     }
 
+    static void argumentNotNull(String argName, Object value) {
+        if (value == null) {
+            throw new NullPointerException(argName + " can't be null");
+        }
+    }
 }

@@ -6,6 +6,7 @@ package org.epics.vtype;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import org.epics.util.stats.Range;
 import org.epics.vtype.Display;
 import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.Test;
@@ -24,12 +25,11 @@ public class DisplayTest {
     @Test
     public void create1() {
         NumberFormat format = new DecimalFormat();
-        Display display = Display.create(0.0, 1.0, 2.0, "m", format, 8.0, 9.0, 10.0, 0.0, 10.0);
-        // TODO: Range needs to support equals
-//        assertThat(display.getDisplayRange(), equalTo(Ranges.range(0.0, 10.0)));
-//        assertThat(display.getWarningRange(), equalTo(Ranges.range(1.0, 9.0)));
-//        assertThat(display.getAlarmRange(), equalTo(Ranges.range(2.0, 8.0)));
-//        assertThat(display.getControlRange(), equalTo(Ranges.range(0.0, 10.0)));
+        Display display = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        assertThat(display.getDisplayRange(), equalTo(Range.of(0.0, 10.0)));
+        assertThat(display.getWarningRange(), equalTo(Range.of(1.0, 9.0)));
+        assertThat(display.getAlarmRange(), equalTo(Range.of(2.0, 8.0)));
+        assertThat(display.getControlRange(), equalTo(Range.of(0.0, 10.0)));
         assertThat(display.getUnit(), equalTo("m"));
         assertThat(display.getFormat(), equalTo(format));
     }
@@ -37,17 +37,18 @@ public class DisplayTest {
     @Test
     public void none1() {
         Display display = Display.none();
-        // TODO: add range check
+        assertThat(display.getDisplayRange(), equalTo(Range.undefined()));
+        assertThat(display.getWarningRange(), equalTo(Range.undefined()));
+        assertThat(display.getAlarmRange(), equalTo(Range.undefined()));
+        assertThat(display.getControlRange(), equalTo(Range.undefined()));
         assertThat(display.getUnit(), equalTo(""));
     }
     @Test
     public void equals1() {
-        // TODO: implement when Range is done
-//        assertThat(Alarm.create(AlarmSeverity.MINOR, "HIGH"), equalTo(Alarm.create(AlarmSeverity.MINOR, "HIGH")));
-//        assertThat(Alarm.none(), equalTo(Alarm.none()));
-//        assertThat(Alarm.none(), not(equalTo(null)));
-//        assertThat(Alarm.create(AlarmSeverity.MINOR, "HIGH"), not(equalTo(Alarm.create(AlarmSeverity.MINOR, "LOW"))));
-//        assertThat(Alarm.create(AlarmSeverity.MINOR, "HIGH"), not(equalTo(Alarm.create(AlarmSeverity.MAJOR, "HIGH"))));
+        NumberFormat format = new DecimalFormat();
+        Display display1 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display2 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        assertThat(display1, equalTo(display2));
     }
     
 }

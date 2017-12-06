@@ -4,6 +4,7 @@
  */
 package org.diirt.vtype.json;
 
+import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import org.epics.util.array.ListFloat;
 import org.epics.util.array.ListInt;
 import org.epics.util.array.ListLong;
 import org.epics.util.array.ListShort;
+import org.epics.util.stats.Range;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
@@ -71,15 +73,11 @@ class VTypeJsonMapper implements JsonObject {
         if (display == null) {
             return null;
         }
-        return Display.create(display.getNotNullDouble("lowDisplay"),
-                display.getNotNullDouble("lowAlarm"),
-                display.getNotNullDouble("lowWarning"),
-                display.getString("units"), null,
-                display.getNotNullDouble("highWarning"),
-                display.getNotNullDouble("highAlarm"),
-                display.getNotNullDouble("highDisplay"),
-                Double.NaN,
-                Double.NaN);
+        return Display.of(Range.of(display.getNotNullDouble("lowDisplay"), display.getNotNullDouble("highDisplay")),
+                Range.of(display.getNotNullDouble("lowWarning"), display.getNotNullDouble("highWarning")),
+                Range.of(display.getNotNullDouble("lowAlarm"), display.getNotNullDouble("highAlarm")),
+                Range.of(display.getNotNullDouble("lowControl"), display.getNotNullDouble("highControl")),
+                display.getString("units"), new DecimalFormat());
     }
     
     public ListDouble getListDouble(String string) {
@@ -255,7 +253,7 @@ class VTypeJsonMapper implements JsonObject {
 
     @Override
     public boolean isNull(String string) {
-        return json.isNull(string);
+        return !json.containsKey(string) || json.isNull(string);
     }
 
     @Override

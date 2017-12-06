@@ -98,33 +98,26 @@ public abstract class Display {
     }
     
     /**
-     * Creates a new display
+     * Creates a new display.
      * 
-     * @param lowerDisplayLimit lower display limit
-     * @param lowerAlarmLimit lower alarm limit
-     * @param lowerWarningLimit lower warning limit
+     * @param displayRange the display range
+     * @param warningRange the warning range
+     * @param alarmRange the alarm range
+     * @param controlRange the control range
      * @param units the units
-     * @param numberFormat the formatter
-     * @param upperWarningLimit the upper warning limit
-     * @param upperAlarmLimit the upper alarm limit
-     * @param upperDisplayLimit the upper display limit
-     * @param lowerCtrlLimit the lower control limit
-     * @param upperCtrlLimit the upper control limit
-     * @return the new display
+     * @param numberFormat the preferred number format
+     * @return a new display
      */
-    public static Display create(final Double lowerDisplayLimit, final Double lowerAlarmLimit, final Double lowerWarningLimit,
-            final String units, final NumberFormat numberFormat, final Double upperWarningLimit,
-            final Double upperAlarmLimit, final Double upperDisplayLimit,
-            final Double lowerCtrlLimit, final Double upperCtrlLimit) {
-        return new IDisplay(Range.of(lowerDisplayLimit, upperDisplayLimit),
-                Range.of(lowerWarningLimit, upperWarningLimit),
-                Range.of(lowerAlarmLimit, upperAlarmLimit),
-                Range.of(lowerCtrlLimit, upperCtrlLimit), units, numberFormat);
+    public static Display of(final Range displayRange, final Range warningRange,
+            final Range alarmRange, final Range controlRange,
+            final String units, final NumberFormat numberFormat) {
+        return new IDisplay(displayRange, warningRange, alarmRange,
+                controlRange, units, numberFormat);
     }
     
-    private static final Display displayNone = create(Double.NaN, Double.NaN, 
-            Double.NaN, "", new DecimalFormat(), Double.NaN, Double.NaN,
-            Double.NaN, Double.NaN, Double.NaN);
+    private static final Display DISPLAY_NONE = of(Range.undefined(),
+            Range.undefined(), Range.undefined(), Range.undefined(), 
+            "", new DecimalFormat());
     
     /**
      * Empty display information.
@@ -132,6 +125,6 @@ public abstract class Display {
      * @return no display
      */
     public static Display none() {
-        return displayNone;
+        return DISPLAY_NONE;
     }
 }
