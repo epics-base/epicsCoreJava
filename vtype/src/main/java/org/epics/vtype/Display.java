@@ -23,28 +23,28 @@ public abstract class Display {
     /**
      * The range for the value when displayed.
      * 
-     * @return the display range; can be null
+     * @return the display range; can be Range.UNDEFINED but not null
      */
     public abstract Range getDisplayRange();
 
     /**
      * The range for the alarm associated to the value.
      * 
-     * @return the alarm range; can be null
+     * @return the alarm range; can be Range.UNDEFINED but not null
      */
     public abstract Range getAlarmRange();
 
     /**
      * The range for the warning associated to the value.
      * 
-     * @return the warning range; can be null
+     * @return the warning range; can be Range.UNDEFINED but not null
      */
     public abstract Range getWarningRange();
 
     /**
      * The range used for changing the value.
      * 
-     * @return the control range; can be null
+     * @return the control range; can be Range.UNDEFINED but not null
      */
     public abstract Range getControlRange();
 
