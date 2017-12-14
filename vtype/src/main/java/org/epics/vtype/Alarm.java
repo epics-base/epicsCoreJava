@@ -55,6 +55,7 @@ public abstract class Alarm {
             Alarm other = (Alarm) obj;
         
             return getSeverity().equals(other.getSeverity()) &&
+                    getStatus().equals(other.getStatus()) &&
                     getName().equals(other.getName());
         }
         
@@ -64,14 +65,15 @@ public abstract class Alarm {
     @Override
     public final int hashCode() {
         int hash = 7;
-        hash = 23 * hash + Objects.hashCode(getName());
         hash = 23 * hash + Objects.hashCode(getSeverity());
+        hash = 23 * hash + Objects.hashCode(getStatus());
+        hash = 23 * hash + Objects.hashCode(getName());
         return hash;
     }
 
     @Override
     public final String toString() {
-        return getSeverity() + "(" + getName() + ")";
+        return getSeverity() + "(" + getStatus()+ ") - " + getName();
     }
     
     /**

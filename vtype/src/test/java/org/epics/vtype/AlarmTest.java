@@ -22,7 +22,7 @@ public class AlarmTest {
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.MAJOR));
         assertThat(alarm.getStatus(), equalTo(AlarmStatus.DEVICE));
         assertThat(alarm.getName(), equalTo("DEVICE"));
-        assertThat(alarm.toString(), equalTo("MAJOR(DEVICE)"));
+        assertThat(alarm.toString(), equalTo("MAJOR(DEVICE) - DEVICE"));
     }
     
     @Test
@@ -31,7 +31,7 @@ public class AlarmTest {
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.NONE));
         assertThat(alarm.getStatus(), equalTo(AlarmStatus.NONE));
         assertThat(alarm.getName(), equalTo("None"));
-        assertThat(alarm.toString(), equalTo("NONE(None)"));
+        assertThat(alarm.toString(), equalTo("NONE(NONE) - None"));
     }
     
     @Test
@@ -40,7 +40,7 @@ public class AlarmTest {
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.INVALID));
         assertThat(alarm.getStatus(), equalTo(AlarmStatus.CLIENT));
         assertThat(alarm.getName(), equalTo("No value"));
-        assertThat(alarm.toString(), equalTo("INVALID(No value)"));
+        assertThat(alarm.toString(), equalTo("INVALID(CLIENT) - No value"));
     }
     
     @Test
@@ -49,7 +49,7 @@ public class AlarmTest {
         assertThat(alarm.getSeverity(), equalTo(AlarmSeverity.INVALID));
         assertThat(alarm.getStatus(), equalTo(AlarmStatus.CLIENT));
         assertThat(alarm.getName(), equalTo("Disconnected"));
-        assertThat(alarm.toString(), equalTo("INVALID(Disconnected)"));
+        assertThat(alarm.toString(), equalTo("INVALID(CLIENT) - Disconnected"));
     }
     
     @Test
@@ -58,8 +58,17 @@ public class AlarmTest {
         assertThat(Alarm.none(), equalTo(Alarm.none()));
         assertThat(Alarm.none(), not(equalTo(null)));
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"))));
-        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "LOW"))));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "HIGH"))));
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DB, "HIGH"))));
+    }
+    
+    @Test
+    public void hashCode1() {
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode(), equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode()));
+        assertThat(Alarm.none().hashCode(), equalTo(Alarm.none().hashCode()));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode(), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW").hashCode())));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode(), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "HIGH").hashCode())));
+        assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode(), not(equalTo(Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DB, "HIGH").hashCode())));
     }
     
     @Test
