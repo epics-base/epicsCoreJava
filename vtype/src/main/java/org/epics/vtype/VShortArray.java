@@ -5,24 +5,25 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ArrayInt;
-import org.epics.util.array.ListDouble;
+import org.epics.util.array.ListShort;
 import org.epics.util.array.ListInt;
+import org.epics.util.array.ListShort;
 
 /**
  * Scalar double array with alarm, timestamp, display and control information.
  * 
  * @author carcassi
  */
-public abstract class VDoubleArray extends VNumberArray {
+public abstract class VShortArray extends VNumberArray {
     
     /**
      * {@inheritDoc }
      */
     @Override
-    public abstract ListDouble getData();
+    public abstract ListShort getData();
     
     /**
-     * Creates a new VDouble.
+     * Creates a new VShort.
      * 
      * @param data the value
      * @param sizes the sizes
@@ -31,12 +32,12 @@ public abstract class VDoubleArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VDoubleArray of(final ListDouble data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
-        return new IVDoubleArray(data, sizes, alarm, time, display);
+    public static VShortArray of(final ListShort data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
+        return new IVShortArray(data, sizes, alarm, time, display);
     }
     
     /**
-     * Creates a new VDouble.
+     * Creates a new VShort.
      * 
      * @param data the value
      * @param alarm the alarm
@@ -44,7 +45,7 @@ public abstract class VDoubleArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VDoubleArray of(final ListDouble data, final Alarm alarm, final Time time, final Display display) {
+    public static VShortArray of(final ListShort data, final Alarm alarm, final Time time, final Display display) {
         return of(data, ArrayInt.of(data.size()), alarm, time, display);
     }
 }

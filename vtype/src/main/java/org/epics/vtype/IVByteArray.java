@@ -4,23 +4,23 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ListDouble;
+import org.epics.util.array.ListByte;
 import org.epics.util.array.ListInt;
 
 /**
- * Immutable VDoubleArray implementation.
+ * Immutable VByteArray implementation.
  *
  * @author carcassi
  */
-class IVDoubleArray extends VDoubleArray {
+class IVByteArray extends VByteArray {
     
-    private final ListDouble data;
+    private final ListByte data;
     private final ListInt sizes;
     private final Alarm alarm;
     private final Time time;
     private final Display display;
 
-    IVDoubleArray(ListDouble data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    IVByteArray(ListByte data, ListInt sizes, Alarm alarm, Time time, Display display) {
         VType.argumentNotNull("data", data);
         VType.argumentNotNull("sizes", sizes);
         VType.argumentNotNull("alarm", alarm);
@@ -39,7 +39,7 @@ class IVDoubleArray extends VDoubleArray {
     }
 
     @Override
-    public ListDouble getData() {
+    public ListByte getData() {
         return data;
     }
 

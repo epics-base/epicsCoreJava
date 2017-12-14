@@ -33,6 +33,11 @@ public abstract class VType {
             VDouble.class,
             VEnum.class,
             VString.class,
+            VByteArray.class,
+            VShortArray.class,
+            VIntArray.class,
+            VLongArray.class,
+            VFloatArray.class,
             VDoubleArray.class);
 
     /**
@@ -115,9 +120,9 @@ public abstract class VType {
                 || javaObject instanceof long[]
                 || javaObject instanceof float[]
                 || javaObject instanceof double[]) {
-            return VNumberArray.create(CollectionNumbers.toList(javaObject), alarm, time, display);
+            return VNumberArray.of(CollectionNumbers.toList(javaObject), alarm, time, display);
         } else if (javaObject instanceof ListNumber) {
-            return VNumberArray.create((ListNumber) javaObject, alarm, time, display);
+            return VNumberArray.of((ListNumber) javaObject, alarm, time, display);
         } else if (javaObject instanceof String[]) {
             return null;//newVStringArray(Arrays.asList((String[]) javaObject), alarm, time);
         } else if (javaObject instanceof List) {

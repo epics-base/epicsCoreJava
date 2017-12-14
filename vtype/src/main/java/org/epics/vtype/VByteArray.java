@@ -5,7 +5,7 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ArrayInt;
-import org.epics.util.array.ListDouble;
+import org.epics.util.array.ListByte;
 import org.epics.util.array.ListInt;
 
 /**
@@ -13,16 +13,16 @@ import org.epics.util.array.ListInt;
  * 
  * @author carcassi
  */
-public abstract class VDoubleArray extends VNumberArray {
+public abstract class VByteArray extends VNumberArray {
     
     /**
      * {@inheritDoc }
      */
     @Override
-    public abstract ListDouble getData();
+    public abstract ListByte getData();
     
     /**
-     * Creates a new VDouble.
+     * Creates a new VByte.
      * 
      * @param data the value
      * @param sizes the sizes
@@ -31,12 +31,12 @@ public abstract class VDoubleArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VDoubleArray of(final ListDouble data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
-        return new IVDoubleArray(data, sizes, alarm, time, display);
+    public static VByteArray of(final ListByte data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
+        return new IVByteArray(data, sizes, alarm, time, display);
     }
     
     /**
-     * Creates a new VDouble.
+     * Creates a new VByte.
      * 
      * @param data the value
      * @param alarm the alarm
@@ -44,7 +44,7 @@ public abstract class VDoubleArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VDoubleArray of(final ListDouble data, final Alarm alarm, final Time time, final Display display) {
+    public static VByteArray of(final ListByte data, final Alarm alarm, final Time time, final Display display) {
         return of(data, ArrayInt.of(data.size()), alarm, time, display);
     }
 }

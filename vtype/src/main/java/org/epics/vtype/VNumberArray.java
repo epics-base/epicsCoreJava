@@ -38,8 +38,8 @@ public abstract class VNumberArray extends Array implements AlarmProvider, TimeP
                 .append("[");
         builder.append(getData());
         builder.append(", size ")
-                .append(getData().size())
-                .append(" ,")
+                .append(getSizes())
+                .append(", ")
                 .append(getAlarm())
                 .append(", ")
                 .append(getTime())
@@ -56,9 +56,9 @@ public abstract class VNumberArray extends Array implements AlarmProvider, TimeP
      * @param display the display
      * @return the new number
      */
-    public static VNumberArray create(ListNumber data, Alarm alarm, Time time, Display display){
+    public static VNumberArray of(ListNumber data, Alarm alarm, Time time, Display display){
         if (data instanceof ListDouble) {
-            return VDoubleArray.create((ListDouble) data, alarm, time, display);
+            return VDoubleArray.of((ListDouble) data, alarm, time, display);
 //        } else if (value instanceof Float) {
 //            return newVFloat((Float) value, alarm, time, display);
 //        } else if (value instanceof Long) {
