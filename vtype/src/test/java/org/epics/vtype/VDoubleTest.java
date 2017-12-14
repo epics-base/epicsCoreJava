@@ -23,7 +23,7 @@ public class VDoubleTest {
         assertThat(value.getValue(), equalTo(1.0));
         assertThat(value.getAlarm(), equalTo(alarm));
         assertThat(value.getTime(), equalTo(time));
-        assertThat(value.toString(), equalTo("VDouble[1.0 ,MINOR(LOW), 2012-12-05T14:57:21.521786982Z]"));
+        assertThat(value.toString(), equalTo("VDouble[1.0 ,MINOR(DB) - LOW, 2012-12-05T14:57:21.521786982Z]"));
     }
     
 }
