@@ -4,6 +4,8 @@
  */
 package org.epics.vtype;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -16,12 +18,12 @@ public abstract class EnumDisplay {
     /**
      * Returns the possible labels for the enum.
      *
-     * @return the labels; not null
+     * @return the choices; not null
      */
     public abstract List<String> getChoices();
 
     /**
-     * Whether the given object is an EnumDisplay with the same choixwa.
+     * Whether the given object is an EnumDisplay with the same choices.
      * 
      * @param obj another alarm
      * @return true if equal
@@ -55,9 +57,33 @@ public abstract class EnumDisplay {
      * New EnumDisplay with the given choices.
      * 
      * @param choices the enum choices
-     * @return the new alarm
+     * @return the new display
      */
     public static EnumDisplay of(final List<String> choices) {
+        return new IEnumDisplay(choices);
+    }
+    
+    /**
+     * New EnumDisplay with the given choices.
+     * 
+     * @param choices the enum choices
+     * @return the new display
+     */
+    public static EnumDisplay of(final String... choices) {
+        return new IEnumDisplay(Arrays.asList(choices));
+    }
+    
+    /**
+     * New EnumDisplay with numeric labels for the given number of choices.
+     * 
+     * @param nChoices the number of choices
+     * @return the new display
+     */
+    public static EnumDisplay of(final int nChoices) {
+        List<String> choices = new ArrayList<>();
+        for (int i = 0; i < nChoices; i++) {
+            choices.add(Integer.toString(i));
+        }
         return new IEnumDisplay(choices);
     }
     
