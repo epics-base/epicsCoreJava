@@ -58,6 +58,8 @@ public class DisplayTest {
         assertThat(display01, not(equalTo(display10)));
         assertThat(display01, not(equalTo(display11)));
         assertThat(display01, not(equalTo(display12)));
+        assertThat(display01, not(equalTo(null)));
+        assertThat(display01, not(equalTo(new Object())));
     }
 
     @Test
@@ -99,6 +101,42 @@ public class DisplayTest {
         assertThat(display.getControlRange(), equalTo(Range.of(0.0, 10.0)));
         assertThat(display.getUnit(), equalTo("m"));
         assertThat(display.getFormat(), equalTo(format));
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void of2() {
+        NumberFormat format = new DecimalFormat();
+        Display display = Display.of(null, Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void of3() {
+        NumberFormat format = new DecimalFormat();
+        Display display = Display.of(Range.of(0, 10), null, Range.of(2, 8), Range.of(0, 10), "m", format);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void of4() {
+        NumberFormat format = new DecimalFormat();
+        Display display = Display.of(Range.of(0, 10), Range.of(1, 9), null, Range.of(0, 10), "m", format);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void of5() {
+        NumberFormat format = new DecimalFormat();
+        Display display = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), null, "m", format);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void of6() {
+        NumberFormat format = new DecimalFormat();
+        Display display = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), null, format);
+    }
+
+    @Test(expected=NullPointerException.class)
+    public void of7() {
+        NumberFormat format = new DecimalFormat();
+        Display display = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", null);
     }
     
     @Test

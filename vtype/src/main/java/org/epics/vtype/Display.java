@@ -66,7 +66,7 @@ public abstract class Display {
     public abstract NumberFormat getFormat();
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -86,7 +86,7 @@ public abstract class Display {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int hash = 5;
         hash = 59 * hash + Objects.hashCode(getFormat());
         hash = 59 * hash + Objects.hashCode(getUnit());
