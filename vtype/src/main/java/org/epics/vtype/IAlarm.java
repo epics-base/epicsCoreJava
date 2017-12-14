@@ -16,6 +16,9 @@ class IAlarm extends Alarm {
     private final String name;
     
     IAlarm(AlarmSeverity severity, AlarmStatus status, String name) {
+        VType.argumentNotNull("severity", severity);
+        VType.argumentNotNull("status", status);
+        VType.argumentNotNull("name", name);
         this.severity = severity;
         this.name = name;
         this.status = status;

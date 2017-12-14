@@ -79,13 +79,13 @@ public abstract class Alarm {
     /**
      * New alarm with the given severity and status.
      * 
-     * @param alarmSeverity the alarm severity
-     * @param alarmStatus the alarm status
-     * @param alarmName the alarm name
+     * @param severity the alarm severity
+     * @param status the alarm status
+     * @param name the alarm name
      * @return the new alarm
      */
-    public static Alarm of(final AlarmSeverity alarmSeverity, final AlarmStatus alarmStatus, final String alarmName) {
-        return new IAlarm(alarmSeverity, alarmStatus, alarmName);
+    public static Alarm of(final AlarmSeverity severity, final AlarmStatus status, final String name) {
+        return new IAlarm(severity, status, name);
     }
     
     private static final Alarm NONE = of(AlarmSeverity.NONE, AlarmStatus.NONE, "None");

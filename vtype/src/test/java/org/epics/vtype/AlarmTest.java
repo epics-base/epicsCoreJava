@@ -24,6 +24,21 @@ public class AlarmTest {
         assertThat(alarm.getName(), equalTo("DEVICE"));
         assertThat(alarm.toString(), equalTo("MAJOR(DEVICE) - DEVICE"));
     }
+
+    @Test(expected = NullPointerException.class)
+    public void of2() {
+        Alarm.of(null, AlarmStatus.DEVICE, "DEVICE");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void of3() {
+        Alarm.of(AlarmSeverity.MAJOR, null, "DEVICE");
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void of4() {
+        Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DEVICE, null);
+    }
     
     @Test
     public void none1() {
