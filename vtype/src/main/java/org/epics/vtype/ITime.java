@@ -18,6 +18,7 @@ class ITime extends Time {
     private final boolean valid;
 
     ITime(Instant timestamp, Integer userTag, boolean valid) {
+        VType.argumentNotNull("timestamp", timestamp);
         this.timestamp = timestamp;
         this.userTag = userTag;
         this.valid = valid;
