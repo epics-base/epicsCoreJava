@@ -130,7 +130,7 @@ class VTypeToJsonV1 {
             default:
                 throw new UnsupportedOperationException("Not implemented yet");
         }
-        return VNumberArray.create(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
+        return VNumberArray.of(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
     }
     
     static JsonObject toJson(VNumber vNumber) {

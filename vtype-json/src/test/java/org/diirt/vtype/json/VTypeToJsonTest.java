@@ -117,7 +117,7 @@ public class VTypeToJsonTest {
             + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
             + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
             + "\"enum\":{\"labels\":[\"One\",\"Two\",\"Three\"]}}";
-    public VDoubleArray vDoubleArray = VDoubleArray.create(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VDoubleArray vDoubleArray = VDoubleArray.of(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
     public String vDoubleArrayJson = "{\"type\":{\"name\":\"VDoubleArray\",\"version\":1},"
             + "\"value\":[0.0,0.1,0.2],"
             + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
