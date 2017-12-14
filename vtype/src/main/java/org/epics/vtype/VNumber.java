@@ -34,7 +34,7 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
         builder.append(type.getSimpleName())
                 .append('[')
                 .append(getValue())
-                .append(" ,")
+                .append(", ")
                 .append(getAlarm())
                 .append(", ")
                 .append(getTime())

@@ -17,6 +17,10 @@ class IVFloat extends VFloat {
     private final Display display;
 
     IVFloat(Float value, Alarm alarm, Time time, Display display) {
+        VType.argumentNotNull("value", value);
+        VType.argumentNotNull("alarm", alarm);
+        VType.argumentNotNull("time", time);
+        VType.argumentNotNull("display", display);
         this.value = value;
         this.alarm = alarm;
         this.time = time;

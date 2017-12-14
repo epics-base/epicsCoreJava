@@ -17,6 +17,10 @@ class IVLong extends VLong {
     private final Display display;
 
     IVLong(Long value, Alarm alarm, Time time, Display display) {
+        VType.argumentNotNull("value", value);
+        VType.argumentNotNull("alarm", alarm);
+        VType.argumentNotNull("time", time);
+        VType.argumentNotNull("display", display);
         this.value = value;
         this.alarm = alarm;
         this.time = time;
