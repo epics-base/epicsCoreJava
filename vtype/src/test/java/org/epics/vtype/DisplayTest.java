@@ -7,7 +7,6 @@ package org.epics.vtype;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import org.epics.util.stats.Range;
-import org.epics.vtype.Display;
 import static org.hamcrest.CoreMatchers.equalTo;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -21,9 +20,77 @@ public class DisplayTest {
     
     public DisplayTest() {
     }
+    
+    @Test
+    public void displayOf1() {
+        assertThat(Display.displayOf(null), equalTo(Display.none()));
+        assertThat(Display.displayOf(new Object()), equalTo(Display.none()));
+        NumberFormat format = new DecimalFormat();
+        Display display = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);        
+        assertThat(Display.displayOf((DisplayProvider) () -> display),
+                equalTo(display));
+    }
 
     @Test
-    public void create1() {
+    public void equals1() {
+        NumberFormat format = new DecimalFormat();
+        NumberFormat format2 = new DecimalFormat("0.00");
+        Display display01 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display02 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display03 = Display.of(Range.of(1, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display04 = Display.of(Range.of(0, 11), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display05 = Display.of(Range.of(0, 10), Range.of(2, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display06 = Display.of(Range.of(0, 10), Range.of(1, 8), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display07 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(3, 8), Range.of(0, 10), "m", format);
+        Display display08 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 7), Range.of(0, 10), "m", format);
+        Display display09 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(-1, 10), "m", format);
+        Display display10 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 11), "m", format);
+        Display display11 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "km", format);
+        Display display12 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format2);
+        assertThat(display01, equalTo(display02));
+        assertThat(display01, not(equalTo(display03)));
+        assertThat(display01, not(equalTo(display04)));
+        assertThat(display01, not(equalTo(display05)));
+        assertThat(display01, not(equalTo(display06)));
+        assertThat(display01, not(equalTo(display07)));
+        assertThat(display01, not(equalTo(display08)));
+        assertThat(display01, not(equalTo(display09)));
+        assertThat(display01, not(equalTo(display10)));
+        assertThat(display01, not(equalTo(display11)));
+        assertThat(display01, not(equalTo(display12)));
+    }
+
+    @Test
+    public void hashCode1() {
+        NumberFormat format = new DecimalFormat();
+        NumberFormat format2 = new DecimalFormat("##0.#####E0");
+        Display display01 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display02 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display03 = Display.of(Range.of(1, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display04 = Display.of(Range.of(0, 11), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display05 = Display.of(Range.of(0, 10), Range.of(2, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display06 = Display.of(Range.of(0, 10), Range.of(1, 8), Range.of(2, 8), Range.of(0, 10), "m", format);
+        Display display07 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(3, 8), Range.of(0, 10), "m", format);
+        Display display08 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 7), Range.of(0, 10), "m", format);
+        Display display09 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(-1, 10), "m", format);
+        Display display10 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 11), "m", format);
+        Display display11 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "km", format);
+        Display display12 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format2);
+        assertThat(display01.hashCode(), equalTo(display02.hashCode()));
+        assertThat(display01.hashCode(), not(equalTo(display03.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display04.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display05.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display06.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display07.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display08.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display09.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display10.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display11.hashCode())));
+        assertThat(display01.hashCode(), not(equalTo(display12.hashCode())));
+    }
+
+    @Test
+    public void of1() {
         NumberFormat format = new DecimalFormat();
         Display display = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
         assertThat(display.getDisplayRange(), equalTo(Range.of(0.0, 10.0)));
@@ -42,13 +109,6 @@ public class DisplayTest {
         assertThat(display.getAlarmRange(), equalTo(Range.undefined()));
         assertThat(display.getControlRange(), equalTo(Range.undefined()));
         assertThat(display.getUnit(), equalTo(""));
-    }
-    @Test
-    public void equals1() {
-        NumberFormat format = new DecimalFormat();
-        Display display1 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
-        Display display2 = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(0, 10), "m", format);
-        assertThat(display1, equalTo(display2));
     }
     
 }
