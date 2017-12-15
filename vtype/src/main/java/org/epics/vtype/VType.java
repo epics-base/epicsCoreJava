@@ -26,6 +26,7 @@ public abstract class VType {
 //            VImage.class);
     private static final Collection<Class<?>> types = Arrays.<Class<?>>asList(
             VByte.class,
+            VUByte.class,
             VShort.class,
             VInt.class,
             VLong.class,
