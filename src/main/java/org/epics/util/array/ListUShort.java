@@ -4,6 +4,8 @@
  */
 package org.epics.util.array;
 
+import org.epics.util.number.UnsignedConversions;
+
 /**
  * An ordered collection of {@code short}s.
  *
@@ -31,22 +33,22 @@ public abstract class ListUShort implements ListNumber, CollectionUShort {
 
     @Override
     public double getDouble(int index) {
-        return (double) getShort(index);
+        return UnsignedConversions.toDouble(getShort(index));
     }
 
     @Override
     public float getFloat(int index) {
-        return (float) getShort(index);
+        return UnsignedConversions.toFloat(getShort(index));
     }
 
     @Override
     public long getLong(int index) {
-        return (long) getShort(index);
+        return UnsignedConversions.toLong(getShort(index));
     }
 
     @Override
     public int getInt(int index) {
-        return (int) getShort(index);
+        return UnsignedConversions.toInt(getShort(index));
     }
 
     @Override

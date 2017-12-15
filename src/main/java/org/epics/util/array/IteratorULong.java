@@ -4,6 +4,8 @@
  */
 package org.epics.util.array;
 
+import org.epics.util.number.UnsignedConversions;
+
 /**
  * An iterator of unsigned {@code long}s.
  *

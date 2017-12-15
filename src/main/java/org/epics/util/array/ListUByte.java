@@ -4,6 +4,8 @@
  */
 package org.epics.util.array;
 
+import org.epics.util.number.UnsignedConversions;
+
 /**
  * An ordered collection of unsigned {@code byte}s.
  *
