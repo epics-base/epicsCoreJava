@@ -52,4 +52,33 @@ public final class UByte extends Number {
     public static UByte valueOf(byte unsignedValue) {
         return new UByte(unsignedValue);
     }
+
+    /**
+     * Returns a new {@code String} object representing the
+     * specified unsigned {@code byte}. The radix is assumed to be 10.
+     *
+     * @param unsignedByte the unsigned {@code byte} to be converted
+     * @return the string representation of the specified unsigned byte {@code byte}
+     */
+    public static String toString(byte unsignedByte) {
+        return Integer.toString(UnsignedConversions.toInt(unsignedByte), 10);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UByte) {
+            return unsignedValue == ((UByte)obj).unsignedValue;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Byte.hashCode(unsignedValue);
+    }
+
+    @Override
+    public String toString() {
+        return UByte.toString(unsignedValue);
+    }
 }
