@@ -6,7 +6,7 @@
 package org.epics.util.number;
 
 /**
- * A wrapper for a unsigned int value.
+ * A wrapper for a unsigned {@code int} value.
  *
  * @author carcassi
  */
@@ -15,9 +15,10 @@ public final class UInteger extends Number {
     private final int unsignedValue;
 
     /**
-     * Constructs a newly allocated UByte object that represent the specified unsigned int value.
+     * Constructs a newly allocated {@code UInteger} object that represent
+     * the specified unsigned {@code int} value.
      * 
-     * @param unsignedValue the unsigned value
+     * @param unsignedValue the value to be represented by the {@code UInteger}
      */
     public UInteger(int unsignedValue) {
         this.unsignedValue = unsignedValue;
@@ -44,10 +45,10 @@ public final class UInteger extends Number {
     }
     
     /**
-     * A wrapper for the given unsigned int.
+     * A wrapper for the given unsigned {@code int}.
      * 
-     * @param unsignedValue an unsigned int
-     * @return the new wrapper
+     * @param unsignedValue an unsigned {@code int} value
+     * @return a {@code UInteger} instance representing {@code unsignedValue}
      */
     public static UInteger valueOf(int unsignedValue) {
         return new UInteger(unsignedValue);

@@ -6,7 +6,7 @@
 package org.epics.util.number;
 
 /**
- * A wrapper for a unsigned byte value.
+ * A wrapper for a unsigned {@code byte} value.
  *
  * @author carcassi
  */
@@ -15,9 +15,10 @@ public final class UByte extends Number {
     private final byte unsignedValue;
 
     /**
-     * Constructs a newly allocated UByte object that represent the specified unsigned byte value.
+     * Constructs a newly allocated {@code UByte} object that represent
+     * the specified unsigned {@code byte} value.
      * 
-     * @param unsignedValue the unsigned value
+     * @param unsignedValue the value to be represented by the {@code UByte}
      */
     public UByte(byte unsignedValue) {
         this.unsignedValue = unsignedValue;
@@ -44,10 +45,10 @@ public final class UByte extends Number {
     }
     
     /**
-     * A wrapper for the given unsigned byte.
+     * A wrapper for the given unsigned {@code byte}.
      * 
-     * @param unsignedValue an unsigned byte
-     * @return the new wrapper
+     * @param unsignedValue an unsigned {@code byte} value
+     * @return a {@code UByte} instance representing {@code unsignedValue}
      */
     public static UByte valueOf(byte unsignedValue) {
         return new UByte(unsignedValue);
@@ -57,11 +58,11 @@ public final class UByte extends Number {
      * Returns a new {@code String} object representing the
      * specified unsigned {@code byte}. The radix is assumed to be 10.
      *
-     * @param unsignedByte the unsigned {@code byte} to be converted
-     * @return the string representation of the specified unsigned byte {@code byte}
+     * @param unsignedValue the unsigned {@code byte} to be converted
+     * @return the string representation of the specified unsigned {@code byte}
      */
-    public static String toString(byte unsignedByte) {
-        return Integer.toString(UnsignedConversions.toInt(unsignedByte), 10);
+    public static String toString(byte unsignedValue) {
+        return Integer.toString(UnsignedConversions.toInt(unsignedValue), 10);
     }
 
     @Override

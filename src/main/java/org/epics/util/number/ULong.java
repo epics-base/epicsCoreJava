@@ -6,7 +6,7 @@
 package org.epics.util.number;
 
 /**
- * A wrapper for a unsigned long value.
+ * A wrapper for a unsigned {@code long} value.
  *
  * @author carcassi
  */
@@ -15,9 +15,10 @@ public final class ULong extends Number {
     private final long unsignedValue;
 
     /**
-     * Constructs a newly allocated UByte object that represent the specified unsigned long value.
+     * Constructs a newly allocated {@code ULong} object that represent
+     * the specified unsigned {@code long} value.
      * 
-     * @param unsignedValue the unsigned value
+     * @param unsignedValue the value to be represented by the {@code ULong}
      */
     public ULong(long unsignedValue) {
         this.unsignedValue = unsignedValue;
@@ -44,10 +45,10 @@ public final class ULong extends Number {
     }
     
     /**
-     * A wrapper for the given unsigned long.
+     * A wrapper for the given unsigned {@code long}.
      * 
-     * @param unsignedValue an unsigned long
-     * @return the new wrapper
+     * @param unsignedValue an unsigned {@code long} value
+     * @return a {@code ULong} instance representing {@code unsignedValue}
      */
     public static ULong valueOf(long unsignedValue) {
         return new ULong(unsignedValue);
