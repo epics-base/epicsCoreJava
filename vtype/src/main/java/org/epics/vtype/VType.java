@@ -30,6 +30,7 @@ public abstract class VType {
             VShort.class,
             VUShort.class,
             VInt.class,
+            VUInt.class,
             VLong.class,
             VFloat.class,
             VDouble.class,

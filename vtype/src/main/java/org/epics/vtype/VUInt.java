@@ -4,20 +4,20 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.number.UShort;
+import org.epics.util.number.UInteger;
 
 /**
- * Scalar unsigned short with alarm, timestamp, display and control information.
+ * Scalar unsigned int with alarm, timestamp, display and control information.
  * 
  * @author carcassi
  */
-public abstract class VUShort extends VNumber {
+public abstract class VUInt extends VNumber {
     
     /**
      * {@inheritDoc }
      */
     @Override
-    public abstract UShort getValue();
+    public abstract UInteger getValue();
     
     /**
      * Creates a new VUShort.
@@ -28,7 +28,7 @@ public abstract class VUShort extends VNumber {
      * @param display the display
      * @return the new value
      */
-    public static VUShort of(final UShort value, final Alarm alarm, final Time time, final Display display) {
-        return new IVUShort(value, alarm, time, display);
+    public static VUInt of(final UInteger value, final Alarm alarm, final Time time, final Display display) {
+        return new IVUInt(value, alarm, time, display);
     }
 }

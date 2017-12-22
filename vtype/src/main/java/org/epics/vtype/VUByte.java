@@ -7,7 +7,7 @@ package org.epics.vtype;
 import org.epics.util.number.UByte;
 
 /**
- * Scalar byte with alarm, timestamp, display and control information.
+ * Scalar unsigned byte with alarm, timestamp, display and control information.
  * 
  * @author carcassi
  */
