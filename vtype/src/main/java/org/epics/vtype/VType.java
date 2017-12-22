@@ -32,6 +32,7 @@ public abstract class VType {
             VInt.class,
             VUInt.class,
             VLong.class,
+            VULong.class,
             VFloat.class,
             VDouble.class,
             VEnum.class,

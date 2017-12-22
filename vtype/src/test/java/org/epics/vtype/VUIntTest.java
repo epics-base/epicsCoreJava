@@ -14,7 +14,7 @@ public class VUIntTest extends FeatureTestVNumber<UInteger, VUInt> {
 
     @Override
     UInteger getValue() {
-        return UInteger.valueOf((byte) -1);
+        return UInteger.valueOf(-1);
     }
 
     @Override

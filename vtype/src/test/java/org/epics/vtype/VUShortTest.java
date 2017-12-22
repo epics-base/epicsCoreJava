@@ -14,7 +14,7 @@ public class VUShortTest extends FeatureTestVNumber<UShort, VUShort> {
 
     @Override
     UShort getValue() {
-        return UShort.valueOf((byte) -1);
+        return UShort.valueOf((short) -1);
     }
 
     @Override
