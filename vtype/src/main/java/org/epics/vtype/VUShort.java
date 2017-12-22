@@ -4,23 +4,23 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.number.UByte;
+import org.epics.util.number.UShort;
 
 /**
  * Scalar byte with alarm, timestamp, display and control information.
  * 
  * @author carcassi
  */
-public abstract class VUByte extends VNumber {
+public abstract class VUShort extends VNumber {
     
     /**
      * {@inheritDoc }
      */
     @Override
-    public abstract UByte getValue();
+    public abstract UShort getValue();
     
     /**
-     * Creates a new VUByte.
+     * Creates a new VUShort.
      * 
      * @param value the value
      * @param alarm the alarm
@@ -28,7 +28,7 @@ public abstract class VUByte extends VNumber {
      * @param display the display
      * @return the new value
      */
-    public static VUByte of(final UByte value, final Alarm alarm, final Time time, final Display display) {
-        return new IVUByte(value, alarm, time, display);
+    public static VUShort of(final UShort value, final Alarm alarm, final Time time, final Display display) {
+        return new IVUShort(value, alarm, time, display);
     }
 }

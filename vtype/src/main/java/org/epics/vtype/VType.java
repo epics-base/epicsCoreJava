@@ -28,6 +28,7 @@ public abstract class VType {
             VByte.class,
             VUByte.class,
             VShort.class,
+            VUShort.class,
             VInt.class,
             VLong.class,
             VFloat.class,

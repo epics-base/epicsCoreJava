@@ -4,21 +4,21 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.number.UByte;
+import org.epics.util.number.UShort;
 
 /**
- * Immutable IVUByte implementation.
+ * Immutable VUShort implementation.
  *
  * @author carcassi
  */
-class IVUByte extends VUByte {
+class IVUShort extends VUShort {
     
-    private final UByte value;
+    private final UShort value;
     private final Alarm alarm;
     private final Time time;
     private final Display display;
 
-    IVUByte(UByte value, Alarm alarm, Time time, Display display) {
+    IVUShort(UShort value, Alarm alarm, Time time, Display display) {
         VType.argumentNotNull("value", value);
         VType.argumentNotNull("alarm", alarm);
         VType.argumentNotNull("time", time);
@@ -30,7 +30,7 @@ class IVUByte extends VUByte {
     }
 
     @Override
-    public UByte getValue() {
+    public UShort getValue() {
         return value;
     }
 
