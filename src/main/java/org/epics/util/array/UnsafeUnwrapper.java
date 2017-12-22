@@ -165,8 +165,8 @@ public class UnsafeUnwrapper {
      * @return the array or null
      */
     public static Array<int[]> wrappedIntArray(CollectionNumber coll) {
-        if (coll instanceof ArrayInt) {
-            ArrayInt wrapper = (ArrayInt) coll;
+        if (coll instanceof ArrayInteger) {
+            ArrayInteger wrapper = (ArrayInteger) coll;
             return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
@@ -366,7 +366,7 @@ public class UnsafeUnwrapper {
      */
     public static Array<int[]> writeSafeIntArray(CollectionNumber coll) {
         Array<int[]> array = wrappedIntArray(coll);
-        if (array != null && !((ArrayInt) coll).isReadOnly()) {
+        if (array != null && !((ArrayInteger) coll).isReadOnly()) {
             return array;
         }
         return new Array<>(coll.toArray(new int[coll.size()]), 0, coll.size());

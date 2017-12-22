@@ -9,11 +9,11 @@ import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.CollectionNumber;
 import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ArrayInteger;
 import java.util.Random;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.IteratorNumber;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListNumbers;
 import static org.epics.util.array.CollectionNumbers.*;
 
@@ -67,13 +67,13 @@ public class ArraySlicePerformanceMeasurement {
         ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
         ArrayFloat floatCollection = unmodifiableListFloat(floatArray);
         ArrayLong longCollection = unmodifiableListLong(longArray);
-        ArrayInt intCollection = unmodifiableListInt(intArray);
+        ArrayInteger intCollection = unmodifiableListInt(intArray);
         ArrayShort shortCollection = unmodifiableListShort(shortArray);
         ArrayByte byteCollection = unmodifiableListByte(byteArray);
         ArrayDouble doubleCollectionBig = unmodifiableListDouble(doubleArrayBig).subList(arraySize/2, arraySize *3/2);
         ArrayFloat floatCollectionBig = unmodifiableListFloat(floatArrayBig).subList(arraySize/2, arraySize *3/2);
         ArrayLong longCollectionBig = unmodifiableListLong(longArrayBig).subList(arraySize/2, arraySize *3/2);
-        ArrayInt intCollectionBig = unmodifiableListInt(intArrayBig).subList(arraySize/2, arraySize *3/2);
+        ArrayInteger intCollectionBig = unmodifiableListInt(intArrayBig).subList(arraySize/2, arraySize *3/2);
         ArrayShort shortCollectionBig = unmodifiableListShort(shortArrayBig).subList(arraySize/2, arraySize *3/2);
         ArrayByte byteCollectionBig = unmodifiableListByte(byteArrayBig).subList(arraySize/2, arraySize *3/2);
 
@@ -229,7 +229,7 @@ public class ArraySlicePerformanceMeasurement {
         System.out.println("Iteration using ArrayLong loop: ns " + (stopTime - startTime) / nIterations);
     }
 
-    private static void profileArrayLoop(ArrayInt array, int nIterations) {
+    private static void profileArrayLoop(ArrayInteger array, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             int sum = 0;
@@ -334,7 +334,7 @@ public class ArraySlicePerformanceMeasurement {
         System.out.println("Iteration using ArrayLong iterator: ns " + (stopTime - startTime) / nIterations);
     }
 
-    private static void profileArrayIterator(ArrayInt array, int nIterations) {
+    private static void profileArrayIterator(ArrayInteger array, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             IteratorNumber iter = array.iterator();

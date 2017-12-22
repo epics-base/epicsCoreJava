@@ -30,7 +30,7 @@ public final class ArrayULong extends ListULong implements Serializable {
     }
 
     /**
-     * A new {@code ArrayLong} that wraps around the given array.
+     * A new {@code ArrayULong} that wraps around the given array.
      *
      * @param array an array
      * @param startIndex first element

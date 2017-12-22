@@ -4,18 +4,16 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.number.UnsignedConversions;
-
 /**
- * An ordered collection of unsigned {@code int}s.
+ * An ordered collection of {@code int}s.
  *
  * @author Gabriele Carcassi
  */
-public abstract class ListUInt implements ListNumber, CollectionUInt {
+public abstract class ListInteger implements ListNumber, CollectionInteger {
 
     @Override
-    public IteratorUInt iterator() {
-        return new IteratorUInt() {
+    public IteratorInteger iterator() {
+        return new IteratorInteger() {
 
             private int index;
 
@@ -33,17 +31,17 @@ public abstract class ListUInt implements ListNumber, CollectionUInt {
 
     @Override
     public double getDouble(int index) {
-        return UnsignedConversions.toDouble(getInt(index));
+        return (double) getInt(index);
     }
 
     @Override
     public float getFloat(int index) {
-        return UnsignedConversions.toFloat(getInt(index));
+        return (float) getInt(index);
     }
 
     @Override
     public long getLong(int index) {
-        return UnsignedConversions.toLong(getInt(index));
+        return (long) getInt(index);
     }
 
     @Override
@@ -100,8 +98,8 @@ public abstract class ListUInt implements ListNumber, CollectionUInt {
         if (obj == this)
             return true;
 
-        if (obj instanceof ListUInt) {
-            ListUInt other = (ListUInt) obj;
+        if (obj instanceof ListInteger) {
+            ListInteger other = (ListInteger) obj;
 
             if (size() != other.size())
                 return false;
@@ -140,24 +138,24 @@ public abstract class ListUInt implements ListNumber, CollectionUInt {
     }
     
     @Override
-    public ListUInt subList(final int fromIndex, final int toIndex) {
+    public ListInteger subList(final int fromIndex, final int toIndex) {
         if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
             throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
         }
         final int size = toIndex - fromIndex;
-        return new ListUInt() {
+        return new ListInteger() {
             @Override
             public int getInt(int index) {
                 if (index < 0 || index >= size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
-                return ListUInt.this.getInt(fromIndex + index);
+                return ListInteger.this.getInt(fromIndex + index);
             }
 
             @Override
             public void setInt(int index, int value) {
                 if (index < 0 || index >= size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
-                ListUInt.this.setInt(fromIndex + index, value);
+                ListInteger.this.setInt(fromIndex + index, value);
             }
 
             @Override

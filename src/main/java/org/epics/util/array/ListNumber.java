@@ -9,7 +9,7 @@ package org.epics.util.array;
  * a single binding for a list of primitive values of six different
  * binding. If the original type is required, instanceof can be used to
  * differentiate between {@link ListDouble}, {@link ListFloat}, {@link ListLong},
- * {@link ListInt}, {@link ListShort} and {@link ListByte}.
+ * {@link ListInteger}, {@link ListShort} and {@link ListByte}.
  *
  */
 public interface ListNumber extends CollectionNumber {

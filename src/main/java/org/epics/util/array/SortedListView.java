@@ -12,7 +12,7 @@ package org.epics.util.array;
 public class SortedListView extends ListDouble {
 
     private ListNumber values;
-    private ListInt indexes;
+    private ListInteger indexes;
     private int[] indexArray;
 
     SortedListView(ListNumber values) {
@@ -24,7 +24,7 @@ public class SortedListView extends ListDouble {
         this.indexes = CollectionNumbers.unmodifiableListInt(indexArray);
     }
 
-    SortedListView(ListNumber values, ListInt indexes) {
+    SortedListView(ListNumber values, ListInteger indexes) {
         this.values = values;
         this.indexes = indexes;
         this.indexArray = null;
@@ -51,7 +51,7 @@ public class SortedListView extends ListDouble {
      *
      * @return a list of integers
      */
-    public ListInt getIndexes() {
+    public ListInteger getIndexes() {
         return indexes;
     }
 

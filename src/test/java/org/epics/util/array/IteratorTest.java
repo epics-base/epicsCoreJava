@@ -4,13 +4,6 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.IteratorFloat;
-import org.epics.util.array.IteratorShort;
-import org.epics.util.array.IteratorLong;
-import org.epics.util.array.IteratorDouble;
-import org.epics.util.array.IteratorByte;
-import org.epics.util.array.IteratorNumber;
-import org.epics.util.array.IteratorInt;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -78,7 +71,7 @@ public class IteratorTest {
 
     @Test
     public void testIteratorInt() {
-        IteratorInt iter = new IteratorInt() {
+        IteratorInteger iter = new IteratorInteger() {
 
             public boolean hasNext() {
                 return true;

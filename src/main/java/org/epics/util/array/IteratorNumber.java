@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  * a single binding for iterating over a collection instead of six different
  * binding. If the original type is required, instanceof can be used to
  * differentiate between {@link IteratorDouble}, {@link IteratorFloat},
- * {@link IteratorLong}, {@link IteratorInt}, {@link IteratorShort}
+ * {@link IteratorLong}, {@link IteratorInteger}, {@link IteratorShort}
  * and {@link IteratorByte}.
  * <p>
  * We looked into making this class implement Iterator, but unfortunately,

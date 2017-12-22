@@ -99,7 +99,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
     public void equalsInt() {
         ListNumber list = createRampCollection();
         ListNumber intList = unmodifiableListInt(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
-        if (list instanceof ListInt) {
+        if (list instanceof ListInteger) {
             assertThat(createRampCollection(), equalTo(intList));
         } else {
             assertThat(createRampCollection(), not(equalTo(intList)));

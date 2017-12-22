@@ -30,7 +30,7 @@ public final class ArrayUShort extends ListUShort implements Serializable {
     }
 
     /**
-     * A new {@code ArrayDouble} that wraps around the given array.
+     * A new {@code ArrayUShort} that wraps around the given array.
      *
      * @param array an array
      * @param startIndex first element

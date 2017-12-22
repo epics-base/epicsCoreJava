@@ -8,7 +8,7 @@ import org.epics.util.array.ArrayShort;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ArrayInteger;
 import java.util.Random;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.ListNumbers;
@@ -50,7 +50,7 @@ public class ArrayCopyPerformanceMeasurement {
         ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
         ArrayFloat floatCollection = unmodifiableListFloat(floatArray);
         ArrayLong longCollection = unmodifiableListLong(longArray);
-        ArrayInt intCollection = unmodifiableListInt(intArray);
+        ArrayInteger intCollection = unmodifiableListInt(intArray);
         ArrayShort shortCollection = unmodifiableListShort(shortArray);
         ArrayByte byteCollection = unmodifiableListByte(byteArray);
 
@@ -124,7 +124,7 @@ public class ArrayCopyPerformanceMeasurement {
         System.out.println("Copy using ArrayLong.setAll: ns " + (stopTime - startTime) / nIterations);
     }
 
-    private static void profileArraySetAll(ArrayInt src, ArrayInt dst, int nIterations) {
+    private static void profileArraySetAll(ArrayInteger src, ArrayInteger dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             dst.setAll(0, src);

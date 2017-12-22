@@ -54,7 +54,7 @@ public class ListNumbers {
      * @param indexes the ordering to be used for the view
      * @return the sorted view
      */
-    public static SortedListView sortedView(ListNumber values, ListInt indexes) {
+    public static SortedListView sortedView(ListNumber values, ListInteger indexes) {
         SortedListView view = new SortedListView(values, indexes);
         return view;
     }
@@ -257,15 +257,15 @@ public class ListNumbers {
      * @param indexes the indexes with the values to expose
      * @return a wrapper around list
      */
-    public static ListNumber listView(ListNumber list, ListInt indexes) {
+    public static ListNumber listView(ListNumber list, ListInteger indexes) {
         if (list instanceof ListDouble) {
             return new ListView.Double((ListDouble) list, indexes);
         } else if (list instanceof ListFloat) {
             return new ListView.Float((ListFloat) list, indexes);
         } else if (list instanceof ListLong) {
             return new ListView.Long((ListLong) list, indexes);
-        } else if (list instanceof ListInt) {
-            return new ListView.Int((ListInt) list, indexes);
+        } else if (list instanceof ListInteger) {
+            return new ListView.Int((ListInteger) list, indexes);
         } else if (list instanceof ListShort) {
             return new ListView.Short((ListShort) list, indexes);
         } else if (list instanceof ListByte) {

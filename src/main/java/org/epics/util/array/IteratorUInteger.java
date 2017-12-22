@@ -10,7 +10,7 @@ import org.epics.util.number.UnsignedConversions;
  * An iterator of unsigned {@code int}s.
  *
  */
-public interface IteratorUInt extends IteratorNumber {
+public interface IteratorUInteger extends IteratorNumber {
 
     @Override
     public default float nextFloat() {

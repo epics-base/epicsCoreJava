@@ -17,9 +17,9 @@ class ListView {
      */
     static class Double extends ListDouble {
         private final ListDouble list;
-        private final ListInt indexes;
+        private final ListInteger indexes;
 
-        public Double(ListDouble list, ListInt indexes) {
+        public Double(ListDouble list, ListInteger indexes) {
             this.list = list;
             this.indexes = indexes;
         }
@@ -41,9 +41,9 @@ class ListView {
      */
     static class Float extends ListFloat {
         private final ListFloat list;
-        private final ListInt indexes;
+        private final ListInteger indexes;
 
-        public Float(ListFloat list, ListInt indexes) {
+        public Float(ListFloat list, ListInteger indexes) {
             this.list = list;
             this.indexes = indexes;
         }
@@ -65,9 +65,9 @@ class ListView {
      */
     static class Long extends ListLong {
         private final ListLong list;
-        private final ListInt indexes;
+        private final ListInteger indexes;
 
-        public Long(ListLong list, ListInt indexes) {
+        public Long(ListLong list, ListInteger indexes) {
             this.list = list;
             this.indexes = indexes;
         }
@@ -87,11 +87,11 @@ class ListView {
     /**
      * A ListView implementation for ints.
      */
-    static class Int extends ListInt {
-        private final ListInt list;
-        private final ListInt indexes;
+    static class Int extends ListInteger {
+        private final ListInteger list;
+        private final ListInteger indexes;
 
-        public Int(ListInt list, ListInt indexes) {
+        public Int(ListInteger list, ListInteger indexes) {
             this.list = list;
             this.indexes = indexes;
         }
@@ -113,9 +113,9 @@ class ListView {
      */
     static class Short extends ListShort {
         private final ListShort list;
-        private final ListInt indexes;
+        private final ListInteger indexes;
 
-        public Short(ListShort list, ListInt indexes) {
+        public Short(ListShort list, ListInteger indexes) {
             this.list = list;
             this.indexes = indexes;
         }
@@ -137,9 +137,9 @@ class ListView {
      */
     static class Byte extends ListByte {
         private final ListByte list;
-        private final ListInt indexes;
+        private final ListInteger indexes;
 
-        public Byte(ListByte list, ListInt indexes) {
+        public Byte(ListByte list, ListInteger indexes) {
             this.list = list;
             this.indexes = indexes;
         }

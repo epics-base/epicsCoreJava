@@ -105,27 +105,27 @@ public class CollectionNumbers {
     }
     
     /**
-     * Takes an int array and wraps it into an ArrayInt.
+     * Takes an int array and wraps it into an ArrayInteger.
      * 
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
      *               a primitive array.
      */
-    public static ArrayInt toListInt(int... values) {
-        return new ArrayInt(values, 0, values.length, false);
+    public static ArrayInteger toListInt(int... values) {
+        return new ArrayInteger(values, 0, values.length, false);
     }
     
     /**
-     * Takes an unsigned int array and wraps it into an ArrayUInt.
+     * Takes an unsigned int array and wraps it into an ArrayUInteger.
      * 
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
      *               a primitive array.
      */
-    public static ArrayUInt toListUInt(int... values) {
-        return new ArrayUInt(values, 0, values.length, false);
+    public static ArrayUInteger toListUInt(int... values) {
+        return new ArrayUInteger(values, 0, values.length, false);
     }
     
     /**
@@ -189,8 +189,8 @@ public class CollectionNumbers {
             return unmodifiableList((ListFloat) list);
         } else if (list instanceof ListLong) {
             return unmodifiableList((ListLong) list);
-        } else if (list instanceof ListInt) {
-            return unmodifiableList((ListInt) list);
+        } else if (list instanceof ListInteger) {
+            return unmodifiableList((ListInteger) list);
         } else if (list instanceof ListShort) {
             return unmodifiableList((ListShort) list);
         } else if (list instanceof ListByte) {
@@ -277,12 +277,12 @@ public class CollectionNumbers {
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
-    public static ListInt unmodifiableList(final ListInt list) {
-        if (list instanceof ArrayInt) {
-            return unmodifiableList((ArrayInt) list);
+    public static ListInteger unmodifiableList(final ListInteger list) {
+        if (list instanceof ArrayInteger) {
+            return unmodifiableList((ArrayInteger) list);
         }
 
-        return new ListInt() {
+        return new ListInteger() {
             @Override
             public int getInt(int index) {
                 return list.getInt(index);
@@ -379,8 +379,8 @@ public class CollectionNumbers {
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
-    public static ArrayInt unmodifiableList(ArrayInt list) {
-        return new ArrayInt(list.wrappedArray(), list.startIndex(), list.size(), true);
+    public static ArrayInteger unmodifiableList(ArrayInteger list) {
+        return new ArrayInteger(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
     
     /**
@@ -444,23 +444,23 @@ public class CollectionNumbers {
     }
     
     /**
-     * Returns an unmodifiable {@link ArrayInt} wrapper for the given {@code int} array.
+     * Returns an unmodifiable {@link ArrayInteger} wrapper for the given {@code int} array.
      * 
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayInt unmodifiableListInt(int... values) {
-        return new ArrayInt(values, 0, values.length, true);
+    public static ArrayInteger unmodifiableListInt(int... values) {
+        return new ArrayInteger(values, 0, values.length, true);
     }
     
     /**
-     * Returns an unmodifiable {@link ArrayUInt} wrapper for the given unsigned {@code int} array.
+     * Returns an unmodifiable {@link ArrayUInteger} wrapper for the given unsigned {@code int} array.
      * 
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayUInt unmodifiableListUInt(int... values) {
-        return new ArrayUInt(values, 0, values.length, true);
+    public static ArrayUInteger unmodifiableListUInt(int... values) {
+        return new ArrayUInteger(values, 0, values.length, true);
     }
     
     /**

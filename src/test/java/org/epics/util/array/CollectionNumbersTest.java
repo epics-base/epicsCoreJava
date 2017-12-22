@@ -251,7 +251,7 @@ public class CollectionNumbersTest {
         assertThat(unmodifiableList((ListDouble) toListDouble(1, 2, 3)), instanceOf(ArrayDouble.class));
         assertThat(unmodifiableList((ListFloat) toListFloat(1, 2, 3)), instanceOf(ArrayFloat.class));
         assertThat(unmodifiableList((ListLong) toListLong(1, 2, 3)), instanceOf(ArrayLong.class));
-        assertThat(unmodifiableList((ListInt) toListInt(1, 2, 3)), instanceOf(ArrayInt.class));
+        assertThat(unmodifiableList((ListInteger) toListInt(1, 2, 3)), instanceOf(ArrayInteger.class));
         assertThat(unmodifiableList((ListShort) toListShort(new short[] {1, 2, 3})), instanceOf(ArrayShort.class));
         assertThat(unmodifiableList((ListByte) toListByte(new byte[] {1, 2, 3})), instanceOf(ArrayByte.class));
     }
@@ -261,7 +261,7 @@ public class CollectionNumbersTest {
         assertThat(unmodifiableList((ListNumber) toListDouble(1, 2, 3)), instanceOf(ArrayDouble.class));
         assertThat(unmodifiableList((ListNumber) toListFloat(1, 2, 3)), instanceOf(ArrayFloat.class));
         assertThat(unmodifiableList((ListNumber) toListLong(1, 2, 3)), instanceOf(ArrayLong.class));
-        assertThat(unmodifiableList((ListNumber) toListInt(1, 2, 3)), instanceOf(ArrayInt.class));
+        assertThat(unmodifiableList((ListNumber) toListInt(1, 2, 3)), instanceOf(ArrayInteger.class));
         assertThat(unmodifiableList((ListNumber) toListShort(new short[] {1, 2, 3})), instanceOf(ArrayShort.class));
         assertThat(unmodifiableList((ListNumber) toListByte(new byte[] {1, 2, 3})), instanceOf(ArrayByte.class));
     }

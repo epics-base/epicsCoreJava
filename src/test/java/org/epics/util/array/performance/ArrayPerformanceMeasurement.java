@@ -9,7 +9,7 @@ import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.CollectionNumber;
 import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ArrayInteger;
 import java.util.Random;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.IteratorNumber;
@@ -57,7 +57,7 @@ public class ArrayPerformanceMeasurement {
         ArrayDouble doubleCollection = unmodifiableListDouble(doubleArray);
         ArrayFloat floatCollection = unmodifiableListFloat(floatArray);
         ArrayLong longCollection = unmodifiableListLong(longArray);
-        ArrayInt intCollection = unmodifiableListInt(intArray);
+        ArrayInteger intCollection = unmodifiableListInt(intArray);
         ArrayShort shortCollection = unmodifiableListShort(shortArray);
         ArrayByte byteCollection = unmodifiableListByte(byteArray);
 
@@ -211,7 +211,7 @@ public class ArrayPerformanceMeasurement {
         System.out.println("Iteration using ArrayLong: ns " + (stopTime - startTime) / nIterations);
     }
 
-    private static void profileArray(ArrayInt array, int nIterations) {
+    private static void profileArray(ArrayInteger array, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;

@@ -4,22 +4,6 @@
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListLong;
-import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayShort;
-import org.epics.util.array.SortedListView;
-import org.epics.util.array.ListMath;
-import org.epics.util.array.ListShort;
-import org.epics.util.array.ListNumbers;
-import org.epics.util.array.ListByte;
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInt;
-import org.epics.util.array.ListInt;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -44,7 +28,7 @@ public class ListNumbersTest {
     @Test
     public void sortedView2() {
         ArrayDouble values = unmodifiableListDouble(5,3,1,4,2,0);
-        ArrayInt indexes = unmodifiableListInt(0,3,1,4,2,5);
+        ArrayInteger indexes = unmodifiableListInt(0,3,1,4,2,5);
         SortedListView sortedView = ListNumbers.sortedView(values, indexes);
         assertThat(values, equalTo(unmodifiableListDouble(5,3,1,4,2,0)));
         assertThat(sortedView, equalTo((ListNumber) unmodifiableListDouble(5,4,3,2,1,0)));
@@ -198,7 +182,7 @@ public class ListNumbersTest {
     @Test
     public void listView1() {
         ArrayDouble values = unmodifiableListDouble(5,3,1,4,2,0);
-        ArrayInt indexes = unmodifiableListInt(0,3,1,4,2,5);
+        ArrayInteger indexes = unmodifiableListInt(0,3,1,4,2,5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
         assertThat(sortedView, instanceOf(ListDouble.class));
         assertThat(values, equalTo(unmodifiableListDouble(5,3,1,4,2,0)));
@@ -208,7 +192,7 @@ public class ListNumbersTest {
     @Test
     public void listView2() {
         ArrayFloat values = unmodifiableListFloat(5, 3, 1, 4, 2, 0);
-        ArrayInt indexes = unmodifiableListInt(0, 3, 1, 4, 2, 5);
+        ArrayInteger indexes = unmodifiableListInt(0, 3, 1, 4, 2, 5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
         assertThat(sortedView, instanceOf(ListFloat.class));
         assertThat(values, equalTo(unmodifiableListFloat(5, 3, 1, 4, 2, 0)));
@@ -218,7 +202,7 @@ public class ListNumbersTest {
     @Test
     public void listView3() {
         ArrayLong values = unmodifiableListLong(5,3,1,4,2,0);
-        ArrayInt indexes = unmodifiableListInt(0,3,1,4,2,5);
+        ArrayInteger indexes = unmodifiableListInt(0,3,1,4,2,5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
         assertThat(sortedView, instanceOf(ListLong.class));
         assertThat(values, equalTo(unmodifiableListLong(5,3,1,4,2,0)));
@@ -227,10 +211,10 @@ public class ListNumbersTest {
 
     @Test
     public void listView4() {
-        ArrayInt values = unmodifiableListInt(5,3,1,4,2,0);
-        ArrayInt indexes = unmodifiableListInt(0,3,1,4,2,5);
+        ArrayInteger values = unmodifiableListInt(5,3,1,4,2,0);
+        ArrayInteger indexes = unmodifiableListInt(0,3,1,4,2,5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
-        assertThat(sortedView, instanceOf(ListInt.class));
+        assertThat(sortedView, instanceOf(ListInteger.class));
         assertThat(values, equalTo(unmodifiableListInt(5,3,1,4,2,0)));
         assertThat(sortedView, equalTo(unmodifiableListInt(5,4,3,2,1,0)));
     }
@@ -238,7 +222,7 @@ public class ListNumbersTest {
     @Test
     public void listView5() {
         ArrayShort values = unmodifiableListShort(new short[] {5,3,1,4,2,0});
-        ArrayInt indexes = unmodifiableListInt(0,3,1,4,2,5);
+        ArrayInteger indexes = unmodifiableListInt(0,3,1,4,2,5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
         assertThat(sortedView, instanceOf(ListShort.class));
         assertThat(values, equalTo(unmodifiableListShort(new short[] {5,3,1,4,2,0})));
@@ -248,7 +232,7 @@ public class ListNumbersTest {
     @Test
     public void listView6() {
         ArrayByte values = unmodifiableListByte(new byte[] {5,3,1,4,2,0});
-        ArrayInt indexes = unmodifiableListInt(0,3,1,4,2,5);
+        ArrayInteger indexes = unmodifiableListInt(0,3,1,4,2,5);
         ListNumber sortedView = ListNumbers.listView(values, indexes);
         assertThat(sortedView, instanceOf(ListByte.class));
         assertThat(values, equalTo(unmodifiableListByte(new byte[] {5,3,1,4,2,0})));
