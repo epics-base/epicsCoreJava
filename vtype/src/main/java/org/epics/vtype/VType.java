@@ -44,6 +44,7 @@ public abstract class VType {
             VIntArray.class,
             VUIntArray.class,
             VLongArray.class,
+            VULongArray.class,
             VFloatArray.class,
             VDoubleArray.class);
 
