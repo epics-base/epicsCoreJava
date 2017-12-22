@@ -38,6 +38,7 @@ public abstract class VType {
             VEnum.class,
             VString.class,
             VByteArray.class,
+            VUByteArray.class,
             VShortArray.class,
             VIntArray.class,
             VLongArray.class,
