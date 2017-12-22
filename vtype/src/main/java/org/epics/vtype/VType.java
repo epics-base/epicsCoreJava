@@ -42,6 +42,7 @@ public abstract class VType {
             VShortArray.class,
             VUShortArray.class,
             VIntArray.class,
+            VUIntArray.class,
             VLongArray.class,
             VFloatArray.class,
             VDoubleArray.class);
