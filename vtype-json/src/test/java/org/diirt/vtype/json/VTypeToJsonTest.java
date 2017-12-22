@@ -17,7 +17,7 @@ import org.epics.util.array.ArrayBoolean;
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.ArrayShort;
 import org.epics.vtype.Alarm;
@@ -135,7 +135,7 @@ public class VTypeToJsonTest {
 //                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VIntArray vIntArray = VIntArray.create(ArrayInt.of(new int[]of, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, ofisplay.none());
+//    public VIntArray vIntArray = VIntArray.create(ArrayInteger.of(new int[]of, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, ofisplay.none());
 //    public String vIntArrayJson = "{\"type\":{\"name\":\"VIntArray\",\"version\":1},"
 //                + "\"value\":[0,1,2],"
 //                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
@@ -163,22 +163,22 @@ public class VTypeToJsonTest {
 //            + "\"value\":[\"A\",\"B\",\"C\"],"
 //            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null}}";
-//    public VEnumArray vEnumArray = newVEnumArray(new ArrayInt(1,0,1), Arrays.asList("One", "Two", "Three"), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)));
+//    public VEnumArray vEnumArray = newVEnumArray(new ArrayInteger(1,0,1), Arrays.asList("One", "Two", "Three"), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)));
 //    public SofvEnumArrayJson = "{\"type\":{\"name\":\"VEnumArray\",\"version\":1},"
 //            + "\"value\":[1,0,1],\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
 //            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
 //            + "\"enum\":{\"labels\":[\"One\",\"Two\",\"Three\"]}}";
-//    public VTable vTable = newVTable(Arrays.<Class<?>>asList(String.class, int.class, double.class), Arrays.asList("Name", "Index", "Value"), Arrays.asList(Arrays.asList("A", "B", "C"), new ArrayInt(1,2,3), new ArrayDouble(3.14, 1.25, -0.1)));
+//    public VTable vTable = newVTable(Arrays.<Class<?>>asList(String.class, int.class, double.class), Arrays.asList("Name", "Index", "Value"), Arrays.asList(Arrays.asList("A", "B", "C"), new ArrayInteger(1,2,3), new ArrayDouble(3.14, 1.25, -0.1)));
 //    public String vTableJson = "{\"type\":{\"name\":\"VTable\",\"version\":1},"
 //            + "\"columnNames\":[\"Name\",\"Index\",\"Value\"],"
 //            + "\"columnTypes\":[\"String\",\"int\",\"double\"],"
 //            + "\"columnValues\":[[\"A\",\"B\",\"C\"],[1,2,3],[3.14,1.25,-0.1]]}";
-//    public VTable vTable2 = newVTable(Arrays.<Class<?>>asList(String.class, int.class, double.class, Timestamp.class), Arrays.asList("Name", "Index", "Value", "Timestamp"), Arrays.asList(Arrays.asList("A", "B", "C"), new ArrayInt(1,2,3), new ArrayDouble(3.14, 1.25, -0.1), Arrays.asList(Instant.ofEpochSecond(1234, 0), Instant.ofEpochSecond(2345, 0), Instant.ofEpochSecond(3456, 0))));
+//    public VTable vTable2 = newVTable(Arrays.<Class<?>>asList(String.class, int.class, double.class, Timestamp.class), Arrays.asList("Name", "Index", "Value", "Timestamp"), Arrays.asList(Arrays.asList("A", "B", "C"), new ArrayInteger(1,2,3), new ArrayDouble(3.14, 1.25, -0.1), Arrays.asList(Instant.ofEpochSecond(1234, 0), Instant.ofEpochSecond(2345, 0), Instant.ofEpochSecond(3456, 0))));
 //    public String vTable2Json = "{\"type\":{\"name\":\"VTable\",\"version\":1},"
 //            + "\"columnNames\":[\"Name\",\"Index\",\"Value\",\"Timestamp\"],"
 //            + "\"columnTypes\":[\"String\",\"int\",\"double\",\"Timestamp\"],"
 //            + "\"columnValues\":[[\"A\",\"B\",\"C\"],[1,2,3],[3.14,1.25,-0.1],[1234000,2345000,3456000]]}";
-//    public VTable vTable3 = newVTable(Arrays.<Class<?>>asList(String.class, int.class, double.class, Timestamp.class), Arrays.asList("Name", "Index", "Value", "Timestamp"), Arrays.asList(Arrays.asList(null, "B", "C"), new ArrayInt(1,2,3), new ArrayDouble(Double.NaN, 1.25, -0.1), Arrays.asList(Instant.ofEpochSecond(1234, 0), null, Instant.ofEpochSecond(3456, 123000000))));
+//    public VTable vTable3 = newVTable(Arrays.<Class<?>>asList(String.class, int.class, double.class, Timestamp.class), Arrays.asList("Name", "Index", "Value", "Timestamp"), Arrays.asList(Arrays.asList(null, "B", "C"), new ArrayInteger(1,2,3), new ArrayDouble(Double.NaN, 1.25, -0.1), Arrays.asList(Instant.ofEpochSecond(1234, 0), null, Instant.ofEpochSecond(3456, 123000000))));
 //    public String vTable3Json = "{\"type\":{\"name\":\"VTable\",\"version\":1},"
 //            + "\"columnNames\":[\"Name\",\"Index\",\"Value\",\"Timestamp\"],"
 //            + "\"columnTypes\":[\"String\",\"int\",\"double\",\"Timestamp\"],"

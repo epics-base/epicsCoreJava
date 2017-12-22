@@ -4,9 +4,9 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListShort;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListShort;
 
 /**
@@ -32,7 +32,7 @@ public abstract class VShortArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VShortArray of(final ListShort data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
+    public static VShortArray of(final ListShort data, final ListInteger sizes, final Alarm alarm, final Time time, final Display display) {
         return new IVShortArray(data, sizes, alarm, time, display);
     }
     
@@ -46,6 +46,6 @@ public abstract class VShortArray extends VNumberArray {
      * @return the new value
      */
     public static VShortArray of(final ListShort data, final Alarm alarm, final Time time, final Display display) {
-        return of(data, ArrayInt.of(data.size()), alarm, time, display);
+        return of(data, ArrayInteger.of(data.size()), alarm, time, display);
     }
 }

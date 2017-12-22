@@ -4,9 +4,9 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 
 /**
  * Scalar double array with alarm, timestamp, display and control information.
@@ -31,7 +31,7 @@ public abstract class VFloatArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VFloatArray of(final ListFloat data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
+    public static VFloatArray of(final ListFloat data, final ListInteger sizes, final Alarm alarm, final Time time, final Display display) {
         return new IVFloatArray(data, sizes, alarm, time, display);
     }
     
@@ -45,6 +45,6 @@ public abstract class VFloatArray extends VNumberArray {
      * @return the new value
      */
     public static VFloatArray of(final ListFloat data, final Alarm alarm, final Time time, final Display display) {
-        return of(data, ArrayInt.of(data.size()), alarm, time, display);
+        return of(data, ArrayInteger.of(data.size()), alarm, time, display);
     }
 }

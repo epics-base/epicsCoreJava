@@ -4,9 +4,9 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ArrayInt;
-import org.epics.util.array.ListInt;
-import org.epics.util.array.ListUInt;
+import org.epics.util.array.ArrayInteger;
+import org.epics.util.array.ListInteger;
+import org.epics.util.array.ListUInteger;
 
 /**
  * Scalar unsigned byte array with alarm, timestamp, display and control information.
@@ -19,7 +19,7 @@ public abstract class VUIntArray extends VNumberArray {
      * {@inheritDoc }
      */
     @Override
-    public abstract ListUInt getData();
+    public abstract ListUInteger getData();
     
     /**
      * Creates a new VUIntArray.
@@ -31,7 +31,7 @@ public abstract class VUIntArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VUIntArray of(final ListUInt data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
+    public static VUIntArray of(final ListUInteger data, final ListInteger sizes, final Alarm alarm, final Time time, final Display display) {
         return new IVUIntArray(data, sizes, alarm, time, display);
     }
     
@@ -44,7 +44,7 @@ public abstract class VUIntArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VUIntArray of(final ListUInt data, final Alarm alarm, final Time time, final Display display) {
-        return of(data, ArrayInt.of(data.size()), alarm, time, display);
+    public static VUIntArray of(final ListUInteger data, final Alarm alarm, final Time time, final Display display) {
+        return of(data, ArrayInteger.of(data.size()), alarm, time, display);
     }
 }

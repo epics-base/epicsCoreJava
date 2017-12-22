@@ -16,14 +16,14 @@ import javax.json.JsonValue;
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInt;
+import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.ArrayShort;
 import org.epics.util.array.CollectionNumbers;
 import org.epics.util.array.ListByte;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListLong;
 import org.epics.util.array.ListNumber;
 import org.epics.util.array.ListNumbers;
@@ -117,17 +117,17 @@ public class JsonArrays {
     }
     
     /**
-     * Converts the given numeric JSON array to a ListInt.
+     * Converts the given numeric JSON array to a ListInteger.
      * 
      * @param array an array of numbers
-     * @return a new ListInt
+     * @return a new ListInteger
      */
-    public static ListInt toListInt(JsonArray array) {
+    public static ListInteger toListInt(JsonArray array) {
         int[] values = new int[array.size()];
         for (int i = 0; i < values.length; i++) {
             values[i] = (int) array.getJsonNumber(i).intValue();
         }
-        return ArrayInt.of(values);
+        return ArrayInteger.of(values);
     }
 
     /**
@@ -235,7 +235,7 @@ public class JsonArrays {
      */
     public static JsonArrayBuilder fromListNumber(ListNumber list) {
         JsonArrayBuilder b = Json.createArrayBuilder();
-        if (list instanceof ListByte || list instanceof ListShort || list instanceof ListInt) {
+        if (list instanceof ListByte || list instanceof ListShort || list instanceof ListInteger) {
             for (int i = 0; i < list.size(); i++) {
                 b.add(list.getInt(i));
             }

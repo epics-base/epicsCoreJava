@@ -4,8 +4,8 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ListInt;
-import org.epics.util.array.ListUInt;
+import org.epics.util.array.ListInteger;
+import org.epics.util.array.ListUInteger;
 
 /**
  * Immutable VUIntArray implementation.
@@ -14,13 +14,13 @@ import org.epics.util.array.ListUInt;
  */
 class IVUIntArray extends VUIntArray {
     
-    private final ListUInt data;
-    private final ListInt sizes;
+    private final ListUInteger data;
+    private final ListInteger sizes;
     private final Alarm alarm;
     private final Time time;
     private final Display display;
 
-    IVUIntArray(ListUInt data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    IVUIntArray(ListUInteger data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         VType.argumentNotNull("data", data);
         VType.argumentNotNull("sizes", sizes);
         VType.argumentNotNull("alarm", alarm);
@@ -34,12 +34,12 @@ class IVUIntArray extends VUIntArray {
     }
 
     @Override
-    public ListInt getSizes() {
+    public ListInteger getSizes() {
         return sizes;
     }
 
     @Override
-    public ListUInt getData() {
+    public ListUInteger getData() {
         return data;
     }
 

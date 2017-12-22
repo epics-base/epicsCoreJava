@@ -5,7 +5,7 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ArrayUByte;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListUByte;
 
 /**
@@ -25,7 +25,7 @@ public class VUByteArrayTest extends FeatureTestVNumberArray<ListUByte, VUByteAr
     }
 
     @Override
-    VUByteArray of(ListUByte data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    VUByteArray of(ListUByte data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         return VUByteArray.of(data, sizes, alarm, time, display);
     }
 

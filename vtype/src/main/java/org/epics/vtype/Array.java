@@ -6,7 +6,7 @@ package org.epics.vtype;
 
 import java.util.List;
 import org.epics.util.array.CollectionNumbers;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListNumber;
 
 /**
@@ -56,5 +56,5 @@ public abstract class Array extends VType {
      * 
      * @return the dimension sizes
      */
-    public abstract ListInt getSizes();
+    public abstract ListInteger getSizes();
 }

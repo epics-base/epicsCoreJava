@@ -5,7 +5,7 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ArrayULong;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListULong;
 
 /**
@@ -25,7 +25,7 @@ public class VULongArrayTest extends FeatureTestVNumberArray<ListULong, VULongAr
     }
 
     @Override
-    VULongArray of(ListULong data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    VULongArray of(ListULong data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         return VULongArray.of(data, sizes, alarm, time, display);
     }
 

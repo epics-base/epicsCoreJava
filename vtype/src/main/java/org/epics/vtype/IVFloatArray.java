@@ -5,7 +5,7 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 
 /**
  * Immutable VFloatArray implementation.
@@ -15,12 +15,12 @@ import org.epics.util.array.ListInt;
 class IVFloatArray extends VFloatArray {
     
     private final ListFloat data;
-    private final ListInt sizes;
+    private final ListInteger sizes;
     private final Alarm alarm;
     private final Time time;
     private final Display display;
 
-    IVFloatArray(ListFloat data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    IVFloatArray(ListFloat data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         VType.argumentNotNull("data", data);
         VType.argumentNotNull("sizes", sizes);
         VType.argumentNotNull("alarm", alarm);
@@ -34,7 +34,7 @@ class IVFloatArray extends VFloatArray {
     }
 
     @Override
-    public ListInt getSizes() {
+    public ListInteger getSizes() {
         return sizes;
     }
 

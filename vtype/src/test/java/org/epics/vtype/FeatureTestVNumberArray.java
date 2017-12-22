@@ -5,8 +5,8 @@
 package org.epics.vtype;
 
 import java.time.Instant;
-import org.epics.util.array.ArrayInt;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ArrayInteger;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListNumber;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -24,7 +24,7 @@ public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VN
     
     abstract V of(L data, Alarm alarm, Time time, Display display);
     
-    abstract V of(L data, ListInt sizes, Alarm alarm, Time time, Display display);
+    abstract V of(L data, ListInteger sizes, Alarm alarm, Time time, Display display);
     
     abstract String getToString();
 
@@ -32,7 +32,7 @@ public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VN
     public void of1() {
         Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
         Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
-        ListInt sizes = ArrayInt.of(5,2);
+        ListInteger sizes = ArrayInteger.of(5,2);
         V value = of(getData(), sizes, alarm, time, Display.none());
         assertThat(value.getData(), equalTo(getData()));
         assertThat(value.getSizes(), equalTo(sizes));
@@ -42,7 +42,7 @@ public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VN
         
         value = of(getData(), alarm, time, Display.none());
         assertThat(value.getData(), equalTo(getData()));
-        assertThat(value.getSizes(), equalTo(ArrayInt.of(10)));
+        assertThat(value.getSizes(), equalTo(ArrayInteger.of(10)));
         assertThat(value.getAlarm(), equalTo(alarm));
         assertThat(value.getTime(), equalTo(time));
     }
@@ -69,22 +69,22 @@ public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VN
     
     @Test(expected = NullPointerException.class)
     public void of6() {
-        of(null, ArrayInt.of(10), Alarm.none(), Time.now(), Display.none());
+        of(null, ArrayInteger.of(10), Alarm.none(), Time.now(), Display.none());
     }
     
     @Test(expected = NullPointerException.class)
     public void of7() {
-        of(getData(), ArrayInt.of(10), null, Time.now(), Display.none());
+        of(getData(), ArrayInteger.of(10), null, Time.now(), Display.none());
     }
     
     @Test(expected = NullPointerException.class)
     public void of8() {
-        of(getData(), ArrayInt.of(10), Alarm.none(), null, Display.none());
+        of(getData(), ArrayInteger.of(10), Alarm.none(), null, Display.none());
     }
     
     @Test(expected = NullPointerException.class)
     public void of9() {
-        of(getData(), ArrayInt.of(10), Alarm.none(), Time.now(), null);
+        of(getData(), ArrayInteger.of(10), Alarm.none(), Time.now(), null);
     }
     
     @Test(expected = NullPointerException.class)

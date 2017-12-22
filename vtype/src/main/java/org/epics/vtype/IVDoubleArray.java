@@ -5,7 +5,7 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ListDouble;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 
 /**
  * Immutable VDoubleArray implementation.
@@ -15,12 +15,12 @@ import org.epics.util.array.ListInt;
 class IVDoubleArray extends VDoubleArray {
     
     private final ListDouble data;
-    private final ListInt sizes;
+    private final ListInteger sizes;
     private final Alarm alarm;
     private final Time time;
     private final Display display;
 
-    IVDoubleArray(ListDouble data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    IVDoubleArray(ListDouble data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         VType.argumentNotNull("data", data);
         VType.argumentNotNull("sizes", sizes);
         VType.argumentNotNull("alarm", alarm);
@@ -34,7 +34,7 @@ class IVDoubleArray extends VDoubleArray {
     }
 
     @Override
-    public ListInt getSizes() {
+    public ListInteger getSizes() {
         return sizes;
     }
 

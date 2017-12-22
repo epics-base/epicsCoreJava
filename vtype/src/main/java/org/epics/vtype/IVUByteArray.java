@@ -4,7 +4,7 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListUByte;
 
 /**
@@ -15,12 +15,12 @@ import org.epics.util.array.ListUByte;
 class IVUByteArray extends VUByteArray {
     
     private final ListUByte data;
-    private final ListInt sizes;
+    private final ListInteger sizes;
     private final Alarm alarm;
     private final Time time;
     private final Display display;
 
-    IVUByteArray(ListUByte data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    IVUByteArray(ListUByte data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         VType.argumentNotNull("data", data);
         VType.argumentNotNull("sizes", sizes);
         VType.argumentNotNull("alarm", alarm);
@@ -34,7 +34,7 @@ class IVUByteArray extends VUByteArray {
     }
 
     @Override
-    public ListInt getSizes() {
+    public ListInteger getSizes() {
         return sizes;
     }
 

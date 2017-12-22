@@ -4,28 +4,28 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ArrayUInt;
-import org.epics.util.array.ListInt;
-import org.epics.util.array.ListUInt;
+import org.epics.util.array.ArrayUInteger;
+import org.epics.util.array.ListInteger;
+import org.epics.util.array.ListUInteger;
 
 /**
  *
  * @author carcassi
  */
-public class VUIntArrayTest extends FeatureTestVNumberArray<ListUInt, VUIntArray> {
+public class VUIntArrayTest extends FeatureTestVNumberArray<ListUInteger, VUIntArray> {
 
     @Override
-    ListUInt getData() {
-        return ArrayUInt.of(new int[] {0,1,2,3,4,5,6,7,8,9});
+    ListUInteger getData() {
+        return ArrayUInteger.of(new int[] {0,1,2,3,4,5,6,7,8,9});
     }
 
     @Override
-    VUIntArray of(ListUInt data, Alarm alarm, Time time, Display display) {
+    VUIntArray of(ListUInteger data, Alarm alarm, Time time, Display display) {
         return VUIntArray.of(data, alarm, time, display);
     }
 
     @Override
-    VUIntArray of(ListUInt data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    VUIntArray of(ListUInteger data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         return VUIntArray.of(data, sizes, alarm, time, display);
     }
 

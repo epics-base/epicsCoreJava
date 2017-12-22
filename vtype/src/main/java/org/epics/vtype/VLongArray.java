@@ -4,8 +4,8 @@
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ArrayInt;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ArrayInteger;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListLong;
 
 /**
@@ -31,7 +31,7 @@ public abstract class VLongArray extends VNumberArray {
      * @param display the display
      * @return the new value
      */
-    public static VLongArray of(final ListLong data, final ListInt sizes, final Alarm alarm, final Time time, final Display display) {
+    public static VLongArray of(final ListLong data, final ListInteger sizes, final Alarm alarm, final Time time, final Display display) {
         return new IVLongArray(data, sizes, alarm, time, display);
     }
     
@@ -45,6 +45,6 @@ public abstract class VLongArray extends VNumberArray {
      * @return the new value
      */
     public static VLongArray of(final ListLong data, final Alarm alarm, final Time time, final Display display) {
-        return of(data, ArrayInt.of(data.size()), alarm, time, display);
+        return of(data, ArrayInteger.of(data.size()), alarm, time, display);
     }
 }

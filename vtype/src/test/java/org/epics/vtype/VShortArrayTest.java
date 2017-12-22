@@ -6,7 +6,7 @@ package org.epics.vtype;
 
 import org.epics.util.array.ArrayShort;
 import org.epics.util.array.ListShort;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 
 /**
  *
@@ -25,7 +25,7 @@ public class VShortArrayTest extends FeatureTestVNumberArray<ListShort, VShortAr
     }
 
     @Override
-    VShortArray of(ListShort data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    VShortArray of(ListShort data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         return VShortArray.of(data, sizes, alarm, time, display);
     }
 

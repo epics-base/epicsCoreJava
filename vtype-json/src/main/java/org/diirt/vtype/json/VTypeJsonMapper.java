@@ -22,7 +22,7 @@ import org.epics.util.array.ListBoolean;
 import org.epics.util.array.ListByte;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListLong;
 import org.epics.util.array.ListShort;
 import org.epics.util.stats.Range;
@@ -98,7 +98,7 @@ class VTypeJsonMapper implements JsonObject {
     }
     
     
-    public ListInt getListInt(String string) {
+    public ListInteger getListInt(String string) {
         JsonArray array = getJsonArray(string);
         return toListInt(array);
     }

@@ -6,7 +6,7 @@ package org.epics.vtype;
 
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ListDouble;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 
 /**
  *
@@ -25,7 +25,7 @@ public class VDoubleArrayTest extends FeatureTestVNumberArray<ListDouble, VDoubl
     }
 
     @Override
-    VDoubleArray of(ListDouble data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    VDoubleArray of(ListDouble data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         return VDoubleArray.of(data, sizes, alarm, time, display);
     }
 

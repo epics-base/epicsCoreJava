@@ -5,7 +5,7 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ListShort;
-import org.epics.util.array.ListInt;
+import org.epics.util.array.ListInteger;
 
 /**
  * Immutable VShortArray implementation.
@@ -15,12 +15,12 @@ import org.epics.util.array.ListInt;
 class IVShortArray extends VShortArray {
     
     private final ListShort data;
-    private final ListInt sizes;
+    private final ListInteger sizes;
     private final Alarm alarm;
     private final Time time;
     private final Display display;
 
-    IVShortArray(ListShort data, ListInt sizes, Alarm alarm, Time time, Display display) {
+    IVShortArray(ListShort data, ListInteger sizes, Alarm alarm, Time time, Display display) {
         VType.argumentNotNull("data", data);
         VType.argumentNotNull("sizes", sizes);
         VType.argumentNotNull("alarm", alarm);
@@ -34,7 +34,7 @@ class IVShortArray extends VShortArray {
     }
 
     @Override
-    public ListInt getSizes() {
+    public ListInteger getSizes() {
         return sizes;
     }
 
