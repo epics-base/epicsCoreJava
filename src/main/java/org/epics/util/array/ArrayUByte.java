@@ -156,12 +156,12 @@ public final class ArrayUByte extends ListUByte implements Serializable {
     }
     
     /**
-     * Returns an unmodifiable {@link ArrayDouble} wrapper for the given {@code double} array.
+     * Returns an unmodifiable {@link ArrayUByte} wrapper for the given unsigned {@code byte} array.
      * 
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
-    public static ArrayDouble of(double... values) {
-        return CollectionNumbers.unmodifiableListDouble(values);
+    public static ArrayUByte of(byte... values) {
+        return CollectionNumbers.unmodifiableListUByte(values);
     }
 }
