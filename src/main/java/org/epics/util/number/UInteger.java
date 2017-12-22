@@ -52,4 +52,33 @@ public final class UInteger extends Number {
     public static UInteger valueOf(int unsignedValue) {
         return new UInteger(unsignedValue);
     }
+
+    /**
+     * Returns a new {@code String} object representing the
+     * specified unsigned {@code int}. The radix is assumed to be 10.
+     *
+     * @param unsignedValue the unsigned {@code int} to be converted
+     * @return the string representation of the specified unsigned {@code int}
+     */
+    public static String toString(int unsignedValue) {
+        return Integer.toUnsignedString(unsignedValue, 10);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof UInteger) {
+            return unsignedValue == ((UInteger)obj).unsignedValue;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(unsignedValue);
+    }
+
+    @Override
+    public String toString() {
+        return UInteger.toString(unsignedValue);
+    }
 }

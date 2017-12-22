@@ -34,4 +34,32 @@ public class ULongTest {
         assertThat(value.longValue(), equalTo(-1L));
         assertThat(value.intValue(), equalTo(-1));
     }
+
+    @Test
+    public void equals1() {
+        ULong value1 = new ULong(-1);
+        ULong value2 = new ULong(-1);
+        ULong value3 = new ULong(0);
+        assertThat(value1, equalTo(value2));
+        assertThat(value1, not(equalTo(value3)));
+        assertThat(value1, not(equalTo(null)));
+        assertThat(value1, not(equalTo(new Object())));
+    }
+
+    @Test
+    public void hashCode1() {
+        ULong value1 = new ULong(-1);
+        ULong value2 = new ULong(-1);
+        ULong value3 = new ULong(10);
+        assertThat(value1.hashCode(), equalTo(value2.hashCode()));
+        assertThat(value1.hashCode(), not(equalTo(value3.hashCode())));
+    }
+    
+    @Test
+    public void toString1() {
+        ULong value1 = new ULong(0);
+        ULong value2 = new ULong(-1);
+        assertThat(value1.toString(), equalTo("0"));
+        assertThat(value2.toString(), equalTo("18446744073709551615"));
+    }
 }

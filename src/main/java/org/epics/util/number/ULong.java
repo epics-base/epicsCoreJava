@@ -52,4 +52,33 @@ public final class ULong extends Number {
     public static ULong valueOf(long unsignedValue) {
         return new ULong(unsignedValue);
     }
+
+    /**
+     * Returns a new {@code String} object representing the
+     * specified unsigned {@code long}. The radix is assumed to be 10.
+     *
+     * @param unsignedValue the unsigned {@code long} to be converted
+     * @return the string representation of the specified unsigned {@code long}
+     */
+    public static String toString(long unsignedValue) {
+        return Long.toUnsignedString(unsignedValue, 10);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ULong) {
+            return unsignedValue == ((ULong)obj).unsignedValue;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(unsignedValue);
+    }
+
+    @Override
+    public String toString() {
+        return ULong.toString(unsignedValue);
+    }
 }
