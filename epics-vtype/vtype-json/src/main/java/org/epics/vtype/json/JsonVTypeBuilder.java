@@ -76,6 +76,13 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
         return this;
     }
 
+    public JsonVTypeBuilder addIgnoreNaN(String string, double d) {
+        if (!Double.isNaN(d)) {
+            builder.add(string, d);
+        }
+        return this;
+    }
+
     @Override
     public JsonVTypeBuilder add(String string, boolean bln) {
         builder.add(string, bln);
@@ -121,12 +128,12 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
     
     public JsonVTypeBuilder addDisplay(Display display) {
         return add("display", new JsonVTypeBuilder()
-                .add("lowAlarm", display.getAlarmRange().getMinimum())
-                .add("highAlarm", display.getAlarmRange().getMaximum())
-                .add("lowDisplay", display.getDisplayRange().getMinimum())
-                .add("highDisplay", display.getDisplayRange().getMaximum())
-                .add("lowWarning", display.getWarningRange().getMinimum())
-                .add("highWarning", display.getWarningRange().getMaximum())
+                .addIgnoreNaN("lowAlarm", display.getAlarmRange().getMinimum())
+                .addIgnoreNaN("highAlarm", display.getAlarmRange().getMaximum())
+                .addIgnoreNaN("lowDisplay", display.getDisplayRange().getMinimum())
+                .addIgnoreNaN("highDisplay", display.getDisplayRange().getMaximum())
+                .addIgnoreNaN("lowWarning", display.getWarningRange().getMinimum())
+                .addIgnoreNaN("highWarning", display.getWarningRange().getMaximum())
                 .add("units", display.getUnit()));
     }
     
@@ -182,9 +189,7 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
     }
     
     public JsonVTypeBuilder addNullableObject(String string, Object o) {
-        if (o == null) {
-            addNull(string);
-        } else {
+        if (o != null) {
             addObject(string, o);
         }
         return this;

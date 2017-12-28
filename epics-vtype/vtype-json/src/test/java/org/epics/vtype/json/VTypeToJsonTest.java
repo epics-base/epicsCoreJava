@@ -176,8 +176,9 @@ public class VTypeToJsonTest {
     @Test
     public void vFloat1() {
         VFloat vFloat1 = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vFloat1, "vFloat1");
-        testDeserialization("vFloat1", vFloat1);
+        testSerialization(vFloat1, "VFloat1");
+        testDeserialization("VFloat1", vFloat1);
+        testDeserialization("VFloat1a", vFloat1);
     }
     
     @Test
@@ -185,55 +186,63 @@ public class VTypeToJsonTest {
         VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
         testSerialization(vDouble1, "VDouble1");
         testDeserialization("VDouble1", vDouble1);
+        testDeserialization("VDouble1a", vDouble1);
     }
     
     @Test
     public void vByte1() {
         VByte vByte1 = VByte.of((byte) 31, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vByte1, "vByte1");
-        testDeserialization("vByte1", vByte1);
+        testSerialization(vByte1, "VByte1");
+        testDeserialization("VByte1", vByte1);
+        testDeserialization("VByte1a", vByte1);
     }
     
     @Test
     public void vShort1() {
         VShort vShort1 = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vShort1, "vShort1");
-        testDeserialization("vShort1", vShort1);
+        testSerialization(vShort1, "VShort1");
+        testDeserialization("VShort1", vShort1);
+        testDeserialization("VShort1a", vShort1);
     }
     
     @Test
     public void vInt1() {
         VInt vInt1 = VInt.of(314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vInt1, "vInt1");
-        testDeserialization("vInt1", vInt1);
+        testSerialization(vInt1, "VInt1");
+        testDeserialization("VInt1", vInt1);
+        testDeserialization("VInt1a", vInt1);
     }
     
     @Test
     public void vLong1() {
         VLong vLong1 = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vLong1, "vLong1");
-        testDeserialization("vLong1", vLong1);
+        testSerialization(vLong1, "VLong1");
+        testDeserialization("VLong1", vLong1);
+        testDeserialization("VLong1a", vLong1);
     }
     
     @Test
     public void vString1() {
         VString vString1 = VString.of("Flower", Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
-        testSerialization(vString1, "vString1");
-        testDeserialization("vString1", vString1);
+        testSerialization(vString1, "VString1");
+        testDeserialization("VString1", vString1);
+        testDeserialization("VString1a", vString1);
     }
     
     @Test
     public void vEnum1() {
         VEnum vEnum1 = VEnum.of(1, EnumDisplay.of(Arrays.asList("One", "Two", "Three")), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
-        testSerialization(vEnum1, "vEnum1");
-        testDeserialization("vEnum1", vEnum1);
+        testSerialization(vEnum1, "VEnum1");
+        testDeserialization("VEnum1", vEnum1);
+        testDeserialization("VEnum1a", vEnum1);
     }
     
     @Test
     public void vDoubleArray1() {
         VDoubleArray vDoubleArray1 = VDoubleArray.of(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vDoubleArray1, "vDoubleArray1");
-        testDeserialization("vDoubleArray1", vDoubleArray1);
+        testSerialization(vDoubleArray1, "VDoubleArray1");
+        testDeserialization("VDoubleArray1", vDoubleArray1);
+        testDeserialization("VDoubleArray1a", vDoubleArray1);
     }
 
 //    @Test
