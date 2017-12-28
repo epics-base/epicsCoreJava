@@ -1,0 +1,26 @@
+{
+   "type":{
+      "name":"VInt",
+      "version":1
+   },
+   "value":314,
+   "alarm":{
+      "severity":"NONE",
+      "status":"NONE",
+      "name":"None"
+   },
+   "time":{
+      "unixSec":0,
+      "nanoSec":0,
+      "userTag":null
+   },
+   "display":{
+      "lowAlarm":null,
+      "highAlarm":null,
+      "lowDisplay":null,
+      "highDisplay":null,
+      "lowWarning":null,
+      "highWarning":null,
+      "units":""
+   }
+}

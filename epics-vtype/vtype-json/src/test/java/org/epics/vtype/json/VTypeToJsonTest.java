@@ -51,11 +51,9 @@ import org.junit.BeforeClass;
  */
 public class VTypeToJsonTest {
 
-    public void compareJson(JsonObject json, String text) {
-        StringWriter writer = new StringWriter();
-        JsonWriter jsonWriter = Json.createWriter(writer);
-        jsonWriter.writeObject(json);
-        assertThat(writer.toString(), equalTo(text));
+    public void compareJson(JsonObject json, String jsonFile) {
+        JsonObject reference = loadJson(jsonFile);
+        assertThat(json, equalTo(reference));
     }
     
     public void compareVType(VType expected, VType actual) {
@@ -67,66 +65,21 @@ public class VTypeToJsonTest {
 //        }
     }
     
-    public JsonObject parseJson(String json) {
-        System.out.println(json);
-        try (JsonReader reader = Json.createReader(new StringReader(json))) {
+    public JsonObject loadJson(String jsonFile) {
+        try (JsonReader reader = Json.createReader(getClass().getResourceAsStream(jsonFile))) {
             return reader.readObject();
         }
     }
     
-    public VDouble vDouble = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public String vDoubleJson = "{\"type\":{\"name\":\"VDouble\",\"version\":1},"
-            + "\"value\":3.14,"
-            + "\"alarm\":{\"severity\":\"MINOR\",\"status\":\"DB\",\"name\":\"LOW\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VFloat vFloat = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public String vFloatJson = "{\"type\":{\"name\":\"VFloat\",\"version\":1},"
-            + "\"value\":3.125,"
-            + "\"alarm\":{\"severity\":\"MINOR\",\"status\":\"DB\",\"name\":\"HIGH\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VLong vLong = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public String vLongJson = "{\"type\":{\"name\":\"VLong\",\"version\":1},"
-            + "\"value\":313,"
-            + "\"alarm\":{\"severity\":\"MINOR\",\"status\":\"DB\",\"name\":\"HIGH\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VInt vInt = VInt.of(314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public String vIntJson = "{\"type\":{\"name\":\"VInt\",\"version\":1},"
-            + "\"value\":314,"
-            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VShort vShort = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public String vShortJson = "{\"type\":{\"name\":\"VShort\",\"version\":1},"
-            + "\"value\":314,"
-            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VByte vByte = VByte.of((byte) 31, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public String vByteJson = "{\"type\":{\"name\":\"VByte\",\"version\":1},"
-            + "\"value\":31,"
-            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-    public VString vString = VString.of("Flower", Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
-    public String vStringJson = "{\"type\":{\"name\":\"VString\",\"version\":1},"
-            + "\"value\":\"Flower\","
-            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null}}";
-    public VEnum vEnum = VEnum.of(1, EnumDisplay.of(Arrays.asList("One", "Two", "Three")), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
-    public String vEnumJson = "{\"type\":{\"name\":\"VEnum\",\"version\":1},"
-            + "\"value\":1,"
-            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"enum\":{\"labels\":[\"One\",\"Two\",\"Three\"]}}";
-    public VDoubleArray vDoubleArray = VDoubleArray.of(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public String vDoubleArrayJson = "{\"type\":{\"name\":\"VDoubleArray\",\"version\":1},"
-            + "\"value\":[0.0,0.1,0.2],"
-            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"NONE\",\"name\":\"None\"},"
-            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
+    public VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VFloat vFloat1 = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VLong vLong1 = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VInt vInt1 = VInt.of(314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VShort vShort1 = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VByte vByte1 = VByte.of((byte) 31, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+    public VString vString1 = VString.of("Flower", Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
+    public VEnum vEnum1 = VEnum.of(1, EnumDisplay.of(Arrays.asList("One", "Two", "Three")), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
+    public VDoubleArray vDoubleArray1 = VDoubleArray.of(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
 //    public VFloatArray vFloatArray = VFloatArray.create(Arrayofof(new float[] {0, 1, 2}), Alarm.none(), Time.create(Instant.oofSecond(0, 0)), Display.none());
 //    public String vFloatArrayJson = "{\"type\":{\"name\":\"VFloatArray\",\"version\":1},"
 //                + "\"value\":[0.0,1.0,2.0],"
@@ -190,32 +143,32 @@ public class VTypeToJsonTest {
     
     @Test
     public void serializeVDouble() {
-        compareJson(VTypeToJson.toJson(vDouble), vDoubleJson);
+        compareJson(VTypeToJson.toJson(vDouble1), "VDouble1.json");
     }
     
     @Test
     public void serializeVFloat() {
-        compareJson(VTypeToJson.toJson(vFloat), vFloatJson);
+        compareJson(VTypeToJson.toJson(vFloat1), "VFloat1.json");
     }
 
     @Test
     public void serializeVLong() {
-        compareJson(VTypeToJson.toJson(vLong), vLongJson);
+        compareJson(VTypeToJson.toJson(vLong1), "VLong1.json");
     }
 
     @Test
     public void serializeVInt() {
-        compareJson(VTypeToJson.toJson(vInt), vIntJson);
+        compareJson(VTypeToJson.toJson(vInt1), "VInt1.json");
     }
 
     @Test
     public void serializeVShort() {
-        compareJson(VTypeToJson.toJson(vShort), vShortJson);
+        compareJson(VTypeToJson.toJson(vShort1), "VShort1.json");
     }
 
     @Test
     public void serializeVByte() {
-        compareJson(VTypeToJson.toJson(vByte), vByteJson);
+        compareJson(VTypeToJson.toJson(vByte1), "VByte1.json");
     }
 
 //    @Test
@@ -225,17 +178,17 @@ public class VTypeToJsonTest {
 
     @Test
     public void serializeVString() {
-        compareJson(VTypeToJson.toJson(vString), vStringJson);
+        compareJson(VTypeToJson.toJson(vString1), "VString1.json");
     }
         
     @Test
     public void serializeVEnum() {
-        compareJson(VTypeToJson.toJson(vEnum), vEnumJson);
+        compareJson(VTypeToJson.toJson(vEnum1), "VEnum1.json");
     }
 
     @Test
     public void serializeVDoubleArray() {
-        compareJson(VTypeToJson.toJson(vDoubleArray), vDoubleArrayJson);
+        compareJson(VTypeToJson.toJson(vDoubleArray1), "VDoubleArray1.json");
     }
 
 //    @Test
@@ -295,32 +248,32 @@ public class VTypeToJsonTest {
 
     @Test
     public void parseVDouble() {
-        compareVType(vDouble, VTypeToJson.toVType(parseJson(vDoubleJson)));
+        compareVType(vDouble1, VTypeToJson.toVType(loadJson("VDouble1.json")));
     }
 
     @Test
     public void parseVFloat() {
-        compareVType(vFloat, VTypeToJson.toVType(parseJson(vFloatJson)));
+        compareVType(vFloat1, VTypeToJson.toVType(loadJson("VFloat1.json")));
     }
 
     @Test
     public void parseVLong() {
-        compareVType(vLong, VTypeToJson.toVType(parseJson(vLongJson)));
+        compareVType(vLong1, VTypeToJson.toVType(loadJson("VLong1.json")));
     }
 
     @Test
     public void parseVInt() {
-        compareVType(vInt, VTypeToJson.toVType(parseJson(vIntJson)));
+        compareVType(vInt1, VTypeToJson.toVType(loadJson("VInt1.json")));
     }
 
     @Test
     public void parseVShort() {
-        compareVType(vShort, VTypeToJson.toVType(parseJson(vShortJson)));
+        compareVType(vShort1, VTypeToJson.toVType(loadJson("VShort1.json")));
     }
 
     @Test
     public void parseVByte() {
-        compareVType(vByte, VTypeToJson.toVType(parseJson(vByteJson)));
+        compareVType(vByte1, VTypeToJson.toVType(loadJson("VByte1.json")));
     }
 
 //    @Test
@@ -330,17 +283,17 @@ public class VTypeToJsonTest {
 
     @Test
     public void parseVString() {
-        compareVType(vString, VTypeToJson.toVType(parseJson(vStringJson)));
+        compareVType(vString1, VTypeToJson.toVType(loadJson("VString1.json")));
     }
 
     @Test
     public void parseVEnum() {
-        compareVType(vEnum, VTypeToJson.toVType(parseJson(vEnumJson)));
+        compareVType(vEnum1, VTypeToJson.toVType(loadJson("VEnum1.json")));
     }
 
     @Test
     public void parseVDoubleArray() {
-        compareVType(vDoubleArray, VTypeToJson.toVType(parseJson(vDoubleArrayJson)));
+        compareVType(vDoubleArray1, VTypeToJson.toVType(loadJson("VDoubleArray1.json")));
     }
 
 //    @Test

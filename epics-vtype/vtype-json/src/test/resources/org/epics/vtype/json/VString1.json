@@ -1,0 +1,17 @@
+{  
+   "type":{  
+      "name":"VString",
+      "version":1
+   },
+   "value":"Flower",
+   "alarm":{  
+      "severity":"NONE",
+      "status":"NONE",
+      "name":"None"
+   },
+   "time":{  
+      "unixSec":0,
+      "nanoSec":0,
+      "userTag":null
+   }
+}
