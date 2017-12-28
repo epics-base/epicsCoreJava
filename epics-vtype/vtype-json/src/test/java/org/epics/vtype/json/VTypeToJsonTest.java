@@ -128,14 +128,6 @@ public class VTypeToJsonTest {
         }
     }
     
-    public VFloat vFloat1 = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public VLong vLong1 = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public VInt vInt1 = VInt.of(314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public VShort vShort1 = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public VByte vByte1 = VByte.of((byte) 31, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-    public VString vString1 = VString.of("Flower", Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
-    public VEnum vEnum1 = VEnum.of(1, EnumDisplay.of(Arrays.asList("One", "Two", "Three")), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
-    public VDoubleArray vDoubleArray1 = VDoubleArray.of(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
 //    public VFloatArray vFloatArray = VFloatArray.create(Arrayofof(new float[] {0, 1, 2}), Alarm.none(), Time.create(Instant.oofSecond(0, 0)), Display.none());
 //    public String vFloatArrayJson = "{\"type\":{\"name\":\"VFloatArray\",\"version\":1},"
 //                + "\"value\":[0.0,1.0,2.0],"
@@ -198,6 +190,13 @@ public class VTypeToJsonTest {
 //            + "\"columnValues\":[[\"\",\"B\",\"C\"],[1,2,3],[null,1.25,-0.1],[1234000,null,3456123]]}";
     
     @Test
+    public void vFloat1() {
+        VFloat vFloat1 = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vFloat1, "vFloat1");
+        testDeserialization("vFloat1", vFloat1);
+    }
+    
+    @Test
     public void vDouble1() {
         VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
         testSerialization(vDouble1, "VDouble1");
@@ -205,49 +204,58 @@ public class VTypeToJsonTest {
     }
     
     @Test
-    public void serializeVFloat() {
-        compareJson(VTypeToJson.toJson(vFloat1), "VFloat1");
+    public void vByte1() {
+        VByte vByte1 = VByte.of((byte) 31, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vByte1, "vByte1");
+        testDeserialization("vByte1", vByte1);
     }
-
+    
     @Test
-    public void serializeVLong() {
-        compareJson(VTypeToJson.toJson(vLong1), "VLong1");
+    public void vShort1() {
+        VShort vShort1 = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vShort1, "vShort1");
+        testDeserialization("vShort1", vShort1);
     }
-
+    
     @Test
-    public void serializeVInt() {
-        compareJson(VTypeToJson.toJson(vInt1), "VInt1");
+    public void vInt1() {
+        VInt vInt1 = VInt.of(314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vInt1, "vInt1");
+        testDeserialization("vInt1", vInt1);
     }
-
+    
     @Test
-    public void serializeVShort() {
-        compareJson(VTypeToJson.toJson(vShort1), "VShort1");
+    public void vLong1() {
+        VLong vLong1 = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vLong1, "vLong1");
+        testDeserialization("vLong1", vLong1);
     }
-
+    
     @Test
-    public void serializeVByte() {
-        compareJson(VTypeToJson.toJson(vByte1), "VByte1");
+    public void vString1() {
+        VString vString1 = VString.of("Flower", Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
+        testSerialization(vString1, "vString1");
+        testDeserialization("vString1", vString1);
+    }
+    
+    @Test
+    public void vEnum1() {
+        VEnum vEnum1 = VEnum.of(1, EnumDisplay.of(Arrays.asList("One", "Two", "Three")), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
+        testSerialization(vEnum1, "vEnum1");
+        testDeserialization("vEnum1", vEnum1);
+    }
+    
+    @Test
+    public void vDoubleArray1() {
+        VDoubleArray vDoubleArray1 = VDoubleArray.of(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vDoubleArray1, "vDoubleArray1");
+        testDeserialization("vDoubleArray1", vDoubleArray1);
     }
 
 //    @Test
 //    public void serializeVBoolean() {
 //        compareJson(VTypeToJson.toJson(vBoolean), vBooleanJson);
 //    }
-
-    @Test
-    public void serializeVString() {
-        compareJson(VTypeToJson.toJson(vString1), "VString1");
-    }
-        
-    @Test
-    public void serializeVEnum() {
-        compareJson(VTypeToJson.toJson(vEnum1), "VEnum1");
-    }
-
-    @Test
-    public void serializeVDoubleArray() {
-        compareJson(VTypeToJson.toJson(vDoubleArray1), "VDoubleArray1");
-    }
 
 //    @Test
 //    public void serializeVFloatArray() {
@@ -305,50 +313,11 @@ public class VTypeToJsonTest {
 //    }
 
 
-    @Test
-    public void parseVFloat() {
-        compareVType(vFloat1, "VFloat1");
-    }
-
-    @Test
-    public void parseVLong() {
-        compareVType(vLong1, "VLong1");
-    }
-
-    @Test
-    public void parseVInt() {
-        compareVType(vInt1, "VInt1");
-    }
-
-    @Test
-    public void parseVShort() {
-        compareVType(vShort1, "VShort1");
-    }
-
-    @Test
-    public void parseVByte() {
-        compareVType(vByte1, "VByte1");
-    }
-
 //    @Test
 //    public void parseVBoolean() {
 //        compareVType(vBoolean, VTypeToJson.toVType(parseJson(vBooleanJson)));
 //    }
 
-    @Test
-    public void parseVString() {
-        compareVType(vString1, "VString1");
-    }
-
-    @Test
-    public void parseVEnum() {
-        compareVType(vEnum1, "VEnum1");
-    }
-
-    @Test
-    public void parseVDoubleArray() {
-        compareVType(vDoubleArray1, "VDoubleArray1");
-    }
 
 //    @Test
 //    public void parseVFloatArray() {
