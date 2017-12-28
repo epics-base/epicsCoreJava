@@ -57,15 +57,25 @@ import org.junit.BeforeClass;
  * @author carcassi
  */
 public class VTypeToJsonTest {
+
+    /**
+     * Serializes the given value and compares the output with the given JSON file.
+     * 
+     * @param value the value to serialize
+     * @param expectedJsonFileName the filename to compare
+     */    
+    public static void testSerialization(VType value, String expectedJsonFileName) {
+        compareJson(VTypeToJson.toJson(value), expectedJsonFileName);
+    }
     
-    public static void compareJson(JsonObject json, String jsonName) {
+    public static void compareJson(JsonObject json, String jsonFileName) {
         boolean success = false;
         try {
-            JsonObject reference = loadJson(jsonName + ".json");
+            JsonObject reference = loadJson(jsonFileName + ".json");
             assertThat(json, equalTo(reference));
             success = true;
         } finally {
-            File failedJsonFile = new File("src/test/resources/org/epics/vtype/json/" + jsonName + ".failed.json");
+            File failedJsonFile = new File("src/test/resources/org/epics/vtype/json/" + jsonFileName + ".failed.json");
             if (!success) {
                 saveErrorJson(json, failedJsonFile);
             } else {
@@ -75,9 +85,19 @@ public class VTypeToJsonTest {
             }
         }
     }
+
+    /**
+     * Deserializes the JSON file and compares the value with the given VType object.
+     * 
+     * @param jsonFileName the JSON file to deserialize
+     * @param expected the object to compare to
+     */
+    public static void testDeserialization(String jsonFileName, VType expected) {
+        VType actual = VTypeToJson.toVType(loadJson(jsonFileName + ".json"));
+        compareVType(actual, expected);
+    }
     
-    public void compareVType(VType expected, String jsonName) {
-        VType actual = VTypeToJson.toVType(loadJson(jsonName + ".json"));
+    public static void compareVType(VType actual, VType expected) {
         assertThat("Type mismatch", VType.typeOf(actual), equalTo(VType.typeOf(expected)));
 //        assertThat("Value mismatch", VTypeValueEquals.valueEquals(actual, expected), equalTo(true));
         assertThat("Alarm mismatch", Alarm.alarmOf(expected), equalTo(Alarm.alarmOf(actual)));
@@ -85,9 +105,12 @@ public class VTypeToJsonTest {
 //            assertThat("Time mismatch", VTypeValueEquals.timeEquals((Time) actual, (Time) expected), equalTo(true));
 //        }
     }
+
+    public static void compareVType(VType actual, String jsonFileName) {
+        testDeserialization(jsonFileName, actual);
+    }
     
     public static JsonObject loadJson(String jsonFile) {
-        System.out.println(jsonFile);
         try (JsonReader reader = Json.createReader(VTypeToJsonTest.class.getResourceAsStream(jsonFile))) {
             return reader.readObject();
         }
@@ -105,7 +128,6 @@ public class VTypeToJsonTest {
         }
     }
     
-    public VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
     public VFloat vFloat1 = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
     public VLong vLong1 = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
     public VInt vInt1 = VInt.of(314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
@@ -176,8 +198,10 @@ public class VTypeToJsonTest {
 //            + "\"columnValues\":[[\"\",\"B\",\"C\"],[1,2,3],[null,1.25,-0.1],[1234000,null,3456123]]}";
     
     @Test
-    public void serializeVDouble() {
-        compareJson(VTypeToJson.toJson(vDouble1), "VDouble1");
+    public void vDouble1() {
+        VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vDouble1, "VDouble1");
+        testDeserialization("VDouble1", vDouble1);
     }
     
     @Test
@@ -280,10 +304,6 @@ public class VTypeToJsonTest {
 //        compareJson(VTypeToJson.toJson(vTable3), vTable3Json);
 //    }
 
-    @Test
-    public void parseVDouble() {
-        compareVType(vDouble1, "VDouble1");
-    }
 
     @Test
     public void parseVFloat() {
