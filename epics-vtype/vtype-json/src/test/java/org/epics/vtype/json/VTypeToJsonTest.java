@@ -4,31 +4,19 @@
  */
 package org.epics.vtype.json;
 
-import org.epics.vtype.json.VTypeToJson;
-import static com.oracle.jrockit.jfr.ContentType.Timestamp;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
-import jdk.nashorn.internal.objects.NativeDebug;
-import org.epics.util.array.ArrayBoolean;
-import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInteger;
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ArrayShort;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
@@ -41,16 +29,13 @@ import org.epics.vtype.VDoubleArray;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
-import org.epics.vtype.VIntArray;
 import org.epics.vtype.VLong;
-import org.epics.vtype.VNumberArray;
 import org.epics.vtype.VShort;
 import org.epics.vtype.VString;
 import org.epics.vtype.VType;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -100,10 +85,9 @@ public class VTypeToJsonTest {
     public static void compareVType(VType actual, VType expected) {
         assertThat("Type mismatch", VType.typeOf(actual), equalTo(VType.typeOf(expected)));
 //        assertThat("Value mismatch", VTypeValueEquals.valueEquals(actual, expected), equalTo(true));
-        assertThat("Alarm mismatch", Alarm.alarmOf(expected), equalTo(Alarm.alarmOf(actual)));
-//        if (expected instanceof Time) {
-//            assertThat("Time mismatch", VTypeValueEquals.timeEquals((Time) actual, (Time) expected), equalTo(true));
-//        }
+        assertThat("Alarm mismatch", Alarm.alarmOf(actual), equalTo(Alarm.alarmOf(expected)));
+        assertThat("Time mismatch", Time.timeOf(actual), equalTo(Time.timeOf(expected)));
+        assertThat("Display mismatch", Display.displayOf(actual), equalTo(Display.displayOf(expected)));
     }
 
     public static void compareVType(VType actual, String jsonFileName) {
