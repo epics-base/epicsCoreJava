@@ -2,7 +2,7 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.diirt.vtype.json;
+package org.epics.vtype.json;
 
 import javax.json.JsonObject;
 import org.epics.vtype.VType;

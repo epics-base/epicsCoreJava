@@ -2,8 +2,9 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.diirt.vtype.json;
+package org.epics.vtype.json;
 
+import org.epics.vtype.json.VTypeToJson;
 import static com.oracle.jrockit.jfr.ContentType.Timestamp;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -13,6 +14,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
+import jdk.nashorn.internal.objects.NativeDebug;
 import org.epics.util.array.ArrayBoolean;
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
@@ -41,6 +43,7 @@ import org.epics.vtype.VType;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
+import org.junit.BeforeClass;
 
 /**
  *
@@ -65,6 +68,7 @@ public class VTypeToJsonTest {
     }
     
     public JsonObject parseJson(String json) {
+        System.out.println(json);
         try (JsonReader reader = Json.createReader(new StringReader(json))) {
             return reader.readObject();
         }

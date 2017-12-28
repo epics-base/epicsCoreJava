@@ -6,4 +6,4 @@
  * Support for JSON serialization of vTypes according to the following
  * (<a href="doc-files/vtype-json.html">specification</a>).
  */
-package org.diirt.vtype.json;
+package org.epics.vtype.json;

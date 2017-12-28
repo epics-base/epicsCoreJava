@@ -2,7 +2,7 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.diirt.vtype.json;
+package org.epics.vtype.json;
 
 import java.io.StringReader;
 import javax.json.Json;
@@ -11,7 +11,7 @@ import javax.json.JsonReader;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.diirt.vtype.json.JsonArrays.*;
+import static org.epics.vtype.json.JsonArrays.*;
 
 /**
  *

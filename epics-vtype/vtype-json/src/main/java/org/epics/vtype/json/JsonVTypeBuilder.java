@@ -2,7 +2,7 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.diirt.vtype.json;
+package org.epics.vtype.json;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,7 +13,7 @@ import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
-import static org.diirt.vtype.json.JsonArrays.*;
+import static org.epics.vtype.json.JsonArrays.*;
 import org.epics.util.array.ListBoolean;
 import org.epics.util.array.ListNumber;
 import org.epics.vtype.Alarm;
