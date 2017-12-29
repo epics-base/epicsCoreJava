@@ -29,6 +29,24 @@ public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VN
     abstract String getToString();
 
     @Test
+    public void vNumberArrayof1() {
+        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
+        Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
+        ListInteger sizes = ArrayInteger.of(5,2);
+        VNumberArray value = VNumberArray.of(getData(), sizes, alarm, time, Display.none());
+        assertThat(value.getData(), equalTo(getData()));
+        assertThat(value.getSizes(), equalTo(sizes));
+        assertThat(value.getAlarm(), equalTo(alarm));
+        assertThat(value.getTime(), equalTo(time));
+        
+        value = VNumberArray.of(getData(), alarm, time, Display.none());
+        assertThat(value.getData(), equalTo(getData()));
+        assertThat(value.getSizes(), equalTo(ArrayInteger.of(10)));
+        assertThat(value.getAlarm(), equalTo(alarm));
+        assertThat(value.getTime(), equalTo(time));
+    }
+
+    @Test
     public void of1() {
         Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
         Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
