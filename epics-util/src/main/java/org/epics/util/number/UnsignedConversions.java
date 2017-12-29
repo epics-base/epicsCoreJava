@@ -5,6 +5,8 @@
  */
 package org.epics.util.number;
 
+import java.math.BigInteger;
+
 /**
  * Conversion utilities between unsigned primitives and standard Java
  * primitives.
@@ -166,6 +168,22 @@ public class UnsignedConversions {
         double result = (double) (unsignedValue & 0x7fffffffffffffffL);
         if (unsignedValue < 0) {
           result += 0x1.0p63;
+        }
+        return result;
+    }
+    
+    private static final BigInteger LONG_BASE = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).multiply(BigInteger.valueOf(2));
+    
+    /**
+     * Converts an unsigned long to a {@code BigInteger}.
+     * 
+     * @param unsignedValue unsigned value
+     * @return the converted value
+     */
+    public static BigInteger toBigInteger(long unsignedValue) {
+        BigInteger result = BigInteger.valueOf(unsignedValue);
+        if (unsignedValue < 0) {
+            result = result.add(LONG_BASE);
         }
         return result;
     }

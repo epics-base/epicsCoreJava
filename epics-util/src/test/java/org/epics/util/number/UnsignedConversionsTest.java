@@ -4,6 +4,7 @@
  */
 package org.epics.util.number;
 
+import java.math.BigInteger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -141,5 +142,14 @@ public class UnsignedConversionsTest {
         assertThat(UnsignedConversions.toDouble((long) 0x7fffffffffffffffL), equalTo((double) 9223372036854775807.0));
         assertThat(UnsignedConversions.toDouble((long) 0x8000000000000000L), equalTo((double) 9223372036854775808.0));
         assertThat(UnsignedConversions.toDouble((long) -1), equalTo((double) 18446744073709551615.0));
+    }
+
+    @Test
+    public void longToBigInteger() {
+        assertThat(UnsignedConversions.toBigInteger((long) 0), equalTo(BigInteger.ZERO));
+        assertThat(UnsignedConversions.toBigInteger((long) 1), equalTo(BigInteger.ONE));
+        assertThat(UnsignedConversions.toBigInteger((long) 0x7fffffffffffffffL), equalTo(new BigInteger("9223372036854775807")));
+        assertThat(UnsignedConversions.toBigInteger((long) 0x8000000000000000L), equalTo(new BigInteger("9223372036854775808")));
+        assertThat(UnsignedConversions.toBigInteger((long) -1), equalTo(new BigInteger("18446744073709551615")));
     }
 }
