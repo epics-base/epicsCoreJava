@@ -17,6 +17,7 @@ import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 import org.epics.util.array.ArrayDouble;
+import org.epics.util.array.ArrayFloat;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
@@ -28,6 +29,7 @@ import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
+import org.epics.vtype.VFloatArray;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VLong;
 import org.epics.vtype.VShort;
@@ -112,12 +114,6 @@ public class VTypeToJsonTest {
         }
     }
     
-//    public VFloatArray vFloatArray = VFloatArray.create(Arrayofof(new float[] {0, 1, 2}), Alarm.none(), Time.create(Instant.oofSecond(0, 0)), Display.none());
-//    public String vFloatArrayJson = "{\"type\":{\"name\":\"VFloatArray\",\"version\":1},"
-//                + "\"value\":[0.0,1.0,2.0],"
-//                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
-//                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-//                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
 //    public VLongArray vLongArray = VLongArray.create(ArrayLong.of(ofng[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSeof, 0)), Display.none());
 //    public String vLongArrayJson = "{\"type\":{\"name\":\"VLongArray\",\"version\":1},"
 //                + "\"value\":[0,1,2],"
@@ -235,6 +231,14 @@ public class VTypeToJsonTest {
         testSerialization(vEnum1, "VEnum1");
         testDeserialization("VEnum1", vEnum1);
         testDeserialization("VEnum1a", vEnum1);
+    }
+    
+    @Test
+    public void vFloatArray1() {
+        VFloatArray vFloatArray1 = VFloatArray.of(ArrayFloat.of(0, 1, 2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vFloatArray1, "VFloatArray1");
+        testDeserialization("VFloatArray1", vFloatArray1);
+        testDeserialization("VFloatArray1a", vFloatArray1);
     }
     
     @Test
