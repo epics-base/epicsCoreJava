@@ -5,6 +5,8 @@
  */
 package org.epics.util.number;
 
+import java.math.BigInteger;
+
 /**
  * A wrapper for a unsigned {@code long} value.
  *
@@ -42,6 +44,10 @@ public final class ULong extends Number {
     @Override
     public double doubleValue() {
         return UnsignedConversions.toDouble(unsignedValue);
+    }
+
+    public BigInteger bigIntegerValue() {
+        return UnsignedConversions.toBigInteger(unsignedValue);
     }
     
     /**

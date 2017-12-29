@@ -4,6 +4,7 @@
  */
 package org.epics.util.number;
 
+import java.math.BigInteger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -20,6 +21,7 @@ public class ULongTest {
     @Test
     public void new1() {
         ULong value = new ULong(0);
+        assertThat(value.bigIntegerValue(), equalTo(BigInteger.ZERO));
         assertThat(value.doubleValue(), equalTo(0.0));
         assertThat(value.floatValue(), equalTo(0.0f));
         assertThat(value.longValue(), equalTo(0L));
@@ -29,6 +31,7 @@ public class ULongTest {
     @Test
     public void new2() {
         ULong value = new ULong(-1);
+        assertThat(value.bigIntegerValue(), equalTo(new BigInteger("18446744073709551615")));
         assertThat(value.doubleValue(), equalTo(18446744073709551615.0));
         assertThat(value.floatValue(), equalTo(18446744073709551615.0f));
         assertThat(value.longValue(), equalTo(-1L));
