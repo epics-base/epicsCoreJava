@@ -7,7 +7,10 @@ package org.epics.vtype.json;
 import java.util.List;
 import javax.json.JsonObject;
 import org.epics.util.array.ListNumber;
+import org.epics.util.number.UByte;
+import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
+import org.epics.util.number.UShort;
 import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VNumber;
@@ -27,8 +30,11 @@ class VTypeToJsonV1 {
             case "VFloat":
             case "VULong":
             case "VLong":
+            case "VUInt":
             case "VInt":
+            case "VUShort":
             case "VShort":
+            case "VUByte":
             case "VByte":
                 return toVNumber(json);
             case "VDoubleArray":
@@ -84,11 +90,20 @@ class VTypeToJsonV1 {
             case "VLong":
                 value = (long) mapper.getJsonNumber("value").longValue();
                 break;
+            case "VUInt":
+                value = new UInteger(mapper.getJsonNumber("value").intValue());
+                break;
             case "VInt":
                 value = (int) mapper.getJsonNumber("value").intValue();
                 break;
+            case "VUShort":
+                value = new UShort((short) mapper.getJsonNumber("value").intValue());
+                break;
             case "VShort":
                 value = (short) mapper.getJsonNumber("value").intValue();
+                break;
+            case "VUByte":
+                value = new UByte((byte) mapper.getJsonNumber("value").intValue());
                 break;
             case "VByte":
                 value = (byte) mapper.getJsonNumber("value").intValue();

@@ -22,7 +22,10 @@ import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.ArrayShort;
+import org.epics.util.number.UByte;
+import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
+import org.epics.util.number.UShort;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
@@ -44,7 +47,10 @@ import org.epics.vtype.VShort;
 import org.epics.vtype.VShortArray;
 import org.epics.vtype.VString;
 import org.epics.vtype.VType;
+import org.epics.vtype.VUByte;
+import org.epics.vtype.VUInt;
 import org.epics.vtype.VULong;
+import org.epics.vtype.VUShort;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -187,6 +193,13 @@ public class VTypeToJsonTest {
     }
     
     @Test
+    public void vUInt1() {
+        VUInt vUInt1 = VUInt.of(new UInteger(-1), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vUInt1, "VUInt1");
+        testDeserialization("VUInt1", vUInt1);
+    }
+    
+    @Test
     public void vInt1() {
         VInt vInt1 = VInt.of(314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
         testSerialization(vInt1, "VInt1");
@@ -195,11 +208,25 @@ public class VTypeToJsonTest {
     }
     
     @Test
+    public void vUShort1() {
+        VUShort vUShort1 = VUShort.of(new UShort((short) -1), Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vUShort1, "VUShort1");
+        testDeserialization("VUShort1", vUShort1);
+    }
+    
+    @Test
     public void vShort1() {
         VShort vShort1 = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
         testSerialization(vShort1, "VShort1");
         testDeserialization("VShort1", vShort1);
         testDeserialization("VShort1a", vShort1);
+    }
+    
+    @Test
+    public void vUByte1() {
+        VUByte vUByte1 = VUByte.of(new UByte((byte) -1), Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vUByte1, "VUByte1");
+        testDeserialization("VUByte1", vUByte1);
     }
     
     @Test
