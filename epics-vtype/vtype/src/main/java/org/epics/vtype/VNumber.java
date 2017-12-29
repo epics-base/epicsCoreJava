@@ -4,6 +4,11 @@
  */
 package org.epics.vtype;
 
+import org.epics.util.number.UByte;
+import org.epics.util.number.UInteger;
+import org.epics.util.number.ULong;
+import org.epics.util.number.UShort;
+
 /**
  * Scalar number with alarm, timestamp, display and control information.
  * <p>
@@ -56,16 +61,24 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
             return VDouble.of((Double) value, alarm, time, display);
         } else if (value instanceof Float) {
             return VFloat.of((Float) value, alarm, time, display);
+        } else if (value instanceof ULong) {
+            return VULong.of((ULong) value, alarm, time, display);
         } else if (value instanceof Long) {
             return VLong.of((Long) value, alarm, time, display);
+        } else if (value instanceof UInteger) {
+            return VUInt.of((UInteger) value, alarm, time, display);
         } else if (value instanceof Integer) {
             return VInt.of((Integer) value, alarm, time, display);
+        } else if (value instanceof UShort) {
+            return VUShort.of((UShort) value, alarm, time, display);
         } else if (value instanceof Short) {
             return VShort.of((Short) value, alarm, time, display);
+        } else if (value instanceof UByte) {
+            return VUByte.of((UByte) value, alarm, time, display);
         } else if (value instanceof Byte) {
             return VByte.of((Byte) value, alarm, time, display);
         }
-	throw new IllegalArgumentException("Only standard Java implementations of Number are supported");
+	throw new IllegalArgumentException("Only standard Java implementations of Number and EPICS unsigned numbers are supported");
     }
     
 }
