@@ -19,7 +19,11 @@ public class ChangeFailedToReference {
     public static void main(String[] args) {
         File file = new File("src/test/resources/org/epics/vtype/json/");
         for (File failed : file.listFiles((File dir, String name) -> name.contains(".failed."))) {
-            failed.renameTo(new File(failed.getPath().subSequence(0, failed.getPath().indexOf(".failed.")) + ".json"));
+            File reference = new File(failed.getPath().subSequence(0, failed.getPath().indexOf(".failed.")) + ".json");
+            if (reference.exists()) {
+                reference.delete();
+            }
+            failed.renameTo(reference);
         }
     }
     

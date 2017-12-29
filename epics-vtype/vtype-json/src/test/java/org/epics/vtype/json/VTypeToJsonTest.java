@@ -16,8 +16,12 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
+import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ArrayFloat;
+import org.epics.util.array.ArrayInteger;
+import org.epics.util.array.ArrayLong;
+import org.epics.util.array.ArrayShort;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
@@ -25,14 +29,18 @@ import org.epics.vtype.Display;
 import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.Time;
 import org.epics.vtype.VByte;
+import org.epics.vtype.VByteArray;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VFloatArray;
 import org.epics.vtype.VInt;
+import org.epics.vtype.VIntArray;
 import org.epics.vtype.VLong;
+import org.epics.vtype.VLongArray;
 import org.epics.vtype.VShort;
+import org.epics.vtype.VShortArray;
 import org.epics.vtype.VString;
 import org.epics.vtype.VType;
 import org.junit.Test;
@@ -114,30 +122,6 @@ public class VTypeToJsonTest {
         }
     }
     
-//    public VLongArray vLongArray = VLongArray.create(ArrayLong.of(ofng[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSeof, 0)), Display.none());
-//    public String vLongArrayJson = "{\"type\":{\"name\":\"VLongArray\",\"version\":1},"
-//                + "\"value\":[0,1,2],"
-//                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
-//                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-//                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VIntArray vIntArray = VIntArray.create(ArrayInteger.of(new int[]of, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, ofisplay.none());
-//    public String vIntArrayJson = "{\"type\":{\"name\":\"VIntArray\",\"version\":1},"
-//                + "\"value\":[0,1,2],"
-//                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
-//                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-//                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VShortArray vShortArray = newVShortArray(ArrayShort.of(new short[] {0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)),ofay.none());
-//    public String vShortArrayJson = "{\"type\":{\"name\":\"VShortArray\",\"version\":1},"
-//                + "\"value\":[0,1,2],"
-//                + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
-//                + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-//                + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
-//    public VNumberArray vByteArray = newVNumberArray(ArrayByte.of(new byte[]{0, 1, 2}), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)), Disofone());
-//    public String vByteArrayJson = "{\"type\":{\"name\":\"VByteArray\",\"version\":1},"
-//            + "\"value\":[0,1,2],"
-//            + "\"alarm\":{\"severity\":\"NONE\",\"status\":\"None\"},"
-//            + "\"time\":{\"unixSec\":0,\"nanoSec\":0,\"userTag\":null},"
-//            + "\"display\":{\"lowAlarm\":null,\"highAlarm\":null,\"lowDisplay\":null,\"highDisplay\":null,\"lowWarning\":null,\"highWarning\":null,\"units\":\"\"}}";
 //    public VBooleanArray vBooleanArray = newVBooleanArray(new ArrayBoolean(true, false, true), Alarm.none(), Time.create(Instant.ofEpochSecond(0, 0)));
 //    of String vBooleanArrayJson = "{\"type\":{\"name\":\"VBooleanArray\",\"version\":1},"
 //            + "\"value\":[true,false,true],"
@@ -170,14 +154,6 @@ public class VTypeToJsonTest {
 //            + "\"columnValues\":[[\"\",\"B\",\"C\"],[1,2,3],[null,1.25,-0.1],[1234000,null,3456123]]}";
     
     @Test
-    public void vFloat1() {
-        VFloat vFloat1 = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vFloat1, "VFloat1");
-        testDeserialization("VFloat1", vFloat1);
-        testDeserialization("VFloat1a", vFloat1);
-    }
-    
-    @Test
     public void vDouble1() {
         VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
         testSerialization(vDouble1, "VDouble1");
@@ -186,19 +162,19 @@ public class VTypeToJsonTest {
     }
     
     @Test
-    public void vByte1() {
-        VByte vByte1 = VByte.of((byte) 31, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vByte1, "VByte1");
-        testDeserialization("VByte1", vByte1);
-        testDeserialization("VByte1a", vByte1);
+    public void vFloat1() {
+        VFloat vFloat1 = VFloat.of((float) 3.125, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vFloat1, "VFloat1");
+        testDeserialization("VFloat1", vFloat1);
+        testDeserialization("VFloat1a", vFloat1);
     }
     
     @Test
-    public void vShort1() {
-        VShort vShort1 = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vShort1, "VShort1");
-        testDeserialization("VShort1", vShort1);
-        testDeserialization("VShort1a", vShort1);
+    public void vLong1() {
+        VLong vLong1 = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vLong1, "VLong1");
+        testDeserialization("VLong1", vLong1);
+        testDeserialization("VLong1a", vLong1);
     }
     
     @Test
@@ -210,11 +186,19 @@ public class VTypeToJsonTest {
     }
     
     @Test
-    public void vLong1() {
-        VLong vLong1 = VLong.of(313L, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vLong1, "VLong1");
-        testDeserialization("VLong1", vLong1);
-        testDeserialization("VLong1a", vLong1);
+    public void vShort1() {
+        VShort vShort1 = VShort.of((short) 314, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vShort1, "VShort1");
+        testDeserialization("VShort1", vShort1);
+        testDeserialization("VShort1a", vShort1);
+    }
+    
+    @Test
+    public void vByte1() {
+        VByte vByte1 = VByte.of((byte) 31, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vByte1, "VByte1");
+        testDeserialization("VByte1", vByte1);
+        testDeserialization("VByte1a", vByte1);
     }
     
     @Test
@@ -234,6 +218,14 @@ public class VTypeToJsonTest {
     }
     
     @Test
+    public void vDoubleArray1() {
+        VDoubleArray vDoubleArray1 = VDoubleArray.of(ArrayDouble.of(0, 1, 2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vDoubleArray1, "VDoubleArray1");
+        testDeserialization("VDoubleArray1", vDoubleArray1);
+        testDeserialization("VDoubleArray1a", vDoubleArray1);
+    }
+    
+    @Test
     public void vFloatArray1() {
         VFloatArray vFloatArray1 = VFloatArray.of(ArrayFloat.of(0, 1, 2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
         testSerialization(vFloatArray1, "VFloatArray1");
@@ -242,11 +234,32 @@ public class VTypeToJsonTest {
     }
     
     @Test
-    public void vDoubleArray1() {
-        VDoubleArray vDoubleArray1 = VDoubleArray.of(ArrayDouble.of(0.0, 0.1, 0.2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        testSerialization(vDoubleArray1, "VDoubleArray1");
-        testDeserialization("VDoubleArray1", vDoubleArray1);
-        testDeserialization("VDoubleArray1a", vDoubleArray1);
+    public void vLongArray1() {
+        VLongArray vLongArray1 = VLongArray.of(ArrayLong.of(0, 1, 2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vLongArray1, "VLongArray1");
+        testDeserialization("VLongArray1", vLongArray1);
+    }
+    
+    @Test
+    public void vIntArray1() {
+        VIntArray vIntArray1 = VIntArray.of(ArrayInteger.of(0, 1, 2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vIntArray1, "VIntArray1");
+        testDeserialization("VIntArray1", vIntArray1);
+    }
+    
+    @Test
+    public void vShortArray1() {
+        VShortArray vShortArray1 = VShortArray.of(ArrayShort.of(new short[] {0, 1, 2}), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vShortArray1, "VShortArray1");
+        testDeserialization("VShortArray1", vShortArray1);
+    }
+    
+    @Test
+    public void vByteArray1() {
+        VByteArray vByteArray1 = VByteArray.of(ArrayByte.of(new byte[] {0, 1, 2}), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vByteArray1, "VByteArray1");
+        testDeserialization("VByteArray1", vByteArray1);
+        testDeserialization("VByteArray1a", vByteArray1);
     }
 
 //    @Test
@@ -254,30 +267,6 @@ public class VTypeToJsonTest {
 //        compareJson(VTypeToJson.toJson(vBoolean), vBooleanJson);
 //    }
 
-//    @Test
-//    public void serializeVFloatArray() {
-//        compareJson(VTypeToJson.toJson(vFloatArray), vFloatArrayJson);
-//    }
-//
-//    @Test
-//    public void serializeVLongArray() {
-//        compareJson(VTypeToJson.toJson(vLongArray), vLongArrayJson);
-//    }
-//
-//    @Test
-//    public void serializeVIntArray() {
-//        compareJson(VTypeToJson.toJson(vIntArray), vIntArrayJson);
-//    }
-//
-//    @Test
-//    public void serializeVShortArray() {
-//        compareJson(VTypeToJson.toJson(vShortArray), vShortArrayJson);
-//    }
-//
-//    @Test
-//    public void serializeVByteArray() {
-//        compareJson(VTypeToJson.toJson(vByteArray), vByteArrayJson);
-//    }
 //
 //    @Test
 //    public void serializeVBooleanArray() {
