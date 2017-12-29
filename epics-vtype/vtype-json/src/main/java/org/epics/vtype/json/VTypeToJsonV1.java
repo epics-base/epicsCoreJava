@@ -7,6 +7,7 @@ package org.epics.vtype.json;
 import java.util.List;
 import javax.json.JsonObject;
 import org.epics.util.array.ListNumber;
+import org.epics.util.number.ULong;
 import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VNumber;
@@ -24,6 +25,7 @@ class VTypeToJsonV1 {
         switch(typeNameOf(json)) {
             case "VDouble":
             case "VFloat":
+            case "VULong":
             case "VLong":
             case "VInt":
             case "VShort":
@@ -75,6 +77,9 @@ class VTypeToJsonV1 {
                 break;
             case "VFloat":
                 value = (float) mapper.getJsonNumber("value").doubleValue();
+                break;
+            case "VULong":
+                value = new ULong(mapper.getJsonNumber("value").longValue());
                 break;
             case "VLong":
                 value = (long) mapper.getJsonNumber("value").longValue();

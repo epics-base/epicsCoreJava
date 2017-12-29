@@ -16,6 +16,7 @@ import javax.json.JsonValue;
 import static org.epics.vtype.json.JsonArrays.*;
 import org.epics.util.array.ListBoolean;
 import org.epics.util.array.ListNumber;
+import org.epics.util.number.ULong;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
@@ -206,6 +207,8 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
             add(string, ((Number) o).intValue());
         } else if (o instanceof Long) {
             add(string, ((Number) o).longValue());
+        } else if (o instanceof ULong) {
+            add(string, ((ULong) o).bigIntegerValue());
         } else if (o instanceof ListNumber) {
             addListNumber(string, (ListNumber) o);
         } else if (o instanceof ListBoolean) {

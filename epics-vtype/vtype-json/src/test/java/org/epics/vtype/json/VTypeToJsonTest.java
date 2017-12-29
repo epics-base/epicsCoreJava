@@ -22,6 +22,7 @@ import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.ArrayShort;
+import org.epics.util.number.ULong;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
@@ -43,6 +44,7 @@ import org.epics.vtype.VShort;
 import org.epics.vtype.VShortArray;
 import org.epics.vtype.VString;
 import org.epics.vtype.VType;
+import org.epics.vtype.VULong;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -167,6 +169,13 @@ public class VTypeToJsonTest {
         testSerialization(vFloat1, "VFloat1");
         testDeserialization("VFloat1", vFloat1);
         testDeserialization("VFloat1a", vFloat1);
+    }
+    
+    @Test
+    public void vULong1() {
+        VULong vULong1 = VULong.of(new ULong(-1), Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vULong1, "VULong1");
+        testDeserialization("VULong1", vULong1);
     }
     
     @Test
