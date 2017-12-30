@@ -39,9 +39,13 @@ class VTypeToJsonV1 {
                 return toVNumber(json);
             case "VDoubleArray":
             case "VFloatArray":
+            case "VULongArray":
             case "VLongArray":
+            case "VUIntArray":
             case "VIntArray":
+            case "VUShortArray":
             case "VShortArray":
+            case "VUByteArray":
             case "VByteArray":
                 return toVNumberArray(json);
             case "VString":
@@ -135,14 +139,26 @@ class VTypeToJsonV1 {
             case "VFloatArray":
                 value = mapper.getListFloat("value");
                 break;
+            case "VULongArray":
+                value = mapper.getListULong("value");
+                break;
             case "VLongArray":
                 value = mapper.getListLong("value");
+                break;
+            case "VUIntArray":
+                value = mapper.getListUInteger("value");
                 break;
             case "VIntArray":
                 value = mapper.getListInt("value");
                 break;
+            case "VUShortArray":
+                value = mapper.getListUShort("value");
+                break;
             case "VShortArray":
                 value = mapper.getListShort("value");
+                break;
+            case "VUByteArray":
+                value = mapper.getListUByte("value");
                 break;
             case "VByteArray":
                 value = mapper.getListByte("value");

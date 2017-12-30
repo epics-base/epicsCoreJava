@@ -1,0 +1,23 @@
+{
+    "type":{
+        "name":"VUByteArray",
+        "version":1
+    },
+    "value":[
+        255,
+        254,
+        253
+    ],
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

@@ -25,6 +25,10 @@ import org.epics.util.array.ListFloat;
 import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListLong;
 import org.epics.util.array.ListShort;
+import org.epics.util.array.ListUByte;
+import org.epics.util.array.ListUInteger;
+import org.epics.util.array.ListULong;
+import org.epics.util.array.ListUShort;
 import org.epics.util.stats.Range;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
@@ -91,6 +95,10 @@ class VTypeJsonMapper implements JsonObject {
         return toListFloat(array);
     }
     
+    public ListULong getListULong(String string) {
+        JsonArray array = getJsonArray(string);
+        return toListULong(array);
+    }
     
     public ListLong getListLong(String string) {
         JsonArray array = getJsonArray(string);
@@ -98,17 +106,32 @@ class VTypeJsonMapper implements JsonObject {
     }
     
     
+    public ListUInteger getListUInteger(String string) {
+        JsonArray array = getJsonArray(string);
+        return toListUInteger(array);
+    }
+    
     public ListInteger getListInt(String string) {
         JsonArray array = getJsonArray(string);
         return toListInt(array);
     }
     
     
+    public ListUShort getListUShort(String string) {
+        JsonArray array = getJsonArray(string);
+        return toListUShort(array);
+    }
+    
     public ListShort getListShort(String string) {
         JsonArray array = getJsonArray(string);
         return toListShort(array);
     }
     
+    
+    public ListUByte getListUByte(String string) {
+        JsonArray array = getJsonArray(string);
+        return toListUByte(array);
+    }
     
     public ListByte getListByte(String string) {
         JsonArray array = getJsonArray(string);

@@ -19,15 +19,22 @@ import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.ArrayShort;
-import org.epics.util.array.CollectionNumbers;
+import org.epics.util.array.ArrayUByte;
+import org.epics.util.array.ArrayUInteger;
+import org.epics.util.array.ArrayULong;
+import org.epics.util.array.ArrayUShort;
 import org.epics.util.array.ListByte;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListFloat;
 import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListLong;
 import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListNumbers;
 import org.epics.util.array.ListShort;
+import org.epics.util.array.ListUByte;
+import org.epics.util.array.ListUInteger;
+import org.epics.util.array.ListULong;
+import org.epics.util.array.ListUShort;
+import org.epics.util.number.UnsignedConversions;
 
 /**
  * Utility classes to convert JSON arrays to and from Lists and ListNumbers.
@@ -103,6 +110,20 @@ public class JsonArrays {
     }
 
     /**
+     * Converts the given numeric JSON array to a {@code ListULong}.
+     * 
+     * @param array an array of numbers
+     * @return a new {@code ListULong}
+     */
+    public static ListULong toListULong(JsonArray array) {
+        long[] values = new long[array.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = (long) array.getJsonNumber(i).longValue();
+        }
+        return ArrayULong.of(values);
+    }
+
+    /**
      * Converts the given numeric JSON array to a ListLong.
      * 
      * @param array an array of numbers
@@ -114,6 +135,20 @@ public class JsonArrays {
             values[i] = (long) array.getJsonNumber(i).longValue();
         }
         return ArrayLong.of(values);
+    }
+
+    /**
+     * Converts the given numeric JSON array to a {@code ListUInteger}.
+     * 
+     * @param array an array of numbers
+     * @return a new {@code ListUInteger}
+     */
+    public static ListUInteger toListUInteger(JsonArray array) {
+        int[] values = new int[array.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = (int) array.getJsonNumber(i).intValue();
+        }
+        return ArrayUInteger.of(values);
     }
     
     /**
@@ -131,6 +166,20 @@ public class JsonArrays {
     }
 
     /**
+     * Converts the given numeric JSON array to a {@code ListUShort}.
+     * 
+     * @param array an array of numbers
+     * @return a new {@code ListUShort}
+     */
+    public static ListUShort toListUShort(JsonArray array) {
+        short[] values = new short[array.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = (short) array.getJsonNumber(i).intValue();
+        }
+        return ArrayUShort.of(values);
+    }
+
+    /**
      * Converts the given numeric JSON array to a ListShort.
      * 
      * @param array an array of numbers
@@ -142,6 +191,20 @@ public class JsonArrays {
             values[i] = (short) array.getJsonNumber(i).intValue();
         }
         return ArrayShort.of(values);
+    }
+
+    /**
+     * Converts the given numeric JSON array to a {@code ListUByte}.
+     * 
+     * @param array an array of numbers
+     * @return a new {@code ListUByte}
+     */
+    public static ListUByte toListUByte(JsonArray array) {
+        byte[] values = new byte[array.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = (byte) array.getJsonNumber(i).intValue();
+        }
+        return ArrayUByte.of(values);
     }
 
     /**
@@ -235,13 +298,17 @@ public class JsonArrays {
      */
     public static JsonArrayBuilder fromListNumber(ListNumber list) {
         JsonArrayBuilder b = Json.createArrayBuilder();
-        if (list instanceof ListByte || list instanceof ListShort || list instanceof ListInteger) {
+        if (list instanceof ListInteger || list instanceof ListUShort || list instanceof ListShort || list instanceof ListUByte || list instanceof ListByte) {
             for (int i = 0; i < list.size(); i++) {
                 b.add(list.getInt(i));
             }
-        } else if (list instanceof ListLong) {
+        } else if (list instanceof ListLong || list instanceof ListInteger) {
             for (int i = 0; i < list.size(); i++) {
                 b.add(list.getLong(i));
+            }
+        } else if (list instanceof ListULong) {
+            for (int i = 0; i < list.size(); i++) {
+                b.add(UnsignedConversions.toBigInteger(list.getLong(i)));
             }
         } else {
             for (int i = 0; i < list.size(); i++) {
