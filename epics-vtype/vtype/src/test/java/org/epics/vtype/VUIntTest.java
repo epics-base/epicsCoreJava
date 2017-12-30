@@ -18,6 +18,11 @@ public class VUIntTest extends FeatureTestVNumber<UInteger, VUInt> {
     }
 
     @Override
+    UInteger getAnotherValue() {
+        return UInteger.valueOf(0);
+    }
+
+    @Override
     VUInt of(UInteger value, Alarm alarm, Time time, Display display) {
         return VUInt.of(value, alarm, time, display);
     }

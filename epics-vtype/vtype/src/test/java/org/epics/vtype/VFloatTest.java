@@ -16,6 +16,11 @@ public class VFloatTest extends FeatureTestVNumber<Float, VFloat> {
     }
 
     @Override
+    Float getAnotherValue() {
+        return 0.0f;
+    }
+
+    @Override
     VFloat of(Float value, Alarm alarm, Time time, Display display) {
         return VFloat.of(value, alarm, time, display);
     }

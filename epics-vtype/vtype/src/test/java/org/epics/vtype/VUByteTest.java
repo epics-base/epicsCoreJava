@@ -18,6 +18,11 @@ public class VUByteTest extends FeatureTestVNumber<UByte, VUByte> {
     }
 
     @Override
+    UByte getAnotherValue() {
+        return UByte.valueOf((byte) 0);
+    }
+
+    @Override
     VUByte of(UByte value, Alarm alarm, Time time, Display display) {
         return VUByte.of(value, alarm, time, display);
     }

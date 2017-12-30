@@ -16,6 +16,11 @@ public class VDoubleTest extends FeatureTestVNumber<Double, VDouble> {
     }
 
     @Override
+    Double getAnotherValue() {
+        return 0.0;
+    }
+
+    @Override
     VDouble of(Double value, Alarm alarm, Time time, Display display) {
         return VDouble.of(value, alarm, time, display);
     }

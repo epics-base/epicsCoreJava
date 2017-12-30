@@ -16,6 +16,11 @@ public class VLongTest extends FeatureTestVNumber<Long, VLong> {
     }
 
     @Override
+    Long getAnotherValue() {
+        return 0L;
+    }
+
+    @Override
     VLong of(Long value, Alarm alarm, Time time, Display display) {
         return VLong.of(value, alarm, time, display);
     }

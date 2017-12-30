@@ -4,6 +4,7 @@
  */
 package org.epics.vtype;
 
+import java.util.Objects;
 import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
@@ -79,6 +80,35 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
             return VByte.of((Byte) value, alarm, time, display);
         }
 	throw new IllegalArgumentException("Only standard Java implementations of Number and EPICS unsigned numbers are supported");
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+	if (obj instanceof VNumber) {
+            VNumber other = (VNumber) obj;
+        
+            return getClass().equals(other.getClass()) &&
+                    getValue().equals(other.getValue()) &&
+                    getAlarm().equals(other.getAlarm()) &&
+                    getTime().equals(other.getTime()) &&
+                    getDisplay().equals(other.getDisplay());
+        }
+        
+        return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(getValue());
+        hash = 23 * hash + Objects.hashCode(getAlarm());
+        hash = 23 * hash + Objects.hashCode(getTime());
+        hash = 23 * hash + Objects.hashCode(getDisplay());
+        return hash;
     }
     
 }

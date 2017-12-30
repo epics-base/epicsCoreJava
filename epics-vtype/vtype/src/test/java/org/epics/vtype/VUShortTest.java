@@ -18,6 +18,11 @@ public class VUShortTest extends FeatureTestVNumber<UShort, VUShort> {
     }
 
     @Override
+    UShort getAnotherValue() {
+        return UShort.valueOf((short) -0);
+    }
+
+    @Override
     VUShort of(UShort value, Alarm alarm, Time time, Display display) {
         return VUShort.of(value, alarm, time, display);
     }

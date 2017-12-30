@@ -18,6 +18,11 @@ public class VULongTest extends FeatureTestVNumber<ULong, VULong> {
     }
 
     @Override
+    ULong getAnotherValue() {
+        return ULong.valueOf(1);
+    }
+
+    @Override
     VULong of(ULong value, Alarm alarm, Time time, Display display) {
         return VULong.of(value, alarm, time, display);
     }

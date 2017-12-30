@@ -16,6 +16,11 @@ public class VShortTest extends FeatureTestVNumber<Short, VShort> {
     }
 
     @Override
+    Short getAnotherValue() {
+        return 0;
+    }
+
+    @Override
     VShort of(Short value, Alarm alarm, Time time, Display display) {
         return VShort.of(value, alarm, time, display);
     }

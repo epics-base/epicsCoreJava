@@ -16,6 +16,11 @@ public class VByteTest extends FeatureTestVNumber<Byte, VByte> {
     }
 
     @Override
+    Byte getAnotherValue() {
+        return 0;
+    }
+
+    @Override
     VByte of(Byte value, Alarm alarm, Time time, Display display) {
         return VByte.of(value, alarm, time, display);
     }

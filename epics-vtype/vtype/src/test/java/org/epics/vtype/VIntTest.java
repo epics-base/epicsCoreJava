@@ -16,6 +16,11 @@ public class VIntTest extends FeatureTestVNumber<Integer, VInt> {
     }
 
     @Override
+    Integer getAnotherValue() {
+        return 0;
+    }
+
+    @Override
     VInt of(Integer value, Alarm alarm, Time time, Display display) {
         return VInt.of(value, alarm, time, display);
     }
