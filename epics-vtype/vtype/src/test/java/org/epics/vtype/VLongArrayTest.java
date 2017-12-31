@@ -16,7 +16,12 @@ public class VLongArrayTest extends FeatureTestVNumberArray<ListLong, VLongArray
 
     @Override
     ListLong getData() {
-        return ArrayLong.of(0,1,2,3,4,5,6,7,8,9);
+        return ArrayLong.of(new long[] {0,1,2,3,4,5,6,7,8,9});
+    }
+
+    @Override
+    ListLong getOtherData() {
+        return ArrayLong.of(new long[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
     }
 
     @Override

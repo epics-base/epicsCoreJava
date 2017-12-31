@@ -20,6 +20,11 @@ public class VUIntArrayTest extends FeatureTestVNumberArray<ListUInteger, VUIntA
     }
 
     @Override
+    ListUInteger getOtherData() {
+        return ArrayUInteger.of(new int[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
+    }
+
+    @Override
     VUIntArray of(ListUInteger data, Alarm alarm, Time time, Display display) {
         return VUIntArray.of(data, alarm, time, display);
     }

@@ -20,6 +20,11 @@ public class VUByteArrayTest extends FeatureTestVNumberArray<ListUByte, VUByteAr
     }
 
     @Override
+    ListUByte getOtherData() {
+        return ArrayUByte.of(new byte[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
+    }
+
+    @Override
     VUByteArray of(ListUByte data, Alarm alarm, Time time, Display display) {
         return VUByteArray.of(data, alarm, time, display);
     }

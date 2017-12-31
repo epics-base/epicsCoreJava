@@ -4,7 +4,9 @@
  */
 package org.epics.vtype;
 
+import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
+import org.epics.util.array.ListByte;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListInteger;
 
@@ -16,7 +18,12 @@ public class VDoubleArrayTest extends FeatureTestVNumberArray<ListDouble, VDoubl
 
     @Override
     ListDouble getData() {
-        return ArrayDouble.of(0,1,2,3,4,5,6,7,8,9);
+        return ArrayDouble.of(new double[] {0,1,2,3,4,5,6,7,8,9});
+    }
+
+    @Override
+    ListDouble getOtherData() {
+        return ArrayDouble.of(new double[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
     }
 
     @Override

@@ -4,6 +4,7 @@
  */
 package org.epics.vtype;
 
+import java.util.Objects;
 import org.epics.util.array.ListByte;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListFloat;
@@ -123,6 +124,35 @@ public abstract class VNumberArray extends Array implements AlarmProvider, TimeP
             return VByteArray.of((ListByte) data, sizes, alarm, time, display);
         }
 	throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+	if (obj instanceof VNumberArray) {
+            VNumberArray other = (VNumberArray) obj;
+        
+            return getClass().equals(other.getClass()) &&
+                    getData().equals(other.getData()) &&
+                    getAlarm().equals(other.getAlarm()) &&
+                    getTime().equals(other.getTime()) &&
+                    getDisplay().equals(other.getDisplay());
+        }
+        
+        return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(getData());
+        hash = 23 * hash + Objects.hashCode(getAlarm());
+        hash = 23 * hash + Objects.hashCode(getTime());
+        hash = 23 * hash + Objects.hashCode(getDisplay());
+        return hash;
     }
     
 }

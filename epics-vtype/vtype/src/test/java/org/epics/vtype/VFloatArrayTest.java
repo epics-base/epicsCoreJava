@@ -16,7 +16,12 @@ public class VFloatArrayTest extends FeatureTestVNumberArray<ListFloat, VFloatAr
 
     @Override
     ListFloat getData() {
-        return ArrayFloat.of(0,1,2,3,4,5,6,7,8,9);
+        return ArrayFloat.of(new float[] {0,1,2,3,4,5,6,7,8,9});
+    }
+
+    @Override
+    ListFloat getOtherData() {
+        return ArrayFloat.of(new float[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
     }
 
     @Override

@@ -16,7 +16,12 @@ public class VIntArrayTest extends FeatureTestVNumberArray<ListInteger, VIntArra
 
     @Override
     ListInteger getData() {
-        return ArrayInteger.of(0,1,2,3,4,5,6,7,8,9);
+        return ArrayInteger.of(new int[] {0,1,2,3,4,5,6,7,8,9});
+    }
+
+    @Override
+    ListInteger getOtherData() {
+        return ArrayInteger.of(new int[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
     }
 
     @Override

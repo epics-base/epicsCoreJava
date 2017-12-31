@@ -20,6 +20,11 @@ public class VUShortArrayTest extends FeatureTestVNumberArray<ListUShort, VUShor
     }
 
     @Override
+    ListUShort getOtherData() {
+        return ArrayUShort.of(new short[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
+    }
+
+    @Override
     VUShortArray of(ListUShort data, Alarm alarm, Time time, Display display) {
         return VUShortArray.of(data, alarm, time, display);
     }

@@ -4,10 +4,12 @@
  */
 package org.epics.vtype;
 
+import java.text.DecimalFormat;
 import java.time.Instant;
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListNumber;
+import org.epics.util.stats.Range;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -21,6 +23,8 @@ import static org.hamcrest.Matchers.*;
 public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VNumberArray> {
     
     abstract L getData();
+    
+    abstract L getOtherData();
     
     abstract V of(L data, Alarm alarm, Time time, Display display);
     
@@ -108,6 +112,33 @@ public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VN
     @Test(expected = NullPointerException.class)
     public void of10() {
         of(getData(), null, Alarm.none(), Time.now(), Display.none());
+    }
+    
+    @Test
+    public void equals1() {
+        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
+        Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
+        Time now = Time.now();
+        assertThat(of(getData(), alarm, time, Display.none()), equalTo(of(getData(), alarm, time, Display.none())));
+        assertThat(of(getOtherData(), Alarm.none(), now, Display.none()), equalTo(of(getOtherData(), Alarm.none(), now, Display.none())));
+        assertThat(of(getData(), alarm, time, Display.none()), not(equalTo(null)));
+        assertThat(of(getData(), alarm, time, Display.none()), not(equalTo(of(getOtherData(), alarm, time, Display.none()))));
+        assertThat(of(getData(), alarm, time, Display.none()), not(equalTo(of(getData(), Alarm.none(), time, Display.none()))));
+        assertThat(of(getData(), alarm, time, Display.none()), not(equalTo(of(getData(), alarm, now, Display.none()))));
+        assertThat(of(getData(), alarm, time, Display.none()), not(equalTo(of(getData(), alarm, time, Display.of(Range.undefined(), Range.undefined(), Range.undefined(), Range.undefined(), "meters", new DecimalFormat())))));
+    }
+    
+    @Test
+    public void hashCode1() {
+        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
+        Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
+        Time now = Time.now();
+        assertThat(of(getData(), alarm, time, Display.none()).hashCode(), equalTo(of(getData(), alarm, time, Display.none()).hashCode()));
+        assertThat(of(getOtherData(), Alarm.none(), now, Display.none()).hashCode(), equalTo(of(getOtherData(), Alarm.none(), now, Display.none()).hashCode()));
+        assertThat(of(getData(), alarm, time, Display.none()).hashCode(), not(equalTo(of(getOtherData(), alarm, time, Display.none()).hashCode())));
+        assertThat(of(getData(), alarm, time, Display.none()).hashCode(), not(equalTo(of(getData(), Alarm.none(), time, Display.none()).hashCode())));
+        assertThat(of(getData(), alarm, time, Display.none()).hashCode(), not(equalTo(of(getData(), alarm, now, Display.none()).hashCode())));
+        assertThat(of(getData(), alarm, time, Display.none()).hashCode(), not(equalTo(of(getData(), alarm, time, Display.of(Range.undefined(), Range.undefined(), Range.undefined(), Range.undefined(), "meters", new DecimalFormat())).hashCode())));
     }
     
 }
