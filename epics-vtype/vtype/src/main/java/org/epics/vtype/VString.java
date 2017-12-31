@@ -41,8 +41,7 @@ public abstract class VString extends Scalar {
 	if (obj instanceof VString) {
             VString other = (VString) obj;
         
-            return getClass().equals(other.getClass()) &&
-                    getValue().equals(other.getValue()) &&
+            return getValue().equals(other.getValue()) &&
                     getAlarm().equals(other.getAlarm()) &&
                     getTime().equals(other.getTime());
         }

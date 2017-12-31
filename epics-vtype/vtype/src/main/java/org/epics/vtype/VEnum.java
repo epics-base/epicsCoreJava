@@ -5,6 +5,8 @@
 package org.epics.vtype;
 
 import java.util.List;
+import java.util.Objects;
+import static org.epics.vtype.VType.typeOf;
 
 /**
  * Scalar enum with alarm and timestamp.
@@ -48,6 +50,48 @@ public abstract class VEnum extends Scalar {
      */
     public static VEnum of(int index, EnumDisplay metaData, Alarm alarm, Time time) {
         return new IVEnum(index, metaData, alarm, time);
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        
+	if (obj instanceof VEnum) {
+            VEnum other = (VEnum) obj;
+        
+            return getIndex() == other.getIndex() &&
+                    getDisplay().equals(other.getDisplay()) &&
+                    getAlarm().equals(other.getAlarm()) &&
+                    getTime().equals(other.getTime());
+        }
+        
+        return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(getValue());
+        hash = 23 * hash + Objects.hashCode(getAlarm());
+        hash = 23 * hash + Objects.hashCode(getTime());
+        return hash;
+    }
+    
+    @Override
+    public final String toString() {
+        StringBuilder builder = new StringBuilder();
+        Class type = typeOf(this);
+        builder.append(type.getSimpleName())
+                .append("[\"")
+                .append(getValue())
+                .append("\", ")
+                .append(getAlarm())
+                .append(", ")
+                .append(getTime())
+                .append(']');
+        return builder.toString();
     }
 
 }

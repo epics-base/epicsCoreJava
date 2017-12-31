@@ -1,0 +1,76 @@
+/**
+ * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
+ * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ */
+package org.epics.vtype;
+
+import java.time.Instant;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+
+/**
+ *
+ * @author carcassi
+ */
+public class VEnumTest {
+
+    @Test
+    public void of1() {
+        EnumDisplay display = EnumDisplay.of("A", "B", "C");
+        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
+        Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
+        VEnum value = VEnum.of(0, display, alarm, time);
+        assertThat(value.getValue(), equalTo("A"));
+        assertThat(value.getIndex(), equalTo(0));
+        assertThat(value.getAlarm(), equalTo(alarm));
+        assertThat(value.getTime(), equalTo(time));
+        assertThat(value.getDisplay(), equalTo(display));
+        assertThat(value.toString(), equalTo("VEnum[\"A\", MINOR(DB) - LOW, 2012-12-05T14:57:21.521786982Z]"));
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void of2() {
+        VEnum value = VEnum.of(0, null, Alarm.none(), Time.now());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void of3() {
+        VEnum value = VEnum.of(0, EnumDisplay.of(3), null, Time.now());
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void of4() {
+        VEnum value = VEnum.of(0, EnumDisplay.of(3), Alarm.none(), null);
+    }
+    
+    @Test
+    public void equals1() {
+        EnumDisplay display = EnumDisplay.of("A", "B", "C");
+        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
+        Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
+        Time now = Time.now();
+        assertThat(VEnum.of(0, display, alarm, time), equalTo(VEnum.of(0, display, alarm, time)));
+        assertThat(VEnum.of(1, display, Alarm.none(), now), equalTo(VEnum.of(1, display, Alarm.none(), now)));
+        assertThat(VEnum.of(0, display, alarm, time), not(equalTo(null)));
+        assertThat(VEnum.of(0, display, alarm, time), not(equalTo(VEnum.of(1, display, alarm, time))));
+        assertThat(VEnum.of(0, display, alarm, time), not(equalTo(VEnum.of(0, EnumDisplay.of(3), alarm, time))));
+        assertThat(VEnum.of(0, display, alarm, time), not(equalTo(VEnum.of(0, display, Alarm.none(), time))));
+        assertThat(VEnum.of(0, display, alarm, time), not(equalTo(VEnum.of(0, display, alarm, now))));
+    }
+    
+    @Test
+    public void hashCode1() {
+        EnumDisplay display = EnumDisplay.of("A", "B", "C");
+        Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
+        Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
+        Time now = Time.now();
+        assertThat(VEnum.of(0, display, alarm, time).hashCode(), equalTo(VEnum.of(0, display, alarm, time).hashCode()));
+        assertThat(VEnum.of(1, display, Alarm.none(), now).hashCode(), equalTo(VEnum.of(1, display, Alarm.none(), now).hashCode()));
+        assertThat(VEnum.of(0, display, alarm, time).hashCode(), not(equalTo(VEnum.of(1, display, alarm, time).hashCode())));
+        assertThat(VEnum.of(0, display, alarm, time).hashCode(), not(equalTo(VEnum.of(0, EnumDisplay.of(3), alarm, time).hashCode())));
+        assertThat(VEnum.of(0, display, alarm, time).hashCode(), not(equalTo(VEnum.of(0, display, Alarm.none(), time).hashCode())));
+        assertThat(VEnum.of(0, display, alarm, time).hashCode(), not(equalTo(VEnum.of(0, display, alarm, now).hashCode())));
+    }
+    
+}
