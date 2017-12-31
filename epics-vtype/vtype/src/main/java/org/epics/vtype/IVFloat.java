@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VFloat implementation.
+ * Immutable {@code VFloat} implementation.
  *
  * @author carcassi
  */
-class IVFloat extends VFloat {
+final class IVFloat extends VFloat {
     
     private final Float value;
     private final Alarm alarm;

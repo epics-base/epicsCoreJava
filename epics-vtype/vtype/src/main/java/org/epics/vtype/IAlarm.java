@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable Alarm implementation.
+ * Immutable {code Alarm} implementation.
  *
  * @author carcassi
  */
-class IAlarm extends Alarm {
+final class IAlarm extends Alarm {
 
     private final AlarmSeverity severity;
     private final AlarmStatus status;

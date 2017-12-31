@@ -7,11 +7,11 @@ package org.epics.vtype;
 import java.time.Instant;
 
 /**
- * Immutable Time implementation.
+ * Immutable {@code Time} implementation.
  *
  * @author carcassi
  */
-class ITime extends Time {
+final class ITime extends Time {
     
     private final Instant timestamp;
     private final Integer userTag;

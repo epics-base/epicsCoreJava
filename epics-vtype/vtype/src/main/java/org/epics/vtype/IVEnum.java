@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VEnum implementation.
+ * Immutable {@code VEnum} implementation.
  *
  * @author carcassi
  */
-class IVEnum extends VEnum {
+final class IVEnum extends VEnum {
     
     private final Alarm alarm;
     private final Time time;

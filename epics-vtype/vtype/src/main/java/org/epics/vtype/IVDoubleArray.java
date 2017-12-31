@@ -8,11 +8,11 @@ import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListInteger;
 
 /**
- * Immutable VDoubleArray implementation.
+ * Immutable {@code VDoubleArray} implementation.
  *
  * @author carcassi
  */
-class IVDoubleArray extends VDoubleArray {
+final class IVDoubleArray extends VDoubleArray {
     
     private final ListDouble data;
     private final ListInteger sizes;

@@ -8,11 +8,11 @@ import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListUInteger;
 
 /**
- * Immutable VUIntArray implementation.
+ * Immutable {@code VUIntArray} implementation.
  *
  * @author carcassi
  */
-class IVUIntArray extends VUIntArray {
+final class IVUIntArray extends VUIntArray {
     
     private final ListUInteger data;
     private final ListInteger sizes;

@@ -8,11 +8,11 @@ import java.text.NumberFormat;
 import org.epics.util.stats.Range;
 
 /**
- * Immutable Display implementation.
+ * Immutable {@code Display} implementation.
  *
  * @author carcassi
  */
-class IDisplay extends Display {
+final class IDisplay extends Display {
 
     private final Range displayRange;
     private final Range warningRange;

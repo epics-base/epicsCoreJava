@@ -7,11 +7,11 @@ package org.epics.vtype;
 import org.epics.util.number.UShort;
 
 /**
- * Immutable VUShort implementation.
+ * Immutable {@code VUShort} implementation.
  *
  * @author carcassi
  */
-class IVUShort extends VUShort {
+final class IVUShort extends VUShort {
     
     private final UShort value;
     private final Alarm alarm;

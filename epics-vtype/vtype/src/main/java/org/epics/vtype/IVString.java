@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VString implementation.
+ * Immutable {@code VString} implementation.
  *
  * @author carcassi
  */
-class IVString extends VString {
+final class IVString extends VString {
     
     private final String value;
     private final Alarm alarm;

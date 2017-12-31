@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VInt implementation.
+ * Immutable {@code VInt} implementation.
  *
  * @author carcassi
  */
-class IVInt extends VInt {
+final class IVInt extends VInt {
     
     private final Integer value;
     private final Alarm alarm;

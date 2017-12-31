@@ -7,11 +7,11 @@ package org.epics.vtype;
 import org.epics.util.number.UByte;
 
 /**
- * Immutable IVUByte implementation.
+ * Immutable {@code IVUByte} implementation.
  *
  * @author carcassi
  */
-class IVUByte extends VUByte {
+final class IVUByte extends VUByte {
     
     private final UByte value;
     private final Alarm alarm;

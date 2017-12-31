@@ -8,11 +8,11 @@ import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListUByte;
 
 /**
- * Immutable VUByteArray implementation.
+ * Immutable {@code VUByteArray} implementation.
  *
  * @author carcassi
  */
-class IVUByteArray extends VUByteArray {
+final class IVUByteArray extends VUByteArray {
     
     private final ListUByte data;
     private final ListInteger sizes;

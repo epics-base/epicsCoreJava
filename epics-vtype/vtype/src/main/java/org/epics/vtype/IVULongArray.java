@@ -8,11 +8,11 @@ import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListULong;
 
 /**
- * Immutable VULongArray implementation.
+ * Immutable {@code VULongArray} implementation.
  *
  * @author carcassi
  */
-class IVULongArray extends VULongArray {
+final class IVULongArray extends VULongArray {
     
     private final ListULong data;
     private final ListInteger sizes;

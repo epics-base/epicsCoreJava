@@ -7,11 +7,11 @@ package org.epics.vtype;
 import java.util.List;
 
 /**
- * Immutable EnumDisplay implementation.
+ * Immutable {@code EnumDisplay} implementation.
  *
  * @author carcassi
  */
-class IEnumDisplay extends EnumDisplay {
+final class IEnumDisplay extends EnumDisplay {
 
     private final List<String> choices;
     

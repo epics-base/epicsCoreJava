@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VLong implementation.
+ * Immutable {@code VLong} implementation.
  *
  * @author carcassi
  */
-class IVLong extends VLong {
+final class IVLong extends VLong {
     
     private final Long value;
     private final Alarm alarm;

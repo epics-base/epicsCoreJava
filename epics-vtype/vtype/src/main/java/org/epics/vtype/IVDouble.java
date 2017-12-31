@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VDouble implementation.
+ * Immutable {@code VDouble} implementation.
  *
  * @author carcassi
  */
-class IVDouble extends VDouble {
+final class IVDouble extends VDouble {
     
     private final Double value;
     private final Alarm alarm;

@@ -7,11 +7,11 @@ package org.epics.vtype;
 import org.epics.util.number.UInteger;
 
 /**
- * Immutable VUInt implementation.
+ * Immutable {@code VUInt} implementation.
  *
  * @author carcassi
  */
-class IVUInt extends VUInt {
+final class IVUInt extends VUInt {
     
     private final UInteger value;
     private final Alarm alarm;

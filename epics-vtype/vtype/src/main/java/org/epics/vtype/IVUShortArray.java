@@ -8,11 +8,11 @@ import org.epics.util.array.ListInteger;
 import org.epics.util.array.ListUShort;
 
 /**
- * Immutable VUShortArray implementation.
+ * Immutable {@code VUShortArray} implementation.
  *
  * @author carcassi
  */
-class IVUShortArray extends VUShortArray {
+final class IVUShortArray extends VUShortArray {
     
     private final ListUShort data;
     private final ListInteger sizes;

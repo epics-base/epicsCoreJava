@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VByte implementation.
+ * Immutable {@code VByte} implementation.
  *
  * @author carcassi
  */
-class IVByte extends VByte {
+final class IVByte extends VByte {
     
     private final Byte value;
     private final Alarm alarm;

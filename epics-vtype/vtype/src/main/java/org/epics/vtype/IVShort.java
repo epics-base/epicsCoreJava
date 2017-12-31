@@ -5,11 +5,11 @@
 package org.epics.vtype;
 
 /**
- * Immutable VShort implementation.
+ * Immutable {@code VShort} implementation.
  *
  * @author carcassi
  */
-class IVShort extends VShort {
+final class IVShort extends VShort {
     
     private final Short value;
     private final Alarm alarm;

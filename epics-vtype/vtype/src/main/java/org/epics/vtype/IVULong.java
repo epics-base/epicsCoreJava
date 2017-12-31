@@ -7,11 +7,11 @@ package org.epics.vtype;
 import org.epics.util.number.ULong;
 
 /**
- * Immutable VULong implementation.
+ * Immutable {@code VULong} implementation.
  *
  * @author carcassi
  */
-class IVULong extends VULong {
+final class IVULong extends VULong {
     
     private final ULong value;
     private final Alarm alarm;

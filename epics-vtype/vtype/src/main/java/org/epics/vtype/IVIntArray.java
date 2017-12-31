@@ -5,14 +5,13 @@
 package org.epics.vtype;
 
 import org.epics.util.array.ListInteger;
-import org.epics.util.array.ListInteger;
 
 /**
- * Immutable VIntArray implementation.
+ * Immutable {@code VIntArray} implementation.
  *
  * @author carcassi
  */
-class IVIntArray extends VIntArray {
+final class IVIntArray extends VIntArray {
     
     private final ListInteger data;
     private final ListInteger sizes;

@@ -8,11 +8,11 @@ import org.epics.util.array.ListFloat;
 import org.epics.util.array.ListInteger;
 
 /**
- * Immutable VFloatArray implementation.
+ * Immutable {@code VFloatArray} implementation.
  *
  * @author carcassi
  */
-class IVFloatArray extends VFloatArray {
+final class IVFloatArray extends VFloatArray {
     
     private final ListFloat data;
     private final ListInteger sizes;
