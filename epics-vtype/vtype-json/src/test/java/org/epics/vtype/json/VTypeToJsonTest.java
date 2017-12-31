@@ -76,17 +76,15 @@ public class VTypeToJsonTest {
      * @param expectedJsonFileName the filename to compare
      */    
     public static void testSerialization(VType value, String expectedJsonFileName) {
-        compareJson(VTypeToJson.toJson(value), expectedJsonFileName);
-    }
-    
-    public static void compareJson(JsonObject json, String jsonFileName) {
+        JsonObject json = VTypeToJson.toJson(value);
+        
         boolean success = false;
         try {
-            JsonObject reference = loadJson(jsonFileName + ".json");
+            JsonObject reference = loadJson(expectedJsonFileName + ".json");
             assertThat(json, equalTo(reference));
             success = true;
         } finally {
-            File failedJsonFile = new File("src/test/resources/org/epics/vtype/json/" + jsonFileName + ".failed.json");
+            File failedJsonFile = new File("src/test/resources/org/epics/vtype/json/" + expectedJsonFileName + ".failed.json");
             if (!success) {
                 saveErrorJson(json, failedJsonFile);
             } else {
@@ -105,19 +103,7 @@ public class VTypeToJsonTest {
      */
     public static void testDeserialization(String jsonFileName, VType expected) {
         VType actual = VTypeToJson.toVType(loadJson(jsonFileName + ".json"));
-        compareVType(actual, expected);
-    }
-    
-    public static void compareVType(VType actual, VType expected) {
-        assertThat("Type mismatch", VType.typeOf(actual), equalTo(VType.typeOf(expected)));
-//        assertThat("Value mismatch", VTypeValueEquals.valueEquals(actual, expected), equalTo(true));
-        assertThat("Alarm mismatch", Alarm.alarmOf(actual), equalTo(Alarm.alarmOf(expected)));
-        assertThat("Time mismatch", Time.timeOf(actual), equalTo(Time.timeOf(expected)));
-        assertThat("Display mismatch", Display.displayOf(actual), equalTo(Display.displayOf(expected)));
-    }
-
-    public static void compareVType(VType actual, String jsonFileName) {
-        testDeserialization(jsonFileName, actual);
+        assertThat(actual, equalTo(expected));
     }
     
     public static JsonObject loadJson(String jsonFile) {
