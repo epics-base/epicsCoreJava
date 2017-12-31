@@ -44,6 +44,16 @@ public class VEnumTest {
         VEnum value = VEnum.of(0, EnumDisplay.of(3), Alarm.none(), null);
     }
     
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void of5() {
+        VEnum value = VEnum.of(-1, EnumDisplay.of(3), Alarm.none(), Time.now());
+    }
+    
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void of6() {
+        VEnum value = VEnum.of(3, EnumDisplay.of(3), Alarm.none(), Time.now());
+    }
+    
     @Test
     public void equals1() {
         EnumDisplay display = EnumDisplay.of("A", "B", "C");
