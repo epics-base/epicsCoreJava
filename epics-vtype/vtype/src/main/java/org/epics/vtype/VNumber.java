@@ -57,7 +57,7 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
      * @param display the display
      * @return the new number
      */
-    public static VNumber of(Number value, Alarm alarm, Time time, Display display){
+    public static VNumber of(Number value, Alarm alarm, Time time, Display display) {
         if (value instanceof Double) {
             return VDouble.of((Double) value, alarm, time, display);
         } else if (value instanceof Float) {

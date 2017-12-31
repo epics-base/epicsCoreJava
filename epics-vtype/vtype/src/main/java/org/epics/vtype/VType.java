@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import org.epics.util.array.CollectionNumbers;
 import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListNumbers;
 
 /**
  * Tag interface to mark all the members of the value classes.
@@ -18,35 +17,29 @@ import org.epics.util.array.ListNumbers;
  */
 public abstract class VType {
     
-//    private static Collection<Class<?>> types = Arrays.<Class<?>>asList(VByte.class, VByteArray.class, VDouble.class,
-//            VDoubleArray.class, VEnum.class, VEnumArray.class, VFloat.class, VFloatArray.class,
-//            VLong.class, VLongArray.class, VInt.class, VIntArray.class, VMultiDouble.class, VMultiEnum.class,
-//            VMultiInt.class, VMultiString.class, VShort.class, VShortArray.class,
-//            VStatistics.class, VString.class, VStringArray.class, VBoolean.class, VBooleanArray.class, VTable.class,
-//            VImage.class);
-    private static final Collection<Class<?>> types = Arrays.<Class<?>>asList(
-            VByte.class,
-            VUByte.class,
-            VShort.class,
-            VUShort.class,
-            VInt.class,
-            VUInt.class,
-            VLong.class,
-            VULong.class,
-            VFloat.class,
+    private static final Collection<Class<?>> TYPES = Arrays.<Class<?>>asList(
             VDouble.class,
+            VFloat.class,
+            VULong.class,
+            VLong.class,
+            VUInt.class,
+            VInt.class,
+            VUShort.class,
+            VShort.class,
+            VUByte.class,
+            VByte.class,
             VEnum.class,
             VString.class,
-            VByteArray.class,
-            VUByteArray.class,
-            VShortArray.class,
-            VUShortArray.class,
-            VIntArray.class,
-            VUIntArray.class,
-            VLongArray.class,
-            VULongArray.class,
+            VDoubleArray.class,
             VFloatArray.class,
-            VDoubleArray.class);
+            VULongArray.class,
+            VLongArray.class,
+            VUIntArray.class,
+            VIntArray.class,
+            VUShortArray.class,
+            VShortArray.class,
+            VUByteArray.class,
+            VByteArray.class);
 
     /**
      * Returns the type of the object by returning the class object of one
@@ -61,7 +54,7 @@ public abstract class VType {
         if (obj == null)
             return null;
         
-        for (Class<?> type : types) {
+        for (Class<?> type : TYPES) {
             if (type.isInstance(obj)) {
                 return type;
             }
