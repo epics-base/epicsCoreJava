@@ -16,6 +16,9 @@ class IVString extends VString {
     private final Time time;
 
     IVString(String value, Alarm alarm, Time time) {
+        VType.argumentNotNull("value", value);
+        VType.argumentNotNull("alarm", alarm);
+        VType.argumentNotNull("time", time);
         this.value = value;
         this.alarm = alarm;
         this.time = time;

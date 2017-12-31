@@ -28,7 +28,7 @@ public abstract class FeatureTestVNumber<N extends Number, V extends VNumber> {
     abstract String getToString();
 
     @Test
-    public void vNumberArrayof1() {
+    public void vNumberOf1() {
         Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
         Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
         VNumber value = VNumber.of(getValue(), alarm, time, Display.none());

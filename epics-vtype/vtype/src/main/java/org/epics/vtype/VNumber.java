@@ -34,7 +34,7 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
      * @return the string representation
      */
     @Override
-    public String toString() {
+    public final String toString() {
         StringBuilder builder = new StringBuilder();
         Class type = typeOf(this);
         builder.append(type.getSimpleName())

@@ -33,7 +33,7 @@ public abstract class FeatureTestVNumberArray<L extends ListNumber, V extends VN
     abstract String getToString();
 
     @Test
-    public void vNumberArrayof1() {
+    public void vNumberArrayOf1() {
         Alarm alarm = Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW");
         Time time = Time.of(Instant.ofEpochSecond(1354719441, 521786982));
         ListInteger sizes = ArrayInteger.of(5,2);
