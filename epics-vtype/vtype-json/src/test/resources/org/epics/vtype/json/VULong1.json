@@ -1,0 +1,19 @@
+{
+    "type":{
+        "name":"VULong",
+        "version":1
+    },
+    "value":18446744073709551615,
+    "alarm":{
+        "severity":"MINOR",
+        "status":"DB",
+        "name":"HIGH"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

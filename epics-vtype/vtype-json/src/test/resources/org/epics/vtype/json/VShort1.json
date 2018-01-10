@@ -1,0 +1,19 @@
+{
+    "type":{
+        "name":"VShort",
+        "version":1
+    },
+    "value":314,
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

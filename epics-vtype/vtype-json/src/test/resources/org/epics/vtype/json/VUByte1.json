@@ -1,0 +1,19 @@
+{
+    "type":{
+        "name":"VUByte",
+        "version":1
+    },
+    "value":255,
+    "alarm":{
+        "severity":"MINOR",
+        "status":"DB",
+        "name":"HIGH"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

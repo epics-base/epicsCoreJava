@@ -1,0 +1,23 @@
+{
+    "type":{
+        "name":"VUShortArray",
+        "version":1
+    },
+    "value":[
+        65535,
+        65534,
+        65533
+    ],
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}
