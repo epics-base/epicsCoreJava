@@ -76,16 +76,36 @@ public class ProbeCollector<T> {
         }
         
         if (!success) {
-            throw new AssertionError("Waited but " + condition + " but was not satisfied");
+            throw new AssertionError("Waited for " + condition + " but it didn't happen within " + ms + " ms");
         }
     }
     
     public static Function<List<SourceRateReadEvent>, Boolean> forAnEvent() {
-        return (List<SourceRateReadEvent> list) -> !list.isEmpty();
+        return new Function<List<SourceRateReadEvent>, Boolean>() {
+            @Override
+            public Boolean apply(List<SourceRateReadEvent> list) {
+                return !list.isEmpty();
+            }
+
+            @Override
+            public String toString() {
+                return "an event received";
+            }
+        };
     }
     
     public static Function<List<SourceRateReadEvent>, Boolean> forEventCount(final int count) {
-        return (List<SourceRateReadEvent> list) -> list.size() >= count;
+        return new Function<List<SourceRateReadEvent>, Boolean>() {
+            @Override
+            public Boolean apply(List<SourceRateReadEvent> list) {
+                return list.size() >= count;
+            }
+
+            @Override
+            public String toString() {
+                return count + " events received";
+            }
+        };
     }
     
     public static ProbeCollector<?> create() {

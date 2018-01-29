@@ -66,5 +66,14 @@ public final class SourceRateReadEvent {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        if (exception != null) {
+            return "{Type: " + types + " - ex: " + exception.getMessage() + "}";
+        } else {
+            return "{Type: " + types + "}";
+        }
+    }
     
 }
