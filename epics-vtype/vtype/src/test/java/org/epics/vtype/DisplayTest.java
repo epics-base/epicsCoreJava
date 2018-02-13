@@ -149,4 +149,59 @@ public class DisplayTest {
         assertThat(display.getUnit(), equalTo(""));
     }
     
+    @Test
+    public void newAlarmFor1() {
+        Display display = Display.of(Range.of(-10, 10), Range.of(-9, 9), Range.of(-8, 8), Range.undefined(),
+                "", Display.defaultNumberFormat());
+        assertThat(display.newAlarmFor(0), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(9.5), equalTo(Alarm.hihi()));
+        assertThat(display.newAlarmFor(8.5), equalTo(Alarm.high()));
+        assertThat(display.newAlarmFor(-8.5), equalTo(Alarm.low()));
+        assertThat(display.newAlarmFor(-9.5), equalTo(Alarm.lolo()));
+    }
+    
+    @Test
+    public void newAlarmFor2() {
+        Display display = Display.of(Range.undefined(), Range.of(0, 100), Range.of(20, 80), Range.undefined(),
+                "", Display.defaultNumberFormat());
+        assertThat(display.newAlarmFor(31), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(107), equalTo(Alarm.hihi()));
+        assertThat(display.newAlarmFor(81.3), equalTo(Alarm.high()));
+        assertThat(display.newAlarmFor(15), equalTo(Alarm.low()));
+        assertThat(display.newAlarmFor(-0.3), equalTo(Alarm.lolo()));
+    }
+    
+    @Test
+    public void newAlarmFor3() {
+        Display display = Display.of(Range.undefined(), Range.undefined(), Range.undefined(), Range.undefined(),
+                "", Display.defaultNumberFormat());
+        assertThat(display.newAlarmFor(31), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(107), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(81.3), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(15), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(-0.3), equalTo(Alarm.none()));
+    }
+    
+    @Test
+    public void newAlarmFor4() {
+        Display display = Display.of(Range.undefined(), Range.undefined(), Range.of(20, 80), Range.undefined(),
+                "", Display.defaultNumberFormat());
+        assertThat(display.newAlarmFor(31), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(107), equalTo(Alarm.high()));
+        assertThat(display.newAlarmFor(81.3), equalTo(Alarm.high()));
+        assertThat(display.newAlarmFor(15), equalTo(Alarm.low()));
+        assertThat(display.newAlarmFor(-0.3), equalTo(Alarm.low()));
+    }
+     
+    @Test
+    public void newAlarmFor5() {
+        Display display = Display.of(Range.of(-10, 10), Range.of(-9, 9), Range.undefined(), Range.undefined(),
+                "", Display.defaultNumberFormat());
+        assertThat(display.newAlarmFor(0), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(9.5), equalTo(Alarm.hihi()));
+        assertThat(display.newAlarmFor(8.5), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(-8.5), equalTo(Alarm.none()));
+        assertThat(display.newAlarmFor(-9.5), equalTo(Alarm.lolo()));
+    }
+   
 }

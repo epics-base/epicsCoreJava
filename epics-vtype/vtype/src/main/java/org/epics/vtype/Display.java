@@ -64,6 +64,32 @@ public abstract class Display {
      * @return the default format for all values
      */
     public abstract NumberFormat getFormat();
+    
+        
+    /**
+     * Alarm based on the value and the display ranges.
+     * 
+     * @param value the value
+     * @return the new alarm
+     */
+    public Alarm newAlarmFor(Number value) {
+        double newValue = value.doubleValue();
+        // Calculate new AlarmSeverity, using display ranges
+        AlarmSeverity severity = AlarmSeverity.NONE;
+        String status = "NONE";
+        if (newValue <= getAlarmRange().getMinimum()) {
+            return Alarm.lolo();
+        } else if (newValue >= getAlarmRange().getMaximum()) {
+            return Alarm.hihi();
+        } else if (newValue <= getWarningRange().getMinimum()) {
+            return Alarm.low();
+        } else if (newValue >= getWarningRange().getMaximum()) {
+            return Alarm.high();
+        }
+        
+        return Alarm.none();
+    }
+
 
     @Override
     public final boolean equals(Object obj) {
