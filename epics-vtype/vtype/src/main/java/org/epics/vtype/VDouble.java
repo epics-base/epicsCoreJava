@@ -31,4 +31,17 @@ public abstract class VDouble extends VNumber {
     public static VDouble of(final Double value, final Alarm alarm, final Time time, final Display display) {
         return new IVDouble(value, alarm, time, display);
     }
+    
+    /**
+     * Creates a new VDouble.
+     * 
+     * @param value the value
+     * @param alarm the alarm
+     * @param time the time
+     * @param display the display
+     * @return the new value
+     */
+    public static VDouble of(final Number value, final Alarm alarm, final Time time, final Display display) {
+        return new IVDouble(value.doubleValue(), alarm, time, display);
+    }
 }

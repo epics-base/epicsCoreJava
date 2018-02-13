@@ -31,4 +31,17 @@ public abstract class VShort extends VNumber {
     public static VShort of(final Short value, final Alarm alarm, final Time time, final Display display) {
         return new IVShort(value, alarm, time, display);
     }
+    
+    /**
+     * Creates a new VShort.
+     * 
+     * @param value the value
+     * @param alarm the alarm
+     * @param time the time
+     * @param display the display
+     * @return the new value
+     */
+    public static VShort of(final Number value, final Alarm alarm, final Time time, final Display display) {
+        return new IVShort(value.shortValue(), alarm, time, display);
+    }
 }

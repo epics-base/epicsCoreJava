@@ -31,4 +31,17 @@ public abstract class VUInt extends VNumber {
     public static VUInt of(final UInteger value, final Alarm alarm, final Time time, final Display display) {
         return new IVUInt(value, alarm, time, display);
     }
+    
+    /**
+     * Creates a new VUShort.
+     * 
+     * @param value the value
+     * @param alarm the alarm
+     * @param time the time
+     * @param display the display
+     * @return the new value
+     */
+    public static VUInt of(final Number value, final Alarm alarm, final Time time, final Display display) {
+        return new IVUInt(new UInteger(value.intValue()), alarm, time, display);
+    }
 }

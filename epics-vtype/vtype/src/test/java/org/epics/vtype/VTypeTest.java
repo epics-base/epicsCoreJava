@@ -19,6 +19,7 @@ import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
 import org.epics.util.number.UShort;
+import org.epics.util.stats.Range;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -32,6 +33,11 @@ public class VTypeTest {
     @Test(expected = IllegalArgumentException.class)
     public void toVTypeChecked1() {
         VType.toVTypeChecked(new Object());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void toVTypeChecked2() {
+        VType.toVTypeChecked(new Object(), Alarm.none(), Time.now(), Display.none());
     }
     
     @Test
@@ -88,5 +94,23 @@ public class VTypeTest {
         
         // Boolean, Boolean arrays and collections
         assertThat(VType.toVType(true), instanceOf(VBoolean.class));
+    }
+    
+    @Test
+    public void toVType2() {
+        Alarm alarm = Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.RECORD, "problem");
+        Time time = Time.now();
+        Display display = Display.of(Range.of(0, 10), Range.of(1, 9), Range.of(2, 8), Range.of(2, 8), "m", Display.defaultNumberFormat());
+        
+        // no conversion
+        assertThat(VType.toVType(new Object(), alarm, time, display), equalTo(null));
+        
+        // primitives
+        assertThat(VType.toVType(1.0, alarm, time, display), equalTo(VDouble.of(1.0, alarm, time, display)));
+        assertThat(VType.toVType(1.0f, alarm, time, display), equalTo(VFloat.of(1.0, alarm, time, display)));
+        assertThat(VType.toVType(1L, alarm, time, display), equalTo(VLong.of(1, alarm, time, display)));
+        assertThat(VType.toVType(1, alarm, time, display), equalTo(VInt.of(1, alarm, time, display)));
+        assertThat(VType.toVType((short) 1, alarm, time, display), equalTo(VShort.of(1, alarm, time, display)));
+        assertThat(VType.toVType((byte) 1, alarm, time, display), equalTo(VByte.of(1, alarm, time, display)));
     }
 }

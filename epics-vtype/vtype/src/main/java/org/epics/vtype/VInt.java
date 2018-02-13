@@ -31,4 +31,17 @@ public abstract class VInt extends VNumber {
     public static VInt of(final Integer value, final Alarm alarm, final Time time, final Display display) {
         return new IVInt(value, alarm, time, display);
     }
+    
+    /**
+     * Creates a new VInt.
+     * 
+     * @param value the value
+     * @param alarm the alarm
+     * @param time the time
+     * @param display the display
+     * @return the new value
+     */
+    public static VInt of(final Number value, final Alarm alarm, final Time time, final Display display) {
+        return new IVInt(value.intValue(), alarm, time, display);
+    }
 }

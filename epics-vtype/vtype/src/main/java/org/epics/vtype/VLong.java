@@ -31,4 +31,17 @@ public abstract class VLong extends VNumber {
     public static VLong of(final Long value, final Alarm alarm, final Time time, final Display display) {
         return new IVLong(value, alarm, time, display);
     }
+    
+    /**
+     * Creates a new VLong.
+     * 
+     * @param value the value
+     * @param alarm the alarm
+     * @param time the time
+     * @param display the display
+     * @return the new value
+     */
+    public static VLong of(final Number value, final Alarm alarm, final Time time, final Display display) {
+        return new IVLong(value.longValue(), alarm, time, display);
+    }
 }
