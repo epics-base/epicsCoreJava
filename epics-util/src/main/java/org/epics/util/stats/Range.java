@@ -87,7 +87,7 @@ public final class Range {
      * @return the value transformed based on the range
      */
     public double rescale(double value) {
-        return (getMinimum() + value) * (getMaximum() - getMinimum());
+        return getMinimum() + value * (getMaximum() - getMinimum());
     }
 
     /**

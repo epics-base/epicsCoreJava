@@ -222,5 +222,8 @@ public class RangeTest {
         assertThat(Range.of(0, 10).rescale(0.0), equalTo(00.0));
         assertThat(Range.of(0, 10).rescale(0.5), equalTo(5.0));
         assertThat(Range.of(0, 10).rescale(1.0), equalTo(10.0));
+        assertThat(Range.of(-10, 10).rescale(0.0), equalTo(-10.0));
+        assertThat(Range.of(-10, 10).rescale(0.5), equalTo(0.0));
+        assertThat(Range.of(-10, 10).rescale(1.0), equalTo(10.0));
     }
 }
