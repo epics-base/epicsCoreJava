@@ -129,6 +129,24 @@ public final class Range {
             }
         }
     }
+
+    /**
+     * Returns a new range with the same center value and width equal to the
+     * original width multiplied by the given factor.
+     * 
+     * @param factor the multiplicative factor to resize the range width
+     * @return a new range
+     */
+    public Range shrink(double factor) {
+        if (this == UNDEFINED) {
+            return UNDEFINED;
+        }
+        
+        double center = (min + max) / 2;
+        double width = max - min;
+        
+        return Range.of(center - width * factor / 2, center + width * factor / 2);
+    }
     
     /**
      * An undefined range.

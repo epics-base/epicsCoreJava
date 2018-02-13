@@ -206,4 +206,14 @@ public class RangeTest {
         assertThat(range2.combine(range1), sameInstance(range2));
     }
     
+    @Test
+    public void shrink1() {
+        assertThat(Range.of(-10, 10).shrink(0.5), equalTo(Range.of(-5, 5)));
+        assertThat(Range.of(0, 128).shrink(0.125), equalTo(Range.of(56, 72)));
+        assertThat(Range.of(0, 100).shrink(0.1), equalTo(Range.of(45, 55)));
+        assertThat(Range.of(0, 100).shrink(0), equalTo(Range.of(50, 50)));
+        assertThat(Range.of(0, 100).shrink(-1), equalTo(Range.of(100, 0)));
+        assertThat(Range.of(0, 200).shrink(2), equalTo(Range.of(-100, 300)));
+        assertThat(Range.undefined().shrink(10), equalTo(Range.undefined()));
+    }
 }
