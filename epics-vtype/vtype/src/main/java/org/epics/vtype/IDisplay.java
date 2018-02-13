@@ -15,13 +15,13 @@ import org.epics.util.stats.Range;
 final class IDisplay extends Display {
 
     private final Range displayRange;
-    private final Range warningRange;
     private final Range alarmRange;
+    private final Range warningRange;
     private final Range controlRange;
     private final String unit;
     private final NumberFormat format;
 
-    public IDisplay(Range displayRange, Range warningRange, Range alarmRange,
+    public IDisplay(Range displayRange, Range alarmRange, Range warningRange,
             Range controlRange, String unit, NumberFormat format) {
         VType.argumentNotNull("displayRange", displayRange);
         VType.argumentNotNull("warningRange", warningRange);

@@ -108,10 +108,9 @@ public abstract class Display {
      * @param numberFormat the preferred number format
      * @return a new display
      */
-    public static Display of(final Range displayRange, final Range warningRange,
-            final Range alarmRange, final Range controlRange,
-            final String units, final NumberFormat numberFormat) {
-        return new IDisplay(displayRange, warningRange, alarmRange,
+    public static Display of(final Range displayRange, final Range alarmRange, final Range warningRange,
+            final Range controlRange, final String units, final NumberFormat numberFormat) {
+        return new IDisplay(displayRange, alarmRange, warningRange,
                 controlRange, units, numberFormat);
     }
     
