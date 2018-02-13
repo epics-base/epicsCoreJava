@@ -64,6 +64,21 @@ public abstract class VType {
     }
     
     /**
+     * As {@link #toVType(java.lang.Object)} but throws an exception
+     * if conversion not possible.
+     * 
+     * @param javaObject the value to wrap
+     * @return the new VType value
+     */
+    public static VType toVTypeChecked(Object javaObject) {
+        VType value = toVType(javaObject);
+        if (value == null) {
+            throw new IllegalArgumentException("Value " + value + " cannot be converted to VType.");
+        }
+        return value;
+    }
+    
+    /**
      * Converts a standard java type to VTypes. Returns null if no conversion
      * is possible. Calls {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display) } 
      * with no alarm, time now and no display.
