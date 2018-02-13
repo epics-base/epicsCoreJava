@@ -115,9 +115,21 @@ public abstract class Display {
                 controlRange, units, numberFormat);
     }
     
+    // TODO: maybe this can be configured (injected through SPI?)
+    private static final NumberFormat DEFAULT_NUMBERFORMAT = new DecimalFormat();
+    
     private static final Display DISPLAY_NONE = of(Range.undefined(),
             Range.undefined(), Range.undefined(), Range.undefined(), 
-            "", new DecimalFormat());
+            "", DEFAULT_NUMBERFORMAT);
+
+    /**
+     * The default number format for number display.
+     * 
+     * @return a number format
+     */
+    public static NumberFormat defaultNumberFormat() {
+        return DEFAULT_NUMBERFORMAT;
+    }
     
     /**
      * Empty display information.
