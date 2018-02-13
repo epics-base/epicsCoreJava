@@ -85,5 +85,8 @@ public class VTypeTest {
         assertThat(VType.toVType("string"), instanceOf(VString.class));
 //        assertThat(VType.toVType(new String[] {"a", "b", "c"}), instanceOf(VStringArray.class));
 //        assertThat(VType.toVType(Arrays.asList(new String[] {"a", "b", "c"})), instanceOf(VStringArray.class));
+        
+        // Boolean, Boolean arrays and collections
+        assertThat(VType.toVType(true), instanceOf(VBoolean.class));
     }
 }

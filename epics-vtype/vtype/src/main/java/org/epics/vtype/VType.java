@@ -29,6 +29,7 @@ public abstract class VType {
             VUByte.class,
             VByte.class,
             VEnum.class,
+            VBoolean.class,
             VString.class,
             VDoubleArray.class,
             VFloatArray.class,
@@ -129,7 +130,7 @@ public abstract class VType {
         } else if (javaObject instanceof String) {
             return VString.of((String) javaObject, alarm, time);
         } else if (javaObject instanceof Boolean) {
-            return null;//newVBoolean((Boolean) javaObject, alarm, time);
+            return VBoolean.of((Boolean) javaObject, alarm, time);
         } else if (javaObject instanceof byte[]
                 || javaObject instanceof short[]
                 || javaObject instanceof int[]
