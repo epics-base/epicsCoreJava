@@ -12,6 +12,7 @@
     </properties>
     <modules>
         <module>gpclient</module>
+        <module>datasource-sim</module>
     </modules>
     <build>
         <plugins>
