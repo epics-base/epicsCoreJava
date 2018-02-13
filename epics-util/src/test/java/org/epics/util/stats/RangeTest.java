@@ -216,4 +216,11 @@ public class RangeTest {
         assertThat(Range.of(0, 200).shrink(2), equalTo(Range.of(-100, 300)));
         assertThat(Range.undefined().shrink(10), equalTo(Range.undefined()));
     }
+    
+    @Test
+    public void rescale1() {
+        assertThat(Range.of(0, 10).rescale(0.0), equalTo(00.0));
+        assertThat(Range.of(0, 10).rescale(0.5), equalTo(5.0));
+        assertThat(Range.of(0, 10).rescale(1.0), equalTo(10.0));
+    }
 }

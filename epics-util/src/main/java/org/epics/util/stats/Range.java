@@ -76,6 +76,19 @@ public final class Range {
     public double normalize(double value) {
         return (value - getMinimum()) / (getMaximum() - getMinimum());
     }
+    
+    /**
+     * Takes a normalized value and returns a proportional
+     * value within the range. It performs a linear
+     * transformation where 0 becomes the minimum value of the range while
+     * 1 becomes the maximum.
+     * 
+     * @param value a value
+     * @return the value transformed based on the range
+     */
+    public double rescale(double value) {
+        return (getMinimum() + value) * (getMaximum() - getMinimum());
+    }
 
     /**
      * Determines whether the value is contained by the range or not.
