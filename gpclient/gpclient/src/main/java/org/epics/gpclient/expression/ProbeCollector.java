@@ -5,6 +5,7 @@
  */
 package org.epics.gpclient.expression;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -31,21 +32,38 @@ public class ProbeCollector<T> {
     private final ReadCollector<T, T> collector;
     private final Object lock = new Object();
     private final List<SourceRateReadEvent> events = new ArrayList<>();
+    private final PrintStream out;
     private Runnable test;
 
-    public ProbeCollector(Class<T> type) {
+    public ProbeCollector(Class<T> type, PrintStream out) {
+        this.out = out;
         this.collector = new LatestValueCollector<>(type);
         this.collector.setUpdateListener(new Consumer<SourceRateReadEvent>() {
             @Override
             public void accept(SourceRateReadEvent event) {
                 synchronized(lock) {
                     events.add(event);
+                    print(event);
                     if (test != null) {
                         test.run();
                     }
                 }
             }
         });
+    }
+    
+    private void print(SourceRateReadEvent event) {
+        if (out != null) {
+            if (event.getType().contains(SourceRateReadEvent.Type.READ_CONNECTION)) {
+                out.println("CONN: " + collector.getConnection());
+            }
+            if (event.getType().contains(SourceRateReadEvent.Type.VALUE)) {
+                out.println("VAL: " + collector.getValue());
+            }
+            if (event.getType().contains(SourceRateReadEvent.Type.READ_EXCEPTION)) {
+                out.println("ERR: " + event.getException().getMessage());
+            }
+        }
     }
 
     public ReadCollector<T, T> getCollector() {
@@ -126,7 +144,7 @@ public class ProbeCollector<T> {
     }
     
     public static ProbeCollector<?> create() {
-        return new ProbeCollector<>(Object.class);
+        return new ProbeCollector<>(Object.class, null);
     }
     
 }

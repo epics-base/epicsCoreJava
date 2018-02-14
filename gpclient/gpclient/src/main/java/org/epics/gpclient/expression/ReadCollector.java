@@ -34,6 +34,12 @@ public abstract class ReadCollector<I, O> {
     
     abstract O getValue();
     
+    public boolean getConnection() {
+        synchronized(lock) {
+            return connection;
+        }
+    }
+    
     public Class<I> getType() {
         return type;
     }
