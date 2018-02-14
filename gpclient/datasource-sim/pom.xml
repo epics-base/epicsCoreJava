@@ -10,4 +10,16 @@
     <packaging>jar</packaging>
     <name>org.epics.gpclient.datasource.sim</name>
     <description>Support for simulated data source.</description>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gpclient</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vtype</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>
