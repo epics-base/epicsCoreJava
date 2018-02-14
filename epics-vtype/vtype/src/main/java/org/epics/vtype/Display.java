@@ -122,6 +122,11 @@ public abstract class Display {
         hash = 59 * hash + Objects.hashCode(getControlRange());
         return hash;
     }
+
+    @Override
+    public final String toString() {
+        return "Display[units: " + getUnit() + " disp: " + getDisplayRange() + " alarm: " + getAlarmRange() + " warn: " + getWarningRange() + " ctrl: " + getControlRange() + " format: " + getFormat() + "]";
+    }
     
     /**
      * Creates a new display.
