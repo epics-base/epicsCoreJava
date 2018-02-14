@@ -16,7 +16,10 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.expression.LatestValueCollector;
+import org.epics.gpclient.expression.LatestValueCollector;
 import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.expression.SourceRateReadEvent;
 import org.epics.gpclient.expression.SourceRateReadEvent;
 
 /**
