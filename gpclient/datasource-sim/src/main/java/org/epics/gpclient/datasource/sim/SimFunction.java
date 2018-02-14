@@ -92,7 +92,7 @@ abstract class SimFunction<T> extends Simulation<T> {
         if (lastTime == null)
             lastTime = Instant.now();
         
-        return VDouble.of(value, oldValue.getDisplay().newAlarmFor(value), Time.now(), oldValue.getDisplay());
+        return VDouble.of(value, oldValue.getDisplay().newAlarmFor(value), Time.of(lastTime), oldValue.getDisplay());
     }
 
     /**

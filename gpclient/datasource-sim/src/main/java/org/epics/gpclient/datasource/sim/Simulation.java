@@ -22,7 +22,7 @@ abstract class Simulation<T> {
 
 //    private final long intervalBetweenExecution;
 //    private final Class<T> classToken;
-    volatile Instant lastTime;
+    volatile Instant lastTime = Instant.now();
 
     /**
      * Creates a new simulation.

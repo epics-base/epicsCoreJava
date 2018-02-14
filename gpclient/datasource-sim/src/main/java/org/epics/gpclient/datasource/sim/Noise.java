@@ -19,11 +19,9 @@ import org.epics.vtype.VDouble;
  *
  * @author carcassi
  */
-public class Noise extends SimFunction<VDouble> {
+public class Noise extends VDoubleSimFunction {
 
     private final Random rand = new Random();
-    private final Range range;
-    private VDouble lastValue;
 
     /**
      * Creates a signal uniformly distributed between -5.0 and 5.0, updating
@@ -31,20 +29,6 @@ public class Noise extends SimFunction<VDouble> {
      */
     public Noise() {
         this(-5.0, 5.0, 1.0);
-    }
-    
-    /**
-     * Do not use: only provided to provide some sort of error message
-     * for people migrating from utility.pv.
-     * 
-     * @param min minimum value
-     * @param max maximum value
-     * @param step ignored
-     * @param interval interval between samples in seconds
-     */
-    public Noise(Double min, Double max, Double step, Double interval) {
-        super(interval, VDouble.class);
-        throw new IllegalArgumentException("Please rename to noise(" + min + ", " + max + ", " + interval + ")");
     }
 
     /**
@@ -56,18 +40,11 @@ public class Noise extends SimFunction<VDouble> {
      * @param interval interval between samples in seconds
      */
     public Noise(Double min, Double max, Double interval) {
-        super(interval, VDouble.class);
-        if (interval <= 0.0) {
-            throw new IllegalArgumentException("Interval must be greater than zero (was " + interval + ")");
-        }
-        this.range = Range.of(min, max);
-        lastValue = VDouble.of(min, Alarm.none(), Time.now(),
-                Display.of(range, range.shrink(0.9), range.shrink(0.8), Range.undefined(),
-                        "", Display.defaultNumberFormat()));
+        super(interval, createDisplay(min, max));
     }
 
     @Override
-    VDouble nextValue() {
-        return newValue(range.rescale(rand.nextDouble()), lastValue);
+    double nextDouble() {
+        return display.getDisplayRange().rescale(rand.nextDouble());
     }
 }

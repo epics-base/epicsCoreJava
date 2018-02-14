@@ -15,10 +15,24 @@ import org.epics.gpclient.datasource.MultiplexedChannelHandler;
 import org.epics.util.stats.TimeInterval;
 
 /**
+ * Takes a simulation object and use it as a source of data for the channel.
  *
  * @author carcassi
  */
 class SimulationChannelHandler<T> extends MultiplexedChannelHandler<Simulation<T>, T> {
+
+    /**
+     * Creates a new simulation channel.
+     * 
+     * @param channelName the name of the channel
+     * @param simulation the source of the simulated data
+     * @param exec the thread pool to use for data generation
+     */
+    SimulationChannelHandler(String channelName, Simulation<T> simulation, ScheduledExecutorService exec) {
+        super(channelName);
+        this.simulation = simulation;
+        this.exec = exec;
+    }
 
     private final Simulation<T> simulation;
     private final ScheduledExecutorService exec;
@@ -31,6 +45,8 @@ class SimulationChannelHandler<T> extends MultiplexedChannelHandler<Simulation<T
                 if (simulation.lastTime == null) {
                     simulation.lastTime = Instant.now();
                 }
+                
+                //
                 List<T> newValues = simulation.createValues(TimeInterval.between(simulation.lastTime, Instant.now()));
 
                 for (T newValue : newValues) {
@@ -43,12 +59,6 @@ class SimulationChannelHandler<T> extends MultiplexedChannelHandler<Simulation<T
     };
     private static final Logger log = Logger.getLogger(SimulationChannelHandler.class.getName());
     private ScheduledFuture<?> taskFuture;
-
-    public SimulationChannelHandler(String channelName, Simulation<T> simulation, ScheduledExecutorService exec) {
-        super(channelName);
-        this.simulation = simulation;
-        this.exec = exec;
-    }
 
     @Override
     public void connect() {
