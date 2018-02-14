@@ -15,17 +15,15 @@ import org.epics.vtype.VDouble;
  * Function to simulate a signal that has a gaussian distribution. The warning
  * limits are set above the standard deviation and the alarm above two times
  * the standard deviation. The total range is 4 times the standard deviation.
- * All values are going to have no alarm status, with the timestamp set at the
- * moment the sample was generated.
+ * Alarm is based on the limits. Timestamp are generated at the rate requested.
  *
  * @author carcassi
  */
-public class GaussianNoise extends SimFunction<VDouble> {
+public class GaussianNoise extends VDoubleSimFunction {
 
-    private Random rand = new Random();
-    private double average;
-    private double stdDev;
-    private VDouble lastValue;
+    private final Random rand = new Random();
+    private final double average;
+    private final double stdDev;
 
     /**
      * Creates a signal with a normal distribution (average zero and
@@ -44,22 +42,17 @@ public class GaussianNoise extends SimFunction<VDouble> {
      * @param interval time between samples in seconds
      */
     public GaussianNoise(Double average, Double stdDev, Double interval) {
-        super(interval, VDouble.class);
-        if (interval <= 0.0) {
-            throw new IllegalArgumentException("Interval must be greater than zero (was " + interval + ")");
-        }
-        this.average = average;
-        this.stdDev = stdDev;
-        lastValue = VDouble.of(average, Alarm.none(), Time.now(),
-                Display.of(Range.of(average - 4 * stdDev, average + 4 * stdDev),
+        super(interval, Display.of(Range.of(average - 4 * stdDev, average + 4 * stdDev),
                         Range.of(average - 2 * stdDev, average + 2 * stdDev),
                         Range.of(average - stdDev, average + stdDev),
                         Range.undefined(),
                         "", Display.defaultNumberFormat()));
+        this.average = average;
+        this.stdDev = stdDev;
     }
 
     @Override
-    VDouble nextValue() {
-        return newValue(average + rand.nextGaussian() * stdDev, lastValue);
+    double nextDouble() {
+        return average + rand.nextGaussian() * stdDev;
     }
 }

@@ -4,7 +4,6 @@
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.util.logging.Logger;
 import org.epics.util.stats.Range;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
@@ -16,8 +15,6 @@ import org.epics.vtype.VDouble;
  * @author carcassi
  */
 abstract class VDoubleSimFunction extends SimFunction<VDouble> {
-
-    private static final Logger log = Logger.getLogger(VDoubleSimFunction.class.getName());
 
     /**
      * The display to be used for all values.
@@ -43,7 +40,7 @@ abstract class VDoubleSimFunction extends SimFunction<VDouble> {
     @Override
     final VDouble nextValue() {
         double value = nextDouble();
-        return VDouble.of(nextDouble(), display.newAlarmFor(value), Time.of(lastTime), display);
+        return VDouble.of(value, display.newAlarmFor(value), Time.of(lastTime), display);
     }
 
     /**

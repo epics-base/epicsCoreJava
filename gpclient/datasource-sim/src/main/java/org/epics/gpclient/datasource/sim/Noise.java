@@ -5,17 +5,11 @@
 package org.epics.gpclient.datasource.sim;
 
 import java.util.Random;
-import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VDouble;
 
 /**
  * Function to simulate a signal that has a uniform distribution. The warning
  * limits are set at 80% of the range and the alarm at 90% the range.
- * All values are going to have no alarm status, with the timestamp set at the
- * moment the sample was generated.
+ * Alarm is based on the limits. Timestamp are generated at the rate requested.
  *
  * @author carcassi
  */
@@ -25,7 +19,7 @@ public class Noise extends VDoubleSimFunction {
 
     /**
      * Creates a signal uniformly distributed between -5.0 and 5.0, updating
-     * every 100ms (10Hz).
+     * every second (1Hz).
      */
     public Noise() {
         this(-5.0, 5.0, 1.0);
