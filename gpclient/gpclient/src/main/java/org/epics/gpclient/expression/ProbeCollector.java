@@ -97,6 +97,20 @@ public class ProbeCollector<T> {
         };
     }
     
+    public static Function<List<SourceRateReadEvent>, Boolean> forAConnectionEvent() {
+        return new Function<List<SourceRateReadEvent>, Boolean>() {
+            @Override
+            public Boolean apply(List<SourceRateReadEvent> list) {
+                return list.get(list.size() - 1).getType().contains(SourceRateReadEvent.Type.READ_CONNECTION);
+            }
+
+            @Override
+            public String toString() {
+                return "a connection event";
+            }
+        };
+    }
+    
     public static Function<List<SourceRateReadEvent>, Boolean> forEventCount(final int count) {
         return new Function<List<SourceRateReadEvent>, Boolean>() {
             @Override
