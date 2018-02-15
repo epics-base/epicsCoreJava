@@ -65,6 +65,14 @@ public class ProbeCollector<T> {
             }
         }
     }
+    
+    public boolean getConnection() {
+        return collector.getConnection();
+    }
+    
+    public T getValue() {
+        return collector.getValue();
+    }
 
     public ReadCollector<T, T> getCollector() {
         return collector;
@@ -98,6 +106,33 @@ public class ProbeCollector<T> {
         
         if (!success) {
             throw new AssertionError("Waited for " + condition + " but it didn't happen within " + ms + " ms");
+        }
+    }
+
+    public void dontExpect(int ms, Function<List<SourceRateReadEvent>, Boolean> condition) {
+        CountDownLatch latch = new CountDownLatch(1);
+        Runnable newTest = new Runnable() {
+            @Override
+            public void run() {
+                if (condition.apply(events)) {
+                    latch.countDown();
+                }
+            }
+        };
+        synchronized(lock) {
+            test = newTest;
+            test.run();
+        }
+        
+        boolean success = false;
+        
+        try {
+            success = latch.await(ms, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+        }
+        
+        if (success) {
+            throw new AssertionError("Wasn't expecting " + condition + " but it it happened");
         }
     }
     

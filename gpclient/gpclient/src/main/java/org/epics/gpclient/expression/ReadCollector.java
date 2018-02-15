@@ -34,7 +34,7 @@ public abstract class ReadCollector<I, O> {
     
     abstract O getValue();
     
-    public boolean getConnection() {
+    boolean getConnection() {
         synchronized(lock) {
             return connection;
         }
