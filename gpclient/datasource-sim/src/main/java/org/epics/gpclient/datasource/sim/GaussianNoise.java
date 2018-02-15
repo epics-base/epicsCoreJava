@@ -6,10 +6,7 @@ package org.epics.gpclient.datasource.sim;
 
 import java.util.Random;
 import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VDouble;
 
 /**
  * Function to simulate a signal that has a gaussian distribution. The warning
@@ -30,7 +27,7 @@ public class GaussianNoise extends VDoubleSimFunction {
      * standard deviation one), updating every 100ms (10Hz).
      */
     public GaussianNoise() {
-        this(0.0, 1.0, 0.1);
+        this(0.0, 1.0, 1.0);
     }
 
     /**

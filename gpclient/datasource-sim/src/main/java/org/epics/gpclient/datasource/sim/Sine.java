@@ -15,7 +15,7 @@ package org.epics.gpclient.datasource.sim;
 public class Sine extends VDoubleSimFunction {
 
     private long currentValue;
-    private final double samplesPerCycle;
+    protected final double samplesPerCycle;
     
     /**
      * Creates a sine shaped signal between -5 and 5, updating

@@ -9,10 +9,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.logging.Logger;
 import org.epics.util.stats.TimeInterval;
+import org.epics.vtype.Time;
 
 /**
- * Base class for all simulated signals. It provides the common mechanism for
- * registering the update on a timer and a few other utilities.
+ * Base class for all simulated signals.
+ * <p>
+ * The values will be calculated always on the same thread. This means that
+ * each simulation does not need to synchronize its state.
  *
  * @author carcassi
  */
@@ -22,7 +25,7 @@ abstract class Simulation<T> {
 
 //    private final long intervalBetweenExecution;
 //    private final Class<T> classToken;
-    volatile Instant lastTime = Instant.now();
+    private volatile Instant lastTime = Instant.now();
 
     /**
      * Creates a new simulation.
@@ -46,14 +49,18 @@ abstract class Simulation<T> {
      * @return the new values
      */
     abstract List<T> createValues(TimeInterval interval);
-
-    /**
-     * Changes the time at which the data will be generated.
-     *
-     * @param lastTime new timestamp
-     */
-    void setLastTime(Instant lastTime) {
-        this.lastTime = lastTime;
+    
+    final void reset() {
+        this.lastTime = resetTime();
     }
-
+    
+    Instant resetTime() {
+        return Instant.now();
+    }
+    
+    List<T> createValuesBefore(Instant newTime) {
+        List<T> newValues = createValues(TimeInterval.between(lastTime, newTime));
+        this.lastTime = newTime;
+        return newValues;
+    }
 }

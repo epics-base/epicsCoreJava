@@ -42,13 +42,8 @@ class SimulationChannelHandler<T> extends MultiplexedChannelHandler<Simulation<T
         public void run() {
             // Protect the timer thread for possible problems.
             try {
-                if (simulation.lastTime == null) {
-                    simulation.lastTime = Instant.now();
-                }
-                
-                //
-                List<T> newValues = simulation.createValues(TimeInterval.between(simulation.lastTime, Instant.now()));
-
+                // Creates all the new vlues and process them one by one
+                List<T> newValues = simulation.createValuesBefore(Instant.now());
                 for (T newValue : newValues) {
                     processMessage(newValue);
                 }
@@ -62,10 +57,11 @@ class SimulationChannelHandler<T> extends MultiplexedChannelHandler<Simulation<T
 
     @Override
     public void connect() {
-        simulation.lastTime = Instant.now();
-        if (simulation instanceof SimFunction) {
-            simulation.lastTime = simulation.lastTime.minus(((SimFunction<?>) simulation).getTimeBetweenSamples());
-        }
+        simulation.reset();
+//        simulation.lastTime = Instant.now();
+//        if (simulation instanceof SimFunction) {
+//            simulation.lastTime = simulation.lastTime.minus(((SimFunction<?>) simulation).getTimeBetweenSamples());
+//        }
         taskFuture = exec.scheduleWithFixedDelay(task, 0, 10, TimeUnit.MILLISECONDS);
         processConnection(simulation);
     }

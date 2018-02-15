@@ -80,14 +80,14 @@ public class SawtoothWaveform extends SimFunction<VDoubleArray> {
     private static Display DISPLAY = Display.of(UNIT_RANGE, UNIT_RANGE.shrink(0.9), UNIT_RANGE.shrink(0.8), Range.undefined(), "x", Display.defaultNumberFormat());
     
     @Override
-    VDoubleArray nextValue() {
+    VDoubleArray nextValue(Instant instant) {
         if (initialRefernce == null) {
-            initialRefernce = lastTime;
+            initialRefernce = instant;
         }
-        double t = Duration.between(initialRefernce, lastTime).getSeconds();
+        double t = Duration.between(initialRefernce, instant).getSeconds();
         double omega = 2 * Math.PI / periodInSeconds;
         double k = 2 * Math.PI / wavelengthInSamples;
         return VDoubleArray.of(generateNewValue(omega, t, k), Alarm.none(),
-                Time.of(lastTime), DISPLAY);
+                Time.of(instant), DISPLAY);
     }
 }

@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.datasource.sim;
 
+import java.time.Instant;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.Time;
 import org.epics.vtype.VBoolean;
@@ -37,8 +38,8 @@ public class Flipflop extends SimFunction<VBoolean> {
     }
 
     @Override
-    VBoolean nextValue() {
+    VBoolean nextValue(Instant instant) {
         value = !value;
-        return VBoolean.of(value, Alarm.none(), Time.now());
+        return VBoolean.of(value, Alarm.none(), Time.of(instant));
     }
 }

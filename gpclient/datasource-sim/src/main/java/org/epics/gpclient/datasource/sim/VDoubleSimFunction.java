@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.datasource.sim;
 
+import java.time.Instant;
 import org.epics.util.stats.Range;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
@@ -38,9 +39,9 @@ abstract class VDoubleSimFunction extends SimFunction<VDouble> {
     }
 
     @Override
-    final VDouble nextValue() {
+    final VDouble nextValue(Instant instant) {
         double value = nextDouble();
-        return VDouble.of(value, display.newAlarmFor(value), Time.of(lastTime), display);
+        return VDouble.of(value, display.newAlarmFor(value), Time.of(instant), display);
     }
 
     /**

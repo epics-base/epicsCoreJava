@@ -93,15 +93,13 @@ public class GaussianWaveform extends SimFunction<VDoubleArray> {
     private static Display DISPLAY = Display.of(UNIT_RANGE, UNIT_RANGE, UNIT_RANGE, UNIT_RANGE, "x", Display.defaultNumberFormat());
 
     @Override
-    VDoubleArray nextValue() {
-        if (lastTime == null)
-            lastTime = Instant.now();
+    VDoubleArray nextValue(Instant instant) {
         if (initialRefernce == null) {
-            initialRefernce = lastTime;
+            initialRefernce = instant;
         }
-        double t = Duration.between(initialRefernce, lastTime).getSeconds();
+        double t = Duration.between(initialRefernce, instant).getSeconds();
         double omega = 2 * Math.PI / periodInSeconds;
         return VDoubleArray.of(ArrayDouble.of(generateNewValue(omega, t)), Alarm.none(),
-                Time.of(lastTime), DISPLAY);
+                Time.of(instant), DISPLAY);
     }
 }

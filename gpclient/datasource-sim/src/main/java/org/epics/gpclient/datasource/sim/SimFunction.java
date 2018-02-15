@@ -24,6 +24,7 @@ abstract class SimFunction<T> extends Simulation<T> {
     private static final Logger log = Logger.getLogger(SimFunction.class.getName());
 
     private Duration timeBetweenSamples;
+    private Instant lastSampleTime;
 
     /**
      * Creates a new simulation function.
@@ -48,12 +49,17 @@ abstract class SimFunction<T> extends Simulation<T> {
         timeBetweenSamples = Duration.ofNanos((long) (secondsBeetwenSamples * 1000000000));
     }
 
+    @Override
+    Instant resetTime() {
+        return Instant.now().minus(timeBetweenSamples);
+    }
+
     /**
      * Calculates and returns the next value.
      *
      * @return the next value
      */
-    abstract T nextValue();
+    abstract T nextValue(Instant instant);
 
     /**
      * Computes all the new values in the given time slice by calling nextValue()
@@ -66,16 +72,16 @@ abstract class SimFunction<T> extends Simulation<T> {
     List<T> createValues(TimeInterval interval) {
         List<T> values = new ArrayList<T>();
         Instant newTime;
-        if (lastTime != null) {
-            newTime = lastTime.plus(timeBetweenSamples);
+        if (lastSampleTime != null) {
+            newTime = lastSampleTime.plus(timeBetweenSamples);
         } else {
-            newTime = Instant.now();
+            newTime = interval.getStart();
         }
 
         while (interval.contains(newTime)) {
-            lastTime = newTime;
-            values.add(nextValue());
-            newTime = lastTime.plus(timeBetweenSamples);
+            lastSampleTime = newTime;
+            values.add(nextValue(lastSampleTime));
+            newTime = lastSampleTime.plus(timeBetweenSamples);
         }
 
         return values;
@@ -89,10 +95,7 @@ abstract class SimFunction<T> extends Simulation<T> {
      * @return new VDouble
      */
     VDouble newValue(double value, VDouble oldValue) {
-        if (lastTime == null)
-            lastTime = Instant.now();
-        
-        return VDouble.of(value, oldValue.getDisplay().newAlarmFor(value), Time.of(lastTime), oldValue.getDisplay());
+        return VDouble.of(value, oldValue.getDisplay().newAlarmFor(value), Time.of(lastSampleTime), oldValue.getDisplay());
     }
 
     /**

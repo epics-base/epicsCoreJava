@@ -114,14 +114,14 @@ public class Square2DWaveform extends SimFunction<VDoubleArray> {
     private static Display DISPLAY = Display.of(UNIT_RANGE, UNIT_RANGE.shrink(0.9), UNIT_RANGE.shrink(0.8), Range.undefined(), "", Display.defaultNumberFormat());
 
     @Override
-    VDoubleArray nextValue() {
+    VDoubleArray nextValue(Instant instant) {
         if (initialReference == null) {
-            initialReference = lastTime;
+            initialReference = instant;
         }
-        double t = Duration.between(initialReference, lastTime).getSeconds();
+        double t = Duration.between(initialReference, instant).getSeconds();
         double omega = 2 * Math.PI / periodInSeconds;
         double k = 2 * Math.PI / wavelengthInSamples;
         return VDoubleArray.of(generateNewValue(omega, t, k), ArrayInteger.of(ySamples, xSamples), Alarm.none(),
-                Time.of(lastTime), DISPLAY);
+                Time.of(instant), DISPLAY);
     }
 }

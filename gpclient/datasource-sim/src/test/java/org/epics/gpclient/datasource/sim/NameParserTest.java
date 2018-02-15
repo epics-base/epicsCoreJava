@@ -4,8 +4,10 @@
  */
 package org.epics.gpclient.datasource.sim;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import org.epics.util.stats.Range;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
@@ -78,36 +80,44 @@ public class NameParserTest {
     @Test
     public void testRamp() {
         Ramp ramp = (Ramp) NameParser.createFunction("ramp(1.0, 10.0, 1.0, 1.0)");
-        assertThat(ramp.nextValue().getValue(), equalTo(1.0));
+        assertThat(ramp.display.getDisplayRange(), equalTo(Range.of(1, 10)));
+        assertThat(ramp.step, equalTo(1.0));
+        assertThat(ramp.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
 
     }
 
     @Test
     public void testSine() {
-        Sine ramp = (Sine) NameParser.createFunction("sine(0.0, 10.0, 4.0, 1.0)");
-        assertEquals(5.0, ramp.nextValue().getValue(), 0.0001);
-        assertEquals(10.0, ramp.nextValue().getValue(), 0.0001);
-        assertEquals(5.0, ramp.nextValue().getValue(), 0.0001);
-        assertEquals(0.0, ramp.nextValue().getValue(), 0.0001);
+        Sine sine = (Sine) NameParser.createFunction("sine(0.0, 10.0, 4.0, 1.0)");
+        assertThat(sine.display.getDisplayRange(), equalTo(Range.of(0, 10)));
+        assertThat(sine.samplesPerCycle, equalTo(4.0));
+        assertThat(sine.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
     }
 
     @Test
     public void testNoise() {
         Noise noise1 = (Noise) NameParser.createFunction("noise(0.0, 10.0, 1.0)");
+        assertThat(noise1.display.getDisplayRange(), equalTo(Range.of(0, 10)));
+        assertThat(noise1.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        
         Noise noise2 = (Noise) NameParser.createFunction("noise");
-        // Forces use of variables
-        assertThat(noise1.nextValue().getAlarm().getName(), notNullValue());
-        assertThat(noise2.nextValue().getAlarm().getName(), notNullValue());
+        assertThat(noise2.display.getDisplayRange(), equalTo(Range.of(-5, 5)));
+        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
     }
 
     @Test
     public void gaussianNoise() {
         GaussianNoise noise1 = (GaussianNoise) NameParser.createFunction("gaussianNoise(0.0, 10.0, 1.0)");
+        assertThat(noise1.display.getDisplayRange(), equalTo(Range.of(-40, 40)));
+        assertThat(noise1.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+
         GaussianNoise noise2 = (GaussianNoise) NameParser.createFunction("gaussianNoise");
+        assertThat(noise2.display.getDisplayRange(), equalTo(Range.of(-4, 4)));
+        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        
         GaussianNoise noise3 = (GaussianNoise) NameParser.createFunction("gaussianNoise()");
-        // Forces use of variables
-        assertThat(noise1.nextValue().getAlarm().getName(), notNullValue());
-        assertThat(noise2.nextValue().getAlarm().getName(), notNullValue());
+        assertThat(noise3.display.getDisplayRange(), equalTo(Range.of(-4, 4)));
+        assertThat(noise3.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
     }
 
 }

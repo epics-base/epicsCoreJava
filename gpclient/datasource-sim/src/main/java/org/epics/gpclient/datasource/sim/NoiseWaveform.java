@@ -73,11 +73,9 @@ public class NoiseWaveform extends SimFunction<VDoubleArray> {
     }
 
     @Override
-    VDoubleArray nextValue() {
-        if (lastTime == null)
-            lastTime = Instant.now();
+    VDoubleArray nextValue(Instant instant) {
         return VDoubleArray.of(ArrayDouble.of(generateNewValue()), Alarm.none(),
-                Time.of(lastTime), Display.of(range, range.shrink(0.9), range.shrink(0.8), Range.undefined(),
+                Time.of(instant), Display.of(range, range.shrink(0.9), range.shrink(0.8), Range.undefined(),
                         "x", Display.defaultNumberFormat()));
     }
 }

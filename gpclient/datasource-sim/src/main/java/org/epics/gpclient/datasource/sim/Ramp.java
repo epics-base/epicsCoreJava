@@ -15,10 +15,10 @@ package org.epics.gpclient.datasource.sim;
  */
 public class Ramp extends VDoubleSimFunction {
 
-    private double min;
-    private double max;
+    protected final double min;
+    protected final double max;
     private double currentValue;
-    private double step;
+    protected final double step;
     
     /**
      * Creates a ramp shaped signal between -5 and +5, incrementing 1 every second.

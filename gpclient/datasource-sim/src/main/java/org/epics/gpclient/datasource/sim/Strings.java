@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.datasource.sim;
 
+import java.time.Instant;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.Time;
 import org.epics.vtype.VString;
@@ -40,8 +41,8 @@ public class Strings extends SimFunction<VString> {
     }
 
     @Override
-    VString nextValue() {
-        return VString.of(nextString(), Alarm.none(), Time.now());
+    VString nextValue(Instant instant) {
+        return VString.of(nextString(), Alarm.none(), Time.of(instant));
     }
 
     String nextString() {
