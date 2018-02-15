@@ -10,13 +10,8 @@ import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ListDouble;
 import org.epics.util.stats.Range;
 import org.epics.vtype.Alarm;
-import org.epics.vtype.AlarmSeverity;
-import org.epics.vtype.AlarmStatus;
 import org.epics.vtype.Display;
-import org.epics.vtype.VDouble;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 /**
  *

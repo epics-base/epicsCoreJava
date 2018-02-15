@@ -16,7 +16,7 @@ import org.epics.vtype.VBoolean;
  */
 public class Flipflop extends SimFunction<VBoolean> {
 
-    private boolean value = true;
+    private boolean value;
 
     /**
      * Creates a flipflop that changes every 500 ms.

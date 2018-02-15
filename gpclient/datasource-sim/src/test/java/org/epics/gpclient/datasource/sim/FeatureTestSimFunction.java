@@ -10,10 +10,12 @@ import java.time.Instant;
 import java.util.List;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.CollectionNumbers;
+import org.epics.util.array.ListBoolean;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListNumbers;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
+import org.epics.vtype.VBoolean;
 import org.epics.vtype.VDouble;
 import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
@@ -24,6 +26,15 @@ import static org.junit.Assert.assertThat;
  * @author carcassi
  */
 public class FeatureTestSimFunction {
+    
+    void testVBooleanSimFunction(SimFunction<VBoolean> function, ListBoolean expectedValues, List<Alarm> expectedAlarms) {
+        List<VBoolean> values = function.createValuesBefore(Instant.now().plus(function.getTimeBetweenSamples().multipliedBy(expectedValues.size())));
+        for (int i = 0; i < expectedValues.size(); i++) {
+            VBoolean value = values.get(i);
+            assertThat(value.getValue(), equalTo(expectedValues.getBoolean(i)));
+            assertThat(value.getAlarm(), equalTo(expectedAlarms.get(i)));
+        }
+    }
     
     void testVDoubleSimFunction(SimFunction<VDouble> function, ListDouble expectedValues, List<Alarm> expectedAlarms, Display referenceDisplay) {
         List<VDouble> values = function.createValuesBefore(Instant.now().plus(function.getTimeBetweenSamples().multipliedBy(expectedValues.size())));
