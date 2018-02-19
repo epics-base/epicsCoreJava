@@ -70,5 +70,15 @@ public final class ArrayBoolean extends ListBoolean implements Serializable {
     boolean[] wrappedArray() {
         return array;
     }
+    
+    /**
+     * Returns an unmodifiable {@link ArrayBoolean} wrapper for the given {@code boolean} array.
+     * 
+     * @param values a primitive array.
+     * @return an immutable wrapper.
+     */
+    public static ArrayBoolean of(boolean... values) {
+        return new ArrayBoolean(values);
+    }
 
 }
