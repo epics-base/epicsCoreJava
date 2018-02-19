@@ -9,7 +9,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.epics.util.stats.Range;
 import org.epics.util.stats.TimeInterval;
+import org.epics.vtype.Display;
 import org.epics.vtype.Time;
 import org.epics.vtype.VDouble;
 
@@ -106,6 +108,11 @@ abstract class SimFunction<T> extends Simulation<T> {
      */
     public Duration getTimeBetweenSamples() {
         return timeBetweenSamples;
+    }
+    
+    static Display createDisplay(double min, double max) {
+        Range range = Range.of(min, max);
+        return Display.of(range, range.shrink(0.9), range.shrink(0.8), Range.undefined(), "", Display.defaultNumberFormat());
     }
     
 }

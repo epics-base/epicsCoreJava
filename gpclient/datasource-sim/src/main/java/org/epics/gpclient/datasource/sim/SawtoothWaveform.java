@@ -4,15 +4,8 @@
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Duration;
-import java.time.Instant;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ListDouble;
-import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VDoubleArray;
 
 
 /**
@@ -20,19 +13,18 @@ import org.epics.vtype.VDoubleArray;
  *
  * @author carcassi
  */
-public class SawtoothWaveform extends SimFunction<VDoubleArray> {
+public class SawtoothWaveform extends VDoubleArraySimFunction {
 
-    private double periodInSeconds;
-    private double wavelengthInSamples;
+    private final double omega;
+    private final double k;
     private int nSamples;
-    private Instant initialRefernce;
 
     /**
      * Creates a triangle wave of 100 samples, with period of 1 second, wavelength of
      * 100 samples, updating every 500ms (2Hz).
      */
     public SawtoothWaveform() {
-        this(1.0, 100.0, DEFAULT_INTERVAL);
+        this(5.0, 100.0, DEFAULT_INTERVAL);
     }
     
     /**
@@ -57,37 +49,23 @@ public class SawtoothWaveform extends SimFunction<VDoubleArray> {
      * @param updateRateInSeconds the update rate in seconds
      */
     public SawtoothWaveform(Double periodInSeconds, Double wavelengthInSamples, Double nSamples, Double updateRateInSeconds) {
-        super(updateRateInSeconds, VDoubleArray.class);
-        this.periodInSeconds = periodInSeconds;
-        this.wavelengthInSamples = wavelengthInSamples;
+        super(updateRateInSeconds, createDisplay(-1, 1));
+        this.omega = 2 * Math.PI / periodInSeconds;
+        this.k = 2 * Math.PI / wavelengthInSamples;
         this.nSamples = nSamples.intValue();
         if (this.nSamples <= 0) {
             throw new IllegalArgumentException("Number of sample must be a positive integer.");
         }
     }
 
-    private ListDouble generateNewValue(final double omega, final double t, double k) {
+    @Override
+    ListDouble nextListDouble(double time) {
         double[] newArray = new double[nSamples];
         for (int i = 0; i < newArray.length; i++) {
-            double x = (omega * t + k * i) / (2 * Math.PI);
+            double x = (omega * time + k * i) / (2 * Math.PI);
             double normalizedPositionInPeriod = x - (double) (long) x;
             newArray[i] = -1.0 + 2 * normalizedPositionInPeriod;
         }
         return ArrayDouble.of(newArray);
-    }
-
-    private static Range UNIT_RANGE = Range.of(-1.0, 1.0);
-    private static Display DISPLAY = Display.of(UNIT_RANGE, UNIT_RANGE.shrink(0.9), UNIT_RANGE.shrink(0.8), Range.undefined(), "x", Display.defaultNumberFormat());
-    
-    @Override
-    VDoubleArray nextValue(Instant instant) {
-        if (initialRefernce == null) {
-            initialRefernce = instant;
-        }
-        double t = Duration.between(initialRefernce, instant).getSeconds();
-        double omega = 2 * Math.PI / periodInSeconds;
-        double k = 2 * Math.PI / wavelengthInSamples;
-        return VDoubleArray.of(generateNewValue(omega, t, k), Alarm.none(),
-                Time.of(instant), DISPLAY);
     }
 }

@@ -4,14 +4,9 @@
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Instant;
 import java.util.Random;
 import org.epics.util.array.ArrayDouble;
-import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VDoubleArray;
+import org.epics.util.array.ListDouble;
 
 /**
  * Function to simulate a waveform containing a uniformly distributed
@@ -19,12 +14,10 @@ import org.epics.vtype.VDoubleArray;
  *
  * @author carcassi
  */
-public class NoiseWaveform extends SimFunction<VDoubleArray> {
+public class NoiseWaveform extends VDoubleArraySimFunction {
 
     private Random rand = new Random();
-    private Range range;
     private int nSamples;
-    private VDoubleArray lastValue;
 
     /**
      * Creates a waveform with samples from a uniform distribution from -5 to 5,
@@ -56,26 +49,19 @@ public class NoiseWaveform extends SimFunction<VDoubleArray> {
      * @param interval time between samples in seconds
      */
     public NoiseWaveform(Double min, Double max, Double nSamples, Double interval) {
-        super(interval, VDoubleArray.class);
-        range = Range.of(min, max);
+        super(interval, createDisplay(min, max));
         this.nSamples = nSamples.intValue();
         if (this.nSamples <= 0) {
             throw new IllegalArgumentException("Number of sample must be a positive integer.");
         }
     }
 
-    private double[] generateNewValue() {
+    @Override
+    ListDouble nextListDouble(double time) {
         double[] newArray = new double[nSamples];
         for (int i = 0; i < newArray.length; i++) {
-            newArray[i] = range.normalize(rand.nextDouble());
+            newArray[i] = display.getDisplayRange().rescale(rand.nextDouble());
         }
-        return newArray;
-    }
-
-    @Override
-    VDoubleArray nextValue(Instant instant) {
-        return VDoubleArray.of(ArrayDouble.of(generateNewValue()), Alarm.none(),
-                Time.of(instant), Display.of(range, range.shrink(0.9), range.shrink(0.8), Range.undefined(),
-                        "x", Display.defaultNumberFormat()));
+        return ArrayDouble.of(newArray);
     }
 }

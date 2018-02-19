@@ -4,35 +4,29 @@
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Random;
 import org.epics.util.array.ArrayDouble;
+import org.epics.util.array.ListDouble;
 import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VDoubleArray;
 /**
  * Function to simulate a waveform containing a gaussian that moves to the
  * left.
  *
  * @author carcassi
  */
-public class GaussianWaveform extends SimFunction<VDoubleArray> {
+public class GaussianWaveform extends VDoubleArraySimFunction {
 
     private Random rand = new Random();
+    private final double omega;
     private double[] buffer;
-    private final double periodInSeconds;
-    private VDoubleArray lastValue;
-    private Instant initialRefernce;
 
     /**
      * Creates a gaussian wave of 100 samples, with period of 1 second, standard deviation of
      * 100 samples, updating every 500ms (2Hz).
      */
     public GaussianWaveform() {
-        this(1.0, 100.0, 100.0, DEFAULT_INTERVAL);
+        this(5.0, 100.0, 100.0, DEFAULT_INTERVAL);
     }
 
     /**
@@ -45,9 +39,13 @@ public class GaussianWaveform extends SimFunction<VDoubleArray> {
      * @param updateRateInSeconds time between samples in seconds
      */
     public GaussianWaveform(Double periodInSeconds, Double stdDev, Double nSamples, Double updateRateInSeconds) {
-        super(updateRateInSeconds, VDoubleArray.class);
+        super(updateRateInSeconds, Display.of(Range.of(0 - 4 * stdDev, 0 + 4 * stdDev),
+                        Range.of(0 - 2 * stdDev, 0 + 2 * stdDev),
+                        Range.of(0 - stdDev, 0 + stdDev),
+                        Range.undefined(),
+                        "", Display.defaultNumberFormat()));
         int size = nSamples.intValue();
-        this.periodInSeconds = periodInSeconds;
+        this.omega = 2 * Math.PI / periodInSeconds;
         buffer = new double[size];
         populateGaussian(buffer, stdDev);
     }
@@ -58,8 +56,9 @@ public class GaussianWaveform extends SimFunction<VDoubleArray> {
         }
     }
 
-    private double[] generateNewValue(double omega, double t) {
-        double x = t * omega / (2 * Math.PI);
+    @Override
+    ListDouble nextListDouble(double time) {
+        double x = time * omega / (2 * Math.PI);
         double normalizedX = x - (double) (long) x;
         int offset = (int) (normalizedX * buffer.length);
         if (offset == buffer.length) {
@@ -75,7 +74,7 @@ public class GaussianWaveform extends SimFunction<VDoubleArray> {
             }
         }
 
-        return newArray;
+        return ArrayDouble.of(newArray);
     }
 
     /**
@@ -87,19 +86,5 @@ public class GaussianWaveform extends SimFunction<VDoubleArray> {
      */
     public static double gaussian(double x, double centerX, double width) {
         return Math.exp((-Math.pow((x - centerX), 2.0)) / width);
-    }
-    
-    private static Range UNIT_RANGE = Range.of(0.0, 1.0);
-    private static Display DISPLAY = Display.of(UNIT_RANGE, UNIT_RANGE, UNIT_RANGE, UNIT_RANGE, "x", Display.defaultNumberFormat());
-
-    @Override
-    VDoubleArray nextValue(Instant instant) {
-        if (initialRefernce == null) {
-            initialRefernce = instant;
-        }
-        double t = Duration.between(initialRefernce, instant).getSeconds();
-        double omega = 2 * Math.PI / periodInSeconds;
-        return VDoubleArray.of(ArrayDouble.of(generateNewValue(omega, t)), Alarm.none(),
-                Time.of(instant), DISPLAY);
     }
 }
