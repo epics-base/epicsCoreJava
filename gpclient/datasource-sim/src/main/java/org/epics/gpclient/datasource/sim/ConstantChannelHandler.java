@@ -11,6 +11,7 @@ import org.epics.util.text.FunctionParser;
 import org.epics.vtype.VType;
 
 /**
+ * Implementation for constant channel.
  *
  * @author carcassi
  */

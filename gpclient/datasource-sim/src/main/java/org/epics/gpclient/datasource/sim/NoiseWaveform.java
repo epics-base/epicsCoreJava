@@ -28,10 +28,10 @@ public class NoiseWaveform extends SimFunction<VDoubleArray> {
 
     /**
      * Creates a waveform with samples from a uniform distribution from -5 to 5,
-     * updating every second.
+     * updating every 500ms (2Hz).
      */
     public NoiseWaveform() {
-        this(-5.0, 5.0, 1.0);
+        this(-5.0, 5.0, DEFAULT_INTERVAL);
     }
     
     /**

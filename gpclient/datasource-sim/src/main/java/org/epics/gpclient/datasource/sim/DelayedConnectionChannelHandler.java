@@ -14,6 +14,7 @@ import org.epics.util.text.FunctionParser;
 import org.epics.vtype.VType;
 
 /**
+ * Implementation class for a channel that connects after a delay.
  *
  * @author carcassi
  */

@@ -17,14 +17,14 @@ import org.epics.vtype.VString;
  */
 public class Strings extends SimFunction<VString> {
 
-    private StringBuffer buffer = new StringBuffer();
+    private final StringBuffer buffer = new StringBuffer();
 
     /**
-     * Creates a signal uniformly distributed between -5.0 and 5.0, updating
-     * every 100ms (10Hz).
+     * Creates a String that grows between 0 and 10 characters, updating
+     * every 500ms (2Hz).
      */
     public Strings() {
-        this(0.1);
+        this(DEFAULT_INTERVAL);
     }
 
     /**

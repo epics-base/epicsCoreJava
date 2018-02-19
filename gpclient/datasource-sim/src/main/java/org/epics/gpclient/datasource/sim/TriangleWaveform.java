@@ -28,10 +28,10 @@ public class TriangleWaveform extends SimFunction<VDoubleArray> {
 
     /**
      * Creates a triangle wave of 100 samples, with period of 1 second, wavelength of
-     * 100 samples, updating at 10 Hz.
+     * 100 samples, updating every 500ms (2Hz).
      */
     public TriangleWaveform() {
-        this(1.0, 100.0, 0.1);
+        this(1.0, 100.0, DEFAULT_INTERVAL);
     }
     
     /**

@@ -22,6 +22,7 @@ import org.epics.vtype.VDouble;
 abstract class SimFunction<T> extends Simulation<T> {
 
     private static final Logger log = Logger.getLogger(SimFunction.class.getName());
+    static final double DEFAULT_INTERVAL = 0.5;
 
     private Duration timeBetweenSamples;
     private Instant lastSampleTime;

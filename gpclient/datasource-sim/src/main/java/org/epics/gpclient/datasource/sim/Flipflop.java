@@ -22,7 +22,7 @@ public class Flipflop extends SimFunction<VBoolean> {
      * Creates a flipflop that changes every 500 ms.
      */
     public Flipflop() {
-        this(0.5);
+        this(DEFAULT_INTERVAL);
     }
 
     /**

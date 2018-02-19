@@ -24,10 +24,10 @@ public class GaussianNoise extends VDoubleSimFunction {
 
     /**
      * Creates a signal with a normal distribution (average zero and
-     * standard deviation one), updating every 100ms (10Hz).
+     * standard deviation one), updating every 500ms (2Hz).
      */
     public GaussianNoise() {
-        this(0.0, 1.0, 1.0);
+        this(0.0, 1.0, DEFAULT_INTERVAL);
     }
 
     /**

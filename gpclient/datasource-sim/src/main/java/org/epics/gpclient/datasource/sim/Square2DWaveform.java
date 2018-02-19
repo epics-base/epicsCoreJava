@@ -30,10 +30,10 @@ public class Square2DWaveform extends SimFunction<VDoubleArray> {
 
     /**
      * Creates sine wave of 100 samples, with period of 1 second, wavelength of
-     * 100 samples along the x axis, updating at 10 Hz.
+     * 100 samples along the x axis, updating every 500ms (2Hz).
      */
     public Square2DWaveform() {
-        this(1.0, 100.0, 0.1);
+        this(1.0, 100.0, DEFAULT_INTERVAL);
     }
     
     /**

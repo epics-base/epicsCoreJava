@@ -21,6 +21,7 @@ import org.epics.vtype.Time;
 import org.epics.vtype.VType;
 
 /**
+ * Implementation class for a channel that keeps connecting and disconnecting.
  *
  * @author carcassi
  */

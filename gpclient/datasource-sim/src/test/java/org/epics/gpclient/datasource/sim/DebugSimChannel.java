@@ -21,7 +21,7 @@ public class DebugSimChannel {
     public static void main(String[] args) throws InterruptedException {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = new ProbeCollector(Object.class, System.out);
-        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("sine()", probe.getCollector()).build();
+        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("ramp()", probe.getCollector()).build();
         sim.connectRead(recipe);
         Thread.sleep(5000);
         sim.disconnectRead(recipe);

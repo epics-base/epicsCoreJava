@@ -19,10 +19,10 @@ public class Sine extends VDoubleSimFunction {
     
     /**
      * Creates a sine shaped signal between -5 and 5, updating
-     * every second with 10 samples every full sine cycle.
+     * every 500ms (2Hz) with 10 samples every full sine cycle.
      */
     public Sine() {
-        this(-5.0, 5.0, 1.0);
+        this(-5.0, 5.0, DEFAULT_INTERVAL);
     }
     
     /**

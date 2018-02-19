@@ -102,7 +102,7 @@ public class NameParserTest {
         
         Noise noise2 = (Noise) NameParser.createFunction("noise");
         assertThat(noise2.display.getDisplayRange(), equalTo(Range.of(-5, 5)));
-        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofMillis(500)));
     }
 
     @Test
@@ -113,11 +113,11 @@ public class NameParserTest {
 
         GaussianNoise noise2 = (GaussianNoise) NameParser.createFunction("gaussianNoise");
         assertThat(noise2.display.getDisplayRange(), equalTo(Range.of(-4, 4)));
-        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofMillis(500)));
         
         GaussianNoise noise3 = (GaussianNoise) NameParser.createFunction("gaussianNoise()");
         assertThat(noise3.display.getDisplayRange(), equalTo(Range.of(-4, 4)));
-        assertThat(noise3.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        assertThat(noise3.getTimeBetweenSamples(), equalTo(Duration.ofMillis(500)));
     }
 
 }

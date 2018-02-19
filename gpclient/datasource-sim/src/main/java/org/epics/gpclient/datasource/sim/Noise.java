@@ -19,10 +19,10 @@ public class Noise extends VDoubleSimFunction {
 
     /**
      * Creates a signal uniformly distributed between -5.0 and 5.0, updating
-     * every second (1Hz).
+     * every 500ms (2Hz).
      */
     public Noise() {
-        this(-5.0, 5.0, 1.0);
+        this(-5.0, 5.0, DEFAULT_INTERVAL);
     }
 
     /**

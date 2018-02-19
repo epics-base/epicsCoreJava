@@ -29,10 +29,10 @@ public class GaussianWaveform extends SimFunction<VDoubleArray> {
 
     /**
      * Creates a gaussian wave of 100 samples, with period of 1 second, standard deviation of
-     * 100 samples, updating every 100ms (10Hz).
+     * 100 samples, updating every 500ms (2Hz).
      */
     public GaussianWaveform() {
-        this(1.0, 100.0, 100.0, 0.1);
+        this(1.0, 100.0, 100.0, DEFAULT_INTERVAL);
     }
 
     /**

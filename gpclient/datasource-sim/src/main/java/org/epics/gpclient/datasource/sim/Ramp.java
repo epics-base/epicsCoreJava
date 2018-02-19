@@ -21,10 +21,10 @@ public class Ramp extends VDoubleSimFunction {
     protected final double step;
     
     /**
-     * Creates a ramp shaped signal between -5 and +5, incrementing 1 every second.
+     * Creates a ramp shaped signal between -5 and +5, incrementing 1 every 500ms (2Hz).
      */
     public Ramp() {
-        this (-5.0, 5.0, 1.0);
+        this (-5.0, 5.0, DEFAULT_INTERVAL);
     }
 
     /**
