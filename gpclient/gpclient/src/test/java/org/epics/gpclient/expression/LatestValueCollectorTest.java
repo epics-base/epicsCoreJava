@@ -6,7 +6,7 @@ package org.epics.gpclient.expression;
 
 import java.util.function.Consumer;
 import org.epics.gpclient.expression.LatestValueCollector;
-import org.epics.gpclient.expression.SourceRateReadEvent;
+import org.epics.gpclient.expression.ReadEvent;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -29,19 +29,19 @@ public class LatestValueCollectorTest {
 
     @Test
     public void updateValue1() {
-        Consumer<SourceRateReadEvent> listener = mock(Consumer.class);
+        Consumer<ReadEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
         
         coll.updateValue(new Object());
         
-        verify(listener).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE));
+        verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
     }
 
     @Test
     public void updateValue2() {
-        Consumer<SourceRateReadEvent> listener = mock(Consumer.class);
+        Consumer<ReadEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
@@ -50,36 +50,36 @@ public class LatestValueCollectorTest {
         coll.updateValue(new Object());
         coll.updateValue(new Object());
         
-        verify(listener, times(3)).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE));
+        verify(listener, times(3)).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
     }
 
     @Test
     public void updateValueAndConnection1() {
-        Consumer<SourceRateReadEvent> listener = mock(Consumer.class);
+        Consumer<ReadEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
         
         coll.updateValueAndConnection(new Object(), true);
         
-        verify(listener).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE, SourceRateReadEvent.Type.READ_CONNECTION));
+        verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE, ReadEvent.Type.READ_CONNECTION));
     }
 
     @Test
     public void updateConnection1() {
-        Consumer<SourceRateReadEvent> listener = mock(Consumer.class);
+        Consumer<ReadEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
         
         coll.updateConnection(true);
         
-        verify(listener).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION));
+        verify(listener).accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
     }
 
     @Test
     public void notifyError1() {
-        Consumer<SourceRateReadEvent> listener = mock(Consumer.class);
+        Consumer<ReadEvent> listener = mock(Consumer.class);
         Exception ex = new RuntimeException();
         
         ReadCollector coll = createCollector();
@@ -88,12 +88,12 @@ public class LatestValueCollectorTest {
         
         coll.notifyError(ex);
         
-        verify(listener).accept(new SourceRateReadEvent(ex, SourceRateReadEvent.Type.READ_EXCEPTION));
+        verify(listener).accept(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION));
     }
 
     @Test
     public void mixedNotifications1() {
-        Consumer<SourceRateReadEvent> listener = mock(Consumer.class);
+        Consumer<ReadEvent> listener = mock(Consumer.class);
         Exception ex = new RuntimeException();
         
         ReadCollector coll = createCollector();
@@ -109,12 +109,12 @@ public class LatestValueCollectorTest {
         
         InOrder inOrder = inOrder(listener);
         
-        inOrder.verify(listener).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE, SourceRateReadEvent.Type.READ_CONNECTION));
-        inOrder.verify(listener, times(2)).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE));
-        inOrder.verify(listener).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION));
-        inOrder.verify(listener).accept(new SourceRateReadEvent(ex, SourceRateReadEvent.Type.READ_EXCEPTION));
-        inOrder.verify(listener).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION));
-        inOrder.verify(listener).accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE));
+        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE, ReadEvent.Type.READ_CONNECTION));
+        inOrder.verify(listener, times(2)).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
+        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
+        inOrder.verify(listener).accept(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION));
+        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
+        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
     }
     
     @Test

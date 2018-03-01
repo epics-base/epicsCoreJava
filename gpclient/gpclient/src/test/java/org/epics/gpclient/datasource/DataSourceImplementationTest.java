@@ -7,7 +7,7 @@ package org.epics.gpclient.datasource;
 import org.epics.gpclient.expression.*;
 import java.util.function.Consumer;
 import org.epics.gpclient.expression.LatestValueCollector;
-import org.epics.gpclient.expression.SourceRateReadEvent;
+import org.epics.gpclient.expression.ReadEvent;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -55,8 +55,8 @@ public class DataSourceImplementationTest {
         probe.wait(100000, forEventCount(2));
         
         assertThat(probe.getEvents().size(), equalTo(2));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION)));
-        assertThat(probe.getEvents().get(1), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION)));
+        assertThat(probe.getEvents().get(1), equalTo(new ReadEvent(null, ReadEvent.Type.VALUE)));
     }
     
     @Test
@@ -89,6 +89,6 @@ public class DataSourceImplementationTest {
         probe.wait(100000, forAnEvent());
         
         assertThat(probe.getEvents().size(), equalTo(1));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(ex, SourceRateReadEvent.Type.READ_EXCEPTION)));
+        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION)));
     }
 }

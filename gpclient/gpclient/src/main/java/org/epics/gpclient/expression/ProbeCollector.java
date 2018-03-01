@@ -20,8 +20,8 @@ import org.epics.gpclient.expression.LatestValueCollector;
 import org.epics.gpclient.expression.LatestValueCollector;
 import org.epics.gpclient.expression.ReadCollector;
 import org.epics.gpclient.expression.ReadCollector;
-import org.epics.gpclient.expression.SourceRateReadEvent;
-import org.epics.gpclient.expression.SourceRateReadEvent;
+import org.epics.gpclient.expression.ReadEvent;
+import org.epics.gpclient.expression.ReadEvent;
 
 /**
  *
@@ -31,16 +31,16 @@ public class ProbeCollector<T> {
     
     private final ReadCollector<T, T> collector;
     private final Object lock = new Object();
-    private final List<SourceRateReadEvent> events = new ArrayList<>();
+    private final List<ReadEvent> events = new ArrayList<>();
     private final PrintStream out;
     private Runnable test;
 
     public ProbeCollector(Class<T> type, PrintStream out) {
         this.out = out;
         this.collector = new LatestValueCollector<>(type);
-        this.collector.setUpdateListener(new Consumer<SourceRateReadEvent>() {
+        this.collector.setUpdateListener(new Consumer<ReadEvent>() {
             @Override
-            public void accept(SourceRateReadEvent event) {
+            public void accept(ReadEvent event) {
                 synchronized(lock) {
                     events.add(event);
                     print(event);
@@ -52,15 +52,15 @@ public class ProbeCollector<T> {
         });
     }
     
-    private void print(SourceRateReadEvent event) {
+    private void print(ReadEvent event) {
         if (out != null) {
-            if (event.getType().contains(SourceRateReadEvent.Type.READ_CONNECTION)) {
+            if (event.getType().contains(ReadEvent.Type.READ_CONNECTION)) {
                 out.println("CONN: " + collector.getConnection());
             }
-            if (event.getType().contains(SourceRateReadEvent.Type.VALUE)) {
+            if (event.getType().contains(ReadEvent.Type.VALUE)) {
                 out.println("VAL: " + collector.getValue());
             }
-            if (event.getType().contains(SourceRateReadEvent.Type.READ_EXCEPTION)) {
+            if (event.getType().contains(ReadEvent.Type.READ_EXCEPTION)) {
                 out.println("ERR: " + event.getException().getMessage());
             }
         }
@@ -78,11 +78,11 @@ public class ProbeCollector<T> {
         return collector;
     }
 
-    public List<SourceRateReadEvent> getEvents() {
+    public List<ReadEvent> getEvents() {
         return events;
     }
 
-    public void wait(int ms, Function<List<SourceRateReadEvent>, Boolean> condition) {
+    public void wait(int ms, Function<List<ReadEvent>, Boolean> condition) {
         CountDownLatch latch = new CountDownLatch(1);
         Runnable newTest = new Runnable() {
             @Override
@@ -109,7 +109,7 @@ public class ProbeCollector<T> {
         }
     }
 
-    public void dontExpect(int ms, Function<List<SourceRateReadEvent>, Boolean> condition) {
+    public void dontExpect(int ms, Function<List<ReadEvent>, Boolean> condition) {
         CountDownLatch latch = new CountDownLatch(1);
         Runnable newTest = new Runnable() {
             @Override
@@ -136,10 +136,10 @@ public class ProbeCollector<T> {
         }
     }
     
-    public static Function<List<SourceRateReadEvent>, Boolean> forAnEvent() {
-        return new Function<List<SourceRateReadEvent>, Boolean>() {
+    public static Function<List<ReadEvent>, Boolean> forAnEvent() {
+        return new Function<List<ReadEvent>, Boolean>() {
             @Override
-            public Boolean apply(List<SourceRateReadEvent> list) {
+            public Boolean apply(List<ReadEvent> list) {
                 return !list.isEmpty();
             }
 
@@ -150,11 +150,11 @@ public class ProbeCollector<T> {
         };
     }
     
-    public static Function<List<SourceRateReadEvent>, Boolean> forAConnectionEvent() {
-        return new Function<List<SourceRateReadEvent>, Boolean>() {
+    public static Function<List<ReadEvent>, Boolean> forAConnectionEvent() {
+        return new Function<List<ReadEvent>, Boolean>() {
             @Override
-            public Boolean apply(List<SourceRateReadEvent> list) {
-                return list.get(list.size() - 1).getType().contains(SourceRateReadEvent.Type.READ_CONNECTION);
+            public Boolean apply(List<ReadEvent> list) {
+                return list.get(list.size() - 1).getType().contains(ReadEvent.Type.READ_CONNECTION);
             }
 
             @Override
@@ -164,10 +164,10 @@ public class ProbeCollector<T> {
         };
     }
     
-    public static Function<List<SourceRateReadEvent>, Boolean> forEventCount(final int count) {
-        return new Function<List<SourceRateReadEvent>, Boolean>() {
+    public static Function<List<ReadEvent>, Boolean> forEventCount(final int count) {
+        return new Function<List<ReadEvent>, Boolean>() {
             @Override
-            public Boolean apply(List<SourceRateReadEvent> list) {
+            public Boolean apply(List<ReadEvent> list) {
                 return list.size() >= count;
             }
 

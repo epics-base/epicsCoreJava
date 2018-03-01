@@ -29,20 +29,20 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
 
     @Override
     public void updateValue(T newValue) {
-        Consumer<SourceRateReadEvent> listener;
+        Consumer<ReadEvent> listener;
         synchronized (lock) {
             value = newValue;
             listener = collectorListener;
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE));
+            listener.accept(new ReadEvent(null, ReadEvent.Type.VALUE));
         }
     }
 
     @Override
     public void updateValueAndConnection(T newValue, boolean newConnection) {
-        Consumer<SourceRateReadEvent> listener;
+        Consumer<ReadEvent> listener;
         synchronized (lock) {
             value = newValue;
             connection = newConnection;
@@ -50,7 +50,7 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE, SourceRateReadEvent.Type.READ_CONNECTION));
+            listener.accept(new ReadEvent(null, ReadEvent.Type.VALUE, ReadEvent.Type.READ_CONNECTION));
         }
     }
     

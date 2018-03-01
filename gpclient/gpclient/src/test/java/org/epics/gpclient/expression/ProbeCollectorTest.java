@@ -6,7 +6,7 @@ package org.epics.gpclient.expression;
 
 import java.util.function.Consumer;
 import org.epics.gpclient.expression.LatestValueCollector;
-import org.epics.gpclient.expression.SourceRateReadEvent;
+import org.epics.gpclient.expression.ReadEvent;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -33,7 +33,7 @@ public class ProbeCollectorTest {
         probe.wait(400, forAnEvent());
         
         assertThat(probe.getEvents().size(), equalTo(1));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(null, ReadEvent.Type.VALUE)));
     }
     
     @Test(expected = AssertionError.class)
@@ -56,7 +56,7 @@ public class ProbeCollectorTest {
         probe.wait(400, forAnEvent());
         
         assertThat(probe.getEvents().size(), equalTo(1));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(null, ReadEvent.Type.VALUE)));
     }
     
     @Test
@@ -78,8 +78,8 @@ public class ProbeCollectorTest {
         probe.wait(400, forEventCount(3));
         
         assertThat(probe.getEvents().size(), equalTo(3));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(null, ReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(null, ReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(null, ReadEvent.Type.VALUE)));
     }
 }

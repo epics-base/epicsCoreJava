@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 public abstract class ReadCollector<I, O> {
     
     protected final Object lock = new Object();
-    protected Consumer<SourceRateReadEvent> collectorListener;
+    protected Consumer<ReadEvent> collectorListener;
     protected boolean connection = false;
     private final Class<I> type;
 
@@ -26,7 +26,7 @@ public abstract class ReadCollector<I, O> {
         this.type = type;
     }
     
-    void setUpdateListener(Consumer<SourceRateReadEvent> notification) {
+    void setUpdateListener(Consumer<ReadEvent> notification) {
         synchronized (lock) {
             this.collectorListener = notification;
         }
@@ -49,24 +49,24 @@ public abstract class ReadCollector<I, O> {
     public abstract void updateValueAndConnection(I value, boolean connection);
 
     public void updateConnection(boolean newConnection) {
-        Consumer<SourceRateReadEvent> listener;
+        Consumer<ReadEvent> listener;
         synchronized (lock) {
             connection = newConnection;
             listener = collectorListener;
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION));
+            listener.accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
         }
     }
 
     public void notifyError(Exception ex) {
-        Consumer<SourceRateReadEvent> listener;
+        Consumer<ReadEvent> listener;
         synchronized (lock) {
             listener = collectorListener;
         }
         // Run the task without holding the lock
-        listener.accept(new SourceRateReadEvent(ex, SourceRateReadEvent.Type.READ_EXCEPTION));
+        listener.accept(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION));
     }
     
 }

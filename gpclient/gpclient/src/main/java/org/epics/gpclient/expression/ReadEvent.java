@@ -5,8 +5,11 @@
  */
 package org.epics.gpclient.expression;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,28 +17,46 @@ import java.util.Set;
  *
  * @author carcassi
  */
-public final class SourceRateReadEvent {
+public final class ReadEvent {
     public enum Type {READ_CONNECTION, WRITE_CONNECTION, VALUE, READ_EXCEPTION, WRITE_EXCEPTION, WRITE_SUCCEEDED, WRITE_FAILED};
     
-    private final Set<Type> types;
+    private final List<Type> types;
     private final Exception exception;
 
-    public SourceRateReadEvent(Exception ex, Type type) {
-        this.types = Collections.unmodifiableSet(EnumSet.of(type));
+    private ReadEvent(Exception ex, List<Type> types) {
+        this.types = Collections.unmodifiableList(types);
         this.exception = ex;
     }
 
-    public SourceRateReadEvent(Exception ex, Type type1, Type type2) {
-        this.types = Collections.unmodifiableSet(EnumSet.of(type1, type2));
+    public ReadEvent(Exception ex, Type type) {
+        this.types = Collections.unmodifiableList(Arrays.asList(type));
         this.exception = ex;
     }
 
-    public Set<Type> getType() {
+    public ReadEvent(Exception ex, Type type1, Type type2) {
+        this.types = Collections.unmodifiableList(Arrays.asList(type1, type2));
+        this.exception = ex;
+    }
+
+    public List<Type> getType() {
         return types;
     }
 
     public Exception getException() {
         return exception;
+    }
+    
+    public ReadEvent addEvent(ReadEvent event) {
+        List<Type> newTypes = new ArrayList<>(getType());
+        for (Type type : event.getType()) {
+            newTypes.remove(type);
+            newTypes.add(type);
+        }
+        Exception newException = getException();
+        if (event.getException() != null) {
+            newException = event.getException();
+        }
+        return new ReadEvent(exception, newTypes);
     }
 
     @Override
@@ -57,7 +78,7 @@ public final class SourceRateReadEvent {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SourceRateReadEvent other = (SourceRateReadEvent) obj;
+        final ReadEvent other = (ReadEvent) obj;
         if (!Objects.equals(this.types, other.types)) {
             return false;
         }
@@ -75,5 +96,6 @@ public final class SourceRateReadEvent {
             return "{Type: " + types + "}";
         }
     }
+    
     
 }
