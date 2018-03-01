@@ -55,8 +55,8 @@ public class DataSourceImplementationTest {
         probe.wait(100000, forEventCount(2));
         
         assertThat(probe.getEvents().size(), equalTo(2));
-        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION)));
-        assertThat(probe.getEvents().get(1), equalTo(new ReadEvent(null, ReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.connectionEvent()));
+        assertThat(probe.getEvents().get(1), equalTo(ReadEvent.valueEvent()));
     }
     
     @Test
@@ -89,6 +89,6 @@ public class DataSourceImplementationTest {
         probe.wait(100000, forAnEvent());
         
         assertThat(probe.getEvents().size(), equalTo(1));
-        assertThat(probe.getEvents().get(0), equalTo(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION)));
+        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.exceptionEvent(ex)));
     }
 }

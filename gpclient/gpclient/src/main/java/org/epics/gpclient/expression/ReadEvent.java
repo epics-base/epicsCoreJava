@@ -28,12 +28,12 @@ public final class ReadEvent {
         this.exception = ex;
     }
 
-    public ReadEvent(Exception ex, Type type) {
+    private ReadEvent(Exception ex, Type type) {
         this.types = Collections.unmodifiableList(Arrays.asList(type));
         this.exception = ex;
     }
 
-    public ReadEvent(Exception ex, Type type1, Type type2) {
+    private ReadEvent(Exception ex, Type type1, Type type2) {
         this.types = Collections.unmodifiableList(Arrays.asList(type1, type2));
         this.exception = ex;
     }
@@ -97,5 +97,23 @@ public final class ReadEvent {
         }
     }
     
+    private static final ReadEvent CONNECTION_EVENT = new ReadEvent(null, Type.READ_CONNECTION);
+    private static final ReadEvent VALUE_EVENT = new ReadEvent(null, Type.VALUE);
+    private static final ReadEvent CONNECTION_VALUE_EVENT = new ReadEvent(null, Type.READ_CONNECTION, Type.VALUE);
     
+    public static ReadEvent connectionEvent() {
+        return CONNECTION_EVENT;
+    }
+    
+    public static ReadEvent valueEvent() {
+        return VALUE_EVENT;
+    }
+    
+    public static ReadEvent connectionValueEvent() {
+        return CONNECTION_VALUE_EVENT;
+    }
+    
+    public static ReadEvent exceptionEvent(Exception ex) {
+        return new ReadEvent(ex, Type.READ_EXCEPTION);
+    }
 }

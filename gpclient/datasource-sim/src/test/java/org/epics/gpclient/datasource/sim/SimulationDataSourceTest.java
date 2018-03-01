@@ -7,7 +7,7 @@ package org.epics.gpclient.datasource.sim;
 import org.epics.gpclient.datasource.ReadRecipe;
 import org.epics.gpclient.datasource.ReadRecipeBuilder;
 import org.epics.gpclient.expression.ProbeCollector;
-import org.epics.gpclient.expression.SourceRateReadEvent;
+import org.epics.gpclient.expression.ReadEvent;
 import org.epics.util.array.ArrayDouble;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
@@ -33,11 +33,11 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         sim.close();
         Thread.sleep(300);
         assertThat(probe.getEvents().size(), equalTo(5));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION)));
-        assertThat(probe.getEvents().get(1), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
-        assertThat(probe.getEvents().get(2), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
-        assertThat(probe.getEvents().get(3), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
-        assertThat(probe.getEvents().get(4), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.connectionEvent()));
+        assertThat(probe.getEvents().get(1), equalTo(ReadEvent.valueEvent()));
+        assertThat(probe.getEvents().get(2), equalTo(ReadEvent.valueEvent()));
+        assertThat(probe.getEvents().get(3), equalTo(ReadEvent.valueEvent()));
+        assertThat(probe.getEvents().get(4), equalTo(ReadEvent.valueEvent()));
     }
     
     @Test
@@ -52,8 +52,8 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         sim.close();
         Thread.sleep(300);
         assertThat(probe.getEvents().size(), equalTo(2));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION)));
-        assertThat(probe.getEvents().get(1), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.connectionEvent()));
+        assertThat(probe.getEvents().get(1), equalTo(ReadEvent.valueEvent()));
         assertThat(probe.getValue(), instanceOf(VString.class));
         assertThat(((VString) probe.getValue()).getValue(), equalTo("connected"));
     }
@@ -69,8 +69,8 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         sim.close();
         Thread.sleep(300);
         assertThat(probe.getEvents().size(), equalTo(2));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION)));
-        assertThat(probe.getEvents().get(1), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.connectionEvent()));
+        assertThat(probe.getEvents().get(1), equalTo(ReadEvent.valueEvent()));
         assertThat(probe.getValue(), instanceOf(VDouble.class));
         assertThat(((VDouble) probe.getValue()).getValue(), equalTo(3.14));
     }
@@ -86,8 +86,8 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         sim.close();
         Thread.sleep(300);
         assertThat(probe.getEvents().size(), equalTo(2));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION)));
-        assertThat(probe.getEvents().get(1), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.connectionEvent()));
+        assertThat(probe.getEvents().get(1), equalTo(ReadEvent.valueEvent()));
         assertThat(probe.getValue(), instanceOf(VString.class));
         assertThat(((VString) probe.getValue()).getValue(), equalTo("testing"));
     }
@@ -103,8 +103,8 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         sim.close();
         Thread.sleep(300);
         assertThat(probe.getEvents().size(), equalTo(2));
-        assertThat(probe.getEvents().get(0), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.READ_CONNECTION)));
-        assertThat(probe.getEvents().get(1), equalTo(new SourceRateReadEvent(null, SourceRateReadEvent.Type.VALUE)));
+        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.connectionEvent()));
+        assertThat(probe.getEvents().get(1), equalTo(ReadEvent.valueEvent()));
         assertThat(probe.getValue(), instanceOf(VDoubleArray.class));
         assertThat(((VDoubleArray) probe.getValue()).getData(), equalTo(ArrayDouble.of(1,2,3,4,5)));
     }

@@ -36,7 +36,7 @@ public class LatestValueCollectorTest {
         
         coll.updateValue(new Object());
         
-        verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
+        verify(listener).accept(ReadEvent.valueEvent());
     }
 
     @Test
@@ -50,7 +50,7 @@ public class LatestValueCollectorTest {
         coll.updateValue(new Object());
         coll.updateValue(new Object());
         
-        verify(listener, times(3)).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
+        verify(listener, times(3)).accept(ReadEvent.valueEvent());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class LatestValueCollectorTest {
         
         coll.updateValueAndConnection(new Object(), true);
         
-        verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE, ReadEvent.Type.READ_CONNECTION));
+        verify(listener).accept(ReadEvent.connectionValueEvent());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class LatestValueCollectorTest {
         
         coll.updateConnection(true);
         
-        verify(listener).accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
+        verify(listener).accept(ReadEvent.connectionEvent());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class LatestValueCollectorTest {
         
         coll.notifyError(ex);
         
-        verify(listener).accept(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION));
+        verify(listener).accept(ReadEvent.exceptionEvent(ex));
     }
 
     @Test
@@ -109,12 +109,12 @@ public class LatestValueCollectorTest {
         
         InOrder inOrder = inOrder(listener);
         
-        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE, ReadEvent.Type.READ_CONNECTION));
-        inOrder.verify(listener, times(2)).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
-        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
-        inOrder.verify(listener).accept(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION));
-        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
-        inOrder.verify(listener).accept(new ReadEvent(null, ReadEvent.Type.VALUE));
+        inOrder.verify(listener).accept(ReadEvent.connectionValueEvent());
+        inOrder.verify(listener, times(2)).accept(ReadEvent.valueEvent());
+        inOrder.verify(listener).accept(ReadEvent.connectionEvent());
+        inOrder.verify(listener).accept(ReadEvent.exceptionEvent(ex));
+        inOrder.verify(listener).accept(ReadEvent.connectionEvent());
+        inOrder.verify(listener).accept(ReadEvent.valueEvent());
     }
     
     @Test

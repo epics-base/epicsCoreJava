@@ -36,7 +36,7 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(new ReadEvent(null, ReadEvent.Type.VALUE));
+            listener.accept(ReadEvent.valueEvent());
         }
     }
 
@@ -50,7 +50,7 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(new ReadEvent(null, ReadEvent.Type.VALUE, ReadEvent.Type.READ_CONNECTION));
+            listener.accept(ReadEvent.connectionValueEvent());
         }
     }
     

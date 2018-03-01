@@ -56,7 +56,7 @@ public abstract class ReadCollector<I, O> {
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(new ReadEvent(null, ReadEvent.Type.READ_CONNECTION));
+            listener.accept(ReadEvent.connectionEvent());
         }
     }
 
@@ -66,7 +66,7 @@ public abstract class ReadCollector<I, O> {
             listener = collectorListener;
         }
         // Run the task without holding the lock
-        listener.accept(new ReadEvent(ex, ReadEvent.Type.READ_EXCEPTION));
+        listener.accept(ReadEvent.exceptionEvent(ex));
     }
     
 }
