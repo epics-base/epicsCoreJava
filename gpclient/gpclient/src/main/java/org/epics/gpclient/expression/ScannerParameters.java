@@ -21,7 +21,7 @@ class ScannerParameters {
     private Duration maxDuration;
     private Duration timeout;
     private String timeoutMessage;
-    private Consumer<DesiredRateEvent> listener;
+    private Consumer<ReadEvent> listener;
     
     public ScannerParameters type(Type type) {
         this.type = type;

@@ -23,12 +23,12 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
     // modified so that code elimination would remove the logging completely
     private static final Level logLevel = Level.FINEST;
     
-    private DesiredRateEvent queuedEvent;
+    private ReadEvent queuedEvent;
     private Instant lastSubmission;
     private boolean scanActive;
 
     public PassiveScanDecoupler(ScheduledExecutorService scannerExecutor,
-            Duration maxDuration, Consumer<DesiredRateEvent> listener) {
+            Duration maxDuration, Consumer<ReadEvent> listener) {
         super(scannerExecutor, maxDuration, listener);
         synchronized(lock) {
             lastSubmission = Instant.now().minus(getMaxDuration());
@@ -39,7 +39,7 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
 
         @Override
         public void run() {
-            DesiredRateEvent nextEvent;
+            ReadEvent nextEvent;
             synchronized(lock) {
                 nextEvent = queuedEvent;
                 queuedEvent = null;
@@ -59,9 +59,11 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
 
     @Override
     void onStart() {
+        // XXX: This should not be needed at this point. The collector
+        // Should take care of that.
         // When starting, send an event in case the expressions
         // are constants
-        newEvent(DesiredRateEvent.Type.READ_CONNECTION);
+        //newEvent(DesiredRateEvent.Type.READ_CONNECTION);
     }
 
     @Override
@@ -76,44 +78,30 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
         onDesiredEventProcessed();
     }
 
+    private final Consumer<ReadEvent> updateListener = new Consumer<ReadEvent>() {
+        @Override
+        public void accept(ReadEvent t) {
+            newEvent(t);
+        }
+        
+    };
+    
     @Override
-    void newReadConnectionEvent() {
-        newEvent(DesiredRateEvent.Type.READ_CONNECTION);
+    Consumer<ReadEvent> getUpdateListener() {
+        return updateListener;
     }
 
-    @Override
-    void newWriteConnectionEvent() {
-        newEvent(DesiredRateEvent.Type.WRITE_CONNECTION);
-    }
-
-    @Override
-    void newValueEvent() {
-        newEvent(DesiredRateEvent.Type.VALUE);
-    }
-
-    @Override
-    void newReadExceptionEvent() {
-        newEvent(DesiredRateEvent.Type.READ_EXCEPTION);
-    }
-
-    @Override
-    void newWriteExceptionEvent() {
-        newEvent(DesiredRateEvent.Type.WRITE_EXCEPTION);
-    }
-
-    @Override
-    void newWriteSuccededEvent() {
-        DesiredRateEvent event = new DesiredRateEvent();
-        event.addType(DesiredRateEvent.Type.WRITE_SUCCEEDED);
-        scheduleWriteOutcome(event);
-    }
-
-    @Override
-    void newWriteFailedEvent(Exception ex) {
-        DesiredRateEvent event = new DesiredRateEvent();
-        event.addWriteFailed(new RuntimeException());
-        sendDesiredRateEvent(event);
-    }
+//    void newWriteSuccededEvent() {
+//        DesiredRateEvent event = new DesiredRateEvent();
+//        event.addType(DesiredRateEvent.Type.WRITE_SUCCEEDED);
+//        scheduleWriteOutcome(event);
+//    }
+//
+//    void newWriteFailedEvent(Exception ex) {
+//        DesiredRateEvent event = new DesiredRateEvent();
+//        event.addWriteFailed(new RuntimeException());
+//        sendDesiredRateEvent(event);
+//    }
 
     @Override
     void onDesiredEventProcessed() {
@@ -147,19 +135,20 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
         }
     }
     
-    private void newEvent(DesiredRateEvent.Type type) {
+    private void newEvent(ReadEvent event) {
         boolean submit;
         Duration delay = null;
         
         synchronized (lock) {
             // Add event to the queue
             if (queuedEvent == null) {
-                queuedEvent = new DesiredRateEvent();
+                queuedEvent = event;
                 if (log.isLoggable(logLevel)) {
                     log.log(logLevel, "Creating queued event {0}", Instant.now());
                 }
+            } else {
+                queuedEvent.addEvent(event);
             }
-            queuedEvent.addType(type);
 
             // If scan is not active, submit the next scan
             if (!scanActive && !isPaused()) {
@@ -206,7 +195,7 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
      * If possible, submit the event right away, otherwise try again later.
      * @param event the event to submit
      */
-    private void scheduleWriteOutcome(final DesiredRateEvent event) {
+    private void scheduleWriteOutcome(final ReadEvent event) {
         if (!isEventProcessing()) {
             sendDesiredRateEvent(event);
         } else {

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 abstract class SourceDesiredRateDecoupler {
     
     private static final Logger log = Logger.getLogger(SourceDesiredRateDecoupler.class.getName());
-    private final Consumer<DesiredRateEvent> listener;
+    private final Consumer<ReadEvent> listener;
     private final ScheduledExecutorService scannerExecutor;
     private final Duration maxDuration;
     
@@ -36,7 +36,7 @@ abstract class SourceDesiredRateDecoupler {
      * @param listener the event callback
      */
     public SourceDesiredRateDecoupler(ScheduledExecutorService scannerExecutor, Duration maxDuration,
-            Consumer<DesiredRateEvent> listener) {
+            Consumer<ReadEvent> listener) {
         this.listener = listener;
         this.scannerExecutor = scannerExecutor;
         this.maxDuration = maxDuration;
@@ -120,46 +120,19 @@ abstract class SourceDesiredRateDecoupler {
     }
     
     /**
-     * Called when a read connection state changes.
+     * Returns the listener on which to notify the new events from the
+     * collectors.
+     * 
+     * @return the listener for the events
      */
-    abstract void newReadConnectionEvent();
-    
-    /**
-     * Called when a write connection state changes.
-     */
-    abstract void newWriteConnectionEvent();
-    
-    /**
-     * Called when a new read value is available.
-     */
-    abstract void newValueEvent();
-    
-    /**
-     * Called when a reader error is encountered.
-     */
-    abstract void newReadExceptionEvent();
-    
-    /**
-     * Called when a writer error is encountered.
-     */
-    abstract void newWriteExceptionEvent();
-    
-    /**
-     * Called when a write operation terminated successfully.
-     */
-    abstract void newWriteSuccededEvent();
-    
-    /**
-     * Called when a write operation terminated unsuccessfully.
-     */
-    abstract void newWriteFailedEvent(Exception ex);
+    abstract Consumer<ReadEvent> getUpdateListener();
     
     /**
      * Call when a new event should be triggered at the desired rate.
      * After calling this method, one should wait for the next {@link #readyForNextEvent() }
      * before calling it again.
      */
-    final void sendDesiredRateEvent(DesiredRateEvent event) {
+    final void sendDesiredRateEvent(ReadEvent event) {
         synchronized(lock) {
             if (isEventProcessing()) {
                 throw new RuntimeException("Previous event still in flight");

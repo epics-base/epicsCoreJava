@@ -11,6 +11,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
+ * Decouples the rate by simply scanning the PV status at the given rate.
+ * <p>
+ * This type of scanning is necessary if there is time dependent computation
+ * performed on the data after it's gathered in the collectors.
  *
  * @author carcassi
  */
@@ -19,7 +23,7 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
     private volatile ScheduledFuture<?> scanTaskHandle;
 
     public ActiveScanDecoupler(ScheduledExecutorService scannerExecutor,
-            Duration maxDuration, Consumer<DesiredRateEvent> listener) {
+            Duration maxDuration, Consumer<ReadEvent> listener) {
         super(scannerExecutor, maxDuration, listener);
     }
 
@@ -30,12 +34,7 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
             @Override
             public void run() {
                 if (!isStopped() && !isPaused() && !isEventProcessing()) {
-                    DesiredRateEvent event = new DesiredRateEvent();
-                    event.addType(DesiredRateEvent.Type.READ_CONNECTION);
-                    event.addType(DesiredRateEvent.Type.READ_EXCEPTION);
-                    event.addType(DesiredRateEvent.Type.VALUE);
-                    event.addType(DesiredRateEvent.Type.WRITE_CONNECTION);
-                    event.addType(DesiredRateEvent.Type.WRITE_EXCEPTION);
+                    ReadEvent event = ReadEvent.connectionValueEvent();
                     sendDesiredRateEvent(event);
                 }
             }
@@ -51,51 +50,39 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
             throw new IllegalStateException("Scan was never started");
         }
     }
+
+    private final Consumer<ReadEvent> updateListener = new Consumer<ReadEvent>() {
+        @Override
+        public void accept(ReadEvent t) {
+            // Do nothing
+        }
+        
+    };
     
     @Override
-    void newReadConnectionEvent() {
-        // Do nothing
+    Consumer<ReadEvent> getUpdateListener() {
+        return updateListener;
     }
-
-    @Override
-    void newWriteConnectionEvent() {
-        // Do nothing
-    }
-
-    @Override
-    void newValueEvent() {
-        // Do nothing
-    }
-
-    @Override
-    void newReadExceptionEvent() {
-        // Do nothing
-    }
-
-    @Override
-    void newWriteExceptionEvent() {
-        // Do nothing
-    }
-
-    @Override
-    void newWriteSuccededEvent() {
-        DesiredRateEvent event = new DesiredRateEvent();
-        event.addType(DesiredRateEvent.Type.WRITE_SUCCEEDED);
-        scheduleWriteOutcome(event);
-    }
-
-    @Override
-    void newWriteFailedEvent(Exception ex) {
-        DesiredRateEvent event = new DesiredRateEvent();
-        event.addWriteFailed(new RuntimeException());
-        sendDesiredRateEvent(event);
-    }
+    
+//    @Override
+//    void newWriteSuccededEvent() {
+//        DesiredRateEvent event = new DesiredRateEvent();
+//        event.addType(DesiredRateEvent.Type.WRITE_SUCCEEDED);
+//        scheduleWriteOutcome(event);
+//    }
+//
+//    @Override
+//    void newWriteFailedEvent(Exception ex) {
+//        DesiredRateEvent event = new DesiredRateEvent();
+//        event.addWriteFailed(new RuntimeException());
+//        sendDesiredRateEvent(event);
+//    }
     
     /**
      * If possible, submit the event right away, otherwise try again later.
      * @param event the event to submit
      */
-    private void scheduleWriteOutcome(final DesiredRateEvent event) {
+    private void scheduleWriteOutcome(final ReadEvent event) {
         if (!isEventProcessing()) {
             sendDesiredRateEvent(event);
         } else {

@@ -15,11 +15,11 @@ import java.util.logging.Logger;
  *
  * @author carcassi
  */
- class DesiredRateEventLog implements Consumer<DesiredRateEvent> {
+ class DesiredRateEventLog implements Consumer<ReadEvent> {
      
     private final Object lock = new Object();
     
-    private final List<DesiredRateEvent> events = new ArrayList<>();
+    private final List<ReadEvent> events = new ArrayList<>();
     private final List<Instant> timestamps = new ArrayList<>();
     private SourceDesiredRateDecoupler decoupler;
     private final Integer pause;
@@ -45,7 +45,7 @@ import java.util.logging.Logger;
     }
 
     @Override
-    public void accept(DesiredRateEvent event) {
+    public void accept(ReadEvent event) {
         synchronized(lock) {
             events.add(event);
             timestamps.add(Instant.now());
@@ -64,13 +64,13 @@ import java.util.logging.Logger;
         decoupler.readyForNextEvent();
     }
     
-    public List<DesiredRateEvent.Type> getEventTypes(int n) {
+    public List<ReadEvent.Type> getEventTypes(int n) {
         synchronized(lock) {
-            return events.get(n).getTypes();
+            return events.get(n).getType();
         }
     }
 
-    public List<DesiredRateEvent> getEvents() {
+    public List<ReadEvent> getEvents() {
         synchronized(lock) {
             return events;
         }
@@ -79,7 +79,7 @@ import java.util.logging.Logger;
     public void printLog() {
         synchronized(lock) {
             for (int i = 0; i < events.size(); i++) {
-                System.out.println(timestamps.get(i) + " " + events.get(i).getTypes());
+                System.out.println(timestamps.get(i) + " " + events.get(i).getType());
             }
         }
     }
