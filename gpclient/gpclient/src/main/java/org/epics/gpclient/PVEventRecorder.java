@@ -13,6 +13,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
+ * Utility class to record the flow of events mainly for debugging and testing
+ * purposes. It allows to add test conditions that lock the thread until
+ * the conditions is verified. It also allows to add some logic that is
+ * executed when each event is received, prior to checking the test condition.
  *
  * @author carcassi
  */
@@ -33,9 +37,20 @@ public class PVEventRecorder implements Consumer<PVEvent> {
         }
     }
     
+    /**
+     * Custom logic executed at each event. This method is executed after the event
+     * is added to the list but before the check is performed.
+     * 
+     * @param event a new event
+     */
     protected void onEvent(PVEvent event) {
     }
 
+    /**
+     * Returns all the events collected so far.
+     * 
+     * @return 
+     */
     public List<PVEvent> getEvents() {
         return events;
     }

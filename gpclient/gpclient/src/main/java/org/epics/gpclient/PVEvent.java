@@ -8,12 +8,16 @@ package org.epics.gpclient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
+ * A notification event for a pv. This may represent an aggregated event of multiple events
+ * coming at a faster rate, of the same channel or of multiple channels.
+ * <p>
+ * Implementation notes. This class is used for both source rate events and
+ * desired rate events. The class allows to combine events together into aggregated
+ * events.
  *
  * @author carcassi
  */
@@ -97,6 +101,7 @@ public final class PVEvent {
         }
     }
     
+    // Cache events that don't have an exception to save memory creation/collection
     private static final PVEvent CONNECTION_EVENT = new PVEvent(null, Type.READ_CONNECTION);
     private static final PVEvent VALUE_EVENT = new PVEvent(null, Type.VALUE);
     private static final PVEvent CONNECTION_VALUE_EVENT = new PVEvent(null, Type.READ_CONNECTION, Type.VALUE);
