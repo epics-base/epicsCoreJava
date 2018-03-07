@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.util.function.Consumer;
 
 /**
@@ -29,20 +30,20 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
 
     @Override
     public void updateValue(T newValue) {
-        Consumer<ReadEvent> listener;
+        Consumer<PVEvent> listener;
         synchronized (lock) {
             value = newValue;
             listener = collectorListener;
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(ReadEvent.valueEvent());
+            listener.accept(PVEvent.valueEvent());
         }
     }
 
     @Override
     public void updateValueAndConnection(T newValue, boolean newConnection) {
-        Consumer<ReadEvent> listener;
+        Consumer<PVEvent> listener;
         synchronized (lock) {
             value = newValue;
             connection = newConnection;
@@ -50,7 +51,7 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(ReadEvent.connectionValueEvent());
+            listener.accept(PVEvent.connectionValueEvent());
         }
     }
     

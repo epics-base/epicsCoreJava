@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
@@ -77,13 +78,13 @@ public class PassiveScanDecouplerTest {
                 SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(20), log);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(ReadEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
                 Thread.sleep(100);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(100);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(100);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(100);
                 decoupler.stop();
                 // 4 events, connection and 3 values
@@ -121,23 +122,23 @@ public class PassiveScanDecouplerTest {
                 SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(100), log);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(ReadEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
                 Thread.sleep(100);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(150);
                 decoupler.stop();
                 // 3 events: connection, first value, last value
@@ -156,14 +157,14 @@ public class PassiveScanDecouplerTest {
                 SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(50), log);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(ReadEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
                 // Wait for connection event
                 Thread.sleep(60);
                 
                 // Send events at 100Hz
                 long startTime = System.nanoTime();
                 for (int i = 0; i < 4*5+2; i++) {
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                     Thread.sleep(10);
                 }
                 long period = System.nanoTime() - startTime;
@@ -202,15 +203,15 @@ public class PassiveScanDecouplerTest {
                 SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(20), log);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(ReadEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
                 // Wait for connection event
                 Thread.sleep(125);
                 
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(25);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(25);
-                decoupler.getUpdateListener().accept(ReadEvent.valueEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(500);
                 decoupler.stop();
                 

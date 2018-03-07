@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,11 +16,11 @@ import java.util.logging.Logger;
  *
  * @author carcassi
  */
- class DesiredRateEventLog implements Consumer<ReadEvent> {
+ class DesiredRateEventLog implements Consumer<PVEvent> {
      
     private final Object lock = new Object();
     
-    private final List<ReadEvent> events = new ArrayList<>();
+    private final List<PVEvent> events = new ArrayList<>();
     private final List<Instant> timestamps = new ArrayList<>();
     private SourceDesiredRateDecoupler decoupler;
     private final Integer pause;
@@ -45,7 +46,7 @@ import java.util.logging.Logger;
     }
 
     @Override
-    public void accept(ReadEvent event) {
+    public void accept(PVEvent event) {
         synchronized(lock) {
             events.add(event);
             timestamps.add(Instant.now());
@@ -64,13 +65,13 @@ import java.util.logging.Logger;
         decoupler.readyForNextEvent();
     }
     
-    public List<ReadEvent.Type> getEventTypes(int n) {
+    public List<PVEvent.Type> getEventTypes(int n) {
         synchronized(lock) {
             return events.get(n).getType();
         }
     }
 
-    public List<ReadEvent> getEvents() {
+    public List<PVEvent> getEvents() {
         synchronized(lock) {
             return events;
         }

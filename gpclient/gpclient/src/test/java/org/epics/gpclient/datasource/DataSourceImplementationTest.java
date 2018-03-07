@@ -7,14 +7,15 @@ package org.epics.gpclient.datasource;
 import org.epics.gpclient.expression.*;
 import java.util.function.Consumer;
 import org.epics.gpclient.expression.LatestValueCollector;
-import org.epics.gpclient.expression.ReadEvent;
+import org.epics.gpclient.PVEvent;
+import org.epics.gpclient.PVEventRecorder;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
-import static org.epics.gpclient.expression.ProbeCollector.*;
+import static org.epics.gpclient.PVEventRecorder.*;
 
 /**
  *
@@ -28,6 +29,7 @@ public class DataSourceImplementationTest {
     @Test
     public void simpleSubscription1() throws InterruptedException {
         ProbeCollector probe = ProbeCollector.create();
+        PVEventRecorder recorder = probe.getRecorder();
         DataSource dataSource = new DataSource(false) {
             @Override
             protected ChannelHandler createChannel(String channelName) {
@@ -52,16 +54,17 @@ public class DataSourceImplementationTest {
         
         dataSource.connectRead(new ReadRecipeBuilder().addChannel("first", probe.getCollector()).build());
         
-        probe.wait(100000, forEventCount(2));
+        recorder.wait(100000, forEventCount(2));
         
-        assertThat(probe.getEvents().size(), equalTo(2));
-        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.connectionEvent()));
-        assertThat(probe.getEvents().get(1), equalTo(ReadEvent.valueEvent()));
+        assertThat(recorder.getEvents().size(), equalTo(2));
+        assertThat(recorder.getEvents().get(0), equalTo(PVEvent.connectionEvent()));
+        assertThat(recorder.getEvents().get(1), equalTo(PVEvent.valueEvent()));
     }
     
     @Test
     public void simpleSubscription2() throws InterruptedException {
         ProbeCollector probe = ProbeCollector.create();
+        PVEventRecorder recorder = probe.getRecorder();
         RuntimeException ex = new RuntimeException("Connection problem");
         DataSource dataSource = new DataSource(false) {
             @Override
@@ -86,9 +89,9 @@ public class DataSourceImplementationTest {
         
         dataSource.connectRead(new ReadRecipeBuilder().addChannel("first", probe.getCollector()).build());
         
-        probe.wait(100000, forAnEvent());
+        recorder.wait(100000, forAnEvent());
         
-        assertThat(probe.getEvents().size(), equalTo(1));
-        assertThat(probe.getEvents().get(0), equalTo(ReadEvent.exceptionEvent(ex)));
+        assertThat(recorder.getEvents().size(), equalTo(1));
+        assertThat(recorder.getEvents().get(0), equalTo(PVEvent.exceptionEvent(ex)));
     }
 }

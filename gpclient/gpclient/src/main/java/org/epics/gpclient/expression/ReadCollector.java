@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.util.function.Consumer;
 
 /**
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
 public abstract class ReadCollector<I, O> {
     
     protected final Object lock = new Object();
-    protected Consumer<ReadEvent> collectorListener;
+    protected Consumer<PVEvent> collectorListener;
     protected boolean connection = false;
     private final Class<I> type;
 
@@ -26,7 +27,7 @@ public abstract class ReadCollector<I, O> {
         this.type = type;
     }
     
-    void setUpdateListener(Consumer<ReadEvent> notification) {
+    void setUpdateListener(Consumer<PVEvent> notification) {
         synchronized (lock) {
             this.collectorListener = notification;
         }
@@ -49,24 +50,24 @@ public abstract class ReadCollector<I, O> {
     public abstract void updateValueAndConnection(I value, boolean connection);
 
     public void updateConnection(boolean newConnection) {
-        Consumer<ReadEvent> listener;
+        Consumer<PVEvent> listener;
         synchronized (lock) {
             connection = newConnection;
             listener = collectorListener;
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(ReadEvent.connectionEvent());
+            listener.accept(PVEvent.connectionEvent());
         }
     }
 
     public void notifyError(Exception ex) {
-        Consumer<ReadEvent> listener;
+        Consumer<PVEvent> listener;
         synchronized (lock) {
             listener = collectorListener;
         }
         // Run the task without holding the lock
-        listener.accept(ReadEvent.exceptionEvent(ex));
+        listener.accept(PVEvent.exceptionEvent(ex));
     }
     
 }

@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -21,7 +22,7 @@ class ScannerParameters {
     private Duration maxDuration;
     private Duration timeout;
     private String timeoutMessage;
-    private Consumer<ReadEvent> listener;
+    private Consumer<PVEvent> listener;
     
     public ScannerParameters type(Type type) {
         this.type = type;

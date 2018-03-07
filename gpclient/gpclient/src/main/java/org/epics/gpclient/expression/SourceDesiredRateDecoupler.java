@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
 abstract class SourceDesiredRateDecoupler {
     
     private static final Logger log = Logger.getLogger(SourceDesiredRateDecoupler.class.getName());
-    private final Consumer<ReadEvent> listener;
+    private final Consumer<PVEvent> listener;
     private final ScheduledExecutorService scannerExecutor;
     private final Duration maxDuration;
     
@@ -36,7 +37,7 @@ abstract class SourceDesiredRateDecoupler {
      * @param listener the event callback
      */
     public SourceDesiredRateDecoupler(ScheduledExecutorService scannerExecutor, Duration maxDuration,
-            Consumer<ReadEvent> listener) {
+            Consumer<PVEvent> listener) {
         this.listener = listener;
         this.scannerExecutor = scannerExecutor;
         this.maxDuration = maxDuration;
@@ -125,14 +126,14 @@ abstract class SourceDesiredRateDecoupler {
      * 
      * @return the listener for the events
      */
-    abstract Consumer<ReadEvent> getUpdateListener();
+    abstract Consumer<PVEvent> getUpdateListener();
     
     /**
      * Call when a new event should be triggered at the desired rate.
      * After calling this method, one should wait for the next {@link #readyForNextEvent() }
      * before calling it again.
      */
-    final void sendDesiredRateEvent(ReadEvent event) {
+    final void sendDesiredRateEvent(PVEvent event) {
         synchronized(lock) {
             if (isEventProcessing()) {
                 throw new RuntimeException("Previous event still in flight");
@@ -165,7 +166,7 @@ abstract class SourceDesiredRateDecoupler {
     }
 
     /**
-     * True if an event was sent, but the ready for next event wasn't receiced.
+     * True if an event was sent, but the ready for next event wasn't received.
      * 
      * @return ture if there is still an event in-flight
      */

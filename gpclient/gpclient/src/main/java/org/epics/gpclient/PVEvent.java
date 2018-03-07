@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,23 +17,23 @@ import java.util.Set;
  *
  * @author carcassi
  */
-public final class ReadEvent {
+public final class PVEvent {
     public enum Type {READ_CONNECTION, WRITE_CONNECTION, VALUE, READ_EXCEPTION, WRITE_EXCEPTION, WRITE_SUCCEEDED, WRITE_FAILED};
     
     private final List<Type> types;
     private final Exception exception;
 
-    private ReadEvent(Exception ex, List<Type> types) {
+    private PVEvent(Exception ex, List<Type> types) {
         this.types = Collections.unmodifiableList(types);
         this.exception = ex;
     }
 
-    private ReadEvent(Exception ex, Type type) {
+    private PVEvent(Exception ex, Type type) {
         this.types = Collections.unmodifiableList(Arrays.asList(type));
         this.exception = ex;
     }
 
-    private ReadEvent(Exception ex, Type type1, Type type2) {
+    private PVEvent(Exception ex, Type type1, Type type2) {
         this.types = Collections.unmodifiableList(Arrays.asList(type1, type2));
         this.exception = ex;
     }
@@ -46,7 +46,7 @@ public final class ReadEvent {
         return exception;
     }
     
-    public ReadEvent addEvent(ReadEvent event) {
+    public PVEvent addEvent(PVEvent event) {
         List<Type> newTypes = new ArrayList<>(getType());
         for (Type type : event.getType()) {
             newTypes.remove(type);
@@ -56,7 +56,7 @@ public final class ReadEvent {
         if (event.getException() != null) {
             newException = event.getException();
         }
-        return new ReadEvent(exception, newTypes);
+        return new PVEvent(exception, newTypes);
     }
 
     @Override
@@ -78,7 +78,7 @@ public final class ReadEvent {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ReadEvent other = (ReadEvent) obj;
+        final PVEvent other = (PVEvent) obj;
         if (!Objects.equals(this.types, other.types)) {
             return false;
         }
@@ -97,23 +97,23 @@ public final class ReadEvent {
         }
     }
     
-    private static final ReadEvent CONNECTION_EVENT = new ReadEvent(null, Type.READ_CONNECTION);
-    private static final ReadEvent VALUE_EVENT = new ReadEvent(null, Type.VALUE);
-    private static final ReadEvent CONNECTION_VALUE_EVENT = new ReadEvent(null, Type.READ_CONNECTION, Type.VALUE);
+    private static final PVEvent CONNECTION_EVENT = new PVEvent(null, Type.READ_CONNECTION);
+    private static final PVEvent VALUE_EVENT = new PVEvent(null, Type.VALUE);
+    private static final PVEvent CONNECTION_VALUE_EVENT = new PVEvent(null, Type.READ_CONNECTION, Type.VALUE);
     
-    public static ReadEvent connectionEvent() {
+    public static PVEvent connectionEvent() {
         return CONNECTION_EVENT;
     }
     
-    public static ReadEvent valueEvent() {
+    public static PVEvent valueEvent() {
         return VALUE_EVENT;
     }
     
-    public static ReadEvent connectionValueEvent() {
+    public static PVEvent connectionValueEvent() {
         return CONNECTION_VALUE_EVENT;
     }
     
-    public static ReadEvent exceptionEvent(Exception ex) {
-        return new ReadEvent(ex, Type.READ_EXCEPTION);
+    public static PVEvent exceptionEvent(Exception ex) {
+        return new PVEvent(ex, Type.READ_EXCEPTION);
     }
 }

@@ -6,7 +6,7 @@ package org.epics.gpclient.expression;
 
 import java.util.function.Consumer;
 import org.epics.gpclient.expression.LatestValueCollector;
-import org.epics.gpclient.expression.ReadEvent;
+import org.epics.gpclient.PVEvent;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -29,19 +29,19 @@ public class LatestValueCollectorTest {
 
     @Test
     public void updateValue1() {
-        Consumer<ReadEvent> listener = mock(Consumer.class);
+        Consumer<PVEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
         
         coll.updateValue(new Object());
         
-        verify(listener).accept(ReadEvent.valueEvent());
+        verify(listener).accept(PVEvent.valueEvent());
     }
 
     @Test
     public void updateValue2() {
-        Consumer<ReadEvent> listener = mock(Consumer.class);
+        Consumer<PVEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
@@ -50,36 +50,36 @@ public class LatestValueCollectorTest {
         coll.updateValue(new Object());
         coll.updateValue(new Object());
         
-        verify(listener, times(3)).accept(ReadEvent.valueEvent());
+        verify(listener, times(3)).accept(PVEvent.valueEvent());
     }
 
     @Test
     public void updateValueAndConnection1() {
-        Consumer<ReadEvent> listener = mock(Consumer.class);
+        Consumer<PVEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
         
         coll.updateValueAndConnection(new Object(), true);
         
-        verify(listener).accept(ReadEvent.connectionValueEvent());
+        verify(listener).accept(PVEvent.connectionValueEvent());
     }
 
     @Test
     public void updateConnection1() {
-        Consumer<ReadEvent> listener = mock(Consumer.class);
+        Consumer<PVEvent> listener = mock(Consumer.class);
         
         ReadCollector coll = createCollector();
         coll.setUpdateListener(listener);
         
         coll.updateConnection(true);
         
-        verify(listener).accept(ReadEvent.connectionEvent());
+        verify(listener).accept(PVEvent.connectionEvent());
     }
 
     @Test
     public void notifyError1() {
-        Consumer<ReadEvent> listener = mock(Consumer.class);
+        Consumer<PVEvent> listener = mock(Consumer.class);
         Exception ex = new RuntimeException();
         
         ReadCollector coll = createCollector();
@@ -88,12 +88,12 @@ public class LatestValueCollectorTest {
         
         coll.notifyError(ex);
         
-        verify(listener).accept(ReadEvent.exceptionEvent(ex));
+        verify(listener).accept(PVEvent.exceptionEvent(ex));
     }
 
     @Test
     public void mixedNotifications1() {
-        Consumer<ReadEvent> listener = mock(Consumer.class);
+        Consumer<PVEvent> listener = mock(Consumer.class);
         Exception ex = new RuntimeException();
         
         ReadCollector coll = createCollector();
@@ -109,12 +109,12 @@ public class LatestValueCollectorTest {
         
         InOrder inOrder = inOrder(listener);
         
-        inOrder.verify(listener).accept(ReadEvent.connectionValueEvent());
-        inOrder.verify(listener, times(2)).accept(ReadEvent.valueEvent());
-        inOrder.verify(listener).accept(ReadEvent.connectionEvent());
-        inOrder.verify(listener).accept(ReadEvent.exceptionEvent(ex));
-        inOrder.verify(listener).accept(ReadEvent.connectionEvent());
-        inOrder.verify(listener).accept(ReadEvent.valueEvent());
+        inOrder.verify(listener).accept(PVEvent.connectionValueEvent());
+        inOrder.verify(listener, times(2)).accept(PVEvent.valueEvent());
+        inOrder.verify(listener).accept(PVEvent.connectionEvent());
+        inOrder.verify(listener).accept(PVEvent.exceptionEvent(ex));
+        inOrder.verify(listener).accept(PVEvent.connectionEvent());
+        inOrder.verify(listener).accept(PVEvent.valueEvent());
     }
     
     @Test

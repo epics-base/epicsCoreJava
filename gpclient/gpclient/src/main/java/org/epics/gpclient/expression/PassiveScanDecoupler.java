@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,12 +24,12 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
     // modified so that code elimination would remove the logging completely
     private static final Level logLevel = Level.FINEST;
     
-    private ReadEvent queuedEvent;
+    private PVEvent queuedEvent;
     private Instant lastSubmission;
     private boolean scanActive;
 
     public PassiveScanDecoupler(ScheduledExecutorService scannerExecutor,
-            Duration maxDuration, Consumer<ReadEvent> listener) {
+            Duration maxDuration, Consumer<PVEvent> listener) {
         super(scannerExecutor, maxDuration, listener);
         synchronized(lock) {
             lastSubmission = Instant.now().minus(getMaxDuration());
@@ -39,7 +40,7 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
 
         @Override
         public void run() {
-            ReadEvent nextEvent;
+            PVEvent nextEvent;
             synchronized(lock) {
                 nextEvent = queuedEvent;
                 queuedEvent = null;
@@ -78,16 +79,16 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
         onDesiredEventProcessed();
     }
 
-    private final Consumer<ReadEvent> updateListener = new Consumer<ReadEvent>() {
+    private final Consumer<PVEvent> updateListener = new Consumer<PVEvent>() {
         @Override
-        public void accept(ReadEvent t) {
+        public void accept(PVEvent t) {
             newEvent(t);
         }
         
     };
     
     @Override
-    Consumer<ReadEvent> getUpdateListener() {
+    Consumer<PVEvent> getUpdateListener() {
         return updateListener;
     }
 
@@ -135,7 +136,7 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
         }
     }
     
-    private void newEvent(ReadEvent event) {
+    private void newEvent(PVEvent event) {
         boolean submit;
         Duration delay = null;
         
@@ -195,7 +196,7 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
      * If possible, submit the event right away, otherwise try again later.
      * @param event the event to submit
      */
-    private void scheduleWriteOutcome(final ReadEvent event) {
+    private void scheduleWriteOutcome(final PVEvent event) {
         if (!isEventProcessing()) {
             sendDesiredRateEvent(event);
         } else {

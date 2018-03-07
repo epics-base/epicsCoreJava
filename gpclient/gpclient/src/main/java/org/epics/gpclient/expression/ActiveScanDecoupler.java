@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -23,7 +24,7 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
     private volatile ScheduledFuture<?> scanTaskHandle;
 
     public ActiveScanDecoupler(ScheduledExecutorService scannerExecutor,
-            Duration maxDuration, Consumer<ReadEvent> listener) {
+            Duration maxDuration, Consumer<PVEvent> listener) {
         super(scannerExecutor, maxDuration, listener);
     }
 
@@ -34,7 +35,7 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
             @Override
             public void run() {
                 if (!isStopped() && !isPaused() && !isEventProcessing()) {
-                    ReadEvent event = ReadEvent.connectionValueEvent();
+                    PVEvent event = PVEvent.connectionValueEvent();
                     sendDesiredRateEvent(event);
                 }
             }
@@ -51,16 +52,16 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
         }
     }
 
-    private final Consumer<ReadEvent> updateListener = new Consumer<ReadEvent>() {
+    private final Consumer<PVEvent> updateListener = new Consumer<PVEvent>() {
         @Override
-        public void accept(ReadEvent t) {
+        public void accept(PVEvent t) {
             // Do nothing
         }
         
     };
     
     @Override
-    Consumer<ReadEvent> getUpdateListener() {
+    Consumer<PVEvent> getUpdateListener() {
         return updateListener;
     }
     
@@ -82,7 +83,7 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
      * If possible, submit the event right away, otherwise try again later.
      * @param event the event to submit
      */
-    private void scheduleWriteOutcome(final ReadEvent event) {
+    private void scheduleWriteOutcome(final PVEvent event) {
         if (!isEventProcessing()) {
             sendDesiredRateEvent(event);
         } else {
