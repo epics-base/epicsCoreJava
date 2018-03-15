@@ -48,15 +48,6 @@ package org.epics.gpclient;
 public interface PVReader<T> {
 
     /**
-     * Returns the name of the PVReader.
-     * <p>
-     * This method is thread safe.
-     *
-     * @return the value of name
-     */
-    public String getName();
-
-    /**
      * Returns the value of the PVReader.
      * <p>
      * This method is thread-safe.
@@ -79,31 +70,31 @@ public interface PVReader<T> {
      * @return true if closed
      */
     public boolean isClosed();
-//
-//    /**
-//     * Pauses or resumes the reader notifications.
-//     * <p>
-//     * Note that since notifications may still be in flight, you may receive
-//     * notifications after setting the pause state to on. The paused flag on the
-//     * reader, though, is changed immediately.
-//     * <p>
-//     * This method is thread-safe.
-//     * 
-//     * @param paused whether the reader should be paused or not
-//     */
-//    public void setPaused(boolean paused);
-//    
-//    /**
-//     * Whether the reader is paused. If a reader is paused, all the notifications
-//     * are skipped. While the channels remains open, and data is still being collected,
-//     * the computation after the collectors is suspended, which saves computation
-//     * resources.
-//     * <p>
-//     * This method is thread-safe.
-//     * 
-//     * @return true if it is paused
-//     */
-//    public boolean isPaused();
+
+    /**
+     * Pauses or resumes the reader notifications.
+     * <p>
+     * Note that since notifications may still be in flight, you may receive
+     * notifications after setting the pause state to on. The paused flag on the
+     * reader, though, is changed immediately.
+     * <p>
+     * This method is thread-safe.
+     * 
+     * @param paused whether the reader should be paused or not
+     */
+    public void setPaused(boolean paused);
+    
+    /**
+     * Whether the reader is paused. If a reader is paused, all the notifications
+     * are skipped. While the channels remains open, and data is still being collected,
+     * the computation after the collectors is suspended, which saves computation
+     * resources.
+     * <p>
+     * This method is thread-safe.
+     * 
+     * @return true if it is paused
+     */
+    public boolean isPaused();
     
     /**
      * True if the reader is connected. <b>Do not use this method to display connection status
