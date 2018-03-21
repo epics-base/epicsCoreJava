@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * A list of expressions to read at the desired rate.
- * <p>
- * Don't implement objects with this interface, use {@link DesiredRateExpressionListImpl}.
  *
  * @param <R> type of the read payload
  * @author carcassi

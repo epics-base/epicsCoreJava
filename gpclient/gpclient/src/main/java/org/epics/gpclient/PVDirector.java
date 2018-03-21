@@ -41,8 +41,9 @@ import org.epics.vtype.VType;
  * or if it's garbage collected</li>
  * </ul>
  *
- * @param <T> value type for the reader managed by this director
  * @author carcassi
+ * @param <R> the read object type
+ * @param <W> the write object type
  */
 public class PVDirector<R, W> {
     

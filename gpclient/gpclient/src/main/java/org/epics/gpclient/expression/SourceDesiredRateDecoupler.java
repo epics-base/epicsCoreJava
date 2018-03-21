@@ -37,6 +37,7 @@ public abstract class SourceDesiredRateDecoupler {
      * @param scannerExecutor executor for the scanner tasks
      * @param maxDuration max interval between notifications
      * @param listener the event callback
+     * @param exceptionHandler the exception handler
      */
     public SourceDesiredRateDecoupler(ScheduledExecutorService scannerExecutor, Duration maxDuration,
             Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
@@ -166,7 +167,7 @@ public abstract class SourceDesiredRateDecoupler {
     }
     
     /**
-     * Called after a pv is notified. Once {@link #sendDesiredRateEvent() }
+     * Called after a pv is notified. Once {@link #sendDesiredRateEvent(org.epics.gpclient.PVEvent) }
      * is called, it should not be called again before this method is called.
      */
     public final void readyForNextEvent() {

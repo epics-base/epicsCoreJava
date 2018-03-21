@@ -16,7 +16,7 @@ public interface PVWriterListener<T> {
      * Notified when the value was written.
      * 
      * @param event the writer event
-     * @param pvWriter
+     * @param pvWriter the writer that generated the event
      */
     public void pvChanged(PVEvent event, PVWriter<T> pvWriter);
 }

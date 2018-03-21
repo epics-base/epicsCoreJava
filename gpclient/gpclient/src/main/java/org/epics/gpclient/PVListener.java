@@ -7,16 +7,17 @@ package org.epics.gpclient;
 /**
  * Callback for delivery notification of new value. 
  *
- * @param <T> the type of writer for the listener
  * @author carcassi
+ * @param <R> the read object type
+ * @param <W> the write object type
  */
 public interface PVListener<R, W> extends PVReaderListener<R>, PVWriterListener<W> {
     
     /**
      * Notified when the value was written.
      * 
-     * @param event the writer event
-     * @param pvWriter
+     * @param event the event
+     * @param pv the pv that generated the event
      */
     public void pvChanged(PVEvent event, PV<R, W> pv);
 }

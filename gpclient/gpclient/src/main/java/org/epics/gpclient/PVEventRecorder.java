@@ -49,7 +49,7 @@ public class PVEventRecorder implements Consumer<PVEvent> {
     /**
      * Returns all the events collected so far.
      * 
-     * @return 
+     * @return the events in the order recorded
      */
     public List<PVEvent> getEvents() {
         return events;
