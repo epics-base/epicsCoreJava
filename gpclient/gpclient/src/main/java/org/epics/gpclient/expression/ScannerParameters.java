@@ -23,6 +23,7 @@ class ScannerParameters {
     private Duration timeout;
     private String timeoutMessage;
     private Consumer<PVEvent> listener;
+    private Consumer<Exception> exceptionHandler;
     
     public ScannerParameters type(Type type) {
         this.type = type;
@@ -57,6 +58,11 @@ class ScannerParameters {
         return this;
     }
 
+    public ScannerParameters exceptionHandler(Consumer<Exception> exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
+        return this;
+    }
+
     public ScheduledExecutorService getScannerExecutor() {
         return scannerExecutor;
     }
@@ -78,7 +84,7 @@ class ScannerParameters {
             if (maxDuration == null) {
                 throw new NullPointerException("Active scanner requires a maxDuration");
             }
-            return new ActiveScanDecoupler(scannerExecutor, maxDuration, listener);
+            return new ActiveScanDecoupler(scannerExecutor, maxDuration, listener, exceptionHandler);
         }
         if (type == Type.PASSIVE) {
             if (scannerExecutor == null) {
@@ -90,7 +96,7 @@ class ScannerParameters {
             if (maxDuration == null) {
                 throw new NullPointerException("Passive scanner requires a maxDuration");
             }
-            return new PassiveScanDecoupler(scannerExecutor, maxDuration, listener);
+            return new PassiveScanDecoupler(scannerExecutor, maxDuration, listener, exceptionHandler);
         }
         throw new IllegalStateException("Can't create suitable scanner");
     }

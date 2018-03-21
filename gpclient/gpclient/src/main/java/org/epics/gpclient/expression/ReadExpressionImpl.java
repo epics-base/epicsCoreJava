@@ -5,6 +5,7 @@
 package org.epics.gpclient.expression;
 
 import java.util.function.Supplier;
+import org.epics.gpclient.PVDirector;
 
 /**
  * Implementation class for {@link ReadExpression}.
@@ -37,13 +38,24 @@ public class ReadExpressionImpl<R> extends ReadExpressionListImpl<R> implements 
 
     @Override
     @SuppressWarnings("unchecked")
-    public void startRead(Object director) {
+    public void startRead(PVDirector director) {
         if (expressionChildren != null) {
             for (ReadExpression<?> desiredRateExpression : expressionChildren.getReadExpressions()) {
                 desiredRateExpression.startRead(director);
             }
         }
     }
+
+    @Override
+    public void stopRead(PVDirector director) {
+        if (expressionChildren != null) {
+            for (ReadExpression<?> desiredRateExpression : expressionChildren.getReadExpressions()) {
+                desiredRateExpression.stopRead(director);
+            }
+        }
+    }
+    
+    
 
     /**
      * The function that calculates new values for this expression.

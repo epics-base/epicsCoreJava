@@ -29,8 +29,8 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
     private boolean scanActive;
 
     public PassiveScanDecoupler(ScheduledExecutorService scannerExecutor,
-            Duration maxDuration, Consumer<PVEvent> listener) {
-        super(scannerExecutor, maxDuration, listener);
+            Duration maxDuration, Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
+        super(scannerExecutor, maxDuration, listener, exceptionHandler);
         synchronized(lock) {
             lastSubmission = Instant.now().minus(getMaxDuration());
         }
@@ -79,19 +79,6 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
         onDesiredEventProcessed();
     }
 
-    private final Consumer<PVEvent> updateListener = new Consumer<PVEvent>() {
-        @Override
-        public void accept(PVEvent t) {
-            newEvent(t);
-        }
-        
-    };
-    
-    @Override
-    Consumer<PVEvent> getUpdateListener() {
-        return updateListener;
-    }
-
 //    void newWriteSuccededEvent() {
 //        DesiredRateEvent event = new DesiredRateEvent();
 //        event.addType(DesiredRateEvent.Type.WRITE_SUCCEEDED);
@@ -136,7 +123,8 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
         }
     }
     
-    private void newEvent(PVEvent event) {
+    @Override
+    protected void newEvent(PVEvent event) {
         boolean submit;
         Duration delay = null;
         

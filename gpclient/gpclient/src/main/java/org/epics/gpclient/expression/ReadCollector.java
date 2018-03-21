@@ -27,15 +27,15 @@ public abstract class ReadCollector<I, O> {
         this.type = type;
     }
     
-    void setUpdateListener(Consumer<PVEvent> notification) {
+    public void setUpdateListener(Consumer<PVEvent> notification) {
         synchronized (lock) {
             this.collectorListener = notification;
         }
     }
     
-    abstract O getValue();
+    public abstract O getValue();
     
-    boolean getConnection() {
+    public boolean getConnection() {
         synchronized(lock) {
             return connection;
         }

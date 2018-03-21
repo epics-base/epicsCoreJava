@@ -6,6 +6,7 @@ package org.epics.gpclient.expression;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.epics.gpclient.PVDirector;
 
 /**
  * Implementation class for {@link Expression}.
@@ -59,7 +60,16 @@ public class ExpressionImpl<R, W> extends ExpressionListImpl<R, W> implements Ex
     
     @Override
     @SuppressWarnings("unchecked")
-    public void startRead(Object director) {
+    public void startRead(PVDirector director) {
+        if (expressionChildren != null) {
+            for (ReadExpression<?> readExpression : expressionChildren.getReadExpressions()) {
+                readExpression.startRead(director);
+            }
+        }
+    }
+
+    @Override
+    public void stopRead(PVDirector director) {
         if (expressionChildren != null) {
             for (ReadExpression<?> readExpression : expressionChildren.getReadExpressions()) {
                 readExpression.startRead(director);

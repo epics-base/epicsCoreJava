@@ -8,6 +8,7 @@ import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -16,10 +17,11 @@ import java.util.logging.Logger;
  *
  * @author carcassi
  */
-abstract class SourceDesiredRateDecoupler {
+public abstract class SourceDesiredRateDecoupler {
     
     private static final Logger log = Logger.getLogger(SourceDesiredRateDecoupler.class.getName());
     private final Consumer<PVEvent> listener;
+    private final Consumer<Exception> exceptionHandler;
     private final ScheduledExecutorService scannerExecutor;
     private final Duration maxDuration;
     
@@ -37,8 +39,9 @@ abstract class SourceDesiredRateDecoupler {
      * @param listener the event callback
      */
     public SourceDesiredRateDecoupler(ScheduledExecutorService scannerExecutor, Duration maxDuration,
-            Consumer<PVEvent> listener) {
+            Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
         this.listener = listener;
+        this.exceptionHandler = exceptionHandler;
         this.scannerExecutor = scannerExecutor;
         this.maxDuration = maxDuration;
     }
@@ -70,7 +73,7 @@ abstract class SourceDesiredRateDecoupler {
     /**
      * Pause the scanning. Events will be collected and delayed until a resume.
      */
-    final void pause() {
+    public final void pause() {
         synchronized(lock) {
             if (paused) {
                 log.warning("Pausing an already paused scanner");
@@ -83,7 +86,7 @@ abstract class SourceDesiredRateDecoupler {
      * Resumes the scanning. If events were collected during the pause,
      * they will be sent right away.
      */
-    final void resume() {
+    public final void resume() {
         synchronized(lock) {
             if (!paused) {
                 log.warning("Resuming a non paused scanner");
@@ -119,6 +122,21 @@ abstract class SourceDesiredRateDecoupler {
      */
     void onStop() {
     }
+
+    private final Consumer<PVEvent> updateListener = new Consumer<PVEvent>() {
+        @Override
+        public void accept(PVEvent event) {
+            newEvent(event);
+            if (exceptionHandler != null && event.getException() != null) {
+                try {
+                    exceptionHandler.accept(event.getException());
+                } catch(Exception ex) {
+                    log.log(Level.SEVERE, "Exception handler " + exceptionHandler + " should not generate exceptions", ex);
+                }
+            }
+        }
+        
+    };
     
     /**
      * Returns the listener on which to notify the new events from the
@@ -126,7 +144,11 @@ abstract class SourceDesiredRateDecoupler {
      * 
      * @return the listener for the events
      */
-    abstract Consumer<PVEvent> getUpdateListener();
+    public final Consumer<PVEvent> getUpdateListener() {
+        return updateListener;
+    }
+    
+    protected abstract void newEvent(PVEvent event);
     
     /**
      * Call when a new event should be triggered at the desired rate.
@@ -147,7 +169,7 @@ abstract class SourceDesiredRateDecoupler {
      * Called after a pv is notified. Once {@link #sendDesiredRateEvent() }
      * is called, it should not be called again before this method is called.
      */
-    final void readyForNextEvent() {
+    public final void readyForNextEvent() {
         synchronized(lock) {
             if (!isEventProcessing()) {
                 log.warning("Event processing is done, but no event was in flight");

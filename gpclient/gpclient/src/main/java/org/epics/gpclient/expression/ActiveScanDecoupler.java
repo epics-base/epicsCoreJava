@@ -24,8 +24,8 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
     private volatile ScheduledFuture<?> scanTaskHandle;
 
     public ActiveScanDecoupler(ScheduledExecutorService scannerExecutor,
-            Duration maxDuration, Consumer<PVEvent> listener) {
-        super(scannerExecutor, maxDuration, listener);
+            Duration maxDuration, Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
+        super(scannerExecutor, maxDuration, listener, exceptionHandler);
     }
 
     @Override
@@ -52,17 +52,9 @@ class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
         }
     }
 
-    private final Consumer<PVEvent> updateListener = new Consumer<PVEvent>() {
-        @Override
-        public void accept(PVEvent t) {
-            // Do nothing
-        }
-        
-    };
-    
     @Override
-    Consumer<PVEvent> getUpdateListener() {
-        return updateListener;
+    protected void newEvent(PVEvent event) {
+        // Do nothing
     }
     
 //    @Override

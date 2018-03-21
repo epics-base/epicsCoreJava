@@ -36,7 +36,7 @@ public class PassiveScanDecouplerTest {
     @Test
     public void pauseResume() {
         DesiredRateEventLog log = new DesiredRateEventLog();
-        SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(10), log);
+        SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(10), log, null);
         log.setDecoupler(decoupler);
         decoupler.start();
         assertThat(decoupler.isPaused(), equalTo(false));
@@ -58,7 +58,7 @@ public class PassiveScanDecouplerTest {
             @Override
             public Object call() throws Exception {
                 DesiredRateEventLog log = new DesiredRateEventLog();
-                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(100), log);
+                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(100), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 Thread.sleep(500);
@@ -75,7 +75,7 @@ public class PassiveScanDecouplerTest {
             @Override
             public Object call() throws Exception {
                 DesiredRateEventLog log = new DesiredRateEventLog();
-                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(20), log);
+                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(20), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
@@ -119,7 +119,7 @@ public class PassiveScanDecouplerTest {
             @Override
             public Object call() throws Exception {
                 log = new DesiredRateEventLog();
-                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(100), log);
+                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(100), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
@@ -154,7 +154,7 @@ public class PassiveScanDecouplerTest {
             @Override
             public Object call() throws Exception {
                 log = new DesiredRateEventLog(10);
-                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(50), log);
+                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(50), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
@@ -200,7 +200,7 @@ public class PassiveScanDecouplerTest {
             @Override
             public Object call() throws Exception {
                 log = new DesiredRateEventLog(100);
-                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(20), log);
+                SourceDesiredRateDecoupler decoupler = new PassiveScanDecoupler(executor, Duration.ofMillis(20), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 decoupler.getUpdateListener().accept(PVEvent.connectionEvent());

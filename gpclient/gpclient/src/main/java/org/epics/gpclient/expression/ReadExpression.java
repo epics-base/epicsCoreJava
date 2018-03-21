@@ -5,6 +5,7 @@
 package org.epics.gpclient.expression;
 
 import java.util.function.Supplier;
+import org.epics.gpclient.PVDirector;
 
 /**
  * An expression to read at the desired rate.
@@ -24,9 +25,10 @@ public interface ReadExpression<R> extends ReadExpressionList<R> {
      * expressions.
      *
      * @param director the director for the reader
-     * @param builder the recipe to fill
      */
-    public void startRead(Object director);
+    public void startRead(PVDirector director);
+    
+    public void stopRead(PVDirector director);
     
     /**
      * The function that calculates this expression.

@@ -9,4 +9,11 @@
     <artifactId>gpclient</artifactId>
     <name>org.epics.gpclient</name>
     <description>The main library for the general purpose JAVA EPICS client.</description>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vtype</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

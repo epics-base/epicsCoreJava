@@ -41,6 +41,10 @@ public final class PVEvent {
         this.types = Collections.unmodifiableList(Arrays.asList(type1, type2));
         this.exception = ex;
     }
+    
+    public boolean isType(Type type) {
+        return types.contains(type);
+    }
 
     public List<Type> getType() {
         return types;
@@ -61,6 +65,16 @@ public final class PVEvent {
             newException = event.getException();
         }
         return new PVEvent(exception, newTypes);
+    }
+    
+    PVEvent removeType(Type type) {
+        List<Type> newTypes = new ArrayList<>(getType());
+        newTypes.remove(type);
+        Exception newException = getException();
+        if (type == Type.READ_EXCEPTION) {
+            newException = null;
+        }
+        return new PVEvent(newException, newTypes);
     }
 
     @Override

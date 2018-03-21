@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.PVDirector;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.datasource.ReadRecipe;
 import org.epics.gpclient.datasource.ReadRecipeBuilder;
@@ -34,10 +35,17 @@ public class ChannelExpression<R, W> extends ExpressionImpl<R, W> {
     }
 
     @Override
-    public void startRead(Object director) {
+    public void startRead(PVDirector director) {
         ReadRecipe recipe = new ReadRecipeBuilder().addChannel(channelName, readCollector).build();
-        DataSource dataSource = null; // get the Datasource
-        dataSource.connectRead(recipe);
+        director.registerCollector(readCollector);
+        director.getDataSource().connectRead(recipe);
+    }
+
+    @Override
+    public void stopRead(PVDirector director) {
+        ReadRecipe recipe = new ReadRecipeBuilder().addChannel(channelName, readCollector).build();
+        director.deregisterCollector(readCollector);
+        director.getDataSource().connectRead(recipe);
     }
 
     @Override
