@@ -29,6 +29,7 @@ import org.epics.gpclient.expression.SourceDesiredRateDecoupler;
 public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
 
     final ReadExpression<R> readExpression;
+    final GPClientConfiguration config;
     
     Executor notificationExecutor;
     DataSource dataSource;
@@ -37,7 +38,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
     Duration maxRate;
     PVReaderListener<R> listener;
 
-    public PVConfiguration(ReadExpression<R> readExpression) {
+    public PVConfiguration(GPClientConfiguration config, ReadExpression<R> readExpression) {
+        this.config = config;
         this.readExpression = readExpression;
     }
 
@@ -73,10 +75,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
     
     public PVConfiguration<R, W> maxRate(Duration maxRate) {
         if (this.maxRate != null)
-            throw new IllegalStateException("Max ragte already set");
-        if (maxRate.getSeconds() == 0 && maxRate.toMillis() < 5) {
-            throw new IllegalArgumentException("Current implementation limits the rate to >5ms or <200Hz (requested " + maxRate + "s)");
-        }
+            throw new IllegalStateException("Max rate already set");
+        GPClientGlobalChecks.validateMaxRate(maxRate);
         this.maxRate = maxRate;
         return this;
     }
@@ -97,14 +97,14 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
     void checkParameters() {
         // Get defaults
         if (dataSource == null) {
-            dataSource = null; // TODO set defaults PVManager.getDefaultDataSource();
+            dataSource = config.defaultDataSource;
         }
         if (notificationExecutor == null) {
-            notificationExecutor = null; // TODO set defaults PVManager.getDefaultNotificationExecutor();
+            notificationExecutor = config.defaultNotificationExecutor;
         }
         
         if (maxRate == null) {
-            maxRate = Duration.ofMillis(500);
+            maxRate = config.defaultMaxRate;
         }
 
         if (connectionTimeoutMessage == null)
@@ -152,10 +152,7 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
         PVImpl<R, W> pv = new PVImpl<R, W>(listener);
         Supplier<R> readFunction = readExpression.getFunction();
         
-        // TODO from single place
-        ScheduledExecutorService scannerExecutor = Executors.newSingleThreadScheduledExecutor();
-        
-        PVDirector<R, W> director = new PVDirector<R, W>(pv, readFunction, scannerExecutor,
+        PVDirector<R, W> director = new PVDirector<R, W>(pv, readFunction, config.dataProcessingThreadPool,
                 notificationExecutor, dataSource);
         if (connectionTimeout != null) {
             director.readTimeout(connectionTimeout, connectionTimeoutMessage);
@@ -163,13 +160,11 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
         
         ScannerParameters scannerParameters = new ScannerParameters()
                 .desiredRateListener(director.getDesiredRateEventListener())
-                .scannerExecutor(scannerExecutor)
+                .scannerExecutor(config.dataProcessingThreadPool)
                 .maxDuration(maxRate);
         if (readFunction instanceof ReadCollector) {
-            System.out.println("Chosen passive");
             scannerParameters.type(ScannerParameters.Type.PASSIVE);
         } else {
-            System.out.println("Chosen active " + readFunction);
             scannerParameters.type(ScannerParameters.Type.ACTIVE);
         }
         SourceDesiredRateDecoupler rateDecoupler = scannerParameters.build();

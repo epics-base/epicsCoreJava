@@ -5,8 +5,8 @@
  */
 package org.epics.gpclient;
 
-import org.epics.gpclient.expression.ChannelExpression;
-import org.epics.gpclient.expression.LatestValueCollector;
+import java.time.Duration;
+import java.util.concurrent.Executors;
 import org.epics.vtype.VType;
 
 /**
@@ -15,7 +15,15 @@ import org.epics.vtype.VType;
  */
 public class GPClient {
     
+    static {
+        gpClient = new GPClientConfiguration().defaultMaxRate(Duration.ofMillis(1000))
+                .dataProcessingThreadPool(Executors.newScheduledThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
+                org.epics.util.concurrent.Executors.namedPool("PVMgr Worker "))).build();
+    }
+    
+    private static final GPClientInstance gpClient;
+    
     public static PVReaderConfiguration<VType> read(String channelName) {
-        return new PVConfiguration<>(new ChannelExpression<>(channelName, new LatestValueCollector<>(VType.class)));
+        return gpClient.read(channelName);
     }
 }
