@@ -52,7 +52,9 @@ public class PVEventRecorder implements Consumer<PVEvent> {
      * @return the events in the order recorded
      */
     public List<PVEvent> getEvents() {
-        return events;
+        synchronized(lock) {
+            return events;
+        }
     }
 
     public void wait(int ms, Function<List<PVEvent>, Boolean> condition) {

@@ -4,13 +4,9 @@
  */
 package org.epics.gpclient;
 
-import org.epics.gpclient.expression.*;
-import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
 import org.epics.gpclient.datasource.DataSource;
 
 /**

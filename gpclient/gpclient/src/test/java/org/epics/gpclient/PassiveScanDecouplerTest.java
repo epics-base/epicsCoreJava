@@ -2,23 +2,19 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
-import org.epics.gpclient.PVEvent;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.epics.gpclient.expression.ActiveScanDecouplerTest.executor;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.gpclient.expression.DesiredRateEvent.Type.*;
 import org.epics.util.concurrent.Executors;
 import org.junit.AfterClass;
-import org.junit.Ignore;
 
 /**
  *

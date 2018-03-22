@@ -16,8 +16,6 @@ import java.util.function.Supplier;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.expression.ReadCollector;
 import org.epics.gpclient.expression.ReadExpression;
-import org.epics.gpclient.expression.ScannerParameters;
-import org.epics.gpclient.expression.SourceDesiredRateDecoupler;
 
 /**
  * Allows to configure the type of read/write PV to create.

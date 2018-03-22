@@ -2,7 +2,7 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
 import java.time.Duration;
 import java.util.concurrent.Callable;
@@ -10,10 +10,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
-import static org.epics.gpclient.expression.DesiredRateEvent.Type.*;
 import org.epics.util.concurrent.Executors;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 /**
  *
