@@ -7,7 +7,7 @@ package org.epics.gpclient.datasource.sim;
 
 import org.epics.gpclient.datasource.ReadRecipe;
 import org.epics.gpclient.datasource.ReadRecipeBuilder;
-import org.epics.gpclient.expression.ProbeCollector;
+import org.epics.gpclient.ProbeCollector;
 
 /**
  *
