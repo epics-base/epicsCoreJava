@@ -7,7 +7,7 @@ package org.epics.gpclient.datasource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import org.epics.gpclient.expression.WriteCollector;
+import org.epics.gpclient.WriteCollector;
 
 /**
  * A builder for {@link WriteRecipe }.

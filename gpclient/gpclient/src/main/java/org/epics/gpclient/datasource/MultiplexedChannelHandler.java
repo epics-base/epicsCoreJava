@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.ReadCollector;
 
 /**
  * Implements a {@link ChannelHandler} on top of a single subscription and

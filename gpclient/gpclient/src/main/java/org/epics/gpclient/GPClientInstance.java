@@ -9,8 +9,6 @@ import java.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import org.epics.gpclient.datasource.DataSource;
-import org.epics.gpclient.expression.ChannelExpression;
-import org.epics.gpclient.expression.LatestValueCollector;
 import org.epics.vtype.VType;
 
 /**

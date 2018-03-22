@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Supplier;
 import org.epics.gpclient.datasource.DataSource;
-import org.epics.gpclient.expression.ReadCollector;
 import org.epics.gpclient.expression.ReadExpression;
 
 /**

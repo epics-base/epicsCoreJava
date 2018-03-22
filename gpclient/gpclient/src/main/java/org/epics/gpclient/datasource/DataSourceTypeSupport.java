@@ -11,7 +11,7 @@ package org.epics.gpclient.datasource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.ReadCollector;
 
 /**
  * The type support for a datasource. This optional class is provided to help

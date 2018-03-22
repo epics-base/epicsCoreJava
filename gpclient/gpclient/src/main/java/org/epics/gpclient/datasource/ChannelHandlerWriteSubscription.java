@@ -4,7 +4,7 @@
  */
 package org.epics.gpclient.datasource;
 
-import org.epics.gpclient.expression.WriteCollector;
+import org.epics.gpclient.WriteCollector;
 
 /**
  * Groups all the parameters required to add a writer to a ChannelHandler.

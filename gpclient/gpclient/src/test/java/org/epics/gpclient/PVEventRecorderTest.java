@@ -5,9 +5,7 @@
 package org.epics.gpclient;
 
 import java.util.function.Consumer;
-import org.epics.gpclient.expression.LatestValueCollector;
 import org.epics.gpclient.PVEvent;
-import org.epics.gpclient.expression.ProbeCollector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;

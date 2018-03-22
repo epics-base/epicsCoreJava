@@ -2,7 +2,7 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
 import org.epics.gpclient.PVEvent;
 import java.util.function.Consumer;
@@ -16,28 +16,41 @@ import java.util.function.Supplier;
  * @param <O> the type read from the collector
  * @author carcassi
  */
-public abstract class ReadCollector<I, O> implements Supplier<O> {
+public abstract class ReadCollector<I, O> {
+    
+    class CollectorSupplier implements Supplier<O> {
+
+        @Override
+        public O get() {
+            return getValue();
+        }
+        
+    }
     
     protected final Object lock = new Object();
     protected Consumer<PVEvent> collectorListener;
     protected boolean connection = false;
     private final Class<I> type;
+    private final Supplier<O> readFunction = new CollectorSupplier();
 
     public ReadCollector(Class<I> type) {
         // TODO check null
         this.type = type;
     }
     
-    public void setUpdateListener(Consumer<PVEvent> notification) {
+    void setUpdateListener(Consumer<PVEvent> notification) {
         synchronized (lock) {
             this.collectorListener = notification;
         }
     }
     
-    @Override
-    public abstract O get();
+    Supplier<O> getReadFunction() {
+        return readFunction;
+    }
     
-    public boolean getConnection() {
+    abstract O getValue();
+    
+    boolean getConnection() {
         synchronized(lock) {
             return connection;
         }

@@ -2,10 +2,11 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
+import org.epics.gpclient.ReadCollector;
 import java.util.function.Consumer;
-import org.epics.gpclient.expression.LatestValueCollector;
+import org.epics.gpclient.LatestValueCollector;
 import org.epics.gpclient.PVEvent;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -121,14 +122,14 @@ public class LatestValueCollectorTest {
     public void retrieveValue1() {
         ReadCollector<Object, Object> coll = new LatestValueCollector<>(Object.class);
         coll.updateValue(0);
-        assertThat(coll.get(), equalTo(0));
+        assertThat(coll.getValue(), equalTo(0));
         coll.updateValue(1);
         coll.updateValue(2);
-        assertThat(coll.get(), equalTo(2));
+        assertThat(coll.getValue(), equalTo(2));
         coll.updateValue(3);
-        assertThat(coll.get(), equalTo(3));
+        assertThat(coll.getValue(), equalTo(3));
         coll.updateValue(4);
         coll.updateValue(5);
-        assertThat(coll.get(), equalTo(5));
+        assertThat(coll.getValue(), equalTo(5));
     }
 }

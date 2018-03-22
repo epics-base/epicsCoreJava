@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.ReadCollector;
 import java.util.function.Supplier;
 import org.epics.gpclient.PVDirector;
 
@@ -16,7 +17,6 @@ import org.epics.gpclient.PVDirector;
 public class ReadExpressionImpl<R> extends ReadExpressionListImpl<R> implements ReadExpression<R> {
 
     private final Supplier<R> function;
-    private final ReadCollector<?, R> readCollector;
     private final ReadExpressionList<?> expressionChildren;
     
     {
@@ -24,14 +24,7 @@ public class ReadExpressionImpl<R> extends ReadExpressionListImpl<R> implements 
         addThis();
     }
 
-    public ReadExpressionImpl(ReadCollector<?, R> readCollector) {
-        this.readCollector = readCollector;
-        this.expressionChildren = null;
-        this.function = readCollector;
-    }
-
     public ReadExpressionImpl(ReadExpressionList<?> childExpressions, Supplier<R> function) {
-        this.readCollector = null;
         this.expressionChildren = childExpressions;
         this.function = function;
     }

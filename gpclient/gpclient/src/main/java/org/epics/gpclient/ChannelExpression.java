@@ -2,14 +2,16 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
+import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.PVDirector;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.datasource.ReadRecipe;
 import org.epics.gpclient.datasource.ReadRecipeBuilder;
 import org.epics.gpclient.datasource.WriteRecipe;
 import org.epics.gpclient.datasource.WriteRecipeBuilder;
+import org.epics.gpclient.expression.ReadExpressionImpl;
 
 /**
  * Represents a channel, which can be both read or written.
@@ -24,7 +26,7 @@ public class ChannelExpression<R> extends ReadExpressionImpl<R> {
 //    private final WriteCollector<W> writeCollector;
 
     public ChannelExpression(String channelName, ReadCollector<?, R> readCollector) {
-        super(readCollector);
+        super(null, readCollector.getReadFunction());
         if (channelName == null) {
             throw new NullPointerException("Channel name can't be null");
         }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.gpclient.expression.LatestValueCollector;
-import org.epics.gpclient.expression.LatestValueCollector;
-import org.epics.gpclient.expression.ReadCollector;
-import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.LatestValueCollector;
+import org.epics.gpclient.LatestValueCollector;
+import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVEventRecorder;
@@ -43,7 +43,7 @@ public class ProbeCollector<T> {
                         out.println("CONN: " + collector.getConnection());
                     }
                     if (event.getType().contains(PVEvent.Type.VALUE)) {
-                        out.println("VAL: " + collector.get());
+                        out.println("VAL: " + collector.getValue());
                     }
                     if (event.getType().contains(PVEvent.Type.READ_EXCEPTION)) {
                         out.println("ERR: " + event.getException().getMessage());
@@ -60,7 +60,7 @@ public class ProbeCollector<T> {
     }
     
     public T getValue() {
-        return collector.get();
+        return collector.getValue();
     }
 
     public ReadCollector<T, T> getCollector() {

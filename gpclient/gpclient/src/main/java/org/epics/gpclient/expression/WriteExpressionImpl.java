@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.expression;
 
+import org.epics.gpclient.WriteCollector;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -18,7 +19,6 @@ import java.util.function.Supplier;
 public class WriteExpressionImpl<W> extends WriteExpressionListImpl<W> implements WriteExpression<W> {
 
     private final Consumer<W> writeFunction;
-    private final WriteCollector<W> writeCollector;
     private final WriteExpressionList<?> expressionChildren;
     
     {
@@ -26,14 +26,7 @@ public class WriteExpressionImpl<W> extends WriteExpressionListImpl<W> implement
         addThis();
     }
     
-    public WriteExpressionImpl(WriteCollector<W> writeCollector) {
-        this.writeCollector = writeCollector;
-        this.expressionChildren = null;
-        this.writeFunction = writeCollector::queueValue;
-    }
-    
     public WriteExpressionImpl(WriteExpressionList<?> childExpressions, Consumer<W> writeFunction) {
-        this.writeCollector = null;
         this.expressionChildren = childExpressions;
         this.writeFunction = writeFunction;
     }

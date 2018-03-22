@@ -4,9 +4,10 @@
  */
 package org.epics.gpclient.datasource;
 
+import org.epics.gpclient.ProbeCollector;
 import org.epics.gpclient.expression.*;
 import java.util.function.Consumer;
-import org.epics.gpclient.expression.LatestValueCollector;
+import org.epics.gpclient.LatestValueCollector;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVEventRecorder;
 import org.junit.Test;

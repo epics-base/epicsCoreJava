@@ -22,7 +22,6 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.datasource.DataSource;
-import org.epics.gpclient.expression.ReadCollector;
 import org.epics.gpclient.expression.ReadExpression;
 import org.epics.vtype.VType;
 
@@ -194,7 +193,7 @@ public class PVDirector<R, W> {
      * @return true if new notification should be performed
      */
     private boolean isActive() {
-        // Making sure to get the reference once for thread safety
+        // Making sure to getValue the reference once for thread safety
         final PV<R, W> pv = pvRef.get();
         if (pv != null && !pv.isClosed()) {
             return true;

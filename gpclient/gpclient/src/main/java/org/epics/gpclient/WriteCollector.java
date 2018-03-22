@@ -2,7 +2,7 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.epics.gpclient.expression;
+package org.epics.gpclient;
 
 import java.util.Collection;
 import java.util.function.Supplier;

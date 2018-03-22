@@ -8,7 +8,7 @@
  */
 package org.epics.gpclient.datasource;
 
-import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.ReadCollector;
 
 /**
  * Matches and fills a cache with the data from connection and message payloads.

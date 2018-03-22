@@ -4,7 +4,7 @@
  */
 package org.epics.gpclient.datasource;
 
-import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.ReadCollector;
 
 /**
  * Groups all the parameters required to add a reader to a ChannelHandler.
