@@ -12,7 +12,7 @@ package org.epics.gpclient;
 class PVImpl<R, W> implements PV<R, W>{
     
     private final Object lock = new Object();
-    private final PVListener<R, W> listener;
+    private final PVReaderListener<R> listener;
     
     // Guarded by the lock
     private PVDirector director = null;
@@ -21,7 +21,7 @@ class PVImpl<R, W> implements PV<R, W>{
     private boolean paused = false;
     private boolean closed = false;
 
-    public PVImpl(PVListener<R, W> listener) {
+    public PVImpl(PVReaderListener<R> listener) {
         this.listener = listener;
     }
 

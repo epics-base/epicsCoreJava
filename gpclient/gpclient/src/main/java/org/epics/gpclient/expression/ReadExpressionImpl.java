@@ -27,7 +27,7 @@ public class ReadExpressionImpl<R> extends ReadExpressionListImpl<R> implements 
     public ReadExpressionImpl(ReadCollector<?, R> readCollector) {
         this.readCollector = readCollector;
         this.expressionChildren = null;
-        this.function = readCollector::getValue;
+        this.function = readCollector;
     }
 
     public ReadExpressionImpl(ReadExpressionList<?> childExpressions, Supplier<R> function) {

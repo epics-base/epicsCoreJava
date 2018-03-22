@@ -5,11 +5,19 @@
 package org.epics.gpclient;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Supplier;
 import org.epics.gpclient.datasource.DataSource;
+import org.epics.gpclient.expression.ReadCollector;
+import org.epics.gpclient.expression.ReadExpression;
+import org.epics.gpclient.expression.ScannerParameters;
+import org.epics.gpclient.expression.SourceDesiredRateDecoupler;
 
 /**
  * Allows to configure the type of read/write PV to create.
@@ -20,12 +28,18 @@ import org.epics.gpclient.datasource.DataSource;
  */
 public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
 
+    final ReadExpression<R> readExpression;
+    
     Executor notificationExecutor;
     DataSource dataSource;
     Duration connectionTimeout;
     String connectionTimeoutMessage;
     Duration maxRate;
-    List<Object> listeners;
+    PVReaderListener<R> listener;
+
+    public PVConfiguration(ReadExpression<R> readExpression) {
+        this.readExpression = readExpression;
+    }
 
     /**
      * Defines which DataSource should be used to read the data.
@@ -88,7 +102,14 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
         if (notificationExecutor == null) {
             notificationExecutor = null; // TODO set defaults PVManager.getDefaultNotificationExecutor();
         }
+        
+        if (maxRate == null) {
+            maxRate = Duration.ofMillis(500);
+        }
 
+        if (connectionTimeoutMessage == null)
+            connectionTimeoutMessage = "Connection timeout";
+        
         // Check that a data source has been specified
         if (dataSource == null) {
             throw new IllegalStateException("You need to specify a source either "
@@ -102,25 +123,63 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
                     + "using PVManager.setDefaultThreadSwitch or by using "
                     + "read(...).andNotify(threadSwitch).");
         }
+        
+        // Check that a listener has been specified
+        if (listener == null) {
+            throw new IllegalStateException("You need to specify a listener "
+                    + "by using "
+                    + "read(...).listener(listener).");
+        }
     }
     
     public PVConfiguration<R, W>  addListener(PVReaderListener<R> listener) {
-        listeners.add(listener);
+        this.listener = listener;
         return this;
     }
 
     public PVConfiguration<R, W> addListener(PVWriterListener<W> listener) {
-        listeners.add(listener);
+        //this.listener = listener;
         return this;
     }
 
     public PVConfiguration<R, W> addListener(PVListener<R, W> listener) {
-        listeners.add(listener);
+        this.listener = listener;
         return this;
     }
     
     public PV<R, W> start() {
-        return null;
+        checkParameters();
+        PVImpl<R, W> pv = new PVImpl<R, W>(listener);
+        Supplier<R> readFunction = readExpression.getFunction();
+        
+        // TODO from single place
+        ScheduledExecutorService scannerExecutor = Executors.newSingleThreadScheduledExecutor();
+        
+        PVDirector<R, W> director = new PVDirector<R, W>(pv, readFunction, scannerExecutor,
+                notificationExecutor, dataSource);
+        if (connectionTimeout != null) {
+            director.readTimeout(connectionTimeout, connectionTimeoutMessage);
+        }
+        
+        ScannerParameters scannerParameters = new ScannerParameters()
+                .desiredRateListener(director.getDesiredRateEventListener())
+                .scannerExecutor(scannerExecutor)
+                .maxDuration(maxRate);
+        if (readFunction instanceof ReadCollector) {
+            System.out.println("Chosen passive");
+            scannerParameters.type(ScannerParameters.Type.PASSIVE);
+        } else {
+            System.out.println("Chosen active " + readFunction);
+            scannerParameters.type(ScannerParameters.Type.ACTIVE);
+        }
+        SourceDesiredRateDecoupler rateDecoupler = scannerParameters.build();
+        
+        pv.setDirector(director);
+        director.setScanner(rateDecoupler);
+        director.connectReadExpression(readExpression);
+        rateDecoupler.start();
+        
+        return pv;
     }
     
 }

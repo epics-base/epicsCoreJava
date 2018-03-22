@@ -13,9 +13,9 @@ import java.util.function.Consumer;
  *
  * @author carcassi
  */
-class ScannerParameters {
+public class ScannerParameters {
     
-    enum Type {ACTIVE, PASSIVE}
+    public enum Type {ACTIVE, PASSIVE}
     
     private Type type = Type.ACTIVE;
     private ScheduledExecutorService scannerExecutor;
@@ -43,15 +43,10 @@ class ScannerParameters {
         return maxDuration;
     }
 
-//    public ScannerParameters readerDirector(PVDirector readerDirector) {
-//        this.listener = readerDirector.getDesiredRateEventListener();
-//        return this;
-//    }
-//
-//    public ScannerParameters writerDirector(PVWriterDirector director) {
-//        this.listener = director.getDesiredRateEventListener();
-//        return this;
-//    }
+    public ScannerParameters desiredRateListener(Consumer<PVEvent> listener) {
+        this.listener = listener;
+        return this;
+    }
 
     public ScannerParameters scannerExecutor(ScheduledExecutorService scannerExecutor) {
         this.scannerExecutor = scannerExecutor;

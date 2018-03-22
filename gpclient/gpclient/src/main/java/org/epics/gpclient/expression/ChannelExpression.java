@@ -15,24 +15,32 @@ import org.epics.gpclient.datasource.WriteRecipeBuilder;
  * Represents a channel, which can be both read or written.
  *
  * @param <R> type of the read payload
- * @param <W> type of the write payload
  * @author carcassi
  */
-public class ChannelExpression<R, W> extends ExpressionImpl<R, W> {
+public class ChannelExpression<R> extends ReadExpressionImpl<R> {
     
     private final String channelName;
     private final ReadCollector<?, R> readCollector;
-    private final WriteCollector<W> writeCollector;
+//    private final WriteCollector<W> writeCollector;
 
-    public ChannelExpression(String channelName, Class<R> readClass, Class<W> writeClass, ReadCollector<?, R> readCollector, WriteCollector<W> writeCollector) {
-        super(readCollector, writeCollector);
+    public ChannelExpression(String channelName, ReadCollector<?, R> readCollector) {
+        super(readCollector);
         if (channelName == null) {
             throw new NullPointerException("Channel name can't be null");
         }
         this.channelName = channelName;
         this.readCollector = readCollector;
-        this.writeCollector = writeCollector;
     }
+//
+//    public ChannelExpression(String channelName, Class<R> readClass, Class<W> writeClass, ReadCollector<?, R> readCollector, WriteCollector<W> writeCollector) {
+//        super(readCollector, writeCollector);
+//        if (channelName == null) {
+//            throw new NullPointerException("Channel name can't be null");
+//        }
+//        this.channelName = channelName;
+//        this.readCollector = readCollector;
+//        this.writeCollector = writeCollector;
+//    }
 
     @Override
     public void startRead(PVDirector director) {
@@ -45,14 +53,14 @@ public class ChannelExpression<R, W> extends ExpressionImpl<R, W> {
     public void stopRead(PVDirector director) {
         ReadRecipe recipe = new ReadRecipeBuilder().addChannel(channelName, readCollector).build();
         director.deregisterCollector(readCollector);
-        director.getDataSource().connectRead(recipe);
+        director.getDataSource().disconnectRead(recipe);
     }
-
-    @Override
-    public void startWrite(Object director) {
-        WriteRecipe recipe = new WriteRecipeBuilder().addChannel(channelName, writeCollector).build();
-        DataSource dataSource = null; // get the Datasource
-        dataSource.connectWrite(recipe);
-    }
+//
+//    @Override
+//    public void startWrite(Object director) {
+//        WriteRecipe recipe = new WriteRecipeBuilder().addChannel(channelName, writeCollector).build();
+//        DataSource dataSource = null; // get the Datasource
+//        dataSource.connectWrite(recipe);
+//    }
     
 }

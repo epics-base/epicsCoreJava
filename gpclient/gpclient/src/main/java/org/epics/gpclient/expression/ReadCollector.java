@@ -6,6 +6,7 @@ package org.epics.gpclient.expression;
 
 import org.epics.gpclient.PVEvent;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A collector can be written from one thread and read from another and provides
@@ -15,7 +16,7 @@ import java.util.function.Consumer;
  * @param <O> the type read from the collector
  * @author carcassi
  */
-public abstract class ReadCollector<I, O> {
+public abstract class ReadCollector<I, O> implements Supplier<O> {
     
     protected final Object lock = new Object();
     protected Consumer<PVEvent> collectorListener;
@@ -33,7 +34,8 @@ public abstract class ReadCollector<I, O> {
         }
     }
     
-    public abstract O getValue();
+    @Override
+    public abstract O get();
     
     public boolean getConnection() {
         synchronized(lock) {

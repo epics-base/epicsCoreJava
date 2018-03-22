@@ -121,14 +121,14 @@ public class LatestValueCollectorTest {
     public void retrieveValue1() {
         ReadCollector<Object, Object> coll = new LatestValueCollector<>(Object.class);
         coll.updateValue(0);
-        assertThat(coll.getValue(), equalTo(0));
+        assertThat(coll.get(), equalTo(0));
         coll.updateValue(1);
         coll.updateValue(2);
-        assertThat(coll.getValue(), equalTo(2));
+        assertThat(coll.get(), equalTo(2));
         coll.updateValue(3);
-        assertThat(coll.getValue(), equalTo(3));
+        assertThat(coll.get(), equalTo(3));
         coll.updateValue(4);
         coll.updateValue(5);
-        assertThat(coll.getValue(), equalTo(5));
+        assertThat(coll.get(), equalTo(5));
     }
 }

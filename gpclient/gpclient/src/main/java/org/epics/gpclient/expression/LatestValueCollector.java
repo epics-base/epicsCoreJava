@@ -22,7 +22,7 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
     }
 
     @Override
-    public T getValue() {
+    public T get() {
         synchronized (lock) {
             return value;
         }

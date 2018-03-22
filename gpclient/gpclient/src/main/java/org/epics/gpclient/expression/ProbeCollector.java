@@ -43,7 +43,7 @@ public class ProbeCollector<T> {
                         out.println("CONN: " + collector.getConnection());
                     }
                     if (event.getType().contains(PVEvent.Type.VALUE)) {
-                        out.println("VAL: " + collector.getValue());
+                        out.println("VAL: " + collector.get());
                     }
                     if (event.getType().contains(PVEvent.Type.READ_EXCEPTION)) {
                         out.println("ERR: " + event.getException().getMessage());
@@ -60,7 +60,7 @@ public class ProbeCollector<T> {
     }
     
     public T getValue() {
-        return collector.getValue();
+        return collector.get();
     }
 
     public ReadCollector<T, T> getCollector() {

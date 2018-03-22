@@ -36,7 +36,7 @@ public class ExpressionImpl<R, W> extends ExpressionListImpl<R, W> implements Ex
         this.writeCollector = writeCollector;
         this.expressionChildren = null;
         // This makes sure the expression does not expose the full collector
-        this.readFunction = readCollector::getValue;
+        this.readFunction = readCollector;
         this.writeFunction = writeCollector::queueValue;
     }
 

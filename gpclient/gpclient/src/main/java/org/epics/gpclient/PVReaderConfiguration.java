@@ -28,6 +28,8 @@ public interface PVReaderConfiguration<T> {
     public PVReaderConfiguration<T> connectionTimeout(Duration timeout, String timeoutMessage);
     
     public PVReaderConfiguration<T> maxRate(Duration maxRate);
+    
+    public PVReaderConfiguration<T> addListener(PVReaderListener<T> listener);
 
     public PVReader<T> start();
 }

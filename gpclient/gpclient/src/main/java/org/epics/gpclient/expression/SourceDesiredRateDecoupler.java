@@ -59,7 +59,7 @@ public abstract class SourceDesiredRateDecoupler {
      * Starts the scanning. From this moment on, source rate events
      * may trigger desired rate events.
      */
-    final void start() {
+    public final void start() {
         onStart();
     }
     
