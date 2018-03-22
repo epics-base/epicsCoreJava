@@ -21,7 +21,7 @@ import java.util.logging.Logger;
     
     private final List<PVEvent> events = new ArrayList<>();
     private final List<Instant> timestamps = new ArrayList<>();
-    private SourceDesiredRateDecoupler decoupler;
+    private RateDecoupler decoupler;
     private final Integer pause;
 
     public DesiredRateEventLog() {
@@ -32,13 +32,13 @@ import java.util.logging.Logger;
         this.pause = msPause;
     }
 
-    public void setDecoupler(SourceDesiredRateDecoupler decoupler) {
+    public void setDecoupler(RateDecoupler decoupler) {
         synchronized(lock) {
             this.decoupler = decoupler;
         }
     }
 
-    public SourceDesiredRateDecoupler getDecoupler() {
+    public RateDecoupler getDecoupler() {
         synchronized(lock) {
             return decoupler;
         }
@@ -57,7 +57,7 @@ import java.util.logging.Logger;
                 Logger.getLogger(DesiredRateEventLog.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        SourceDesiredRateDecoupler decoupler;
+        RateDecoupler decoupler;
         synchronized(lock) {
             decoupler = this.decoupler;
         }

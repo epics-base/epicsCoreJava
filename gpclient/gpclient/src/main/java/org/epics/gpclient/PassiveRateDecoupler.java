@@ -17,9 +17,9 @@ import java.util.logging.Logger;
  *
  * @author carcassi
  */
-class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
+class PassiveRateDecoupler extends RateDecoupler {
     
-    private static final Logger log = Logger.getLogger(PassiveScanDecoupler.class.getName());
+    private static final Logger log = Logger.getLogger(PassiveRateDecoupler.class.getName());
     // TODO: this could be made configurable between FINEST and OFF, and the if
     // modified so that code elimination would remove the logging completely
     private static final Level logLevel = Level.FINEST;
@@ -28,7 +28,7 @@ class PassiveScanDecoupler extends SourceDesiredRateDecoupler {
     private Instant lastSubmission;
     private boolean scanActive;
 
-    public PassiveScanDecoupler(ScheduledExecutorService scannerExecutor,
+    public PassiveRateDecoupler(ScheduledExecutorService scannerExecutor,
             Duration maxDuration, Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
         super(scannerExecutor, maxDuration, listener, exceptionHandler);
         synchronized(lock) {

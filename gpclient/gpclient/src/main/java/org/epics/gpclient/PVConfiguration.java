@@ -152,11 +152,11 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
         
         PVDirector<R, W> pvDirector = new PVDirector<R, W>(pv, this);
         
-        SourceDesiredRateDecoupler rateDecoupler;
+        RateDecoupler rateDecoupler;
         if (pvDirector.readFunction instanceof ReadCollector) {
-            rateDecoupler = new PassiveScanDecoupler(pvDirector.scannerExecutor, pvDirector.maxRate, pvDirector.getDesiredRateEventListener(), null);
+            rateDecoupler = new PassiveRateDecoupler(pvDirector.scannerExecutor, pvDirector.maxRate, pvDirector.getDesiredRateEventListener(), null);
         } else {
-            rateDecoupler = new ActiveScanDecoupler(pvDirector.scannerExecutor, pvDirector.maxRate, pvDirector.getDesiredRateEventListener(), null);
+            rateDecoupler = new ActiveRateDecoupler(pvDirector.scannerExecutor, pvDirector.maxRate, pvDirector.getDesiredRateEventListener(), null);
         }
         
         pv.setDirector(pvDirector);

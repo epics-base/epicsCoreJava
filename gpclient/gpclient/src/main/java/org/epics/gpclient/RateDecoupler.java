@@ -17,9 +17,9 @@ import java.util.logging.Logger;
  *
  * @author carcassi
  */
-abstract class SourceDesiredRateDecoupler {
+abstract class RateDecoupler {
     
-    private static final Logger log = Logger.getLogger(SourceDesiredRateDecoupler.class.getName());
+    private static final Logger log = Logger.getLogger(RateDecoupler.class.getName());
     private final Consumer<PVEvent> listener;
     private final Consumer<Exception> exceptionHandler;
     private final ScheduledExecutorService scannerExecutor;
@@ -39,7 +39,7 @@ abstract class SourceDesiredRateDecoupler {
      * @param listener the event callback
      * @param exceptionHandler the exception handler
      */
-    public SourceDesiredRateDecoupler(ScheduledExecutorService scannerExecutor, Duration maxDuration,
+    public RateDecoupler(ScheduledExecutorService scannerExecutor, Duration maxDuration,
             Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
         this.listener = listener;
         this.exceptionHandler = exceptionHandler;

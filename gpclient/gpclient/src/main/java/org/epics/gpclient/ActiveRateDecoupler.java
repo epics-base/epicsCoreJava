@@ -19,11 +19,11 @@ import java.util.function.Consumer;
  *
  * @author carcassi
  */
-class ActiveScanDecoupler extends SourceDesiredRateDecoupler {
+class ActiveRateDecoupler extends RateDecoupler {
     
     private volatile ScheduledFuture<?> scanTaskHandle;
 
-    public ActiveScanDecoupler(ScheduledExecutorService scannerExecutor,
+    public ActiveRateDecoupler(ScheduledExecutorService scannerExecutor,
             Duration maxDuration, Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
         super(scannerExecutor, maxDuration, listener, exceptionHandler);
     }

@@ -17,7 +17,7 @@ import org.junit.AfterClass;
  *
  * @author carcassi
  */
-public class ActiveScanDecouplerTest {
+public class ActiveRateDecouplerTest {
     
     static ScheduledExecutorService executor = java.util.concurrent.Executors.newScheduledThreadPool(3, Executors.namedPool("test"));
     
@@ -29,7 +29,7 @@ public class ActiveScanDecouplerTest {
     @Test
     public void pauseResume() {
         DesiredRateEventLog log = new DesiredRateEventLog();
-        SourceDesiredRateDecoupler decoupler = new ActiveScanDecoupler(executor, Duration.ofMillis(10), log, null);
+        RateDecoupler decoupler = new ActiveRateDecoupler(executor, Duration.ofMillis(10), log, null);
         log.setDecoupler(decoupler);
         decoupler.start();
         assertThat(decoupler.isPaused(), equalTo(false));
@@ -51,7 +51,7 @@ public class ActiveScanDecouplerTest {
             @Override
             public Object call() throws Exception {
                 DesiredRateEventLog log = new DesiredRateEventLog();
-                SourceDesiredRateDecoupler decoupler = new ActiveScanDecoupler(executor, Duration.ofMillis(100), log, null);
+                RateDecoupler decoupler = new ActiveRateDecoupler(executor, Duration.ofMillis(100), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 Thread.sleep(500);
@@ -69,7 +69,7 @@ public class ActiveScanDecouplerTest {
             @Override
             public Object call() throws Exception {
                 DesiredRateEventLog log = new DesiredRateEventLog();
-                SourceDesiredRateDecoupler decoupler = new ActiveScanDecoupler(executor, Duration.ofMillis(100), log, null);
+                RateDecoupler decoupler = new ActiveRateDecoupler(executor, Duration.ofMillis(100), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 decoupler.pause();

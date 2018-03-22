@@ -65,7 +65,7 @@ public class PVDirector<R, W> {
     /** Maximum rate for notification */
     final Duration maxRate;
     
-    private SourceDesiredRateDecoupler scanStrategy;
+    private RateDecoupler scanStrategy;
 
     
     // Required to connect/disconnect expressions
@@ -77,7 +77,7 @@ public class PVDirector<R, W> {
     /** Collector required to connect/disconnect expressions and for connection calculation */
     private final Set<ReadCollector<?,?>> readCollectors = new HashSet<>();
     
-    void setScanner(final SourceDesiredRateDecoupler scanStrategy) {
+    void setScanner(final RateDecoupler scanStrategy) {
         synchronized(lock) {
             this.scanStrategy = scanStrategy;
         }
