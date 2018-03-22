@@ -27,7 +27,7 @@ import org.epics.gpclient.expression.ReadExpression;
 public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
 
     final ReadExpression<R> readExpression;
-    final GPClientConfiguration config;
+    final GPClientInstance gpClient;
     
     Executor notificationExecutor;
     DataSource dataSource;
@@ -36,8 +36,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
     Duration maxRate;
     PVReaderListener<R> listener;
 
-    public PVConfiguration(GPClientConfiguration config, ReadExpression<R> readExpression) {
-        this.config = config;
+    public PVConfiguration(GPClientInstance gpClient, ReadExpression<R> readExpression) {
+        this.gpClient = gpClient;
         this.readExpression = readExpression;
     }
 
@@ -95,14 +95,14 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
     void checkParameters() {
         // Get defaults
         if (dataSource == null) {
-            dataSource = config.defaultDataSource;
+            dataSource = gpClient.defaultDataSource;
         }
         if (notificationExecutor == null) {
-            notificationExecutor = config.defaultNotificationExecutor;
+            notificationExecutor = gpClient.defaultNotificationExecutor;
         }
         
         if (maxRate == null) {
-            maxRate = config.defaultMaxRate;
+            maxRate = gpClient.defaultMaxRate;
         }
 
         if (connectionTimeoutMessage == null)
@@ -145,31 +145,23 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
         return this;
     }
     
+    @Override
     public PV<R, W> start() {
         checkParameters();
         PVImpl<R, W> pv = new PVImpl<R, W>(listener);
-        Supplier<R> readFunction = readExpression.getFunction();
         
-        PVDirector<R, W> director = new PVDirector<R, W>(pv, readFunction, config.dataProcessingThreadPool,
-                notificationExecutor, dataSource);
-        if (connectionTimeout != null) {
-            director.readTimeout(connectionTimeout, connectionTimeoutMessage);
-        }
+        PVDirector<R, W> pvDirector = new PVDirector<R, W>(pv, this);
         
-        ScannerParameters scannerParameters = new ScannerParameters()
-                .desiredRateListener(director.getDesiredRateEventListener())
-                .scannerExecutor(config.dataProcessingThreadPool)
-                .maxDuration(maxRate);
-        if (readFunction instanceof ReadCollector) {
-            scannerParameters.type(ScannerParameters.Type.PASSIVE);
+        SourceDesiredRateDecoupler rateDecoupler;
+        if (pvDirector.readFunction instanceof ReadCollector) {
+            rateDecoupler = new PassiveScanDecoupler(pvDirector.scannerExecutor, pvDirector.maxRate, pvDirector.getDesiredRateEventListener(), null);
         } else {
-            scannerParameters.type(ScannerParameters.Type.ACTIVE);
+            rateDecoupler = new ActiveScanDecoupler(pvDirector.scannerExecutor, pvDirector.maxRate, pvDirector.getDesiredRateEventListener(), null);
         }
-        SourceDesiredRateDecoupler rateDecoupler = scannerParameters.build();
         
-        pv.setDirector(director);
-        director.setScanner(rateDecoupler);
-        director.connectReadExpression(readExpression);
+        pv.setDirector(pvDirector);
+        pvDirector.setScanner(rateDecoupler);
+        pvDirector.connectReadExpression(readExpression);
         rateDecoupler.start();
         
         return pv;

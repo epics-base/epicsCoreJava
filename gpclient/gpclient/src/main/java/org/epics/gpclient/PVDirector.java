@@ -51,18 +51,19 @@ public class PVDirector<R, W> {
     // Required for connection and exception notification
 
     /** Executor used to notify of new values/connection/exception */
-    private final Executor notificationExecutor;
+    final Executor notificationExecutor;
     /** Executor used to scan the connection/exception queues */
-    private final ScheduledExecutorService scannerExecutor;
+    final ScheduledExecutorService scannerExecutor;
     /** PVReader to update during the notification */
     private final WeakReference<PVImpl<R, W>> pvRef;
     /** Function for the new value */
-    private final Supplier<R> readFunction;
+    final Supplier<R> readFunction;
     /** Creation for stack trace */
     private final Exception creationStackTrace = new Exception("PV was never closed (stack trace for creation)");
     /** Used to ignore duplicated errors */
     private final AtomicReference<Exception> previousCalculationException = new AtomicReference<>();
-
+    /** Maximum rate for notification */
+    final Duration maxRate;
     
     private SourceDesiredRateDecoupler scanStrategy;
 
@@ -170,13 +171,16 @@ public class PVDirector<R, W> {
      * @param function the function used to calculate new values
      * @param notificationExecutor the thread switching mechanism
      */
-    PVDirector(PVImpl<R, W> pv, Supplier<R> function, ScheduledExecutorService scannerExecutor,
-            Executor notificationExecutor, DataSource dataSource) {
+    PVDirector(PVImpl<R, W> pv, PVConfiguration<R, W> pvConf) {
         this.pvRef = new WeakReference<>(pv);
-        this.readFunction = function;
-        this.notificationExecutor = notificationExecutor;
-        this.scannerExecutor = scannerExecutor;
-        this.dataSource = dataSource;
+        this.readFunction = pvConf.readExpression.getFunction();
+        this.notificationExecutor = pvConf.notificationExecutor;
+        this.scannerExecutor = pvConf.gpClient.dataProcessingThreadPool;
+        this.dataSource = pvConf.dataSource;
+        this.maxRate = pvConf.maxRate;
+        if (pvConf.connectionTimeout != null) {
+            this.readTimeout(pvConf.connectionTimeout, pvConf.connectionTimeoutMessage);
+        }
     }
 
     /**
@@ -323,7 +327,7 @@ public class PVDirector<R, W> {
         }
     }
     
-    void readTimeout(Duration timeout, final String timeoutMessage) {
+    private void readTimeout(Duration timeout, final String timeoutMessage) {
         scannerExecutor.schedule(new Runnable() {
             @Override
             public void run() {

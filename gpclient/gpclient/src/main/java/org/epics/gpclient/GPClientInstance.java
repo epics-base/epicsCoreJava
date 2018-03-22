@@ -5,7 +5,10 @@
  */
 package org.epics.gpclient;
 
+import java.time.Duration;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
+import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.expression.ChannelExpression;
 import org.epics.gpclient.expression.LatestValueCollector;
 import org.epics.vtype.VType;
@@ -16,13 +19,19 @@ import org.epics.vtype.VType;
  */
 public class GPClientInstance {
     
-    final GPClientConfiguration config;
+    final ScheduledExecutorService dataProcessingThreadPool;
+    final DataSource defaultDataSource;
+    final Duration defaultMaxRate;
+    final Executor defaultNotificationExecutor;
 
     GPClientInstance(GPClientConfiguration config) {
-        this.config = config;
+        this.dataProcessingThreadPool = config.dataProcessingThreadPool;
+        this.defaultDataSource = config.defaultDataSource;
+        this.defaultMaxRate = config.defaultMaxRate;
+        this.defaultNotificationExecutor = config.defaultNotificationExecutor;
     }
     
     public PVReaderConfiguration<VType> read(String channelName) {
-        return new PVConfiguration<>(config, new ChannelExpression<>(channelName, new LatestValueCollector<>(VType.class)));
+        return new PVConfiguration<>(this, new ChannelExpression<>(channelName, new LatestValueCollector<>(VType.class)));
     }
 }
