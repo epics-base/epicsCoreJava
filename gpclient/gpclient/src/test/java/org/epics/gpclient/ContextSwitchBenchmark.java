@@ -69,8 +69,8 @@ public class ContextSwitchBenchmark {
         }
         avgDelay /= nIterations;
         
-        System.out.println("Direct: average submission delay is " + avgDelay);
-        System.out.println("Direct: average execution is " + (System.nanoTime() - total) / nIterations);
+        System.out.println("Direct: average submission delay is " + avgDelay + " ns");
+        System.out.println("Direct: average execution is " + (System.nanoTime() - total) / nIterations + " ns");
     }
     
     public static void benchmarkContextSwitchExecution(int nIterations) throws Exception {
@@ -112,7 +112,7 @@ public class ContextSwitchBenchmark {
         }
         avgDelay /= nIterations;
         
-        System.out.println("Switch: average submission delay is " + avgDelay);
-        System.out.println("Switch: average execution is " + (System.nanoTime() - total) / nIterations);
+        System.out.println("Switch: average submission delay is " + avgDelay + " ns");
+        System.out.println("Switch: average execution is " + (System.nanoTime() - total) / nIterations + " ns");
     }
 }
