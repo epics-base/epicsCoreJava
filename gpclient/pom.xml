@@ -13,6 +13,7 @@
     <modules>
         <module>gpclient</module>
         <module>datasource-sim</module>
+        <module>sample</module>
     </modules>
     <build>
         <plugins>
