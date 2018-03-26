@@ -22,8 +22,7 @@ public class BasicExamples {
     
     public static void b1_readLatestValue() throws Exception {
         SimulationDataSource sim = new SimulationDataSource();
-        PVReader<VType> pv = GPClient.read("noise")
-                .from(sim)
+        PVReader<VType> pv = GPClient.read("sim://noise")
                 .addListener((PVEvent event, PVReader<VType> pvReader) -> {
                     System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
                 })

@@ -7,6 +7,7 @@ package org.epics.gpclient;
 
 import java.time.Duration;
 import java.util.concurrent.Executors;
+import org.epics.gpclient.datasource.DataSourceProvider;
 import org.epics.vtype.VType;
 
 /**
@@ -17,6 +18,7 @@ public class GPClient {
     
     static {
         gpClient = new GPClientConfiguration().defaultMaxRate(Duration.ofMillis(1000))
+                .dataSource(DataSourceProvider.createDataSource())
                 .dataProcessingThreadPool(Executors.newScheduledThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
                 org.epics.util.concurrent.Executors.namedPool("PVMgr Worker "))).build();
     }
