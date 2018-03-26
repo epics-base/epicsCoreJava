@@ -189,31 +189,6 @@ public class CompositeDataSource extends DataSource {
         }
     }
     
-    private Map<String, WriteRecipe> splitRecipe(WriteRecipe writeRecipe) {
-        // Chop the recipe along different data sources
-        Map<String, Collection<ChannelWriteRecipe>> recipes = new HashMap<String, Collection<ChannelWriteRecipe>>();
-        for (ChannelWriteRecipe channelWriteRecipe : writeRecipe.getChannelWriteRecipes()) {
-            String channelName = nameOf(channelWriteRecipe.getChannelName());
-            String dataSource = sourceOf(channelWriteRecipe.getChannelName());
-            Collection<ChannelWriteRecipe> channelWriteRecipes = recipes.get(dataSource);
-            if (channelWriteRecipes == null) {
-                channelWriteRecipes = new ArrayList<ChannelWriteRecipe>();
-                recipes.put(dataSource, channelWriteRecipes);
-            }
-            channelWriteRecipes.add(new ChannelWriteRecipe(channelName, channelWriteRecipe.getWriteSubscription()));
-        }
-        
-        Map<String, WriteRecipe> splitRecipes = new HashMap<String, WriteRecipe>();
-        for (Map.Entry<String, Collection<ChannelWriteRecipe>> en : recipes.entrySet()) {
-            String dataSource = en.getKey();
-            Collection<ChannelWriteRecipe> val = en.getValue();
-            WriteRecipe newWriteRecipe = new WriteRecipe(val);
-            splitRecipes.put(dataSource, newWriteRecipe);
-        }
-        
-        return splitRecipes;
-    }
-    
     private DataSource retrieveDataSource(String name) {
         DataSource dataSource = dataSources.get(name);
         if (dataSource == null) {
@@ -236,23 +211,34 @@ public class CompositeDataSource extends DataSource {
     }
 
     @Override
-    public void connectWrite(WriteRecipe writeRecipe) {
-        Map<String, WriteRecipe> splitRecipes = splitRecipe(writeRecipe);
-        for (Entry<String, WriteRecipe> entry : splitRecipes.entrySet()) {
-            String dataSource = entry.getKey();
-            WriteRecipe splitWriteRecipe = entry.getValue();
-            retrieveDataSource(dataSource).connectWrite(splitWriteRecipe);
+    public void connectWrite(ChannelWriteRecipe writeRecipe) {
+        try {
+            String name = nameOf(writeRecipe.getChannelName());
+            String dataSource = sourceOf(writeRecipe.getChannelName());
+
+            if (dataSource == null)
+                throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
+
+            retrieveDataSource(dataSource).connectWrite(new ChannelWriteRecipe(name, writeRecipe.getWriteSubscription()));
+        } catch (RuntimeException ex) {
+            // If data source fail, report the error
+            writeRecipe.getWriteSubscription().notifyError(ex);
         }
     }
 
     @Override
-    public void disconnectWrite(WriteRecipe writeRecipe) {
-        Map<String, WriteRecipe> splitRecipe = splitRecipe(writeRecipe);
-        
-        for (Map.Entry<String, WriteRecipe> en : splitRecipe.entrySet()) {
-            String dataSource = en.getKey();
-            WriteRecipe splitWriteRecipe = en.getValue();
-            retrieveDataSource(dataSource).disconnectWrite(splitWriteRecipe);
+    public void disconnectWrite(ChannelWriteRecipe writeRecipe) {
+        try {
+            String name = nameOf(writeRecipe.getChannelName());
+            String dataSource = sourceOf(writeRecipe.getChannelName());
+
+            if (dataSource == null)
+                throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
+
+            retrieveDataSource(dataSource).disconnectWrite(new ChannelWriteRecipe(name, writeRecipe.getWriteSubscription()));
+        } catch (RuntimeException ex) {
+            // If data source fail, report the error
+            writeRecipe.getWriteSubscription().notifyError(ex);
         }
     }
     

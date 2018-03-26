@@ -8,8 +8,6 @@ import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.PVDirector;
 import org.epics.gpclient.datasource.ChannelReadRecipe;
 import org.epics.gpclient.datasource.DataSource;
-import org.epics.gpclient.datasource.WriteRecipe;
-import org.epics.gpclient.datasource.WriteRecipeBuilder;
 import org.epics.gpclient.expression.ReadExpressionImpl;
 
 /**

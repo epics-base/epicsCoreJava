@@ -4,6 +4,8 @@
  */
 package org.epics.gpclient.datasource;
 
+import org.epics.gpclient.WriteCollector;
+
 /**
  * The recipe for the write connection to a single channel.
  * <p>
@@ -14,7 +16,7 @@ package org.epics.gpclient.datasource;
  */
 public class ChannelWriteRecipe {
     private final String channelName;
-    private final ChannelHandlerWriteSubscription writeSubscription;
+    private final WriteCollector writeSubscription;
 
     /**
      * Creates a new write recipe for the given channel.
@@ -22,7 +24,7 @@ public class ChannelWriteRecipe {
      * @param channelName the name of the channel to connect to
      * @param writeSubscription the subscription parameters for the write
      */
-    public ChannelWriteRecipe(String channelName, ChannelHandlerWriteSubscription writeSubscription) {
+    public ChannelWriteRecipe(String channelName, WriteCollector writeSubscription) {
         this.channelName = channelName;
         this.writeSubscription = writeSubscription;
     }
@@ -41,7 +43,7 @@ public class ChannelWriteRecipe {
      *
      * @return the write subscription parameters
      */
-    public ChannelHandlerWriteSubscription getWriteSubscription() {
+    public WriteCollector getWriteSubscription() {
         return writeSubscription;
     }
 

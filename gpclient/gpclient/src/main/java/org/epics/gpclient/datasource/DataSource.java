@@ -132,13 +132,13 @@ public abstract class DataSource {
         public void accept(List<ChannelReadRecipe> list) {
             for (ChannelReadRecipe channelReadRecipe : list) {
                 try {
+                    readRecipes.add(channelReadRecipe);
                     String channelName = channelReadRecipe.getChannelName();
                     ChannelHandler channelHandler = channel(channelName);
                     if (channelHandler == null) {
                         throw new RuntimeException("Channel named '" + channelName + "' not found");
                     }
                     channelHandler.addReader(channelReadRecipe.getReadSubscription());
-                    readRecipes.add(channelReadRecipe);
                 } catch(Exception ex) {
                     // If an error happens while adding the read subscription,
                     // notify the appropriate handler
@@ -157,7 +157,7 @@ public abstract class DataSource {
         public void accept(List<ChannelReadRecipe> list) {
             for (ChannelReadRecipe channelReadRecipe : list) {
                 try {
-                    if (!readRecipes.contains(channelReadRecipe)) {
+                    if (!readRecipes.remove(channelReadRecipe)) {
                         log.log(Level.WARNING, "ChannelReadRecipe {0} was disconnected but was never connected. Ignoring it.", channelReadRecipe);
                     } else {
                         String channelName = channelReadRecipe.getChannelName();
@@ -181,114 +181,60 @@ public abstract class DataSource {
     public void disconnectRead(final ChannelReadRecipe readRecipe) {
         disconnectReadQueue.submit(readRecipe);
     }
-    
-    /**
-     * Prepares the channels defined in the write recipe for writes.
-     * <p>
-     * If these are channels over the network, it will create the 
-     * network connections with the underlying libraries.
-     * 
-     * @param writeRecipe the recipe that will contain the write data
-     */
-    public void connectWrite(final WriteRecipe writeRecipe) {
-        if (!isWriteable()) {
-            throw new RuntimeException("Data source is read only");
-        }
-        
-        // Register right away, so that if a failure happen
-        // we still keep track of it
-        writeRecipes.addAll(writeRecipe.getChannelWriteRecipes());
-        
-        // Let's go through the whole request first, so if something
-        // breaks unexpectadely, either everything works or nothing works
-        final Map<ChannelHandler, Collection<ChannelHandlerWriteSubscription>> handlers = new HashMap<>();
-        for (ChannelWriteRecipe channelWriteRecipe : writeRecipe.getChannelWriteRecipes()) {
-            try {
-                String channelName = channelWriteRecipe.getChannelName();
-                ChannelHandler handler = channel(channelName);
-                if (handler == null) {
-                    throw new RuntimeException("Channel " + channelName + " does not exist");
+
+    private final ProcessingQueue<ChannelWriteRecipe> connectWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelWriteRecipe>>() {
+        @Override
+        public void accept(List<ChannelWriteRecipe> list) {
+            for (ChannelWriteRecipe channelWriteRecipe : list) {
+                try {
+                    writeRecipes.add(channelWriteRecipe);
+                    String channelName = channelWriteRecipe.getChannelName();
+                    ChannelHandler channelHandler = channel(channelName);
+                    if (channelHandler == null) {
+                        throw new RuntimeException("Channel named '" + channelName + "' not found");
+                    }
+                    channelHandler.addWriter(channelWriteRecipe.getWriteSubscription());
+                } catch(Exception ex) {
+                    // If an error happens while adding the read subscription,
+                    // notify the appropriate handler
+                    channelWriteRecipe.getWriteSubscription().notifyError(ex);
                 }
-                Collection<ChannelHandlerWriteSubscription> channelSubscriptions = handlers.get(handler);
-                if (channelSubscriptions == null) {
-                    channelSubscriptions = new HashSet<>();
-                    handlers.put(handler, channelSubscriptions);
-                }
-                channelSubscriptions.add(channelWriteRecipe.getWriteSubscription());
-            } catch (Exception ex) {
-                channelWriteRecipe.getWriteSubscription().getWriteCollector().notifyError(ex);
             }
         }
+    });
+    
+    public void connectWrite(final ChannelWriteRecipe writeRecipe) {
+        connectWriteQueue.submit(writeRecipe);
+    }
 
-        // Connect using another thread
-        exec.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                for (Map.Entry<ChannelHandler, Collection<ChannelHandlerWriteSubscription>> entry : handlers.entrySet()) {
-                    ChannelHandler channelHandler = entry.getKey();
-                    Collection<ChannelHandlerWriteSubscription> subscriptions = entry.getValue();
-                    for (ChannelHandlerWriteSubscription subscription : subscriptions) {
-                        try {
-                            channelHandler.addWriter(subscription);
-                        } catch (Exception ex) {
-                            // If an error happens while adding the write subscription,
-                            // notify the appropriate handler
-                            subscription.getWriteCollector().notifyError(ex);
+    private final ProcessingQueue<ChannelWriteRecipe> disconnectWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelWriteRecipe>>() {
+        @Override
+        public void accept(List<ChannelWriteRecipe> list) {
+            for (ChannelWriteRecipe channelWriteRecipe : list) {
+                try {
+                    if (!writeRecipes.remove(channelWriteRecipe)) {
+                        log.log(Level.WARNING, "ChannelWriteRecipe {0} was disconnected but was never connected. Ignoring it.", channelWriteRecipe);
+                    } else {
+                        String channelName = channelWriteRecipe.getChannelName();
+                        ChannelHandler channelHandler = channel(channelName);
+                        // If the channel is not found, it means it was not found during
+                        // connection and a proper notification was sent then. Silently
+                        // ignore it.
+                        if (channelHandler != null) {
+                            channelHandler.removeWriter(channelWriteRecipe.getWriteSubscription());
                         }
                     }
+                } catch(Exception ex) {
+                    // If an error happens while adding the read subscription,
+                    // notify the appropriate handler
+                    channelWriteRecipe.getWriteSubscription().notifyError(ex);
                 }
             }
-        });
-    }
+        }
+    });
     
-    /**
-     * Releases the resources associated with the given write recipe.
-     * <p>
-     * Will close network channels and deallocate memory needed.
-     * 
-     * @param writeRecipe the recipe that will no longer be used
-     */
-    public void disconnectWrite(final WriteRecipe writeRecipe) {
-        if (!isWriteable()) {
-            throw new RuntimeException("Data source is read only");
-        }
-        
-        final Map<ChannelHandler, ChannelHandlerWriteSubscription> handlers = new HashMap<ChannelHandler, ChannelHandlerWriteSubscription>();
-        for (ChannelWriteRecipe channelWriteRecipe : writeRecipe.getChannelWriteRecipes()) {
-            if (!writeRecipes.contains(channelWriteRecipe)) {
-                log.log(Level.WARNING, "ChannelWriteRecipe {0} was unregistered but was never registered. Ignoring it.", channelWriteRecipe);
-            } else {
-                try {
-                    String channelName = channelWriteRecipe.getChannelName();
-                    ChannelHandler handler = channel(channelName);
-                    // If the channel does not exist, simply skip it: it must have
-                    // not be there while preparing the write, so an appropriate
-                    // notification has already been sent
-                    if (handler != null) {
-                        handlers.put(handler, channelWriteRecipe.getWriteSubscription());
-                    }
-                } catch (Exception ex) {
-                    // No point in sending the exception through the exception handler:
-                    // nothing will be listening by now. Just log the exception
-                    log.log(Level.WARNING, "Error while preparing channel '" + channelWriteRecipe.getChannelName() + "' for closing.", ex);
-                }
-                writeRecipes.remove(channelWriteRecipe);
-            }
-        }
-
-        // Disconnect using another thread
-        exec.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                for (Map.Entry<ChannelHandler, ChannelHandlerWriteSubscription> entry : handlers.entrySet()) {
-                    ChannelHandler channelHandler = entry.getKey();
-                    ChannelHandlerWriteSubscription channelHandlerWriteSubscription = entry.getValue();
-                    channelHandler.removeWriter(channelHandlerWriteSubscription);
-                }
-            }
-        });
+    public void disconnectWrite(final ChannelWriteRecipe writeRecipe) {
+        disconnectWriteQueue.submit(writeRecipe);
     }
 
     /**

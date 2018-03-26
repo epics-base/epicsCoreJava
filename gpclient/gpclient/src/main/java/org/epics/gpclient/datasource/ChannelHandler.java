@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.WriteCollector;
 
 /**
  * Manages the connection for each channel of a data source.
@@ -93,14 +94,14 @@ public abstract class ChannelHandler {
      * 
      * @param subscription the data required for the subscription
      */
-    protected abstract void addWriter(ChannelHandlerWriteSubscription subscription);
+    protected abstract void addWriter(WriteCollector subscription);
 
     /**
      * Used by the data source to conclude writes to the channel managed by this handler.
      * 
      * @param subscription the subscription to remove
      */
-    protected abstract void removeWriter(ChannelHandlerWriteSubscription subscription);
+    protected abstract void removeWriter(WriteCollector subscription);
 
     /**
      * Returns true if it is connected.

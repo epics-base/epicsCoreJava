@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.WriteCollector;
 
 /**
  * Implements a {@link ChannelHandler} on top of a single subscription and
@@ -51,7 +52,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     private MessagePayload lastMessage;
     private ConnectionPayload connectionPayload;
     private Map<ReadCollector, MonitorHandler> readers = new ConcurrentHashMap<>();
-    private Map<ChannelHandlerWriteSubscription, Runnable> writers = new ConcurrentHashMap<>();
+    private Map<WriteCollector, Runnable> writers = new ConcurrentHashMap<>();
     private boolean processMessageOnDisconnect = true;
     private boolean processMessageOnReconnect = true;
     
@@ -103,8 +104,8 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
         for (ReadCollector subscription : readers.keySet()) {
             subscription.notifyError(ex);
         }
-        for (ChannelHandlerWriteSubscription subscription : writers.keySet()) {
-            subscription.getWriteCollector().notifyError(ex);
+        for (WriteCollector subscription : writers.keySet()) {
+            subscription.notifyError(ex);
         }
     }
     
@@ -114,8 +115,8 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
      * @param ex the exception to notify
      */
     protected synchronized final void reportExceptionToAllWriters(Exception ex) {
-        for (ChannelHandlerWriteSubscription subscription : writers.keySet()) {
-            subscription.getWriteCollector().notifyError(ex);
+        for (WriteCollector subscription : writers.keySet()) {
+            subscription.notifyError(ex);
         }
     }
     
@@ -126,8 +127,8 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     }
     
     private void reportWriteConnectionStatus(boolean writeConnected) {
-        for (ChannelHandlerWriteSubscription subscription : writers.keySet()) {
-            subscription.getWriteCollector().updateConnection(writeConnected);
+        for (WriteCollector subscription : writers.keySet()) {
+            subscription.updateConnection(writeConnected);
         }
     }
 
@@ -264,34 +265,34 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     }
     
     @Override
-    protected synchronized void addWriter(final ChannelHandlerWriteSubscription subscription) {
+    protected synchronized void addWriter(final WriteCollector subscription) {
         writeUsageCounter++;
         Runnable collectorListener = new Runnable() {
             @Override
             public void run() {
-                for (Object value : subscription.getWriteCollector().getValues()) {
+                for (Object value : subscription.getValues()) {
                     try {
                         write(value);
-                        subscription.getWriteCollector().sendWriteSuccessful();
+                        subscription.sendWriteSuccessful();
                     } catch (Exception ex) {
-                        subscription.getWriteCollector().sendWriteFailed(ex);
+                        subscription.sendWriteFailed(ex);
                     }
                 }
             }
         };
-        subscription.getWriteCollector().setWriteNotification(collectorListener);
+        subscription.setWriteNotification(collectorListener);
         writers.put(subscription, collectorListener);
         guardedConnect();
         if (connectionPayload != null) {
-            subscription.getWriteCollector().updateConnection(isWriteConnected());
+            subscription.updateConnection(isWriteConnected());
         }
     }
 
     @Override
-    protected synchronized void removeWriter(ChannelHandlerWriteSubscription subscription) {
+    protected synchronized void removeWriter(WriteCollector subscription) {
         writeUsageCounter--;
         writers.remove(subscription);
-        subscription.getWriteCollector().setWriteNotification(null);
+        subscription.setWriteNotification(null);
         guardedDisconnect();
     }
     
