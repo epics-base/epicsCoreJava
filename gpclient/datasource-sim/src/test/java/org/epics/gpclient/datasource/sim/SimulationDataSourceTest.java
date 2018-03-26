@@ -4,11 +4,10 @@
  */
 package org.epics.gpclient.datasource.sim;
 
-import org.epics.gpclient.datasource.ReadRecipe;
-import org.epics.gpclient.datasource.ReadRecipeBuilder;
 import org.epics.gpclient.ProbeCollector;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVEventRecorder;
+import org.epics.gpclient.datasource.ChannelReadRecipe;
 import org.epics.util.array.ArrayDouble;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
@@ -28,7 +27,7 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
-        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("noise(-5,5,0.1)", probe.getCollector()).build();
+        ChannelReadRecipe recipe = new ChannelReadRecipe("noise(-5,5,0.1)", probe.getCollector());
         sim.connectRead(recipe);
         recorder.wait(10000, PVEventRecorder.forEventCount(5));
         sim.disconnectRead(recipe);
@@ -47,7 +46,7 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
-        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("delayedConnectionChannel(1.0,\"connected\")", probe.getCollector()).build();
+        ChannelReadRecipe recipe = new ChannelReadRecipe("delayedConnectionChannel(1.0,\"connected\")", probe.getCollector());
         sim.connectRead(recipe);
         recorder.dontExpect(800, PVEventRecorder.forAnEvent());
         recorder.wait(10000, PVEventRecorder.forEventCount(2));
@@ -66,7 +65,7 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
-        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("const(3.14)", probe.getCollector()).build();
+        ChannelReadRecipe recipe = new ChannelReadRecipe("const(3.14)", probe.getCollector());
         sim.connectRead(recipe);
         recorder.wait(10000, PVEventRecorder.forEventCount(2));
         sim.disconnectRead(recipe);
@@ -84,7 +83,7 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
-        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("const(\"testing\")", probe.getCollector()).build();
+        ChannelReadRecipe recipe = new ChannelReadRecipe("const(\"testing\")", probe.getCollector());
         sim.connectRead(recipe);
         recorder.wait(10000, PVEventRecorder.forEventCount(2));
         sim.disconnectRead(recipe);
@@ -102,7 +101,7 @@ public class SimulationDataSourceTest extends FeatureTestSimFunction {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
-        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("const(1,2,3,4,5)", probe.getCollector()).build();
+        ChannelReadRecipe recipe = new ChannelReadRecipe("const(1,2,3,4,5)", probe.getCollector());
         sim.connectRead(recipe);
         recorder.wait(10000, PVEventRecorder.forEventCount(2));
         sim.disconnectRead(recipe);

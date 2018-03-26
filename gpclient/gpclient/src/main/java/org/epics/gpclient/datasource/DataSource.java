@@ -7,10 +7,12 @@ package org.epics.gpclient.datasource;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.ReadCollector;
 import static org.epics.util.concurrent.Executors.namedPool;
+import org.epics.util.concurrent.ProcessingQueue;
 
 /**
  * A source for data that is going to be processed by the PVManager.
@@ -125,111 +127,54 @@ public abstract class DataSource {
     private final Set<ChannelReadRecipe> readRecipes = Collections.synchronizedSet(new HashSet<ChannelReadRecipe>());
     private final Set<ChannelWriteRecipe> writeRecipes = Collections.synchronizedSet(new HashSet<ChannelWriteRecipe>());
 
-    /**
-     * Connects to a set of channels based on the given recipe.
-     * <p>
-     * The data source must update the value caches relative to each channel.
-     * Before updating any cache, it must lock the collector relative to that
-     * cache and after any update it must notify the collector.
-     *
-     * @param readRecipe the instructions for the data connection
-     */
-    public void connectRead(final ReadRecipe readRecipe) {
-        // Add the recipe first, so that if a problem comes out
-        // while processing the request, we still keep
-        // track of it.
-        readRecipes.addAll(readRecipe.getChannelReadRecipes());
-
-        // Let's go through all the recipes first, so if something
-        // breaks unexpectadely, either everything works or nothing works
-        final Map<ChannelHandler, Collection<ChannelReadRecipe>> handlersWithSubscriptions =
-                new HashMap<>();
-        for (final ChannelReadRecipe channelRecipe : readRecipe.getChannelReadRecipes()) {
-            try {
-                String channelName = channelRecipe.getChannelName();
-                ChannelHandler channelHandler = channel(channelName);
-                if (channelHandler == null) {
-                    throw new RuntimeException("Channel named '" + channelName + "' not found");
-                }
-                Collection<ChannelReadRecipe> channelSubscriptions = handlersWithSubscriptions.get(channelHandler);
-                if (channelSubscriptions == null) {
-                    channelSubscriptions = new HashSet<>();
-                    handlersWithSubscriptions.put(channelHandler, channelSubscriptions);
-                }
-                channelSubscriptions.add(channelRecipe);
-            } catch (Exception ex) {
-                // If any error happens while creating the channel,
-                // report it to the exception handler of that channel
-                channelRecipe.getReadSubscription().notifyError(ex);
-            }
-            
-        }
-        
-        // Now that we went through all channels,
-        // add a monitor to the ones that were found
-        exec.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                for (Map.Entry<ChannelHandler, Collection<ChannelReadRecipe>> entry : handlersWithSubscriptions.entrySet()) {
-                    ChannelHandler channelHandler = entry.getKey();
-                    Collection<ChannelReadRecipe> channelRecipes = entry.getValue();
-                    for (ChannelReadRecipe channelRecipe : channelRecipes) {
-                        try {
-                            channelHandler.addReader(channelRecipe.getReadSubscription());
-                        } catch(Exception ex) {
-                            // If an error happens while adding the read subscription,
-                            // notify the appropriate handler
-                            channelRecipe.getReadSubscription().notifyError(ex);
-                        }
+    private final ProcessingQueue<ChannelReadRecipe> connectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelReadRecipe>>() {
+        @Override
+        public void accept(List<ChannelReadRecipe> list) {
+            for (ChannelReadRecipe channelReadRecipe : list) {
+                try {
+                    String channelName = channelReadRecipe.getChannelName();
+                    ChannelHandler channelHandler = channel(channelName);
+                    if (channelHandler == null) {
+                        throw new RuntimeException("Channel named '" + channelName + "' not found");
                     }
+                    channelHandler.addReader(channelReadRecipe.getReadSubscription());
+                } catch(Exception ex) {
+                    // If an error happens while adding the read subscription,
+                    // notify the appropriate handler
+                    channelReadRecipe.getReadSubscription().notifyError(ex);
                 }
             }
-        });
+        }
+    });
+    
+    public void connectRead(final ChannelReadRecipe readRecipe) {
+        connectReadQueue.submit(readRecipe);
     }
 
-    /**
-     * Disconnects the set of channels given by the recipe.
-     * <p>
-     * The disconnect call is guaranteed to be given the same object,
-     * so that the recipe itself can be used as a key in a map to retrieve
-     * the list of resources needed to be closed.
-     *
-     * @param readRecipe the instructions for the data connection
-     */
-    public void disconnectRead(final ReadRecipe readRecipe) {
-        // Find the channels to disconnect
-        final Map<ChannelHandler, ReadCollector> handlers = new HashMap<>();
-        for (ChannelReadRecipe channelRecipe : readRecipe.getChannelReadRecipes()) {
-            if (!readRecipes.contains(channelRecipe)) {
-                log.log(Level.WARNING, "ChannelReadRecipe {0} was disconnected but was never connected. Ignoring it.", channelRecipe);
-            } else {
-                String channelName = channelRecipe.getChannelName();
-                ChannelHandler channelHandler = channel(channelName);
-                // If the channel is not found, it means it was not found during
-                // connection and a proper notification was sent then. Silently
-                // ignore it.
-                if (channelHandler != null) {
-                    handlers.put(channelHandler, channelRecipe.getReadSubscription());
+    private final ProcessingQueue<ChannelReadRecipe> disconnectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelReadRecipe>>() {
+        @Override
+        public void accept(List<ChannelReadRecipe> list) {
+            for (ChannelReadRecipe channelReadRecipe : list) {
+                try {
+                    String channelName = channelReadRecipe.getChannelName();
+                    ChannelHandler channelHandler = channel(channelName);
+                    // If the channel is not found, it means it was not found during
+                    // connection and a proper notification was sent then. Silently
+                    // ignore it.
+                    if (channelHandler != null) {
+                        channelHandler.removeReader(channelReadRecipe.getReadSubscription());
+                    }
+                } catch(Exception ex) {
+                    // If an error happens while adding the read subscription,
+                    // notify the appropriate handler
+                    channelReadRecipe.getReadSubscription().notifyError(ex);
                 }
-                readRecipes.remove(channelRecipe);
             }
         }
-        
-        // Schedule disconnection and return right away.
-        exec.execute(new Runnable() {
-
-            @Override
-            public void run() {
-                for (Map.Entry<ChannelHandler, ReadCollector> entry : handlers.entrySet()) {
-                    ChannelHandler channelHandler = entry.getKey();
-                    ReadCollector channelHandlerReadSubscription = entry.getValue();
-                    channelHandler.removeReader(channelHandlerReadSubscription);
-                }
-            }
-            
-        });
-
+    });
+    
+    public void disconnectRead(final ChannelReadRecipe readRecipe) {
+        disconnectReadQueue.submit(readRecipe);
     }
     
     /**

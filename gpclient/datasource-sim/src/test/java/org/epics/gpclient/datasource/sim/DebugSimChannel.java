@@ -5,9 +5,8 @@
  */
 package org.epics.gpclient.datasource.sim;
 
-import org.epics.gpclient.datasource.ReadRecipe;
-import org.epics.gpclient.datasource.ReadRecipeBuilder;
 import org.epics.gpclient.ProbeCollector;
+import org.epics.gpclient.datasource.ChannelReadRecipe;
 
 /**
  *
@@ -21,10 +20,9 @@ public class DebugSimChannel {
     public static void main(String[] args) throws InterruptedException {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = new ProbeCollector(Object.class, System.out);
-        ReadRecipe recipe = new ReadRecipeBuilder().addChannel("gaussianWaveform()", probe.getCollector()).build();
-        sim.connectRead(recipe);
+        sim.connectRead(new ChannelReadRecipe("gaussianWaveform()", probe.getCollector()));
         Thread.sleep(5000);
-        sim.disconnectRead(recipe);
+        sim.disconnectRead(new ChannelReadRecipe("gaussianWaveform()", probe.getCollector()));
         sim.close();
         
     }

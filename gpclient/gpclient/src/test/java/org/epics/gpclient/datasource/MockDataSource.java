@@ -15,7 +15,7 @@ public class MockDataSource extends DataSource {
     
     private final List<ChannelReadRecipe> connectedReadRecipes = new CopyOnWriteArrayList<>();
     private final List<ChannelWriteRecipe> connectedWriteRecipes = new CopyOnWriteArrayList<>();
-    private volatile ReadRecipe readRecipe;
+    private volatile ChannelReadRecipe readRecipe;
     private volatile WriteRecipe writeRecipe;
     private volatile WriteRecipe writeRecipeForWrite;
 
@@ -29,15 +29,15 @@ public class MockDataSource extends DataSource {
     }
 
     @Override
-    public void connectRead(ReadRecipe recipe) {
+    public void connectRead(ChannelReadRecipe recipe) {
         this.readRecipe = recipe;
-        connectedReadRecipes.addAll(recipe.getChannelReadRecipes());
+        connectedReadRecipes.add(recipe);
     }
 
     @Override
-    public void disconnectRead(ReadRecipe recipe) {
+    public void disconnectRead(ChannelReadRecipe recipe) {
         this.readRecipe = recipe;
-        connectedReadRecipes.removeAll(recipe.getChannelReadRecipes());
+        connectedReadRecipes.remove(recipe);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MockDataSource extends DataSource {
         connectedWriteRecipes.removeAll(writeRecipe.getChannelWriteRecipes());
     }
 
-    public ReadRecipe getReadRecipe() {
+    public ChannelReadRecipe getReadRecipe() {
         return readRecipe;
     }
 

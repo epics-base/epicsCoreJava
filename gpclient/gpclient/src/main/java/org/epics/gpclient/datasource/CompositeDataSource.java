@@ -157,61 +157,35 @@ public class CompositeDataSource extends DataSource {
         }
     }
     
-    private Map<String, ReadRecipe> splitRecipe(ReadRecipe readRecipe) {
-        Map<String, ReadRecipe> splitRecipe = new HashMap<String, ReadRecipe>();
-
-        // Iterate through the recipe to understand how to distribute
-        // the calls
-        Map<String, List<ChannelReadRecipe>> routingRecipes = new HashMap<String, List<ChannelReadRecipe>>();
-        for (ChannelReadRecipe channelRecipe : readRecipe.getChannelReadRecipes()) {
-            String name = nameOf(channelRecipe.getChannelName());
-            String dataSource = sourceOf(channelRecipe.getChannelName());
+    @Override
+    public void connectRead(final ChannelReadRecipe readRecipe) {
+        try {
+            String name = nameOf(readRecipe.getChannelName());
+            String dataSource = sourceOf(readRecipe.getChannelName());
 
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            // Add recipe for the target dataSource
-            if (routingRecipes.get(dataSource) == null) {
-                routingRecipes.put(dataSource, new ArrayList<ChannelReadRecipe>());
-            }
-            routingRecipes.get(dataSource).add(new ChannelReadRecipe(name, channelRecipe.getReadSubscription()));
-        }
-        
-        // Create the recipes
-        for (Entry<String, List<ChannelReadRecipe>> entry : routingRecipes.entrySet()) {
-            splitRecipe.put(entry.getKey(), new ReadRecipe(Collections.unmodifiableList(entry.getValue())));
-        }
-        
-        return splitRecipe;
-    }
-
-    @Override
-    public void connectRead(ReadRecipe readRecipe) {
-        Map<String, ReadRecipe> splitRecipe = splitRecipe(readRecipe);
-
-        // Dispatch calls to all the data sources
-        for (Map.Entry<String, ReadRecipe> entry : splitRecipe.entrySet()) {
-            try {
-                retrieveDataSource(entry.getKey()).connectRead(entry.getValue());
-            } catch (RuntimeException ex) {
-                // If data source fail, still go and connect the others
-                readRecipe.getChannelReadRecipes().iterator().next().getReadSubscription().notifyError(ex);
-            }
+            retrieveDataSource(dataSource).connectRead(new ChannelReadRecipe(name, readRecipe.getReadSubscription()));
+        } catch (RuntimeException ex) {
+            // If data source fail, report the error
+            readRecipe.getReadSubscription().notifyError(ex);
         }
     }
 
     @Override
-    public void disconnectRead(ReadRecipe readRecipe) {
-        Map<String, ReadRecipe> splitRecipe = splitRecipe(readRecipe);
+    public void disconnectRead(ChannelReadRecipe readRecipe) {
+        try {
+            String name = nameOf(readRecipe.getChannelName());
+            String dataSource = sourceOf(readRecipe.getChannelName());
 
-        // Dispatch calls to all the data sources
-        for (Map.Entry<String, ReadRecipe> entry : splitRecipe.entrySet()) {
-            try {
-                retrieveDataSource(entry.getKey()).disconnectRead(entry.getValue());
-            } catch(RuntimeException ex) {
-                // If a data source fails, still go and disconnect the others
-                readRecipe.getChannelReadRecipes().iterator().next().getReadSubscription().notifyError(ex);
-            }
+            if (dataSource == null)
+                throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
+
+            retrieveDataSource(dataSource).disconnectRead(new ChannelReadRecipe(name, readRecipe.getReadSubscription()));
+        } catch (RuntimeException ex) {
+            // If data source fail, report the error
+            readRecipe.getReadSubscription().notifyError(ex);
         }
     }
     
