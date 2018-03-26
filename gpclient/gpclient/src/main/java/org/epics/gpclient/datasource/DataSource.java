@@ -138,6 +138,7 @@ public abstract class DataSource {
                         throw new RuntimeException("Channel named '" + channelName + "' not found");
                     }
                     channelHandler.addReader(channelReadRecipe.getReadSubscription());
+                    readRecipes.add(channelReadRecipe);
                 } catch(Exception ex) {
                     // If an error happens while adding the read subscription,
                     // notify the appropriate handler
@@ -156,13 +157,17 @@ public abstract class DataSource {
         public void accept(List<ChannelReadRecipe> list) {
             for (ChannelReadRecipe channelReadRecipe : list) {
                 try {
-                    String channelName = channelReadRecipe.getChannelName();
-                    ChannelHandler channelHandler = channel(channelName);
-                    // If the channel is not found, it means it was not found during
-                    // connection and a proper notification was sent then. Silently
-                    // ignore it.
-                    if (channelHandler != null) {
-                        channelHandler.removeReader(channelReadRecipe.getReadSubscription());
+                    if (!readRecipes.contains(channelReadRecipe)) {
+                        log.log(Level.WARNING, "ChannelReadRecipe {0} was disconnected but was never connected. Ignoring it.", channelReadRecipe);
+                    } else {
+                        String channelName = channelReadRecipe.getChannelName();
+                        ChannelHandler channelHandler = channel(channelName);
+                        // If the channel is not found, it means it was not found during
+                        // connection and a proper notification was sent then. Silently
+                        // ignore it.
+                        if (channelHandler != null) {
+                            channelHandler.removeReader(channelReadRecipe.getReadSubscription());
+                        }
                     }
                 } catch(Exception ex) {
                     // If an error happens while adding the read subscription,
