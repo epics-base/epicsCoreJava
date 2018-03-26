@@ -44,13 +44,13 @@ public class ChannelExpression<R> extends ReadExpressionImpl<R> {
     @Override
     public void startRead(PVDirector director) {
         director.registerCollector(readCollector);
-        director.getDataSource().connectRead(new ReadSubscription(channelName, readCollector));
+        director.getDataSource().startRead(new ReadSubscription(channelName, readCollector));
     }
 
     @Override
     public void stopRead(PVDirector director) {
         director.deregisterCollector(readCollector);
-        director.getDataSource().disconnectRead(new ReadSubscription(channelName, readCollector));
+        director.getDataSource().stopRead(new ReadSubscription(channelName, readCollector));
     }
 //
 //    @Override

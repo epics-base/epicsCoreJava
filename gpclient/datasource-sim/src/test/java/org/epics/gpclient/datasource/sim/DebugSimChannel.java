@@ -20,9 +20,9 @@ public class DebugSimChannel {
     public static void main(String[] args) throws InterruptedException {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = new ProbeCollector(Object.class, System.out);
-        sim.connectRead(new ReadSubscription("gaussianWaveform()", probe.getCollector()));
+        sim.startRead(new ReadSubscription("gaussianWaveform()", probe.getCollector()));
         Thread.sleep(5000);
-        sim.disconnectRead(new ReadSubscription("gaussianWaveform()", probe.getCollector()));
+        sim.stopRead(new ReadSubscription("gaussianWaveform()", probe.getCollector()));
         sim.close();
         
     }

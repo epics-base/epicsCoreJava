@@ -158,7 +158,7 @@ public class CompositeDataSource extends DataSource {
     }
     
     @Override
-    public void connectRead(final ReadSubscription readRecipe) {
+    public void startRead(final ReadSubscription readRecipe) {
         try {
             String name = nameOf(readRecipe.getChannelName());
             String dataSource = sourceOf(readRecipe.getChannelName());
@@ -166,7 +166,7 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).connectRead(new ReadSubscription(name, readRecipe.getCollector()));
+            retrieveDataSource(dataSource).startRead(new ReadSubscription(name, readRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
             readRecipe.getCollector().notifyError(ex);
@@ -174,7 +174,7 @@ public class CompositeDataSource extends DataSource {
     }
 
     @Override
-    public void disconnectRead(ReadSubscription readRecipe) {
+    public void stopRead(ReadSubscription readRecipe) {
         try {
             String name = nameOf(readRecipe.getChannelName());
             String dataSource = sourceOf(readRecipe.getChannelName());
@@ -182,7 +182,7 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).disconnectRead(new ReadSubscription(name, readRecipe.getCollector()));
+            retrieveDataSource(dataSource).stopRead(new ReadSubscription(name, readRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
             readRecipe.getCollector().notifyError(ex);

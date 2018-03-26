@@ -6,21 +6,19 @@ package org.epics.gpclient.datasource;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.gpclient.ReadCollector;
 import static org.epics.util.concurrent.Executors.namedPool;
 import org.epics.util.concurrent.ProcessingQueue;
 
 /**
- * A source for data that is going to be processed by the PVManager.
- * PVManager can work with more than one source at a time. Support
+ * A source for data that is going to be processed by the general purpose client.
+ * The GP client can work with more than one source at a time. Support
  * for each different source can be added by external libraries.
  * <p>
  * To implement a datasource, one has to implement the {@link #createChannel(java.lang.String) }
- * method, and the requested will be forwarded to the channel accordingly.
+ * method, and requests will be forwarded to the channel accordingly.
  * The channels are automatically cached and reused. The name under which
  * the channels are looked up in the cache or registered in the cache is configurable.
  * <p>
@@ -56,7 +54,7 @@ public abstract class DataSource {
     }
 
     // Keeps track of the currently created channels
-    private Map<String, ChannelHandler> usedChannels = new ConcurrentHashMap<String, ChannelHandler>();
+    private final Map<String, ChannelHandler> usedChannels = new ConcurrentHashMap<String, ChannelHandler>();
 
     /**
      * Returns a channel from the given name, either cached or it
@@ -127,7 +125,7 @@ public abstract class DataSource {
     private final Set<ReadSubscription> readRecipes = Collections.synchronizedSet(new HashSet<ReadSubscription>());
     private final Set<WriteSubscription> writeRecipes = Collections.synchronizedSet(new HashSet<WriteSubscription>());
 
-    private final ProcessingQueue<ReadSubscription> connectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
+    private final ProcessingQueue<ReadSubscription> startReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
         @Override
         public void accept(List<ReadSubscription> list) {
             for (ReadSubscription channelReadRecipe : list) {
@@ -148,11 +146,16 @@ public abstract class DataSource {
         }
     });
     
-    public void connectRead(final ReadSubscription readRecipe) {
-        connectReadQueue.submit(readRecipe);
+    /**
+     * Starts the given read subscription.
+     * 
+     * @param readSubscription the subscription information
+     */
+    public void startRead(final ReadSubscription readSubscription) {
+        startReadQueue.submit(readSubscription);
     }
 
-    private final ProcessingQueue<ReadSubscription> disconnectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
+    private final ProcessingQueue<ReadSubscription> stopReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
         @Override
         public void accept(List<ReadSubscription> list) {
             for (ReadSubscription channelReadRecipe : list) {
@@ -178,8 +181,13 @@ public abstract class DataSource {
         }
     });
     
-    public void disconnectRead(final ReadSubscription readRecipe) {
-        disconnectReadQueue.submit(readRecipe);
+    /**
+     * Stops the given read subscription.
+     * 
+     * @param readSubscription the subscription information
+     */
+    public void stopRead(final ReadSubscription readSubscription) {
+        stopReadQueue.submit(readSubscription);
     }
 
     private final ProcessingQueue<WriteSubscription> connectWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<WriteSubscription>>() {

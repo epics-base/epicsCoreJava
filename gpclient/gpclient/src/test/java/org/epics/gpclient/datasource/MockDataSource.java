@@ -29,13 +29,13 @@ public class MockDataSource extends DataSource {
     }
 
     @Override
-    public void connectRead(ReadSubscription recipe) {
+    public void startRead(ReadSubscription recipe) {
         this.readRecipe = recipe;
         connectedReadRecipes.add(recipe);
     }
 
     @Override
-    public void disconnectRead(ReadSubscription recipe) {
+    public void stopRead(ReadSubscription recipe) {
         this.readRecipe = recipe;
         connectedReadRecipes.remove(recipe);
     }
