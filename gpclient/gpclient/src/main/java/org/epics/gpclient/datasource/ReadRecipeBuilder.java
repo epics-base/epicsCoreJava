@@ -7,6 +7,7 @@ package org.epics.gpclient.datasource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import org.epics.gpclient.ReadCollector;
 
 /**
@@ -16,7 +17,7 @@ import org.epics.gpclient.ReadCollector;
  */
 public class ReadRecipeBuilder {
 
-    private final Collection<ChannelReadRecipe> recipes = new ArrayList<>();
+    private final List<ChannelReadRecipe> recipes = new ArrayList<>();
 
     public ReadRecipeBuilder addChannel(String channelName, ReadCollector<?, ?> collector) {
         recipes.add(new ChannelReadRecipe(channelName, new ChannelHandlerReadSubscription(collector)));
@@ -29,6 +30,6 @@ public class ReadRecipeBuilder {
      * @return a new recipe
      */
     public ReadRecipe build() {
-        return new ReadRecipe(Collections.unmodifiableCollection(recipes));
+        return new ReadRecipe(Collections.unmodifiableList(recipes));
     }
 }
