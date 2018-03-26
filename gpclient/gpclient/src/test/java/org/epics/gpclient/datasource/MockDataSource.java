@@ -13,11 +13,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MockDataSource extends DataSource {
     
-    private final List<ChannelReadRecipe> connectedReadRecipes = new CopyOnWriteArrayList<>();
-    private final List<ChannelWriteRecipe> connectedWriteRecipes = new CopyOnWriteArrayList<>();
-    private volatile ChannelReadRecipe readRecipe;
-    private volatile ChannelWriteRecipe writeRecipe;
-    private volatile ChannelWriteRecipe writeRecipeForWrite;
+    private final List<ReadSubscription> connectedReadRecipes = new CopyOnWriteArrayList<>();
+    private final List<WriteSubscription> connectedWriteRecipes = new CopyOnWriteArrayList<>();
+    private volatile ReadSubscription readRecipe;
+    private volatile WriteSubscription writeRecipe;
+    private volatile WriteSubscription writeRecipeForWrite;
 
     public MockDataSource() {
         super(true);
@@ -29,46 +29,46 @@ public class MockDataSource extends DataSource {
     }
 
     @Override
-    public void connectRead(ChannelReadRecipe recipe) {
+    public void connectRead(ReadSubscription recipe) {
         this.readRecipe = recipe;
         connectedReadRecipes.add(recipe);
     }
 
     @Override
-    public void disconnectRead(ChannelReadRecipe recipe) {
+    public void disconnectRead(ReadSubscription recipe) {
         this.readRecipe = recipe;
         connectedReadRecipes.remove(recipe);
     }
 
     @Override
-    public void connectWrite(ChannelWriteRecipe writeRecipe) {
+    public void connectWrite(WriteSubscription writeRecipe) {
         this.writeRecipe = writeRecipe;
         connectedWriteRecipes.add(writeRecipe);
     }
 
     @Override
-    public void disconnectWrite(ChannelWriteRecipe writeRecipe) {
+    public void disconnectWrite(WriteSubscription writeRecipe) {
         this.writeRecipe = writeRecipe;
         connectedWriteRecipes.remove(writeRecipe);
     }
 
-    public ChannelReadRecipe getReadRecipe() {
+    public ReadSubscription getReadRecipe() {
         return readRecipe;
     }
 
-    public ChannelWriteRecipe getWriteRecipe() {
+    public WriteSubscription getWriteRecipe() {
         return writeRecipe;
     }
 
-    public ChannelWriteRecipe getWriteRecipeForWrite() {
+    public WriteSubscription getWriteRecipeForWrite() {
         return writeRecipeForWrite;
     }
 
-    public List<ChannelReadRecipe> getConnectedReadRecipes() {
+    public List<ReadSubscription> getConnectedReadRecipes() {
         return connectedReadRecipes;
     }
 
-    public List<ChannelWriteRecipe> getConnectedWriteRecipes() {
+    public List<WriteSubscription> getConnectedWriteRecipes() {
         return connectedWriteRecipes;
     }
     

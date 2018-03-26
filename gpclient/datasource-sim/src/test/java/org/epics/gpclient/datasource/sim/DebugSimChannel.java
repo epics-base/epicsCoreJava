@@ -6,7 +6,7 @@
 package org.epics.gpclient.datasource.sim;
 
 import org.epics.gpclient.ProbeCollector;
-import org.epics.gpclient.datasource.ChannelReadRecipe;
+import org.epics.gpclient.datasource.ReadSubscription;
 
 /**
  *
@@ -20,9 +20,9 @@ public class DebugSimChannel {
     public static void main(String[] args) throws InterruptedException {
         SimulationDataSource sim = new SimulationDataSource();
         ProbeCollector probe = new ProbeCollector(Object.class, System.out);
-        sim.connectRead(new ChannelReadRecipe("gaussianWaveform()", probe.getCollector()));
+        sim.connectRead(new ReadSubscription("gaussianWaveform()", probe.getCollector()));
         Thread.sleep(5000);
-        sim.disconnectRead(new ChannelReadRecipe("gaussianWaveform()", probe.getCollector()));
+        sim.disconnectRead(new ReadSubscription("gaussianWaveform()", probe.getCollector()));
         sim.close();
         
     }

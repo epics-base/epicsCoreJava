@@ -6,7 +6,7 @@ package org.epics.gpclient;
 
 import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.PVDirector;
-import org.epics.gpclient.datasource.ChannelReadRecipe;
+import org.epics.gpclient.datasource.ReadSubscription;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.expression.ReadExpressionImpl;
 
@@ -44,13 +44,13 @@ public class ChannelExpression<R> extends ReadExpressionImpl<R> {
     @Override
     public void startRead(PVDirector director) {
         director.registerCollector(readCollector);
-        director.getDataSource().connectRead(new ChannelReadRecipe(channelName, readCollector));
+        director.getDataSource().connectRead(new ReadSubscription(channelName, readCollector));
     }
 
     @Override
     public void stopRead(PVDirector director) {
         director.deregisterCollector(readCollector);
-        director.getDataSource().disconnectRead(new ChannelReadRecipe(channelName, readCollector));
+        director.getDataSource().disconnectRead(new ReadSubscription(channelName, readCollector));
     }
 //
 //    @Override

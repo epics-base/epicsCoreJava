@@ -7,30 +7,29 @@ package org.epics.gpclient.datasource;
 import org.epics.gpclient.WriteCollector;
 
 /**
- * The recipe for the write connection to a single channel.
- * <p>
- * The recipe is made up of two parts to make it easy to forward
- * the request to a channel with a different name.
+ * The information for a write subscription to a datasource channel. It consists
+ * of a channel name, which identifies the channel, and a collector, which
+ * is used to update the data.
  *
  * @author carcassi
  */
-public class ChannelWriteRecipe {
+public class WriteSubscription {
     private final String channelName;
-    private final WriteCollector writeSubscription;
+    private final WriteCollector writeCollector;
 
     /**
-     * Creates a new write recipe for the given channel.
+     * Creates a new write subscription for the given channel and collector.
      * 
      * @param channelName the name of the channel to connect to
-     * @param writeSubscription the subscription parameters for the write
+     * @param writeCollector the collector for the write operations
      */
-    public ChannelWriteRecipe(String channelName, WriteCollector writeSubscription) {
+    public WriteSubscription(String channelName, WriteCollector writeCollector) {
         this.channelName = channelName;
-        this.writeSubscription = writeSubscription;
+        this.writeCollector = writeCollector;
     }
     
     /**
-     * The name of the channel to read.
+     * The name of the channel to write to.
      *
      * @return the channel name
      */
@@ -39,19 +38,19 @@ public class ChannelWriteRecipe {
     }
 
     /**
-     * The write subscription parameters.
+     * The collector to be connected to the channel.
      *
-     * @return the write subscription parameters
+     * @return the write collector
      */
-    public WriteCollector getWriteSubscription() {
-        return writeSubscription;
+    public WriteCollector getCollector() {
+        return writeCollector;
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
         hash = 71 * hash + (this.channelName != null ? this.channelName.hashCode() : 0);
-        hash = 71 * hash + (this.writeSubscription != null ? this.writeSubscription.hashCode() : 0);
+        hash = 71 * hash + (this.writeCollector != null ? this.writeCollector.hashCode() : 0);
         return hash;
     }
 
@@ -63,14 +62,19 @@ public class ChannelWriteRecipe {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ChannelWriteRecipe other = (ChannelWriteRecipe) obj;
+        final WriteSubscription other = (WriteSubscription) obj;
         if ((this.channelName == null) ? (other.channelName != null) : !this.channelName.equals(other.channelName)) {
             return false;
         }
-        if (this.writeSubscription != other.writeSubscription && (this.writeSubscription == null || !this.writeSubscription.equals(other.writeSubscription))) {
+        if (this.writeCollector != other.writeCollector && (this.writeCollector == null || !this.writeCollector.equals(other.writeCollector))) {
             return false;
         }
         return true;
     }
     
+    @Override
+    public String toString() {
+        return "[WriteSubscription for " + channelName + ": " + writeCollector + "]";
+    }
+
 }

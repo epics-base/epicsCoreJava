@@ -53,7 +53,7 @@ public class DataSourceImplementationTest {
             }
         };
         
-        dataSource.connectRead(new ChannelReadRecipe("first", probe.getCollector()));
+        dataSource.connectRead(new ReadSubscription("first", probe.getCollector()));
         
         recorder.wait(100000, forEventCount(2));
         
@@ -88,7 +88,7 @@ public class DataSourceImplementationTest {
             }
         };
         
-        dataSource.connectRead(new ChannelReadRecipe("first", probe.getCollector()));
+        dataSource.connectRead(new ReadSubscription("first", probe.getCollector()));
         
         recorder.wait(100000, forAnEvent());
         

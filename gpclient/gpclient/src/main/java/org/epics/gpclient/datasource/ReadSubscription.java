@@ -7,30 +7,29 @@ package org.epics.gpclient.datasource;
 import org.epics.gpclient.ReadCollector;
 
 /**
- * The recipe for the read connection of a single channel.
- * <p>
- * The recipe is made up of two parts to make it easy to forward
- * the request to a channel with a different name.
+ * The information for a read subscription to a datasource channel. It consists
+ * of a channel name, which identifies the channel, and a collector, which
+ * is used to update the data.
  *
  * @author carcassi
  */
-public class ChannelReadRecipe {
+public class ReadSubscription {
     private final String channelName;
     private final ReadCollector<?,?> readCollector;
 
     /**
-     * Creates a new read recipe for the given channel.
+     * Creates a new read subscription for the given channel and collector.
      *
      * @param channelName the name of the channel to connect to
      * @param readCollector the collector for the read operations
      */
-    public ChannelReadRecipe(String channelName, ReadCollector<?,?> readCollector) {
+    public ReadSubscription(String channelName, ReadCollector<?,?> readCollector) {
         this.channelName = channelName;
         this.readCollector = readCollector;
     }
     
     /**
-     * The name of the channel to read.
+     * The name of the channel to read from.
      *
      * @return the channel name
      */
@@ -39,11 +38,11 @@ public class ChannelReadRecipe {
     }
 
     /**
-     * The collector associated with the channel.
+     * The collector to be connected to the channel.
      *
-     * @return the read subscription parameters
+     * @return the read collector
      */
-    public ReadCollector<?,?> getReadSubscription() {
+    public ReadCollector<?,?> getCollector() {
         return readCollector;
     }
 
@@ -62,7 +61,7 @@ public class ChannelReadRecipe {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ChannelReadRecipe other = (ChannelReadRecipe) obj;
+        final ReadSubscription other = (ReadSubscription) obj;
         if (this.readCollector != other.readCollector && (this.readCollector == null || !this.readCollector.equals(other.readCollector))) {
             return false;
         }
@@ -71,7 +70,7 @@ public class ChannelReadRecipe {
 
     @Override
     public String toString() {
-        return "[ChannelReadRecipe for " + channelName + ": " + readCollector + "]";
+        return "[ReadSubscription for " + channelName + ": " + readCollector + "]";
     }
     
 }

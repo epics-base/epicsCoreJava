@@ -124,13 +124,13 @@ public abstract class DataSource {
     
     // Keeps track of the recipes that were opened with
     // this data source.
-    private final Set<ChannelReadRecipe> readRecipes = Collections.synchronizedSet(new HashSet<ChannelReadRecipe>());
-    private final Set<ChannelWriteRecipe> writeRecipes = Collections.synchronizedSet(new HashSet<ChannelWriteRecipe>());
+    private final Set<ReadSubscription> readRecipes = Collections.synchronizedSet(new HashSet<ReadSubscription>());
+    private final Set<WriteSubscription> writeRecipes = Collections.synchronizedSet(new HashSet<WriteSubscription>());
 
-    private final ProcessingQueue<ChannelReadRecipe> connectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelReadRecipe>>() {
+    private final ProcessingQueue<ReadSubscription> connectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
         @Override
-        public void accept(List<ChannelReadRecipe> list) {
-            for (ChannelReadRecipe channelReadRecipe : list) {
+        public void accept(List<ReadSubscription> list) {
+            for (ReadSubscription channelReadRecipe : list) {
                 try {
                     readRecipes.add(channelReadRecipe);
                     String channelName = channelReadRecipe.getChannelName();
@@ -138,24 +138,24 @@ public abstract class DataSource {
                     if (channelHandler == null) {
                         throw new RuntimeException("Channel named '" + channelName + "' not found");
                     }
-                    channelHandler.addReader(channelReadRecipe.getReadSubscription());
+                    channelHandler.addReader(channelReadRecipe.getCollector());
                 } catch(Exception ex) {
                     // If an error happens while adding the read subscription,
                     // notify the appropriate handler
-                    channelReadRecipe.getReadSubscription().notifyError(ex);
+                    channelReadRecipe.getCollector().notifyError(ex);
                 }
             }
         }
     });
     
-    public void connectRead(final ChannelReadRecipe readRecipe) {
+    public void connectRead(final ReadSubscription readRecipe) {
         connectReadQueue.submit(readRecipe);
     }
 
-    private final ProcessingQueue<ChannelReadRecipe> disconnectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelReadRecipe>>() {
+    private final ProcessingQueue<ReadSubscription> disconnectReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
         @Override
-        public void accept(List<ChannelReadRecipe> list) {
-            for (ChannelReadRecipe channelReadRecipe : list) {
+        public void accept(List<ReadSubscription> list) {
+            for (ReadSubscription channelReadRecipe : list) {
                 try {
                     if (!readRecipes.remove(channelReadRecipe)) {
                         log.log(Level.WARNING, "ChannelReadRecipe {0} was disconnected but was never connected. Ignoring it.", channelReadRecipe);
@@ -166,26 +166,26 @@ public abstract class DataSource {
                         // connection and a proper notification was sent then. Silently
                         // ignore it.
                         if (channelHandler != null) {
-                            channelHandler.removeReader(channelReadRecipe.getReadSubscription());
+                            channelHandler.removeReader(channelReadRecipe.getCollector());
                         }
                     }
                 } catch(Exception ex) {
                     // If an error happens while adding the read subscription,
                     // notify the appropriate handler
-                    channelReadRecipe.getReadSubscription().notifyError(ex);
+                    channelReadRecipe.getCollector().notifyError(ex);
                 }
             }
         }
     });
     
-    public void disconnectRead(final ChannelReadRecipe readRecipe) {
+    public void disconnectRead(final ReadSubscription readRecipe) {
         disconnectReadQueue.submit(readRecipe);
     }
 
-    private final ProcessingQueue<ChannelWriteRecipe> connectWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelWriteRecipe>>() {
+    private final ProcessingQueue<WriteSubscription> connectWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<WriteSubscription>>() {
         @Override
-        public void accept(List<ChannelWriteRecipe> list) {
-            for (ChannelWriteRecipe channelWriteRecipe : list) {
+        public void accept(List<WriteSubscription> list) {
+            for (WriteSubscription channelWriteRecipe : list) {
                 try {
                     writeRecipes.add(channelWriteRecipe);
                     String channelName = channelWriteRecipe.getChannelName();
@@ -193,24 +193,24 @@ public abstract class DataSource {
                     if (channelHandler == null) {
                         throw new RuntimeException("Channel named '" + channelName + "' not found");
                     }
-                    channelHandler.addWriter(channelWriteRecipe.getWriteSubscription());
+                    channelHandler.addWriter(channelWriteRecipe.getCollector());
                 } catch(Exception ex) {
                     // If an error happens while adding the read subscription,
                     // notify the appropriate handler
-                    channelWriteRecipe.getWriteSubscription().notifyError(ex);
+                    channelWriteRecipe.getCollector().notifyError(ex);
                 }
             }
         }
     });
     
-    public void connectWrite(final ChannelWriteRecipe writeRecipe) {
+    public void connectWrite(final WriteSubscription writeRecipe) {
         connectWriteQueue.submit(writeRecipe);
     }
 
-    private final ProcessingQueue<ChannelWriteRecipe> disconnectWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<ChannelWriteRecipe>>() {
+    private final ProcessingQueue<WriteSubscription> disconnectWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<WriteSubscription>>() {
         @Override
-        public void accept(List<ChannelWriteRecipe> list) {
-            for (ChannelWriteRecipe channelWriteRecipe : list) {
+        public void accept(List<WriteSubscription> list) {
+            for (WriteSubscription channelWriteRecipe : list) {
                 try {
                     if (!writeRecipes.remove(channelWriteRecipe)) {
                         log.log(Level.WARNING, "ChannelWriteRecipe {0} was disconnected but was never connected. Ignoring it.", channelWriteRecipe);
@@ -221,19 +221,19 @@ public abstract class DataSource {
                         // connection and a proper notification was sent then. Silently
                         // ignore it.
                         if (channelHandler != null) {
-                            channelHandler.removeWriter(channelWriteRecipe.getWriteSubscription());
+                            channelHandler.removeWriter(channelWriteRecipe.getCollector());
                         }
                     }
                 } catch(Exception ex) {
                     // If an error happens while adding the read subscription,
                     // notify the appropriate handler
-                    channelWriteRecipe.getWriteSubscription().notifyError(ex);
+                    channelWriteRecipe.getCollector().notifyError(ex);
                 }
             }
         }
     });
     
-    public void disconnectWrite(final ChannelWriteRecipe writeRecipe) {
+    public void disconnectWrite(final WriteSubscription writeRecipe) {
         disconnectWriteQueue.submit(writeRecipe);
     }
 

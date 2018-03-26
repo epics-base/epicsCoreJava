@@ -158,7 +158,7 @@ public class CompositeDataSource extends DataSource {
     }
     
     @Override
-    public void connectRead(final ChannelReadRecipe readRecipe) {
+    public void connectRead(final ReadSubscription readRecipe) {
         try {
             String name = nameOf(readRecipe.getChannelName());
             String dataSource = sourceOf(readRecipe.getChannelName());
@@ -166,15 +166,15 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).connectRead(new ChannelReadRecipe(name, readRecipe.getReadSubscription()));
+            retrieveDataSource(dataSource).connectRead(new ReadSubscription(name, readRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
-            readRecipe.getReadSubscription().notifyError(ex);
+            readRecipe.getCollector().notifyError(ex);
         }
     }
 
     @Override
-    public void disconnectRead(ChannelReadRecipe readRecipe) {
+    public void disconnectRead(ReadSubscription readRecipe) {
         try {
             String name = nameOf(readRecipe.getChannelName());
             String dataSource = sourceOf(readRecipe.getChannelName());
@@ -182,10 +182,10 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).disconnectRead(new ChannelReadRecipe(name, readRecipe.getReadSubscription()));
+            retrieveDataSource(dataSource).disconnectRead(new ReadSubscription(name, readRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
-            readRecipe.getReadSubscription().notifyError(ex);
+            readRecipe.getCollector().notifyError(ex);
         }
     }
     
@@ -211,7 +211,7 @@ public class CompositeDataSource extends DataSource {
     }
 
     @Override
-    public void connectWrite(ChannelWriteRecipe writeRecipe) {
+    public void connectWrite(WriteSubscription writeRecipe) {
         try {
             String name = nameOf(writeRecipe.getChannelName());
             String dataSource = sourceOf(writeRecipe.getChannelName());
@@ -219,15 +219,15 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).connectWrite(new ChannelWriteRecipe(name, writeRecipe.getWriteSubscription()));
+            retrieveDataSource(dataSource).connectWrite(new WriteSubscription(name, writeRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
-            writeRecipe.getWriteSubscription().notifyError(ex);
+            writeRecipe.getCollector().notifyError(ex);
         }
     }
 
     @Override
-    public void disconnectWrite(ChannelWriteRecipe writeRecipe) {
+    public void disconnectWrite(WriteSubscription writeRecipe) {
         try {
             String name = nameOf(writeRecipe.getChannelName());
             String dataSource = sourceOf(writeRecipe.getChannelName());
@@ -235,10 +235,10 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).disconnectWrite(new ChannelWriteRecipe(name, writeRecipe.getWriteSubscription()));
+            retrieveDataSource(dataSource).disconnectWrite(new WriteSubscription(name, writeRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
-            writeRecipe.getWriteSubscription().notifyError(ex);
+            writeRecipe.getCollector().notifyError(ex);
         }
     }
     
