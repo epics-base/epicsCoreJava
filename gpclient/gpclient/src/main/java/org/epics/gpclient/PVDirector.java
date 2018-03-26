@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
@@ -60,9 +61,22 @@ public class PVDirector<R, W> {
     /** Creation for stack trace */
     private final Exception creationStackTrace = new Exception("PV was never closed (stack trace for creation)");
     /** Used to ignore duplicated errors */
-    private final AtomicReference<Exception> previousCalculationException = new AtomicReference<>();
+    private final AtomicReference<Notification> lastNotification = new AtomicReference<>();
     /** Maximum rate for notification */
     final Duration maxRate;
+    
+    private class Notification {
+        final R readValue;
+        final boolean readConnection;
+        final PVEvent event;
+
+        Notification(R readValue, boolean readConnection, PVEvent event) {
+            this.readValue = readValue;
+            this.readConnection = readConnection;
+            this.event = event;
+        }
+        
+    }
     
     private RateDecoupler scanStrategy;
 
@@ -241,15 +255,7 @@ public class PVDirector<R, W> {
             } catch (RuntimeException ex) {
                 // Calculation failed
                 event = event.removeType(PVEvent.Type.VALUE);
-                
-                // Don't continue giving the same exception over and over
-                Exception previousException = previousCalculationException.get();
-                if (previousException == null ||
-                        !ex.getClass().equals(previousException.getClass()) ||
-                        !ex.getMessage().equals(previousException.getMessage())) {
-                    event = event.addEvent(PVEvent.exceptionEvent(ex));
-                    previousCalculationException.set(ex);
-                }
+                event = event.addEvent(PVEvent.exceptionEvent(ex));
             } catch (Throwable ex) {
                 log.log(Level.SEVERE, "Unrecoverable error during scanning", ex);
             }
@@ -262,18 +268,43 @@ public class PVDirector<R, W> {
             
             // If we are connected after a timeout, ignore the timeout
             if (newConnection && event.getException() instanceof TimeoutException) {
-                event.removeType(PVEvent.Type.READ_EXCEPTION);
+                event = event.removeType(PVEvent.Type.READ_EXCEPTION);
             }
         }
 
-        // TODO: optimize the case where the value is exactly the same
+        // Don't repeat notifications
+        Notification previousNotification = lastNotification.get();
+        if (previousNotification != null) {
+            if (event.isType(PVEvent.Type.READ_CONNECTION) && previousNotification.readConnection == newConnection) {
+                event = event.removeType(PVEvent.Type.READ_CONNECTION);
+            }
+            if (event.isType(PVEvent.Type.VALUE) && previousNotification.readValue == newValue) {
+                event = event.removeType(PVEvent.Type.VALUE);
+            }
+            Exception previousReadException = previousNotification.event.getException();
+            Exception currentReadException = event.getException();
+            if (event.isType(PVEvent.Type.READ_EXCEPTION) && previousReadException != null && currentReadException != null &&
+                    currentReadException.getClass().equals(previousReadException.getClass()) &&
+                    Objects.equals(currentReadException.getMessage(), previousReadException.getMessage())) {
+                event = event.removeType(PVEvent.Type.READ_EXCEPTION);
+            }
+        } else {
+            if (event.isType(PVEvent.Type.READ_CONNECTION) && newConnection == false) {
+                event = event.removeType(PVEvent.Type.READ_CONNECTION);
+            }
+            if (event.isType(PVEvent.Type.VALUE) && newValue == null) {
+                event = event.removeType(PVEvent.Type.VALUE);
+            }
+        }
+        
+        if (event.getType().isEmpty()) {
+            scanStrategy.readyForNextEvent();
+            return;
+        }
         
         // Prepare values to ship to the other thread.
-        // The data will be shipped as part of the task,
-        // which is properly synchronized by the executor
-        final R finalValue = newValue;
-        final boolean finalConnection = newConnection;
-        final PVEvent finalEvent = event;
+        lastNotification.set(new Notification(newValue, newConnection, event));
+        
         notificationInFlight = true;
         notificationExecutor.execute(new Runnable() {
 
@@ -281,6 +312,7 @@ public class PVDirector<R, W> {
             public void run() {
                 try {
                     PVImpl<R, W> pv = pvRef.get();
+                    Notification notification = lastNotification.get();
                     // Proceed with notification only if the PV was not garbage
                     // collected
                     if (pv != null) {
@@ -296,14 +328,14 @@ public class PVDirector<R, W> {
                         //    notificationInFlight double checks this for now and
                         //    can be removed in a second phase.
                         
-                        if (finalEvent.isType(PVEvent.Type.READ_CONNECTION) && finalEvent.isType(PVEvent.Type.VALUE)) {
-                            pv.fireConnectionValueUpdate(finalEvent, finalConnection, finalValue);
-                        } else if (finalEvent.isType(PVEvent.Type.READ_CONNECTION)) {
-                            pv.fireConnectionUpdate(finalEvent, finalConnection);
-                        } else if (finalEvent.isType(PVEvent.Type.VALUE)) {
-                            pv.fireValueUpdate(finalEvent, finalValue);
+                        if (notification.event.isType(PVEvent.Type.READ_CONNECTION) && notification.event.isType(PVEvent.Type.VALUE)) {
+                            pv.fireConnectionValueUpdate(notification.event, notification.readConnection, notification.readValue);
+                        } else if (notification.event.isType(PVEvent.Type.READ_CONNECTION)) {
+                            pv.fireConnectionUpdate(notification.event, notification.readConnection);
+                        } else if (notification.event.isType(PVEvent.Type.VALUE)) {
+                            pv.fireValueUpdate(notification.event, notification.readValue);
                         } else {
-                            pv.fireEvent(finalEvent);
+                            pv.fireEvent(notification.event);
                         }
                     }
                 } finally {
@@ -336,10 +368,14 @@ public class PVDirector<R, W> {
     }
     
     private final Consumer<PVEvent> desiredRateEventListener = (PVEvent event) -> {
-        if (isActive()) {
-            notifyPv(event);
-        } else {
-            close();
+        try {
+            if (isActive()) {
+                notifyPv(event);
+            } else {
+                close();
+            }
+        } catch(Exception ex) {
+            log.log(Level.SEVERE, "GPClient fatal error", ex);
         }
     };
 
