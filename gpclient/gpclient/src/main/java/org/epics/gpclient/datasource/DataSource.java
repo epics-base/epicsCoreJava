@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.epics.gpclient.ReadCollector;
 import static org.epics.util.concurrent.Executors.namedPool;
 
 /**
@@ -159,7 +160,7 @@ public abstract class DataSource {
             } catch (Exception ex) {
                 // If any error happens while creating the channel,
                 // report it to the exception handler of that channel
-                channelRecipe.getReadSubscription().getCollector().notifyError(ex);
+                channelRecipe.getReadSubscription().notifyError(ex);
             }
             
         }
@@ -179,7 +180,7 @@ public abstract class DataSource {
                         } catch(Exception ex) {
                             // If an error happens while adding the read subscription,
                             // notify the appropriate handler
-                            channelRecipe.getReadSubscription().getCollector().notifyError(ex);
+                            channelRecipe.getReadSubscription().notifyError(ex);
                         }
                     }
                 }
@@ -198,7 +199,7 @@ public abstract class DataSource {
      */
     public void disconnectRead(final ReadRecipe readRecipe) {
         // Find the channels to disconnect
-        final Map<ChannelHandler, ChannelHandlerReadSubscription> handlers = new HashMap<>();
+        final Map<ChannelHandler, ReadCollector> handlers = new HashMap<>();
         for (ChannelReadRecipe channelRecipe : readRecipe.getChannelReadRecipes()) {
             if (!readRecipes.contains(channelRecipe)) {
                 log.log(Level.WARNING, "ChannelReadRecipe {0} was disconnected but was never connected. Ignoring it.", channelRecipe);
@@ -220,9 +221,9 @@ public abstract class DataSource {
 
             @Override
             public void run() {
-                for (Map.Entry<ChannelHandler, ChannelHandlerReadSubscription> entry : handlers.entrySet()) {
+                for (Map.Entry<ChannelHandler, ReadCollector> entry : handlers.entrySet()) {
                     ChannelHandler channelHandler = entry.getKey();
-                    ChannelHandlerReadSubscription channelHandlerReadSubscription = entry.getValue();
+                    ReadCollector channelHandlerReadSubscription = entry.getValue();
                     channelHandler.removeReader(channelHandlerReadSubscription);
                 }
             }

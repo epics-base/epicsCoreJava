@@ -50,22 +50,22 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     private boolean writeConnected = false;
     private MessagePayload lastMessage;
     private ConnectionPayload connectionPayload;
-    private Map<ChannelHandlerReadSubscription, MonitorHandler> readers = new ConcurrentHashMap<>();
+    private Map<ReadCollector, MonitorHandler> readers = new ConcurrentHashMap<>();
     private Map<ChannelHandlerWriteSubscription, Runnable> writers = new ConcurrentHashMap<>();
     private boolean processMessageOnDisconnect = true;
     private boolean processMessageOnReconnect = true;
     
     private class MonitorHandler {
 
-        private final ChannelHandlerReadSubscription subscription;
+        private final ReadCollector subscription;
         private DataSourceTypeAdapter<ConnectionPayload, MessagePayload> typeAdapter;
 
-        public MonitorHandler(ChannelHandlerReadSubscription subscription) {
+        public MonitorHandler(ReadCollector subscription) {
             this.subscription = subscription;
         }
         
         public final void processConnection(boolean connection) {
-            subscription.getCollector().updateConnection(connection);;
+            subscription.updateConnection(connection);;
         }
 
         public final void processValue(MessagePayload payload) {
@@ -74,9 +74,9 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
             
             // Lock the collector and prepare the new value.
             try {
-                typeAdapter.updateCache(subscription.getCollector(), getConnectionPayload(), payload);
+                typeAdapter.updateCache(subscription, getConnectionPayload(), payload);
             } catch (RuntimeException e) {
-                subscription.getCollector().notifyError(e);
+                subscription.notifyError(e);
             }
         }
         
@@ -85,9 +85,9 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
                 typeAdapter = null;
             } else {
                 try {
-                    typeAdapter = MultiplexedChannelHandler.this.findTypeAdapter(subscription.getCollector(), getConnectionPayload());
+                    typeAdapter = MultiplexedChannelHandler.this.findTypeAdapter(subscription, getConnectionPayload());
                 } catch(RuntimeException ex) {
-                    subscription.getCollector().notifyError(ex);
+                    subscription.notifyError(ex);
                 }
             }
         }
@@ -100,8 +100,8 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
      * @param ex the exception to notify
      */
     protected synchronized final void reportExceptionToAllReadersAndWriters(Exception ex) {
-        for (ChannelHandlerReadSubscription subscription : readers.keySet()) {
-            subscription.getCollector().notifyError(ex);
+        for (ReadCollector subscription : readers.keySet()) {
+            subscription.notifyError(ex);
         }
         for (ChannelHandlerWriteSubscription subscription : writers.keySet()) {
             subscription.getWriteCollector().notifyError(ex);
@@ -240,7 +240,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     }
 
     @Override
-    protected synchronized void addReader(ChannelHandlerReadSubscription subscription) {
+    protected synchronized void addReader(ReadCollector subscription) {
         readUsageCounter++;
         MonitorHandler monitor = new MonitorHandler(subscription);
         readers.put(subscription, monitor);
@@ -257,7 +257,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     }
 
     @Override
-    protected synchronized void removeReader(ChannelHandlerReadSubscription subscription) {
+    protected synchronized void removeReader(ReadCollector subscription) {
         readers.remove(subscription);
         readUsageCounter--;
         guardedDisconnect();

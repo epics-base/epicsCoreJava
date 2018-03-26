@@ -195,7 +195,7 @@ public class CompositeDataSource extends DataSource {
                 retrieveDataSource(entry.getKey()).connectRead(entry.getValue());
             } catch (RuntimeException ex) {
                 // If data source fail, still go and connect the others
-                readRecipe.getChannelReadRecipes().iterator().next().getReadSubscription().getCollector().notifyError(ex);
+                readRecipe.getChannelReadRecipes().iterator().next().getReadSubscription().notifyError(ex);
             }
         }
     }
@@ -210,7 +210,7 @@ public class CompositeDataSource extends DataSource {
                 retrieveDataSource(entry.getKey()).disconnectRead(entry.getValue());
             } catch(RuntimeException ex) {
                 // If a data source fails, still go and disconnect the others
-                readRecipe.getChannelReadRecipes().iterator().next().getReadSubscription().getCollector().notifyError(ex);
+                readRecipe.getChannelReadRecipes().iterator().next().getReadSubscription().notifyError(ex);
             }
         }
     }

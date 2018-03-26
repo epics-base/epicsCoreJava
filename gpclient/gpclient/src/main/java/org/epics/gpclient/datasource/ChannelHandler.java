@@ -7,6 +7,7 @@ package org.epics.gpclient.datasource;
 import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Logger;
+import org.epics.gpclient.ReadCollector;
 
 /**
  * Manages the connection for each channel of a data source.
@@ -77,14 +78,14 @@ public abstract class ChannelHandler {
      * 
      * @param subscription the data required for a subscription
      */
-    protected abstract void addReader(ChannelHandlerReadSubscription subscription);
+    protected abstract void addReader(ReadCollector subscription);
 
     /**
      * Used by the data source to remove a read request.
      * 
      * @param subscription the subscription to remove
      */
-    protected abstract void removeReader(ChannelHandlerReadSubscription subscription);
+    protected abstract void removeReader(ReadCollector subscription);
 
     /**
      * Used by the data source to prepare the channel managed by this handler

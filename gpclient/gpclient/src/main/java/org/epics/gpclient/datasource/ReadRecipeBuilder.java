@@ -20,7 +20,7 @@ public class ReadRecipeBuilder {
     private final List<ChannelReadRecipe> recipes = new ArrayList<>();
 
     public ReadRecipeBuilder addChannel(String channelName, ReadCollector<?, ?> collector) {
-        recipes.add(new ChannelReadRecipe(channelName, new ChannelHandlerReadSubscription(collector)));
+        recipes.add(new ChannelReadRecipe(channelName, collector));
         return this;
     }
 
