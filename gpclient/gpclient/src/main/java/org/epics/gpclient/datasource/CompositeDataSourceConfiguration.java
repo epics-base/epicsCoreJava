@@ -25,9 +25,8 @@ import org.xml.sax.SAXException;
  */
 public final class CompositeDataSourceConfiguration {
     
-    // Package private so we don't need getters
-    String delimiter = "://";
-    String defaultDataSource;
+    private String delimiter = "://";
+    private String defaultDataSource;
 
     public CompositeDataSourceConfiguration() {
     }

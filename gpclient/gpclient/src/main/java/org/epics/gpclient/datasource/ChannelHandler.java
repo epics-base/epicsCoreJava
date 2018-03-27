@@ -11,7 +11,7 @@ import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.WriteCollector;
 
 /**
- * Manages the connection for each channel of a data source.
+ * Manages the connection of a channel for a data source.
  *
  * @author carcassi
  */
@@ -74,34 +74,32 @@ public abstract class ChannelHandler {
     public abstract int getWriteUsageCounter();
 
     /**
-     * Used by the data source to add a read request on the channel managed
-     * by this handler.
+     * Starts sending read notification to the given collector.
      * 
-     * @param subscription the data required for a subscription
+     * @param collector the data collector
      */
-    protected abstract void addReader(ReadCollector subscription);
+    protected abstract void addReader(ReadCollector collector);
 
     /**
-     * Used by the data source to remove a read request.
+     * Stops sending read notification to the given collector.
      * 
-     * @param subscription the subscription to remove
+     * @param collector the data collector
      */
-    protected abstract void removeReader(ReadCollector subscription);
+    protected abstract void removeReader(ReadCollector collector);
 
     /**
-     * Used by the data source to prepare the channel managed by this handler
-     * for write.
+     * Starts sending/receiving write notification to the given collector.
      * 
-     * @param subscription the data required for the subscription
+     * @param collector the data collector
      */
-    protected abstract void addWriter(WriteCollector subscription);
+    protected abstract void addWriter(WriteCollector collector);
 
     /**
-     * Used by the data source to conclude writes to the channel managed by this handler.
+     * Stops sending/receiving write notification to the given collector.
      * 
-     * @param subscription the subscription to remove
+     * @param collector the data collector
      */
-    protected abstract void removeWriter(WriteCollector subscription);
+    protected abstract void removeWriter(WriteCollector collector);
 
     /**
      * Returns true if it is connected.

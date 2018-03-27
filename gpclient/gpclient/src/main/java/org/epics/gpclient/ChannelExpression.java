@@ -57,7 +57,7 @@ public class ChannelExpression<R> extends ReadExpressionImpl<R> {
 //    public void startWrite(Object director) {
 //        WriteRecipe recipe = new WriteRecipeBuilder().addChannel(channelName, writeCollector).build();
 //        DataSource dataSource = null; // get the Datasource
-//        dataSource.connectWrite(recipe);
+//        dataSource.startWrite(recipe);
 //    }
     
 }

@@ -4,7 +4,6 @@
  */
 package org.epics.gpclient.datasource;
 
-import java.io.InputStream;
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -54,7 +53,7 @@ public abstract class DataSourceProvider {
         return composite;
     }
     
-    public static <T> void load(Class<T> serviceClazz, Logger log, Consumer<T> consumer) {
+    private static <T> void load(Class<T> serviceClazz, Logger log, Consumer<T> consumer) {
         log.log(Level.CONFIG, "Fetching {0}s", serviceClazz.getSimpleName());
         int count = 0;
         for (T service : ServiceLoader.load(serviceClazz)) {

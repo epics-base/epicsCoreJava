@@ -41,13 +41,13 @@ public class MockDataSource extends DataSource {
     }
 
     @Override
-    public void connectWrite(WriteSubscription writeRecipe) {
+    public void startWrite(WriteSubscription writeRecipe) {
         this.writeRecipe = writeRecipe;
         connectedWriteRecipes.add(writeRecipe);
     }
 
     @Override
-    public void disconnectWrite(WriteSubscription writeRecipe) {
+    public void stopWrite(WriteSubscription writeRecipe) {
         this.writeRecipe = writeRecipe;
         connectedWriteRecipes.remove(writeRecipe);
     }

@@ -13,41 +13,40 @@ import java.util.logging.Logger;
 /**
  * A data source that can dispatch a request to multiple different
  * data sources.
+ * <p>
+ * This supports lazy initialization of DataSources: DataSourceProviders are
+ * initialized only if the a channel of the corresponding DataSource is opened.
+ * There is not penalty, then, if no channel is every opened.
  *
  * @author carcassi
  */
 public class CompositeDataSource extends DataSource {
     
     private static final Logger log = Logger.getLogger(CompositeDataSource.class.getName());
-    
-    // XXX: quickest way to implement the idea of a session is to keep a handle
-    // to a global composite datasource, so that some parts can be overridden
-    // for each session (say the local variables) and other can be shared
-    // (say data and network/protocol channels).
-    private final CompositeDataSource globalDataSource;
 
     // Stores all data sources by name
     private final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
     private final Map<String, DataSourceProvider> dataSourceProviders = new ConcurrentHashMap<>();
 
-    private volatile CompositeDataSourceConfiguration conf = new CompositeDataSourceConfiguration();
+    private final String delimiter;
+    private final String defaultDataSource;
 
     /**
      * Creates a new CompositeDataSource.
      */
     public CompositeDataSource() {
-        super(true);
-        globalDataSource = null;
+        this(new CompositeDataSourceConfiguration());
     }
-
+    
     /**
-     * Creates a session on the globalDataSource.
+     * Creates a new CompositeDataSource with the given configuration.
      * 
-     * @param globalDataSource the parent data source
+     * @param conf the configuration for the new CompositeDataSource
      */
-    private CompositeDataSource(CompositeDataSource globalDataSource) {
+    public CompositeDataSource(CompositeDataSourceConfiguration conf) {
         super(true);
-        this.globalDataSource = globalDataSource;
+        this.delimiter = conf.getDelimiter();
+        this.defaultDataSource = conf.getDefaultDataSource();
     }
 
     /**
@@ -56,22 +55,7 @@ public class CompositeDataSource extends DataSource {
      * @return the configuration; can't be null
      */
     public CompositeDataSourceConfiguration getConfiguration() {
-        return conf;
-    }
-
-    /**
-     * Changes the composite data source configuration.
-     * <p>
-     * NOTE: the configuration should be changed before any channel
-     * is opened. The result of later changes is not well defined.
-     *
-     * @param conf the new configuration; can't be null
-     */
-    public void setConfiguration(CompositeDataSourceConfiguration conf) {
-        if (conf == null) {
-            throw new NullPointerException("Configuration can't be null.");
-        }
-        this.conf = conf;
+        return new CompositeDataSourceConfiguration().delimiter(delimiter).defaultDataSource(defaultDataSource);
     }
 
     /**
@@ -129,7 +113,6 @@ public class CompositeDataSource extends DataSource {
     }
     
     private  String nameOf(String channelName) {
-        String delimiter = conf.delimiter;
         int indexDelimiter = channelName.indexOf(delimiter);
         if (indexDelimiter == -1) {
             return channelName;
@@ -139,19 +122,17 @@ public class CompositeDataSource extends DataSource {
     }
     
     private String sourceOf(String channelName) {
-        String delimiter = conf.delimiter;
-        String defaultDataSource = conf.defaultDataSource;
         int indexDelimiter = channelName.indexOf(delimiter);
         if (indexDelimiter == -1) {
             if (defaultDataSource == null)
                 throw new IllegalArgumentException("Channel " + channelName + " uses default data source but one was never set.");
-            if (!dataSourceProviders.containsKey(defaultDataSource) && (globalDataSource == null || !globalDataSource.dataSourceProviders.containsKey(defaultDataSource))) {
+            if (!dataSourceProviders.containsKey(defaultDataSource)) {
                 throw new IllegalArgumentException("Channel " + channelName + " uses default data source " + defaultDataSource + " which was not found.");
             }
             return defaultDataSource;
         } else {
             String source = channelName.substring(0, indexDelimiter);
-            if (dataSourceProviders.containsKey(source) || (globalDataSource != null && globalDataSource.dataSourceProviders.containsKey(source)))
+            if (dataSourceProviders.containsKey(source))
                 return source;
             throw new IllegalArgumentException("Data source " + source + " for " + channelName + " was not configured.");
         }
@@ -194,14 +175,11 @@ public class CompositeDataSource extends DataSource {
         if (dataSource == null) {
             DataSourceProvider factory = dataSourceProviders.get(name);
             if (factory == null) {
-                if (globalDataSource != null) {
-                    return globalDataSource.retrieveDataSource(name);
-                }
-                throw new IllegalArgumentException("DataSource '" + name + conf.delimiter + "' was not configured.");
+                throw new IllegalArgumentException("DataSource '" + name + delimiter + "' was not configured.");
             } else {
                 dataSource = factory.createInstance();
                 if (dataSource == null) {
-                    throw new IllegalStateException("DataSourceProvider '" + name + conf.delimiter + "' did not create a valid datasource.");
+                    throw new IllegalStateException("DataSourceProvider '" + name + delimiter + "' did not create a valid datasource.");
                 }
                 dataSources.put(name, dataSource);
                 log.log(Level.CONFIG, "Created instance for data source {0} ({1})", new Object[]{name, dataSource.getClass().getSimpleName()});
@@ -211,7 +189,7 @@ public class CompositeDataSource extends DataSource {
     }
 
     @Override
-    public void connectWrite(WriteSubscription writeRecipe) {
+    public void startWrite(WriteSubscription writeRecipe) {
         try {
             String name = nameOf(writeRecipe.getChannelName());
             String dataSource = sourceOf(writeRecipe.getChannelName());
@@ -219,7 +197,7 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).connectWrite(new WriteSubscription(name, writeRecipe.getCollector()));
+            retrieveDataSource(dataSource).startWrite(new WriteSubscription(name, writeRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
             writeRecipe.getCollector().notifyError(ex);
@@ -227,7 +205,7 @@ public class CompositeDataSource extends DataSource {
     }
 
     @Override
-    public void disconnectWrite(WriteSubscription writeRecipe) {
+    public void stopWrite(WriteSubscription writeRecipe) {
         try {
             String name = nameOf(writeRecipe.getChannelName());
             String dataSource = sourceOf(writeRecipe.getChannelName());
@@ -235,7 +213,7 @@ public class CompositeDataSource extends DataSource {
             if (dataSource == null)
                 throw new IllegalArgumentException("Channel " + name + " uses the default data source but one was never set.");
 
-            retrieveDataSource(dataSource).disconnectWrite(new WriteSubscription(name, writeRecipe.getCollector()));
+            retrieveDataSource(dataSource).stopWrite(new WriteSubscription(name, writeRecipe.getCollector()));
         } catch (RuntimeException ex) {
             // If data source fail, report the error
             writeRecipe.getCollector().notifyError(ex);
@@ -268,31 +246,17 @@ public class CompositeDataSource extends DataSource {
     @Override
     public Map<String, ChannelHandler> getChannels() {
         Map<String, ChannelHandler> channels = new HashMap<String, ChannelHandler>();
-        if (globalDataSource != null) {
-            channels.putAll(globalDataSource.getChannels());
-        }
         for (Entry<String, DataSource> entry : dataSources.entrySet()) {
             String dataSourceName = entry.getKey();
             DataSource dataSource = entry.getValue();
             for (Entry<String, ChannelHandler> channelEntry : dataSource.getChannels().entrySet()) {
                 String channelName = channelEntry.getKey();
                 ChannelHandler channelHandler = channelEntry.getValue();
-                channels.put(dataSourceName + conf.delimiter + channelName, channelHandler);
+                channels.put(dataSourceName + delimiter + channelName, channelHandler);
             }
         }
         
         return channels;
-    }
-    
-    /**
-     * Creates a new composite data source that can be overridden.
-     * 
-     * @return a new composite datasource
-     */
-    public CompositeDataSource createSessionDataSource() {
-        CompositeDataSource session = new CompositeDataSource(this);
-        session.setConfiguration(conf);
-        return session;
     }
 
 }
