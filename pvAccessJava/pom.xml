@@ -1,0 +1,297 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-parent</artifactId>
+        <version>7.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>epics-pvaccess</artifactId>
+    <version>5.1.0-SNAPSHOT</version>
+
+    <name>pvAccessJava</name>
+    <url>https://github.com/epics-base/pvAccessJava</url>
+
+    <!-- Explicitly declare snapshot repository -->
+    <repositories>
+        <repository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>OSS Snapshots</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-pvdata</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.epics</groupId>
+            <artifactId>jca</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.japex</groupId>
+            <artifactId>japex-maven-plugin</artifactId>
+            <version>1.2.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <!-- Use lower case for bundle name, as agreed upon with CS-Studio devs -->
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>org.epics.pvaccess</Bundle-SymbolicName>
+                        <Import-Package>sun.misc;resolution:=optional,*</Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>with-japex</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.sun.japex</groupId>
+                        <artifactId>japex-maven-plugin</artifactId>
+                        <version>1.2.4</version>
+                        <executions>
+                            <execution>
+                                <id>japex</id>
+                                <goals>
+                                    <goal>japex</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <japexConfig>
+                                <testSuite name="MessageProcessPerformance" xmlns="http://www.sun.com/japex/testSuite">
+                                    <param name="japex.namedClassPath" value="maven.test.classpath"/>
+                                    <param name="japex.resultUnit" value="tps"/>
+                                    <param name="japex.chartType" value="linechart"/>
+                                    <param name="japex.plotDrivers" value="true"/>
+                                    <param name="japex.plotGroupSize" value="100000"/>
+                                    <param name="japex.warmupTime" value="3"/>
+                                    <param name="japex.runTime" value="10"/>
+                                    <driver name="TestAbstractCodec">
+                                        <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.MessageProcessPerformance"/>
+                                        <param name="description" value="Header process performance test"/>
+                                    </driver>
+		  
+                                    <testCase name="One-by-one control message">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="false"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+                                    <testCase name="Bulk of 1000 control messages">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="false"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+
+                                    <testCase name="One-by-one application message, zero payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 10 application messages, zero payload">
+                                        <param name="messagesInBuffer" value="10"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 20 application messages, zero payload">
+                                        <param name="messagesInBuffer" value="20"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 50 application messages, zero payload">
+                                        <param name="messagesInBuffer" value="50"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 100 application messages, zero payload">
+                                        <param name="messagesInBuffer" value="100"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 200 application messages, zero payload">
+                                        <param name="messagesInBuffer" value="200"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 500 application messages, zero payload">
+                                        <param name="messagesInBuffer" value="500"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, zero payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="0"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, 1-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="1"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, 7-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="7"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, aligned 8-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="8"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, 9-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="9"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, 15-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="15"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, 16-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="16"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, 32-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="32"/>
+                                    </testCase>
+
+                                    <testCase name="One-by-one application message, 64-byte payload">
+                                        <param name="messagesInBuffer" value="1"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="64"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, 1-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="1"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, 8-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="8"/>
+                                    </testCase>
+		  
+                                    <testCase name="Bulk of 1000 application messages, 15-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="15"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, 16-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="16"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, 32-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="32"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, 48-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="48"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, 56-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="56"/>
+                                    </testCase>
+
+                                    <testCase name="Bulk of 1000 application messages, 64-byte payload">
+                                        <param name="messagesInBuffer" value="1000"/>
+                                        <param name="applicationMessage" value="true"/>
+                                        <param name="payloadSize" value="64"/>
+                                    </testCase>
+
+                                </testSuite>
+
+            			
+                                <!--testSuite name="SerializationPerformance" xmlns="http://www.sun.com/japex/testSuite">
+                                    <param name="japex.namedClassPath" value="maven.test.classpath"/>
+                                    <param name="japex.resultUnit" value="tps"/>
+                                    <param name="japex.chartType" value="linechart"/>
+                                    <param name="japex.plotGroupSize" value="100000"/>
+                                    <param name="japex.warmupTime" value="10"/>
+                                    <param name="japex.runTime" value="10"/>
+
+                                    <driver name="PVByte">
+                                        <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.PVByteSerializationPerformance"/>
+                                        <param name="description" value="PVByte serialization performance test"/>
+                                    </driver>
+		  
+                                    <driver name="PVInt">
+                                        <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.PVIntSerializationPerformance"/>
+                                        <param name="description" value="PVInt serialization performance test"/>
+                                    </driver>
+
+                                    <driver name="PVDouble">
+                                        <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.PVDoubleSerializationPerformance"/>
+                                        <param name="description" value="PVDouble serialization performance test"/>
+                                    </driver>
+
+                                    <driver name="PVStructure">
+                                        <param name="japex.driverClass" value="org.epics.pvaccess.impl.remote.codec.test.perf.ExampleStructureSerializationPerformance"/>
+                                        <param name="description" value="PVStructure serialization performance test"/>
+                                    </driver>
+
+                                    <testCase name="serialization">
+                                        <param name="testSerialization" value="true"/>
+                                    </testCase>
+
+                                    <testCase name="deserialization">
+                                        <param name="testSerialization" value="false"/>
+                                    </testCase>
+
+                                </testSuite-->
+		
+                            </japexConfig>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+   
+</project>
