@@ -5,6 +5,7 @@
 package org.epics.gpclient;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Handler;
@@ -110,7 +111,6 @@ public class PassiveRateDecouplerTest {
     
     @Test
     public void fastEvents() throws Exception {
-        // TODO: make this test always pass, and get debug info if it doesn't
         repeatTest(10, new Callable<Object>() {
             @Override
             public Object call() throws Exception {
@@ -139,6 +139,48 @@ public class PassiveRateDecouplerTest {
                 decoupler.stop();
                 // 3 events: connection, first value, last value
                 assertThat(log.getEvents().size(), equalTo(3));
+                assertThat(log.getEvents().get(0).getType(), equalTo(Arrays.asList(PVEvent.Type.READ_CONNECTION)));
+                assertThat(log.getEvents().get(1).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE)));
+                assertThat(log.getEvents().get(2).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE)));
+                return null;
+            }
+        });
+    }
+    
+    @Test
+    public void fastEvents2() throws Exception {
+        repeatTest(10, new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                log = new DesiredRateEventLog();
+                RateDecoupler decoupler = new PassiveRateDecoupler(executor, Duration.ofMillis(100), log, null);
+                log.setDecoupler(decoupler);
+                decoupler.start();
+                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(100);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(1);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(1);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(1);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(1);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(1);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(1);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(1);
+                decoupler.getUpdateListener().accept(PVEvent.valueEvent());
+                Thread.sleep(150);
+                decoupler.stop();
+                // 3 events: connection, first value, last value
+                assertThat(log.getEvents().size(), equalTo(3));
+                assertThat(log.getEvents().get(0).getType(), equalTo(Arrays.asList(PVEvent.Type.READ_CONNECTION, PVEvent.Type.VALUE)));
+                assertThat(log.getEvents().get(1).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE)));
+                assertThat(log.getEvents().get(2).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE)));
                 return null;
             }
         });
