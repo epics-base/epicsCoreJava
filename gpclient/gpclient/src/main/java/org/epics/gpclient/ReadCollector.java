@@ -41,7 +41,6 @@ public abstract class ReadCollector<I, O> {
     void setUpdateListener(Consumer<PVEvent> notification) {
         synchronized (lock) {
             this.collectorListener = notification;
-            System.out.println("Collector set");
         }
     }
     
