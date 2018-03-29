@@ -18,6 +18,7 @@ public class GPClient {
     
     static {
         gpClient = new GPClientConfiguration().defaultMaxRate(Duration.ofMillis(1000))
+                .notificationExecutor(org.epics.util.concurrent.Executors.localThread())
                 .dataSource(DataSourceProvider.createDataSource())
                 .dataProcessingThreadPool(Executors.newScheduledThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
                 org.epics.util.concurrent.Executors.namedPool("PVMgr Worker "))).build();
