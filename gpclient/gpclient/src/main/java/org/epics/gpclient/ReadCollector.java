@@ -41,6 +41,7 @@ public abstract class ReadCollector<I, O> {
     void setUpdateListener(Consumer<PVEvent> notification) {
         synchronized (lock) {
             this.collectorListener = notification;
+            System.out.println("Collector set");
         }
     }
     
@@ -82,7 +83,9 @@ public abstract class ReadCollector<I, O> {
             listener = collectorListener;
         }
         // Run the task without holding the lock
-        listener.accept(PVEvent.exceptionEvent(ex));
+        if (listener != null) {
+            listener.accept(PVEvent.exceptionEvent(ex));
+        }
     }
     
 }
