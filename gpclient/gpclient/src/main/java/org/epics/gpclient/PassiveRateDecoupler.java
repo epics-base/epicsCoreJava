@@ -136,7 +136,7 @@ class PassiveRateDecoupler extends RateDecoupler {
                     log.log(logLevel, "Creating queued event {0}", Instant.now());
                 }
             } else {
-                queuedEvent.addEvent(event);
+                queuedEvent = queuedEvent.addEvent(event);
             }
 
             // If scan is not active, submit the next scan
