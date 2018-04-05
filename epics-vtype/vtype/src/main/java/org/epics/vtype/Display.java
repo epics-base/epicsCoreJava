@@ -150,7 +150,7 @@ public abstract class Display {
     
     private static final Display DISPLAY_NONE = of(Range.undefined(),
             Range.undefined(), Range.undefined(), Range.undefined(), 
-            "", DEFAULT_NUMBERFORMAT);
+            defaultUnits(), DEFAULT_NUMBERFORMAT);
 
     /**
      * The default number format for number display.
@@ -159,6 +159,15 @@ public abstract class Display {
      */
     public static NumberFormat defaultNumberFormat() {
         return DEFAULT_NUMBERFORMAT;
+    }
+
+    /**
+     * The default unit string.
+     * 
+     * @return an empty string
+     */
+    public static String defaultUnits() {
+        return "";
     }
     
     /**
