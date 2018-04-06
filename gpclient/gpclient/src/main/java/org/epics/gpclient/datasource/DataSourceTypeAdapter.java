@@ -30,7 +30,7 @@ public interface DataSourceTypeAdapter<ConnectionPayload, MessagePayload> {
      * @param connection the connection information
      * @return zero if there is no match, or the position of the type matched
      */
-    int match(ReadCollector<?, ?> cache, ConnectionPayload connection);
+    boolean match(ReadCollector<?, ?> cache, ConnectionPayload connection);
     
     /**
      * The parameters required to open a monitor for the channel. The

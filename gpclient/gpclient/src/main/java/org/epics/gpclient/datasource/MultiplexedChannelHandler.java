@@ -180,8 +180,8 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     private static DataSourceTypeAdapter<?, ?> defaultTypeAdapter = new DataSourceTypeAdapter<Object, Object>() {
 
             @Override
-            public int match(ReadCollector<?, ?> cache, Object connection) {
-                return 1;
+            public boolean match(ReadCollector<?, ?> cache, Object connection) {
+                return true;
             }
 
             @Override

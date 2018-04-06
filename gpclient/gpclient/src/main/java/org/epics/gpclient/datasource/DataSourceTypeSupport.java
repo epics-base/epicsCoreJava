@@ -38,20 +38,15 @@ public class DataSourceTypeSupport {
      * @return 0 if the type was not matched
      */
     protected <C, T extends DataSourceTypeAdapter<? super C,?>> T find(Collection<T> typeAdapters, ReadCollector<?, ?> cache, C connection) {
-        int matched = 0;
         List<T> matchedConverters = new ArrayList<T>();
         for (T converter : typeAdapters) {
-            int match = converter.match(cache, connection);
-            if (match != 0) {
-                if (match < matched) {
-                    matchedConverters.clear();
-                }
+            if (converter.match(cache, connection)) {
                 matchedConverters.add(converter);
             }
         }
         
         if (matchedConverters.size() != 1) {
-            throw new IllegalStateException(formatMessage(cache, connection, matched, matchedConverters));
+            throw new IllegalStateException(formatMessage(cache, connection, matchedConverters));
         }
         
         return matchedConverters.get(0);
@@ -63,12 +58,11 @@ public class DataSourceTypeSupport {
      * 
      * @param cache the cache used for the match
      * @param connection the connection payload used for the match
-     * @param match the result of the match
      * @param matchedConverters the matched converters; will either be 0 (no match)
      * or more than 1 (non unique match)
      * @return the message to be passed with the exception
      */
-    protected String formatMessage(ReadCollector<?, ?> cache, Object connection, int match, List<? extends DataSourceTypeAdapter<?, ?>> matchedConverters) {
+    protected String formatMessage(ReadCollector<?, ?> cache, Object connection, List<? extends DataSourceTypeAdapter<?, ?>> matchedConverters) {
         if (matchedConverters.isEmpty()) {
             return "DataSource misconfiguration: no match found to convert payload to type. ("
                     + cache.getType() + " - " + connection + ")";
