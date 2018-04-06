@@ -31,8 +31,17 @@ import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
+import org.epics.vtype.VByte;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
+import org.epics.vtype.VFloat;
+import org.epics.vtype.VInt;
+import org.epics.vtype.VLong;
+import org.epics.vtype.VShort;
+import org.epics.vtype.VUByte;
+import org.epics.vtype.VUInt;
+import org.epics.vtype.VULong;
+import org.epics.vtype.VUShort;
 
 /**
  *
@@ -201,6 +210,114 @@ public class PVAToVTypes {
     public static VDouble vDoubleOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
         if (pvField instanceof PVScalar) {
             return VDouble.of(convert.toDouble((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VFloat vFloatOf(PVStructure pvField, boolean disconnected) {
+        return vFloatOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VFloat vFloatOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VFloat.of(convert.toFloat((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VULong vULongOf(PVStructure pvField, boolean disconnected) {
+        return vULongOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VULong vULongOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VULong.of(convert.toLong((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VLong vLongOf(PVStructure pvField, boolean disconnected) {
+        return vLongOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VLong vLongOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VLong.of(convert.toLong((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VUInt vUIntOf(PVStructure pvField, boolean disconnected) {
+        return vUIntOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VUInt vUIntOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VUInt.of(convert.toInt((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VInt vIntOf(PVStructure pvField, boolean disconnected) {
+        return vIntOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VInt vIntOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VInt.of(convert.toInt((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VUShort vUShortOf(PVStructure pvField, boolean disconnected) {
+        return vUShortOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VUShort vUShortOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VUShort.of(convert.toShort((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VShort vShortOf(PVStructure pvField, boolean disconnected) {
+        return vShortOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VShort vShortOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VShort.of(convert.toShort((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VUByte vUByteOf(PVStructure pvField, boolean disconnected) {
+        return vUByteOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VUByte vUByteOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VUByte.of(convert.toByte((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VByte vByteOf(PVStructure pvField, boolean disconnected) {
+        return vByteOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VByte vByteOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVScalar) {
+            return VByte.of(convert.toByte((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
         } else {
             return null;
         }
