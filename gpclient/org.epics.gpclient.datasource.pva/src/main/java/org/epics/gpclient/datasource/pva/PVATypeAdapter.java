@@ -106,11 +106,11 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
     }
     
     @Override
-    public int match(ReadCollector<?, ?> cache, PVAChannelHandler channel) {
+    public boolean match(ReadCollector<?, ?> cache, PVAChannelHandler channel) {
     	
     	// If the generated type can't be put in the cache, no match
         if (!cache.getType().isAssignableFrom(typeClass))
-            return 0;
+            return false;
 
         // If one of the IDs does not match, no match
         if (ntIds != null)
@@ -126,7 +126,7 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
         		}
         	
         	if (!match)
-        		return 0;
+        		return false;
         }
         
         // If the type of the channel does not match, no match
@@ -147,12 +147,12 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
             		}
             	
             	if (!match)
-            		return 0;
+            		return false;
     		}
         }
 
         // Everything matches
-        return 1;
+        return true;
     }
     
     @Override
