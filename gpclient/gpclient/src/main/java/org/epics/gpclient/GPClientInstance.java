@@ -32,4 +32,8 @@ public class GPClientInstance {
     public PVReaderConfiguration<VType> read(String channelName) {
         return new PVConfiguration<>(this, new ChannelExpression<>(channelName, new LatestValueCollector<>(VType.class)));
     }
+    
+    public DataSource getDefaultDataSource() {
+        return defaultDataSource;
+    }
 }

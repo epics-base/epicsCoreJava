@@ -17,7 +17,7 @@ import org.epics.vtype.VType;
 public class GPClient {
     
     static {
-        gpClient = new GPClientConfiguration().defaultMaxRate(Duration.ofMillis(1000))
+        gpClient = new GPClientConfiguration().defaultMaxRate(Duration.ofMillis(50))
                 .notificationExecutor(org.epics.util.concurrent.Executors.localThread())
                 .dataSource(DataSourceProvider.createDataSource())
                 .dataProcessingThreadPool(Executors.newScheduledThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors() - 1),
@@ -28,5 +28,9 @@ public class GPClient {
     
     public static PVReaderConfiguration<VType> read(String channelName) {
         return gpClient.read(channelName);
+    }
+    
+    public static GPClientInstance defaultInstance() {
+        return gpClient;
     }
 }
