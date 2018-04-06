@@ -618,16 +618,10 @@ public class PVAChannelHandler extends
 	
 
         
-	
-	@Override
-	protected PVATypeAdapter findTypeAdapter(
-			ReadCollector<?, ?> cache, PVAChannelHandler connection) {
-		PVATypeAdapter pta = null;
-		try	{
-			pta = pvaTypeSupport.find(cache, connection);
-		} catch (Throwable th) { th.printStackTrace(); }
-		return pta;
-	}
+    @Override
+    protected PVATypeAdapter findTypeAdapter(ReadCollector<?, ?> cache, PVAChannelHandler connection) {
+        return pvaTypeSupport.find(cache, connection);
+    }
 
 	@Override
 	public void addReader(ReadCollector subscription) {

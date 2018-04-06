@@ -111,6 +111,10 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
     	// If the generated type can't be put in the cache, no match
         if (!cache.getType().isAssignableFrom(typeClass))
             return false;
+        
+        // If the channel type is not available, no match
+        if (channel.getChannelType() == null)
+            return false;
 
         // If one of the IDs does not match, no match
         if (ntIds != null)

@@ -50,18 +50,7 @@ public class PVATypeSupport extends DataSourceTypeSupport {
      * @return the matched type adapter
      */
     protected PVATypeAdapter find(ReadCollector<?, ?> cache, PVAChannelHandler channel) {
-    	try
-    	{
-    		return find(adapters.getAdapters(), cache, channel);
-    	} catch (IllegalStateException ise) {
-    		// TODO ultra-ugly
-    		if (ise.getMessage().indexOf("no match found") != -1)
-    		{
-    			if (channel.getChannelType().getType() == Type.structure)
-    	        	return ToPVAPVStructure;			
-    		}
-    		throw ise;
-    	}
+        return find(adapters.getAdapters(), cache, channel);
     }
     
 }
