@@ -46,11 +46,11 @@ public class PVATypeSupport extends DataSourceTypeSupport {
      * cache and channel.
      * 
      * @param cache the cache that will store the data
-     * @param channel the pva channel
+     * @param connection the pva channel
      * @return the matched type adapter
      */
-    protected PVATypeAdapter find(ReadCollector<?, ?> cache, PVAChannelHandler channel) {
-        return find(adapters.getAdapters(), cache, channel);
+    protected PVATypeAdapter find(ReadCollector<?, ?> cache, PVAConnectionPayload connection) {
+        return find(adapters.getAdapters(), cache, connection);
     }
     
 }

@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.Type;
  *
  * @author msekoranja
  */
-public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannelHandler, PVStructure> {
+public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayload, PVStructure> {
 
 	// e.g. VDouble.class
     private final Class<?> typeClass;
@@ -106,21 +106,21 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
     }
     
     @Override
-    public boolean match(ReadCollector<?, ?> cache, PVAChannelHandler channel) {
+    public boolean match(ReadCollector<?, ?> cache, PVAConnectionPayload connection) {
     	
     	// If the generated type can't be put in the cache, no match
         if (!cache.getType().isAssignableFrom(typeClass))
             return false;
         
         // If the channel type is not available, no match
-        if (channel.getChannelType() == null)
+        if (connection.channelType == null)
             return false;
 
         // If one of the IDs does not match, no match
         if (ntIds != null)
         {
         	boolean match = false;
-        	String ntId = channel.getChannelType().getID();
+        	String ntId = connection.channelType.getID();
         	// TODO "structure" ID ??
         	for (String id : ntIds)
         		if (ntId.startsWith(id))	// ignore minor version
@@ -138,7 +138,7 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
         {
         	boolean match = false;
         	// we assume Structure here
-        	Field channelType = channel.getChannelType();
+        	Field channelType = connection.channelType;
         	Field channelValueType = (channelType.getType() == Type.structure) ?
         			((Structure)channelType).getField("value") : channelType;
         	if (channelValueType != null)
@@ -160,19 +160,19 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
     }
     
     @Override
-    public Object getSubscriptionParameter(ReadCollector<?, ?> cache, PVAChannelHandler channel) {
+    public Object getSubscriptionParameter(ReadCollector<?, ?> cache, PVAConnectionPayload connection) {
         throw new UnsupportedOperationException("Not implemented: PVAChannelHandler is multiplexed, will not use this method");
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void updateCache(@SuppressWarnings("rawtypes") ReadCollector cache, PVAChannelHandler channel, PVStructure message) {
+    public void updateCache(@SuppressWarnings("rawtypes") ReadCollector cache, PVAConnectionPayload connection, PVStructure message) {
 
     	PVField valueField = null;
-    	String extractFieldName = channel.getExtractFieldName();
+    	String extractFieldName = connection.extractFieldName;
     	if (extractFieldName != null)
     	{
-    		if (channel.getChannelType().getType() == Type.structure)
+    		if (connection.channelType.getType() == Type.structure)
     			message = message.getStructureField(extractFieldName);
     		else
     			// this avoids problem when scalars/scalar arrays needs to be passed as PVStructure message
@@ -180,7 +180,7 @@ public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAChannel
   
     	}
     	
-        Object value = createValue(message, valueField, !channel.isConnected());
+        Object value = createValue(message, valueField, !connection.connected);
         cache.updateValue(value);
     }
 

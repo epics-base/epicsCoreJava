@@ -52,7 +52,7 @@ import org.epics.util.array.UnsafeUnwrapper;
  * @author msekoranja
  */
 public class PVAChannelHandler extends
-		MultiplexedChannelHandler<PVAChannelHandler, PVStructure> implements
+		MultiplexedChannelHandler<PVAConnectionPayload, PVStructure> implements
 		ChannelRequester, GetFieldRequester, ChannelPutRequester, MonitorRequester {
 
 	private final ChannelProvider pvaChannelProvider;
@@ -256,7 +256,7 @@ public class PVAChannelHandler extends
 			}
 			else
 			{
-				processConnection(this);
+				processConnection(newConnectionPayload());
 			}
 
 		} catch (Exception ex) {
@@ -285,20 +285,22 @@ public class PVAChannelHandler extends
 				isChannelEnumType = false;
 		}
 	
-		processConnection(this);
+		processConnection(newConnectionPayload());
 	}
-
-	@Override
-	public boolean isConnected(PVAChannelHandler channel) {
-		final Channel c = channel.getChannel();
-		return c != null && c.isConnected();
-	}
+    
+    private PVAConnectionPayload newConnectionPayload() {
+        return new PVAConnectionPayload(channelType, channel != null && channel.isConnected(), extractPVField);
+    }
 
     @Override
-    protected boolean isWriteConnected(PVAChannelHandler channel) {
+    public boolean isConnected(PVAConnectionPayload connectionPayload) {
+        return connectionPayload.connected;
+    }
+
+    @Override
+    protected boolean isWriteConnected(PVAConnectionPayload connectionPayload) {
     	// NOTE: access-rights not yet supported
-		final Channel c = channel.getChannel();
-		return c != null && c.isConnected();
+        return connectionPayload.connected;
     }
 
     @Override
@@ -619,7 +621,7 @@ public class PVAChannelHandler extends
 
         
     @Override
-    protected PVATypeAdapter findTypeAdapter(ReadCollector<?, ?> cache, PVAChannelHandler connection) {
+    protected PVATypeAdapter findTypeAdapter(ReadCollector<?, ?> cache, PVAConnectionPayload connection) {
         return pvaTypeSupport.find(cache, connection);
     }
 
