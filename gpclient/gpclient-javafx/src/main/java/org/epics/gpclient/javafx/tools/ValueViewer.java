@@ -69,8 +69,7 @@ public final class ValueViewer extends ScrollPane {
     private Button inspectTableButton;
 
     public ValueViewer() {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/fxml/ValueViewer.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ValueViewer.fxml"));
 
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);

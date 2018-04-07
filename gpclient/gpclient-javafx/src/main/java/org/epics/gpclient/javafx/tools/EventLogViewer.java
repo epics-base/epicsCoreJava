@@ -33,8 +33,7 @@ public final class EventLogViewer extends HBox {
     });
 
     public EventLogViewer() {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/fxml/EventLogViewer.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("EventLogViewer.fxml"));
 
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);

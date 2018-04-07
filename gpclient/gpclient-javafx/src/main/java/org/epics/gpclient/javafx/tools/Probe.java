@@ -15,7 +15,7 @@ public class Probe extends VBox {
     
     public Probe() {
         FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/fxml/Probe.fxml"));
+                getClass().getResource("Probe.fxml"));
 
         fxmlLoader.setRoot(this);
         
@@ -24,15 +24,6 @@ public class Probe extends VBox {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-    }
-
-    // TODO: temporary for CS-Studio
-    public static Scene createScene() throws Exception {
-        Parent root = FXMLLoader.load(Probe.class.getResource("/fxml/Probe.fxml"));
-        
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-        return scene;
     }
 
     public static void main(String[] args) {

@@ -52,8 +52,7 @@ public final class EventViewer extends ScrollPane {
     private TextArea writeExceptionField;
 
     public EventViewer() {
-        FXMLLoader fxmlLoader = new FXMLLoader(
-                getClass().getResource("/fxml/EventViewer.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("EventViewer.fxml"));
 
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
