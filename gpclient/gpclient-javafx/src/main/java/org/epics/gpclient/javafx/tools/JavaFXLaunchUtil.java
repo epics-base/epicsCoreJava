@@ -5,11 +5,14 @@
 package org.epics.gpclient.javafx.tools;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  *
@@ -47,6 +50,13 @@ public class JavaFXLaunchUtil {
             primaryStage.setTitle(appTitle);
             Scene scene = new Scene(appRootClass.newInstance());
             primaryStage.setScene(scene);
+            primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                @Override
+                public void handle(WindowEvent t) {
+                    Platform.exit();
+                    System.exit(0);
+                }
+            });
             primaryStage.show();
         }
     }
