@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.epics.gpclient.datasource.pva.adapters;
+package org.epics.gpclient.datasource.pva;
 
 import java.text.FieldPosition;
 import java.text.NumberFormat;

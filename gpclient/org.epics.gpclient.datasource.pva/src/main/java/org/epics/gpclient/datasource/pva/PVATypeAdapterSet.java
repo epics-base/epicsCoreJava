@@ -11,7 +11,7 @@ import org.epics.gpclient.datasource.DataSourceTypeAdapterSet;
  *
  * @author carcassi
  */
-public interface PVATypeAdapterSet extends DataSourceTypeAdapterSet {
+interface PVATypeAdapterSet extends DataSourceTypeAdapterSet {
     
     @Override
     Collection<PVATypeAdapter> getAdapters();

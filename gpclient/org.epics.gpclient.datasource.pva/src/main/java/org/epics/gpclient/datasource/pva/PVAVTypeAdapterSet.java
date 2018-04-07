@@ -14,10 +14,9 @@ import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
-import org.epics.gpclient.datasource.pva.adapters.PVAToVTypes;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
-import static org.epics.gpclient.datasource.pva.adapters.PVAToVTypes.*;
+import static org.epics.gpclient.datasource.pva.PVAToVTypes.*;
 import org.epics.vtype.VByte;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
@@ -32,7 +31,7 @@ import org.epics.vtype.VUShort;
  *
  * @author msekoranja
  */
-public class PVAVTypeAdapterSet implements PVATypeAdapterSet {
+class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     
 	private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 	

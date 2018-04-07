@@ -51,7 +51,7 @@ import org.epics.util.array.UnsafeUnwrapper;
  * 
  * @author msekoranja
  */
-public class PVAChannelHandler extends
+class PVAChannelHandler extends
 		MultiplexedChannelHandler<PVAConnectionPayload, PVStructure> implements
 		ChannelRequester, GetFieldRequester, ChannelPutRequester, MonitorRequester {
 

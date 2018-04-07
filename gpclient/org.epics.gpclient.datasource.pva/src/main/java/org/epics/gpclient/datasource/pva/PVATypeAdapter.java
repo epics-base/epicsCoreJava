@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.Type;
  *
  * @author msekoranja
  */
-public abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayload, PVStructure> {
+abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayload, PVStructure> {
 
 	// e.g. VDouble.class
     private final Class<?> typeClass;

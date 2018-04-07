@@ -9,7 +9,6 @@ import org.epics.gpclient.datasource.DataSourceTypeSupport;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Type;
-import org.epics.gpclient.datasource.pva.adapters.PVAPVStructure;
 
 /**
  * 
@@ -18,7 +17,7 @@ import org.epics.gpclient.datasource.pva.adapters.PVAPVStructure;
  *
  * @author carcassi
  */
-public class PVATypeSupport extends DataSourceTypeSupport {
+class PVATypeSupport extends DataSourceTypeSupport {
     
     private final PVATypeAdapterSet adapters;
 

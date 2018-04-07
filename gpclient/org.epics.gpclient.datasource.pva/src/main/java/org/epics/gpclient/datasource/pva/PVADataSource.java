@@ -35,6 +35,7 @@ public class PVADataSource extends DataSource {
         this.defaultPriority = defaultPriority;
 
         try {
+            // This takes more than a second: should be moved to a background thread
             ClientFactory.start();
             final ChannelProviderRegistry registry = ChannelProviderRegistryFactory.getChannelProviderRegistry();
             this.pvaChannelProvider = registry.createProvider("pva");

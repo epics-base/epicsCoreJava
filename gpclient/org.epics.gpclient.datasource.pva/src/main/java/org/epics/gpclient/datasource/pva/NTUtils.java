@@ -2,7 +2,7 @@
  * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
-package org.epics.gpclient.datasource.pva.adapters;
+package org.epics.gpclient.datasource.pva;
 
 import java.util.Arrays;
 
@@ -53,7 +53,7 @@ import org.epics.vtype.VShort;
 import org.epics.vtype.VShortArray;
 import org.epics.vtype.VString;
 
-public final class NTUtils {
+final class NTUtils {
 	
 	private static final Class<?>[] classLUT = {
 		boolean.class, // pvBoolean
