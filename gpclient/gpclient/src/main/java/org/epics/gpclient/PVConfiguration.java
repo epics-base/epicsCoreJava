@@ -129,8 +129,19 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
         }
     }
     
-    public PVConfiguration<R, W>  addListener(PVReaderListener<R> listener) {
-        this.listener = listener;
+    public PVConfiguration<R, W>  addListener(final PVReaderListener<R> listener) {
+        if (this.listener == null) {
+            this.listener = listener;
+        } else {
+            final PVReaderListener<R> previousListener = this.listener;
+            this.listener = new PVReaderListener<R>() {
+                @Override
+                public void pvChanged(PVEvent event, PVReader<R> pvReader) {
+                    previousListener.pvChanged(event, pvReader);
+                    listener.pvChanged(event, pvReader);
+                }
+            };
+        }
         return this;
     }
 
