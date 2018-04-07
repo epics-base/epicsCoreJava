@@ -17,11 +17,14 @@ import org.epics.pvdata.pv.ScalarType;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
 import static org.epics.gpclient.datasource.pva.PVAToVTypes.*;
+import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.vtype.VByte;
+import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VLong;
 import org.epics.vtype.VShort;
+import org.epics.vtype.VString;
 import org.epics.vtype.VUByte;
 import org.epics.vtype.VUInt;
 import org.epics.vtype.VULong;
@@ -39,6 +42,22 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     public Set<PVATypeAdapter> getAdapters() {
         return converters;
     }
+
+    // String types
+    //--------------
+    
+    final static PVATypeAdapter vStringAdapter = new PVATypeAdapter(VString.class,
+            new String[]{"epics:nt/NTScalar:1.", "string"},
+            new Field[]{fieldCreate.createScalar(ScalarType.pvString)}) {
+        @Override
+        public VString createValue(PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return vStringOf(valueField, message, disconnected);
+            } else {
+                return vStringOf(message, disconnected);
+            }
+        }
+    };
 
     // Numeric scalars
     //-----------------
@@ -187,6 +206,18 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
             		return PVAToVTypes.vDoubleArrayOf(message, disconnected);
             }
         };
+
+    // Enum types
+    //--------------
+
+    final static PVATypeAdapter vEnumAdapter = new PVATypeAdapter(VEnum.class,
+            new String[]{"epics:nt/NTEnum:1.", "enum_t"},
+            StandardFieldFactory.getStandardField().enumerated()) {
+        @Override
+        public VEnum createValue(PVStructure message, PVField valueField, boolean disconnected) {
+            return PVAToVTypes.vEnumOf(message, disconnected);
+        }
+    };
         
     public static final Set<PVATypeAdapter> converters;
     
@@ -195,6 +226,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
         Set<PVATypeAdapter> newFactories = new HashSet<PVATypeAdapter>();
         
         // Add all SCALARs
+        newFactories.add(vStringAdapter);
+
         newFactories.add(vDoubleAdapter);
         newFactories.add(vFloatAdapter);
         newFactories.add(vULongAdapter);
@@ -205,6 +238,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
         newFactories.add(vShortAdapter);
         newFactories.add(vUByteAdapter);
         newFactories.add(vByteAdapter);
+
+        newFactories.add(vEnumAdapter);
 
         // Add all ARRAYs
         newFactories.add(ToVArrayDouble);

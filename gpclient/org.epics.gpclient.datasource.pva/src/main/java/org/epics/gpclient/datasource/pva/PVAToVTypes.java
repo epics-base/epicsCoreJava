@@ -10,6 +10,7 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,7 +23,10 @@ import org.epics.pvdata.pv.PVInt;
 import org.epics.pvdata.pv.PVLong;
 import org.epics.pvdata.pv.PVScalar;
 import org.epics.pvdata.pv.PVString;
+import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.StringArrayData;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.stats.Range;
 import org.epics.util.text.NumberFormats;
@@ -30,14 +34,17 @@ import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
 import org.epics.vtype.Display;
+import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.Time;
 import org.epics.vtype.VByte;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
+import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VLong;
 import org.epics.vtype.VShort;
+import org.epics.vtype.VString;
 import org.epics.vtype.VUByte;
 import org.epics.vtype.VUInt;
 import org.epics.vtype.VULong;
@@ -203,6 +210,18 @@ public class PVAToVTypes {
         }
     }
 
+    public static VString vStringOf(PVStructure pvField, boolean disconnected) {
+        return vStringOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VString vStringOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVString) {
+            return VString.of(convert.toString((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
     public static VDouble vDoubleOf(PVStructure pvField, boolean disconnected) {
         return vDoubleOf(pvField.getSubField("value"), pvField, disconnected);
     }
@@ -336,6 +355,32 @@ public class PVAToVTypes {
         } else {
             return null;
         }
+    }
+    
+    public static VEnum vEnumOf(PVStructure pvField, boolean disconnected) {
+        int index;
+        List<String> choices;
+        
+        PVStructure enumStructure = (pvField != null) ? pvField.getStructureField("value") : null;
+
+        PVInt indexField = (enumStructure != null) ? enumStructure.getIntField("index") : null;
+        if (indexField != null) {
+            index = indexField.get();
+        } else {
+            index = -1;
+        }
+
+        PVStringArray choicesField = (enumStructure != null) ? (PVStringArray) enumStructure.getScalarArrayField("choices", ScalarType.pvString) : null;
+        if (choicesField != null) {
+            StringArrayData data = new StringArrayData();
+            choicesField.get(0, choicesField.getLength(), data);
+            choices = Arrays.asList(data.data);
+        } else {
+            choices = Collections.emptyList();
+        }
+        
+        
+        return VEnum.of(index, EnumDisplay.of(choices), alarmOf(pvField, disconnected), timeOf(pvField));
     }
 
 }
