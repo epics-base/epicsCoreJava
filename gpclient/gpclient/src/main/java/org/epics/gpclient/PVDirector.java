@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -75,7 +76,15 @@ public class PVDirector<R, W> {
             this.readConnection = readConnection;
             this.event = event;
         }
-        
+
+        @Override
+        public String toString() {
+            Map<String, Object> properties = new LinkedHashMap<>();
+            properties.put("event", event);
+            properties.put("readConnection", readConnection);
+            properties.put("readValue", readValue);
+            return properties.toString();
+        }
     }
     
     private RateDecoupler scanStrategy;
@@ -242,9 +251,11 @@ public class PVDirector<R, W> {
             log.log(Level.SEVERE, "Called notifyPV while an event was in flight");
             return;
         }
+
+        Notification previousNotification = lastNotification.get();
         
         // Calculate new value if it is a value event
-        R newValue = null;
+        R newValue = previousNotification != null ? previousNotification.readValue : null;
         if (event.isType(PVEvent.Type.VALUE)) {
             try {
                 // Tries to calculate the value
@@ -262,7 +273,7 @@ public class PVDirector<R, W> {
         }
         
         // Calculate new connection if it is a connection value
-        boolean newConnection = false;
+        boolean newConnection = previousNotification != null ? previousNotification.readConnection : false;
         if (event.isType(PVEvent.Type.READ_CONNECTION)) {
             newConnection = calculateConnection();
             
@@ -273,14 +284,16 @@ public class PVDirector<R, W> {
         }
 
         // Don't repeat notifications
-        Notification previousNotification = lastNotification.get();
         if (previousNotification != null) {
+            // Compare new connection
             if (event.isType(PVEvent.Type.READ_CONNECTION) && previousNotification.readConnection == newConnection) {
                 event = event.removeType(PVEvent.Type.READ_CONNECTION);
             }
+            
             if (event.isType(PVEvent.Type.VALUE) && previousNotification.readValue == newValue) {
                 event = event.removeType(PVEvent.Type.VALUE);
             }
+            
             Exception previousReadException = previousNotification.event.getException();
             Exception currentReadException = event.getException();
             if (event.isType(PVEvent.Type.READ_EXCEPTION) && previousReadException != null && currentReadException != null &&
