@@ -15,19 +15,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.epics.pvdata.factory.ConvertFactory;
+import org.epics.pvdata.pv.ByteArrayData;
 import org.epics.pvdata.pv.Convert;
 import org.epics.pvdata.pv.DoubleArrayData;
+import org.epics.pvdata.pv.FloatArrayData;
+import org.epics.pvdata.pv.IntArrayData;
+import org.epics.pvdata.pv.LongArrayData;
+import org.epics.pvdata.pv.PVByteArray;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.PVField;
+import org.epics.pvdata.pv.PVFloatArray;
 import org.epics.pvdata.pv.PVInt;
+import org.epics.pvdata.pv.PVIntArray;
 import org.epics.pvdata.pv.PVLong;
+import org.epics.pvdata.pv.PVLongArray;
 import org.epics.pvdata.pv.PVScalar;
+import org.epics.pvdata.pv.PVShortArray;
 import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.PVUByteArray;
+import org.epics.pvdata.pv.PVUIntArray;
+import org.epics.pvdata.pv.PVULongArray;
+import org.epics.pvdata.pv.PVUShortArray;
 import org.epics.pvdata.pv.ScalarType;
+import org.epics.pvdata.pv.ShortArrayData;
 import org.epics.pvdata.pv.StringArrayData;
+import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
+import org.epics.util.array.ArrayFloat;
+import org.epics.util.array.ArrayInteger;
+import org.epics.util.array.ArrayLong;
+import org.epics.util.array.ArrayShort;
+import org.epics.util.array.ArrayUByte;
+import org.epics.util.array.ArrayUInteger;
+import org.epics.util.array.ArrayULong;
+import org.epics.util.array.ArrayUShort;
 import org.epics.util.stats.Range;
 import org.epics.util.text.NumberFormats;
 import org.epics.vtype.Alarm;
@@ -37,18 +60,27 @@ import org.epics.vtype.Display;
 import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.Time;
 import org.epics.vtype.VByte;
+import org.epics.vtype.VByteArray;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
+import org.epics.vtype.VFloatArray;
 import org.epics.vtype.VInt;
+import org.epics.vtype.VIntArray;
 import org.epics.vtype.VLong;
+import org.epics.vtype.VLongArray;
 import org.epics.vtype.VShort;
+import org.epics.vtype.VShortArray;
 import org.epics.vtype.VString;
 import org.epics.vtype.VUByte;
+import org.epics.vtype.VUByteArray;
 import org.epics.vtype.VUInt;
+import org.epics.vtype.VUIntArray;
 import org.epics.vtype.VULong;
+import org.epics.vtype.VULongArray;
 import org.epics.vtype.VUShort;
+import org.epics.vtype.VUShortArray;
 
 /**
  *
@@ -405,6 +437,141 @@ public class PVAToVTypes {
             DoubleArrayData data = new DoubleArrayData();
             valueField.get(0, valueField.getLength(), data);
             return VDoubleArray.of(ArrayDouble.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VFloatArray vFloatArrayOf(PVStructure pvField, boolean disconnected) {
+        return vFloatArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VFloatArray vFloatArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVFloatArray) {
+            PVFloatArray valueField = (PVFloatArray) pvField;
+            FloatArrayData data = new FloatArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VFloatArray.of(ArrayFloat.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VULongArray vULongArrayOf(PVStructure pvField, boolean disconnected) {
+        return vULongArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VULongArray vULongArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVULongArray) {
+            PVULongArray valueField = (PVULongArray) pvField;
+            LongArrayData data = new LongArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VULongArray.of(ArrayULong.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VLongArray vLongArrayOf(PVStructure pvField, boolean disconnected) {
+        return vLongArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VLongArray vLongArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVLongArray) {
+            PVLongArray valueField = (PVLongArray) pvField;
+            LongArrayData data = new LongArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VLongArray.of(ArrayLong.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VUIntArray vUIntArrayOf(PVStructure pvField, boolean disconnected) {
+        return vUIntArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VUIntArray vUIntArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVUIntArray) {
+            PVUIntArray valueField = (PVUIntArray) pvField;
+            IntArrayData data = new IntArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VUIntArray.of(ArrayUInteger.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VIntArray vIntArrayOf(PVStructure pvField, boolean disconnected) {
+        return vIntArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VIntArray vIntArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVIntArray) {
+            PVIntArray valueField = (PVIntArray) pvField;
+            IntArrayData data = new IntArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VIntArray.of(ArrayInteger.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VUShortArray vUShortArrayOf(PVStructure pvField, boolean disconnected) {
+        return vUShortArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VUShortArray vUShortArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVUShortArray) {
+            PVUShortArray valueField = (PVUShortArray) pvField;
+            ShortArrayData data = new ShortArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VUShortArray.of(ArrayUShort.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VShortArray vShortArrayOf(PVStructure pvField, boolean disconnected) {
+        return vShortArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VShortArray vShortArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVShortArray) {
+            PVShortArray valueField = (PVShortArray) pvField;
+            ShortArrayData data = new ShortArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VShortArray.of(ArrayShort.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VUByteArray vUByteArrayOf(PVStructure pvField, boolean disconnected) {
+        return vUByteArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VUByteArray vUByteArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVUByteArray) {
+            PVUByteArray valueField = (PVUByteArray) pvField;
+            ByteArrayData data = new ByteArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VUByteArray.of(ArrayUByte.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
+        } else {
+            return null;
+        }
+    }
+
+    public static VByteArray vByteArrayOf(PVStructure pvField, boolean disconnected) {
+        return vByteArrayOf(pvField.getSubField("value"), pvField, disconnected);
+    }
+
+    public static VByteArray vByteArrayOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
+        if (pvField instanceof PVByteArray) {
+            PVByteArray valueField = (PVByteArray) pvField;
+            ByteArrayData data = new ByteArrayData();
+            valueField.get(0, valueField.getLength(), data);
+            return VByteArray.of(ArrayByte.of(data.data), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata), displayOf(pvMetadata));
         } else {
             return null;
         }
