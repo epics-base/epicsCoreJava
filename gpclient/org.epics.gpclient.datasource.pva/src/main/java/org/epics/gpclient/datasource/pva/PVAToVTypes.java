@@ -52,22 +52,32 @@ import org.epics.vtype.VUShort;
 
 /**
  *
+ * Utility class to convert Normative Type structures from PVData to VTypes.
+ * 
  * @author carcassi
  */
 public class PVAToVTypes {
-    
 
+    /**
+     * Extracts the time information from the given PVStructure.
+     * <p>
+     * It expects a substructure with name {@code timeStamp} of type {@code timeStamp_t}.
+     * If it's not found, the current time is returned.
+     * 
+     * @param pvField the root field
+     * @return the time information
+     */
     public static Time timeOf(PVStructure pvField) {
-        // timeStamp_t
+        // Expect a timeStamp field of type timeStamp_t
         PVStructure timeStampStructure = (pvField != null) ? pvField.getStructureField("timeStamp") : null;
         if (timeStampStructure != null) {
             Instant timestamp;
             boolean timeValid;
             Integer timeUserTag;
 
+            // Extract the time
             PVLong secsField = timeStampStructure.getLongField("secondsPastEpoch");
             PVInt nanosField = timeStampStructure.getIntField("nanoseconds");
-
             if (secsField != null && nanosField != null) {
                 timestamp = Instant.ofEpochSecond(secsField.get(), nanosField.get());
                 timeValid = true;
@@ -76,6 +86,7 @@ public class PVAToVTypes {
                 timeValid = false;
             }
 
+            // Extract the user tag
             PVInt userTagField = timeStampStructure.getIntField("userTag");
             if (userTagField != null) {
                 timeUserTag = userTagField.get();
@@ -85,18 +96,19 @@ public class PVAToVTypes {
 
             return Time.of(timestamp, timeUserTag, timeValid);
         } else {
+            // No time found
             return Time.now();
         }
     }
     
-    // Conversion from pva AlarmSeverity to vtypes AlarmSeverity
+    // Conversion table from pva AlarmSeverity to vType AlarmSeverity
     private static final List<AlarmSeverity> FROM_PVA_SEVERITY = Arrays.asList(AlarmSeverity.NONE,
             AlarmSeverity.MINOR,
             AlarmSeverity.MAJOR,
             AlarmSeverity.INVALID,
             AlarmSeverity.UNDEFINED);
 
-    // Conversion from pva AlarmStatus to vtypes AlarmStatus
+    // Conversion table from pva AlarmStatus to vType AlarmStatus
     private static final List<AlarmStatus> FROM_PVA_STATUS = Arrays.asList(AlarmStatus.NONE,
             AlarmStatus.DEVICE,
             AlarmStatus.DRIVER,
@@ -106,11 +118,23 @@ public class PVAToVTypes {
             AlarmStatus.UNDEFINED,
             AlarmStatus.CLIENT);
 
+    /**
+     * Extracts the alarm information from the given PVStructure.
+     * <p>
+     * It expects a substructure with name {@code alarm} of type {@code alarm_t}.
+     * If it's not found, no alarm is returned. If disconnected, disconnected is
+     * returned.
+     * 
+     * @param pvField the root field
+     * @param disconnected whether the channel is disconnected
+     * @return the alarm information
+     */
     public static Alarm alarmOf(PVStructure pvField, boolean disconnected) {
         if (disconnected) {
             return Alarm.disconnected();
         }
         
+        // Expect an alarm field of type alarm_t
         PVStructure alarmStructure = (pvField != null) ? pvField.getStructureField("alarm") : null;
         if (alarmStructure != null) {
             AlarmSeverity alarmSeverity;
@@ -139,12 +163,26 @@ public class PVAToVTypes {
             }
             
             return Alarm.of(alarmSeverity, alarmStatus, name);
-
         } else {
             return Alarm.none();
         }
     }
     
+    /**
+     * Extracts the numeric display information from the given PVStructure.
+     * <p>
+     * It expects the following substructures:
+     * <ul>
+     *   <li>{@code display} field of type {@display_t} containing display range, units and format</li>
+     *   <li>{@code valueAlarm} field of type {@valueAlarm_t} containing alarm ranges</li>
+     *   <li>{@code control} field of type {@control_t} containing the control range</li>
+     * </ul>
+     * The undefined range is used for missing ranges. The default unit and
+     * format are used if no unit and/or format are found.
+     * 
+     * @param pvField the root field
+     * @return the display information
+     */
     public static Display displayOf(PVStructure pvField) {
         if (pvField == null) {
             return Display.none();
@@ -157,7 +195,7 @@ public class PVAToVTypes {
         NumberFormat format;
         String units;
         
-        // display_t
+        // Expect a display field of type display_t
         PVStructure displayStructure = pvField.getStructureField("display");
         displayRange = rangeOf(displayStructure, "limitLow", "limitHigh");
         if (displayStructure != null) {
@@ -179,10 +217,10 @@ public class PVAToVTypes {
             units = Display.defaultUnits();
         }
 
-        // control_t
+        // Expect a control field of type control_t
         controlRange = rangeOf(pvField.getStructureField("control"), "limitLow", "limitHigh");
 
-        // valueAlarm_t
+        // Expect a valueAlarm field of type valueAlarm_t
         PVStructure valueAlarmStructure = pvField.getStructureField("valueAlarm");
         warningRange = rangeOf(valueAlarmStructure, "lowWarningLimit", "highWarningLimit");
         alarmRange = rangeOf(valueAlarmStructure, "lowAlarmLimit", "highAlarmLimit");
@@ -210,10 +248,25 @@ public class PVAToVTypes {
         }
     }
 
+    /**
+     * Converts the the given field to a {@link VString}.
+     * 
+     * @param pvField a field of type NTScalar string
+     * @param disconnected whether the client is disconnected
+     * @return a new VString
+     */
     public static VString vStringOf(PVStructure pvField, boolean disconnected) {
         return vStringOf(pvField.getSubField("value"), pvField, disconnected);
     }
 
+    /**
+     * Converts the the given field and metadata to a {@link VString}.
+     * 
+     * @param pvField a field convertible to a string
+     * @param pvMetadata the metadata structure from an NTScalar
+     * @param disconnected whether the client is disconnected
+     * @return a new VString
+     */
     public static VString vStringOf(PVField pvField, PVStructure pvMetadata, boolean disconnected) {
         if (pvField instanceof PVString) {
             return VString.of(convert.toString((PVScalar)pvField), alarmOf(pvMetadata, disconnected), timeOf(pvMetadata));
