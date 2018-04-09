@@ -57,7 +57,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     
     final static PVATypeAdapter vStringAdapter = new PVATypeAdapter(VString.class,
             new String[]{"epics:nt/NTScalar:1.", "string"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvString)}) {
+            fieldCreate.createScalar(ScalarType.pvString)) {
         @Override
         public VString createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -73,7 +73,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     
     final static PVATypeAdapter vDoubleAdapter = new PVATypeAdapter(VDouble.class,
             new String[]{"epics:nt/NTScalar:1.", "double"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvDouble)}) {
+            fieldCreate.createScalar(ScalarType.pvDouble)) {
         @Override
         public VDouble createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -86,7 +86,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     final static PVATypeAdapter vFloatAdapter = new PVATypeAdapter(VFloat.class,
             new String[]{"epics:nt/NTScalar:1.", "float"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvFloat)}) {
+            fieldCreate.createScalar(ScalarType.pvFloat)) {
         @Override
         public VFloat createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -99,7 +99,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     final static PVATypeAdapter vULongAdapter = new PVATypeAdapter(VULong.class,
             new String[]{"epics:nt/NTScalar:1.", "ulong"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvULong)}) {
+            fieldCreate.createScalar(ScalarType.pvULong)) {
         @Override
         public VULong createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -112,7 +112,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     final static PVATypeAdapter vLongAdapter = new PVATypeAdapter(VLong.class,
             new String[]{"epics:nt/NTScalar:1.", "long"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvLong)}) {
+            fieldCreate.createScalar(ScalarType.pvLong)) {
         @Override
         public VLong createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -124,8 +124,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vUIntAdapter = new PVATypeAdapter(VUInt.class,
-            new String[]{"epics:nt/NTScalar:1.", "double"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvUInt)}) {
+            new String[]{"epics:nt/NTScalar:1.", "uint"},
+            fieldCreate.createScalar(ScalarType.pvUInt)) {
         @Override
         public VUInt createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -137,8 +137,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vIntAdapter = new PVATypeAdapter(VInt.class,
-            new String[]{"epics:nt/NTScalar:1.", "double"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvInt)}) {
+            new String[]{"epics:nt/NTScalar:1.", "int"},
+            fieldCreate.createScalar(ScalarType.pvInt)) {
         @Override
         public VInt createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -150,8 +150,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vUShortAdapter = new PVATypeAdapter(VUShort.class,
-            new String[]{"epics:nt/NTScalar:1.", "double"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvUShort)}) {
+            new String[]{"epics:nt/NTScalar:1.", "ushort"},
+            fieldCreate.createScalar(ScalarType.pvUShort)) {
         @Override
         public VUShort createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -163,8 +163,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vShortAdapter = new PVATypeAdapter(VShort.class,
-            new String[]{"epics:nt/NTScalar:1.", "double"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvShort)}) {
+            new String[]{"epics:nt/NTScalar:1.", "short"},
+            fieldCreate.createScalar(ScalarType.pvShort)) {
         @Override
         public VShort createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -176,8 +176,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vUByteAdapter = new PVATypeAdapter(VUByte.class,
-            new String[]{"epics:nt/NTScalar:1.", "double"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvUByte)}) {
+            new String[]{"epics:nt/NTScalar:1.", "ubyte"},
+            fieldCreate.createScalar(ScalarType.pvUByte)) {
         @Override
         public VUByte createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -189,8 +189,8 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vByteAdapter = new PVATypeAdapter(VByte.class,
-            new String[]{"epics:nt/NTScalar:1.", "double"},
-            new Field[]{fieldCreate.createScalar(ScalarType.pvByte)}) {
+            new String[]{"epics:nt/NTScalar:1.", "byte"},
+            fieldCreate.createScalar(ScalarType.pvByte)) {
         @Override
         public VByte createValue(PVStructure message, PVField valueField, boolean disconnected) {
             if (valueField != null) {
@@ -218,7 +218,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vFloatArrayAdapter = new PVATypeAdapter(VFloatArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "float[]"},
             fieldCreate.createScalarArray(ScalarType.pvFloat)) {
         @Override
         public VFloatArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -231,7 +231,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vULongArrayAdapter = new PVATypeAdapter(VULongArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "ulong[]"},
             fieldCreate.createScalarArray(ScalarType.pvULong)) {
         @Override
         public VULongArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -244,7 +244,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vLongArrayAdapter = new PVATypeAdapter(VLongArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "long[]"},
             fieldCreate.createScalarArray(ScalarType.pvLong)) {
         @Override
         public VLongArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -257,7 +257,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vUIntArrayAdapter = new PVATypeAdapter(VUIntArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "uint[]"},
             fieldCreate.createScalarArray(ScalarType.pvUInt)) {
         @Override
         public VUIntArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -270,7 +270,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vIntArrayAdapter = new PVATypeAdapter(VIntArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "int[]"},
             fieldCreate.createScalarArray(ScalarType.pvInt)) {
         @Override
         public VIntArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -283,7 +283,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vUShortArrayAdapter = new PVATypeAdapter(VUShortArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "ushort[]"},
             fieldCreate.createScalarArray(ScalarType.pvUShort)) {
         @Override
         public VUShortArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -296,7 +296,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vShortArrayAdapter = new PVATypeAdapter(VShortArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "short[]"},
             fieldCreate.createScalarArray(ScalarType.pvShort)) {
         @Override
         public VShortArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -309,7 +309,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vUByteArrayAdapter = new PVATypeAdapter(VUByteArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "ubyte[]"},
             fieldCreate.createScalarArray(ScalarType.pvUByte)) {
         @Override
         public VUByteArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
@@ -322,7 +322,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
     };
 
     final static PVATypeAdapter vByteArrayAdapter = new PVATypeAdapter(VByteArray.class,
-            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            new String[]{"epics:nt/NTScalarArray:1.", "byte[]"},
             fieldCreate.createScalarArray(ScalarType.pvByte)) {
         @Override
         public VByteArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
