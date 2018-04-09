@@ -205,9 +205,9 @@ public class PVAToVTypes {
      * <p>
      * It expects the following substructures:
      * <ul>
-     *   <li>{@code display} field of type {@display_t} containing display range, units and format</li>
-     *   <li>{@code valueAlarm} field of type {@valueAlarm_t} containing alarm ranges</li>
-     *   <li>{@code control} field of type {@control_t} containing the control range</li>
+     *   <li>{@code display} field of type {@code display_t} containing display range, units and format</li>
+     *   <li>{@code valueAlarm} field of type {@code valueAlarm_t} containing alarm ranges</li>
+     *   <li>{@code control} field of type {@code control_t} containing the control range</li>
      * </ul>
      * The undefined range is used for missing ranges. The default unit and
      * format are used if no unit and/or format are found.
