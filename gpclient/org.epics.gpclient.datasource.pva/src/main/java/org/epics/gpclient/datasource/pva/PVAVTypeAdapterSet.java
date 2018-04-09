@@ -19,25 +19,34 @@ import org.epics.vtype.VDoubleArray;
 import static org.epics.gpclient.datasource.pva.PVAToVTypes.*;
 import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.vtype.VByte;
+import org.epics.vtype.VByteArray;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
+import org.epics.vtype.VFloatArray;
 import org.epics.vtype.VInt;
+import org.epics.vtype.VIntArray;
 import org.epics.vtype.VLong;
+import org.epics.vtype.VLongArray;
 import org.epics.vtype.VShort;
+import org.epics.vtype.VShortArray;
 import org.epics.vtype.VString;
 import org.epics.vtype.VUByte;
+import org.epics.vtype.VUByteArray;
 import org.epics.vtype.VUInt;
+import org.epics.vtype.VUIntArray;
 import org.epics.vtype.VULong;
+import org.epics.vtype.VULongArray;
 import org.epics.vtype.VUShort;
+import org.epics.vtype.VUShortArray;
 
 /**
  *
  * @author msekoranja
  */
 class PVAVTypeAdapterSet implements PVATypeAdapterSet {
-    
-	private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-	
+
+    private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
+
     @Override
     public Set<PVATypeAdapter> getAdapters() {
         return converters;
@@ -61,7 +70,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     // Numeric scalars
     //-----------------
-
+    
     final static PVATypeAdapter vDoubleAdapter = new PVATypeAdapter(VDouble.class,
             new String[]{"epics:nt/NTScalar:1.", "double"},
             new Field[]{fieldCreate.createScalar(ScalarType.pvDouble)}) {
@@ -192,24 +201,142 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
         }
     };
 
-    //  -> VDoubleArray
-    final static PVATypeAdapter ToVArrayDouble = new PVATypeAdapter(
-    		VDoubleArray.class,
-    		new String[] { "epics:nt/NTScalarArray:1.", "double[]" },
-    		fieldCreate.createScalarArray(ScalarType.pvDouble))
-    	{
-            @Override
-            public VDoubleArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
-            	if (valueField != null)
-            		return PVAToVTypes.vDoubleArrayOf(valueField, message, disconnected);
-            	else
-            		return PVAToVTypes.vDoubleArrayOf(message, disconnected);
+    // Numeric arrays
+    //--------------
+    
+    final static PVATypeAdapter vDoubleArrayAdapter = new PVATypeAdapter(VDoubleArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvDouble)) {
+        @Override
+        public VDoubleArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vDoubleArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vDoubleArrayOf(message, disconnected);
             }
-        };
+        }
+    };
+
+    final static PVATypeAdapter vFloatArrayAdapter = new PVATypeAdapter(VFloatArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvFloat)) {
+        @Override
+        public VFloatArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vFloatArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vFloatArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vULongArrayAdapter = new PVATypeAdapter(VULongArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvULong)) {
+        @Override
+        public VULongArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vULongArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vULongArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vLongArrayAdapter = new PVATypeAdapter(VLongArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvLong)) {
+        @Override
+        public VLongArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vLongArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vLongArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vUIntArrayAdapter = new PVATypeAdapter(VUIntArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvUInt)) {
+        @Override
+        public VUIntArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vUIntArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vUIntArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vIntArrayAdapter = new PVATypeAdapter(VIntArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvInt)) {
+        @Override
+        public VIntArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vIntArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vIntArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vUShortArrayAdapter = new PVATypeAdapter(VUShortArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvUShort)) {
+        @Override
+        public VUShortArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vUShortArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vUShortArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vShortArrayAdapter = new PVATypeAdapter(VShortArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvShort)) {
+        @Override
+        public VShortArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vShortArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vShortArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vUByteArrayAdapter = new PVATypeAdapter(VUByteArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvUByte)) {
+        @Override
+        public VUByteArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vUByteArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vUByteArrayOf(message, disconnected);
+            }
+        }
+    };
+
+    final static PVATypeAdapter vByteArrayAdapter = new PVATypeAdapter(VByteArray.class,
+            new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
+            fieldCreate.createScalarArray(ScalarType.pvByte)) {
+        @Override
+        public VByteArray createValue(final PVStructure message, PVField valueField, boolean disconnected) {
+            if (valueField != null) {
+                return PVAToVTypes.vByteArrayOf(valueField, message, disconnected);
+            } else {
+                return PVAToVTypes.vByteArrayOf(message, disconnected);
+            }
+        }
+    };
 
     // Enum types
     //--------------
-
+    
     final static PVATypeAdapter vEnumAdapter = new PVATypeAdapter(VEnum.class,
             new String[]{"epics:nt/NTEnum:1.", "enum_t"},
             StandardFieldFactory.getStandardField().enumerated()) {
@@ -218,13 +345,13 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
             return PVAToVTypes.vEnumOf(message, disconnected);
         }
     };
-        
+
     public static final Set<PVATypeAdapter> converters;
-    
+
     static {
-    	// preserve order
+        // preserve order
         Set<PVATypeAdapter> newFactories = new HashSet<PVATypeAdapter>();
-        
+
         // Add all SCALARs
         newFactories.add(vStringAdapter);
 
@@ -242,7 +369,16 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
         newFactories.add(vEnumAdapter);
 
         // Add all ARRAYs
-        newFactories.add(ToVArrayDouble);
+        newFactories.add(vDoubleArrayAdapter);
+        newFactories.add(vFloatArrayAdapter);
+        newFactories.add(vULongArrayAdapter);
+        newFactories.add(vLongArrayAdapter);
+        newFactories.add(vUIntArrayAdapter);
+        newFactories.add(vIntArrayAdapter);
+        newFactories.add(vUShortArrayAdapter);
+        newFactories.add(vShortArrayAdapter);
+        newFactories.add(vUByteArrayAdapter);
+        newFactories.add(vByteArrayAdapter);
 
         converters = Collections.unmodifiableSet(newFactories);
     }
