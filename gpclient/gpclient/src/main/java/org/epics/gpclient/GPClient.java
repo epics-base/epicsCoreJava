@@ -6,11 +6,8 @@
 package org.epics.gpclient;
 
 import java.time.Duration;
-import java.util.List;
 import java.util.concurrent.Executors;
 import org.epics.gpclient.datasource.DataSourceProvider;
-import org.epics.gpclient.expression.Expression;
-import org.epics.gpclient.expression.ReadExpression;
 import org.epics.vtype.VType;
 
 /**

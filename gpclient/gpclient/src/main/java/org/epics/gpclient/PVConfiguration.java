@@ -5,17 +5,8 @@
 package org.epics.gpclient;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Supplier;
 import org.epics.gpclient.datasource.DataSource;
-import org.epics.gpclient.expression.Expression;
-import org.epics.gpclient.expression.ReadExpression;
 
 /**
  * Allows to configure the type of read/write PV to create.

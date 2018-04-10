@@ -4,9 +4,6 @@
  */
 package org.epics.gpclient;
 
-import org.epics.gpclient.expression.ExpressionImpl;
-import org.epics.gpclient.expression.ReadExpressionImpl;
-
 /**
  * Represents a channel, which can be both read or written.
  *

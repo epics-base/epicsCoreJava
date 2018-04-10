@@ -5,7 +5,6 @@
 package org.epics.gpclient.datasource;
 
 import org.epics.gpclient.ProbeCollector;
-import org.epics.gpclient.expression.*;
 import java.util.function.Consumer;
 import org.epics.gpclient.LatestValueCollector;
 import org.epics.gpclient.PVEvent;
