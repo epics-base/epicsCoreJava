@@ -4,7 +4,6 @@
  */
 package org.epics.gpclient;
 
-import org.epics.gpclient.PVEvent;
 import java.util.function.Consumer;
 
 /**
