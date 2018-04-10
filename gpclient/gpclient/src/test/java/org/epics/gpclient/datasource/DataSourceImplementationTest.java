@@ -53,12 +53,12 @@ public class DataSourceImplementationTest {
             }
         };
         
-        dataSource.startRead(new ReadSubscription("first", probe.getCollector()));
+        dataSource.startRead(new ReadSubscription("first", probe.getReadCollector()));
         
-        recorder.wait(100000, forEventCount(2));
+        recorder.wait(1000, forEventCount(2));
         
         assertThat(recorder.getEvents().size(), equalTo(2));
-        assertThat(recorder.getEvents().get(0), equalTo(PVEvent.connectionEvent()));
+        assertThat(recorder.getEvents().get(0), equalTo(PVEvent.readConnectionEvent()));
         assertThat(recorder.getEvents().get(1), equalTo(PVEvent.valueEvent()));
     }
     
@@ -88,11 +88,97 @@ public class DataSourceImplementationTest {
             }
         };
         
-        dataSource.startRead(new ReadSubscription("first", probe.getCollector()));
+        dataSource.startRead(new ReadSubscription("first", probe.getReadCollector()));
         
-        recorder.wait(100000, forAnEvent());
+        recorder.wait(1000, forAnEvent());
         
         assertThat(recorder.getEvents().size(), equalTo(1));
         assertThat(recorder.getEvents().get(0), equalTo(PVEvent.exceptionEvent(ex)));
+    }
+    
+    @Test
+    public void readWrite1() throws InterruptedException {
+        ProbeCollector probe = ProbeCollector.create();
+        PVEventRecorder recorder = probe.getRecorder();
+        DataSource dataSource = new DataSource(false) {
+            @Override
+            protected ChannelHandler createChannel(String channelName) {
+                return new MultiplexedChannelHandler(channelName) {
+                    @Override
+                    protected void connect() {
+                        this.processConnection(true);
+                        this.processMessage("Initial value");
+                    }
+                    
+                    @Override
+                    protected void disconnect() {
+                    }
+                    
+                    @Override
+                    protected void write(Object newValue) {
+                        processMessage(newValue);
+                    }
+                };
+            }
+        };
+        
+        dataSource.startRead(new ReadSubscription("first", probe.getReadCollector()));
+        dataSource.startWrite(new WriteSubscription("first", probe.getWriteCollector()));
+        
+        recorder.wait(1000, forEventCount(3));
+        
+        probe.writeValue("Second value");
+        
+        recorder.wait(1000, forEventCount(2));
+        
+        assertThat(recorder.getEvents().size(), equalTo(5));
+        assertThat(recorder.getEvents().get(0), equalTo(PVEvent.readConnectionEvent()));
+        assertThat(recorder.getEvents().get(1), equalTo(PVEvent.valueEvent()));
+        assertThat(recorder.getEvents().get(2), equalTo(PVEvent.writeConnectionEvent()));
+        assertThat(recorder.getEvents().get(3), equalTo(PVEvent.valueEvent()));
+        assertThat(recorder.getEvents().get(4), equalTo(PVEvent.writeSucceededEvent()));
+    }
+    
+    @Test
+    public void readWrite2() throws InterruptedException {
+        ProbeCollector probe = ProbeCollector.create();
+        PVEventRecorder recorder = probe.getRecorder();
+        RuntimeException ex = new RuntimeException("Read failed");
+        DataSource dataSource = new DataSource(false) {
+            @Override
+            protected ChannelHandler createChannel(String channelName) {
+                return new MultiplexedChannelHandler(channelName) {
+                    @Override
+                    protected void connect() {
+                        this.processConnection(true);
+                        this.processMessage("Initial value");
+                    }
+                    
+                    @Override
+                    protected void disconnect() {
+                    }
+                    
+                    @Override
+                    protected void write(Object newValue) {
+                        throw ex;
+                    }
+                };
+            }
+        };
+        
+        dataSource.startRead(new ReadSubscription("first", probe.getReadCollector()));
+        dataSource.startWrite(new WriteSubscription("first", probe.getWriteCollector()));
+        
+        recorder.wait(1000, forEventCount(3));
+        
+        probe.writeValue("Second value");
+        
+        recorder.wait(1000, forEventCount(1));
+        
+        assertThat(recorder.getEvents().size(), equalTo(4));
+        assertThat(recorder.getEvents().get(0), equalTo(PVEvent.readConnectionEvent()));
+        assertThat(recorder.getEvents().get(1), equalTo(PVEvent.valueEvent()));
+        assertThat(recorder.getEvents().get(2), equalTo(PVEvent.writeConnectionEvent()));
+        assertThat(recorder.getEvents().get(3), equalTo(PVEvent.writeFailedEvent(ex)));
     }
 }

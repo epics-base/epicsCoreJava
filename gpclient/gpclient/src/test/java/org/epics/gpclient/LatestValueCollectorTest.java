@@ -63,7 +63,7 @@ public class LatestValueCollectorTest {
         
         coll.updateValueAndConnection(new Object(), true);
         
-        verify(listener).accept(PVEvent.connectionValueEvent());
+        verify(listener).accept(PVEvent.readConnectionValueEvent());
     }
 
     @Test
@@ -75,7 +75,7 @@ public class LatestValueCollectorTest {
         
         coll.updateConnection(true);
         
-        verify(listener).accept(PVEvent.connectionEvent());
+        verify(listener).accept(PVEvent.readConnectionEvent());
     }
 
     @Test
@@ -110,11 +110,11 @@ public class LatestValueCollectorTest {
         
         InOrder inOrder = inOrder(listener);
         
-        inOrder.verify(listener).accept(PVEvent.connectionValueEvent());
+        inOrder.verify(listener).accept(PVEvent.readConnectionValueEvent());
         inOrder.verify(listener, times(2)).accept(PVEvent.valueEvent());
-        inOrder.verify(listener).accept(PVEvent.connectionEvent());
+        inOrder.verify(listener).accept(PVEvent.readConnectionEvent());
         inOrder.verify(listener).accept(PVEvent.exceptionEvent(ex));
-        inOrder.verify(listener).accept(PVEvent.connectionEvent());
+        inOrder.verify(listener).accept(PVEvent.readConnectionEvent());
         inOrder.verify(listener).accept(PVEvent.valueEvent());
     }
     

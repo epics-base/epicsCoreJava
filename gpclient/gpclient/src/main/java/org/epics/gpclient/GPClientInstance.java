@@ -12,6 +12,7 @@ import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.expression.ReadExpression;
 import org.epics.vtype.VType;
 import static org.epics.gpclient.GPClient.*;
+import org.epics.gpclient.expression.Expression;
 
 /**
  *
@@ -35,8 +36,16 @@ public class GPClientInstance {
         return read(channel(channelName));
     }
     
-    public <R> PVReaderConfiguration<R> read(ReadExpression<R> expression) {
-        return new PVConfiguration<>(this, expression);
+    public <R> PVReaderConfiguration<R> read(Expression<R, ?> expression) {
+        return new PVConfiguration<>(this, expression, PVConfiguration.Mode.READ);
+    }
+    
+    public <W> PVWriterConfiguration<W> write(Expression<?, W> expression) {
+        return new PVConfiguration<>(this, expression, PVConfiguration.Mode.WRITE);
+    }
+    
+    public <R, W> PVConfiguration<R, W> readAndWrite(Expression<R, W> expression) {
+        return new PVConfiguration<>(this, expression, PVConfiguration.Mode.READ_WRITE);
     }
     
     public DataSource getDefaultDataSource() {

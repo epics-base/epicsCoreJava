@@ -118,7 +118,7 @@ public abstract class DataSource {
     // The executor used by the data source to perform asynchronous operations,
     // such as connections and writes. We use one extra thread for each datasource,
     // mainly to be able to shut it down during cleanup
-    private final ExecutorService exec = Executors.newSingleThreadExecutor(namedPool("PVMgr " + getClass().getSimpleName() + " Worker "));
+    protected final ExecutorService exec = Executors.newSingleThreadExecutor(namedPool("PVMgr " + getClass().getSimpleName() + " Worker "));
     
     // Keeps track of the recipes that were opened with
     // this data source.

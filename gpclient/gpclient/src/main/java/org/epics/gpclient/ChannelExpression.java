@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient;
 
+import org.epics.gpclient.expression.ExpressionImpl;
 import org.epics.gpclient.expression.ReadExpressionImpl;
 
 /**
@@ -12,17 +13,23 @@ import org.epics.gpclient.expression.ReadExpressionImpl;
  * @param <R> type of the read payload
  * @author carcassi
  */
-public abstract class ChannelExpression<R> extends ReadExpressionImpl<R> {
+public abstract class ChannelExpression<R, W> extends ExpressionImpl<R, W> {
     
     private final ReadCollector<?, R> readCollector;
+    private final WriteCollector<W> writeCollector;
+
+    ChannelExpression(ReadCollector<?, R> readCollector, WriteCollector<W> writeCollector) {
+        super(null, readCollector.getReadFunction(), writeCollector.getWriteFunction());
+        this.readCollector = readCollector;
+        this.writeCollector = writeCollector;
+    }
 
     protected ReadCollector<?, R> getReadCollector() {
         return readCollector;
     }
 
-    ChannelExpression(ReadCollector<?, R> readCollector) {
-        super(null, readCollector.getReadFunction());
-        this.readCollector = readCollector;
+    protected WriteCollector<W> getWriteCollector() {
+        return writeCollector;
     }
 
     @Override
@@ -40,5 +47,23 @@ public abstract class ChannelExpression<R> extends ReadExpressionImpl<R> {
     }
     
     protected abstract void disconnectRead(PVDirector director);
+
+    @Override
+    public void startWrite(PVDirector director) {
+        director.registerCollector(writeCollector);
+        connectWrite(director);
+    }
+    
+    protected abstract void connectWrite(PVDirector director);
+
+    @Override
+    public final void stopWrite(PVDirector director) {
+        director.deregisterCollector(writeCollector);
+        disconnectRead(director);
+    }
+    
+    protected abstract void disconnectWrite(PVDirector director);
+    
+    
     
 }

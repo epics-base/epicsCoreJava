@@ -56,7 +56,7 @@ public class Log {
             if (readEvent.getEvent().isType(PVEvent.Type.VALUE)) {
                 out.append("V");
             }
-            if (readEvent.getEvent().isType(PVEvent.Type.READ_EXCEPTION)) {
+            if (readEvent.getEvent().isType(PVEvent.Type.EXCEPTION)) {
                 out.append("E");
             }
             out.append(")");

@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Supplier;
 import org.epics.gpclient.datasource.DataSource;
+import org.epics.gpclient.expression.Expression;
 import org.epics.gpclient.expression.ReadExpression;
 
 /**
@@ -23,21 +24,25 @@ import org.epics.gpclient.expression.ReadExpression;
  * @param <W> the write payload
  * @author carcassi
  */
-public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
+public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriterConfiguration<W> {
+    
+    static enum Mode {READ, WRITE, READ_WRITE};
 
-    final ReadExpression<R> readExpression;
+    final Expression<R, W> expression;
     final GPClientInstance gpClient;
+    final Mode mode;
     
     Executor notificationExecutor;
     DataSource dataSource;
     Duration connectionTimeout;
     String connectionTimeoutMessage;
     Duration maxRate;
-    PVReaderListener<R> listener;
+    PVListener<R, W> listener;
 
-    public PVConfiguration(GPClientInstance gpClient, ReadExpression<R> readExpression) {
+    PVConfiguration(GPClientInstance gpClient, Expression<R, W> expression, Mode mode) {
         this.gpClient = gpClient;
-        this.readExpression = readExpression;
+        this.expression = expression;
+        this.mode = mode;
     }
 
     /**
@@ -130,28 +135,46 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
     }
     
     public PVConfiguration<R, W>  addListener(final PVReaderListener<R> listener) {
-        if (this.listener == null) {
-            this.listener = listener;
-        } else {
-            final PVReaderListener<R> previousListener = this.listener;
-            this.listener = new PVReaderListener<R>() {
-                @Override
-                public void pvChanged(PVEvent event, PVReader<R> pvReader) {
+        final PVListener<R, W> previousListener = this.listener;
+        this.listener = new PVListener<R, W>() {
+            @Override
+            public void pvChanged(PVEvent event, PV<R, W> pvReader) {
+                if (previousListener != null) {
                     previousListener.pvChanged(event, pvReader);
-                    listener.pvChanged(event, pvReader);
                 }
-            };
-        }
+                listener.pvChanged(event, pvReader);
+            }
+        };
         return this;
     }
 
     public PVConfiguration<R, W> addListener(PVWriterListener<W> listener) {
-        //this.listener = listener;
+        final PVListener<R, W> previousListener = this.listener;
+        this.listener = new PVListener<R, W>() {
+            @Override
+            public void pvChanged(PVEvent event, PV<R, W> pvReader) {
+                if (previousListener != null) {
+                    previousListener.pvChanged(event, pvReader);
+                }
+                listener.pvChanged(event, pvReader);
+            }
+        };
         return this;
     }
 
     public PVConfiguration<R, W> addListener(PVListener<R, W> listener) {
-        this.listener = listener;
+        if (this.listener == null) {
+            this.listener = listener;
+        } else {
+            final PVListener<R, W> previousListener = this.listener;
+            this.listener = new PVListener<R, W>() {
+                @Override
+                public void pvChanged(PVEvent event, PV<R, W> pv) {
+                    previousListener.pvChanged(event, pv);
+                    listener.pvChanged(event, pv);
+                }
+            };
+        }
         return this;
     }
     
@@ -171,7 +194,18 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R> {
         
         pv.setDirector(pvDirector);
         pvDirector.setScanner(rateDecoupler);
-        pvDirector.connectReadExpression(readExpression);
+        switch(mode) {
+            case READ:
+                pvDirector.connectReadExpression(expression);
+                break;
+            case WRITE:
+                pvDirector.connectWriteExpression(expression);
+                break;
+            case READ_WRITE:
+                pvDirector.connectReadExpression(expression);
+                pvDirector.connectWriteExpression(expression);
+                break;
+        }
         rateDecoupler.start();
         
         return pv;

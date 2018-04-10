@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.datasource.DataSource;
+import org.epics.gpclient.expression.Expression;
 import org.epics.gpclient.expression.ReadExpression;
 import org.epics.vtype.VType;
 
@@ -93,11 +94,14 @@ public class PVDirector<R, W> {
     // Required to connect/disconnect expressions
     private final DataSource dataSource;
     private final Object lock = new Object();
-    private final Set<ReadExpression<?>> readExpressions = new HashSet<>();
+    private final Set<Expression<?, ?>> readExpressions = new HashSet<>();
+    private final Set<Expression<?, ?>> writeExpressions = new HashSet<>();
 
     // Required for multiple operations
     /** Collector required to connect/disconnect expressions and for connection calculation */
     private final Set<ReadCollector<?,?>> readCollectors = new HashSet<>();
+    /** Collector required to connect/disconnect expressions and for connection calculation */
+    private final Set<WriteCollector<?>> writeCollectors = new HashSet<>();
     
     void setScanner(final RateDecoupler scanStrategy) {
         synchronized(lock) {
@@ -110,9 +114,19 @@ public class PVDirector<R, W> {
         readCollectors.add(collector);
     }
     
+    public void registerCollector(WriteCollector<?> collector) {
+        collector.setUpdateListener(scanStrategy.getUpdateListener());
+        writeCollectors.add(collector);
+    }
+    
     public void deregisterCollector(ReadCollector<?, ?> collector) {
         collector.setUpdateListener(null);
         readCollectors.remove(collector);
+    }
+    
+    public void deregisterCollector(WriteCollector<?> collector) {
+        collector.setUpdateListener(null);
+        writeCollectors.remove(collector);
     }
 
     public DataSource getDataSource() {
@@ -138,10 +152,17 @@ public class PVDirector<R, W> {
      * 
      * @param expression the expression to connect
      */
-    public void connectReadExpression(ReadExpression<?> expression) {
+    public void connectReadExpression(Expression<?, ?> expression) {
         synchronized(lock) {
             expression.startRead(this);
             readExpressions.add(expression);
+        }
+    }
+
+    public void connectWriteExpression(Expression<?, ?> expression) {
+        synchronized(lock) {
+            expression.startWrite(this);
+            writeExpressions.add(expression);
         }
     }
     
@@ -153,12 +174,21 @@ public class PVDirector<R, W> {
      *
      * @param expression the expression to disconnect
      */
-    public void disconnectReadExpression(ReadExpression<?> expression) {
+    public void disconnectReadExpression(Expression<?, ?> expression) {
         synchronized(lock) {
             if (!readExpressions.remove(expression)) {
                 log.log(Level.SEVERE, "Director was asked to disconnect expression '" + expression + "' which was not found.");
             }
             expression.stopRead(this);
+        }
+    }
+
+    public void disconnectWriteExpression(Expression<?, ?> expression) {
+        synchronized(lock) {
+            if (!writeExpressions.remove(expression)) {
+                log.log(Level.SEVERE, "Director was asked to disconnect expression '" + expression + "' which was not found.");
+            }
+            expression.stopWrite(this);
         }
     }
     
@@ -175,7 +205,7 @@ public class PVDirector<R, W> {
     private void disconnect() {
         synchronized(lock) {
             while (!readExpressions.isEmpty()) {
-                ReadExpression<?> expression = readExpressions.iterator().next();
+                Expression<?, ?> expression = readExpressions.iterator().next();
                 disconnectReadExpression(expression);
             }
         }
@@ -195,7 +225,7 @@ public class PVDirector<R, W> {
      */
     PVDirector(PVImpl<R, W> pv, PVConfiguration<R, W> pvConf) {
         this.pvRef = new WeakReference<>(pv);
-        this.readFunction = pvConf.readExpression.getFunction();
+        this.readFunction = pvConf.expression.getFunction();
         this.notificationExecutor = pvConf.notificationExecutor;
         this.scannerExecutor = pvConf.gpClient.dataProcessingThreadPool;
         this.dataSource = pvConf.dataSource;
@@ -279,7 +309,7 @@ public class PVDirector<R, W> {
             
             // If we are connected after a timeout, ignore the timeout
             if (newConnection && event.getException() instanceof TimeoutException) {
-                event = event.removeType(PVEvent.Type.READ_EXCEPTION);
+                event = event.removeType(PVEvent.Type.EXCEPTION);
             }
         }
 
@@ -296,10 +326,10 @@ public class PVDirector<R, W> {
             
             Exception previousReadException = previousNotification.event.getException();
             Exception currentReadException = event.getException();
-            if (event.isType(PVEvent.Type.READ_EXCEPTION) && previousReadException != null && currentReadException != null &&
+            if (event.isType(PVEvent.Type.EXCEPTION) && previousReadException != null && currentReadException != null &&
                     currentReadException.getClass().equals(previousReadException.getClass()) &&
                     Objects.equals(currentReadException.getMessage(), previousReadException.getMessage())) {
-                event = event.removeType(PVEvent.Type.READ_EXCEPTION);
+                event = event.removeType(PVEvent.Type.EXCEPTION);
             }
         } else {
             if (event.isType(PVEvent.Type.READ_CONNECTION) && newConnection == false) {

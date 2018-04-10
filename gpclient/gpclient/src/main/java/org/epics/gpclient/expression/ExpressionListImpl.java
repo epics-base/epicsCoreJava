@@ -35,29 +35,5 @@ public class ExpressionListImpl<R, W> implements ExpressionList<R, W> {
     public final List<Expression<R, W>> getExpressions() {
         return expressions;
     }
-
-    @Override
-    public final ReadExpressionList<R> and(ReadExpressionList<? extends R> expressions) {
-        @SuppressWarnings("unchecked")
-        ReadExpressionList<R> newExpression = (ReadExpressionList<R>) (ReadExpressionList) expressions;
-        return new ReadExpressionListImpl<R>(this.expressions).and(newExpression);
-    }
-
-    @Override
-    public final List<ReadExpression<R>> getReadExpressions() {
-        return Collections.<ReadExpression<R>>unmodifiableList(expressions);
-    }
-
-    @Override
-    public final WriteExpressionList<W> and(WriteExpressionList<? extends W> expressions) {
-        @SuppressWarnings("unchecked")
-        WriteExpressionList<W> newExpression = (WriteExpressionList<W>) (WriteExpressionList) expressions;
-        return new WriteExpressionListImpl<W>(this.expressions).and(newExpression);
-    }
-
-    @Override
-    public final List<WriteExpression<W>> getWriteExpressions() {
-        return Collections.<WriteExpression<W>>unmodifiableList(expressions);
-    }
     
 }

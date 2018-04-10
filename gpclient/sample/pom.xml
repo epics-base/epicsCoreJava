@@ -26,5 +26,15 @@
             <artifactId>datasource-sim</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>datasource-pva</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>gpclient-loc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

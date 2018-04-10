@@ -72,7 +72,7 @@ public class ProbeController implements Initializable {
             @Override
                     public void pvChanged(PVEvent event, PVReader<VType> pvReader) {
                         changeValue(pvReader.getValue(), pvReader.isConnected());
-                        if (event.isType(PVEvent.Type.READ_EXCEPTION)) {
+                        if (event.isType(PVEvent.Type.EXCEPTION)) {
                             errorField.setText(event.getException().getMessage());
                         } else {
                             errorField.setText(null);

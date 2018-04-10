@@ -22,24 +22,20 @@ import java.util.Objects;
  * @author carcassi
  */
 public final class PVEvent {
-    public enum Type {READ_CONNECTION, WRITE_CONNECTION, VALUE, READ_EXCEPTION, WRITE_EXCEPTION, WRITE_SUCCEEDED, WRITE_FAILED};
+    public enum Type {READ_CONNECTION, WRITE_CONNECTION, VALUE, EXCEPTION, WRITE_SUCCEEDED, WRITE_FAILED};
     
     private final List<Type> types;
     private final Exception exception;
+    private final Exception writeError;
 
-    private PVEvent(Exception ex, List<Type> types) {
+    private PVEvent(Exception ex, Exception writeError, List<Type> types) {
         this.types = Collections.unmodifiableList(types);
         this.exception = ex;
+        this.writeError = writeError;
     }
 
-    private PVEvent(Exception ex, Type type) {
-        this.types = Collections.unmodifiableList(Arrays.asList(type));
-        this.exception = ex;
-    }
-
-    private PVEvent(Exception ex, Type type1, Type type2) {
-        this.types = Collections.unmodifiableList(Arrays.asList(type1, type2));
-        this.exception = ex;
+    private PVEvent(Type type) {
+        this(null, null, Collections.singletonList(type));
     }
     
     public boolean isType(Type type) {
@@ -53,6 +49,10 @@ public final class PVEvent {
     public Exception getException() {
         return exception;
     }
+
+    public Exception getWriteError() {
+        return writeError;
+    }
     
     public PVEvent addEvent(PVEvent event) {
         List<Type> newTypes = new ArrayList<>(getType());
@@ -60,21 +60,17 @@ public final class PVEvent {
             newTypes.remove(type);
             newTypes.add(type);
         }
-        Exception newException = getException();
-        if (event.getException() != null) {
-            newException = event.getException();
-        }
-        return new PVEvent(exception, newTypes);
+        Exception newException = (event.getException() != null) ? event.getException() : getException();
+        Exception newWriteError = (event.getWriteError() != null) ? event.getWriteError() : getWriteError();
+        return new PVEvent(newException, newWriteError, newTypes);
     }
     
     PVEvent removeType(Type type) {
         List<Type> newTypes = new ArrayList<>(getType());
         newTypes.remove(type);
-        Exception newException = getException();
-        if (type == Type.READ_EXCEPTION) {
-            newException = null;
-        }
-        return new PVEvent(newException, newTypes);
+        Exception newException = (type == Type.EXCEPTION) ? null : getException();
+        Exception newWriteError = (type == Type.WRITE_FAILED) ? null : getWriteError();
+        return new PVEvent(newException, newWriteError, newTypes);
     }
 
     @Override
@@ -82,6 +78,7 @@ public final class PVEvent {
         int hash = 3;
         hash = 29 * hash + Objects.hashCode(this.types);
         hash = 29 * hash + Objects.hashCode(this.exception);
+        hash = 29 * hash + Objects.hashCode(this.writeError);
         return hash;
     }
 
@@ -103,6 +100,9 @@ public final class PVEvent {
         if (!Objects.equals(this.exception, other.exception)) {
             return false;
         }
+        if (!Objects.equals(this.writeError, other.writeError)) {
+            return false;
+        }
         return true;
     }
 
@@ -116,23 +116,37 @@ public final class PVEvent {
     }
     
     // Cache events that don't have an exception to save memory creation/collection
-    private static final PVEvent CONNECTION_EVENT = new PVEvent(null, Type.READ_CONNECTION);
-    private static final PVEvent VALUE_EVENT = new PVEvent(null, Type.VALUE);
-    private static final PVEvent CONNECTION_VALUE_EVENT = new PVEvent(null, Type.READ_CONNECTION, Type.VALUE);
+    private static final PVEvent READ_CONNECTION_EVENT = new PVEvent(Type.READ_CONNECTION);
+    private static final PVEvent VALUE_EVENT = new PVEvent( Type.VALUE);
+    private static final PVEvent READ_CONNECTION_VALUE_EVENT = new PVEvent(null, null, Arrays.asList(Type.READ_CONNECTION, Type.VALUE));
+    private static final PVEvent WRITE_CONNECTION_EVENT = new PVEvent(Type.WRITE_CONNECTION);
+    private static final PVEvent WRITE_SUCCEEDED_EVENT = new PVEvent(Type.WRITE_SUCCEEDED);
     
-    public static PVEvent connectionEvent() {
-        return CONNECTION_EVENT;
+    public static PVEvent readConnectionEvent() {
+        return READ_CONNECTION_EVENT;
     }
     
     public static PVEvent valueEvent() {
         return VALUE_EVENT;
     }
     
-    public static PVEvent connectionValueEvent() {
-        return CONNECTION_VALUE_EVENT;
+    public static PVEvent readConnectionValueEvent() {
+        return READ_CONNECTION_VALUE_EVENT;
     }
     
     public static PVEvent exceptionEvent(Exception ex) {
-        return new PVEvent(ex, Type.READ_EXCEPTION);
+        return new PVEvent(ex, null, Collections.singletonList(Type.EXCEPTION));
+    }
+    
+    public static PVEvent writeConnectionEvent() {
+        return WRITE_CONNECTION_EVENT;
+    }
+    
+    public static PVEvent writeSucceededEvent() {
+        return WRITE_SUCCEEDED_EVENT;
+    }
+    
+    public static PVEvent writeFailedEvent(Exception writeError) {
+        return new PVEvent(null, writeError, Collections.singletonList(Type.WRITE_FAILED));
     }
 }

@@ -50,7 +50,7 @@ public class LatestValueCollector<T> extends ReadCollector<T, T> {
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(PVEvent.connectionValueEvent());
+            listener.accept(PVEvent.readConnectionValueEvent());
         }
     }
     

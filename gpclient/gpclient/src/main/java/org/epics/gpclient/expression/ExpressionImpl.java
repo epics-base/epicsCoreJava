@@ -4,8 +4,6 @@
  */
 package org.epics.gpclient.expression;
 
-import org.epics.gpclient.WriteCollector;
-import org.epics.gpclient.ReadCollector;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.epics.gpclient.PVDirector;
@@ -46,10 +44,9 @@ public class ExpressionImpl<R, W> extends ExpressionListImpl<R, W> implements Ex
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public void startRead(PVDirector director) {
         if (expressionChildren != null) {
-            for (ReadExpression<?> readExpression : expressionChildren.getReadExpressions()) {
+            for (Expression<?, ?> readExpression : expressionChildren.getExpressions()) {
                 readExpression.startRead(director);
             }
         }
@@ -58,28 +55,26 @@ public class ExpressionImpl<R, W> extends ExpressionListImpl<R, W> implements Ex
     @Override
     public void stopRead(PVDirector director) {
         if (expressionChildren != null) {
-            for (ReadExpression<?> readExpression : expressionChildren.getReadExpressions()) {
+            for (Expression<?, ?> readExpression : expressionChildren.getExpressions()) {
                 readExpression.startRead(director);
             }
         }
     }
     
     @Override
-    @SuppressWarnings("unchecked")
-    public void startWrite(Object director) {
+    public void startWrite(PVDirector director) {
         if (expressionChildren != null) {
-            for (WriteExpression<?> writeExpression : expressionChildren.getWriteExpressions()) {
+            for (Expression<?, ?> writeExpression : expressionChildren.getExpressions()) {
                 writeExpression.startWrite(director);
             }
         }
     }
     
     @Override
-    @SuppressWarnings("unchecked")
-    public void start(Object director) {
+    public void stopWrite(PVDirector director) {
         if (expressionChildren != null) {
             for (Expression<?, ?> writeExpression : expressionChildren.getExpressions()) {
-                writeExpression.start(director);
+                writeExpression.startWrite(director);
             }
         }
     }

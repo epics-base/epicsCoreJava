@@ -13,7 +13,7 @@ import java.util.List;
  * @param <W> type of the write payload
  * @author carcassi
  */
-public interface ExpressionList<R, W> extends ReadExpressionList<R>, WriteExpressionList<W> {
+public interface ExpressionList<R, W> {
     
     /**
      * Adds the given expressions to this list.

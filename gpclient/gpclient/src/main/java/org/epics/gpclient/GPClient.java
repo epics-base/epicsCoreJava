@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
 import org.epics.gpclient.datasource.DataSourceProvider;
+import org.epics.gpclient.expression.Expression;
 import org.epics.gpclient.expression.ReadExpression;
 import org.epics.vtype.VType;
 
@@ -32,19 +33,30 @@ public class GPClient {
         return gpClient.read(channelName);
     }
     
-    public static <R> PVReaderConfiguration<R> read(ReadExpression<R> expression) {
+    public static <R> PVReaderConfiguration<R> read(Expression<R, ?> expression) {
         return gpClient.read(expression);
+    }
+    public static <R, W> PVConfiguration<R, W> readAndWrite(Expression<R, W> expression) {
+        return gpClient.readAndWrite(expression);
     }
     
     public static <R> ReadCollector<R, R> cacheLastValue(Class<R> readType) {
         return new LatestValueCollector<>(readType);
     }
     
-    public static <R> ReadExpression<R> channel(String channelName, ReadCollector<?, R> readCollector) {
-        return new DataSourceChannelExpression<>(channelName, readCollector);
+    public static <W> WriteCollector<W> writeType(Class<W> writeType) {
+        return new WriteCollector<>();
+    }
+    
+    public static <R, W> Expression<R, W> channel(String channelName, ReadCollector<?, R> readCollector, WriteCollector<W> writeCollector) {
+        return new DataSourceChannelExpression<>(channelName, readCollector, writeCollector);
+    }
+    
+    public static <R, Object> Expression<R, Object> channel(String channelName, ReadCollector<?, R> readCollector) {
+        return new DataSourceChannelExpression<>(channelName, readCollector, new WriteCollector<>());
     }
 
-    public static ReadExpression<VType> channel(String channelName) {
+    public static Expression<VType, Object> channel(String channelName) {
         return channel(channelName, cacheLastValue(VType.class));
     }
 

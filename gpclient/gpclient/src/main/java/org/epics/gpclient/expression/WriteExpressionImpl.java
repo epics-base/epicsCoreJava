@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.epics.gpclient.PVDirector;
 
 /**
  * Implementation class for {@link WriteExpression}.
@@ -42,10 +43,19 @@ public class WriteExpressionImpl<W> extends WriteExpressionListImpl<W> implement
     }
 
     @Override
-    public void startWrite(Object pvDirector) {
+    public void startWrite(PVDirector pvDirector) {
         if (expressionChildren != null) {
             for (WriteExpression<?> writeExpression : expressionChildren.getWriteExpressions()) {
                 writeExpression.startWrite(pvDirector);
+            }
+        }
+    }
+
+    @Override
+    public void stopWrite(PVDirector pvDirector) {
+        if (expressionChildren != null) {
+            for (WriteExpression<?> writeExpression : expressionChildren.getWriteExpressions()) {
+                writeExpression.stopWrite(pvDirector);
             }
         }
     }

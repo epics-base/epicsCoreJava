@@ -11,7 +11,7 @@ package org.epics.gpclient;
  * @param <R> the read object type
  * @param <W> the write object type
  */
-public interface PVListener<R, W> extends PVReaderListener<R>, PVWriterListener<W> {
+public interface PVListener<R, W> {
     
     /**
      * Notified when the value was written.

@@ -5,6 +5,7 @@
 package org.epics.gpclient.expression;
 
 import java.util.function.Consumer;
+import org.epics.gpclient.PVDirector;
 
 /**
  * An expression to write.
@@ -32,5 +33,7 @@ public interface WriteExpression<W> extends WriteExpressionList<W> {
      *
      * @param director the director for the reader
      */
-    public void startWrite(Object director);
+    public void startWrite(PVDirector director);
+    
+    public void stopWrite(PVDirector director);
 }

@@ -17,8 +17,8 @@ public class PVEventTest {
     
     @Test
     public void addEvent1() {
-        assertThat(PVEvent.connectionEvent().addEvent(PVEvent.valueEvent()), equalTo(PVEvent.connectionValueEvent()));
-        assertThat(PVEvent.valueEvent().addEvent(PVEvent.connectionEvent()), not(equalTo(PVEvent.connectionValueEvent())));
-        assertThat(PVEvent.valueEvent().addEvent(PVEvent.connectionEvent()).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE, PVEvent.Type.READ_CONNECTION)));
+        assertThat(PVEvent.readConnectionEvent().addEvent(PVEvent.valueEvent()), equalTo(PVEvent.readConnectionValueEvent()));
+        assertThat(PVEvent.valueEvent().addEvent(PVEvent.readConnectionEvent()), not(equalTo(PVEvent.readConnectionValueEvent())));
+        assertThat(PVEvent.valueEvent().addEvent(PVEvent.readConnectionEvent()).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE, PVEvent.Type.READ_CONNECTION)));
     }
 }

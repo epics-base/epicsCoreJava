@@ -35,7 +35,7 @@ class ActiveRateDecoupler extends RateDecoupler {
             @Override
             public void run() {
                 if (!isStopped() && !isPaused() && !isEventProcessing()) {
-                    PVEvent event = PVEvent.connectionValueEvent();
+                    PVEvent event = PVEvent.readConnectionValueEvent();
                     sendDesiredRateEvent(event);
                 }
             }

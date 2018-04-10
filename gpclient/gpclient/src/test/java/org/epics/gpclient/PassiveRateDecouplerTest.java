@@ -75,7 +75,7 @@ public class PassiveRateDecouplerTest {
                 RateDecoupler decoupler = new PassiveRateDecoupler(executor, Duration.ofMillis(20), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.readConnectionEvent());
                 Thread.sleep(100);
                 decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(100);
@@ -118,7 +118,7 @@ public class PassiveRateDecouplerTest {
                 RateDecoupler decoupler = new PassiveRateDecoupler(executor, Duration.ofMillis(100), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.readConnectionEvent());
                 Thread.sleep(100);
                 decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
@@ -156,7 +156,7 @@ public class PassiveRateDecouplerTest {
                 RateDecoupler decoupler = new PassiveRateDecoupler(executor, Duration.ofMillis(100), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.readConnectionEvent());
                 decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(100);
                 decoupler.getUpdateListener().accept(PVEvent.valueEvent());
@@ -195,7 +195,7 @@ public class PassiveRateDecouplerTest {
                 RateDecoupler decoupler = new PassiveRateDecoupler(executor, Duration.ofMillis(50), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.readConnectionEvent());
                 // Wait for connection event
                 Thread.sleep(60);
                 
@@ -241,7 +241,7 @@ public class PassiveRateDecouplerTest {
                 RateDecoupler decoupler = new PassiveRateDecoupler(executor, Duration.ofMillis(20), log, null);
                 log.setDecoupler(decoupler);
                 decoupler.start();
-                decoupler.getUpdateListener().accept(PVEvent.connectionEvent());
+                decoupler.getUpdateListener().accept(PVEvent.readConnectionEvent());
                 // Wait for connection event
                 Thread.sleep(125);
                 

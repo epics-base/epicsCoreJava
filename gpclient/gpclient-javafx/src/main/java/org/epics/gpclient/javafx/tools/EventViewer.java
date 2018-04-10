@@ -106,7 +106,7 @@ public final class EventViewer extends ScrollPane {
     }
 
     private void updateReadError(Event readEvent) {
-        if (readEvent != null && readEvent.getEvent().isType(PVEvent.Type.READ_EXCEPTION)) {
+        if (readEvent != null && readEvent.getEvent().isType(PVEvent.Type.EXCEPTION)) {
             eventReadError.setVisible(true);
             eventReadError.setManaged(true);
             readExceptionMessageField.setText(readEvent.getEvent().getException().getMessage());

@@ -72,7 +72,7 @@ public abstract class ReadCollector<I, O> {
         }
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(PVEvent.connectionEvent());
+            listener.accept(PVEvent.readConnectionEvent());
         }
     }
 

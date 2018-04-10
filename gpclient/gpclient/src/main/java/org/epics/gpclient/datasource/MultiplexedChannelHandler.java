@@ -6,6 +6,7 @@ package org.epics.gpclient.datasource;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.ReadCollector;
@@ -52,7 +53,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     private MessagePayload lastMessage;
     private ConnectionPayload connectionPayload;
     private Map<ReadCollector, MonitorHandler> readers = new ConcurrentHashMap<>();
-    private Map<WriteCollector, Runnable> writers = new ConcurrentHashMap<>();
+    private Map<WriteCollector, Consumer<WriteCollector<?>>> writers = new ConcurrentHashMap<>();
     private boolean processMessageOnDisconnect = true;
     private boolean processMessageOnReconnect = true;
     
@@ -267,17 +268,13 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     @Override
     protected synchronized void addWriter(final WriteCollector subscription) {
         writeUsageCounter++;
-        Runnable collectorListener = new Runnable() {
-            @Override
-            public void run() {
-                for (Object value : subscription.getValues()) {
-                    try {
-                        write(value);
-                        subscription.sendWriteSuccessful();
-                    } catch (Exception ex) {
-                        subscription.sendWriteFailed(ex);
-                    }
-                }
+        Consumer<WriteCollector<?>> collectorListener = (WriteCollector<?> collector) -> {
+            Object value = collector.getValue();
+            try {
+                write(value);
+                subscription.sendWriteSuccessful();
+            } catch (Exception ex) {
+                subscription.sendWriteFailed(ex);
             }
         };
         subscription.setWriteNotification(collectorListener);

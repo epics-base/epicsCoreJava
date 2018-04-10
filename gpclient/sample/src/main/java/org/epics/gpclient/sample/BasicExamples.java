@@ -5,37 +5,49 @@
  */
 package org.epics.gpclient.sample;
 
-import java.time.Duration;
 import org.epics.gpclient.GPClient;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVReader;
-import org.epics.gpclient.PVReaderListener;
-import org.epics.gpclient.datasource.sim.SimulationDataSource;
-import org.epics.util.concurrent.Executors;
 import org.epics.vtype.VType;
+import static org.epics.gpclient.GPClient.*;
+import org.epics.gpclient.PV;
 
 /**
  *
  * @author carcassi
  */
 public class BasicExamples {
-    
+
     public static void b1_readLatestValue() throws Exception {
-        SimulationDataSource sim = new SimulationDataSource();
-        PVReader<VType> pv = GPClient.read("sim://noise")
+        PVReader<VType> pv = GPClient.read("pva://TST:I")
                 .addListener((PVEvent event, PVReader<VType> pvReader) -> {
                     System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
                 })
-                .notifyOn(Executors.localThread())
-                .maxRate(Duration.ofMillis(50))
                 .start();
-        
+
         Thread.sleep(2000);
-        
-        pv.close();
+
+        GPClient.defaultInstance().getDefaultDataSource().close();
     }
-    
+
+    public static void b1_readAndWriteLoc() throws Exception {
+        PV<VType, Object> pv = GPClient.readAndWrite(channel("loc://a(\"init\")"))
+                .addListener((PVEvent event, PV<VType, Object> pvReader) -> {
+                    System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
+                    if (event.isType(PVEvent.Type.EXCEPTION)) {
+                        event.getException().printStackTrace();
+                    }
+                })
+                .start();
+
+        Thread.sleep(1000);
+        
+        pv.write("New Value");
+
+        GPClient.defaultInstance().getDefaultDataSource().close();
+    }
+
     public static void main(String[] args) throws Exception {
-        b1_readLatestValue();
+        b1_readAndWriteLoc();
     }
 }

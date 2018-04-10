@@ -4,43 +4,107 @@
  */
 package org.epics.gpclient;
 
-import java.util.Collection;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /**
  * @author carcassi
  */
-public abstract class WriteCollector<T> {
+public class WriteCollector<T> {
     
-    final Object lock = new Object();
-    Runnable notification;
-    Runnable writeNotification;
-    Boolean connection = Boolean.FALSE;
-    
-    void setChangeNotification(Runnable notification) {
-        synchronized (lock) {
-            this.notification = notification;
+    class CollectorConsumer implements Consumer<T> {
+        @Override
+        public void accept(T t) {
+            queueValue(value);
         }
     }
     
-    public void setWriteNotification(Runnable writeNotification) {
+    private final Object lock = new Object();
+    private boolean connection = false;
+    private Consumer<PVEvent> collectorListener;
+    private Consumer<WriteCollector<?>> writeListener;
+    private final Consumer<T> writeFunction = new WriteCollector.CollectorConsumer();
+    private T value;
+    
+    WriteCollector() {
+    }
+
+    public Consumer<T> getWriteFunction() {
+        return writeFunction;
+    }
+   
+    void setUpdateListener(Consumer<PVEvent>  collectorListener) {
         synchronized (lock) {
-            this.writeNotification = writeNotification;
+            this.collectorListener = collectorListener;
         }
     }
     
-    public abstract Class<T> getType();
+    public void setWriteNotification(Consumer<WriteCollector<?>> writeListener) {
+        synchronized (lock) {
+            this.writeListener = writeListener;
+        }
+    }
     
-    public abstract Collection<T> getValues();
+    public T getValue() {
+        synchronized (lock) {
+            return value;
+        }
+    }
     
-    abstract void queueValue(T value);
+    void queueValue(T newValue) {
+        Consumer<WriteCollector<?>> listener;
+        synchronized (lock) {
+            value = newValue;
+            listener = writeListener;
+        }
+        // Run the task without holding the lock
+        if (listener != null) {
+            listener.accept(this);
+        }
+    }
     
-    public abstract void updateConnection(boolean connection);
+    public void updateConnection(boolean newConnection) {
+        Consumer<PVEvent> listener;
+        synchronized (lock) {
+            connection = newConnection;
+            listener = collectorListener;
+        }
+        // Run the task without holding the lock
+        if (listener != null) {
+            listener.accept(PVEvent.writeConnectionEvent());
+        }
+    }
     
-    public abstract void notifyError(Exception ex);
+    public void notifyError(Exception ex) {
+        Consumer<PVEvent> listener;
+        synchronized (lock) {
+            listener = collectorListener;
+        }
+        // Run the task without holding the lock
+        if (listener != null) {
+            listener.accept(PVEvent.exceptionEvent(ex));
+        }
+    }
     
-    public abstract void sendWriteSuccessful();
+    public void sendWriteSuccessful() {
+        Consumer<PVEvent> listener;
+        synchronized (lock) {
+            listener = collectorListener;
+        }
+        // Run the task without holding the lock
+        if (listener != null) {
+            listener.accept(PVEvent.writeSucceededEvent());
+        }
+    }
     
-    public abstract void sendWriteFailed(Exception ex);
+    public void sendWriteFailed(Exception ex) {
+        Consumer<PVEvent> listener;
+        synchronized (lock) {
+            listener = collectorListener;
+        }
+        // Run the task without holding the lock
+        if (listener != null) {
+            listener.accept(PVEvent.writeFailedEvent(ex));
+        }
+    }
     
 }

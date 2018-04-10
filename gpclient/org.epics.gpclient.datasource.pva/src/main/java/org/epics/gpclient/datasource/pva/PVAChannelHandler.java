@@ -243,26 +243,25 @@ class PVAChannelHandler extends
 		this.channel = channel;
 	}
 	
-	@Override
-	public void channelStateChange(Channel channel, ConnectionState connectionState) {
-		try {
+    @Override
+    public void channelStateChange(Channel channel, ConnectionState connectionState) {
+        try {
 
-			// introspect
-			if (connectionState == ConnectionState.CONNECTED) {
-				if (extractPVField == null)
-					channel.getField(this, null);
-				else
-					channel.getField(this, extractPVField);
-			}
-			else
-			{
-				processConnection(newConnectionPayload());
-			}
+            // introspect
+            if (connectionState == ConnectionState.CONNECTED) {
+                if (extractPVField == null) {
+                    channel.getField(this, null);
+                } else {
+                    channel.getField(this, extractPVField);
+                }
+            } else {
+                processConnection(newConnectionPayload());
+            }
 
-		} catch (Exception ex) {
-			reportExceptionToAllReadersAndWriters(ex);
-		}
-	}
+        } catch (Exception ex) {
+            reportExceptionToAllReadersAndWriters(ex);
+        }
+    }
 
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.GetFieldRequester#getDone(org.epics.pvdata.pv.Status, org.epics.pvdata.pv.Field)

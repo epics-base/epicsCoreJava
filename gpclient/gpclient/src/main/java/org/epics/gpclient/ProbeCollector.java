@@ -6,23 +6,6 @@
 package org.epics.gpclient;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.epics.gpclient.LatestValueCollector;
-import org.epics.gpclient.LatestValueCollector;
-import org.epics.gpclient.ReadCollector;
-import org.epics.gpclient.ReadCollector;
-import org.epics.gpclient.PVEvent;
-import org.epics.gpclient.PVEvent;
-import org.epics.gpclient.PVEventRecorder;
 
 /**
  *
@@ -31,40 +14,51 @@ import org.epics.gpclient.PVEventRecorder;
 public class ProbeCollector<T> {
     
     private final PVEventRecorder recorder;
-    private final ReadCollector<T, T> collector;
+    private final ReadCollector<T, T> readCollector;
+    private final WriteCollector<T> writeCollector;
 
     public ProbeCollector(Class<T> type, PrintStream out) {
-        this.collector = new LatestValueCollector<>(type);
+        this.readCollector = new LatestValueCollector<>(type);
+        this.writeCollector = new WriteCollector<>();
         this.recorder = new PVEventRecorder() {
             @Override
             protected void onEvent(PVEvent event) {
                 if (out != null) {
                     if (event.getType().contains(PVEvent.Type.READ_CONNECTION)) {
-                        out.println("CONN: " + collector.getConnection());
+                        out.println("CONN: " + readCollector.getConnection());
                     }
                     if (event.getType().contains(PVEvent.Type.VALUE)) {
-                        out.println("VAL: " + collector.getValue());
+                        out.println("VAL: " + readCollector.getValue());
                     }
-                    if (event.getType().contains(PVEvent.Type.READ_EXCEPTION)) {
+                    if (event.getType().contains(PVEvent.Type.EXCEPTION)) {
                         out.println("ERR: " + event.getException().getMessage());
                     }
                 }
             }
             
         };
-        this.collector.setUpdateListener(this.recorder);
+        this.readCollector.setUpdateListener(this.recorder);
+        this.writeCollector.setUpdateListener(this.recorder);
     }
     
     public boolean getConnection() {
-        return collector.getConnection();
+        return readCollector.getConnection();
     }
     
     public T getValue() {
-        return collector.getValue();
+        return readCollector.getValue();
     }
 
-    public ReadCollector<T, T> getCollector() {
-        return collector;
+    public ReadCollector<T, T> getReadCollector() {
+        return readCollector;
+    }
+
+    public WriteCollector<T> getWriteCollector() {
+        return writeCollector;
+    }
+    
+    public void writeValue(T value) {
+        writeCollector.queueValue(value);
     }
 
     public PVEventRecorder getRecorder() {
