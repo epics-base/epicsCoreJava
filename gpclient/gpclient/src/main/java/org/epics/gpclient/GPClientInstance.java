@@ -32,7 +32,7 @@ public class GPClientInstance {
     }
     
     public PVReaderConfiguration<VType> read(String channelName) {
-        return read(latestValueFrom(channel(channelName, VType.class)));
+        return read(channel(channelName));
     }
     
     public <R> PVReaderConfiguration<R> read(ReadExpression<R> expression) {

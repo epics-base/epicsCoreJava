@@ -13,7 +13,7 @@ import org.epics.gpclient.datasource.ReadSubscription;
  *
  * @author carcassi
  */
-class DataSourceChannel<T> extends DataChannel<T> {
+class DataSourceChannelExpression<T, R> extends ChannelExpression<T> {
     
     private final String channelName;
 
@@ -23,18 +23,18 @@ class DataSourceChannel<T> extends DataChannel<T> {
      * @param channelName the name of the channel
      * @param readType the type to read
      */
-    DataSourceChannel(String channelName, Class<T> readType) {
-        super(readType);
+    DataSourceChannelExpression(String channelName, ReadCollector<R, T> readCollector) {
+        super(readCollector);
         this.channelName = channelName;
     }
 
     @Override
-    public void startRead(PVDirector pvDirector) {
+    protected void connectRead(PVDirector pvDirector) {
         pvDirector.getDataSource().startRead(new ReadSubscription(channelName, getReadCollector()));
     }
 
     @Override
-    public void stopRead(PVDirector pvDirector) {
+    protected void disconnectRead(PVDirector pvDirector) {
         pvDirector.getDataSource().stopRead(new ReadSubscription(channelName, getReadCollector()));
     }
     
