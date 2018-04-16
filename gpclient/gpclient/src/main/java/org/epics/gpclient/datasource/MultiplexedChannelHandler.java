@@ -4,7 +4,6 @@
  */
 package org.epics.gpclient.datasource;
 
-import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
