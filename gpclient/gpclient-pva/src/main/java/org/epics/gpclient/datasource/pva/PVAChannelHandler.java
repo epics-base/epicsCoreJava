@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.WriteCollector;
+import org.epics.gpclient.WriteCollector.WriteRequest;
 import org.epics.gpclient.datasource.DataSourceTypeAdapter;
 
 import org.epics.pvaccess.client.Channel;
@@ -341,70 +342,44 @@ class PVAChannelHandler extends
 		}
 	}
 	
-	static class WriteRequest
-	{
-		private final Object newValue;
-		private final WriteCollector callback;
+	private final LinkedList<WriteRequest<?>> writeRequests = new LinkedList<WriteRequest<?>>(); 
 
-		public WriteRequest(Object newValue, WriteCollector callback) {
-			this.newValue = newValue;
-			this.callback = callback;
-		}
+    @Override
+    protected void processWriteRequest(WriteRequest<?> request) {
+        boolean wasEmpty;
+        synchronized (writeRequests) {
+            wasEmpty = writeRequests.isEmpty();
+            writeRequests.add(request);
+        }
 
-		public Object getNewValue() {
-			return newValue;
-		}
+        if (!channelPutCreated.getAndSet(true)) {
+            channel.createChannelPut(this, isChannelEnumType ? enumPutPVRequest : standardPutPVRequest);
+        } else if (wasEmpty) {
+            doNextWrite();
+        }
+    }
 
-		public WriteCollector getCallback() {
-			return callback;
-		}
-	}
-	
-	private final LinkedList<WriteRequest> writeRequests = new LinkedList<WriteRequest>(); 
+    private void doNextWrite() {
+        WriteRequest writeRequest;
+        synchronized (writeRequests) {
+            writeRequest = writeRequests.peek();
+        }
 
-	@Override
-	public void write(Object newValue) {
-		
-		boolean wasEmpty;
-		synchronized (writeRequests)
-		{
-			wasEmpty = writeRequests.isEmpty();
-			writeRequests.add(new WriteRequest(newValue, null));
-		}
-		
-		if (!channelPutCreated.getAndSet(true))
-		{
-			channel.createChannelPut(this, isChannelEnumType ? enumPutPVRequest : standardPutPVRequest);
-		}
-		else if (wasEmpty)
-		{
-			doNextWrite();
-		}
-	}
+        if (writeRequest != null) {
+            try {
+                if (channelPutValueField == null) {
+                    throw new RuntimeException("No 'value' field");
+                }
 
-	private void doNextWrite()
-	{
-		WriteRequest writeRequest;
-		synchronized (writeRequests)
-		{
-			writeRequest = writeRequests.peek();
-		}
-		
-		if (writeRequest != null)
-		{
-			try {
-				if (channelPutValueField == null)
-					throw new RuntimeException("No 'value' field");
-					
-				fromObject(channelPutValueField, writeRequest.getNewValue());
-				channelPut.put(channelPutStructure, bitSet);
-			} catch (Exception ex) {
-				writeRequests.poll();
-				writeRequest.getCallback().sendWriteFailed(ex);
-			}
-		}
-		
-	}
+                fromObject(channelPutValueField, writeRequest.getValue());
+                channelPut.put(channelPutStructure, bitSet);
+            } catch (Exception ex) {
+                writeRequests.poll();
+                writeRequest.writeFailed(ex);
+            }
+        }
+
+    }
 	
 	@Override
 	public void channelPutConnect(Status status, ChannelPut channelPut, Structure putStructure) {
@@ -457,11 +432,11 @@ class PVAChannelHandler extends
 		{
 			if (status.isSuccess())
 			{
-				writeRequest.getCallback().sendWriteSuccessful();
+				writeRequest.writeSuccessful();
 			}
 			else
 			{
-				writeRequest.getCallback().sendWriteFailed(new Exception(status.getMessage()));
+				writeRequest.writeFailed(new Exception(status.getMessage()));
 			}
 			
 			doNextWrite();
