@@ -6,9 +6,9 @@
         <artifactId>gpclient-all</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>sample</artifactId>
+    <artifactId>gpclient-sample</artifactId>
     <packaging>jar</packaging>
-    <name>org.epics.gpclient.sample</name>
+    <name>gpclient-sample</name>
     <description>Examples for the generic client.</description>
     <dependencies>
         <dependency>
@@ -23,12 +23,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>datasource-sim</artifactId>
+            <artifactId>gpclient-sim</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>datasource-pva</artifactId>
+            <artifactId>gpclient-pva</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -8,7 +8,7 @@
     </parent>
     <artifactId>gpclient-javafx</artifactId>
     <packaging>jar</packaging>
-    <name>org.epics.gpclient.javafx</name>
+    <name>gpclient-javafx</name>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -22,12 +22,12 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>datasource-sim</artifactId>
+            <artifactId>gpclient-sim</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>datasource-pva</artifactId>
+            <artifactId>gpclient-pva</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -6,18 +6,19 @@
         <artifactId>gpclient-all</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>datasource-pva</artifactId>
+    <artifactId>gpclient-sim</artifactId>
     <packaging>jar</packaging>
-    <name>org.epics.gpclient.datasource.pva</name>
+    <name>gpclient-sim</name>
+    <description>Support for simulated data source.</description>
     <dependencies>
-        <dependency>
-            <groupId>org.epics</groupId>
-            <artifactId>epics-pvaccess</artifactId>
-            <version>5.1.1</version>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gpclient</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vtype</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

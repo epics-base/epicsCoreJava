@@ -12,9 +12,9 @@
     </properties>
     <modules>
         <module>gpclient</module>
-        <module>datasource-sim</module>
-        <module>sample</module>
-        <module>org.epics.gpclient.datasource.pva</module>
+        <module>gpclient-sim</module>
+        <module>gpclient-sample</module>
+        <module>gpclient-pva</module>
         <module>gpclient-javafx</module>
         <module>gpclient-loc</module>
     </modules>
