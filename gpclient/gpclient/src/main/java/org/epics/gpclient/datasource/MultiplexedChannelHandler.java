@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient.datasource;
 
+import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -268,15 +269,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     @Override
     protected synchronized void addWriter(final WriteCollector subscription) {
         writeUsageCounter++;
-        Consumer<WriteCollector.WriteRequest<?>> collectorListener = (request)  -> {
-            Object value = request.getValue();
-            try {
-                write(value);
-                request.writeSuccessful();
-            } catch (Exception ex) {
-                request.writeFailed(ex);
-            }
-        };
+        Consumer<WriteCollector.WriteRequest<?>> collectorListener = this::processWriteRequest;
         subscription.setWriteNotification(collectorListener);
         writers.put(subscription, collectorListener);
         guardedConnect();
@@ -284,7 +277,43 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
             subscription.updateConnection(isWriteConnected());
         }
     }
+    
+    /**
+     * Process the write request. Override this method to implement writes asynchronously.
+     * Take the value from the request and, when the response arrives, calls
+     * either {@link WriteCollector.WriteRequest#writeSuccessful() } or
+     * {@link WriteCollector.WriteRequest#writeFailed(java.lang.Exception) }.
+     * <p>
+     * To implement writes, either this method or {@link #write(java.lang.Object) }
+     * should be overriden.
+     * 
+     * @param request 
+     */
+    protected void processWriteRequest(WriteCollector.WriteRequest<?> request) {
+        try {
+            write(request.getValue());
+            request.writeSuccessful();
+        } catch (Exception ex) {
+            request.writeFailed(ex);
+        }
+    }
 
+
+    /**
+     * Write the value. Override this method to implement writes synchronously.
+     * Simply return if the write was successful or throw an exception if it
+     * wasn't. The exception is propagated up to the client code, so the
+     * error message should be short but descriptive.
+     * <p>
+     * To implement writes, either this method or {@link #write(java.lang.Object) }
+     * should be overriden.
+     * 
+     * @param newValue the new value to write.
+     */
+    protected void write(Object newValue) {
+        throw new RuntimeException("Write not implemented");
+    }
+    
     @Override
     protected synchronized void removeWriter(WriteCollector subscription) {
         writeUsageCounter--;
@@ -369,8 +398,6 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
      * the last reader or writer is de-registered.
      */
     protected abstract void disconnect();
-
-    protected abstract void write(Object newValue);
 
     private void setConnected(boolean connected) {
         this.connected = connected;
