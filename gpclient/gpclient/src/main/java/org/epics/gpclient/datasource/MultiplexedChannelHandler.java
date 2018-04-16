@@ -53,7 +53,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     private MessagePayload lastMessage;
     private ConnectionPayload connectionPayload;
     private Map<ReadCollector, MonitorHandler> readers = new ConcurrentHashMap<>();
-    private Map<WriteCollector, Consumer<WriteCollector<?>>> writers = new ConcurrentHashMap<>();
+    private Map<WriteCollector, Consumer<WriteCollector.WriteRequest<?>>> writers = new ConcurrentHashMap<>();
     private boolean processMessageOnDisconnect = true;
     private boolean processMessageOnReconnect = true;
     
@@ -268,13 +268,13 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     @Override
     protected synchronized void addWriter(final WriteCollector subscription) {
         writeUsageCounter++;
-        Consumer<WriteCollector<?>> collectorListener = (WriteCollector<?> collector) -> {
-            Object value = collector.getValue();
+        Consumer<WriteCollector.WriteRequest<?>> collectorListener = (request)  -> {
+            Object value = request.getValue();
             try {
                 write(value);
-                subscription.sendWriteSuccessful();
+                request.writeSuccessful();
             } catch (Exception ex) {
-                subscription.sendWriteFailed(ex);
+                request.writeFailed(ex);
             }
         };
         subscription.setWriteNotification(collectorListener);

@@ -58,7 +58,9 @@ public class ProbeCollector<T> {
     }
     
     public void writeValue(T value) {
+        writeCollector.prepareWrite(1);
         writeCollector.queueValue(value);
+        writeCollector.sendWriteRequest(0, recorder);
     }
 
     public PVEventRecorder getRecorder() {

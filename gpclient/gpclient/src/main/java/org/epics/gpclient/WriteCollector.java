@@ -4,6 +4,7 @@
  */
 package org.epics.gpclient;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -11,9 +12,32 @@ import java.util.function.Consumer;
  */
 public class WriteCollector<T> {
     
+    public static class WriteRequest<T> {
+        private final T value;
+        private final Consumer<PVEvent> writeCallback;
+
+        WriteRequest(T value, Consumer<PVEvent> writeCallback) {
+            this.value = value;
+            this.writeCallback = writeCallback;
+        }
+
+        
+        public T getValue() {
+            return value;
+        }
+        
+        public void writeSuccessful() {
+            writeCallback.accept(PVEvent.writeSucceededEvent());
+        }
+        
+        public void writeFailed(Exception ex) {
+            writeCallback.accept(PVEvent.writeFailedEvent(ex));
+        }
+    }
+    
     class CollectorConsumer implements Consumer<T> {
         @Override
-        public void accept(T t) {
+        public void accept(T value) {
             queueValue(value);
         }
     }
@@ -21,15 +45,22 @@ public class WriteCollector<T> {
     private final Object lock = new Object();
     private boolean connection = false;
     private Consumer<PVEvent> collectorListener;
-    private Consumer<WriteCollector<?>> writeListener;
+    private Consumer<WriteRequest<?>> writeListener;
     private final Consumer<T> writeFunction = new WriteCollector.CollectorConsumer();
-    private T value;
+    private Optional<T> value;
+    private Integer writeId;
     
     WriteCollector() {
     }
 
-    public Consumer<T> getWriteFunction() {
+    Consumer<T> getWriteFunction() {
         return writeFunction;
+    }
+    
+    boolean getConnection() {
+        synchronized(lock) {
+            return connection;
+        }
     }
    
     void setUpdateListener(Consumer<PVEvent>  collectorListener) {
@@ -38,27 +69,56 @@ public class WriteCollector<T> {
         }
     }
     
-    public void setWriteNotification(Consumer<WriteCollector<?>> writeListener) {
+    public void setWriteNotification(Consumer<WriteRequest<?>> writeListener) {
         synchronized (lock) {
             this.writeListener = writeListener;
         }
     }
     
-    public T getValue() {
-        synchronized (lock) {
-            return value;
+    void prepareWrite(int writeId) {
+        synchronized(lock) {
+            if (this.writeId != null) {
+                throw new IllegalStateException("Asked to prepare for writeId " + writeId + " while haven't submitted request for " + this.writeId);
+            } else {
+                this.writeId = writeId;
+            }
         }
     }
     
     void queueValue(T newValue) {
-        Consumer<WriteCollector<?>> listener;
+        synchronized(lock) {
+            if (this.writeId == null) {
+                throw new IllegalStateException("Received unexpected value to write");
+            } else {
+                this.value = Optional.ofNullable(newValue);
+            }
+        }
+    }
+    
+    void sendWriteRequest(int writeId, Consumer<PVEvent> writeCallback) {
+        Consumer<WriteRequest<?>> listener;
+        WriteRequest<T> request;
         synchronized (lock) {
-            value = newValue;
+            if (this.writeId == null) {
+                throw new IllegalStateException("Received unexpected send write request");
+            }
+            if (this.value != null) {
+                request = new WriteRequest<>(this.value.get(), writeCallback);
+            } else {
+                request = null;
+            }
             listener = writeListener;
         }
+        // If no value was sent to be written, return successful
+        if (request == null) {
+            new WriteRequest<>(null, writeCallback).writeSuccessful();
+        }
+        
         // Run the task without holding the lock
         if (listener != null) {
-            listener.accept(this);
+            listener.accept(request);
+        } else {
+            request.writeFailed(new RuntimeException("No listener was registered to process write for value " + request.getValue()));
         }
     }
     
@@ -82,28 +142,6 @@ public class WriteCollector<T> {
         // Run the task without holding the lock
         if (listener != null) {
             listener.accept(PVEvent.exceptionEvent(ex));
-        }
-    }
-    
-    public void sendWriteSuccessful() {
-        Consumer<PVEvent> listener;
-        synchronized (lock) {
-            listener = collectorListener;
-        }
-        // Run the task without holding the lock
-        if (listener != null) {
-            listener.accept(PVEvent.writeSucceededEvent());
-        }
-    }
-    
-    public void sendWriteFailed(Exception ex) {
-        Consumer<PVEvent> listener;
-        synchronized (lock) {
-            listener = collectorListener;
-        }
-        // Run the task without holding the lock
-        if (listener != null) {
-            listener.accept(PVEvent.writeFailedEvent(ex));
         }
     }
     
