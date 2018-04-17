@@ -33,6 +33,11 @@ public class GPClient {
     public static <R> PVReaderConfiguration<R> read(Expression<R, ?> expression) {
         return gpClient.read(expression);
     }
+    
+    public static PVConfiguration<VType, Object> readAndWrite(String channelName) {
+        return gpClient.readAndWrite(channelName);
+    }
+
     public static <R, W> PVConfiguration<R, W> readAndWrite(Expression<R, W> expression) {
         return gpClient.readAndWrite(expression);
     }

@@ -42,6 +42,10 @@ public class GPClientInstance {
         return new PVConfiguration<>(this, expression, PVConfiguration.Mode.WRITE);
     }
     
+    public PVConfiguration<VType, Object> readAndWrite(String channelName) {
+        return readAndWrite(channel(channelName));
+    }
+    
     public <R, W> PVConfiguration<R, W> readAndWrite(Expression<R, W> expression) {
         return new PVConfiguration<>(this, expression, PVConfiguration.Mode.READ_WRITE);
     }

@@ -11,7 +11,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.epics.gpclient.PV;
 import org.epics.gpclient.PVEvent;
+import org.epics.gpclient.PVListener;
 import org.epics.gpclient.PVReader;
 import org.epics.gpclient.PVReaderListener;
 
@@ -28,11 +30,11 @@ public class Log {
         this.callback = callback;
     }
     
-    public <T> PVReaderListener<T> createReadListener() {
-        return new org.epics.gpclient.PVReaderListener<T>() {
+    public <R, W> PVListener<R, W> createReadListener() {
+        return new org.epics.gpclient.PVListener<R, W>() {
             @Override
-            public void pvChanged(PVEvent event, PVReader<T> pvReader) {
-                events.add(new Event(Instant.now(), event, pvReader.isConnected(), pvReader.getValue()));
+            public void pvChanged(PVEvent event, PV<R, W> pv) {
+                events.add(new Event(Instant.now(), event, pv.isConnected(), pv.isWriteConnected(), pv.getValue()));
                 callback.run();
             }
         };
@@ -53,11 +55,20 @@ public class Log {
             if (readEvent.getEvent().isType(PVEvent.Type.READ_CONNECTION)) {
                 out.append("C");
             }
+            if (readEvent.getEvent().isType(PVEvent.Type.WRITE_CONNECTION)) {
+                out.append("c");
+            }
             if (readEvent.getEvent().isType(PVEvent.Type.VALUE)) {
                 out.append("V");
             }
             if (readEvent.getEvent().isType(PVEvent.Type.EXCEPTION)) {
                 out.append("E");
+            }
+            if (readEvent.getEvent().isType(PVEvent.Type.WRITE_SUCCEEDED)) {
+                out.append("S");
+            }
+            if (readEvent.getEvent().isType(PVEvent.Type.WRITE_FAILED)) {
+                out.append("F");
             }
             out.append(")");
             if (readEvent.isConnected()) {

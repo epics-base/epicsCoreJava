@@ -22,7 +22,9 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import org.epics.gpclient.GPClient;
+import org.epics.gpclient.PV;
 import org.epics.gpclient.PVEvent;
+import org.epics.gpclient.PVListener;
 import org.epics.gpclient.javafx.Executors;
 import org.epics.gpclient.PVReader;
 import org.epics.gpclient.PVReaderListener;
@@ -32,7 +34,7 @@ import org.epics.vtype.VType;
 
 public class ProbeController implements Initializable {
     
-    private PVReader<?> pv;
+    private PV<VType, Object> pv;
     
 //    private ValueFormat format = new SimpleValueFormat(3);
     
@@ -63,23 +65,32 @@ public class ProbeController implements Initializable {
             errorField.setText(null);
             expressionProbe.setExpression(null);
         }
-        
+
         expressionProbe.setExpression(channelField.getText());
 
-        pv = GPClient.read(channelField.getText())
+        pv = GPClient.readAndWrite(channelField.getText())
                 .addListener(eventLogViewer.eventLog().createReadListener())
-                .addListener(new PVReaderListener<org.epics.vtype.VType>() {
-            @Override
-                    public void pvChanged(PVEvent event, PVReader<VType> pvReader) {
-                        changeValue(pvReader.getValue(), pvReader.isConnected());
+                .addListener(new PVListener<VType, Object>() {
+                    @Override
+                    public void pvChanged(PVEvent event, PV<VType, Object> pv) {
+                        changeValue(pv.getValue(), pv.isConnected());
                         if (event.isType(PVEvent.Type.EXCEPTION)) {
                             errorField.setText(event.getException().getMessage());
                         } else {
                             errorField.setText(null);
                         }
+                        if (event.isType(PVEvent.Type.WRITE_CONNECTION)) {
+                            if (pv.isWriteConnected()) {
+                                newValueField.setDisable(false);
+                                newValueField.setEditable(true);
+                            } else {
+                                newValueField.setEditable(false);
+                                newValueField.setDisable(true);
+                            }
+                        }
                     }
                 })
-//                .timeout(TimeDuration.ofSeconds(1), "Still connecting...", "Still writing...")
+                //                .timeout(TimeDuration.ofSeconds(1), "Still connecting...", "Still writing...")
                 .notifyOn(Executors.javaFXAT())
                 .maxRate(Duration.ofMillis(20))
                 .start();
@@ -115,7 +126,7 @@ public class ProbeController implements Initializable {
 
     @FXML
     private void onNewValueChanged(ActionEvent event) {
-//        pv.write(newValueField.getText());
+        pv.write(newValueField.getText());
     }
     
     @Override

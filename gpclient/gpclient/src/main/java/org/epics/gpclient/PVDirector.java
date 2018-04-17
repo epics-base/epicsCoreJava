@@ -502,7 +502,6 @@ public class PVDirector<R, W> {
 
         @Override
         public void accept(PVEvent event) {
-            System.out.println(event);
             synchronized(lock) {
                 // If we are done, we ignore incoming events
                 if (done) {

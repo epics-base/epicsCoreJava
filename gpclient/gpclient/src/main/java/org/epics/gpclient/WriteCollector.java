@@ -108,6 +108,7 @@ public class WriteCollector<T> {
                 request = null;
             }
             listener = writeListener;
+            this.writeId = null;
         }
         // If no value was sent to be written, return successful
         if (request == null) {

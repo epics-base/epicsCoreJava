@@ -16,12 +16,14 @@ public class Event {
     private final Instant timestamp;
     private final PVEvent event;
     private final boolean connected;
+    private final boolean writeConnected;
     private final Object value;
 
-    public Event(Instant timestamp, PVEvent event, boolean coonected, Object value) {
+    public Event(Instant timestamp, PVEvent event, boolean connected, boolean writeConnected, Object value) {
         this.timestamp = timestamp;
         this.event = event;
-        this.connected = coonected;
+        this.connected = connected;
+        this.writeConnected = writeConnected;
         this.value = value;
     }
     
@@ -35,6 +37,10 @@ public class Event {
 
     public boolean isConnected() {
         return connected;
+    }
+
+    public boolean isWriteConnected() {
+        return writeConnected;
     }
 
     public Object getValue() {
