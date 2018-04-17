@@ -64,11 +64,13 @@ public class PVDirector<R, W> {
     private class Notification {
         final R readValue;
         final boolean readConnection;
+        final boolean writeConnection;
         final PVEvent event;
 
-        Notification(R readValue, boolean readConnection, PVEvent event) {
+        Notification(R readValue, boolean readConnection, boolean writeConnection, PVEvent event) {
             this.readValue = readValue;
             this.readConnection = readConnection;
+            this.writeConnection = writeConnection;
             this.event = event;
         }
 
@@ -77,6 +79,7 @@ public class PVDirector<R, W> {
             Map<String, Object> properties = new LinkedHashMap<>();
             properties.put("event", event);
             properties.put("readConnection", readConnection);
+            properties.put("writeConnection", writeConnection);
             properties.put("readValue", readValue);
             return properties.toString();
         }
@@ -134,6 +137,16 @@ public class PVDirector<R, W> {
                 connection = connection && readCollector.getConnection();
             }
             return connection;
+        }
+    }
+    
+    private boolean calculateWriteConnection() {
+        synchronized(lock) {
+            boolean writeConnection = true;
+            for (WriteCollector<?> writeCollector : writeCollectors) {
+                writeConnection = writeConnection && writeCollector.getConnection();
+            }
+            return writeConnection;
         }
     }
     
@@ -266,6 +279,8 @@ public class PVDirector<R, W> {
      * Notifies the PVReader of a new value.
      */
     private void notifyPv(PVEvent event) {
+        System.out.println(event);
+        
         // This function should not be called when another even is in flight.
         // In principle, this should never happen since the scan rate
         // decoupler should not fire an event if the previous was not
@@ -306,12 +321,22 @@ public class PVDirector<R, W> {
                 event = event.removeType(PVEvent.Type.EXCEPTION);
             }
         }
+        
+        // Calculate new write connection if it is a connection value
+        boolean newWriteConnection = previousNotification != null ? previousNotification.writeConnection : false;
+        if (event.isType(PVEvent.Type.WRITE_CONNECTION)) {
+            newWriteConnection = calculateWriteConnection();
+        }
 
         // Don't repeat notifications
         if (previousNotification != null) {
             // Compare new connection
             if (event.isType(PVEvent.Type.READ_CONNECTION) && previousNotification.readConnection == newConnection) {
                 event = event.removeType(PVEvent.Type.READ_CONNECTION);
+            }
+
+            if (event.isType(PVEvent.Type.WRITE_CONNECTION) && previousNotification.writeConnection == newWriteConnection) {
+                event = event.removeType(PVEvent.Type.WRITE_CONNECTION);
             }
             
             if (event.isType(PVEvent.Type.VALUE) && previousNotification.readValue == newValue) {
@@ -329,6 +354,9 @@ public class PVDirector<R, W> {
             if (event.isType(PVEvent.Type.READ_CONNECTION) && newConnection == false) {
                 event = event.removeType(PVEvent.Type.READ_CONNECTION);
             }
+            if (event.isType(PVEvent.Type.WRITE_CONNECTION) && newWriteConnection == false) {
+                event = event.removeType(PVEvent.Type.WRITE_CONNECTION);
+            }
             if (event.isType(PVEvent.Type.VALUE) && newValue == null) {
                 event = event.removeType(PVEvent.Type.VALUE);
             }
@@ -340,7 +368,7 @@ public class PVDirector<R, W> {
         }
         
         // Prepare values to ship to the other thread.
-        lastNotification.set(new Notification(newValue, newConnection, event));
+        lastNotification.set(new Notification(newValue, newConnection, newWriteConnection, event));
         
         notificationInFlight = true;
         notificationExecutor.execute(new Runnable() {
@@ -365,15 +393,7 @@ public class PVDirector<R, W> {
                         //    notificationInFlight double checks this for now and
                         //    can be removed in a second phase.
                         
-                        if (notification.event.isType(PVEvent.Type.READ_CONNECTION) && notification.event.isType(PVEvent.Type.VALUE)) {
-                            pv.fireConnectionValueUpdate(notification.event, notification.readConnection, notification.readValue);
-                        } else if (notification.event.isType(PVEvent.Type.READ_CONNECTION)) {
-                            pv.fireConnectionUpdate(notification.event, notification.readConnection);
-                        } else if (notification.event.isType(PVEvent.Type.VALUE)) {
-                            pv.fireValueUpdate(notification.event, notification.readValue);
-                        } else {
-                            pv.fireEvent(notification.event);
-                        }
+                        pv.fireEvent(notification.event, notification.readConnection, notification.writeConnection, notification.readValue);
                     }
                 } finally {
                     notificationInFlight = false;

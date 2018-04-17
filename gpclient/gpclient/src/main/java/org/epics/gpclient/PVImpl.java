@@ -17,6 +17,7 @@ class PVImpl<R, W> implements PV<R, W>{
     // Guarded by the lock
     private PVDirector director = null;
     private boolean connected = false;
+    private boolean writeConnected = false;
     private R value = null;
     private boolean paused = false;
     private boolean closed = false;
@@ -53,6 +54,21 @@ class PVImpl<R, W> implements PV<R, W>{
         synchronized(lock) {
             this.value = value;
             this.connected = connected;
+        }
+        listener.pvChanged(event, this);
+    }
+    
+    void fireEvent(PVEvent event, boolean connected, boolean writeConnected, R value) {
+        synchronized(lock) {
+            if (event.isType(PVEvent.Type.VALUE)) {
+                this.value = value;
+            }
+            if (event.isType(PVEvent.Type.READ_CONNECTION)) {
+                this.connected = connected;
+            }
+            if (event.isType(PVEvent.Type.WRITE_CONNECTION)) {
+                this.writeConnected = writeConnected;
+            }
         }
         listener.pvChanged(event, this);
     }
@@ -114,7 +130,9 @@ class PVImpl<R, W> implements PV<R, W>{
 
     @Override
     public boolean isWriteConnected() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        synchronized(lock) {
+            return writeConnected;
+        }
     }
     
 }
