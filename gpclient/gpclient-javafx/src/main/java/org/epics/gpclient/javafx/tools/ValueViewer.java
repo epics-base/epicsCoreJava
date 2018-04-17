@@ -93,7 +93,7 @@ public final class ValueViewer extends ScrollPane {
         commonMetadata(value, connection);
         numberDisplay(Display.displayOf(value));
         enumMetadata(value);
-//        tableMetadata(value);
+        tableMetadata(value);
         this.value = value;
     }
     
@@ -115,7 +115,7 @@ public final class ValueViewer extends ScrollPane {
     }
     
     private void numberDisplay(Display display) {
-        if (display == null) {
+        if (display == null || display.equals(Display.none())) {
             numberMetadata.setVisible(false);
             numberMetadata.setManaged(false);
         } else {
@@ -174,7 +174,7 @@ public final class ValueViewer extends ScrollPane {
         
     }
 //    
-//    private void tableMetadata(Object value) {
+    private void tableMetadata(Object value) {
 //        if (value instanceof org.diirt.vtype.VTable) {
 //            tableMetadata.setVisible(true);
 //            tableMetadata.setManaged(true);
@@ -185,11 +185,11 @@ public final class ValueViewer extends ScrollPane {
 //            }
 //            columnsTable.setItems(FXCollections.observableList(columns));
 //        } else {
-//            tableMetadata.setVisible(false);
-//            tableMetadata.setManaged(false);
-//            columnsTable.setItems(new ImmutableObservableList<>());
+            tableMetadata.setVisible(false);
+            tableMetadata.setManaged(false);
+            columnsTable.setItems(new ImmutableObservableList<>());
 //        }
-//    }
+    }
 
     @FXML
     private void onInspectTable(ActionEvent event) {
