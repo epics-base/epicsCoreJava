@@ -122,6 +122,16 @@ public class WriteCollector<T> {
         }
     }
     
+    void cancelWrite(int writeId) {
+        synchronized(lock) {
+            if (((Integer) writeId).equals(this.writeId)) {
+                this.writeId = null;
+            } else {
+                throw new IllegalStateException("Received unexpected cancel write");
+            }
+        }
+    }
+    
     public void updateConnection(boolean newConnection) {
         Consumer<PVEvent> listener;
         synchronized (lock) {

@@ -125,7 +125,7 @@ class PVImpl<R, W> implements PV<R, W>{
 
     @Override
     public void write(W newValue) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        director.submitWrite(newValue, director.getDesiredRateEventListener());
     }
 
     @Override

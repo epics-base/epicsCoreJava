@@ -10,10 +10,12 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -54,6 +56,8 @@ public class PVDirector<R, W> {
     private final WeakReference<PVImpl<R, W>> pvRef;
     /** Function for the new value */
     final Supplier<R> readFunction;
+    /** Function to write values */
+    final Consumer<W> writeFunction;
     /** Creation for stack trace */
     private final Exception creationStackTrace = new Exception("PV was never closed (stack trace for creation)");
     /** Used to ignore duplicated errors */
@@ -233,6 +237,11 @@ public class PVDirector<R, W> {
     PVDirector(PVImpl<R, W> pv, PVConfiguration<R, W> pvConf) {
         this.pvRef = new WeakReference<>(pv);
         this.readFunction = pvConf.expression.getFunction();
+        if (pvConf.mode == PVConfiguration.Mode.WRITE || pvConf.mode == PVConfiguration.Mode.READ_WRITE) {
+            this.writeFunction = pvConf.expression.getWriteFunction();
+        } else {
+            this.writeFunction = null;
+        }
         this.notificationExecutor = pvConf.notificationExecutor;
         this.scannerExecutor = pvConf.gpClient.dataProcessingThreadPool;
         this.dataSource = pvConf.dataSource;
@@ -279,8 +288,6 @@ public class PVDirector<R, W> {
      * Notifies the PVReader of a new value.
      */
     private void notifyPv(PVEvent event) {
-        System.out.println(event);
-        
         // This function should not be called when another even is in flight.
         // In principle, this should never happen since the scan rate
         // decoupler should not fire an event if the previous was not
@@ -440,5 +447,84 @@ public class PVDirector<R, W> {
         return desiredRateEventListener;
     }
     
+    private static final Random rand = new Random();
+    
+    public void submitWrite(W value, Consumer<PVEvent> callback) {
+        if (writeFunction == null) {
+            throw new IllegalStateException("This pv is read only");
+        }
+        scannerExecutor.execute(() -> {
+            try {
+                // Take a copy of the write collectors so that if there is a dynamic
+                // change of the connected expressions we at least have a stable
+                // snapshot
+                Set<WriteCollector<?>> writeCollectors;
+                synchronized (lock) {
+                    writeCollectors = new HashSet<>(this.writeCollectors);
+                }
+                int id = rand.nextInt();
+                for (WriteCollector<?> writeCollector : writeCollectors) {
+                    writeCollector.prepareWrite(id);
+                }
+
+                // Use writeFunction to prepare the values in the WriteCollectors.
+                // If writeFunction fails, clear the collectors and return failure.
+                try {
+                    writeFunction.accept(value);
+                } catch (Exception ex) {
+                    for (WriteCollector<?> writeCollector : writeCollectors) {
+                        writeCollector.cancelWrite(id);
+                    }
+                    callback.accept(PVEvent.writeFailedEvent(ex));
+                    return;
+                }
+                
+                WriteTab tab = new WriteTab(writeCollectors.size(), callback);
+                for (WriteCollector<?> writeCollector : writeCollectors) {
+                    writeCollector.sendWriteRequest(id, tab);
+                }
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "Error while processing write", ex);
+            }
+        });
+    }
+    
+    private class WriteTab implements Consumer<PVEvent> {
+        private final Object lock = new Object();
+        private int counter;
+        private boolean done;
+        private final Consumer<PVEvent> callback;
+
+        public WriteTab(int nCalls, Consumer<PVEvent> callback) {
+            this.callback = callback;
+            this.counter = nCalls;
+        }
+
+        @Override
+        public void accept(PVEvent event) {
+            System.out.println(event);
+            synchronized(lock) {
+                // If we are done, we ignore incoming events
+                if (done) {
+                    return;
+                }
+                
+                if (event.isType(PVEvent.Type.WRITE_SUCCEEDED)) {
+                    // Decerement counter. If we are not zero we have nothing to do
+                    int value = counter--;
+                    if (value != 0) {
+                        return;
+                    }
+                }
+                
+                // If we haven't returned, then this event should be sent, and
+                // no other shoule be sent after this
+                done = true;
+            }
+            callback.accept(event);
+        }
+        
+        
+    }
     
 }

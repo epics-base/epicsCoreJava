@@ -108,11 +108,17 @@ public final class PVEvent {
 
     @Override
     public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{Type: ").append(types);
         if (exception != null) {
-            return "{Type: " + types + " - ex: " + exception.getMessage() + "}";
-        } else {
-            return "{Type: " + types + "}";
+            sb.append(" - ex: ").append(exception.getMessage());
         }
+        if (writeError != null) {
+            sb.append(" - wrEx: ").append(writeError.getMessage());
+        }
+        sb.append("}");
+        
+        return sb.toString();
     }
     
     // Cache events that don't have an exception to save memory creation/collection
