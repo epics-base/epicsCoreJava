@@ -33,7 +33,7 @@ public class BasicExamples {
     public static void b1_readAndWriteLoc() throws Exception {
         PV<VType, Object> pv = GPClient.readAndWrite(channel("loc://a(\"init\")"))
                 .addListener((PVEvent event, PV<VType, Object> pvReader) -> {
-                    System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
+                    System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.isWriteConnected() + " " + pvReader.getValue());
                     if (event.isType(PVEvent.Type.EXCEPTION)) {
                         event.getException().printStackTrace();
                     }
@@ -43,6 +43,8 @@ public class BasicExamples {
         Thread.sleep(1000);
         
         pv.write("New Value");
+
+        Thread.sleep(1000);
 
         GPClient.defaultInstance().getDefaultDataSource().close();
     }
