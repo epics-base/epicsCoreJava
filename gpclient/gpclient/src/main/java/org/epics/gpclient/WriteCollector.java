@@ -4,34 +4,72 @@
  */
 package org.epics.gpclient;
 
+import com.sun.istack.internal.logging.Logger;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 /**
  * @author carcassi
  */
 public class WriteCollector<T> {
     
+    private static final Logger log = Logger.getLogger(WriteCollector.class);
+    
+    /**
+     * A request to write a particular value to a channel.
+     * <p>
+     * To perform the write, use {@link WriteRequest#getValue() } to take the
+     * value to write, and respond with either {@link WriteRequest#writeSuccessful() }
+     * or {@link WriteRequest#writeFailed(java.lang.Exception) }.
+     * 
+     * @param <T> the type of data to be written
+     */
     public static class WriteRequest<T> {
         private final T value;
         private final Consumer<PVEvent> writeCallback;
+        private volatile boolean responseSent = false;
 
         WriteRequest(T value, Consumer<PVEvent> writeCallback) {
             this.value = value;
             this.writeCallback = writeCallback;
         }
-
         
+        /**
+         * The value to be written.
+         * 
+         * @return the value to be written, can be null
+         */
         public T getValue() {
             return value;
         }
-        
+
+        /**
+         * Signal the write was successfully completed.
+         */
         public void writeSuccessful() {
+            if (responseSent) {
+                log.log(Level.SEVERE, "Multiple response for the same write", new RuntimeException("Multiple response for the same write"));
+            }
             writeCallback.accept(PVEvent.writeSucceededEvent());
+            responseSent = true;
         }
         
-        public void writeFailed(Exception ex) {
-            writeCallback.accept(PVEvent.writeFailedEvent(ex));
+        /**
+         * Signal that the write was not completed or that it completed with
+         * an error.
+         * <p>
+         * Note that the exception is propagated to the user layer of the gpclient,
+         * therefore the error should be meaningful.
+         * 
+         * @param writeError the error associated with the response
+         */
+        public void writeFailed(Exception writeError) {
+            if (responseSent) {
+                log.log(Level.SEVERE, "Multiple response for the same write", new RuntimeException("Multiple response for the same write"));
+            }
+            writeCallback.accept(PVEvent.writeFailedEvent(writeError));
+            responseSent = true;
         }
     }
     
