@@ -449,10 +449,40 @@ public class PVDirector<R, W> {
     
     private static final Random rand = new Random();
     
-    public void submitWrite(W value, Consumer<PVEvent> callback) {
+    /**
+     * Implements the asynchronous write. Starts the process for
+     * writing the value so that the result will be notified on the given
+     * callback.
+     * 
+     * @param value the value to be written; can be null
+     * @param callback the callback for the write result; can't be null
+     */
+    void submitWrite(W value, Consumer<PVEvent> callback) {
         if (writeFunction == null) {
             throw new IllegalStateException("This pv is read only");
         }
+        
+        // TODO: the current implementation writes all values. We may want to skip if there is a
+        // write burst.
+        
+        // Design for the write communication
+        //
+        // The write value is in general something that will be decomposed into
+        // the actual write values for each channel (i.e. a key/value pair of
+        // channel names and channel values). Also, not all the channel will
+        // need to be actually writte (i.e. some keys/values are not added).
+        // Therefore the pvDirector breaks down the write in three phases:
+        // - prepare all collectors to receive a value
+        // - write the value, which the expression logic will decompose and write
+        //   into each WriteCollector
+        // - tell all collectors to send the write request
+        // This division allows the logic of how the write is decomposed to the
+        // different channel to be still general while we can still keep track
+        // of which channel write corresponds to the value being written.
+        // Once the write requests are sent, the WriteTab collects the write
+        // results for each channel and constructs a single event for the
+        // write callback.
+        
         scannerExecutor.execute(() -> {
             try {
                 // Take a copy of the write collectors so that if there is a dynamic
