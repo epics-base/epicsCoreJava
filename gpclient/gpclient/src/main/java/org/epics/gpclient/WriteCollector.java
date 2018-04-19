@@ -4,10 +4,10 @@
  */
 package org.epics.gpclient;
 
-import com.sun.istack.internal.logging.Logger;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.epics.gpclient.datasource.DataSource;
 
 /**
@@ -31,7 +31,7 @@ import org.epics.gpclient.datasource.DataSource;
  */
 public class WriteCollector<T> {
     
-    private static final Logger log = Logger.getLogger(WriteCollector.class);
+    private static final Logger log = Logger.getLogger(WriteCollector.class.getName());
     
     /**
      * A request to write a particular value to a channel.
