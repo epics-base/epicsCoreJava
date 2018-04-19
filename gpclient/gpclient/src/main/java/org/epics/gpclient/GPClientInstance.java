@@ -13,6 +13,8 @@ import org.epics.vtype.VType;
 import static org.epics.gpclient.GPClient.*;
 
 /**
+ * An instance of the general purpose client. Typically one would use the
+ * default instance provided by {@link GPClient}.
  *
  * @author carcassi
  */
@@ -30,10 +32,23 @@ public class GPClientInstance {
         this.defaultNotificationExecutor = config.defaultNotificationExecutor;
     }
     
+    /**
+     * Reads the channel with the given name, asking for {@link VType} values.
+     * 
+     * @param channelName the name of the channel
+     * @return the configuration options
+     */
     public PVReaderConfiguration<VType> read(String channelName) {
         return read(channel(channelName));
     }
     
+    /**
+     * Reads the given expression.
+     * 
+     * @param <R> the read type
+     * @param expression the expression to read
+     * @return the configuration options
+     */
     public <R> PVReaderConfiguration<R> read(Expression<R, ?> expression) {
         return new PVConfiguration<>(this, expression, PVConfiguration.Mode.READ);
     }
@@ -42,14 +57,33 @@ public class GPClientInstance {
         return new PVConfiguration<>(this, expression, PVConfiguration.Mode.WRITE);
     }
     
+    /**
+     * Reads and writes the channel with the given name, asking for {@link VType} values.
+     * 
+     * @param channelName the name of the channel
+     * @return the configuration options
+     */
     public PVConfiguration<VType, Object> readAndWrite(String channelName) {
         return readAndWrite(channel(channelName));
     }
     
+    /**
+     * Reads and writes the given expression.
+     * 
+     * @param <R> the read type
+     * @param <W> the write type
+     * @param expression the expression to read and write
+     * @return the configuration options
+     */
     public <R, W> PVConfiguration<R, W> readAndWrite(Expression<R, W> expression) {
         return new PVConfiguration<>(this, expression, PVConfiguration.Mode.READ_WRITE);
     }
     
+    /**
+     * The default {@link DataSource} used by this client instance.
+     * 
+     * @return the default data source; never null
+     */
     public DataSource getDefaultDataSource() {
         return defaultDataSource;
     }
