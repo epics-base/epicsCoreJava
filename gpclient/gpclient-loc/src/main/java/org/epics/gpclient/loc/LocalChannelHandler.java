@@ -100,7 +100,7 @@ class LocalChannelHandler extends MultiplexedChannelHandler<Object, Object> {
                 }
             }
             // If new value is not a VType, try to convert it
-            if (!(newValue instanceof VType)) {
+            if (newValue != null && !(newValue instanceof VType)) {
                 newValue = checkValue(VType.toVTypeChecked(newValue));
             }
         }
