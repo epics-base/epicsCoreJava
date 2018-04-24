@@ -193,7 +193,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
             @Override
             @SuppressWarnings("unchecked")
             public void updateCache(ReadCollector cache, Object connection, Object message) {
-                if (cache.getType().isInstance(message)) {
+                if (message == null || cache.getType().isInstance(message)) {
                     cache.updateValue(message);
                 } else {
                     throw new IllegalArgumentException("Payload " + message + " does not match " + cache.getType().getSimpleName());

@@ -217,7 +217,7 @@ public class WriteCollector<T> {
                 throw new IllegalStateException("Received unexpected send write request");
             }
             if (this.value != null) {
-                request = new WriteRequest<>(this.value.get(), writeCallback);
+                request = new WriteRequest<>(this.value.orElse(null), writeCallback);
             } else {
                 request = null;
             }
