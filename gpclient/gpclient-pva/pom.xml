@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.epics</groupId>
-        <artifactId>gpclient-all</artifactId>
+        <artifactId>gpclient</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>gpclient-pva</artifactId>
     <packaging>jar</packaging>
-    <name>gpclient-pva</name>
+    <name>PVAccess datasource for the EPICS General Purpose Client</name>
     <dependencies>
         <dependency>
             <groupId>org.epics</groupId>
@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>gpclient</artifactId>
+            <artifactId>gpclient-core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

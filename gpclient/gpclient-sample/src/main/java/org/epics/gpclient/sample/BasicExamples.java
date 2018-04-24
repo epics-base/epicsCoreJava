@@ -5,6 +5,7 @@
  */
 package org.epics.gpclient.sample;
 
+import java.time.Duration;
 import org.epics.gpclient.GPClient;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVReader;
@@ -19,13 +20,13 @@ import org.epics.gpclient.PV;
 public class BasicExamples {
 
     public static void b1_readLatestValue() throws Exception {
-        PVReader<VType> pv = GPClient.read("pva://TST:I")
+        PVReader<VType> pv = GPClient.read("sim://delayedConnectionChannel(3, \"init\")")
                 .addListener((PVEvent event, PVReader<VType> pvReader) -> {
                     System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
                 })
                 .start();
 
-        Thread.sleep(2000);
+        Thread.sleep(10000);
 
         GPClient.defaultInstance().getDefaultDataSource().close();
     }
@@ -50,6 +51,6 @@ public class BasicExamples {
     }
 
     public static void main(String[] args) throws Exception {
-        b1_readAndWriteLoc();
+        b1_readLatestValue();
     }
 }

@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.epics</groupId>
-        <artifactId>gpclient-all</artifactId>
+        <artifactId>gpclient</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>gpclient</artifactId>
-    <name>gpclient</name>
+    <artifactId>gpclient-core</artifactId>
+    <name>EPICS General Purpose Client Core</name>
     <description>The main library for the general purpose JAVA EPICS client.</description>
     <dependencies>
         <dependency>
