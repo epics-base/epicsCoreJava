@@ -54,6 +54,7 @@ abstract class SimFunction<T> extends Simulation<T> {
 
     @Override
     Instant resetTime() {
+        lastSampleTime = null;
         return Instant.now().minus(timeBetweenSamples);
     }
 
