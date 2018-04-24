@@ -5,6 +5,7 @@
 package org.epics.gpclient;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.Executors;
 import org.epics.gpclient.datasource.DataSourceProvider;
 import org.epics.vtype.VType;
@@ -82,6 +83,21 @@ public class GPClient {
      */
     public static <R> ReadCollector<R, R> cacheLastValue(Class<R> readType) {
         return new LatestValueCollector<>(readType);
+    }
+    
+    /**
+     * Return all the values queued from the last update.
+     * <p>
+     * In case of data bursts (i.e. data coming in at rate faster than the
+     * reader can handle) this strategy will combine the notifications and
+     * return all the values.
+     * 
+     * @param <R> the type to read
+     * @param readType the type to read
+     * @return the caching strategy
+     */
+    public static <R> ReadCollector<R, List<R>> queueAllValues(Class<R> readType) {
+        return new AllValuesCollector<>(readType);
     }
 
     /**
