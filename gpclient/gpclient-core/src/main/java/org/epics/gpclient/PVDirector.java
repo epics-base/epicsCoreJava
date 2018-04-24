@@ -542,7 +542,8 @@ public class PVDirector<R, W> {
                 
                 if (event.isType(PVEvent.Type.WRITE_SUCCEEDED)) {
                     // Decerement counter. If we are not zero we have nothing to do
-                    int value = counter--;
+                    counter--;
+                    int value = counter;
                     if (value != 0) {
                         return;
                     }
@@ -552,7 +553,10 @@ public class PVDirector<R, W> {
                 // no other shoule be sent after this
                 done = true;
             }
-            callback.accept(event);
+            scanStrategy.getUpdateListener().accept(event);
+            if (callback != null) {
+                callback.accept(event);
+            }
         }
         
         

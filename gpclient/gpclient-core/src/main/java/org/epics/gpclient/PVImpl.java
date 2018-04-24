@@ -124,7 +124,7 @@ class PVImpl<R, W> implements PV<R, W>{
 
     @Override
     public void write(W newValue) {
-        director.submitWrite(newValue, director.getDesiredRateEventListener());
+        director.submitWrite(newValue, null);
     }
 
     @Override
