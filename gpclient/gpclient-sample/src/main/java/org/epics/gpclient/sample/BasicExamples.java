@@ -42,7 +42,9 @@ public class BasicExamples {
 
         pause(1000);
 
-        pv.write("New Value");
+        pv.write(null);
+        pause(100);
+        pv.write("final");
 
         pause(1000);
 
@@ -62,7 +64,19 @@ public class BasicExamples {
         pv.close();
     }
 
-    public static void readLatestValue() {
+    public static void readAllValues() {
+        PVReader<List<VType>> pv = GPClient.read(channel("sim://noise", queueAllValues(VType.class)))
+                .addListener((PVEvent event, PVReader<List<VType>> pvReader) -> {
+                    System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
+                })
+                .start();
+
+        pause(2000);
+
+        pv.close();
+    }
+
+    public static void readLatestValueBurst() {
         PVReader<VType> pv = GPClient.read("sim://noise(-5,5,0.01)")
                 .addListener((PVEvent event, PVReader<VType> p) -> {
                     System.out.println(event + " " + p.isConnected() + " " + p.getValue());
@@ -74,7 +88,7 @@ public class BasicExamples {
         pv.close();
     }
 
-    public static void readAllValues() {
+    public static void readAllValuesBurst() {
         PVReader<List<VType>> pv = GPClient.read(channel("sim://noise(-5,5,0.01)", queueAllValues(VType.class)))
                 .addListener((PVEvent event, PVReader<List<VType>> pvReader) -> {
                     System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
@@ -105,8 +119,9 @@ public class BasicExamples {
         run("Simple read", BasicExamples::simpleRead);
         run("Simple read and write", BasicExamples::simpleReadAndWrite);
         run("Connection timeout", BasicExamples::connectionTimeout);
-        run("Read latest value", BasicExamples::readLatestValue);
         run("Read all values", BasicExamples::readAllValues);
+        run("Read latest value (burst)", BasicExamples::readLatestValueBurst);
+        run("Read all values (burst)", BasicExamples::readAllValuesBurst);
         
         GPClient.defaultInstance().getDefaultDataSource().close();
     }
