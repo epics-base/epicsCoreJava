@@ -1,12 +1,11 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.javafx.tools;
 
 import java.net.URL;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
@@ -26,8 +25,6 @@ import org.epics.gpclient.PV;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVListener;
 import org.epics.gpclient.javafx.Executors;
-import org.epics.gpclient.PVReader;
-import org.epics.gpclient.PVReaderListener;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.VType;

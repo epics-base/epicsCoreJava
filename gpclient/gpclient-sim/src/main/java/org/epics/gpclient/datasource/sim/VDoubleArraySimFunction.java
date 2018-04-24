@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
@@ -10,7 +10,6 @@ import org.epics.util.array.ListDouble;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
-import org.epics.vtype.VDouble;
 import org.epics.vtype.VDoubleArray;
 
 /**

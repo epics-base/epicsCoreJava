@@ -1,19 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.pva;
 
-import java.text.FieldPosition;
 import java.text.NumberFormat;
-import java.text.ParsePosition;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.epics.pvdata.factory.ConvertFactory;
 import org.epics.pvdata.pv.ByteArrayData;
 import org.epics.pvdata.pv.Convert;

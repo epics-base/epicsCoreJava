@@ -1,15 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.CollectionNumbers;
 import org.epics.util.array.ListBoolean;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListNumbers;
@@ -17,7 +13,6 @@ import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
 import org.epics.vtype.VBoolean;
 import org.epics.vtype.VDouble;
-import org.hamcrest.Matchers;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 

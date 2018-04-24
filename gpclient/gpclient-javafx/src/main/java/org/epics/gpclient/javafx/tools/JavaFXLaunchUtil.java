@@ -1,14 +1,12 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.javafx.tools;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
