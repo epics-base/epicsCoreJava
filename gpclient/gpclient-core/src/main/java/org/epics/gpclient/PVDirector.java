@@ -8,6 +8,7 @@ import java.lang.ref.WeakReference;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -306,7 +307,7 @@ public class PVDirector<R, W> {
             try {
                 // Tries to calculate the value
                 newValue = readFunction.get();
-                if (newValue != null && !(newValue instanceof VType)) {
+                if (newValue != null && !(newValue instanceof VType) && !(newValue instanceof List)) {
                     throw new RuntimeException("Notification is only currently supported for VTypes (was " + newValue + ")");
                 }
             } catch (RuntimeException ex) {
@@ -491,27 +492,28 @@ public class PVDirector<R, W> {
                 Set<WriteCollector<?>> writeCollectors;
                 synchronized (lock) {
                     writeCollectors = new HashSet<>(this.writeCollectors);
-                }
-                int id = rand.nextInt();
-                for (WriteCollector<?> writeCollector : writeCollectors) {
-                    writeCollector.prepareWrite(id);
-                }
-
-                // Use writeFunction to prepare the values in the WriteCollectors.
-                // If writeFunction fails, clear the collectors and return failure.
-                try {
-                    writeFunction.accept(value);
-                } catch (Exception ex) {
+                    
+                    int id = rand.nextInt();
                     for (WriteCollector<?> writeCollector : writeCollectors) {
-                        writeCollector.cancelWrite(id);
+                        writeCollector.prepareWrite(id);
                     }
-                    callback.accept(PVEvent.writeFailedEvent(ex));
-                    return;
-                }
-                
-                WriteTab tab = new WriteTab(writeCollectors.size(), callback);
-                for (WriteCollector<?> writeCollector : writeCollectors) {
-                    writeCollector.sendWriteRequest(id, tab);
+
+                    // Use writeFunction to prepare the values in the WriteCollectors.
+                    // If writeFunction fails, clear the collectors and return failure.
+                    try {
+                        writeFunction.accept(value);
+                    } catch (Exception ex) {
+                        for (WriteCollector<?> writeCollector : writeCollectors) {
+                            writeCollector.cancelWrite(id);
+                        }
+                        callback.accept(PVEvent.writeFailedEvent(ex));
+                        return;
+                    }
+
+                    WriteTab tab = new WriteTab(writeCollectors.size(), callback);
+                    for (WriteCollector<?> writeCollector : writeCollectors) {
+                        writeCollector.sendWriteRequest(id, tab);
+                    }
                 }
             } catch (Exception ex) {
                 log.log(Level.SEVERE, "Error while processing write", ex);
