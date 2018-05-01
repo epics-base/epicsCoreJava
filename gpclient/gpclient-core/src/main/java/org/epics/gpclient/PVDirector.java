@@ -456,11 +456,19 @@ public class PVDirector<R, W> {
      * callback.
      * 
      * @param value the value to be written; can be null
-     * @param callback the callback for the write result; can't be null
+     * @param callback the callback for the write result; if null, notify
+     * with the other events
      */
     void submitWrite(W value, Consumer<PVEvent> callback) {
         if (writeFunction == null) {
             throw new IllegalStateException("This pv is read only");
+        }
+
+        Consumer<PVEvent> finalCallback;
+        if (callback == null) {
+            finalCallback = scanStrategy.getUpdateListener();
+        } else {
+            finalCallback = callback;
         }
         
         // TODO: the current implementation writes all values. We may want to skip if there is a
@@ -506,11 +514,11 @@ public class PVDirector<R, W> {
                         for (WriteCollector<?> writeCollector : writeCollectors) {
                             writeCollector.cancelWrite(id);
                         }
-                        callback.accept(PVEvent.writeFailedEvent(ex));
+                        finalCallback.accept(PVEvent.writeFailedEvent(ex));
                         return;
                     }
 
-                    WriteTab tab = new WriteTab(writeCollectors.size(), callback);
+                    WriteTab tab = new WriteTab(writeCollectors.size(), finalCallback);
                     for (WriteCollector<?> writeCollector : writeCollectors) {
                         writeCollector.sendWriteRequest(id, tab);
                     }
@@ -553,10 +561,8 @@ public class PVDirector<R, W> {
                 // no other shoule be sent after this
                 done = true;
             }
-            scanStrategy.getUpdateListener().accept(event);
-            if (callback != null) {
-                callback.accept(event);
-            }
+
+            callback.accept(event);
         }
         
         

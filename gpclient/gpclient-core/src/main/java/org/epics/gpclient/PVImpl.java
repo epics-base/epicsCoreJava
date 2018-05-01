@@ -4,6 +4,11 @@
  */
 package org.epics.gpclient;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author carcassi
@@ -14,7 +19,7 @@ class PVImpl<R, W> implements PV<R, W>{
     private final PVListener<R, W> listener;
     
     // Guarded by the lock
-    private PVDirector director = null;
+    private PVDirector<R, W> director = null;
     private boolean connected = false;
     private boolean writeConnected = false;
     private R value = null;
@@ -25,7 +30,7 @@ class PVImpl<R, W> implements PV<R, W>{
         this.listener = listener;
     }
 
-    void setDirector(PVDirector director) {
+    void setDirector(PVDirector<R, W> director) {
         synchronized(this) {
             this.director = director;
         }
@@ -125,6 +130,45 @@ class PVImpl<R, W> implements PV<R, W>{
     @Override
     public void write(W newValue) {
         director.submitWrite(newValue, null);
+    }
+
+    @Override
+    public void write(W newValue, PVWriterListener<W> callback) {
+        director.submitWrite(newValue, (PVEvent event) -> {
+            callback.pvChanged(event, this);
+        });
+    }
+
+    @Override
+    public void writeAndWait(W newValue) {
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<PVEvent> response = new AtomicReference<>();
+        director.submitWrite(newValue, (PVEvent event) -> {
+            response.set(event);
+            latch.countDown();
+        });
+        
+        try {
+            latch.await();
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("WriteAndWait interrupted", ex);
+        }
+        
+        PVEvent event = response.get();
+        if (event == null) {
+            Logger.getLogger(PVImpl.class.getName()).log(Level.SEVERE, "Synch write did not return event");
+            throw new IllegalStateException("No event was given");
+        }
+        
+        if (event.isType(PVEvent.Type.WRITE_SUCCEEDED)) {
+            return;
+        } else if (event.isType(PVEvent.Type.WRITE_FAILED)) {
+            throw new RuntimeException("Write failed", event.getWriteError());
+        } else {
+            Logger.getLogger(PVImpl.class.getName()).log(Level.SEVERE, "Synch write result in a wrong event type: {0}", event);
+            throw new IllegalStateException("Event type mismatch");
+        }
     }
 
     @Override

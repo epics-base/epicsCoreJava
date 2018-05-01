@@ -5,11 +5,14 @@
 package org.epics.gpclient;
 
 /**
- * An object representing a writable PV. The write payload is specified by the generic type,
- * and is changed is returned by {@link #write(java.lang.Object)}. Changes in
- * values are notified through the {@link PVWriterListener}. Listeners
- * can be registered from any thread. The value can only be accessed on the
- * thread on which the listeners is called.
+ * An object representing a writable PV.
+ * <p>
+ * The write connection flag keeps track of whether the pv can be written two.
+ * A write before the pv is connected will result in a failed write.
+ * One can choose
+ * The write payload is specified by the generic type,
+ * and is changed by {@link #write(java.lang.Object)}. Changes in
+ * values are notified through the {@link PVWriterListener}. 
  *
  * @param <T> type of the write payload
  * @author carcassi
@@ -17,13 +20,39 @@ package org.epics.gpclient;
 public interface PVWriter<T> {
     
     /**
-     * Writes a new value. This method can be synchronous or synchronous
-     * depending on how the PV was created.
-     * 
+     * Writes a new value asynchronously using the default callback. The result
+     * of the write will be notified through the {@link PVWriterListener}
+     * registered at pv creation. Events are aggregated and throttled in the
+     * usual way, so multiple writes may correspond to a single event if they
+     * happen close to each other.
+       * 
      * @param newValue the new value
      */
     public void write(T newValue);
 
+    /**
+     * Writes a new value asynchronously using the given callback. The
+     * {@link PVWriterListener} registered at pv creation will not be notified
+     * for this write, only the given callback. The callback will receive one
+     * event for each write that is either write succeeded or write failed, so
+     * no event aggregation will happen.
+     * 
+     * @param newValue the new value
+     * @param callback the callback to be used for this write
+     */
+    public void write(T newValue, PVWriterListener<T> callback);
+
+    /**
+     * Writes synchronously. The
+     * {@link PVWriterListener} registered at pv creation will not be notified
+     * for this write. If the write is successful the method returns, otherwise
+     * it will throw a runtime exception. The cause of the exception will be the
+     * error that would have been returned with the asynchronous event.
+     * 
+     * @param newValue the new value
+     */
+    public void writeAndWait(T newValue);
+    
     /**
      * De-registers all listeners, stops all notifications and closes all
      * connections from the data sources needed by this. Once the PV
