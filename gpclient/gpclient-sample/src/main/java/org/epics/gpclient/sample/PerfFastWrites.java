@@ -58,7 +58,7 @@ public class PerfFastWrites {
         int nPeriods = 200;
         int nWritesPerPeriod = (int) (nPvs * 0.7);
         int pauseMs = 20;
-        int writtenPeriods = 0;
+        int writtenCount = 0;
         long start = System.currentTimeMillis();
         
         // Submit writes
@@ -67,9 +67,11 @@ public class PerfFastWrites {
 
             // Start writing only when all pvs are created
             if (count.get() == nPvs) {
-                writtenPeriods++;
                 for (int j = 0; j < nWritesPerPeriod; j++) {
-                    pvs.get(k).write(rand.nextInt(10));
+                    if (pvs.get(k).isWriteConnected()) {
+                        pvs.get(k).write(rand.nextInt(10));
+                        writtenCount++;
+                    }
                     k++;
                     if (k == pvs.size()) {
                         k = 0;
@@ -81,7 +83,7 @@ public class PerfFastWrites {
         long end = System.currentTimeMillis();
         long elapsed = (end - start) / 1000;
         
-        System.out.println("Submitted " + nWritesPerPeriod * writtenPeriods + " at a rate of " + nWritesPerPeriod * writtenPeriods / elapsed + "writes/sec");
+        System.out.println("Submitted " + writtenCount + " at a rate of " + writtenCount / elapsed + "writes/sec");
         
         // Wait for all writes to conclude
         Thread.sleep(2000);

@@ -17,9 +17,15 @@ class PVImpl<R, W> implements PV<R, W>{
     
     private final Object lock = new Object();
     private final PVListener<R, W> listener;
+
+    // No need to be guarded: the director is used only in response to actions
+    // started by the user. The user recevies the pv only after the
+    // the director is set. Whatever other method of publishing the pv
+    // itself will take care of synchronizing the director
+    private PVDirector<R, W> director = null;
+
     
     // Guarded by the lock
-    private PVDirector<R, W> director = null;
     private boolean connected = false;
     private boolean writeConnected = false;
     private R value = null;
@@ -31,9 +37,7 @@ class PVImpl<R, W> implements PV<R, W>{
     }
 
     void setDirector(PVDirector<R, W> director) {
-        synchronized(this) {
-            this.director = director;
-        }
+        this.director = director;
     }
     
     void fireEvent(PVEvent event) {
@@ -126,14 +130,24 @@ class PVImpl<R, W> implements PV<R, W>{
             return connected;
         }
     }
+    
+    private void checkWriteable() {
+        synchronized(lock) {
+            if (!writeConnected) {
+                throw new IllegalStateException("The pv is not write connected");
+            }
+        }
+    }
 
     @Override
     public void write(W newValue) {
+        checkWriteable();
         director.submitWrite(newValue, null);
     }
 
     @Override
     public void write(W newValue, PVWriterListener<W> callback) {
+        checkWriteable();
         director.submitWrite(newValue, (PVEvent event) -> {
             callback.pvChanged(event, this);
         });
@@ -141,6 +155,7 @@ class PVImpl<R, W> implements PV<R, W>{
 
     @Override
     public void writeAndWait(W newValue) {
+        checkWriteable();
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<PVEvent> response = new AtomicReference<>();
         director.submitWrite(newValue, (PVEvent event) -> {

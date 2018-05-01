@@ -86,4 +86,8 @@ public class GPClientInstance {
     public DataSource getDefaultDataSource() {
         return defaultDataSource;
     }
+    
+    public void close() {
+        defaultDataSource.close();
+    }
 }
