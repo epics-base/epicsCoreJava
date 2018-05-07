@@ -14,6 +14,7 @@ import static org.epics.gpclient.PVEventRecorder.*;
 import static org.epics.gpclient.PVEvent.Type.*;
 import org.epics.gpclient.PVListener;
 import org.epics.gpclient.PVWriter;
+import org.epics.gpclient.datasource.ReadOnlyChannelException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -47,6 +48,7 @@ public class WriteTest extends BlackBoxTestBase {
         recorder.wait(1000, anEventOfType(EXCEPTION));
         assertThat(pv.isConnected(), equalTo(true));
         assertThat(pv.isWriteConnected(), equalTo(false));
+        assertThat(recorder.getEvents().get(1).getException(), instanceOf(ReadOnlyChannelException.class));
     }
 
     @Test(expected = RuntimeException.class)

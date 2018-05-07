@@ -231,6 +231,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
      * Creates a new channel handler.
      * 
      * @param channelName the name of the channel this handler will be responsible of
+     * @param readOnly whether the channel is read-only
      */
     public MultiplexedChannelHandler(String channelName, boolean readOnly) {
         super(channelName);
@@ -288,7 +289,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
                 subscription.updateConnection(isWriteConnected());
             }
         } else {
-            subscription.notifyError(new RuntimeException("Channel " + getChannelName() + " is read only"));
+            subscription.notifyError(new ReadOnlyChannelException("Channel " + getChannelName() + " is read only"));
         }
     }
     
@@ -301,7 +302,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
      * To implement writes, either this method or {@link #write(java.lang.Object) }
      * should be overriden.
      * 
-     * @param request 
+     * @param request the request to be processed
      */
     protected void processWriteRequest(WriteCollector.WriteRequest<?> request) {
         try {

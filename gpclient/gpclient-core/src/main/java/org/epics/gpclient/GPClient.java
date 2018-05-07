@@ -133,7 +133,7 @@ public class GPClient {
      * @param readCollector the read buffer
      * @return a new channel expression
      */
-    public static <R, Object> Expression<R, Object> channel(String channelName, ReadCollector<?, R> readCollector) {
+    public static <R> Expression<R, Object> channel(String channelName, ReadCollector<?, R> readCollector) {
         return new DataSourceChannelExpression<>(channelName, readCollector, new WriteCollector<>());
     }
 
