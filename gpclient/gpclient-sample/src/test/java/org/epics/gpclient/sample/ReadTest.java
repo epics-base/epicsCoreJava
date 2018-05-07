@@ -31,8 +31,8 @@ public class ReadTest extends BlackBoxTestBase {
                 .start();
         assertThat(pv.isConnected(), equalTo(false));
         assertThat(pv.getValue(), nullValue());
-        recorder.wait(1000, forEventOfType(READ_CONNECTION));
-        recorder.wait(100, forEventOfType(VALUE));
+        recorder.wait(1000, anEventOfType(READ_CONNECTION));
+        recorder.wait(100, anEventOfType(VALUE));
         assertThat(pv.isConnected(), equalTo(true));
         assertThat(pv.getValue(), instanceOf(VDouble.class));
         assertThat(((VDouble) pv.getValue()).getValue(), equalTo(4.0));
@@ -47,13 +47,13 @@ public class ReadTest extends BlackBoxTestBase {
                 .start();
         assertThat(pv.isConnected(), equalTo(false));
         assertThat(pv.getValue(), nullValue());
-        recorder.wait(2000, forEventOfType(EXCEPTION));
+        recorder.wait(2000, anEventOfType(EXCEPTION));
         assertThat(recorder.getEvents().get(0).getException(), instanceOf(TimeoutException.class));
         assertThat(pv.isConnected(), equalTo(false));
         assertThat(pv.getValue(), nullValue());
-        recorder.wait(2000, forEventOfType(READ_CONNECTION));
+        recorder.wait(2000, anEventOfType(READ_CONNECTION));
         assertThat(pv.isConnected(), equalTo(true));
-        recorder.wait(100, forEventOfType(VALUE));
+        recorder.wait(100, anEventOfType(VALUE));
         assertThat(pv.getValue(), instanceOf(VString.class));
         assertThat(((VString) pv.getValue()).getValue(), equalTo("Connected"));
     }

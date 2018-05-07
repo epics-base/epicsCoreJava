@@ -4,6 +4,9 @@
  */
 package org.epics.gpclient.sample;
 
+import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 import org.epics.gpclient.PV;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVEventRecorder;
@@ -36,7 +39,7 @@ public class WriteTest extends BlackBoxTestBase {
 
     @Test(expected = RuntimeException.class)
     public void writeDisconnectedChannel() {
-        PV<VType, Object> pv = gpClient.readAndWrite("loc://a")
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannel")
                 .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
                     // Do nothing
                 })
@@ -47,7 +50,7 @@ public class WriteTest extends BlackBoxTestBase {
 
     @Test(expected = RuntimeException.class)
     public void writeDisconnectedChannelAsynch() {
-        PV<VType, Object> pv = gpClient.readAndWrite("loc://a")
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannelAsynch")
                 .addListener((PVEvent event, PV<VType, Object> pv1) -> {
                     // Do nothing
                 })
@@ -60,7 +63,7 @@ public class WriteTest extends BlackBoxTestBase {
 
     @Test(expected = RuntimeException.class)
     public void writeDisconnectedChannelSynch() {
-        PV<VType, Object> pv = gpClient.readAndWrite("loc://a")
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannelSynch")
                 .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
                     // Do nothing
                 })
@@ -72,16 +75,53 @@ public class WriteTest extends BlackBoxTestBase {
     @Test
     public void writeChannelSynch() throws InterruptedException {
         PVEventRecorder recorder = new PVEventRecorder();
-        PV<VType, Object> pv = gpClient.readAndWrite("loc://a")
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeChannelSynch")
                 .addListener(recorder)
                 .start();
         assertThat(pv.isWriteConnected(), equalTo(false));
-        recorder.wait(1000, forEventOfType(WRITE_CONNECTION));
+        recorder.wait(1000, anEventOfType(WRITE_CONNECTION));
         assertThat(pv.getValue(), equalTo(null));
-        System.out.println("Writing");
         pv.writeAndWait("Value");
-        recorder.wait(1000, forEventOfType(VALUE));
+        recorder.wait(1000, anEventOfType(VALUE));
         assertThat(pv.getValue(), instanceOf(VString.class));
         assertThat(((VString) pv.getValue()).getValue(), equalTo("Value"));
+    }
+
+    @Test
+    public void writeChannelAsynch() throws InterruptedException {
+        PVEventRecorder recorder = new PVEventRecorder();
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeChannelAsynch")
+                .addListener(recorder)
+                .start();
+        assertThat(pv.isWriteConnected(), equalTo(false));
+        recorder.wait(1000, anEventOfType(WRITE_CONNECTION));
+        assertThat(pv.getValue(), equalTo(null));
+        pv.write("Value");
+        recorder.wait(1000, anEventOfType(VALUE));
+        recorder.wait(1000, anEventOfType(WRITE_SUCCEEDED));
+        assertThat(pv.getValue(), instanceOf(VString.class));
+        assertThat(((VString) pv.getValue()).getValue(), equalTo("Value"));
+    }
+
+    @Test
+    public void writeChannelAsynchDirect() throws InterruptedException {
+        PVEventRecorder recorder = new PVEventRecorder();
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeChannelAsynchDirect")
+                .addListener(recorder)
+                .start();
+        assertThat(pv.isWriteConnected(), equalTo(false));
+        recorder.wait(1000, anEventOfType(WRITE_CONNECTION));
+        assertThat(pv.getValue(), equalTo(null));
+        CountDownLatch latch = new CountDownLatch(1);
+        AtomicReference<PVEvent> pvEvent = new AtomicReference<>();
+        pv.write("Value", (event, pvWriter) -> {
+            pvEvent.set(event);
+            latch.countDown();
+        });
+        awaitTimeout(latch, Duration.ofMillis(1000));
+        recorder.wait(1000, anEventOfType(VALUE));
+        assertThat(pv.getValue(), instanceOf(VString.class));
+        assertThat(((VString) pv.getValue()).getValue(), equalTo("Value"));
+        recorder.hasNotReceived(anEventOfType(WRITE_SUCCEEDED));
     }
 }

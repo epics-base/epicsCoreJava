@@ -79,7 +79,7 @@ public class PVEventRecorder implements Consumer<PVEvent> {
         }
         
         if (!success) {
-            throw new AssertionError("Waited for " + condition + " but it didn't happen within " + ms + " ms");
+            throw new AssertionError("Didn't receive " + condition + " within " + ms + " ms");
         }
     }
 
@@ -106,8 +106,18 @@ public class PVEventRecorder implements Consumer<PVEvent> {
         }
         
         if (success) {
-            throw new AssertionError("Wasn't expecting " + condition + " but it it happened");
+            throw new AssertionError("Received " + condition + " against expectation");
         }
+    }
+    
+    public void hasReceived(Function<List<PVEvent>, Boolean> condition) {
+        if (!condition.apply(events)) {
+            throw new AssertionError("Didn't receive " + condition);
+        }
+    }
+    
+    public boolean hasNotReceived(Function<List<PVEvent>, Boolean> condition) {
+        return !condition.apply(events);
     }
     
     public static Function<List<PVEvent>, Boolean> forAnEvent() {
@@ -119,16 +129,16 @@ public class PVEventRecorder implements Consumer<PVEvent> {
 
             @Override
             public String toString() {
-                return "an event received";
+                return "an event";
             }
         };
     }
     
     public static Function<List<PVEvent>, Boolean> forAConnectionEvent() {
-        return forEventOfType(PVEvent.Type.READ_CONNECTION);
+        return anEventOfType(PVEvent.Type.READ_CONNECTION);
     }
     
-    public static Function<List<PVEvent>, Boolean> forEventOfType(PVEvent.Type type) {
+    public static Function<List<PVEvent>, Boolean> anEventOfType(PVEvent.Type type) {
         return new Function<List<PVEvent>, Boolean>() {
             @Override
             public Boolean apply(List<PVEvent> list) {
@@ -151,7 +161,7 @@ public class PVEventRecorder implements Consumer<PVEvent> {
 
             @Override
             public String toString() {
-                return count + " events received";
+                return count + " events";
             }
         };
     }
