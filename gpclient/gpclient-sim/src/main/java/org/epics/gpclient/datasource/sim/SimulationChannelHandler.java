@@ -28,7 +28,7 @@ class SimulationChannelHandler<T> extends MultiplexedChannelHandler<Simulation<T
      * @param exec the thread pool to use for data generation
      */
     SimulationChannelHandler(String channelName, Simulation<T> simulation, ScheduledExecutorService exec) {
-        super(channelName);
+        super(channelName, true);
         this.simulation = simulation;
         this.exec = exec;
     }

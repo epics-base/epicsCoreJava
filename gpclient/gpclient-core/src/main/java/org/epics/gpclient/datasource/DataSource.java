@@ -32,27 +32,6 @@ public abstract class DataSource {
 
     private static final Logger log = Logger.getLogger(DataSource.class.getName());
 
-    private final boolean writeable;
-
-    /**
-     * Returns true whether the channels of this data source can be
-     * written to.
-     * 
-     * @return true if data source accept write operations
-     */
-    public boolean isWriteable() {
-        return writeable;
-    }
-    
-    /**
-     * Creates a new data source.
-     * 
-     * @param writeable whether the data source implements write operations
-     */
-    public DataSource(boolean writeable) {
-        this.writeable = writeable;
-    }
-
     // Keeps track of the currently created channels
     private final Map<String, ChannelHandler> usedChannels = new ConcurrentHashMap<String, ChannelHandler>();
 

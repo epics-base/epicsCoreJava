@@ -19,10 +19,6 @@ import static org.epics.util.concurrent.Executors.namedPool;
  */
 public final class SimulationDataSource extends DataSource {
 
-    public SimulationDataSource() {
-        super(false);
-    }
-
     /**
      * Data source instance.
      *

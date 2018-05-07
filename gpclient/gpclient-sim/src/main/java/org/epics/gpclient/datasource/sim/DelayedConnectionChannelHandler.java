@@ -25,7 +25,7 @@ class DelayedConnectionChannelHandler extends MultiplexedChannelHandler<Object, 
     private final ScheduledExecutorService exec;
 
     DelayedConnectionChannelHandler(String channelName, ScheduledExecutorService exec) {
-        super(channelName);
+        super(channelName, true);
         String errorMessage = "Incorrect syntax. Must match delayedConnectionChannel(delayInSeconds, value)";
         List<Object> tokens = FunctionParser.parseFunctionAnyParameter(channelName);
         if (tokens == null || tokens.size() <= 1) {

@@ -20,7 +20,7 @@ class ConstantChannelHandler extends MultiplexedChannelHandler<Object, Object> {
     private static final Logger log = Logger.getLogger(ConstantChannelHandler.class.getName());
 
     public ConstantChannelHandler(String channelName) {
-        super(channelName);
+        super(channelName, true);
         List<Object> tokens = FunctionParser.parseFunctionWithScalarOrArrayArguments(channelName,
                 "Wrong syntax. Correct examples: const(3.14), const(\"Bob\"), const(1,2,3), const(\"ON\", \"OFF\"");
         processMessage((Object) VType.toVTypeChecked(tokens.get(1)));

@@ -25,7 +25,7 @@ public class DataSourceImplementationTest {
     public void simpleSubscription1() throws InterruptedException {
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
-        DataSource dataSource = new DataSource(false) {
+        DataSource dataSource = new DataSource() {
             @Override
             protected ChannelHandler createChannel(String channelName) {
                 return new MultiplexedChannelHandler(channelName) {
@@ -61,7 +61,7 @@ public class DataSourceImplementationTest {
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
         RuntimeException ex = new RuntimeException("Connection problem");
-        DataSource dataSource = new DataSource(false) {
+        DataSource dataSource = new DataSource() {
             @Override
             protected ChannelHandler createChannel(String channelName) {
                 return new MultiplexedChannelHandler(channelName) {
@@ -94,7 +94,7 @@ public class DataSourceImplementationTest {
     public void readWrite1() throws InterruptedException {
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
-        DataSource dataSource = new DataSource(false) {
+        DataSource dataSource = new DataSource() {
             @Override
             protected ChannelHandler createChannel(String channelName) {
                 return new MultiplexedChannelHandler(channelName) {
@@ -138,7 +138,7 @@ public class DataSourceImplementationTest {
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
         RuntimeException ex = new RuntimeException("Read failed");
-        DataSource dataSource = new DataSource(false) {
+        DataSource dataSource = new DataSource() {
             @Override
             protected ChannelHandler createChannel(String channelName) {
                 return new MultiplexedChannelHandler(channelName) {

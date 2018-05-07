@@ -26,15 +26,27 @@ import org.epics.vtype.VType;
  */
 public class WriteTest extends BlackBoxTestBase {
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void writeInexistentChannel() {
+        PVEventRecorder recorder = new PVEventRecorder();
         PV<VType, Object> pv = gpClient.readAndWrite("none://nothing")
-                .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
-                    // Do nothing
-                })
+                .addListener(recorder)
                 .start();
+        recorder.dontExpect(500, anEventOfType(READ_CONNECTION));
+        recorder.wait(1000, anEventOfType(EXCEPTION));
         assertThat(pv.isWriteConnected(), equalTo(false));
-        pv.write("Value");
+    }
+
+    @Test
+    public void writeReadOnlyChannel() {
+        PVEventRecorder recorder = new PVEventRecorder();
+        PV<VType, Object> pv = gpClient.readAndWrite("sim://ramp")
+                .addListener(recorder)
+                .start();
+        recorder.wait(1000, anEventOfType(READ_CONNECTION));
+        recorder.wait(1000, anEventOfType(EXCEPTION));
+        assertThat(pv.isConnected(), equalTo(true));
+        assertThat(pv.isWriteConnected(), equalTo(false));
     }
 
     @Test(expected = RuntimeException.class)

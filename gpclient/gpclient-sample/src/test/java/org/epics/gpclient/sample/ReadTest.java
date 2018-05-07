@@ -24,6 +24,26 @@ import org.epics.vtype.VType;
 public class ReadTest extends BlackBoxTestBase {
 
     @Test
+    public void writeInexistentChannel() {
+        PVEventRecorder recorder = new PVEventRecorder();
+        PVReader<VType> pv = gpClient.read("none://nothing")
+                .addListener(recorder)
+                .start();
+        recorder.dontExpect(500, anEventOfType(READ_CONNECTION));
+        assertThat(pv.isConnected(), equalTo(false));
+    }
+
+    @Test
+    public void writeReadOnlyChannel() {
+        PVEventRecorder recorder = new PVEventRecorder();
+        PVReader<VType> pv = gpClient.read("sim://ramp")
+                .addListener(recorder)
+                .start();
+        recorder.wait(1000, anEventOfType(READ_CONNECTION));
+        assertThat(pv.isConnected(), equalTo(true));
+    }
+
+    @Test
     public void readConstant() throws InterruptedException {
         PVEventRecorder recorder = new PVEventRecorder();
         PVReader<VType> pv = gpClient.read("sim://const(4)")

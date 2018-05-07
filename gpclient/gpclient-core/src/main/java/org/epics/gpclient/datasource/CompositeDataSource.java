@@ -44,7 +44,6 @@ public class CompositeDataSource extends DataSource {
      * @param conf the configuration for the new CompositeDataSource
      */
     public CompositeDataSource(CompositeDataSourceConfiguration conf) {
-        super(true);
         this.delimiter = conf.getDelimiter();
         this.defaultDataSource = conf.getDefaultDataSource();
     }

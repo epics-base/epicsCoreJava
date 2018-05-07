@@ -54,7 +54,7 @@ class IntermittentChannelHandler extends MultiplexedChannelHandler<Object, Objec
     private ScheduledFuture<?> taskFuture;
 
     IntermittentChannelHandler(String channelName, ScheduledExecutorService exec) {
-        super(channelName);
+        super(channelName, true);
         String errorMessage = "Incorrect syntax. Must match intermittentChannel(delayInSeconds, value)";
         List<Object> tokens = FunctionParser.parseFunctionAnyParameter(channelName);
         if (tokens == null || tokens.size() <= 1) {

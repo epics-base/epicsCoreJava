@@ -46,6 +46,7 @@ import org.epics.gpclient.WriteCollector;
 public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayload> extends ChannelHandler {
     
     private static final Logger log = Logger.getLogger(MultiplexedChannelHandler.class.getName());
+    private final boolean readOnly;
     private int readUsageCounter = 0;
     private int writeUsageCounter = 0;
     private boolean connected = false;
@@ -223,7 +224,17 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
      * @param channelName the name of the channel this handler will be responsible of
      */
     public MultiplexedChannelHandler(String channelName) {
+        this(channelName, false);
+    }
+    
+    /**
+     * Creates a new channel handler.
+     * 
+     * @param channelName the name of the channel this handler will be responsible of
+     */
+    public MultiplexedChannelHandler(String channelName, boolean readOnly) {
         super(channelName);
+        this.readOnly = readOnly;
     }
 
     @Override
@@ -267,13 +278,17 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     
     @Override
     protected synchronized void addWriter(final WriteCollector subscription) {
-        writeUsageCounter++;
-        Consumer<WriteCollector.WriteRequest<?>> collectorListener = this::processWriteRequest;
-        subscription.setWriteNotification(collectorListener);
-        writers.put(subscription, collectorListener);
-        guardedConnect();
-        if (connectionPayload != null) {
-            subscription.updateConnection(isWriteConnected());
+        if (!readOnly) {
+            writeUsageCounter++;
+            Consumer<WriteCollector.WriteRequest<?>> collectorListener = this::processWriteRequest;
+            subscription.setWriteNotification(collectorListener);
+            writers.put(subscription, collectorListener);
+            guardedConnect();
+            if (connectionPayload != null) {
+                subscription.updateConnection(isWriteConnected());
+            }
+        } else {
+            subscription.notifyError(new RuntimeException("Channel " + getChannelName() + " is read only"));
         }
     }
     
@@ -315,10 +330,12 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
     
     @Override
     protected synchronized void removeWriter(WriteCollector subscription) {
-        writeUsageCounter--;
-        writers.remove(subscription);
-        subscription.setWriteNotification(null);
-        guardedDisconnect();
+        if (!readOnly) {
+            writeUsageCounter--;
+            writers.remove(subscription);
+            subscription.setWriteNotification(null);
+            guardedDisconnect();
+        }
     }
     
     /**

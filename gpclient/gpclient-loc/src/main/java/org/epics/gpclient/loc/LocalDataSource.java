@@ -24,7 +24,6 @@ public class LocalDataSource extends DataSource {
      * Creates a new data source.
      */
     public LocalDataSource() {
-        super(true);
     }
 
     private final String CHANNEL_SYNTAX_ERROR_MESSAGE = 

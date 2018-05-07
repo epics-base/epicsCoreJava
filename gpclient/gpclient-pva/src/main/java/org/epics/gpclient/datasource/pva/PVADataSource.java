@@ -30,8 +30,6 @@ public class PVADataSource extends DataSource {
     }
 
     public PVADataSource(short defaultPriority) {
-        super(true);
-
         this.defaultPriority = defaultPriority;
 
         try {
@@ -49,7 +47,6 @@ public class PVADataSource extends DataSource {
     }
 
     public PVADataSource(ChannelProvider channelProvider, short defaultPriority) {
-        super(true);
         this.pvaChannelProvider = channelProvider;
         this.defaultPriority = defaultPriority;
     }

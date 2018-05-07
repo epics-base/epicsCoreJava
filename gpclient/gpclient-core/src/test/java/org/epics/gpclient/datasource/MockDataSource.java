@@ -19,10 +19,6 @@ public class MockDataSource extends DataSource {
     private volatile WriteSubscription writeRecipe;
     private volatile WriteSubscription writeRecipeForWrite;
 
-    public MockDataSource() {
-        super(true);
-    }
-
     @Override
     protected ChannelHandler createChannel(String channelName) {
         throw new UnsupportedOperationException("Not supported yet.");
