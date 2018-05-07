@@ -125,15 +125,19 @@ public class PVEventRecorder implements Consumer<PVEvent> {
     }
     
     public static Function<List<PVEvent>, Boolean> forAConnectionEvent() {
+        return forEventOfType(PVEvent.Type.READ_CONNECTION);
+    }
+    
+    public static Function<List<PVEvent>, Boolean> forEventOfType(PVEvent.Type type) {
         return new Function<List<PVEvent>, Boolean>() {
             @Override
             public Boolean apply(List<PVEvent> list) {
-                return list.get(list.size() - 1).getType().contains(PVEvent.Type.READ_CONNECTION);
+                return !list.isEmpty() && list.get(list.size() - 1).getType().contains(type);
             }
 
             @Override
             public String toString() {
-                return "a connection event";
+                return "a " + type + " event";
             }
         };
     }

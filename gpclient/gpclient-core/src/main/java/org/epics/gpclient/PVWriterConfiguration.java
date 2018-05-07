@@ -6,6 +6,7 @@ package org.epics.gpclient;
 
 import java.time.Duration;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import org.epics.gpclient.datasource.DataSource;
 
 /**
@@ -26,6 +27,8 @@ public interface PVWriterConfiguration<T> {
     public PVWriterConfiguration<T> connectionTimeout(Duration timeout, String timeoutMessage);
     
     public PVWriterConfiguration<T> maxRate(Duration maxRate);
+    
+    public PVWriterConfiguration<T> addListener(Consumer<PVEvent> listener);
 
     public PVWriter<T> start();
 }

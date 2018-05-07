@@ -6,6 +6,7 @@ package org.epics.gpclient;
 
 import java.time.Duration;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import org.epics.gpclient.datasource.DataSource;
 
 /**
@@ -28,6 +29,8 @@ public interface PVReaderConfiguration<T> {
     public PVReaderConfiguration<T> maxRate(Duration maxRate);
     
     public PVReaderConfiguration<T> addListener(PVReaderListener<T> listener);
+    
+    public PVReaderConfiguration<T> addListener(Consumer<PVEvent> listener);
 
     public PVReader<T> start();
 }

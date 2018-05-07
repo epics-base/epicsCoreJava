@@ -6,6 +6,7 @@ package org.epics.gpclient;
 
 import java.time.Duration;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import org.epics.gpclient.datasource.DataSource;
 
 /**
@@ -167,6 +168,13 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
             };
         }
         return this;
+    }
+
+    @Override
+    public PVConfiguration<R, W> addListener(Consumer<PVEvent> listener) {
+        return addListener((PVEvent event, PV<R, W> pv) -> {
+            listener.accept(event);
+        });
     }
     
     @Override
