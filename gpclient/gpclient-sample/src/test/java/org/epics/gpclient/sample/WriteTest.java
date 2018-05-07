@@ -4,10 +4,11 @@
  */
 package org.epics.gpclient.sample;
 
-import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
 import org.epics.gpclient.PV;
 import org.epics.gpclient.PVEvent;
+import org.epics.gpclient.PVEventRecorder;
+import static org.epics.gpclient.PVEventRecorder.*;
+import static org.epics.gpclient.PVEvent.Type.*;
 import org.epics.gpclient.PVListener;
 import org.epics.gpclient.PVWriter;
 import org.junit.Test;
@@ -70,24 +71,16 @@ public class WriteTest extends BlackBoxTestBase {
 
     @Test
     public void writeChannelSynch() throws InterruptedException {
-        CountDownLatch connectionLatch = new CountDownLatch(1);
-        CountDownLatch valueLatch = new CountDownLatch(1);
+        PVEventRecorder recorder = new PVEventRecorder();
         PV<VType, Object> pv = gpClient.readAndWrite("loc://a")
-                .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
-                    if (event.isType(PVEvent.Type.WRITE_CONNECTION)) {
-                        connectionLatch.countDown();
-                    }
-                    if (event.isType(PVEvent.Type.VALUE)) {
-                        valueLatch.countDown();
-                    }
-                })
+                .addListener(recorder)
                 .start();
         assertThat(pv.isWriteConnected(), equalTo(false));
-        awaitTimeout(connectionLatch, Duration.ofSeconds(1));
+        recorder.wait(1000, forEventOfType(WRITE_CONNECTION));
         assertThat(pv.getValue(), equalTo(null));
         System.out.println("Writing");
         pv.writeAndWait("Value");
-        awaitTimeout(valueLatch, Duration.ofSeconds(1));
+        recorder.wait(1000, forEventOfType(VALUE));
         assertThat(pv.getValue(), instanceOf(VString.class));
         assertThat(((VString) pv.getValue()).getValue(), equalTo("Value"));
     }

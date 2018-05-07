@@ -5,25 +5,17 @@
 package org.epics.gpclient.sample;
 
 import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import org.epics.gpclient.GPClientConfiguration;
-import org.epics.gpclient.GPClientInstance;
-import org.epics.gpclient.PV;
-import org.epics.gpclient.PVEvent;
-import org.epics.gpclient.PVListener;
+import org.epics.gpclient.PVEventRecorder;
+import static org.epics.gpclient.PVEventRecorder.*;
+import static org.epics.gpclient.PVEvent.Type.*;
 import org.epics.gpclient.PVReader;
-import org.epics.gpclient.PVWriter;
 import org.epics.gpclient.TimeoutException;
-import org.epics.gpclient.datasource.DataSourceProvider;
 import org.epics.vtype.VDouble;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
 import org.epics.vtype.VString;
 import org.epics.vtype.VType;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -33,20 +25,14 @@ public class ReadTest extends BlackBoxTestBase {
 
     @Test
     public void readConstant() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(2);
+        PVEventRecorder recorder = new PVEventRecorder();
         PVReader<VType> pv = gpClient.read("sim://const(4)")
-                .addListener((PVEvent event, PVReader<VType> pv1) -> {
-                    if (event.isType(PVEvent.Type.READ_CONNECTION)) {
-                        latch.countDown();
-                    }
-                    if (event.isType(PVEvent.Type.VALUE)) {
-                        latch.countDown();
-                    }
-                })
+                .addListener(recorder)
                 .start();
         assertThat(pv.isConnected(), equalTo(false));
         assertThat(pv.getValue(), nullValue());
-        awaitTimeout(latch, Duration.ofSeconds(1));
+        recorder.wait(1000, forEventOfType(READ_CONNECTION));
+        recorder.wait(100, forEventOfType(VALUE));
         assertThat(pv.isConnected(), equalTo(true));
         assertThat(pv.getValue(), instanceOf(VDouble.class));
         assertThat(((VDouble) pv.getValue()).getValue(), equalTo(4.0));
@@ -54,33 +40,20 @@ public class ReadTest extends BlackBoxTestBase {
 
     @Test
     public void readTimeout() throws InterruptedException {
-        CountDownLatch timeoutLatch = new CountDownLatch(1);
-        CountDownLatch connectionLatch = new CountDownLatch(1);
-        CountDownLatch valueLatch = new CountDownLatch(1);
+        PVEventRecorder recorder = new PVEventRecorder();
         PVReader<VType> pv = gpClient.read("sim://delayedConnectionChannel(2, \"Connected\")")
-                .addListener((PVEvent event, PVReader<VType> pv1) -> {
-                    if (event.isType(PVEvent.Type.EXCEPTION)) {
-                        if (event.getException() instanceof TimeoutException) {
-                            timeoutLatch.countDown();
-                        }
-                    }
-                    if (event.isType(PVEvent.Type.READ_CONNECTION)) {
-                        connectionLatch.countDown();
-                    }
-                    if (event.isType(PVEvent.Type.VALUE)) {
-                        valueLatch.countDown();
-                    }
-                })
+                .addListener(recorder)
                 .connectionTimeout(Duration.ofMillis(500))
                 .start();
         assertThat(pv.isConnected(), equalTo(false));
         assertThat(pv.getValue(), nullValue());
-        awaitTimeout(timeoutLatch, Duration.ofSeconds(2));
+        recorder.wait(2000, forEventOfType(EXCEPTION));
+        assertThat(recorder.getEvents().get(0).getException(), instanceOf(TimeoutException.class));
         assertThat(pv.isConnected(), equalTo(false));
         assertThat(pv.getValue(), nullValue());
-        awaitTimeout(connectionLatch, Duration.ofSeconds(2));
+        recorder.wait(2000, forEventOfType(READ_CONNECTION));
         assertThat(pv.isConnected(), equalTo(true));
-        awaitTimeout(valueLatch, Duration.ofSeconds(2));
+        recorder.wait(100, forEventOfType(VALUE));
         assertThat(pv.getValue(), instanceOf(VString.class));
         assertThat(((VString) pv.getValue()).getValue(), equalTo("Connected"));
     }
