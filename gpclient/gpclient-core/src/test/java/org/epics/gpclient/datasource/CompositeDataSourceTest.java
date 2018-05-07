@@ -8,7 +8,6 @@ import org.epics.gpclient.datasource.CompositeDataSourceConfiguration;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.epics.gpclient.LatestValueCollector;
 import org.epics.gpclient.WriteCollector;
 import org.junit.After;
 import org.junit.Before;

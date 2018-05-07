@@ -10,7 +10,7 @@ package org.epics.gpclient;
  * @param <R> type of the read payload
  * @author carcassi
  */
-public abstract class ChannelExpression<R, W> extends ExpressionImpl<R, W> {
+abstract class ChannelExpression<R, W> extends ExpressionImpl<R, W> {
     
     private final ReadCollector<?, R> readCollector;
     private final WriteCollector<W> writeCollector;

@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * @param <T> the type stored in the collector
  * @author carcassi
  */
-public class AllValuesCollector<T> extends ReadCollector<T, List<T>> {
+class AllValuesCollector<T> extends ReadCollector<T, List<T>> {
     
     private List<T> currentValues = new ArrayList<>();
 

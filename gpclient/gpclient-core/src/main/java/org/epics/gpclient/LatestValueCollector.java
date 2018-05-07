@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * @param <T> the type stored in the collector
  * @author carcassi
  */
-public class LatestValueCollector<T> extends ReadCollector<T, T> {
+class LatestValueCollector<T> extends ReadCollector<T, T> {
     
     private T value;
 
