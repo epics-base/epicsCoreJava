@@ -5,14 +5,14 @@
 package org.epics.gpclient;
 
 /**
- * An object representing a writable PV.
- * <p>
- * The write connection flag keeps track of whether the pv can be written two.
- * A write before the pv is connected will result in a failed write.
- * One can choose
- * The write payload is specified by the generic type,
+ * A write of a channel expression created through the {@link GPClient}. The write payload is specified by the generic type,
  * and is changed by {@link #write(java.lang.Object)}. Changes in
  * values are notified through the {@link PVWriterListener}. 
+ * <p>
+ * The write connection flag keeps track of whether the pv can be written to.
+ * A write before the pv is connected will result in a failed write.
+ * The different write methods allows to choose the type of call (e.g. synch or
+ * asynch).
  *
  * @param <T> type of the write payload
  * @author carcassi
@@ -25,7 +25,7 @@ public interface PVWriter<T> {
      * registered at pv creation. Events are aggregated and throttled in the
      * usual way, so multiple writes may correspond to a single event if they
      * happen close to each other.
-       * 
+     * 
      * @param newValue the new value
      */
     public void write(T newValue);

@@ -6,11 +6,10 @@ package org.epics.gpclient;
 
 
 /**
- * An object representing the PVReader. It contains all elements that are common
- * to all PVs of all type. The payload is specified by the generic type,
+ * A reader of a channel expression created through the {@link GPClient}. 
+ * The payload is specified by the generic type,
  * and is returned by {@link #getValue()}. Changes in
- * values are notified through the {@link PVReaderListener}. Listeners
- * can be registered from any thread.
+ * values are notified through the {@link PVReaderListener}.
  * <p>
  * The implementation is thread safe, meaning any element (e.g. value, connection, exception, ...)
  * can be accessed from any thread,
@@ -48,7 +47,7 @@ package org.epics.gpclient;
 public interface PVReader<T> {
 
     /**
-     * Returns the value of the PVReader.
+     * Returns the current value of the PVReader.
      * <p>
      * This method is thread-safe.
      *
@@ -65,7 +64,7 @@ public interface PVReader<T> {
     public void close();
 
     /**
-     * True if no more notifications are going to be sent for this PVReader.
+     * True if no more notifications are going to be sent to this PVReader.
      *
      * @return true if closed
      */
@@ -97,16 +96,16 @@ public interface PVReader<T> {
     public boolean isPaused();
     
     /**
-     * True if the reader is connected. <b>Do not use this method to display connection status
-     * if using vTypes defined in org.epics.pvmanager.data.</b>
+     * True if the reader is connected.
      * <p>
-     * Currently, a reader is defined as connected if <b>all</b> the channels
+     * A reader is connected if <b>all</b> the channels
      * are connected. This means that you still may get updates even if
      * this method returns false. You can use this method to determine whether
      * your notification comes from a complete set.
      * <p>
-     * When using <code>VType</code>s, you should use the <code>Alarm</code> interface to
-     * get the connection status. This scales when you get aggregates, such
+     * When using <code>VType</code>s, use the value and
+     * connection with {@link org.epics.vtype.Alarm#alarmOf(java.lang.Object, boolean) 
+     * to combine the connection information within the value. This scales when you get aggregates, such
      * as lists or maps of channels. This method does obviously not scale functionally
      * since, in an aggregate, it can't tell you which channel of the set
      * is connected or not.
