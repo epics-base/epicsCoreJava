@@ -5,11 +5,11 @@
 package org.epics.gpclient;
 
 /**
- * Callback for delivery notification of new value. 
+ * Callback for notification of new events. 
  *
+ * @param <R> the read type
+ * @param <W> the write type
  * @author carcassi
- * @param <R> the read object type
- * @param <W> the write object type
  */
 public interface PVListener<R, W> {
     

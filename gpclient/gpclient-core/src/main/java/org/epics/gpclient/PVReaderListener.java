@@ -5,15 +5,12 @@
 package org.epics.gpclient;
 
 /**
- * Callback for any change in the PV value. Cannot simply use a PropertyChangedListener
- * because the payload of the PV will be typically updated in place for complex
- * data structures, and therefore the data object is the same and would not
- * trigger a PropertyChangedEvent.
+ * Callback for notification of new events. 
  *
- * @param <T> the type of reader for the listener
+ * @param <R> the read type
  * @author carcassi
  */
-public interface PVReaderListener<T> {
+public interface PVReaderListener<R> {
 
     /**
      * Notified when the value of the PV has changed.
@@ -21,6 +18,6 @@ public interface PVReaderListener<T> {
      * @param event the reader event
      * @param pvReader the reader that generated the event
      */
-    void pvChanged(PVEvent event, PVReader<T> pvReader);
+    void pvChanged(PVEvent event, PVReader<R> pvReader);
 
 }

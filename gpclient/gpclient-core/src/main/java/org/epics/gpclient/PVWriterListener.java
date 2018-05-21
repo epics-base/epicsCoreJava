@@ -5,12 +5,12 @@
 package org.epics.gpclient;
 
 /**
- * Callback for delivery notification of new value. 
+ * Callback for notification of new events. 
  *
- * @param <T> the type of writer for the listener
+ * @param <W> the write type
  * @author carcassi
  */
-public interface PVWriterListener<T> {
+public interface PVWriterListener<W> {
     
     /**
      * Notified when the value was written.
@@ -18,5 +18,5 @@ public interface PVWriterListener<T> {
      * @param event the writer event
      * @param pvWriter the writer that generated the event
      */
-    public void pvChanged(PVEvent event, PVWriter<T> pvWriter);
+    public void pvChanged(PVEvent event, PVWriter<W> pvWriter);
 }
