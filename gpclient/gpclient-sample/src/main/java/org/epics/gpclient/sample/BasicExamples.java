@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.GPClient;
-import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVReader;
 import org.epics.vtype.VType;
 import static org.epics.gpclient.GPClient.*;
@@ -23,7 +22,7 @@ public class BasicExamples {
 
     public static void simpleRead() {
         PVReader<VType> pv = GPClient.read("sim://noise")
-                .addListener((PVEvent event, PVReader<VType> p) -> {
+                .addReadListener((event, p) -> {
                     System.out.println(event + " " + p.isConnected() + " " + p.getValue());
                 })
                 .start();
@@ -35,7 +34,7 @@ public class BasicExamples {
 
     public static void simpleReadAndWrite() {
         PV<VType, Object> pv = GPClient.readAndWrite(channel("loc://a(\"init\")"))
-                .addListener((PVEvent event, PV<VType, Object> p) -> {
+                .addListener((event, p) -> {
                     System.out.println(event + " " + p.isConnected() + " " + p.isWriteConnected() + " " + p.getValue());
                 })
                 .start();
@@ -53,7 +52,7 @@ public class BasicExamples {
 
     public static void connectionTimeout() {
         PVReader<VType> pv = GPClient.read("sim://delayedConnectionChannel(2, \"init\")")
-                .addListener((PVEvent event, PVReader<VType> pvReader) -> {
+                .addReadListener((event, pvReader) -> {
                     System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
                 })
                 .connectionTimeout(Duration.ofSeconds(1))
@@ -66,7 +65,7 @@ public class BasicExamples {
 
     public static void readAllValues() {
         PVReader<List<VType>> pv = GPClient.read(channel("sim://noise", queueAllValues(VType.class)))
-                .addListener((PVEvent event, PVReader<List<VType>> pvReader) -> {
+                .addReadListener((event, pvReader) -> {
                     System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
                 })
                 .start();
@@ -78,7 +77,7 @@ public class BasicExamples {
 
     public static void readLatestValueBurst() {
         PVReader<VType> pv = GPClient.read("sim://noise(-5,5,0.01)")
-                .addListener((PVEvent event, PVReader<VType> p) -> {
+                .addReadListener((event, p) -> {
                     System.out.println(event + " " + p.isConnected() + " " + p.getValue());
                 })
                 .start();
@@ -90,7 +89,7 @@ public class BasicExamples {
 
     public static void readAllValuesBurst() {
         PVReader<List<VType>> pv = GPClient.read(channel("sim://noise(-5,5,0.01)", queueAllValues(VType.class)))
-                .addListener((PVEvent event, PVReader<List<VType>> pvReader) -> {
+                .addReadListener((event, pvReader) -> {
                     System.out.println(event + " " + pvReader.isConnected() + " " + pvReader.getValue());
                 })
                 .start();

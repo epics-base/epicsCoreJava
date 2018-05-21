@@ -9,7 +9,7 @@ import org.epics.gpclient.datasource.ReadSubscription;
 import org.epics.gpclient.datasource.WriteSubscription;
 
 /**
- * A {@link DataChannel} that connects to a {@link DataSource}.
+ * A {@link ChannelExpression} that connects to a {@link DataSource}.
  *
  * @author carcassi
  */

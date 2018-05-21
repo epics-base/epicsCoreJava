@@ -18,19 +18,69 @@ import org.epics.gpclient.datasource.DataSource;
  */
 public interface PVReaderConfiguration<T> {
 
+    /**
+     * Defines which DataSource should be used to read/write the data.
+     *
+     * @param dataSource the data source to access the data
+     * @return this
+     */
     public PVReaderConfiguration<T> from(DataSource dataSource);
 
+    /**
+     * Defines on which thread to notify the client.
+     *
+     * @param onThread the thread on which to notify
+     * @return this
+     */
     public PVReaderConfiguration<T> notifyOn(Executor onThread);
     
+    /**
+     * Sends a {@link TimeoutException} if the expression does not connect
+     * within the given duration.
+     * 
+     * @param timeout time to wait before the timeout
+     * @return this
+     */
     public PVReaderConfiguration<T> connectionTimeout(Duration timeout);
     
+    /**
+     * Sends a {@link TimeoutException} with the given message if the expression
+     * does not connect within the given duration.
+     * 
+     * @param timeout time to wait before the timeout
+     * @param timeoutMessage the exception message
+     * @return this
+     */
     public PVReaderConfiguration<T> connectionTimeout(Duration timeout, String timeoutMessage);
-    
+
+    /**
+     * The maximum rate of notifications for this reader/writer.
+     * 
+     * @param maxRate the maximum time between notifications
+     * @return this
+     */    
     public PVReaderConfiguration<T> maxRate(Duration maxRate);
     
-    public PVReaderConfiguration<T> addListener(PVReaderListener<T> listener);
+    /**
+     * Adds a read listener for the expression.
+     * 
+     * @param listener a new listener
+     * @return this
+     */
+    public PVReaderConfiguration<T> addReadListener(PVReaderListener<T> listener);
     
+    /**
+     * Adds a listener for the expression.
+     * 
+     * @param listener a new listener
+     * @return this
+     */
     public PVReaderConfiguration<T> addListener(Consumer<PVEvent> listener);
 
+    /**
+     * Starts processing events for the expression.
+     * 
+     * @return the new pv
+     */
     public PVReader<T> start();
 }

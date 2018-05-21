@@ -11,7 +11,7 @@ import org.epics.gpclient.datasource.DataSourceProvider;
 import org.epics.vtype.VType;
 
 /**
- * The default instance for the generic purpose client.
+ * The default instance for the gpclient.
  *
  * @author carcassi
  */

@@ -56,20 +56,6 @@ class ActiveRateDecoupler extends RateDecoupler {
         // Do nothing
     }
     
-//    @Override
-//    void newWriteSuccededEvent() {
-//        DesiredRateEvent event = new DesiredRateEvent();
-//        event.addType(DesiredRateEvent.Type.WRITE_SUCCEEDED);
-//        scheduleWriteOutcome(event);
-//    }
-//
-//    @Override
-//    void newWriteFailedEvent(Exception ex) {
-//        DesiredRateEvent event = new DesiredRateEvent();
-//        event.addWriteFailed(new RuntimeException());
-//        sendDesiredRateEvent(event);
-//    }
-    
     /**
      * If possible, submit the event right away, otherwise try again later.
      * @param event the event to submit

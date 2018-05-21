@@ -42,7 +42,7 @@ public class GPClientInstance {
     }
     
     /**
-     * Reads the given expression.
+     * Create a reader for the given expression.
      * 
      * @param <R> the read type
      * @param expression the expression to read
@@ -52,6 +52,13 @@ public class GPClientInstance {
         return new PVConfiguration<>(this, expression, PVConfiguration.Mode.READ);
     }
     
+    /**
+     * Creates a writer for the given expression.
+     * 
+     * @param <W> the write type
+     * @param expression the expression to be written to
+     * @return the configurations options
+     */
     public <W> PVWriterConfiguration<W> write(Expression<?, W> expression) {
         return new PVConfiguration<>(this, expression, PVConfiguration.Mode.WRITE);
     }
@@ -86,7 +93,10 @@ public class GPClientInstance {
     public DataSource getDefaultDataSource() {
         return defaultDataSource;
     }
-    
+
+    /**
+     * Closes the gpclient instance.
+     */
     public void close() {
         defaultDataSource.close();
     }

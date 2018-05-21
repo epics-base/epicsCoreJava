@@ -37,14 +37,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         this.mode = mode;
     }
 
-    /**
-     * Defines which DataSource should be used to read the data.
-     *
-     * @param dataSource a connection manager
-     * @return this
-     */
+    @Override
     public PVConfiguration<R, W> from(DataSource dataSource) {
-        // TODO: check all parameters for double setting
         if (dataSource == null) {
             throw new IllegalArgumentException("dataSource can't be null");
         }
@@ -52,12 +46,7 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         return this;
     }
 
-    /**
-     * Defines on which thread the PVManager should notify the client.
-     *
-     * @param onThread the thread on which to notify
-     * @return this
-     */
+    @Override
     public PVConfiguration<R, W> notifyOn(Executor onThread) {
         if (this.notificationExecutor == null) {
             this.notificationExecutor = onThread;
@@ -66,7 +55,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         }
         return this;
     }
-    
+
+    @Override
     public PVConfiguration<R, W> maxRate(Duration maxRate) {
         if (this.maxRate != null)
             throw new IllegalStateException("Max rate already set");
@@ -74,7 +64,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         this.maxRate = maxRate;
         return this;
     }
-    
+
+    @Override
     public PVConfiguration<R, W> connectionTimeout(Duration timeout) {
         if (this.connectionTimeout != null)
             throw new IllegalStateException("Timeout already set");
@@ -82,6 +73,7 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         return this;
     }
     
+    @Override
     public PVConfiguration<R, W> connectionTimeout(Duration timeout, String timeoutMessage) {
         connectionTimeout(timeout);
         this.connectionTimeoutMessage = timeoutMessage;
@@ -126,7 +118,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         }
     }
     
-    public PVConfiguration<R, W>  addListener(final PVReaderListener<R> listener) {
+    @Override
+    public PVConfiguration<R, W>  addReadListener(final PVReaderListener<R> listener) {
         final PVListener<R, W> previousListener = this.listener;
         this.listener = new PVListener<R, W>() {
             @Override
@@ -140,7 +133,8 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         return this;
     }
 
-    public PVConfiguration<R, W> addListener(PVWriterListener<W> listener) {
+    @Override
+    public PVConfiguration<R, W> addWriteListener(PVWriterListener<W> listener) {
         final PVListener<R, W> previousListener = this.listener;
         this.listener = new PVListener<R, W>() {
             @Override
@@ -154,6 +148,12 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         return this;
     }
 
+    /**
+     * Adds a listener for the expression.
+     * 
+     * @param listener a new listener
+     * @return this
+     */
     public PVConfiguration<R, W> addListener(PVListener<R, W> listener) {
         if (this.listener == null) {
             this.listener = listener;
@@ -177,6 +177,11 @@ public class PVConfiguration<R, W> implements PVReaderConfiguration<R>, PVWriter
         });
     }
     
+    /**
+     * Starts processing events for the expression.
+     * 
+     * @return the new pv
+     */
     @Override
     public PV<R, W> start() {
         checkParameters();
