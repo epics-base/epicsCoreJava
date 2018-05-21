@@ -56,6 +56,14 @@ public class PVEventRecorder implements Consumer<PVEvent> {
         }
     }
 
+    /**
+     * Waits until the condition is met. If the conditions is already met, it
+     * returns right away. If the condition is not met after the time specified,
+     * an {@link AssertionError} is thrown.
+     * 
+     * @param ms the timeout in millis
+     * @param condition the condition
+     */
     public void wait(int ms, Function<List<PVEvent>, Boolean> condition) {
         CountDownLatch latch = new CountDownLatch(1);
         Runnable newTest = new Runnable() {
@@ -83,6 +91,15 @@ public class PVEventRecorder implements Consumer<PVEvent> {
         }
     }
 
+    /**
+     * Checks that the condition is not met. The method returns successfully
+     * only if the condition is not met within the timeout. If the conditions is
+     * already met, or if it is met within the time specified, an
+     * {@link AssertionError} is thrown.
+     * 
+     * @param ms the timeout in millis
+     * @param condition the condition
+     */
     public void dontExpect(int ms, Function<List<PVEvent>, Boolean> condition) {
         CountDownLatch latch = new CountDownLatch(1);
         Runnable newTest = new Runnable() {
@@ -109,17 +126,34 @@ public class PVEventRecorder implements Consumer<PVEvent> {
             throw new AssertionError("Received " + condition + " against expectation");
         }
     }
-    
+
+    /**
+     * Returns an {@link AssertionError} if the condition is not already met.
+     * 
+     * @param condition the condition
+     */    
     public void hasReceived(Function<List<PVEvent>, Boolean> condition) {
         if (!condition.apply(events)) {
             throw new AssertionError("Didn't receive " + condition);
         }
     }
     
-    public boolean hasNotReceived(Function<List<PVEvent>, Boolean> condition) {
-        return !condition.apply(events);
+    /**
+     * Returns an {@link AssertionError} if the condition is already met.
+     * 
+     * @param condition the condition
+     */    
+    public void hasNotReceived(Function<List<PVEvent>, Boolean> condition) {
+        if (condition.apply(events)) {
+            throw new AssertionError("Received " + condition);
+        }
     }
     
+    /**
+     * Checks that any event was received.
+     * 
+     * @return any event condition
+     */
     public static Function<List<PVEvent>, Boolean> forAnEvent() {
         return new Function<List<PVEvent>, Boolean>() {
             @Override
@@ -134,10 +168,21 @@ public class PVEventRecorder implements Consumer<PVEvent> {
         };
     }
     
+    /**
+     * Checks that a connection event was received.
+     * 
+     * @return connection event condition
+     */
     public static Function<List<PVEvent>, Boolean> forAConnectionEvent() {
         return anEventOfType(PVEvent.Type.READ_CONNECTION);
     }
     
+    /**
+     * Checks that an event of the given type was received.
+     * 
+     * @param type the event type
+     * @return type of event condition
+     */
     public static Function<List<PVEvent>, Boolean> anEventOfType(PVEvent.Type type) {
         return new Function<List<PVEvent>, Boolean>() {
             @Override
@@ -151,7 +196,13 @@ public class PVEventRecorder implements Consumer<PVEvent> {
             }
         };
     }
-    
+
+    /**
+     * Checks the given number of events were received.
+     * 
+     * @param count the number of events
+     * @return event count condition
+     */    
     public static Function<List<PVEvent>, Boolean> forEventCount(final int count) {
         return new Function<List<PVEvent>, Boolean>() {
             @Override
