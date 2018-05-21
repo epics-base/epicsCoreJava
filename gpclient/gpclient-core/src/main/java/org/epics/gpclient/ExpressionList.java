@@ -23,6 +23,12 @@ public class ExpressionList<R, W> {
     }
 
     /**
+     * Creates a new empty expression list.
+     */
+    public ExpressionList() {
+    }
+
+    /**
      * Adds the given expressions to this list.
      * 
      * @param expressions a list of expressions

@@ -26,7 +26,21 @@ public class Expression<R, W> extends ExpressionList<R, W> {
         addThis();
     }
 
+    /**
+     * Creates a new expression. If not null, start/stop read/write will cascade on the
+     * children.
+     * 
+     * @param childExpressions the child expression, can be null
+     * @param readFunction the read function, can't be null
+     * @param writeFunction the write function, can't be null
+     */
     public Expression(ExpressionList<?, ?> childExpressions, Supplier<R> readFunction, Consumer<W> writeFunction) {
+        if (readFunction == null) {
+            throw new NullPointerException("readFunction can't be null");
+        }
+        if (writeFunction == null) {
+            throw new NullPointerException("writeFunction can't be null");
+        }
         this.expressionChildren = childExpressions;
         this.readFunction = readFunction;
         this.writeFunction = writeFunction;
