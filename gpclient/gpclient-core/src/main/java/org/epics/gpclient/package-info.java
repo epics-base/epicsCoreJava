@@ -3,7 +3,7 @@
  * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * Main package of the EPICS Generic Purpose client (gpclient).
+ * Main package of the EPICS General Purpose client (gpclient).
  * <p>
  * The generic purpose client is meant to be used to build applications that 
  * are not specific to a particular deployment environment or to a particular use
