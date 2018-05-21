@@ -13,10 +13,10 @@ package org.epics.gpclient;
 public interface PVReaderListener<R> {
 
     /**
-     * Notified when the value of the PV has changed.
+     * Called when a new event is available to be processed.
      * 
-     * @param event the reader event
-     * @param pvReader the reader that generated the event
+     * @param event the event
+     * @param pvReader the pv associated with the event
      */
     void pvChanged(PVEvent event, PVReader<R> pvReader);
 

@@ -14,10 +14,10 @@ package org.epics.gpclient;
 public interface PVListener<R, W> {
     
     /**
-     * Notified when the value was written.
+     * Called when a new event is available to be processed.
      * 
      * @param event the event
-     * @param pv the pv that generated the event
+     * @param pv the pv associated with the event
      */
     public void pvChanged(PVEvent event, PV<R, W> pv);
 }

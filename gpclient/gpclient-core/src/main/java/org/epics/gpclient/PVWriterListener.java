@@ -13,10 +13,10 @@ package org.epics.gpclient;
 public interface PVWriterListener<W> {
     
     /**
-     * Notified when the value was written.
+     * Called when a new event is available to be processed.
      * 
-     * @param event the writer event
-     * @param pvWriter the writer that generated the event
+     * @param event the event
+     * @param pvWriter the pv associated with the event
      */
     public void pvChanged(PVEvent event, PVWriter<W> pvWriter);
 }
