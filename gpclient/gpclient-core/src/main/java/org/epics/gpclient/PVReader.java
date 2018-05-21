@@ -104,7 +104,7 @@ public interface PVReader<T> {
      * your notification comes from a complete set.
      * <p>
      * When using <code>VType</code>s, use the value and
-     * connection with {@link org.epics.vtype.Alarm#alarmOf(java.lang.Object, boolean) 
+     * connection with {@link org.epics.vtype.Alarm#alarmOf(java.lang.Object, boolean) }
      * to combine the connection information within the value. This scales when you get aggregates, such
      * as lists or maps of channels. This method does obviously not scale functionally
      * since, in an aggregate, it can't tell you which channel of the set
