@@ -8,7 +8,8 @@
     </parent>
     <artifactId>gpclient-javafx</artifactId>
     <packaging>jar</packaging>
-    <name>JavaFX support for the EPICS General Purpose Client</name>
+    <name>org.epics.gpclient.javafx</name>
+    <description>Java FX support for the EPICS Generic Purpose Client.</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

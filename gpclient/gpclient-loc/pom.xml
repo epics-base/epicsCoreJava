@@ -8,7 +8,8 @@
     </parent>
     <artifactId>gpclient-loc</artifactId>
     <packaging>jar</packaging>
-    <name>Local datasource for the EPICS General Purpose Client</name>
+    <name>org.epics.gpclient.loc</name>
+    <description>Support for in-memory data source for the EPICS Generic Purpose Client.</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

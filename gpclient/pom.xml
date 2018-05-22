@@ -3,10 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.epics</groupId>
     <artifactId>gpclient</artifactId>
-    <name>EPICS General Purpose Client</name>
+    <name>gpclient</name>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <description>The general purpose JAVA EPICS client.</description>
+    <description>The generic purpose JAVA EPICS client.</description>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

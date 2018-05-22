@@ -8,8 +8,8 @@
     </parent>
     <artifactId>gpclient-sample</artifactId>
     <packaging>jar</packaging>
-    <name>Examples for the EPICS General Purpose Client</name>
-    <description>Examples for the generic client.</description>
+    <name>org.epics.gpclient.sample</name>
+    <description>Examples for the EPICS Generic Purpose Client.</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

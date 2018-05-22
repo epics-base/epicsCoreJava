@@ -8,8 +8,8 @@
     </parent>
     <artifactId>gpclient-sim</artifactId>
     <packaging>jar</packaging>
-    <name>Simulated datasource for the EPICS General Purpose Client</name>
-    <description>Support for simulated data source.</description>
+    <name>org.epics.gpclient.sim</name>
+    <description>Support for simulated data source for the EPICS Generic Purpose Client.</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
