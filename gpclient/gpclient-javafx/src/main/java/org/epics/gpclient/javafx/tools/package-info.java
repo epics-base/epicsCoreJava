@@ -2,9 +2,7 @@
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
-
 /**
- * Defines the API to connect data sources to the EPICS Generic Purpose client.
- * 
+ * Provides standard JavaFX tools for the EPICS Generic Client.
  */
-package org.epics.gpclient.datasource;
+package org.epics.gpclient.javafx.tools;

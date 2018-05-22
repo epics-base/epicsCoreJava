@@ -3,7 +3,6 @@
  * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * Support for a data source that reads and writes channels
- * that reside in the local memory (<a href="doc-files/loc-datasource.html">channel syntax</a>).
+ * Provides support for memory resident data  to the EPICS Generic Client.
  */
 package org.epics.gpclient.loc;

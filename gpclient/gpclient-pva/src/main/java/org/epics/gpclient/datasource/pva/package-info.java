@@ -3,6 +3,6 @@
  * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * Support for Epics 4 data source (<a href="doc-files/pva-datasource.html">channel syntax</a>).
+ * Provides support for PVAccess to the EPICS Generic Client.
  */
 package org.epics.gpclient.datasource.pva;

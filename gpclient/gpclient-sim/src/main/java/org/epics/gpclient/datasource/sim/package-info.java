@@ -3,6 +3,6 @@
  * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * DataSource for simulated data (<a href="doc-files/sim-datasource.html">channel syntax</a>).
+ * Provides support for simulated data to the EPICS Generic Client.
  */
 package org.epics.gpclient.datasource.sim;
