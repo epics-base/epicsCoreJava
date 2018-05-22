@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A class that provides support for a DataSource.
+ * A class that provides support for a {@link DataSource}.
  * <p>
  * This interface allows different modules to registers a DataSource through
  * the ServiceLoader. Implementations that are correctly registered will
@@ -42,7 +42,7 @@ public abstract class DataSourceProvider {
     public abstract DataSource createInstance();
     
     /**
-     * Looks up the registered factories and creates a CompositeDataSource
+     * Looks up the registered factories and creates a {@link CompositeDataSource}
      * using them.
      * 
      * @return a new DataSource

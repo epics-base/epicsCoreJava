@@ -101,8 +101,8 @@ public abstract class DataSource {
     
     // Keeps track of the recipes that were opened with
     // this data source.
-    private final Set<ReadSubscription> readSubscriptions = Collections.synchronizedSet(new HashSet<ReadSubscription>());
-    private final Set<WriteSubscription> writeSubscriptions = Collections.synchronizedSet(new HashSet<WriteSubscription>());
+    private final Set<ReadSubscription> readSubscriptions = Collections.synchronizedSet(new HashSet<>());
+    private final Set<WriteSubscription> writeSubscriptions = Collections.synchronizedSet(new HashSet<>());
 
     private final ProcessingQueue<ReadSubscription> startReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
         @Override
@@ -190,6 +190,11 @@ public abstract class DataSource {
         }
     });
     
+    /**
+     * Starts the given write subscription.
+     * 
+     * @param writeSubscription the subscription information
+     */
     public void startWrite(final WriteSubscription writeSubscription) {
         startWriteQueue.submit(writeSubscription);
     }
@@ -220,6 +225,11 @@ public abstract class DataSource {
         }
     });
     
+    /**
+     * Stops the given write subscription.
+     * 
+     * @param writeRecipe the subscription information
+     */
     public void stopWrite(final WriteSubscription writeRecipe) {
         stopWriteQueue.submit(writeRecipe);
     }

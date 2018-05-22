@@ -7,7 +7,7 @@ package org.epics.gpclient.datasource;
 import org.epics.gpclient.ReadCollector;
 
 /**
- * Matches and fills a cache with the data from connection and message payloads.
+ * Matches and sends notifies {@link ReadCollector}s with the data from connection and message payloads.
  * This optional class helps the writer of a datasource to manage the
  * type matching and conversions.
  *
@@ -30,7 +30,7 @@ public interface DataSourceTypeAdapter<ConnectionPayload, MessagePayload> {
     
     /**
      * The parameters required to open a monitor for the channel. The
-     * type of the parameters will be datasource specific
+     * type of the parameters will be datasource specific.
      * <p>
      * For channels multiplexed on a single subscription, this method
      * is never used.

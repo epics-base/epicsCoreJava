@@ -11,7 +11,7 @@ import org.epics.gpclient.datasource.DataSource;
 
 /**
  * An expression used to set the final parameters on how the pv expression
- * should be read.
+ * should be written.
  * 
  * @param <T> the type of the expression
  * @author carcassi

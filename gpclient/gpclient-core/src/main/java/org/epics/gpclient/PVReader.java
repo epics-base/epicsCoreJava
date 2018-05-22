@@ -15,7 +15,7 @@ package org.epics.gpclient;
  * can be accessed from any thread,
  * but there is no guarantee on the atomicity. The only way to work on a consistent
  * snapshot is to use a listener and to process the event on the thread
- * of the listener. If the event is forwarded on another thread, one loses
+ * of the listener. If the event is forwarded to another thread, one loses
  * the atomicity and also the other safeguards (like rate throttling).
  * The callback does not lock the object, so other threads can still access
  * the object while listeners are executing.
@@ -30,7 +30,7 @@ package org.epics.gpclient;
  * state before the event processing started: since each element in the event
  * processing may be stateful, this becomes a non-trivial task. It would also not
  * cover a much simpler hole: the processing may be finished and the pause/stop
- * arrive during the use event callback. At that point, the framework has no control, so
+ * arrive during the user event callback. At that point, the framework has no control, so
  * you would still have a small chance of part of the callback executed after
  * pausing/closing. The solution there would be to lock the pause/close until
  * after all callbacks are done. This, which was the original implementation, has

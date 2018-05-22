@@ -5,7 +5,7 @@
 package org.epics.gpclient;
 
 /**
- * A write of a channel expression created through the {@link GPClient}. The write payload is specified by the generic type,
+ * A writer of a channel expression created through the {@link GPClient}. The write payload is specified by the generic type,
  * and is changed by {@link #write(java.lang.Object)}. Changes in
  * values are notified through the {@link PVWriterListener}. 
  * <p>

@@ -28,9 +28,18 @@ public final class CompositeDataSourceConfiguration {
     private String delimiter = "://";
     private String defaultDataSource;
 
+    /**
+     * Creates a new configuration.
+     */
     public CompositeDataSourceConfiguration() {
     }
 
+    /**
+     * Loads the configuration from the given input stream which must correspond
+     * to an XML file.
+     * 
+     * @param input the xml configuration
+     */
     public CompositeDataSourceConfiguration(InputStream input) {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
