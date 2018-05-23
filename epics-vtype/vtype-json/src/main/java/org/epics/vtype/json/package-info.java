@@ -1,9 +1,8 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * Support for JSON serialization of vTypes according to the following
- * (<a href="doc-files/vtype-json.html">specification</a>).
+ * Provides JSON serialization of vTypes.
  */
 package org.epics.vtype.json;
