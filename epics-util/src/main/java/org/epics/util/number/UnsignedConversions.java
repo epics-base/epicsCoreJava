@@ -1,7 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.number;
 

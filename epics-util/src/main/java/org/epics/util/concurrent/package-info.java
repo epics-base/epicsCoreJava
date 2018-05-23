@@ -3,7 +3,6 @@
  * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * Defines classes to handle statistical information.
- * 
+ * Provides utility classes for concurrency.
  */
-package org.epics.util.stats;
+package org.epics.util.concurrent;

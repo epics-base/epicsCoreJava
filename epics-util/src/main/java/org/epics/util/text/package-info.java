@@ -3,7 +3,7 @@
  * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * Defines classes to handle statistical information.
+ * Provides utilities for test parsing.
  * 
  */
-package org.epics.util.stats;
+package org.epics.util.text;
