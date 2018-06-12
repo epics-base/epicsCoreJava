@@ -15,13 +15,16 @@
 package org.epics.pvaccess.client.pvms;
 
 import java.nio.ByteBuffer;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.impl.remote.IntrospectionRegistry;
-import org.epics.pvaccess.util.ShortHashMap;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
+
 
 
 /**
@@ -60,7 +63,8 @@ public final class IncomingMulticastIntrospectionRegistry {
 	}
 	
 	// TODO generics
-	protected final ShortHashMap registry = new ShortHashMap();
+	protected final Map<Short, FieldEntry> registry = 
+			Collections.synchronizedMap(new HashMap<Short, FieldEntry>());
 	
 	public IncomingMulticastIntrospectionRegistry()
 	{
@@ -82,7 +86,7 @@ public final class IncomingMulticastIntrospectionRegistry {
 	 */
 	public FieldEntry getIntrospectionInterface(short id)
 	{
-		return (FieldEntry)registry.get(id);
+		return registry.get(id);
 	}
 
 	/**

@@ -10,7 +10,8 @@
 <body>
 <h1>Support code for implementing channelRPC.</h1>
 
-<h1 style="text-align: center">PVService<br />This page documentation needs to be updated!<br />
+<h1 style="text-align: center">PVService<br>
+This page documentation needs to be updated!<br>
 2011.08.22</h1>
 CONTENTS 
 
@@ -28,11 +29,10 @@ CONTENTS
 </ul>
 </div>
 
-<p></p>
-<hr />
+<hr>
 
 <h2 style="text-align: center" id="L33">Introduction</h2>
-<hr />
+<hr>
 
 <p>This package provides support for services that are implemented as an RPC
 (Remote Procedure Call). PVAccess provideds two flavors of RPC: putProcessGet
@@ -102,25 +102,25 @@ described in detail below.</p>
 
 <p>The rest of this document describes the following:</p>
 <ul>
-  <li>client<br />
+  <li>client<br>
     The java interfaces and factories this project provides for a service
     client.</li>
-  <li>server<br />
+  <li>server<br>
     The java interfaces and factories this project provides for a service
     server.</li>
   <li>Examples: 
     <ul>
-      <li>table<br />
+      <li>table<br>
         An example that returns data that can be interpeted as a table.</li>
-      <li>example<br />
+      <li>example<br>
         A example of a service that returns a somewhat complex structure.</li>
     </ul>
   </li>
 </ul>
-<hr />
+<hr>
 
 <h2 style="text-align: center" id="L119">Client</h2>
-<hr />
+<hr>
 
 <p>The client is implemented via the following interfaces and factory:</p>
 <pre>interface ServiceClientRequester extends Requester{
@@ -196,10 +196,10 @@ following method:</p>
       </dl>
     </dd>
 </dl>
-<hr />
+<hr>
 
 <h2 style="text-align: center" id="L211">Server</h2>
-<hr />
+<hr>
 
 <p>The service is implemented via the following interfaces and factory:</p>
 <pre>//RPCServer defined in org.epics.ca.server.impl.local
@@ -259,10 +259,10 @@ the record.factory field of the PVRecord. It has the following method:</p>
     <dd>Called by org.epics.ca.server.impl.local.ChannelServerFactory when the
       PVRecord for the service is initialized.</dd>
 </dl>
-<hr />
+<hr>
 
 <h2 style="text-align: center" id="L282">Examples</h2>
-<hr />
+<hr>
 
 <p>The project provides examples in package (org.epics.pvService.example). This
 section describes ExampleClient and ExampleServiceFactory, which are the client
@@ -402,7 +402,7 @@ all done
     <dd>This is the record for clientExample</dd>
   <dt>tableSevice</dt>
     <dd>This is the record for clientTable</dd>
-  You should see:</dl>
+</dl>
 
 <p>Note that both records are created by extending org.epics.pvService.service.
 This is defined in pvService.xml.structure.service.xml:</p>
