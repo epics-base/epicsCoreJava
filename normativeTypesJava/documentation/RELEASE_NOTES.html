@@ -1,0 +1,48 @@
+<h1>Release 0.1</h1>
+
+<p>This is the first release of normativeTypesJava.</p>
+
+<p>This release provides support through wrapper classes and builders for the
+following Normative Types:</p>
+
+<ul>
+<li>NTScalar</li>
+<li>NTScalarArray</li>
+<li>NTEnum</li>
+<li>NTMatrix</li>
+<li>NTURI</li>
+<li>NTNameValue</li>
+<li>NTTable</li>
+<li>NTAttribute</li>
+<li>NTMultiChannel</li>
+<li>NTNDArray</li>
+<li>NTContinuum</li>
+<li>NTHistogram</li>
+<li>NTAggregate</li>
+<li>NTUnion</li>
+<li>NTScalarMultiChannel</li>
+</ul>
+
+<p>Release 0.1 therefore implements fully the
+<a href="http://epics-pvdata.sourceforge.net/alpha/normativeTypes/normativeTypes_20150316.html">16 Mar 2015 version</a>
+ of the normativeTypes specification.</p>
+
+<p>Each type has a wrapper class of the same name which has functions for checking 
+compatibility (isCompatible) and the reported types (is_a) of existing
+structures (either Structures or PVStructures) and of the validity of the data
+of wrapped PVStructures with respect to the specification (isValid), wraps
+existing PVStructures (wrap, wrapUnsafe) and provides a convenient interface to
+all required and optional fields.</p>
+
+<p>Each type has a builder which can create a Structure, a PVStructure or a
+wrapper around a new PVStructure. In each case optional or extra fields can be
+added and options such as choice of scalar type can be made.</p>
+
+<p>Additional features are:</p>
+
+<ul>
+<li>Utility classes NTField and NTPVField for standard structure fields and
+NTUtils and NTID for type IDs.</li>
+<li>Unit tests for all the implemented types and other classes, providing
+extensive coverage for all the Normative Types (except NTNDArray).</li>
+</ul>

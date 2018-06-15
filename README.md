@@ -6,17 +6,20 @@ It also contains the EPICS parent POM that is inherited by all modules,
 and provides a convenience dependency POM that can be used by other projects 
 to depend on a matching set of the EPICS Core libraries.
 
-All EPICS Core modules are contained as Git submodules.
 
 ## Code Submodules
-Five submodules/directories/projects contain the code of EPICS Core:
+Five maven submodules/directories/projects contain the code of EPICS Core:
 * pvDataJava
 * pvAccessJava
 * normativeTypesJava
+* epics-util
+* epics-vtype
+
+Two git submodules contain the code of EPICS Core:
 * pvaClientJava
 * pvDatabaseJava
 
-Two submodules contain example code:
+Two git submodules contain example code:
 * exampleJava
 * directoryService
 

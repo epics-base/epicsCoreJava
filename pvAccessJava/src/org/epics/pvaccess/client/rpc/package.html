@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+  <title>PVService</title>
+</head>
+
+<body>
+<h1>Support code for implementing channelRPC.</h1>
+
+<h1 style="text-align: center">PVService<br />This page documentation needs to be updated!<br />
+2011.08.22</h1>
+CONTENTS 
+
+<div class="toc">
+<ul>
+  <li><a href="#L33">Introduction</a></li>
+  <li><a href="#L119">Client</a></li>
+  <li><a href="#L211">Server</a></li>
+  <li><a href="#L282">Examples</a> 
+    <ul>
+      <li><a href="#L288">Running the examples</a></li>
+      <li><a href="#L328">The service record</a></li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<p></p>
+<hr />
+
+<h2 style="text-align: center" id="L33">Introduction</h2>
+<hr />
+
+<p>This package provides support for services that are implemented as an RPC
+(Remote Procedure Call). PVAccess provideds two flavors of RPC: putProcessGet
+and channelRPC. </p>
+
+<p>If the service is accessed via a putProcessGet the record that implements
+the RPC has the structure</p>
+<pre>record serviceName
+    // may be optional fields
+   structure arguments
+      // sevice specific
+  structure result
+     // service specific</pre>
+
+<p>If the service is accessed via a channelRPC the record that implements the
+RPC has the structure:</p>
+<pre>record serviceName
+    // may be optional fields
+   structure arguments
+      // sevice specific</pre>
+
+<p>The main difference between the two types of service is that for a
+putProcessGet the structure of the result is fixed and for a channelRPC a
+completely new structure is returned for each request.</p>
+
+<p>This package provides support for channelRPC: It provides client and server
+support for implementing a network accessable service that uses PVData for all
+data communication between a client and the service. The service is implemented
+via a PVRecord that is present in a javaIOC. The client communicates with the
+server via a ChannelRPC (Remote Procedure Call) as defined by pvAccess.</p>
+
+<p>The record name is the name of the service. The record has the following
+fields: </p>
+<dl>
+  <dt>factoryRPC</dt>
+    <dd>A string field that is the name of a factory that implements the
+      specific RPC service.</dd>
+  <dt>arguments</dt>
+    <dd>A structure that defines the arguments for the RPC.</dd>
+</dl>
+
+<p>This package provides:</p>
+<ul>
+  <li>Client - The client code that interfaces to PVAccess, i.e. manages
+    channel access communication with the service </li>
+  <li>Server - Code that implements Support code for a record instance that
+    implements a service. It calls service specific code.</li>
+</ul>
+
+<p>A sevice implementation must implement the following interfaces, which are
+described in detail below.</p>
+<ul>
+  <li>Server - Defined in javaIOC. package org.epics.ioc.pvAccess 
+    <pre>interface RPCServer {
+    void destroy()
+    Status initialize(...);
+    void request()
+}</pre>
+  </li>
+  <li>Client 
+    <pre>interface ServiceClientRequester extends Requester{
+    void connectResult(...);
+    void requestResult(...);
+}</pre>
+  </li>
+</ul>
+
+<p>The rest of this document describes the following:</p>
+<ul>
+  <li>client<br />
+    The java interfaces and factories this project provides for a service
+    client.</li>
+  <li>server<br />
+    The java interfaces and factories this project provides for a service
+    server.</li>
+  <li>Examples: 
+    <ul>
+      <li>table<br />
+        An example that returns data that can be interpeted as a table.</li>
+      <li>example<br />
+        A example of a service that returns a somewhat complex structure.</li>
+    </ul>
+  </li>
+</ul>
+<hr />
+
+<h2 style="text-align: center" id="L119">Client</h2>
+<hr />
+
+<p>The client is implemented via the following interfaces and factory:</p>
+<pre>interface ServiceClientRequester extends Requester{
+    void connectResult(Status status,PVStructure pvArguments,BitSet bitSet);
+    void requestResult(Status status,PVStructure pvResult);
+}
+
+interface ServiceClient {
+    void destroy();
+    void waitConnect(double timeout);
+    void sendRequest();
+    void waitRequest();
+}
+
+class ServiceClientFactory {
+    public static ServiceClient create(String serviceName,ServiceClientRequester requester);
+}</pre>
+
+<p>ServiceClientRequester, which must be implemented by each client, has the
+following methods:</p>
+<dl>
+  <dt>connectResult</dt>
+    <dd>This is called when ServiceClient has connected to the service or when
+      a timeout occurs. It has the methods: 
+      <dl>
+        <dt>status</dt>
+          <dd>The status as descibed in project pvData.</dd>
+        <dt>pvArguments</dt>
+          <dd>The arguments structure defined in the service record.</dd>
+        <dt>bitSet</dt>
+          <dd>A bitSet for pvArguments. The client must call bitSet.set for any
+            fields it changes in pvAguments before issuing a request.</dd>
+      </dl>
+    </dd>
+  <dt>requestResult</dt>
+    <dd>This is called when the ServiceClient receives the request data from
+      the service. It has the methods: 
+      <dl>
+        <dt>status</dt>
+          <dd>The status of the request as described in project pvData.</dd>
+        <dt>pvResult</dt>
+          <dd>The pvStructure created by the service.</dd>
+      </dl>
+    </dd>
+</dl>
+
+<p>ServiceClient is created by ServiceClientFactory. It has the methods:</p>
+<dl>
+  <dt>destroy</dt>
+    <dd>Called by the client when it no longer requires the service.</dd>
+  <dt>waitConnect</dt>
+    <dd>Called by the client to wait until a connection has been made to the
+      service or a timeout occurs.</dd>
+  <dt>sendRequest</dt>
+    <dd>Called by the client to send a request to the service.</dd>
+  <dt>waitRequest</dt>
+    <dd>Called by the client to wait until the request response has been
+      returned by the service.</dd>
+</dl>
+
+<p>ServiceClientFactory, which is also implemented by this project, has the
+following method:</p>
+<dl>
+  <dt>create</dt>
+    <dd>Creates a ServiceClient and connects to the service. It has the
+      arguments: 
+      <dl>
+        <dt>serviceName</dt>
+          <dd>The name of the channel, i.e. record, that implements the
+          service.</dd>
+        <dt>requester</dt>
+          <dd>The serviceChannelRequester as described above.</dd>
+      </dl>
+    </dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="L211">Server</h2>
+<hr />
+
+<p>The service is implemented via the following interfaces and factory:</p>
+<pre>//RPCServer defined in org.epics.ca.server.impl.local
+public interface RPCServer {
+    void destroy();
+    Status initialize(
+         Channel channel,
+         PVRecord pvRecord,
+         ChannelRPCRequester channelRPCRequester,
+         PVStructure pvArgument,
+         BitSet bitSet,
+         PVStructure pvRequest);
+    void request();
+}
+
+class XXXServiceFactory {
+    public static RPCServer create();
+}</pre>
+
+<p>RPCService, which is implemented by each service, has the following
+methods:</p>
+<dl>
+  <dt>destroy</dt>
+    <dd><p>Called when a client disconnects from the ChannelRPC.</p>
+    </dd>
+  <dt>initialize</dt>
+    <dd>Called when a client creates a ChannelRPC. It has the arguments: 
+      <dl>
+        <dt>channel</dt>
+          <dd>The channel that is connecting to the service.</dd>
+        <dt>pvRecord</dt>
+          <dd>The record that implements the service.</dd>
+        <dt>channelRPCRequester</dt>
+          <dd>The remote pvAccess server implements this and passes the
+            information back to the client.</dd>
+        <dt>pvArgument</dt>
+          <dd>The arguments structure as defined in the record.</dd>
+        <dt>bitSet</dt>
+          <dd>A bitSet for arguments. The service can use this to determine
+            what has changed since the last request.</dd>
+        <dt>pvRequest</dt>
+          <dd>An optional pvStructure than can be passed between client an d
+            server. See pvAccess for details.</dd>
+      </dl>
+    </dd>
+  <dt>request</dt>
+    <dd>Called when a client calls channelRPC.request. The service is expected
+      to create a new pvStructure and call: 
+      <pre>channelRPCRequester.requestDone(okStatus, pvTop);</pre>
+      where pvTop is the newly created pvStructure. </dd>
+</dl>
+
+<p>Also the service must implement a XXXServiceFactory, which is specified in
+the record.factory field of the PVRecord. It has the following method:</p>
+<dl>
+  <dt>create</dt>
+    <dd>Called by org.epics.ca.server.impl.local.ChannelServerFactory when the
+      PVRecord for the service is initialized.</dd>
+</dl>
+<hr />
+
+<h2 style="text-align: center" id="L282">Examples</h2>
+<hr />
+
+<p>The project provides examples in package (org.epics.pvService.example). This
+section describes ExampleClient and ExampleServiceFactory, which are the client
+and server sides of the example. The example is skeleton code for a service
+that, given a search string, returns a set of pvnames. Each pvName can have
+associated properties. The example ignores the search request. Instead it just
+makes up two pvnames (pvName0 and pvName1) and makes up some properties for
+each pvname.</p>
+
+<h3 id="L288">Running the examples</h3>
+
+<p>The example package has a file pvService.zip that runs the example. To run
+the example do the following:</p>
+<ol>
+  <li>Copy pvService.zip to some test directory and unzip it.</li>
+  <li>change directory location to pvService.</li>
+  <li>Edit the source file so that it has the correct locations for WORKSPACE
+    and for the org.eclipse.swt definitions.</li>
+  <li>Open two windows in the pvService directory</li>
+  <li>In one window execute the command: 
+    <pre>    ./serviceExample
+    </pre>
+  </li>
+  <li>In other window execute the command: 
+    <pre>    ./clientExample
+    </pre>
+  </li>
+  <li>In other window execute the command: 
+    <pre>    ./clientTable
+    </pre>
+  </li>
+</ol>
+
+<p>In the window where clientExample is run you should see:</p>
+<pre>structure 
+{
+    0 = structure
+    {
+        name = pvName0
+        properties = structure
+        {
+            a = structure
+            {
+                value = avalue
+                owner = aowner
+            }
+            b = structure
+            {
+                value = bvalue
+                owner = bowner
+            }
+        }
+    }
+    1 = structure
+    {
+        name = pvName1
+        properties = structure
+        {
+            a = structure
+            {
+                value = avalue
+                owner = aowner
+            }
+            b = structure
+            {
+                value = bvalue
+                owner = bowner
+            }
+        }
+    }
+}
+all done</pre>
+
+<p>In the window where clientTable is run you should see:</p>
+<pre>mrk&gt; ./clientTable 
+structure table
+    int nrows 2
+    structure columns
+        string[] name [name0,name1]
+        double[] value [10.0000,20.0000]
+        structure[] timeStamp 
+            structure timeStamp
+                long secondsPastEpoch 946702800
+                int nanoseconds 582000000
+            structure timeStamp
+                long secondsPastEpoch 946702801
+                int nanoseconds 582000000
+timeStamp[] [ 2000-01-01 00:00:00.582, 2000-01-01 00:00:01.582]
+structure table
+    int nrows 5
+    structure columns
+        string[] name [name0,name1,name2,name3,name4]
+        double[] value [10.0000,20.0000,30.0000,40.0000,50.0000]
+        structure[] timeStamp 
+            structure timeStamp
+                long secondsPastEpoch 946702800
+                int nanoseconds 582000000
+            structure timeStamp
+                long secondsPastEpoch 946702801
+                int nanoseconds 582000000
+            structure timeStamp
+                long secondsPastEpoch 946702802
+                int nanoseconds 582000000
+            structure timeStamp
+                long secondsPastEpoch 946702803
+                int nanoseconds 582000000
+            structure timeStamp
+                long secondsPastEpoch 946702804
+                int nanoseconds 582000000
+timeStamp[] [ 2000-01-01 00:00:00.582, 2000-01-01 00:00:01.582, 2000-01-01 00:00:02.582, 2000-01-01 00:00:03.582, 2000-01-01 00:00:04.582]
+all done
+
+</pre>
+
+<h3 id="L328">The service record</h3>
+
+<p>The xml file that implements the example service is:</p>
+<pre>&lt;database&gt;
+&lt;record recordName = "exampleService" extends = "org.epics.pvService.service"&gt;
+    &lt;scalar name = "factoryRPC"&gt;org.epics.pvService.example.ExampleServiceFactory&lt;/scalar&gt;
+    &lt;structure name = "arguments"&gt;
+        &lt;scalar name = "search" scalarType = "string" /&gt;
+    &lt;/structure&gt;
+&lt;/record&gt;
+&lt;record recordName = "tableService" extends = "org.epics.pvService.service"&gt;
+    &lt;scalar name = "factoryRPC"&gt;org.epics.pvService.example.TableServiceFactory&lt;/scalar&gt;
+    &lt;structure name = "arguments"&gt;
+        &lt;scalar name = "search" scalarType = "string" /&gt;
+        &lt;scalar name = "number" scalarType = "int" /&gt;
+    &lt;/structure&gt;
+&lt;/record&gt;
+&lt;/database&gt;</pre>
+
+<p>This creates two records.</p>
+<dl>
+  <dt>exampleService</dt>
+    <dd>This is the record for clientExample</dd>
+  <dt>tableSevice</dt>
+    <dd>This is the record for clientTable</dd>
+  You should see:</dl>
+
+<p>Note that both records are created by extending org.epics.pvService.service.
+This is defined in pvService.xml.structure.service.xml:</p>
+<pre>&lt;structure structureName = "service"&gt;
+  &lt;scalar name = "factoryRPC" scalarType = "string" /&gt;
+  &lt;structure name = "arguments" /&gt;
+&lt;/structure&gt;</pre>
+</body>
+</html>
