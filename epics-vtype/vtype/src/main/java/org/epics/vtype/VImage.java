@@ -4,6 +4,8 @@
  */
 package org.epics.vtype;
 
+import java.util.Objects;
+
 import org.epics.util.array.ListNumber;
 
 /**
@@ -33,18 +35,17 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
      * @return ListNumber image data
      */
     public abstract ListNumber getData();
-    
+
     /**
-     * Describes the type in which the data is stored
-     * {@link VImageDataType}
+     * Describes the type in which the data is stored {@link VImageDataType}
      * 
-     * @return image data type 
+     * @return image data type
      */
     public abstract VImageDataType getDataType();
 
     /**
-     * Returns the image type, The image type describes the mechanism in which
-     * the data is encoded and how it can be converted to something that can be
+     * Returns the image type, The image type describes the mechanism in which the
+     * data is encoded and how it can be converted to something that can be
      * rendered.
      * 
      * @return the image type {@link VImageType}
@@ -53,14 +54,50 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
 
     /**
      * Creates a new VImage.
-     * 
+     *
      * @param value the value
      * @param alarm the alarm
      * @param time the time
      * @param display the display
-     * @return the new value
+     * @return the new Image
      */
-    public static VImage of(int height, int width, final ListNumber data, VImageDataType imageDataType, Alarm alarm, Time time) {
-        return new IVImage(height, width, data, imageDataType, VImageType.TYPE_3BYTE_BGR, alarm, time);
+    public static VImage of(int height, int width, final ListNumber data, VImageDataType imageDataType, VImageType vImageType, Alarm alarm, Time time) {
+        return new IVImage(height, width, data, imageDataType, vImageType, alarm, time);
     }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj instanceof VImage) {
+            VImage other = (VImage) obj;
+
+            return getClass().equals(other.getClass()) 
+                    && getHeight() == other.getHeight()
+                    && getWidth() == other.getWidth()
+                    && getData().equals(other.getData())
+                    && getDataType().equals(other.getDataType())
+                    && getVImageType().equals(other.getVImageType())
+                    && getAlarm().equals(other.getAlarm())
+                    && getTime().equals(other.getTime());
+        }
+
+        return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(getHeight());
+        hash = 23 * hash + Objects.hashCode(getWidth());
+        hash = 23 * hash + Objects.hashCode(getData());
+        hash = 23 * hash + Objects.hashCode(getDataType());
+        hash = 23 * hash + Objects.hashCode(getVImageType());
+        hash = 23 * hash + Objects.hashCode(getAlarm());
+        hash = 23 * hash + Objects.hashCode(getTime());
+        return hash;
+    }
+
 }

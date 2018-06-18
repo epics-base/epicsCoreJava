@@ -27,6 +27,7 @@ public class VImageTest {
             img = ImageIO.read(VType.class.getResource("Tulips.jpg"));
             vImage = VImage.of(img.getHeight(), img.getWidth(),
                     ArrayByte.of(((DataBufferByte) img.getRaster().getDataBuffer()).getData()), VImageDataType.pvByte,
+                    VImageType.TYPE_3BYTE_BGR,
                     Alarm.none(), Time.now());
             BufferedImage vImg = toImage(vImage);
             for (int x = 0; x < vImage.getWidth(); x++) {
@@ -49,8 +50,7 @@ public class VImageTest {
 
     private static BufferedImage toImage(VImage vImage) {
         if (vImage.getVImageType() == VImageType.TYPE_3BYTE_BGR) {
-            BufferedImage image = new BufferedImage(vImage.getWidth(), vImage.getHeight(),
-                    BufferedImage.TYPE_3BYTE_BGR);
+            BufferedImage image = new BufferedImage(vImage.getWidth(), vImage.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
             ListNumber data = vImage.getData();
             for (int i = 0; i < data.size(); i++) {
                 ((DataBufferByte) image.getRaster().getDataBuffer()).getData()[i] = data.getByte(i);
