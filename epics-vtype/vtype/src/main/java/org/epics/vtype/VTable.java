@@ -1,0 +1,79 @@
+/**
+ * Copyright (C) 2010-18 diirt developers. See COPYRIGHT.TXT
+ * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ */
+package org.epics.vtype;
+
+import java.util.List;
+import org.epics.util.array.ListNumber;
+
+/**
+ * A table. Tables are collections of columns, each of which is composed of a
+ * String representing the name of the column and a list of a particular type
+ * (all elements of the same column must be of the same type).
+ *
+ * @author carcassi, shroff
+ */
+public abstract class VTable extends VType {
+
+    /**
+     * The number of columns in the table.
+     *
+     * @return the number of columns
+     */
+    abstract int getColumnCount();
+
+    /**
+     * The number of rows in the table.
+     * <p>
+     * Currently, it is not clear whether all columns actually have the same number
+     * of rows, that is if all arrays have the same length. In the case of variable
+     * row, this will return the maximum row count, that is the length of the
+     * longest array/column.
+     *
+     * @return the number of rows
+     */
+    abstract int getRowCount();
+
+    /**
+     * The type of the elements in the column. The column array will be an array of
+     * the given type. For primitive types, this function will return the TYPE class
+     * (such as {@link Double#TYPE}, while {@link #getColumnData(int) } will return
+     * a {@link ListNumber}.
+     *
+     * @param column the column index
+     * @return the type of this column
+     */
+    abstract Class<?> getColumnType(int column);
+
+    /**
+     * The name of the given column.
+     *
+     * @param column the column index
+     * @return the name of the column
+     */
+    abstract String getColumnName(int column);
+
+    /**
+     * The data for the given column.
+     * <p>
+     * The data is going to be a {@link List} in case of objects or a
+     * {@link ListNumber} in case of a numeric primitive.
+     *
+     * @param column the column index
+     * @return the data of the column
+     */
+    abstract Object getColumnData(int column);
+
+    /**
+     * Create a new VTable
+     * 
+     * @param types the types of each column
+     * @param names the name of each column
+     * @param values the values of each column
+     * @return an immutable instance of the VTable
+     */
+    public static VTable of(List<Class<?>> types, List<String> names, List<Object> values) {
+        return new IVTable(types, names, values);
+    }
+}
