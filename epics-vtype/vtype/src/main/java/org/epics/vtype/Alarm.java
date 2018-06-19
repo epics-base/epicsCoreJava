@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
@@ -89,6 +89,10 @@ public abstract class Alarm {
     }
     
     private static final Alarm NONE = of(AlarmSeverity.NONE, AlarmStatus.NONE, "None");
+    private static final Alarm HIHI = of(AlarmSeverity.MAJOR, AlarmStatus.RECORD, "HIHI");
+    private static final Alarm HIGH = of(AlarmSeverity.MINOR, AlarmStatus.RECORD, "HIGH");
+    private static final Alarm LOW = of(AlarmSeverity.MINOR, AlarmStatus.RECORD, "LOW");
+    private static final Alarm LOLO = of(AlarmSeverity.MAJOR, AlarmStatus.RECORD, "LOLO");
     private static final Alarm NO_VALUE = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "No value");
     private static final Alarm DISCONNECTED = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "Disconnected");
     
@@ -103,6 +107,42 @@ public abstract class Alarm {
      */
     public static Alarm none() {
         return NONE;
+    }
+    
+    /**
+     * Alarm condition for when a value is above the high alarm threshold.
+     * 
+     * @return the HIHI alarm
+     */
+    public static Alarm hihi() {
+        return HIHI;
+    }
+    
+    /**
+     * Alarm condition for when a value is above the high warning threshold.
+     * 
+     * @return the HIGH alarm
+     */
+    public static Alarm high() {
+        return HIGH;
+    }
+    
+    /**
+     * Alarm condition for when a value is below the low warning threshold.
+     * 
+     * @return the LOW alarm
+     */
+    public static Alarm low() {
+        return LOW;
+    }
+    
+    /**
+     * Alarm condition for when a value is below the low alarm threshold.
+     * 
+     * @return the LOLO alarm
+     */
+    public static Alarm lolo() {
+        return LOLO;
     }
     
     /**

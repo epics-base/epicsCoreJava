@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype.json;
 
@@ -78,8 +78,8 @@ class VTypeJsonMapper implements JsonObject {
             return null;
         }
         return Display.of(Range.of(display.getNotNullDouble("lowDisplay"), display.getNotNullDouble("highDisplay")),
-                Range.of(display.getNotNullDouble("lowWarning"), display.getNotNullDouble("highWarning")),
                 Range.of(display.getNotNullDouble("lowAlarm"), display.getNotNullDouble("highAlarm")),
+                Range.of(display.getNotNullDouble("lowWarning"), display.getNotNullDouble("highWarning")),
                 Range.of(display.getNotNullDouble("lowControl"), display.getNotNullDouble("highControl")),
                 display.getString("units"), new DecimalFormat());
     }

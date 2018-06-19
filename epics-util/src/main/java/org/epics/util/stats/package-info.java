@@ -1,9 +1,9 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 /**
- * Contains classes to handle statistical information.
+ * Defines classes to handle statistical information.
  * 
  */
 package org.epics.util.stats;

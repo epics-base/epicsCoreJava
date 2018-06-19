@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
@@ -29,6 +29,7 @@ public abstract class VType {
             VUByte.class,
             VByte.class,
             VEnum.class,
+            VBoolean.class,
             VString.class,
             VDoubleArray.class,
             VFloatArray.class,
@@ -61,6 +62,39 @@ public abstract class VType {
         }
 
         return Object.class;
+    }
+    
+    /**
+     * As {@link #toVType(java.lang.Object)} but throws an exception
+     * if conversion not possible.
+     * 
+     * @param javaObject the value to wrap
+     * @return the new VType value
+     */
+    public static VType toVTypeChecked(Object javaObject) {
+        VType value = toVType(javaObject);
+        if (value == null) {
+            throw new IllegalArgumentException("Value " + value + " cannot be converted to VType.");
+        }
+        return value;
+    }
+    
+    /**
+     * As {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display)} but throws an exception
+     * if conversion not possible.
+     * 
+     * @param javaObject the value to wrap
+     * @param alarm the alarm
+     * @param time the time
+     * @param display the display
+     * @return the new VType value
+     */
+    public static VType toVTypeChecked(Object javaObject, Alarm alarm, Time time, Display display) {
+        VType value = toVType(javaObject, alarm, time, display);
+        if (value == null) {
+            throw new IllegalArgumentException("Value " + value + " cannot be converted to VType.");
+        }
+        return value;
     }
     
     /**
@@ -114,7 +148,7 @@ public abstract class VType {
         } else if (javaObject instanceof String) {
             return VString.of((String) javaObject, alarm, time);
         } else if (javaObject instanceof Boolean) {
-            return null;//newVBoolean((Boolean) javaObject, alarm, time);
+            return VBoolean.of((Boolean) javaObject, alarm, time);
         } else if (javaObject instanceof byte[]
                 || javaObject instanceof short[]
                 || javaObject instanceof int[]

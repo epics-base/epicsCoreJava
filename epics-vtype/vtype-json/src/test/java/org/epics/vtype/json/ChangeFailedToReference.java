@@ -1,3 +1,7 @@
+/**
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
+ */
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates

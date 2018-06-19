@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
@@ -15,13 +15,13 @@ import org.epics.util.stats.Range;
 final class IDisplay extends Display {
 
     private final Range displayRange;
-    private final Range warningRange;
     private final Range alarmRange;
+    private final Range warningRange;
     private final Range controlRange;
     private final String unit;
     private final NumberFormat format;
 
-    public IDisplay(Range displayRange, Range warningRange, Range alarmRange,
+    public IDisplay(Range displayRange, Range alarmRange, Range warningRange,
             Range controlRange, String unit, NumberFormat format) {
         VType.argumentNotNull("displayRange", displayRange);
         VType.argumentNotNull("warningRange", warningRange);

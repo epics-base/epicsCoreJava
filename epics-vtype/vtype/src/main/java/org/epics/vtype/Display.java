@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
@@ -64,6 +64,32 @@ public abstract class Display {
      * @return the default format for all values
      */
     public abstract NumberFormat getFormat();
+    
+        
+    /**
+     * Alarm based on the value and the display ranges.
+     * 
+     * @param value the value
+     * @return the new alarm
+     */
+    public Alarm newAlarmFor(Number value) {
+        double newValue = value.doubleValue();
+        // Calculate new AlarmSeverity, using display ranges
+        AlarmSeverity severity = AlarmSeverity.NONE;
+        String status = "NONE";
+        if (newValue <= getAlarmRange().getMinimum()) {
+            return Alarm.lolo();
+        } else if (newValue >= getAlarmRange().getMaximum()) {
+            return Alarm.hihi();
+        } else if (newValue <= getWarningRange().getMinimum()) {
+            return Alarm.low();
+        } else if (newValue >= getWarningRange().getMaximum()) {
+            return Alarm.high();
+        }
+        
+        return Alarm.none();
+    }
+
 
     @Override
     public final boolean equals(Object obj) {
@@ -96,6 +122,11 @@ public abstract class Display {
         hash = 59 * hash + Objects.hashCode(getControlRange());
         return hash;
     }
+
+    @Override
+    public final String toString() {
+        return "Display[units: " + getUnit() + " disp: " + getDisplayRange() + " alarm: " + getAlarmRange() + " warn: " + getWarningRange() + " ctrl: " + getControlRange() + " format: " + getFormat() + "]";
+    }
     
     /**
      * Creates a new display.
@@ -108,16 +139,36 @@ public abstract class Display {
      * @param numberFormat the preferred number format
      * @return a new display
      */
-    public static Display of(final Range displayRange, final Range warningRange,
-            final Range alarmRange, final Range controlRange,
-            final String units, final NumberFormat numberFormat) {
-        return new IDisplay(displayRange, warningRange, alarmRange,
+    public static Display of(final Range displayRange, final Range alarmRange, final Range warningRange,
+            final Range controlRange, final String units, final NumberFormat numberFormat) {
+        return new IDisplay(displayRange, alarmRange, warningRange,
                 controlRange, units, numberFormat);
     }
     
+    // TODO: maybe this can be configured (injected through SPI?)
+    private static final NumberFormat DEFAULT_NUMBERFORMAT = new DecimalFormat();
+    
     private static final Display DISPLAY_NONE = of(Range.undefined(),
             Range.undefined(), Range.undefined(), Range.undefined(), 
-            "", new DecimalFormat());
+            defaultUnits(), DEFAULT_NUMBERFORMAT);
+
+    /**
+     * The default number format for number display.
+     * 
+     * @return a number format
+     */
+    public static NumberFormat defaultNumberFormat() {
+        return DEFAULT_NUMBERFORMAT;
+    }
+
+    /**
+     * The default unit string.
+     * 
+     * @return an empty string
+     */
+    public static String defaultUnits() {
+        return "";
+    }
     
     /**
      * Empty display information.

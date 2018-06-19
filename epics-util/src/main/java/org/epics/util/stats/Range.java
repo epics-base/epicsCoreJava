@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.stats;
 
@@ -76,6 +76,19 @@ public final class Range {
     public double normalize(double value) {
         return (value - getMinimum()) / (getMaximum() - getMinimum());
     }
+    
+    /**
+     * Takes a normalized value and returns a proportional
+     * value within the range. It performs a linear
+     * transformation where 0 becomes the minimum value of the range while
+     * 1 becomes the maximum.
+     * 
+     * @param value a value
+     * @return the value transformed based on the range
+     */
+    public double rescale(double value) {
+        return getMinimum() + value * (getMaximum() - getMinimum());
+    }
 
     /**
      * Determines whether the value is contained by the range or not.
@@ -128,6 +141,24 @@ public final class Range {
                 return other;
             }
         }
+    }
+
+    /**
+     * Returns a new range with the same center value and width equal to the
+     * original width multiplied by the given factor.
+     * 
+     * @param factor the multiplicative factor to resize the range width
+     * @return a new range
+     */
+    public Range shrink(double factor) {
+        if (this == UNDEFINED) {
+            return UNDEFINED;
+        }
+        
+        double center = (min + max) / 2;
+        double width = max - min;
+        
+        return Range.of(center - width * factor / 2, center + width * factor / 2);
     }
     
     /**

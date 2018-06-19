@@ -1,6 +1,6 @@
 /**
- * Copyright (C) 2010-14 diirt developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.stats;
 
@@ -206,4 +206,24 @@ public class RangeTest {
         assertThat(range2.combine(range1), sameInstance(range2));
     }
     
+    @Test
+    public void shrink1() {
+        assertThat(Range.of(-10, 10).shrink(0.5), equalTo(Range.of(-5, 5)));
+        assertThat(Range.of(0, 128).shrink(0.125), equalTo(Range.of(56, 72)));
+        assertThat(Range.of(0, 100).shrink(0.1), equalTo(Range.of(45, 55)));
+        assertThat(Range.of(0, 100).shrink(0), equalTo(Range.of(50, 50)));
+        assertThat(Range.of(0, 100).shrink(-1), equalTo(Range.of(100, 0)));
+        assertThat(Range.of(0, 200).shrink(2), equalTo(Range.of(-100, 300)));
+        assertThat(Range.undefined().shrink(10), equalTo(Range.undefined()));
+    }
+    
+    @Test
+    public void rescale1() {
+        assertThat(Range.of(0, 10).rescale(0.0), equalTo(00.0));
+        assertThat(Range.of(0, 10).rescale(0.5), equalTo(5.0));
+        assertThat(Range.of(0, 10).rescale(1.0), equalTo(10.0));
+        assertThat(Range.of(-10, 10).rescale(0.0), equalTo(-10.0));
+        assertThat(Range.of(-10, 10).rescale(0.5), equalTo(0.0));
+        assertThat(Range.of(-10, 10).rescale(1.0), equalTo(10.0));
+    }
 }
