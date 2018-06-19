@@ -11,3 +11,6 @@ buildNumber.properties
 nbactions.xml
 .settings
 .project
+
+# For all you Mac OS users out there
+**/.DS_Store

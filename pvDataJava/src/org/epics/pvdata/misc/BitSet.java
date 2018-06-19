@@ -214,7 +214,6 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param lb a long buffer containing a little-endian representation
      *        of a sequence of bits between its position and limit, to be
      *        used as the initial bits of the new bit set
-     * @return the new bit set
      * @return a new bit set containing all the bits in the given long buffer between its position and limit
      * @since 1.7
      */
@@ -462,11 +461,11 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         final int wordIndex = wordIndex(bitIndex);
         final long mask = 1L << bitIndex;
         final boolean retVal = (wordIndex < wordsInUse) && ((words[wordIndex] & mask) != 0);
-        
+
         expandTo(wordIndex);
 
         words[wordIndex] |= mask; // Restores invariants
-        
+
         return retVal;
     }
 
@@ -478,11 +477,11 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         // we ensure that words array size is adequate (and not wordsInUse to ensure capacity to the future)
         if (src.words.length > this.words.length)
             this.words = new long[src.words.length];
-        
+
         System.arraycopy(src.words, 0, this.words, 0, src.wordsInUse);
         this.wordsInUse = src.wordsInUse;
     }
-    
+
     /**
      * Sets the bit at the specified index to the specified value.
      *
@@ -950,12 +949,12 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
             	words = Arrays.copyOf(words, inUse);
             wordsInUse = inUse;
         }
-        
+
         // Perform logical AND on words in common
         for (int i = 0; i < inUse; i++)
             words[i] |= (set1.words[i] & set2.words[i]);
     }
-    
+
     /**
      * Performs a logical <b>OR</b> of this bit set with the bit set
      * argument. This bit set is modified so that a bit in it has the
@@ -1219,7 +1218,7 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         b.append('}');
         return b.toString();
     }
-    
+
     /**
      * Get long[] that represents this BitSet.
      * @return long[] that represts this BitSet.
@@ -1228,9 +1227,9 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
     {
         return words;
     }
-    
+
     /**
-     * NOTE: word is atomic unit here; some bytes might be saved, but it's not worth it. 
+     * NOTE: word is atomic unit here; some bytes might be saved, but it's not worth it.
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
     @Override
@@ -1244,12 +1243,12 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
             final int maxIndex = Math.min(wordsInUse, i + spaceLeft);
             for (; i < maxIndex; i++)
                 buffer.putLong(words[i]);
-            
+
             if (i < wordsInUse)
                 flusher.flushSerializeBuffer();
         }
         */
-        
+
         int n = wordsInUse;
         if (n == 0) {
             SerializeHelper.writeSize(0, buffer, flusher);
@@ -1258,14 +1257,14 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
         int len = 8 * (n-1);
         for (long x = words[n - 1]; x != 0; x >>>= 8)
             len++;
-        
+
          SerializeHelper.writeSize(len, buffer, flusher);
         flusher.ensureBuffer(len);
 
         n = len / 8;
         for (int i = 0; i < n; i++)
             buffer.putLong(words[i]);
-        
+
         if (n < wordsInUse)
             for (long x = words[wordsInUse - 1]; x != 0; x >>>= 8)
                 buffer.put((byte) (x & 0xff));
@@ -1278,29 +1277,29 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 
         final int bytes = SerializeHelper.readSize(buffer, control);    // in bytes
-        
+
         wordsInUse = (bytes + 7) / 8;
         if (wordsInUse > words.length)
             words = new long[wordsInUse];
 
         if (wordsInUse == 0)
             return;
-        
+
         control.ensureData(bytes);
-        
+
         int i = 0;
         final int longs = bytes / 8;
         while (i < longs)
             words[i++] = buffer.getLong();
-        
+
         for (int j = i; j < wordsInUse; j++)
             words[j] = 0;
-        
+
         for (int remaining = (bytes - longs * 8), j = 0; j < remaining; j++)
             words[i] |= (buffer.get() & 0xffL) << (8 * j);
-        
+
         /*
-        
+
         wordsInUse = SerializeHelper.readSize(buffer, control);
         if (wordsInUse > words.length)
             words = new long[wordsInUse];

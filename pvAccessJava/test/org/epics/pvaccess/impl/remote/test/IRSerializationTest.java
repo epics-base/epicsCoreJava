@@ -11,11 +11,17 @@ import junit.framework.TestCase;
 
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvaccess.impl.remote.IntrospectionRegistry;
+import org.epics.pvaccess.util.BooleanHolder;
+import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
+import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.SerializableControl;
+
+import static org.junit.Assert.*;
+
 
 /**
  * JUnit test for IR supported serialization.
@@ -103,6 +109,22 @@ public class IRSerializationTest extends TestCase {
 		PVField pvField = PVFactory.getPVDataCreate().createPVField(field);
 		((PVStructure)pvField).getPVFields()[2].deserialize(databuffer, ic);
 		System.out.println(pvField);
+	}
+	
+	public void testRegisterIntrospectionInterface() {
+		
+		IntrospectionRegistry introspectionRegistry =
+				new IntrospectionRegistry();
+		
+		Field field1 = FieldFactory.getFieldCreate().createScalar(ScalarType.pvDouble);
+		
+		BooleanHolder existing = new BooleanHolder(true);
+		
+		short key = introspectionRegistry.registerIntrospectionInterface(field1, existing);
+		
+		assertEquals(1, key);
+		assertFalse(existing.value);
+		
 	}
 	
 }

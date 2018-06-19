@@ -15,16 +15,17 @@
 package org.epics.pvaccess.impl.remote;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.epics.pvaccess.PVFactory;
-import org.epics.pvaccess.util.ShortHashMap;
+import org.epics.pvaccess.util.BooleanHolder;
 import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.Field;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.Type;
-import org.omg.CORBA.BooleanHolder;
-import org.omg.CORBA.ShortHolder;
+
 
 
 /**
@@ -35,7 +36,8 @@ import org.omg.CORBA.ShortHolder;
  */
 public final class IntrospectionRegistry {
 
-	protected ShortHashMap registry = new ShortHashMap();
+	protected Map<Short, Field> registry = 
+			new HashMap<>();
 	protected short pointer;
 	
 	public IntrospectionRegistry()
@@ -58,7 +60,7 @@ public final class IntrospectionRegistry {
 	 */
 	public Field getIntrospectionInterface(short id)
 	{
-		return (Field)registry.get(id);
+		return registry.get(id);
 	}
 
 	/**
@@ -74,7 +76,7 @@ public final class IntrospectionRegistry {
 	/**
 	 * Private helper variable (optimization).
 	 */
-	private ShortHolder shortHolder = new ShortHolder();
+	private Short shortHolder = Short.valueOf((short)0);
 	
 	/**
 	 * Register introspection interface and get it's ID. Always OUTGOING.
@@ -85,11 +87,10 @@ public final class IntrospectionRegistry {
 	 */
 	public short registerIntrospectionInterface(Field field, BooleanHolder existing)
 	{
-		// TODO this is slow
-		if (registry.contains(field, shortHolder))
-		{
+		Field potentiallyExistingField = registry.get(shortHolder);
+		if(potentiallyExistingField != null && potentiallyExistingField.equals(field)) {
 			existing.value = true;
-			return shortHolder.value;
+			return shortHolder;
 		}
 		else
 		{

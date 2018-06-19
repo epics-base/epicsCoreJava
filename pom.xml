@@ -20,7 +20,7 @@
         <epics-pvdatabase.version>4.3.0-SNAPSHOT</epics-pvdatabase.version>
         <jca.version>2.3.7-SNAPSHOT</jca.version>
         <!-- Versions of examples bundled with Core -->
-        
+
         <!-- Name of javadoc overview page -->
         <mainpage.name>${project.name}</mainpage.name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -106,6 +106,14 @@
             <name>Gregory White</name>
             <email>greg@slac.stanford.edu</email>
             <organization>SLAC</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <name>Georg Weiss</name>
+            <email>georgweiss@esss.se</email>
+            <organization>European Spallation Source</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -263,7 +271,7 @@
                     <execution>
                         <id>bundle-manifest</id>
                         <phase>process-classes</phase>
-                        <goals>    
+                        <goals>
                             <goal>manifest</goal>
                         </goals>
                     </execution>
@@ -274,9 +282,9 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
                 <configuration>
-                    <archive>  
+                    <archive>
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive> 
+                    </archive>
                 </configuration>
             </plugin>
 
@@ -308,7 +316,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>3.0.1</version>
                 <configuration>
                     <overview>documentation/${mainpage.name}.html</overview>
                 </configuration>
@@ -322,16 +330,16 @@
                 </executions>
             </plugin>
 
-            <plugin> 
-                <artifactId>maven-deploy-plugin</artifactId> 
-                <version>2.8.2</version> 
-                <dependencies> 
-                    <dependency> 
-                        <groupId>org.apache.maven.wagon</groupId> 
-                        <artifactId>wagon-ssh</artifactId> 
-                        <version>2.8</version> 
-                    </dependency> 
-                </dependencies> 
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-ssh</artifactId>
+                        <version>2.8</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
@@ -351,7 +359,7 @@
 
     <profiles>
 
-        <profile> 
+        <profile>
             <id>with-examples</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -384,6 +392,46 @@
             </build>
         </profile>
 
+        <profile>
+    			<id>java-9+</id>
+    			<activation>
+    				<jdk>[9,)</jdk>
+    			</activation>
+          <modules>
+              <module>directoryService</module>
+              <module>exampleJava</module>
+              <module>bundleJava</module>
+          </modules>
+    			<build>
+    				<plugins>
+    					<plugin>
+    						<groupId>org.apache.maven.plugins</groupId>
+    						<artifactId>maven-javadoc-plugin</artifactId>
+    						<configuration>
+    							<overview>documentation/${mainpage.name}.html</overview>
+    						</configuration>
+    						<dependencies>
+    							<dependency>
+    								<groupId>org.apache.commons</groupId>
+    								<artifactId>commons-lang3</artifactId>
+    								<version>3.7</version>
+    							</dependency>
+    						</dependencies>
+    						<executions>
+    							<execution>
+    								<id>attach-javadocs</id>
+    								<goals>
+    									<goal>jar</goal>
+    								</goals>
+    								<configuration>
+    									<additionalOptions>-html5</additionalOptions>
+    								</configuration>
+    							</execution>
+    						</executions>
+    					</plugin>
+    				</plugins>
+    			</build>
+    		</profile>
     </profiles>
 
 </project>

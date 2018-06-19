@@ -45,15 +45,15 @@
   <p class="copyright">This product is made available subject to acceptance of the <a
 href="http://epics-pvdata.sourceforge.net/LICENSE.html">EPICS open source
 license.</a></p>
-<hr />  
+<hr>
 </div>
 
 <h2 class="nocount">Abstract</h2>
 
-<p>pvDataJava is a computer software package for the efficient 
+<p>pvDataJava is a computer software package for the efficient
 storage, access, and communication, of structured data. It is specifically the
 Java implementation of pvData, which is one part of the set of related products in the EPICS
-V4 control system programming environment:<br />
+V4 control system programming environment:<br>
 <a href="http://epics-pvdata.sourceforge.net/relatedDocumentsV4.html">relatedDocumentsV4.html</a>
 </p>
 
@@ -426,9 +426,9 @@ public interface FieldBuilder
     public FieldBuilder addArray(String name, Field element);
     public Structure createStructure();
     public Union createUnion();
-    FieldBuilder addNestedStructure(String name); 
+    FieldBuilder addNestedStructure(String name);
     FieldBuilder addNestedUnion(String name);
-    FieldBuilder addNestedStructureArray(String name); 
+    FieldBuilder addNestedStructureArray(String name);
     FieldBuilder addNestedUnionArray(String name);
     FieldBuilder endNested();
 }
@@ -456,7 +456,7 @@ public interface FieldBuilder
     PVUnion createPVUnion(Union union);
     PVUnion createPVVariantUnion();
     PVUnion createPVUnion(PVUnion unionToClone);
-	
+
     PVStructureArray createPVStructureArray(Structure structure);
     PVUnionArray createPVUnionArray(Union union);
     PVField[] flattenPVStructure(PVStructure pvStructure);
@@ -635,7 +635,7 @@ where
       <dd>Align buffer.Note that this takes care only current buffer alignment. If streaming protocol is used,
         care must be taken that entire stream is aligned.</dd>
    <dt>cachedSerialize</dt>
-      <dd>Serialize <code>Field</code> instance via cache.</dd> 
+      <dd>Serialize <code>Field</code> instance via cache.</dd>
 </dl>
 <pre>
 interface DeserializableControl {
@@ -652,12 +652,12 @@ where
       <dd>Align buffer.Note that this takes care only current buffer alignment. If streaming protocol is used,
         care must be taken that entire stream is aligned.</dd>
    <dt>cachedDeserialize</dt>
-      <dd>Deserialize <code>Field</code> instance via cache.</dd> 
+      <dd>Deserialize <code>Field</code> instance via cache.</dd>
 </dl>
 <pre>
 interface SerializableArray extends Serializable {
     void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count);
-}       
+}
 </pre>
 where
 <dl>
@@ -684,7 +684,7 @@ where
 Reflection consists of the following:</p>
 <dl>
   <dt>Field</dt>
-    <dd>A <code>Field</code> has an ID and a type. It can be converted to a string. 
+    <dd>A <code>Field</code> has an ID and a type. It can be converted to a string.
         The format is the metadata format
         described in the overview.</dd>
   <dt>Scalar</dt>
@@ -711,14 +711,14 @@ Reflection consists of the following:</p>
       interfaces. A factory is provided to create a <code>FieldCreate</code>.</dd>
 </dl>
 <h5>Field</h5>
-<pre>    
+<pre>
 interface Field extends Serializable {
     String getID();
     Type getType();
     void toString(StringBuilder buf));
     void toString(StringBuilder buf,int indentLevel);
     String toString();
-} 
+}
 </pre>
 where
 <dl>
@@ -902,7 +902,7 @@ where
      interface for each array element.</dd>
    <dt>createUnionArray</dt>
       <dd>Return a <code>UnionArray</code> with the specified introspection interface.</dd>
-   <dt>createVariantUnionArray</dt> 
+   <dt>createVariantUnionArray</dt>
        <dd>Return a <code>UnionArray</code> of variant union elements.</dd>
    <dt>createStructure</dt>
      <dd>Return a <code>Structure</code>. There are two methods.
@@ -961,9 +961,9 @@ public interface FieldBuilder
     public FieldBuilder addArray(String name, Field element);
     public Structure createStructure();
     public Union createUnion();
-    FieldBuilder addNestedStructure(String name); 
+    FieldBuilder addNestedStructure(String name);
     FieldBuilder addNestedUnion(String name);
-    FieldBuilder addNestedStructureArray(String name); 
+    FieldBuilder addNestedStructureArray(String name);
     FieldBuilder addNestedUnionArray(String name);
     FieldBuilder endNested();
 }
@@ -1019,8 +1019,7 @@ public interface FieldBuilder
       This is followed by calls to other methods and ended by a call to <code>endNested</code>.
      </dd>
   <dt>endNested</dt>
-     <dd>
-     </dd>
+     <dd>&nbsp;</dd>
 </dl>
 
 
@@ -1058,7 +1057,7 @@ where
 <h4>StatusCreate</h4>
 <pre>
 interface StatusCreate {
-    Status getStatusOK(); 
+    Status getStatusOK();
     Status createStatus(StatusType type, String message, Throwable cause);
     Status deserializeStatus(ByteBuffer buffer, DeserializableControl control);
 }
@@ -1092,15 +1091,15 @@ interface Requester {
 
 <p>where</p>
 <dl>
-  <dt></dt>
+  <dt>&nbsp;</dt>
   <dt>MessageType</dt>
     <dd>Type of message.</dd>
   <dt>Requester</dt>
-    <dd>The default implementation is: 
+    <dd>The default implementation is:
       <ul>
-        <li>getRequesterName<br />
+        <li>getRequesterName<br>
           This is the full field name concatenated to the record name.</li>
-        <li>message<br />
+        <li>message<br>
           For the default implementation, <code>PVField</code> prepends the full field name
           to the message and calls <code>PVRecord.message</code>. The default implementation
           for <code>PVRecord</code> either displays the message on stdout or stderr or gives
@@ -1174,7 +1173,7 @@ This includes the top-level structure itself.
       <code>PVStructure</code>.</dd>
   <dt>postPut</dt>
     <dd>If a <code>PostHandler</code> is registered it is called otherwise no action is
-      taken.<br />
+      taken.<br>
      <b>NOTE: </b>The implementation  of the various data interfaces automatically
       call <code>postPut</code> when a field is changed. However this is not true
       for a subField of a <code>PVUnion</code>, <code>PVUnionArray</code>, or <code>PVStructureArray</code>.
@@ -1414,7 +1413,7 @@ It should <b>not</b> used except for immutable arrays.
 </p>
 <p><code>shareData</code> results in the <code>PVArray</code> using the primitive array that is passed to
 this method. This is most useful for immutable arrays. In this case the caller
-must set the <code>PVArray</code> to be immutable. If the <code>PVArray</code> is not immutable then 
+must set the <code>PVArray</code> to be immutable. If the <code>PVArray</code> is not immutable then
 the application is responsibility for coordinating access to the array.
 This violates the principle that objects should not expose their internal data but
 is important for immutable arrays. For example pvData defines
@@ -1653,12 +1652,12 @@ interfaces. A factory is provided that creates <code>PVDataCreate</code>.</p>
     PVUnion createPVUnion(Union union);
     PVUnion createPVVariantUnion();
     PVUnion createPVUnion(PVUnion unionToClone);
-	
+
     PVStructureArray createPVStructureArray(Structure structure);
     PVUnionArray createPVUnionArray(Union union);
     PVField[] flattenPVStructure(PVStructure pvStructure);
 }</pre>
-where 
+where
 <dl>
   <dt>createPVField</dt>
     <dd>The <code>PVField</code> is created reusing the <code>Field</code> interface. Two methods are
@@ -1736,14 +1735,14 @@ Thus the source and target share the same primitive array.</p>
     megabyte array to be converted to a string expect a lot of output.</li>
   <li>Conversion from a string to a scalar type.</li>
   <li>Conversion from an array of strings to an array of scalar types.</li>
-  <li>Copy between the following types of scalar PVs 
+  <li>Copy between the following types of scalar PVs
     <ul>
       <li>Numeric type to another numeric type</li>
       <li>Both have the same type.</li>
       <li>Either is a string</li>
     </ul>
   </li>
-  <li>Copy between <code>PVArray</code>s that satisfy one of the following. 
+  <li>Copy between <code>PVArray</code>s that satisfy one of the following.
     <ul>
       <li>Numeric to numeric</li>
       <li>Both have the same type.</li>
@@ -2048,7 +2047,7 @@ PVDouble pvValue = pvDataCreate.createPVScalar(ScalarType.pvDouble);
 </pre>
 
 <p>Create a structure.</p>
-<pre>    
+<pre>
 FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
 
@@ -2172,7 +2171,7 @@ general purpose clients.</p>
     <dd>This is normally defined since most general purpose clients access this
       field. All other fields in the structure support or describe the value
       field. The type can any supported type but is usually one of the
-      following: 
+      following:
       <dl>
         <dt>scalar</dt>
           <dd>Any of the scalar types.</dd>
@@ -2521,7 +2520,7 @@ structure control
     double minStep
 </pre>
 <h5>Control</h5>
-The java definition for Control is: 
+The java definition for Control is:
 <pre>class Control {
     Control();
     double getLow();
@@ -2856,8 +2855,8 @@ standard Jave implementation does not allow.</p>
 currently has only one method:</p>
 <dl>
   <dt>compress</dt>
-    <dd>Compress the bits in a <code>BitSet</code> related to a structure.<br />
-      For each structure: 
+    <dd>Compress the bits in a <code>BitSet</code> related to a structure.<br>
+      For each structure:
       <ol>
         <li>If the bit for the structure is set then the bit for all subfields
           of the structure are cleared. </li>
@@ -2944,7 +2943,7 @@ public enum ThreadPriority {
     high,
     higher,
     highest;
-    
+
     public static final int[] javaPriority;
     public int getJavaPriority();
     public static int getJavaPriority(ThreadPriority threadPriority);
@@ -3007,7 +3006,7 @@ public interface Executor {
 public class ExecutorFactory {
     static public Executor create(String name,ScanPriority priority);
 }</pre>
-where 
+where
 <dl>
   <dt>createNode</dt>
 <dd>Create a ExecutorNode that can be passed to execute.</dd>
@@ -3061,7 +3060,7 @@ than the length of the current <code>LinkNode</code> array.</p>
 public interface LinkedListNode&lt;T&gt; {
     public T getObject();
     boolean isOnList();
-} 
+}
 </pre>
 <h4>LinkedList</h4>
 <pre>
@@ -3157,10 +3156,10 @@ synchronized(linkedList) {
 <p>This provides a general purpose timer. It provides the following features
 not provided by <code>java.util.Timer</code> and <code>java.util.TimerTask</code>:</p>
 <ol>
-  <li>Priority<br />
+  <li>Priority<br>
     The java.util implementation does not allow the user to specify the
     priority of the timer thread. This implementation does.</li>
-  <li>TimerNode<br />
+  <li>TimerNode<br>
     A java.util.TimerTask is not reusable. Once a <code>TimerTask</code> has been canceled
     or a delay <code>TimerTask</code> has run, the <code>TimerTask</code> can not be reused. Instead a
     new <code>TimerTask</code> must be created. A <code>TimerNode</code> can be reused.</li>
@@ -3387,7 +3386,7 @@ It is intended for use by pvAccess and by channel providers.
 It is provided with this project because the code depends only on
 pvData itself.
 </p>
-<p><b>copy</b> provides the ability to create a structure that has 
+<p><b>copy</b> provides the ability to create a structure that has
 a copy of an arbitrary subset of the fields in an existing top level
 structure. In addition it allows global options and field specific options.
 It has two main components: <b>createRequest</b> and <b>pvCopy</b>.
@@ -3410,10 +3409,10 @@ See the developerGuide for details.
    <dt>createRequest</dt>
      <dd>
       The Channel create methods in pvAccess all have an argument
-      <b>PVStructure pvRequest</b>.<br />
+      <b>PVStructure pvRequest</b>.<br>
       Given an ascii string createRequest creates a PVStructure that provides
       a pvData representation of the information from the ascii string.
-      It is this structure that can be passed to the channel create methods.<br />
+      It is this structure that can be passed to the channel create methods.<br>
       The information in a pvRequest selects an arbitrary subset of the
       fields in a top level structure that resides in the server.
       In addition options can be specified. Both global and field specific
@@ -3424,7 +3423,7 @@ See the developerGuide for details.
      It provides client specific code that manages a copy of an arbitrary
      subset of the fields in a top level structure that resides in the
      provider. It also allows provider access to options specified
-     by the client.<br />
+     by the client.<br>
      pvCopy also provides filter plugin support.
      </dd>
 </dl>
@@ -3432,7 +3431,7 @@ See the developerGuide for details.
 <h3>createRequest</h3>
 <p>This is mainly used by pvAccess clients. Given a request string it creates
 a pvRequest structure that can be passed to the pvAccess create methods.
-In turn pvAccess passes the pvRequest to a local channel provider which 
+In turn pvAccess passes the pvRequest to a local channel provider which
 then passes it to pvCopy.
 </p>
 <p>The definition of the public members is:</p>
@@ -3503,13 +3502,13 @@ where
        <b>PVCopyTraverseMasterCallback</b> is a callback which must
        be implemented by the code that uses pvCopy, normally
        the channel provider. It has the single method <b>nextMasterPVField</b>
-       <br />
+       <br>
        <b>nextMasterPVField</b> is called for each field in the master
        as a result of a call to <b>traverseMaster</b>.
      </dd>
    <dt>create</dt>
       <dd>
-        This is the method for creating a PVCopy instance.<br/>
+        This is the method for creating a PVCopy instance.<br>
         <dl>
            <dt>pvMaster</dt>
              <dd>the top-level structure managed by the server.</dd>
@@ -3574,13 +3573,13 @@ where
       <dd>
        For each set bit in bitSet set the field in <code>pvMaster</code> to the value
       of the corresponding field in <code>copyPVStructure</code>.
-      
+
       </dd>
    <dt>getOptions</dt>
       <dd>
        Get the options for the field at the specified offset.
       A NULL is returned if no options were specified for the field.
-      If options were specified, the returned<code>PVStructure</code> is 
+      If options were specified, the returned<code>PVStructure</code> is
       a structure with a set of <code>PVString</code> subfields that specify name,value
       pairs. name is the subField name and value is the subField value.
       </dd>

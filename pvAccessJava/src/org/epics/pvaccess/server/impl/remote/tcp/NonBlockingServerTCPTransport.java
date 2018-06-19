@@ -20,6 +20,8 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,7 +42,6 @@ import org.epics.pvaccess.impl.security.SecurityPluginMessageTransportSender;
 import org.epics.pvaccess.plugins.SecurityPlugin;
 import org.epics.pvaccess.plugins.SecurityPlugin.SecurityPluginControl;
 import org.epics.pvaccess.plugins.SecurityPlugin.SecuritySession;
-import org.epics.pvaccess.util.IntHashMap;
 import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.pv.PVField;
@@ -63,7 +64,7 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	/**
 	 * Channel table (SID -> channel mapping).
 	 */
-	private IntHashMap channels;
+	private Map<Integer, ServerChannel> channels;
 
 	/**
 	 * Server TCP transport constructor.
@@ -85,9 +86,8 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 		// TODO implement priorities in Reactor... not that user will change it.. still getPriority() must return "registered" priority!
 		
 		final int INITIAL_SIZE = 64;
-		channels = new IntHashMap(INITIAL_SIZE);
+		channels = Collections.synchronizedMap(new HashMap<Integer, ServerChannel>(INITIAL_SIZE));
 		
-		//start();
 	}
 	
 	
@@ -105,32 +105,15 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	 */
 	private void destroyAllChannels() {
 
-		ServerChannel[] channelsArray;
-		synchronized (channels)
-		{
-    		// resource allocation optimization
-    		if (channels.size() == 0)
-    			return;
-
-    		channelsArray = new ServerChannel[channels.size()];
-			channels.toArray(channelsArray);
-
-			channels.clear();
-		}
-
-		context.getLogger().fine("Transport to " + socketAddress + " still has " + channelsArray.length + " channel(s) active and closing...");
 		
-		for (int i = 0; i < channelsArray.length; i++)
-		{
-			try
-			{
-				channelsArray[i].destroy();
-			}
-			catch (Throwable th)
-			{
-				th.printStackTrace();
-			}
+		context.getLogger().fine("Transport to " + socketAddress + " still has " + channels.size() + " channel(s) active and closing...");
+	
+		
+		for(ServerChannel serverChannel : channels.values()) {
+			serverChannel.destroy();
 		}
+		
+		channels.clear();
 	}
 
 	/**
@@ -139,13 +122,13 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	 */
 	public int preallocateChannelSID()
 	{
-		synchronized (channels) {
+		
 			// search first free (theoretically possible loop of death)
 			int sid = lastChannelSID.incrementAndGet();
 			while (channels.containsKey(sid))
 				sid = lastChannelSID.incrementAndGet();
 			return sid;
-		}
+		
 	}
 
 	/**
@@ -164,9 +147,9 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	 */
 	public void registerChannel(int sid, ServerChannel channel)
 	{
-		synchronized (channels) {
+		
 			channels.put(sid, channel);
-		}
+		
 	}
 	
 	/**
@@ -175,9 +158,9 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	 */
 	public void unregisterChannel(int sid)
 	{
-		synchronized (channels) {
+		
 			channels.remove(sid);
-		}
+		
 	}
 
 	/**
@@ -187,19 +170,20 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	 */
 	public ServerChannel getChannel(int sid)
 	{
-		synchronized (channels) {
+		
 			return (ServerChannel)channels.get(sid);
-		}
+		
 	}
 
 	@Override
 	public ServerChannel[] getChannels()
 	{
-		synchronized (channels) {
+		synchronized(channels) {
 			ServerChannel[] sca = new ServerChannel[channels.size()];
-			channels.toArray(sca);
+			channels.values().toArray(sca);
 			return sca;
 		}
+		
 	}
 
 	/**
@@ -208,9 +192,7 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	 */
 	public int getChannelCount() 
 	{
-		synchronized (channels) {
 			return channels.size();
-		}
 	}
 
 	/* (non-Javadoc)

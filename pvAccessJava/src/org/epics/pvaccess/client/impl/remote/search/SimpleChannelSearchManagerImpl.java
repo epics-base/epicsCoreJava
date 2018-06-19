@@ -18,6 +18,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,12 +31,12 @@ import org.epics.pvaccess.impl.remote.TransportSendControl;
 import org.epics.pvaccess.impl.remote.udp.BlockingUDPTransport.InetAddressType;
 import org.epics.pvaccess.impl.remote.utils.GUID;
 import org.epics.pvaccess.util.InetAddressUtil;
-import org.epics.pvaccess.util.IntHashMap;
 import org.epics.pvdata.misc.SerializeHelper;
 import org.epics.pvdata.misc.Timer.TimerCallback;
 import org.epics.pvdata.misc.Timer.TimerNode;
 import org.epics.pvdata.misc.TimerFactory;
 import org.epics.pvdata.pv.Field;
+
 
 /**
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
@@ -64,7 +67,8 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
     /**
      * Set of registered channels.
      */
-    private final IntHashMap channels = new IntHashMap();
+    private final Map<Integer, SearchInstance> channels = 
+    		Collections.synchronizedMap(new HashMap<Integer, SearchInstance>());
     
     private final ArrayList<SearchInstance> immediateSearch = new ArrayList<SearchInstance>(128);
     
@@ -133,7 +137,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 					
 				send(sis);
 			}
-			catch (Throwable th)
+			catch (Exception th)
 			{
 				// should never happen, be we are careful and verbose
 				th.printStackTrace();
@@ -402,17 +406,21 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	
 	private void boost()
 	{
-		synchronized (channels) {
-			if (channels.size() == 0)
-				return;
-
-			// TODO no copy when iterator is supported
-			SearchInstance[] sis = new SearchInstance[channels.size()];
-			channels.toArray(sis);
-			
-			
-			for (SearchInstance si : sis)
-				si.getUserValue().set(BOOST_VALUE);
+//		synchronized (channels) {
+//			if (channels.size() == 0)
+//				return;
+//
+//			// TODO no copy when iterator is supported
+//			SearchInstance[] sis = new SearchInstance[channels.size()];
+//			channels.values().toArray(sis);
+//			
+//			
+//			for (SearchInstance si : sis)
+//				si.getUserValue().set(BOOST_VALUE);
+//		}
+		
+		for(SearchInstance searchInstance : channels.values()) {
+			searchInstance.getUserValue().set(BOOST_VALUE);
 		}
 	}
 	
@@ -431,12 +439,12 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		try 
 		{
 			SearchInstance[] sis;
-			synchronized (channels) {
+			//synchronized (channels) {
 				if (channels.size() == 0)
 					return;
 				sis = new SearchInstance[channels.size()];
-				channels.toArray(sis);
-			}
+				channels.values().toArray(sis);
+			//}
 			
 			send(sis);
 		}
