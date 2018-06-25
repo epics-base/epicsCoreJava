@@ -1,6 +1,9 @@
 sudo: required
 language: java
-jdk: oraclejdk8
+jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk8
 
 env:
   - EPICS_PVA_ADDR_LIST=127.255.255.255
