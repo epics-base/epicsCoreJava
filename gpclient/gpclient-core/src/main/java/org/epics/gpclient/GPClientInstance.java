@@ -5,8 +5,15 @@
 package org.epics.gpclient;
 
 import java.time.Duration;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.vtype.VType;
 import static org.epics.gpclient.GPClient.*;
@@ -29,6 +36,85 @@ public class GPClientInstance {
         this.defaultDataSource = config.defaultDataSource;
         this.defaultMaxRate = config.defaultMaxRate;
         this.defaultNotificationExecutor = config.defaultNotificationExecutor;
+    }
+    
+    /**
+     * Reads the value of the given expression, asking for {@link VType} values.
+     * 
+     * @param channelName the name of the channel
+     * @return the future value
+     */
+    public Future<VType> readOnce(String channelName) {
+        return readOnce(channel(channelName));
+    }
+    
+    /**
+     * Reads the value of the given expression.
+     * 
+     * @param <R> the read type
+     * @param expression the expression to read
+     * @return the future value
+     */
+    public <R> Future<R> readOnce(Expression<R, ?> expression) {
+        final AtomicReference<R> result = new AtomicReference<>();
+        final AtomicReference<Exception> error = new AtomicReference<>();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final PVReader<R> pvReader = read(expression).addReadListener((event, pv) -> {
+            if (event.isType(PVEvent.Type.VALUE)) {
+                result.set(pv.getValue());
+                pv.close();
+                latch.countDown();
+            }
+            if (event.isType(PVEvent.Type.EXCEPTION)) {
+                error.set(event.getException());
+                pv.close();
+                latch.countDown();
+            }
+        }).start();
+        Future<R> future = new Future<R>() {
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning) {
+                boolean toCancel = !pvReader.isClosed();
+                if (toCancel) {
+                    pvReader.close();
+                }
+                return toCancel;
+            }
+
+            @Override
+            public boolean isCancelled() {
+                return pvReader.isClosed() && result.get() == null;
+            }
+
+            @Override
+            public boolean isDone() {
+                return pvReader.isClosed() && result.get() != null;
+            }
+
+            @Override
+            public R get() throws InterruptedException, ExecutionException {
+                latch.await();
+                return getResult();
+            }
+            
+            private R getResult() throws ExecutionException {
+                if (error.get() != null) {
+                    throw new ExecutionException(error.get());
+                } else {
+                    return result.get();
+                }
+            }
+
+            @Override
+            public R get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                if (latch.await(timeout, unit)) {
+                    return getResult();
+                } else {
+                    throw new TimeoutException();
+                }
+            }
+        };
+        return future;
     }
     
     /**

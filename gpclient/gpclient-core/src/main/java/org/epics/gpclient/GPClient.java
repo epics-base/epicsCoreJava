@@ -7,6 +7,7 @@ package org.epics.gpclient;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.epics.gpclient.datasource.DataSourceProvider;
 import org.epics.vtype.VType;
 
@@ -26,6 +27,27 @@ public class GPClient {
     }
     
     private static final GPClientInstance gpClient;
+    
+    /**
+     * Reads the value of the given expression, asking for {@link VType} values.
+     * 
+     * @param channelName the name of the channel
+     * @return the future value
+     */
+    public static Future<VType> readOnce(String channelName) {
+        return gpClient.readOnce(channelName);
+    }
+    
+    /**
+     * Reads the value of the given expression.
+     * 
+     * @param <R> the read type
+     * @param expression the expression to read
+     * @return the future value
+     */
+    public static <R> Future<R> readOnce(Expression<R, ?> expression) {
+        return gpClient.readOnce(expression);
+    }
     
     /**
      * Reads the channel with the given name, asking for {@link VType} values.
