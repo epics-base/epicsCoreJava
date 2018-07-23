@@ -134,9 +134,9 @@ public abstract class ListUShort implements ListNumber, CollectionUShort {
         builder.append("[");
         int i = 0;
         for (; i < size() - 1; i++) {
-            builder.append(getShort(i)).append(", ");
+            builder.append(getInt(i)).append(", ");
         }
-        builder.append(getShort(i)).append("]");
+        builder.append(getInt(i)).append("]");
         return builder.toString();
     }
     

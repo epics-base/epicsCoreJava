@@ -51,4 +51,10 @@ public class ArrayULongTest extends FeatureTestListNumber {
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
     }
+
+    @Test
+    public void toStringOverflow() {
+        ListNumber list = ArrayULong.of(new long[] {-1, 0, 1});
+        assertThat(list.toString(), equalTo("[18446744073709551615, 0, 1]"));
+    }
 }
