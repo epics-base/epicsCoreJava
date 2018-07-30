@@ -12,6 +12,8 @@ import org.epics.pvdata.pv.DeserializableControl;
 import org.epics.pvdata.pv.PVByteArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
+import org.epics.util.array.ArrayByte;
+import org.epics.util.array.CollectionNumbers;
 
 
 /**
@@ -70,6 +72,11 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
     @Override
     public int get(int offset, int len, ByteArrayData data) {
     	return internalGet(offset, len, data);
+    }
+
+    @Override
+    public ArrayByte get() {
+        return CollectionNumbers.unmodifiableListByte(value);
     }
     
     /* (non-Javadoc)

@@ -12,6 +12,8 @@ import org.epics.pvdata.pv.FloatArrayData;
 import org.epics.pvdata.pv.PVFloatArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
+import org.epics.util.array.ArrayFloat;
+import org.epics.util.array.CollectionNumbers;
 
 
 /**
@@ -72,6 +74,11 @@ public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatAr
     @Override
     public int get(int offset, int len, FloatArrayData data) {
     	return internalGet(offset, len, data);
+    }
+
+    @Override
+    public ArrayFloat get() {
+        return CollectionNumbers.unmodifiableListFloat(value);
     }
     
     /* (non-Javadoc)

@@ -12,6 +12,9 @@ import org.epics.pvdata.pv.DoubleArrayData;
 import org.epics.pvdata.pv.PVDoubleArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
+import org.epics.util.array.ArrayDouble;
+import org.epics.util.array.CollectionNumbers;
+import org.epics.util.array.ListNumber;
 
 
 /**
@@ -73,6 +76,11 @@ public class BasePVDoubleArray extends AbstractPVScalarArray implements PVDouble
     public int get(int offset, int len, DoubleArrayData data) {
     	return internalGet(offset, len, data);
     }
+
+    @Override
+    public ArrayDouble get() {
+        return CollectionNumbers.unmodifiableListDouble(value);
+    }
     
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVDoubleArray#put(int, int, double[], int)
@@ -81,7 +89,6 @@ public class BasePVDoubleArray extends AbstractPVScalarArray implements PVDouble
     public int put(int offset, int len, double[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
-
 
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVDoubleArray#shareData(double[])

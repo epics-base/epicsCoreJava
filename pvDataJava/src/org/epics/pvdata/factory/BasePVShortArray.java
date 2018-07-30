@@ -12,6 +12,8 @@ import org.epics.pvdata.pv.PVShortArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
 import org.epics.pvdata.pv.ShortArrayData;
+import org.epics.util.array.ArrayShort;
+import org.epics.util.array.CollectionNumbers;
 
 
 /**
@@ -72,6 +74,11 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
     @Override
     public int get(int offset, int len, ShortArrayData data) {
     	return internalGet(offset, len, data);
+    }
+
+    @Override
+    public ArrayShort get() {
+        return CollectionNumbers.unmodifiableListShort(value);
     }
     
     /* (non-Javadoc)

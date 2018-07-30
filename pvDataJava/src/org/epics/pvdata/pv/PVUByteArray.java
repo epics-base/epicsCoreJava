@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayUByte;
+
 /**
  * Get/put a byte array.
  * Since Java does not support unsigned the actual arguments are signed.
@@ -14,7 +16,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVUByteArray extends PVScalarArray{
+public interface PVUByteArray extends PVNumberArray{
     /**
      * Get values from a <i>PVByteArray</i> and put them into <i>byte[]from</i>.
      *
@@ -30,6 +32,14 @@ public interface PVUByteArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, ByteArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayUByte get();
 
     /**
      * Put values into a <i>PVByteArray</i> from <i>byte[]to</i>.

@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayULong;
+
 /**
  * Get/put a long array.
  * Since Java does not support unsigned the actual arguments are signed.
@@ -14,7 +16,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVULongArray extends PVScalarArray{
+public interface PVULongArray extends PVNumberArray{
     /**
      * Get values from a <i>PVLongArray</i> and put them into <i>long[]to</i>.
      *
@@ -30,6 +32,14 @@ public interface PVULongArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, LongArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayULong get();
 
     /**
      * Put values into a <i>PVLongArray</i> from <i>long[]from</i>.

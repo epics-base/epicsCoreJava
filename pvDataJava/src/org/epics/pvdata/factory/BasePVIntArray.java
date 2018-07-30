@@ -12,6 +12,8 @@ import org.epics.pvdata.pv.IntArrayData;
 import org.epics.pvdata.pv.PVIntArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
+import org.epics.util.array.ArrayInteger;
+import org.epics.util.array.CollectionNumbers;
 
 
 /**
@@ -72,6 +74,11 @@ public class BasePVIntArray extends AbstractPVScalarArray implements PVIntArray
     @Override
     public int get(int offset, int len, IntArrayData data) {
     	return internalGet(offset, len, data);
+    }
+
+    @Override
+    public ArrayInteger get() {
+        return CollectionNumbers.unmodifiableListInt(value);
     }
     
     /* (non-Javadoc)

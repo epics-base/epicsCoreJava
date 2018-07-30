@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayLong;
+
 /**
  * Get/put a long array.
  * The caller must be prepared to get/put the array in chunks.
@@ -12,7 +14,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVLongArray extends PVScalarArray{
+public interface PVLongArray extends PVNumberArray{
     /**
      * Get values from a <i>PVLongArray</i> and put them into <i>long[]to</i>.
      *
@@ -28,6 +30,14 @@ public interface PVLongArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, LongArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayLong get();
 
     /**
      * Put values into a <i>PVLongArray</i> from <i>long[]from</i>.

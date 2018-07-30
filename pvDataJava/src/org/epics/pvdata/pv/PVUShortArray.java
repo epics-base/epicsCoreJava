@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayUShort;
+
 /**
  * Get/put a short array.
  * Since Java does not support unsigned the actual arguments are signed.
@@ -14,7 +16,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVUShortArray extends PVScalarArray{
+public interface PVUShortArray extends PVNumberArray{
     /**
      * Get values from a <i>PVShortArray</i> and put them into <i>short[]to</i>.
      *
@@ -30,6 +32,14 @@ public interface PVUShortArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, ShortArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayUShort get();
 
     /**
      * Put values into a <i>PVShortArray</i> from <i>short[]from</i>.

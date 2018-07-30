@@ -4,6 +4,9 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayDouble;
+import org.epics.util.array.ListNumber;
+
 /**
  * Get/put a double array.
  * The caller must be prepared to get/put the array in chunks.
@@ -12,7 +15,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVDoubleArray extends PVScalarArray{
+public interface PVDoubleArray extends PVNumberArray{
     /**
      * Get values from a <i>PVDoubleArray</i>
      * and put them into <i>double[]to</i>
@@ -29,6 +32,14 @@ public interface PVDoubleArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, DoubleArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayDouble get();
 
     /**
      * Put values into a <i>PVDoubleArray</i> from <i>double[]from</i>
