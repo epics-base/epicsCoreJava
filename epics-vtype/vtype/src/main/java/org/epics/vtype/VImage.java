@@ -53,13 +53,16 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
     public abstract VImageType getVImageType();
 
     /**
-     * Creates a new VImage.
-     *
-     * @param value the value
-     * @param alarm the alarm
-     * @param time the time
-     * @param display the display
-     * @return the new Image
+     * Creates a new VImage. 
+     * 
+     * @param height image height
+     * @param width image width
+     * @param data image data
+     * @param imageDataType image data type
+     * @param vImageType image type
+     * @param alarm alarm information
+     * @param time timestamp
+     * @return
      */
     public static VImage of(int height, int width, final ListNumber data, VImageDataType imageDataType, VImageType vImageType, Alarm alarm, Time time) {
         return new IVImage(height, width, data, imageDataType, vImageType, alarm, time);
