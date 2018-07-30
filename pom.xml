@@ -34,6 +34,9 @@
         <module>pvDatabaseJava</module>
         <module>epics-core</module>
         <module>epics-deploy</module>
+        <module>epics-util</module>
+        <module>epics-vtype</module>
+        <module>gpclient</module>
     </modules>
 
     <organization>
