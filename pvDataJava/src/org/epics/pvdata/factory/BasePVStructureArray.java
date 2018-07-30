@@ -76,12 +76,14 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     @Override
     public int put(int offset, int len, PVStructure[] from, int fromOffset) {
     	
-    	// first check if all the PVStructure-s are of the right type
+    	// first check if the PVStructure-s being written are of the right type
     	Structure elementField = structureArray.getStructure();
-    	for (PVStructure pvs : from)
-    		if (pvs != null && !pvs.getStructure().equals(elementField))
-    			throw new IllegalStateException("element is not a compatible structure");
     	
+    	for (int i = 0; i < len; i++) {
+    	    PVStructure pvs = from[i];
+    	    if (pvs != null && !pvs.getStructure().equals(elementField))
+                throw new IllegalStateException("element is not a compatible structure");
+        }
     	return internalPut(offset, len, from, fromOffset);
     }
 
