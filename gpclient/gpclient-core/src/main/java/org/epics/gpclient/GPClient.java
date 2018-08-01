@@ -170,6 +170,47 @@ public class GPClient {
     }
 
     /**
+     * An expression that allows to directly send/receive values to/from
+     * PVReaders/PVWriters. This can be used for testing purpose or to integrate
+     * data models that do not fit datasources or services.
+     * 
+     * @param <R> the type to read
+     * @param <C> the type to collect
+     * @param <W> the type to write
+     * @param readCollector the read buffer
+     * @param writeCollector the write buffer
+     * @return a new collector expression
+     */
+    public static <R, C, W> CollectorExpression<R, C, W> collector(ReadCollector<C, R> readCollector, WriteCollector<W> writeCollector) {
+        return new CollectorExpression<>(readCollector, writeCollector);
+    }
+
+    /**
+     * An expression that allows to directly send/receive values to/from
+     * PVReaders/PVWriters. This can be used for testing purpose or to integrate
+     * data models that do not fit datasources or services.
+     * 
+     * @param <R> the type to read
+     * @param <C> the type to collect
+     * @param readCollector the read buffer
+     * @return a new collector expression
+     */
+    public static <R, C> CollectorExpression<R, C, Object> collector(ReadCollector<C, R> readCollector) {
+        return collector(readCollector, new WriteCollector<>());
+    }
+
+    /**
+     * An expression that allows to directly send/receive values to/from
+     * PVReaders/PVWriters. This can be used for testing purpose or to integrate
+     * data models that do not fit datasources or services.
+     * 
+     * @return a new collector expression
+     */
+    public static CollectorExpression<VType, VType, Object> collector() {
+        return collector(cacheLastValue(VType.class));
+    }
+
+    /**
      * The default instance of the general purpose client.
      * 
      * @return the default instance
