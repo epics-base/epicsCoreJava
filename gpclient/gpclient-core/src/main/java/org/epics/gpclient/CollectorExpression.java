@@ -8,6 +8,9 @@ package org.epics.gpclient;
  * A {@link ChannelExpression} that exposes its {@link ReadCollector} and {@link WriteCollector}.
  *
  * @author carcassi
+ * @param <R> the type read by the GPClient
+ * @param <C> the type collected into the collector
+ * @param <W> the type written by the GPClient
  */
 public class CollectorExpression<R, C ,W> extends ChannelExpression<R, W> {
     
