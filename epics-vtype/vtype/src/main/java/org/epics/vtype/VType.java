@@ -40,7 +40,9 @@ public abstract class VType {
             VUShortArray.class,
             VShortArray.class,
             VUByteArray.class,
-            VByteArray.class);
+            VByteArray.class,
+            VImage.class, 
+            VTable.class);
 
     /**
      * Returns the type of the object by returning the class object of one
