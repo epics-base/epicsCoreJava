@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.TypeMismatchException;
 import org.epics.gpclient.WriteCollector;
 
 /**
@@ -197,7 +198,7 @@ public abstract class MultiplexedChannelHandler<ConnectionPayload, MessagePayloa
                 if (message == null || cache.getType().isInstance(message)) {
                     cache.updateValue(message);
                 } else {
-                    throw new IllegalArgumentException("Payload " + message + " does not match " + cache.getType().getSimpleName());
+                    throw new TypeMismatchException("Payload " + message + " does not match " + cache.getType().getSimpleName());
                 }
             }
         };
