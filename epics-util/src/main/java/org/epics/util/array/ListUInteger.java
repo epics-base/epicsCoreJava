@@ -133,9 +133,9 @@ public abstract class ListUInteger implements ListNumber, CollectionUInteger {
         builder.append("[");
         int i = 0;
         for (; i < size() - 1; i++) {
-            builder.append(getInt(i)).append(", ");
+            builder.append(getLong(i)).append(", ");
         }
-        builder.append(getInt(i)).append("]");
+        builder.append(getLong(i)).append("]");
         return builder.toString();
     }
     

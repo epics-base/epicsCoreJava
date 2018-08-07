@@ -44,7 +44,7 @@ package org.epics.gpclient;
  * @author carcassi
  * @param <T> the type of the PVReader.
  */
-public interface PVReader<T> {
+public interface PVReader<T> extends AutoCloseable {
 
     /**
      * Returns the current value of the PVReader.

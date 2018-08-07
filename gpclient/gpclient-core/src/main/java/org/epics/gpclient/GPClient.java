@@ -7,6 +7,7 @@ package org.epics.gpclient;
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.epics.gpclient.datasource.DataSourceProvider;
 import org.epics.vtype.VType;
 
@@ -26,6 +27,27 @@ public class GPClient {
     }
     
     private static final GPClientInstance gpClient;
+    
+    /**
+     * Reads the value of the given expression, asking for {@link VType} values.
+     * 
+     * @param channelName the name of the channel
+     * @return the future value
+     */
+    public static Future<VType> readOnce(String channelName) {
+        return gpClient.readOnce(channelName);
+    }
+    
+    /**
+     * Reads the value of the given expression.
+     * 
+     * @param <R> the read type
+     * @param expression the expression to read
+     * @return the future value
+     */
+    public static <R> Future<R> readOnce(Expression<R, ?> expression) {
+        return gpClient.readOnce(expression);
+    }
     
     /**
      * Reads the channel with the given name, asking for {@link VType} values.
@@ -145,6 +167,47 @@ public class GPClient {
      */
     public static Expression<VType, Object> channel(String channelName) {
         return channel(channelName, cacheLastValue(VType.class));
+    }
+
+    /**
+     * An expression that allows to directly send/receive values to/from
+     * PVReaders/PVWriters. This can be used for testing purpose or to integrate
+     * data models that do not fit datasources or services.
+     * 
+     * @param <R> the type to read
+     * @param <C> the type to collect
+     * @param <W> the type to write
+     * @param readCollector the read buffer
+     * @param writeCollector the write buffer
+     * @return a new collector expression
+     */
+    public static <R, C, W> CollectorExpression<R, C, W> collector(ReadCollector<C, R> readCollector, WriteCollector<W> writeCollector) {
+        return new CollectorExpression<>(readCollector, writeCollector);
+    }
+
+    /**
+     * An expression that allows to directly send/receive values to/from
+     * PVReaders/PVWriters. This can be used for testing purpose or to integrate
+     * data models that do not fit datasources or services.
+     * 
+     * @param <R> the type to read
+     * @param <C> the type to collect
+     * @param readCollector the read buffer
+     * @return a new collector expression
+     */
+    public static <R, C> CollectorExpression<R, C, Object> collector(ReadCollector<C, R> readCollector) {
+        return collector(readCollector, new WriteCollector<>());
+    }
+
+    /**
+     * An expression that allows to directly send/receive values to/from
+     * PVReaders/PVWriters. This can be used for testing purpose or to integrate
+     * data models that do not fit datasources or services.
+     * 
+     * @return a new collector expression
+     */
+    public static CollectorExpression<VType, VType, Object> collector() {
+        return collector(cacheLastValue(VType.class));
     }
 
     /**

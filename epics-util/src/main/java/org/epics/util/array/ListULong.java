@@ -136,9 +136,9 @@ public abstract class ListULong implements ListNumber, CollectionULong {
         builder.append("[");
         int i = 0;
         for (; i < size() - 1; i++) {
-            builder.append(getLong(i)).append(", ");
+            builder.append(Long.toUnsignedString(getLong(i))).append(", ");
         }
-        builder.append(getLong(i)).append("]");
+        builder.append(Long.toUnsignedString(getLong(i))).append("]");
         return builder.toString();
     }
     

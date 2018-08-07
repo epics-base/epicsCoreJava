@@ -134,9 +134,9 @@ public abstract class ListUByte implements ListNumber, CollectionUByte {
         builder.append("[");
         int i = 0;
         for (; i < size() - 1; i++) {
-            builder.append(getByte(i)).append(", ");
+            builder.append(getShort(i)).append(", ");
         }
-        builder.append(getByte(i)).append("]");
+        builder.append(getShort(i)).append("]");
         return builder.toString();
     }
     

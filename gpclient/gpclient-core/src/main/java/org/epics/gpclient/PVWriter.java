@@ -17,7 +17,7 @@ package org.epics.gpclient;
  * @param <T> type of the write payload
  * @author carcassi
  */
-public interface PVWriter<T> {
+public interface PVWriter<T> extends AutoCloseable {
     
     /**
      * Writes a new value asynchronously using the default callback. The result
