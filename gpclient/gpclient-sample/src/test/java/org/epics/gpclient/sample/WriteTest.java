@@ -40,27 +40,29 @@ public class WriteTest extends BlackBoxTestBase {
 
     @Test
     public void writeReadOnlyChannel() {
-        PVEventRecorder recorder = new PVEventRecorder();
-        PV<VType, Object> pv = gpClient.readAndWrite("sim://ramp")
-                .addListener(recorder)
-                .start();
-        recorder.wait(1000, anEventOfType(READ_CONNECTION));
-        recorder.wait(1000, anEventOfType(EXCEPTION));
-        assertThat(pv.isConnected(), equalTo(true));
-        assertThat(pv.isWriteConnected(), equalTo(false));
-        assertThat(recorder.getEvents().get(1).getException(), instanceOf(ReadOnlyChannelException.class));
+        for (int i = 0; i < 100; i++) {
+            PVEventRecorder recorder = new PVEventRecorder();
+            PV<VType, Object> pv = gpClient.readAndWrite("sim://ramp")
+                    .addListener(recorder)
+                    .start();
+            recorder.wait(1000, anEventOfType(READ_CONNECTION));
+            recorder.wait(1000, anEventOfType(EXCEPTION));
+            assertThat(pv.isConnected(), equalTo(true));
+            assertThat(pv.isWriteConnected(), equalTo(false));
+            assertThat(recorder.getEvents().get(recorder.getEvents().size() - 1).getException(), instanceOf(ReadOnlyChannelException.class));
+        }
     }
 
     @Test(expected = RuntimeException.class)
     public void writeDisconnectedChannel() {
-        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannel")
-                .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
-                    // Do nothing
-                })
-                .start();
+                PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannel")
+                        .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
+                            // Do nothing
+                        })
+                        .start();
 //        assertThat(pv.isWriteConnected(), equalTo(false));
-        pv.write("Value");
-    }
+                pv.write("Value");
+            }
 
     @Test(expected = RuntimeException.class)
     public void writeDisconnectedChannelAsynch() {
