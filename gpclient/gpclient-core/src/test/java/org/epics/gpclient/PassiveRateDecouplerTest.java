@@ -157,8 +157,10 @@ public class PassiveRateDecouplerTest {
                 log.setDecoupler(decoupler);
                 decoupler.start();
                 decoupler.getUpdateListener().accept(PVEvent.readConnectionEvent());
+                Thread.sleep(50);
+                decoupler.getUpdateListener().accept(PVEvent.readConnectionEvent());
                 decoupler.getUpdateListener().accept(PVEvent.valueEvent());
-                Thread.sleep(100);
+                Thread.sleep(150);
                 decoupler.getUpdateListener().accept(PVEvent.valueEvent());
                 Thread.sleep(1);
                 decoupler.getUpdateListener().accept(PVEvent.valueEvent());
@@ -177,10 +179,11 @@ public class PassiveRateDecouplerTest {
                 Thread.sleep(150);
                 decoupler.stop();
                 // 3 events: connection, first value, last value
-                assertThat(log.getEvents().size(), equalTo(3));
-                assertThat(log.getEvents().get(0).getType(), equalTo(Arrays.asList(PVEvent.Type.READ_CONNECTION, PVEvent.Type.VALUE)));
-                assertThat(log.getEvents().get(1).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE)));
+                assertThat(log.getEvents().size(), equalTo(4));
+                assertThat(log.getEvents().get(0).getType(), equalTo(Arrays.asList(PVEvent.Type.READ_CONNECTION)));
+                assertThat(log.getEvents().get(1).getType(), equalTo(Arrays.asList(PVEvent.Type.READ_CONNECTION, PVEvent.Type.VALUE)));
                 assertThat(log.getEvents().get(2).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE)));
+                assertThat(log.getEvents().get(3).getType(), equalTo(Arrays.asList(PVEvent.Type.VALUE)));
                 return null;
             }
         });

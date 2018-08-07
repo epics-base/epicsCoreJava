@@ -51,4 +51,10 @@ public class ArrayShortTest extends FeatureTestListNumber {
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
     }
+
+    @Test
+    public void toStringOverflow() {
+        ListNumber list = ArrayShort.of(new short[] {-1, 0, 1});
+        assertThat(list.toString(), equalTo("[-1, 0, 1]"));
+    }
 }

@@ -6,6 +6,7 @@ package org.epics.gpclient.sample;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.gpclient.GPClient;
@@ -19,6 +20,16 @@ import org.epics.gpclient.PV;
  * @author carcassi
  */
 public class BasicExamples {
+
+    public static void simpleReadOnce() {
+        Future<VType> value = GPClient.readOnce("sim://noise");
+
+        try {
+            System.out.println("Value " + value.get());
+        } catch (Exception ex) {
+            Logger.getLogger(BasicExamples.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     public static void simpleRead() {
         PVReader<VType> pv = GPClient.read("sim://noise")
@@ -115,6 +126,7 @@ public class BasicExamples {
     }
 
     public static void main(String[] args) {
+        run("Simple read once", BasicExamples::simpleReadOnce);
         run("Simple read", BasicExamples::simpleRead);
         run("Simple read and write", BasicExamples::simpleReadAndWrite);
         run("Connection timeout", BasicExamples::connectionTimeout);

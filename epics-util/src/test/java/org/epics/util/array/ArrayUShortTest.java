@@ -8,8 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import org.epics.util.array.ArrayShort;
-import org.epics.util.array.CollectionNumbers;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -50,5 +48,11 @@ public class ArrayUShortTest extends FeatureTestListNumber {
         ArrayUShort read = (ArrayUShort) inStream.readObject();
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
+    }
+
+    @Test
+    public void toStringOverflow() {
+        ListNumber list = ArrayUShort.of(new short[] {-1, 0, 1});
+        assertThat(list.toString(), equalTo("[65535, 0, 1]"));
     }
 }

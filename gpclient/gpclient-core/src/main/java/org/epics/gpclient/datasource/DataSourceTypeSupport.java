@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.TypeMismatchException;
 
 /**
  * The type support for a datasource. This optional class is provided to help
@@ -42,7 +43,7 @@ public class DataSourceTypeSupport {
         }
         
         if (matchedConverters.size() != 1) {
-            throw new IllegalStateException(formatMessage(cache, connection, matchedConverters));
+            throw new TypeMismatchException(formatMessage(cache, connection, matchedConverters));
         }
         
         return matchedConverters.get(0);

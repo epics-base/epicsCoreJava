@@ -60,7 +60,7 @@ public class PVDirector<R, W> {
     /** Function to write values */
     final Consumer<W> writeFunction;
     /** Creation for stack trace */
-    private final Exception creationStackTrace = new Exception("PV was never closed (stack trace for creation)");
+    private final Exception creationStackTrace = new Exception("Open PV was garbage collected: see stack trace for where it was created");
     /** Used to ignore duplicated errors */
     private final AtomicReference<Notification> lastNotification = new AtomicReference<>();
     /** Maximum rate for notification */
@@ -268,7 +268,7 @@ public class PVDirector<R, W> {
         if (pv != null && !pv.isClosed()) {
             return true;
         } else if (pv == null && closed != true) {
-            log.log(Level.WARNING, "PVReader wasn't properly closed and it was garbage collected. Closing the associated connections...", creationStackTrace);
+            log.log(Level.WARNING, "Open PVReader/Writer was garbage collected: always keep a handle and close it. Disconnecting and cleaning up.", creationStackTrace);
             return false;
         } else {
             return false;

@@ -37,7 +37,7 @@ public abstract class ReadCollector<I, O> {
      * 
      * @param type the type of values collected; can't be null
      */
-    ReadCollector(Class<I> type) {
+    protected ReadCollector(Class<I> type) {
         if (type == null) {
             throw new NullPointerException("Type can't be null");
         }
@@ -71,7 +71,7 @@ public abstract class ReadCollector<I, O> {
      * 
      * @return the new value
      */
-    abstract O getValue();
+    protected abstract O getValue();
     
     /**
      * The current connection state.

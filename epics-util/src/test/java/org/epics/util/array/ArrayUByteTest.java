@@ -51,4 +51,10 @@ public class ArrayUByteTest extends FeatureTestListNumber {
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
     }
+
+    @Test
+    public void toStringOverflow() {
+        ListNumber list = ArrayUByte.of(new byte[] {-1, 0, 1});
+        assertThat(list.toString(), equalTo("[255, 0, 1]"));
+    }
 }

@@ -49,4 +49,10 @@ public class ArrayIntegerTest extends FeatureTestListNumber {
         assertThat(read, not(sameInstance(array)));
         assertThat(read, equalTo(array));
     }
+
+    @Test
+    public void toStringOverflow() {
+        ListNumber list = ArrayInteger.of(new int[] {-1, 0, 1});
+        assertThat(list.toString(), equalTo("[-1, 0, 1]"));
+    }
 }
