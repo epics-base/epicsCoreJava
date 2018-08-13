@@ -46,9 +46,14 @@ public abstract class VType {
 
     /**
      * Returns the type of the object by returning the class object of one
-     * of the VXxx interfaces. The getClass() methods returns the
-     * concrete implementation type, which is of little use. If no
-     * super-interface is found, Object.class is used.
+     * of the VXxx interfaces. As the getClass() methods returns the
+     * concrete implementation type, this method is more useful to create
+     * code that depends on the VType type. The return value is as follows:
+     * <ul>
+     * <li>VXxx.class if the argument is a VType</li>
+     * <li>Object.class if the argument is not a VType</li>
+     * <li>null if the argument is null</li>
+     * </ul>
      * 
      * @param obj an object implementing a standard type
      * @return the type is implementing
@@ -76,7 +81,7 @@ public abstract class VType {
     public static VType toVTypeChecked(Object javaObject) {
         VType value = toVType(javaObject);
         if (value == null) {
-            throw new IllegalArgumentException("Value " + value + " cannot be converted to VType.");
+            throw new IllegalArgumentException("Value " + javaObject + " cannot be converted to VType.");
         }
         return value;
     }
