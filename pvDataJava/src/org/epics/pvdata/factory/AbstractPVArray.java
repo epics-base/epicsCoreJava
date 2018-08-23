@@ -10,6 +10,8 @@ import org.epics.pvdata.pv.Array;
 import org.epics.pvdata.pv.ArrayData;
 import org.epics.pvdata.pv.PVArray;
 import org.epics.pvdata.pv.SerializableControl;
+import org.epics.util.array.CollectionNumbers;
+import org.epics.util.array.ListNumber;
 
 /**
  * Abstract base class for any PVArray field.
@@ -114,6 +116,22 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
         System.arraycopy(from, fromOffset, value, offset, len);
         super.postPut();
         return len;      
+    }
+
+    public void put(int offset, ListNumber list) {
+    	if (super.isImmutable())
+        	throw new IllegalStateException("field is immutable");
+ 
+        int newLength = offset + list.size();
+        if (newLength > length)
+        {
+        	checkLength(newLength);
+        	setCapacity(newLength);
+        	length = newLength;
+        }
+        
+        CollectionNumbers.toList(getValue()).setAll(offset, list);
+        super.postPut();
     }
 
     private void checkLength(int len)

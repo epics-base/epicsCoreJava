@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayUInteger;
+
 /**
  * Get/put a int array.
  * Since Java does not support unsigned the actual arguments are signed.
@@ -14,7 +16,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVUIntArray extends PVScalarArray{
+public interface PVUIntArray extends PVNumberArray{
     /**
      * Get values from a <i>PVIntArray</i> and put them into <i>int[]to</i>.
      *
@@ -30,6 +32,14 @@ public interface PVUIntArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, IntArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayUInteger get();
 
     /**
      * Put values into a <i>PVIntArray</i> from <i>int[]from</i>.

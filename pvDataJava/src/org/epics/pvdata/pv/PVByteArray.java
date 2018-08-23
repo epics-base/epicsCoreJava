@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayByte;
+
 /**
  * Get/put a byte array.
  * The caller must be prepared to get/put the array in chunks.
@@ -12,7 +14,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVByteArray extends PVScalarArray {
+public interface PVByteArray extends PVNumberArray {
     /**
      * Get values from a <i>PVByteArray</i> and put them into <i>byte[]from</i>.
      *
@@ -28,6 +30,14 @@ public interface PVByteArray extends PVScalarArray {
      * array.
      */
     int get(int offset, int length, ByteArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayByte get();
 
     /**
      * Put values into a <i>PVByteArray</i> from <i>byte[]to</i>.

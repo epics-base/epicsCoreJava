@@ -12,6 +12,8 @@ import org.epics.pvdata.pv.LongArrayData;
 import org.epics.pvdata.pv.PVULongArray;
 import org.epics.pvdata.pv.ScalarArray;
 import org.epics.pvdata.pv.SerializableControl;
+import org.epics.util.array.ArrayULong;
+import org.epics.util.array.CollectionNumbers;
 
 
 /**
@@ -72,6 +74,11 @@ public class BasePVULongArray extends AbstractPVScalarArray implements PVULongAr
     @Override
     public int get(int offset, int len, LongArrayData data) {
     	return internalGet(offset, len, data);
+    }
+
+    @Override
+    public ArrayULong get() {
+        return CollectionNumbers.unmodifiableListULong(value);
     }
     
     /* (non-Javadoc)

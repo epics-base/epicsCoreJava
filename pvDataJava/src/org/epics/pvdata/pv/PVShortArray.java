@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayShort;
+
 /**
  * Get/put a short array.
  * The caller must be prepared to get/put the array in chunks.
@@ -12,7 +14,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVShortArray extends PVScalarArray{
+public interface PVShortArray extends PVNumberArray{
     /**
      * Get values from a <i>PVShortArray</i> and put them into <i>short[]to</i>.
      *
@@ -28,6 +30,14 @@ public interface PVShortArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, ShortArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayShort get();
 
     /**
      * Put values into a <i>PVShortArray</i> from <i>short[]from</i>.

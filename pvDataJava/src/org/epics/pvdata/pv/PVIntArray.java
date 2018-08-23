@@ -4,6 +4,9 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayInteger;
+import org.epics.util.array.ListNumber;
+
 /**
  * Get/put a int array.
  * The caller must be prepared to get/put the array in chunks.
@@ -12,7 +15,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVIntArray extends PVScalarArray{
+public interface PVIntArray extends PVNumberArray{
     /**
      * Get values from a <i>PVIntArray</i> and put them into <i>int[]to</i>.
      *
@@ -28,6 +31,14 @@ public interface PVIntArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, IntArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayInteger get();
 
     /**
      * Put values into a <i>PVIntArray</i> from <i>int[]from</i>.

@@ -4,6 +4,8 @@
  */
 package org.epics.pvdata.pv;
 
+import org.epics.util.array.ArrayFloat;
+
 /**
  * Get/put a float array.
  * The caller must be prepared to get/put the array in chunks.
@@ -12,7 +14,7 @@ package org.epics.pvdata.pv;
  * @author mrk
  *
  */
-public interface PVFloatArray extends PVScalarArray{
+public interface PVFloatArray extends PVNumberArray{
     /**
      * Get values from a <i>PVFloatArray</i>
      * and put them into <i>float[]to</i>.
@@ -29,6 +31,14 @@ public interface PVFloatArray extends PVScalarArray{
      * array.
      */
     int get(int offset, int length, FloatArrayData data);
+    
+    /**
+     * Returns an unmodifiable view of the data.
+     * 
+     * @return an unmodifiable view of the data
+     */
+    @Override
+    ArrayFloat get();
 
     /**
      * Put values into a <i>PVFloatArray</i> from <i>float[]from</i>.

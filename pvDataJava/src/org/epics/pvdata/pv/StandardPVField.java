@@ -12,7 +12,7 @@ package org.epics.pvdata.pv;
 public interface StandardPVField {
     /**
      * Create a PVStructure with a scalar value field.
-     *
+     * 
      * @param type The scalarType
      * @param properties the list of additional properties, which is some
      *                   combination of the strings alarm, timeStamp, display,
@@ -23,7 +23,7 @@ public interface StandardPVField {
 
     /**
      * Create a PVStructure with a scalarArray value field.
-     *
+     * 
      * @param elementType the scalarType for each element.
      * @param properties the list of additional properties, which is some
      *                   combination of the strings alarm, timeStamp, display,
@@ -35,6 +35,7 @@ public interface StandardPVField {
     /**
      * Create a PVStructure with a structureArray value field.
      * 
+     * @param properties Some combination of alarm,timeStamp
      * @param properties the list of additional properties, which is some
      *                   combination of the strings alarm and timeStamp
      *                   separated by commas
@@ -45,7 +46,7 @@ public interface StandardPVField {
 
     /**
      * Create a PVStructure with an enumerated value field
-     *
+     * 
      * @param choices the array of choices.
      * @return the PVStructure with field value and choices field containing
      *         the supplied choices
@@ -54,7 +55,7 @@ public interface StandardPVField {
 
     /**
      * Create a PVStructure with an enumerated value field
-     *
+     * 
      * @param choices the array of choices.
      * @param properties the list of additional properties, which is some
      *                   combination of the strings alarm and timeStamp
