@@ -1,10 +1,6 @@
 /**
- * Copyright (C) 2010-14 pvmanager developers. See COPYRIGHT.TXT
- * All rights reserved. Use is subject to license terms. See LICENSE.TXT
- */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.ca;
 
@@ -24,7 +20,7 @@ public class CAConnectionPayload {
     private final CADataSource caDataSource;
     private final Channel channel;
     private final boolean connected;
-//    private final boolean longString;
+    private final boolean longString;
     private final DBRType fieldType;
     private final Instant eventTime = Instant.now();
 
@@ -32,7 +28,7 @@ public class CAConnectionPayload {
         this.caDataSource = channleHandler.getCADataSource();
         this.channel = channel;
         this.connected = channel != null && channel.getConnectionState() == Channel.ConnectionState.CONNECTED;
-//        this.longString = channleHandler.isLongString();
+        this.longString = channleHandler.isLongString();
         this.fieldType = channel.getFieldType();
     }
 
@@ -76,14 +72,14 @@ public class CAConnectionPayload {
         return isChannelConnected() && channel.getWriteAccess();
     }
 
-//    /**
-//     * Whether the message payload should be handled as a long string.
-//     * 
-//     * @return true if long string support should be used
-//     */
-//    public boolean isLongString() {
-//        return longString;
-//    }
+    /**
+     * Whether the message payload should be handled as a long string.
+     * 
+     * @return true if long string support should be used
+     */
+    public boolean isLongString() {
+        return longString;
+    }
 
     /**
      * Returns the local time of the connection event.
@@ -98,5 +94,4 @@ public class CAConnectionPayload {
     public String toString() {
         return "CAConnection [connected: " +isChannelConnected() + " writeConnected: " + isWriteConnected() + " channel: " + channel + "]";
     }
-    
 }

@@ -1,3 +1,7 @@
+/**
+ * Copyright information and license terms for this software can be
+ * found in the file LICENSE.TXT included with the distribution.
+ */
 package org.epics.gpclient.datasource.ca;
 
 import static org.epics.gpclient.datasource.ca.CADataSource.log;
@@ -355,6 +359,11 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
         }
 
         return new String(data, 0, index);
+    }
+
+    public boolean isLongString() {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }
