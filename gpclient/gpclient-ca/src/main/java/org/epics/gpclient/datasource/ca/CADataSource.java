@@ -33,6 +33,8 @@ public class CADataSource extends DataSource {
     private boolean rtypValueOnly = false;
     private boolean honorZeroPrecision = true;
 
+    private final CATypeSupport caTypeSupport = new CATypeSupport(new CAVTypeAdapterSet());
+    
     public CADataSource() {
         super();
         // Some properties are not pre-initialized to the default,
@@ -73,6 +75,10 @@ public class CADataSource extends DataSource {
 
     public Context getContext() {
         return context;
+    }
+
+    public CATypeSupport getCaTypeSupport() {
+        return caTypeSupport;
     }
 
     public int getMonitorMask() {

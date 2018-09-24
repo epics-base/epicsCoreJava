@@ -10,7 +10,9 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.datasource.MultiplexedChannelHandler;
+import org.epics.gpclient.datasource.ca.types.CATypeAdapter;
 
 import gov.aps.jca.CAException;
 import gov.aps.jca.Channel;
@@ -67,11 +69,9 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
             // Give the listener right away so that no event gets lost
             // If it's a large array, connect using lower priority
             if (largeArray) {
-                channel = caDataSource.getContext().createChannel(getChannelName(), connectionListener,
-                        Channel.PRIORITY_MIN);
+                channel = caDataSource.getContext().createChannel(getChannelName(), connectionListener, Channel.PRIORITY_MIN);
             } else {
-                channel = caDataSource.getContext().createChannel(getChannelName(), connectionListener,
-                        (short) (Channel.PRIORITY_MIN + 1));
+                channel = caDataSource.getContext().createChannel(getChannelName(), connectionListener, (short) (Channel.PRIORITY_MIN + 1));
             }
         } catch (CAException ex) {
             throw new RuntimeException("JCA Connection failed", ex);
@@ -104,6 +104,11 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
     @Override
     protected boolean isWriteConnected(CAConnectionPayload connPayload) {
         return connPayload != null && connPayload.isWriteConnected();
+    }
+
+    @Override
+    protected CATypeAdapter findTypeAdapter(ReadCollector<?, ?> cache, CAConnectionPayload connection) {
+        return caDataSource.getCaTypeSupport().find(cache, connection);
     }
 
     private final ConnectionListener connectionListener = new ConnectionListener() {
