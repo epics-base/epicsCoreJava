@@ -4,12 +4,13 @@
  */
 package org.epics.gpclient.datasource.ca;
 
-import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.epics.gpclient.datasource.ChannelHandler;
 import org.epics.gpclient.datasource.DataSource;
+import org.epics.gpclient.datasource.ca.types.CATypeSupport;
+import org.epics.gpclient.datasource.ca.types.CAVTypeAdapterSet;
 
 import com.cosylab.epics.caj.CAJContext;
 
@@ -97,6 +98,11 @@ public class CADataSource extends DataSource {
     @Override
     protected ChannelHandler createChannel(String channelName) {
         return new CAChannelHandler(channelName, this);
+    }
+
+    @Override
+    public void close() {
+        context.dispose();
     }
 
 }
