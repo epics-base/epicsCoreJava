@@ -2,11 +2,18 @@ sudo: required
 language: java
 jdk:
   - oraclejdk8
-  - openjdk8
   - oraclejdk9
-  - openjdk10
   - oraclejdk10
 
+matrix:
+  include:
+    - jdk: openjdk8
+      before_install:
+        - sudo apt-get install openjfx
+    - jdk: openjdk10
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
 env:
   - EPICS_PVA_ADDR_LIST=127.255.255.255
 
