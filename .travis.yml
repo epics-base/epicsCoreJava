@@ -9,6 +9,7 @@ matrix:
   include:
     - jdk: openjdk8
       before_install:
+        - sudo apt-get update
         - sudo apt-get install openjfx
     - jdk: openjdk10
       before_install:
