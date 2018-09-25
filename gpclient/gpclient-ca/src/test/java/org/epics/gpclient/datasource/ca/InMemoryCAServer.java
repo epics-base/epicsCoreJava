@@ -47,7 +47,7 @@ public class InMemoryCAServer {
 
     private static final Random generator = new Random();
 
-    private static void initialize() {
+    static synchronized void initialize() {
 
         // Get the JCALibrary instance.
         JCALibrary jca = JCALibrary.getInstance();
@@ -72,7 +72,7 @@ public class InMemoryCAServer {
         initialized.set(true);
     }
 
-    private static void registerProcessVariables(DefaultServerImpl server) {
+    static void registerProcessVariables(DefaultServerImpl server) {
         for (int i = 0; i < 10000; i++) {
             createDoubleProcessVariable("test_double_" + i, generator.doubles(-10, 10).findAny().getAsDouble(), server);
             createIntProcessVariable("test_int_" + i, generator.ints(-10, 10).findAny().getAsInt(), server);
@@ -81,7 +81,7 @@ public class InMemoryCAServer {
         }
     }
 
-    private static void createDoubleProcessVariable(String name, double value, DefaultServerImpl server) {
+    static void createDoubleProcessVariable(String name, double value, DefaultServerImpl server) {
         // PV supporting all GR/CTRL info
         MemoryProcessVariable mpv = new MemoryProcessVariable(name, null, DBR_Double.TYPE, new double[] { value });
 
@@ -103,7 +103,7 @@ public class InMemoryCAServer {
         server.registerProcessVaribale(mpv);
     }
 
-    private static void createIntProcessVariable(String name, int value, DefaultServerImpl server) {
+    static void createIntProcessVariable(String name, int value, DefaultServerImpl server) {
         // PV supporting all GR/CTRL info
         MemoryProcessVariable mpv = new MemoryProcessVariable(name, null, DBR_Int.TYPE, new int[] { value });
 
@@ -124,9 +124,8 @@ public class InMemoryCAServer {
 
         server.registerProcessVaribale(mpv);
     }
-    
 
-    private static void createFloatProcessVariable(String name, float value, DefaultServerImpl server) {
+    static void createFloatProcessVariable(String name, float value, DefaultServerImpl server) {
         // PV supporting all GR/CTRL info
         MemoryProcessVariable mpv = new MemoryProcessVariable(name, null, DBR_Float.TYPE, new float[] { value });
 
@@ -148,7 +147,7 @@ public class InMemoryCAServer {
         server.registerProcessVaribale(mpv);
     }
 
-    private static void createStringProcessVariable(String name, String value, DefaultServerImpl server) {
+    static void createStringProcessVariable(String name, String value, DefaultServerImpl server) {
         // PV supporting all GR/CTRL info
         MemoryProcessVariable mpv = new MemoryProcessVariable(name, null, DBR_String.TYPE, new String[] { value });
         server.registerProcessVaribale(mpv);

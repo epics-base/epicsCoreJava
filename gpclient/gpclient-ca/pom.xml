@@ -21,6 +21,16 @@
       <artifactId>gpclient-core</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.epics</groupId>
+      <artifactId>vtype</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.epics</groupId>
+      <artifactId>epics-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

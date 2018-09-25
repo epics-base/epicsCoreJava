@@ -6,13 +6,26 @@ package org.epics.gpclient.datasource.ca;
 
 import static org.epics.gpclient.datasource.ca.CADataSource.log;
 
+import static org.epics.util.array.UnsafeUnwrapper.wrappedArray;
+import static org.epics.util.array.UnsafeUnwrapper.wrappedDoubleArray;
+
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.WriteCollector.WriteRequest;
 import org.epics.gpclient.datasource.MultiplexedChannelHandler;
 import org.epics.gpclient.datasource.ca.types.CATypeAdapter;
+import org.epics.util.array.CollectionNumbers;
+import org.epics.util.array.ListNumber;
+import org.epics.vtype.VByte;
+import org.epics.vtype.VDouble;
+import org.epics.vtype.VFloat;
+import org.epics.vtype.VInt;
+import org.epics.vtype.VLong;
+import org.epics.vtype.VShort;
 
 import gov.aps.jca.CAException;
 import gov.aps.jca.Channel;
@@ -74,7 +87,8 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
                 channel = caDataSource.getContext().createChannel(getChannelName(), connectionListener, (short) (Channel.PRIORITY_MIN + 1));
             }
         } catch (CAException ex) {
-            throw new RuntimeException("JCA Connection failed", ex);
+            reportExceptionToAllReadersAndWriters(ex);
+            log.log(Level.WARNING, "JCA Connection failed", ex);
         }
     }
 
@@ -89,7 +103,8 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
                 channel.destroy();
             }
         } catch (CAException ex) {
-            throw new RuntimeException("JCA Disconnect fail", ex);
+            reportExceptionToAllReadersAndWriters(ex);
+            log.log(Level.WARNING, "JCA Disconnect fail", ex);
         } finally {
             channel = null;
             processConnection(null);
@@ -264,6 +279,103 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
             }
         }
     };
+
+    @Override
+    protected void write(Object newValue) {
+        // If it's a ListNumber, extract the array
+        if (newValue instanceof ListNumber) {
+            ListNumber data = (ListNumber) newValue;
+            Object wrappedArray = wrappedArray(data);
+            if (wrappedArray == null) {
+                newValue = wrappedDoubleArray(data);
+            } else {
+                newValue = wrappedArray;
+            }
+        }
+        try {
+            if (newValue instanceof Double[]) {
+                log.warning("You are writing a Double[] to channel " + getChannelName()
+                        + ": use org.epics.util.array.ListDouble instead");
+                final Double dbl[] = (Double[]) newValue;
+                final double val[] = new double[dbl.length];
+                for (int i = 0; i < val.length; ++i) {
+                    val[i] = dbl[i].doubleValue();
+                }
+                newValue = val;
+            }
+            if (newValue instanceof Integer[]) {
+                log.warning("You are writing a Integer[] to channel " + getChannelName()
+                        + ": use org.epics.util.array.ListInt instead");
+                final Integer ival[] = (Integer[]) newValue;
+                final int val[] = new int[ival.length];
+                for (int i = 0; i < val.length; ++i) {
+                    val[i] = ival[i].intValue();
+                }
+                newValue = val;
+            }
+
+            if (newValue instanceof String) {
+                if (isLongString()) {
+                    channel.put(toBytes(newValue.toString()));
+                } else {
+                    if (channel.getFieldType().isBYTE() && channel.getElementCount() > 1) {
+                        log.warning("You are writing the String " + newValue + " to BYTE channel " + getChannelName()
+                                + ": use {\"longString\":true} for support");
+                        channel.put(toBytes(newValue.toString()));
+                    } else {
+                        channel.put(newValue.toString());
+                    }
+                }
+            } else if (newValue instanceof byte[]) {
+                channel.put((byte[]) newValue);
+            } else if (newValue instanceof short[]) {
+                channel.put((short[]) newValue);
+            } else if (newValue instanceof int[]) {
+                channel.put((int[]) newValue);
+            } else if (newValue instanceof float[]) {
+                channel.put((float[]) newValue);
+            } else if (newValue instanceof double[]) {
+                channel.put((double[]) newValue);
+            } else if (newValue instanceof VByte) {
+                channel.put(((VByte) newValue).getValue());
+            } else if (newValue instanceof VShort) {
+                channel.put(((VShort) newValue).getValue());
+            } else if (newValue instanceof VInt) {
+                channel.put(((VInt)newValue).getValue());
+            } else if (newValue instanceof VLong) {
+                // XXX: Channel access does not support 64 bit integers
+                // If fits 32 bits, use int. Use double otherwise
+                long value64 = ((VLong) newValue).getValue();
+                int value32 = (int) value64;
+                if (value32 == value64) {
+                    channel.put(value32);
+                } else {
+                    channel.put((double) value64);
+                }
+            } else if (newValue instanceof VFloat) {
+                channel.put(((VFloat) newValue).getValue());
+            } else if (newValue instanceof VDouble) {
+                channel.put(((VDouble) newValue).getValue());
+            } else {
+                // callback.channelWritten(new Exception(new RuntimeException("Unsupported type
+                // for CA: " + newValue.getClass())));
+                return;
+            }
+            caDataSource.getContext().flushIO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void processWriteRequest(WriteRequest<?> request) {
+        try {
+            write(request.getValue());
+            request.writeSuccessful();
+        } catch (Exception ex) {
+            request.writeFailed(ex);
+        }
+    }
 
     protected int countFor(Channel channel) {
         if (channel.getElementCount() == 1)

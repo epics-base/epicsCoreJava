@@ -103,6 +103,7 @@ public class CADataSource extends DataSource {
 
     @Override
     protected ChannelHandler createChannel(String channelName) {
+        log.log(Level.INFO, "CREATE channel " + channelName);
         return new CAChannelHandler(channelName, this);
     }
 
