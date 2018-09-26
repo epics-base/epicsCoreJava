@@ -20,7 +20,7 @@ env:
 
 install: true
 script:
-  - mvn clean verify -${MVN_OPT} -B
+  - mvn clean verify ${MVN_OPT} -B
 
 after_failure:
  - find ./ -type d -name "surefire-reports" -print0 | xargs -0 -I {} find {} -iname "*.txt" -type f | xargs cat
