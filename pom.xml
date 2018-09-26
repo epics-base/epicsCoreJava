@@ -306,6 +306,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.0.1</version>
+                <configuration>
+                    <additionalOptions>
+                        <additionalOption>-html5</additionalOption>
+                    </additionalOptions>
+                </configuration>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -322,6 +327,9 @@
                 <version>3.0.1</version>
                 <configuration>
                     <overview>documentation/${mainpage.name}.html</overview>
+                    <additionalOptions>
+                        <additionalOption>-html5</additionalOption>
+                    </additionalOptions>
                 </configuration>
                 <executions>
                     <execution>
