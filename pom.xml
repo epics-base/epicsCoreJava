@@ -308,7 +308,7 @@
                 <version>3.0.1</version>
                 <configuration>
                     <additionalOptions>
-                        <additionalOption>-html5</additionalOption>
+                        <additionalOption>${javadoc.opts}</additionalOption>
                     </additionalOptions>
                 </configuration>
                 <executions>
@@ -328,7 +328,7 @@
                 <configuration>
                     <overview>documentation/${mainpage.name}.html</overview>
                     <additionalOptions>
-                        <additionalOption>-html5</additionalOption>
+                        <additionalOption>${javadoc.opts}</additionalOption>
                     </additionalOptions>
                 </configuration>
                 <executions>
@@ -408,6 +408,9 @@
     			<activation>
     				<jdk>[9,)</jdk>
     			</activation>
+          <properties>
+            <javadoc.opts>-html5</javadoc.opts>
+          </properties>
           <modules>
               <module>directoryService</module>
               <module>exampleJava</module>
