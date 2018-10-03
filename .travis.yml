@@ -2,17 +2,25 @@ sudo: required
 language: java
 jdk:
   - oraclejdk8
-  - openjdk8
   - oraclejdk9
-  - openjdk10
   - oraclejdk10
 
+matrix:
+  include:
+    - jdk: openjdk8
+      before_install:
+        - export MVN_OPT='--projects "!gpclient/gpclient-javafx"'
+    - jdk: openjdk10
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+        - export MVN_OPT='--projects "!gpclient/gpclient-javafx"'
 env:
   - EPICS_PVA_ADDR_LIST=127.255.255.255
 
 install: true
 script:
-  - mvn clean verify -B
+  - mvn clean verify ${MVN_OPT} -B
 
 after_failure:
  - find ./ -type d -name "surefire-reports" -print0 | xargs -0 -I {} find {} -iname "*.txt" -type f | xargs cat

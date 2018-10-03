@@ -4,9 +4,19 @@
  */
 package org.epics.gpclient.javafx.tools;
 
-import com.sun.javafx.collections.ImmutableObservableList;
+import static javafx.collections.FXCollections.emptyObservableList;
+import static javafx.collections.FXCollections.unmodifiableObservableList;
+
 import java.io.IOException;
+
+import org.epics.vtype.Alarm;
+import org.epics.vtype.Display;
+import org.epics.vtype.Time;
+import org.epics.vtype.VEnum;
+import org.epics.vtype.VType;
+
 import javafx.collections.FXCollections;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,11 +28,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VType;
 
 public final class ValueViewer extends ScrollPane {
     
@@ -182,7 +187,7 @@ public final class ValueViewer extends ScrollPane {
 //        } else {
             tableMetadata.setVisible(false);
             tableMetadata.setManaged(false);
-            columnsTable.setItems(new ImmutableObservableList<>());
+            columnsTable.setItems(unmodifiableObservableList(emptyObservableList()));
 //        }
     }
 
