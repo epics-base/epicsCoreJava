@@ -15,7 +15,7 @@
         <epics-pvdata.version>6.1.2-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.3.2-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>5.1.2-SNAPSHOT</epics-pvaccess.version>
-        <epics-pvaclient.version>4.3.2-SNAPSHOT</epics-pvaclient.version>
+        <epics-pvaclient.version>4.3.3-SNAPSHOT</epics-pvaclient.version>
         <epics-pvdatabase.version>4.3.2-SNAPSHOT</epics-pvdatabase.version>
         <jca.version>2.4.2-SNAPSHOT</jca.version>
         <!-- Versions of examples bundled with Core -->
