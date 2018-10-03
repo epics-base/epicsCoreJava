@@ -214,7 +214,6 @@ public final class BitSet implements Cloneable, java.io.Serializable, org.epics.
      * @param lb a long buffer containing a little-endian representation
      *        of a sequence of bits between its position and limit, to be
      *        used as the initial bits of the new bit set
-     * @return the new bit set
      * @return a new bit set containing all the bits in the given long buffer between its position and limit
      * @since 1.7
      */
