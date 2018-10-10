@@ -1,9 +1,10 @@
 pipeline { 
     agent any
-    tools { 
-        maven 'Maven 3.3.9' 
-        jdk 'jdk8' 
+
+    environment{
+        MAVEN_OPTS="-Xmx2048m -Xms1024M -Xss128M -XX:-UseGCOverheadLimit"
     }
+    
     stages { 
         stage('Build') { 
             steps {
