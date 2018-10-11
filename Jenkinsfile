@@ -12,11 +12,11 @@ pipeline {
                 sh 'git submodule update --recursive --remote'
                 sh 'mvn clean install' 
             }
-            post {
-                always {
-                    junit 'target/surefire-reports/**/*.xml' 
-                }
-            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: '**/*.jar', fingerprint: true
         }
     }
 }
