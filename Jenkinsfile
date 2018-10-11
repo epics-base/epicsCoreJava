@@ -9,6 +9,7 @@ pipeline {
         stage('Build') { 
             steps {
                 git(url: "https://github.com/epics-base/epicsCoreJava.git")
+                sh 'git submodule update --recursive --remote'
                 sh 'mvn clean install' 
             }
             post {
