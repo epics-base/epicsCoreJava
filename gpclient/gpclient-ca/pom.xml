@@ -1,0 +1,56 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.epics</groupId>
+    <artifactId>gpclient</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>gpclient-ca</artifactId>
+  <packaging>jar</packaging>
+  <name>org.epics.gpclient.ca</name>
+  <description>Support for ChannelAccess data source for the EPICS Generic Purpose Client.</description>
+  <dependencies>
+    <dependency>
+      <groupId>org.epics</groupId>
+      <artifactId>jca</artifactId>
+      <version>2.4.1</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>gpclient-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.epics</groupId>
+      <artifactId>vtype</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.epics</groupId>
+      <artifactId>epics-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>eu.somatik.serviceloader-maven-plugin</groupId>
+        <artifactId>serviceloader-maven-plugin</artifactId>
+        <version>1.0.4</version>
+        <configuration>
+          <services>
+            <param>org.epics.gpclient.datasource.DataSourceProvider</param>
+          </services>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

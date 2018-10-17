@@ -13,10 +13,11 @@
     <modules>
         <module>gpclient-core</module>
         <module>gpclient-sim</module>
-        <module>gpclient-sample</module>
+        <module>gpclient-ca</module>
         <module>gpclient-pva</module>
         <module>gpclient-javafx</module>
         <module>gpclient-loc</module>
+        <module>gpclient-sample</module>
     </modules>
     <build>
         <plugins>
