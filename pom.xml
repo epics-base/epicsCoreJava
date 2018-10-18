@@ -16,9 +16,7 @@
         <epics-pvdata.version>6.1.0-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.3.0-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>5.1.0-SNAPSHOT</epics-pvaccess.version>
-        <epics-pvaclient.version>4.3.0-SNAPSHOT</epics-pvaclient.version>
-        <epics-pvdatabase.version>4.3.0-SNAPSHOT</epics-pvdatabase.version>
-        <jca.version>2.3.7-SNAPSHOT</jca.version>
+        <jca.version>2.4.1-SNAPSHOT</jca.version>
         <!-- Versions of examples bundled with Core -->
 
         <!-- Name of javadoc overview page -->
@@ -30,8 +28,6 @@
         <module>pvDataJava</module>
         <module>normativeTypesJava</module>
         <module>pvAccessJava</module>
-        <module>pvaClientJava</module>
-        <module>pvDatabaseJava</module>
         <module>epics-core</module>
         <module>epics-deploy</module>
         <module>epics-util</module>
@@ -200,43 +196,6 @@
                 <version>${epics-pvaccess.version}</version>
                 <classifier>javadoc</classifier>
             </dependency>
-
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvaclient</artifactId>
-                <version>${epics-pvaclient.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvaclient</artifactId>
-                <version>${epics-pvaclient.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvaclient</artifactId>
-                <version>${epics-pvaclient.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvdatabase</artifactId>
-                <version>${epics-pvdatabase.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvdatabase</artifactId>
-                <version>${epics-pvdatabase.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvdatabase</artifactId>
-                <version>${epics-pvdatabase.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-
             <dependency>
                 <groupId>org.epics</groupId>
                 <artifactId>jca</artifactId>
@@ -376,8 +335,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>directoryService</module>
-                <module>exampleJava</module>
                 <module>bundleJava</module>
             </modules>
         </profile>
@@ -412,8 +369,6 @@
             <javadoc.opts>-html5</javadoc.opts>
           </properties>
           <modules>
-              <module>directoryService</module>
-              <module>exampleJava</module>
               <module>bundleJava</module>
           </modules>
     			<build>
