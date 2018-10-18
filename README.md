@@ -8,20 +8,13 @@ to depend on a matching set of the EPICS Core libraries.
 
 
 ## Code Submodules
-Five maven submodules/directories/projects contain the code of EPICS Core:
+Maven submodules/directories/projects contain the code of EPICS Core:
 * pvDataJava
 * pvAccessJava
 * normativeTypesJava
 * epics-util
 * epics-vtype
-
-Two git submodules contain the code of EPICS Core:
-* pvaClientJava
-* pvDatabaseJava
-
-Two git submodules contain example code:
-* exampleJava
-* directoryService
+* gpclient
 
 One submodule creates the distribution tar/zip archives:
 * bundleJava
@@ -32,11 +25,13 @@ One directory/project provides the dependency POM:
 One (dummy) directory/project deploys the libraries to Maven Central:
 * epics-deploy
 
+### example code
+https://github.com/epics-base/exampleJava/
+
 ## Maven Profiles
 
 ### with-examples
-This profile (enabled by default) adds the directories/projects exampleJava, 
-directoryService and bundleJava as subprojects.
+This profile (enabled by default) adds the directories/projects bundleJava as subprojects.
 
 Disable this profile when deploying to Maven repositories, as the artifacts 
 of these subprojects contain applications and no libraries.
