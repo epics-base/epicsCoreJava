@@ -122,7 +122,7 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 		
 		synchronized (resultMonitor) {
 			sendRequestInternal(timeout, pvArgument);
-			long timeLeft = Math.max(timeoutMs - (System.currentTimeMillis() - startTime), 0);
+			long timeLeft = Math.max((timeoutMs - (System.currentTimeMillis() - startTime))/1000, 0);
 			if (waitResponse(timeLeft))
 			{
 				if (status.isSuccess())
