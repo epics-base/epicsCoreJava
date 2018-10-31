@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.epics</groupId>
     <artifactId>gpclient</artifactId>
     <name>gpclient</name>
     <version>1.0.0-SNAPSHOT</version>
@@ -20,6 +19,9 @@
         <module>gpclient-sample</module>
     </modules>
     <build>
+        <!-- Non-standard source directories -->
+        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+        <testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -111,4 +113,9 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <parent>
+      <groupId>org.epics</groupId>
+      <artifactId>epics-parent</artifactId>
+      <version>7.0.0-SNAPSHOT</version>
+    </parent>
 </project>

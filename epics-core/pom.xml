@@ -29,14 +29,6 @@
             <artifactId>epics-pvaccess</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>epics-pvaclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>epics-pvdatabase</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.epics</groupId>
             <artifactId>jca</artifactId>
         </dependency>
