@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>epics-parent</artifactId>
-        <version>7.0.2</version>
+        <version>7.0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>epics-core</artifactId>
@@ -32,9 +32,4 @@
             <artifactId>jca</artifactId>
         </dependency>
     </dependencies>
-
-
-  <scm>
-    <tag>epics-7.0.2</tag>
-  </scm>
 </project>
