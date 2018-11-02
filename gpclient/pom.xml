@@ -6,9 +6,9 @@
     <parent>
       <groupId>org.epics</groupId>
       <artifactId>epics-parent</artifactId>
-      <version>7.0.2-SNAPSHOT</version>
+      <version>7.0.2</version>
     </parent>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <description>The generic purpose JAVA EPICS client.</description>
     <properties>
@@ -118,4 +118,8 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+  <scm>
+    <tag>epics-7.0.2</tag>
+  </scm>
 </project>
