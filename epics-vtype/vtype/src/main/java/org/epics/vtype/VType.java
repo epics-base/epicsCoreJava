@@ -41,6 +41,7 @@ public abstract class VType {
             VShortArray.class,
             VUByteArray.class,
             VByteArray.class,
+            VStringArray.class,
             VImage.class, 
             VTable.class);
 
