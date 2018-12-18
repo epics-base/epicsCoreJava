@@ -302,7 +302,7 @@ public class JsonArrays {
             for (int i = 0; i < list.size(); i++) {
                 b.add(list.getInt(i));
             }
-        } else if (list instanceof ListLong || list instanceof ListInteger) {
+        } else if (list instanceof ListLong || list instanceof ListUInteger) {
             for (int i = 0; i < list.size(); i++) {
                 b.add(list.getLong(i));
             }
