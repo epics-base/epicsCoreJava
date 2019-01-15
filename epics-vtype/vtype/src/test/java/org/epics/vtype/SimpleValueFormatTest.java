@@ -60,6 +60,7 @@ public class SimpleValueFormatTest {
     public void testMandatedPrecision() {
         ValueFormat f = new SimpleValueFormat(3);
         f.setNumberFormat(NumberFormats.precisionFormat(2));
+        Display display = Display.of(maxDoubleRange, maxDoubleRange, maxDoubleRange, maxDoubleRange, "", f.getNumberFormat());
         assertThat(f.format(VDouble.of(1234.5678, Alarm.none(), Time.now(), display)), equalTo("1234.57"));
         assertThat(f.format(VIntArray.of(ArrayInteger.of(1, 2, 3), Alarm.none(), Time.now(), displayInt)), equalTo("[1.00, 2.00, 3.00]"));
         assertThat(f.format(VIntArray.of(ArrayInteger.of(1), Alarm.none(), Time.now(), displayInt)), equalTo("[1.00]"));
