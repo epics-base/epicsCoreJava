@@ -9,7 +9,7 @@ package org.epics.vtype;
  *
  * @author carcassi
  */
-interface TimeProvider {
+public interface TimeProvider {
     
     /**
      * The time associated with this value.

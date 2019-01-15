@@ -9,7 +9,7 @@ package org.epics.vtype;
  *
  * @author carcassi
  */
-interface DisplayProvider {
+public interface DisplayProvider {
     
     /**
      * The display associated with this value.
