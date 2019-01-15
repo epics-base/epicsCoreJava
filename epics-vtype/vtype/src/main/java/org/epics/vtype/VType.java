@@ -174,7 +174,7 @@ public abstract class VType {
             if (matches) {
                 @SuppressWarnings("unchecked")
                 List<String> newList = (List<String>) list;
-                return null;//newVStringArray(Collections.unmodifiableList(newList), alarm, time);
+                return VStringArray.of(list, alarm, time);
             } else {
                 return null;
             }
