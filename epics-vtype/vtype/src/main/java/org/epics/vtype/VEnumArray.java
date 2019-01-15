@@ -24,11 +24,11 @@ public abstract class VEnumArray extends Array implements AlarmProvider, TimePro
 
     /**
      * Return an instance of the VEnumArray
-     * @param data
-     * @param enumDisplay
-     * @param alarm
-     * @param time
-     * @return
+     * @param data the indices
+     * @param enumDisplay the enum display labels
+     * @param alarm the alarm
+     * @param time new time
+     * @return {@link VEnumArray} instance of VEnumArray
      */
     public static VEnumArray of(ListInteger data, EnumDisplay enumDisplay, Alarm alarm, Time time) {
         return new IVEnumArray(data, enumDisplay, alarm, time);

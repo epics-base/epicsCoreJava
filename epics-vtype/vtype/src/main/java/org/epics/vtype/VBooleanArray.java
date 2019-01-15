@@ -24,7 +24,6 @@ public abstract class VBooleanArray extends Array implements AlarmProvider, Time
      * @param data the value
      * @param alarm the alarm
      * @param time the time
-     * @param display the display
      * @return the new value
      */
     public static VBooleanArray of(final ListBoolean data, final Alarm alarm, final Time time) {
