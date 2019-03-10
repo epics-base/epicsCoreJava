@@ -41,6 +41,9 @@ public abstract class VType {
             VShortArray.class,
             VUByteArray.class,
             VByteArray.class,
+            VStringArray.class,
+            VBooleanArray.class,
+            VEnumArray.class,
             VImage.class, 
             VTable.class);
 
@@ -173,7 +176,7 @@ public abstract class VType {
             if (matches) {
                 @SuppressWarnings("unchecked")
                 List<String> newList = (List<String>) list;
-                return null;//newVStringArray(Collections.unmodifiableList(newList), alarm, time);
+                return VStringArray.of(list, alarm, time);
             } else {
                 return null;
             }
