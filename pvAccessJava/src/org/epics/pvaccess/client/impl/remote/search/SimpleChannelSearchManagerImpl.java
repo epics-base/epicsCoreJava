@@ -418,10 +418,11 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 //			for (SearchInstance si : sis)
 //				si.getUserValue().set(BOOST_VALUE);
 //		}
-		
-		for(SearchInstance searchInstance : channels.values()) {
-			searchInstance.getUserValue().set(BOOST_VALUE);
-		}
+        synchronized (channels) {
+            for (SearchInstance searchInstance : channels.values()) {
+                searchInstance.getUserValue().set(BOOST_VALUE);
+            }
+        }
 	}
 	
 	@Override
@@ -439,12 +440,12 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		try 
 		{
 			SearchInstance[] sis;
-			//synchronized (channels) {
+			synchronized (channels) {
 				if (channels.size() == 0)
 					return;
 				sis = new SearchInstance[channels.size()];
 				channels.values().toArray(sis);
-			//}
+			}
 			
 			send(sis);
 		}
