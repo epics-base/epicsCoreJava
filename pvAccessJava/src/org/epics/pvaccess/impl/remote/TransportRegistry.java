@@ -57,14 +57,15 @@ public final class TransportRegistry {
 		// TODO support type
 		final short priority = transport.getPriority();
 		final InetSocketAddress address = transport.getRemoteAddress();
-		Map<Short, Transport> priorities = transports.get(address);
-		if (priorities == null) {
-			priorities = Collections.synchronizedMap(new HashMap<Short, Transport>());
-			transports.put(address, priorities);
-		}
-		priorities.put(priority, transport);
-		allTransports.add(transport);
-
+        synchronized (transports) {
+            Map<Short, Transport> priorities = transports.get(address);
+            if (priorities == null) {
+                priorities = Collections.synchronizedMap(new HashMap<Short, Transport>());
+                transports.put(address, priorities);
+            }
+            priorities.put(priority, transport);
+            allTransports.add(transport);
+        }
 	}
 
 	/**
@@ -78,7 +79,7 @@ public final class TransportRegistry {
 	 *            priority of the transport.
 	 * @return corresponding transport, <code>null</code> if none found.
 	 */
-	public Transport get(String type, InetSocketAddress address, short priority) {
+	public synchronized Transport get(String type, InetSocketAddress address, short priority) {
 		// TODO support type
 		Map<Short, Transport> priorities = transports.get(address);
 		if (priorities != null)
@@ -96,7 +97,7 @@ public final class TransportRegistry {
 	 *            address of the host computer.
 	 * @return array of corresponding transports, <code>null</code> if none found.
 	 */
-	public Transport[] get(String type, InetSocketAddress address) {
+	public synchronized Transport[] get(String type, InetSocketAddress address) {
 		// TODO support type
 		Map<Short, Transport> priorities = transports.get(address);
 		if (priorities != null) {
@@ -115,7 +116,7 @@ public final class TransportRegistry {
 	 *            transport to remove.
 	 * @return removed transport, <code>null</code> if none found.
 	 */
-	public Transport remove(Transport transport) {
+	public synchronized Transport remove(Transport transport) {
 		// TODO support type
 		final short priority = transport.getPriority();
 		final InetSocketAddress address = transport.getRemoteAddress();
@@ -135,7 +136,7 @@ public final class TransportRegistry {
 	/**
 	 * Clear cache.
 	 */
-	public void clear() {
+	public synchronized void clear() {
 
 		transports.clear();
 
@@ -147,7 +148,7 @@ public final class TransportRegistry {
 	 * 
 	 * @return number of active (cached) transports.
 	 */
-	public int numberOfActiveTransports() {
+	public synchronized int numberOfActiveTransports() {
 
 		return allTransports.size();
 
@@ -160,7 +161,7 @@ public final class TransportRegistry {
 	 *            protocol type (e.g. tcp, udp, ssl, etc.).
 	 * @return array of all active (cached) transports.
 	 */
-	public Transport[] toArray(String type) {
+	public synchronized Transport[] toArray(String type) {
 		// TODO support type
 
 		return allTransports.toArray(new Transport[transports.size()]);
@@ -172,7 +173,7 @@ public final class TransportRegistry {
 	 * 
 	 * @return array of all active (cached) transports.
 	 */
-	public Transport[] toArray() {
+	public synchronized Transport[] toArray() {
 
 		return allTransports.toArray(new Transport[transports.size()]);
 
