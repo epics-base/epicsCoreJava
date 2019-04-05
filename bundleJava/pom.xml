@@ -32,6 +32,21 @@
     <!-- The assembly is built through dependencies, as the regular moduleSet
          does not allow to include sources and javadoc as jars -->
     <dependencies>
+            <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-util</artifactId>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>epics-util</artifactId>
+            <classifier>javadoc</classifier>
+        </dependency>
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>epics-pvdata</artifactId>
