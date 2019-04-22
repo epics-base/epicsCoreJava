@@ -17,6 +17,10 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>epics-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>epics-pvdata</artifactId>
         </dependency>
         <dependency>
@@ -30,6 +34,7 @@
         <dependency>
             <groupId>org.epics</groupId>
             <artifactId>jca</artifactId>
+            <version>${jca.version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -12,6 +12,7 @@
 
     <properties>
         <!-- Matching versions of Core modules -->
+        <epics-util.version>1.0.1-SNAPSHOT</epics-util.version>
         <epics-pvdata.version>6.1.3-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.3.3-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>5.1.3-SNAPSHOT</epics-pvaccess.version>
@@ -142,6 +143,24 @@
         <dependencies>
 
             <!-- EPICS Core Libraries -->
+            <dependency>
+                <groupId>org.epics</groupId>
+                <artifactId>epics-util</artifactId>
+                <version>${epics-util.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.epics</groupId>
+                <artifactId>epics-util</artifactId>
+                <version>${epics-util.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.epics</groupId>
+                <artifactId>epics-util</artifactId>
+                <version>${epics-util.version}</version>
+                <classifier>javadoc</classifier>
+            </dependency>
+
             <dependency>
                 <groupId>org.epics</groupId>
                 <artifactId>epics-pvdata</artifactId>

@@ -5,9 +5,10 @@ import java.util.List;
 
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListInteger;
+import org.epics.util.array.ListNumber;
 
 /**
- * Immutable {@code VEnum} implementation.
+ * Immutable {@code VEnumArray} implementation.
  *
  * @author carcassi, shroffk, kasemir
  */
@@ -15,12 +16,12 @@ public class IVEnumArray extends VEnumArray {
 
     private final Alarm alarm;
     private final Time time;
-    private final ListInteger indices;
+    private final ListNumber indices;
     private final EnumDisplay enumDisplay;
     
     private final List<String> labels;
 
-    IVEnumArray(ListInteger indices, EnumDisplay enumDisplay, Alarm alarm, Time time) {
+    IVEnumArray(ListNumber indices, EnumDisplay enumDisplay, Alarm alarm, Time time) {
         VType.argumentNotNull("enumDisplay", enumDisplay);
         this.enumDisplay = enumDisplay;
 
@@ -32,8 +33,8 @@ public class IVEnumArray extends VEnumArray {
         for (int i = 0; i < indices.size(); i++) {
             int index = indices.getInt(i);
             if (index < 0 || index >= enumDisplay.getChoices().size()) {
-                throw new IndexOutOfBoundsException("VEnumArray element " + i + " has index " + index
-                        + " outside of permitted options " + enumDisplay.getChoices());
+                labels.add("VEnumArray element " + i + " has index " + index + " outside of permitted options "
+                        + enumDisplay.getChoices());
             }
             labels.add(enumDisplay.getChoices().get(index));
         }
@@ -63,7 +64,7 @@ public class IVEnumArray extends VEnumArray {
     }
 
     @Override
-    public ListInteger getIndexes() {
+    public ListNumber getIndexes() {
         return indices;
     }
 
