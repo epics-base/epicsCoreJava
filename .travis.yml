@@ -1,15 +1,8 @@
 sudo: required
 language: java
-jdk:
-  - oraclejdk8
-  - oraclejdk9
-
 matrix:
   include:
-    - jdk: openjdk8
-      before_install:
-        - export MVN_OPT='--projects "!gpclient/gpclient-javafx"'
-    - jdk: openjdk10
+    - jdk: openjdk11
       before_install:
         - rm "${JAVA_HOME}/lib/security/cacerts"
         - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
