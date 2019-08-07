@@ -291,7 +291,6 @@
           <additionalOptions>
             <additionalOption>${javadoc.opts}</additionalOption>
           </additionalOptions>
-          <additionalOptions>--javafx</additionalOptions>
           <detectJavaApiLink>true</detectJavaApiLink>
           <detectLinks>false</detectLinks>
           <detectOfflineLinks>true</detectOfflineLinks>
