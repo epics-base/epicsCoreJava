@@ -1,406 +1,495 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.epics</groupId>
-    <artifactId>epics-parent</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+  <groupId>org.epics</groupId>
+  <artifactId>epics-parent</artifactId>
+  <version>7.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-    <name>EPICS Core Build</name>
+  <name>EPICS Core Build</name>
+  <url>https://github.com/epics-base/epicsCoreJava</url>
+  <description>Parent project for the EPICS Core Libraries.</description>
+
+  <properties>
+    <!-- Matching versions of Core modules -->
+    <epics-pvdata.version>6.1.0-SNAPSHOT</epics-pvdata.version>
+    <epics-ntypes.version>0.3.0-SNAPSHOT</epics-ntypes.version>
+    <epics-pvaccess.version>5.1.0-SNAPSHOT</epics-pvaccess.version>
+    <jca.version>2.4.1-SNAPSHOT</jca.version>
+    <!-- Versions of examples bundled with Core -->
+
+    <!-- Name of javadoc overview page -->
+    <mainpage.name>${project.name}</mainpage.name>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <asm.version>7.0</asm.version>
+  </properties>
+
+  <modules>
+    <module>pvDataJava</module>
+    <module>normativeTypesJava</module>
+    <module>pvAccessJava</module>
+    <module>epics-core</module>
+    <module>epics-deploy</module>
+    <module>epics-util</module>
+    <module>epics-vtype</module>
+    <module>gpclient</module>
+  </modules>
+
+  <organization>
+    <name>EPICS</name>
+    <url>http://www.aps.anl.gov/epics/</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>https://tldrlegal.com/license/mit-license</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:https://github.com/epics-base/epicsCoreJava.git</connection>
+    <developerConnection>scm:git:https://github.com/epics-base/epicsCoreJava.git</developerConnection>
     <url>https://github.com/epics-base/epicsCoreJava</url>
-    <description>Parent project for the EPICS Core Libraries.</description>
+  </scm>
 
-    <properties>
-        <!-- Matching versions of Core modules -->
-        <epics-pvdata.version>6.1.0-SNAPSHOT</epics-pvdata.version>
-        <epics-ntypes.version>0.3.0-SNAPSHOT</epics-ntypes.version>
-        <epics-pvaccess.version>5.1.0-SNAPSHOT</epics-pvaccess.version>
-        <jca.version>2.4.1-SNAPSHOT</jca.version>
-        <!-- Versions of examples bundled with Core -->
+  <!-- Project developers (alphabetically) taken from SCM logs -->
+  <developers>
+    <developer>
+      <name>Michael Davidsaver</name>
+      <email>mdavidsaver@gmail.com</email>
+      <organization>Osprey DCS</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Dave Hickin</name>
+      <email>david.hickin@diamond.ac.uk</email>
+      <organization>Diamond Light Source</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Marty Kraimer</name>
+      <email>mrkraimer@comcast.net</email>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Ralph Lange</name>
+      <email>ralph.lange@gmx.de</email>
+      <organization>ITER Organization</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Kunal Shroff</name>
+      <email>kunalshroff9@gmail.com</email>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Matej Sekoranja</name>
+      <email>matej.sekoranja@cosylab.com</email>
+      <organization>Cosylab</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Gregory White</name>
+      <email>greg@slac.stanford.edu</email>
+      <organization>SLAC</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Georg Weiss</name>
+      <email>georgweiss@esss.se</email>
+      <organization>European Spallation Source</organization>
+      <roles>
+        <role>developer</role>
+      </roles>
+    </developer>
+  </developers>
 
-        <!-- Name of javadoc overview page -->
-        <mainpage.name>${project.name}</mainpage.name>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <distributionManagement>
+    <!-- To be able to deploy, set login/passwd in your m2 settings.xml, 
+      <servers> section (id values there should match ids below) -->
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
-    <modules>
-        <module>pvDataJava</module>
-        <module>normativeTypesJava</module>
-        <module>pvAccessJava</module>
-        <module>epics-core</module>
-        <module>epics-deploy</module>
-        <module>epics-util</module>
-        <module>epics-vtype</module>
-        <module>gpclient</module>
-    </modules>
+  <!-- Common depoendencies -->
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-    <organization>
-        <name>EPICS</name>
-        <url>http://www.aps.anl.gov/epics/</url>
-    </organization>
-
-    <licenses>
-        <license>
-            <name>The MIT License</name>
-            <url>https://tldrlegal.com/license/mit-license</url>
-        </license>
-    </licenses>
-
-    <scm>
-        <connection>scm:git:https://github.com/epics-base/epicsCoreJava.git</connection>
-        <developerConnection>scm:git:https://github.com/epics-base/epicsCoreJava.git</developerConnection>
-        <url>https://github.com/epics-base/epicsCoreJava</url>
-    </scm>
-
-    <!-- Project developers (alphabetically) taken from SCM logs -->
-    <developers>
-        <developer>
-            <name>Michael Davidsaver</name>
-            <email>mdavidsaver@gmail.com</email>
-            <organization>Osprey DCS</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Dave Hickin</name>
-            <email>david.hickin@diamond.ac.uk</email>
-            <organization>Diamond Light Source</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Marty Kraimer</name>
-            <email>mrkraimer@comcast.net</email>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Ralph Lange</name>
-            <email>ralph.lange@gmx.de</email>
-            <organization>ITER Organization</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Kunal Shroff</name>
-            <email>kunalshroff9@gmail.com</email>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Matej Sekoranja</name>
-            <email>matej.sekoranja@cosylab.com</email>
-            <organization>Cosylab</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Gregory White</name>
-            <email>greg@slac.stanford.edu</email>
-            <organization>SLAC</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Georg Weiss</name>
-            <email>georgweiss@esss.se</email>
-            <organization>European Spallation Source</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
-
-    <distributionManagement>
-        <!-- To be able to deploy, set login/passwd in your m2 settings.xml, <servers> section
-        (id values there should match ids below) -->
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-    <!-- Common depoendencies -->
+  <!-- Preset dependency versions for core librraies -->
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
+
+      <!-- EPICS Core Libraries -->
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-pvdata</artifactId>
+        <version>${epics-pvdata.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-pvdata</artifactId>
+        <version>${epics-pvdata.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-pvdata</artifactId>
+        <version>${epics-pvdata.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-ntypes</artifactId>
+        <version>${epics-ntypes.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-ntypes</artifactId>
+        <version>${epics-ntypes.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-ntypes</artifactId>
+        <version>${epics-ntypes.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-pvaccess</artifactId>
+        <version>${epics-pvaccess.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-pvaccess</artifactId>
+        <version>${epics-pvaccess.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>epics-pvaccess</artifactId>
+        <version>${epics-pvaccess.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>jca</artifactId>
+        <version>${jca.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>jca</artifactId>
+        <version>${jca.version}</version>
+        <classifier>sources</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.epics</groupId>
+        <artifactId>jca</artifactId>
+        <version>${jca.version}</version>
+        <classifier>javadoc</classifier>
+      </dependency>
+
     </dependencies>
+  </dependencyManagement>
 
-    <!-- Preset dependency versions for core librraies -->
-    <dependencyManagement>
+  <build>
+    <!-- Non-standard source directories -->
+    <sourceDirectory>${basedir}/src</sourceDirectory>
+    <testSourceDirectory>${basedir}/test</testSourceDirectory>
+
+    <plugins>
+      <!-- Includes the OSGi manifest -->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>3.3.0</version>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <id>bundle-manifest</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>manifest</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Set compiler for Java 7 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <additionalOptions>
+            <additionalOption>${javadoc.opts}</additionalOption>
+          </additionalOptions>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <overview>documentation/${mainpage.name}.html</overview>
+          <additionalOptions>
+            <additionalOption>${javadoc.opts}</additionalOption>
+          </additionalOptions>
+          <additionalOptions>--javafx</additionalOptions>
+          <detectJavaApiLink>true</detectJavaApiLink>
+          <detectLinks>false</detectLinks>
+          <detectOfflineLinks>true</detectOfflineLinks>
+          <docfilessubdirs>true</docfilessubdirs>
+          <isOffline>false</isOffline>
+          <!-- Hardcoding the java 8 docs since 11.0.2 and maven javadoc 
+            plugin hit the following jdk bug https://bugs.openjdk.java.net/browse/JDK-8212233 -->
+          <links>
+            <link>https://docs.oracle.com/javase/8/docs/api/</link>
+          </links>
+          <source>8</source>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
         <dependencies>
-
-            <!-- EPICS Core Libraries -->
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvdata</artifactId>
-                <version>${epics-pvdata.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvdata</artifactId>
-                <version>${epics-pvdata.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvdata</artifactId>
-                <version>${epics-pvdata.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-ntypes</artifactId>
-                <version>${epics-ntypes.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-ntypes</artifactId>
-                <version>${epics-ntypes.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-ntypes</artifactId>
-                <version>${epics-ntypes.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvaccess</artifactId>
-                <version>${epics-pvaccess.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvaccess</artifactId>
-                <version>${epics-pvaccess.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>epics-pvaccess</artifactId>
-                <version>${epics-pvaccess.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>jca</artifactId>
-                <version>${jca.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>jca</artifactId>
-                <version>${jca.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.epics</groupId>
-                <artifactId>jca</artifactId>
-                <version>${jca.version}</version>
-                <classifier>javadoc</classifier>
-            </dependency>
-
+          <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+          </dependency>
         </dependencies>
-    </dependencyManagement>
+      </plugin>
 
-    <build>
-        <!-- Non-standard source directories -->
-        <sourceDirectory>${basedir}/src</sourceDirectory>
-        <testSourceDirectory>${basedir}/test</testSourceDirectory>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.8.2</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-ssh</artifactId>
+            <version>2.8</version>
+          </dependency>
+        </dependencies>
+      </plugin>
 
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.8</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>sonatype-nexus-staging</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <profiles>
+
+    <profile>
+      <id>with-examples</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>bundleJava</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>release</id>
+      <build>
         <plugins>
-            <!-- Includes the OSGi manifest -->
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.3.0</version>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
-                <configuration>
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <!-- Set compiler for Java 7 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <additionalOptions>
-                        <additionalOption>${javadoc.opts}</additionalOption>
-                    </additionalOptions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <overview>documentation/${mainpage.name}.html</overview>
-                    <additionalOptions>
-                        <additionalOption>${javadoc.opts}</additionalOption>
-                    </additionalOptions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.wagon</groupId>
-                        <artifactId>wagon-ssh</artifactId>
-                        <version>2.8</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>sonatype-nexus-staging</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-
+          <plugin>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.6</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
-    </build>
+      </build>
+    </profile>
 
-    <profiles>
-
-        <profile>
-            <id>with-examples</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>bundleJava</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-    			<id>java-9+</id>
-    			<activation>
-    				<jdk>[9,)</jdk>
-    			</activation>
-          <properties>
-            <javadoc.opts>-html5</javadoc.opts>
-          </properties>
-          <modules>
-              <module>bundleJava</module>
-          </modules>
-    			<build>
-    				<plugins>
-    					<plugin>
-    						<groupId>org.apache.maven.plugins</groupId>
-    						<artifactId>maven-javadoc-plugin</artifactId>
-    						<configuration>
-    							<overview>documentation/${mainpage.name}.html</overview>
-    						</configuration>
-    						<dependencies>
-    							<dependency>
-    								<groupId>org.apache.commons</groupId>
-    								<artifactId>commons-lang3</artifactId>
-    								<version>3.7</version>
-    							</dependency>
-    						</dependencies>
-    						<executions>
-    							<execution>
-    								<id>attach-javadocs</id>
-    								<goals>
-    									<goal>jar</goal>
-    								</goals>
-    								<configuration>
-    									<additionalOptions>-html5</additionalOptions>
-    								</configuration>
-    							</execution>
-    						</executions>
-    					</plugin>
-    				</plugins>
-    			</build>
-    		</profile>
-    </profiles>
-
+    <profile>
+      <id>java-9+</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <javadoc.opts>-html5</javadoc.opts>
+      </properties>
+      <modules>
+        <module>bundleJava</module>
+      </modules>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <overview>documentation/${mainpage.name}.html</overview>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.7</version>
+              </dependency>
+            </dependencies>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <additionalOptions>-html5</additionalOptions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java-8</id>
+      <activation>
+        <jdk>1.8</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.0.1</version>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <!-- add Java 8 dependencies -->
+    </profile>
+    <profile>
+      <id>java-11</id>
+      <activation>
+        <jdk>11</jdk>
+      </activation>
+      <build>
+        <!-- add Java 11 dependencies -->
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.0.1</version>
+            <configuration>
+              <additionalOptions>--javafx</additionalOptions>
+              <detectJavaApiLink>true</detectJavaApiLink>
+              <detectLinks>false</detectLinks>
+              <detectOfflineLinks>true</detectOfflineLinks>
+              <docfilessubdirs>true</docfilessubdirs>
+              <isOffline>false</isOffline>
+              <!-- Hardcoding the java 8 docs since 11.0.2 and maven javadoc 
+                plugin hit the following jdk bug https://bugs.openjdk.java.net/browse/JDK-8212233 -->
+              <links>
+                <link>https://docs.oracle.com/javase/8/docs/api/</link>
+              </links>
+              <source>8</source>
+            </configuration>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+            <dependencies>
+              <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
