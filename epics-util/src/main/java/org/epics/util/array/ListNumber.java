@@ -20,7 +20,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     double getDouble(int index);
 
@@ -30,7 +30,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     float getFloat(int index);
 
@@ -40,7 +40,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     long getLong(int index);
 
@@ -50,7 +50,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     int getInt(int index);
 
@@ -60,7 +60,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     short getShort(int index);
 
@@ -70,7 +70,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to return
      * @return the element at the specified position in this list
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     byte getByte(int index);
 
@@ -81,7 +81,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to change
      * @param value the new value
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     void setDouble(int index, double value);
 
@@ -92,7 +92,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to change
      * @param value the new value
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     void setFloat(int index, float value);
 
@@ -103,7 +103,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to change
      * @param value the new value
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     void setLong(int index, long value);
 
@@ -114,7 +114,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to change
      * @param value the new value
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     void setInt(int index, int value);
 
@@ -125,7 +125,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to change
      * @param value the new value
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     void setShort(int index, short value);
 
@@ -136,7 +136,7 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the element to change
      * @param value the new value
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>)
+     *         (<code>index &lt; 0 || index &gt;= size()</code>)
      */
     void setByte(int index, byte value);
 
@@ -147,21 +147,21 @@ public interface ListNumber extends CollectionNumber {
      * @param index position of the first element to change
      * @param list the new values
      * @throws IndexOutOfBoundsException if the index is out of range
-     *         (<tt>index &lt; 0 || index &gt;= size()</tt>) or if this
+     *         (<code>index &lt; 0 || index &gt;= size()</code>) or if this
      *         list is too short to hold the data.
      */
     void setAll(int index, ListNumber list);
     
     /**
      * Returns a view of the portion of this list between the specified
-     * <tt>fromIndex</tt>, inclusive, and <tt>toIndex</tt>, exclusive.
+     * <var>fromIndex</var>, inclusive, and <var>toIndex</var>, exclusive.
      * 
      * @param fromIndex low endpoint (inclusive) of the subList
      * @param toIndex high endpoint (exclusive) of the subList
      * @return a view of the specified range within this list
      * @throws IndexOutOfBoundsException for an illegal endpoint index value
-     *         (<tt>fromIndex &lt; 0 || toIndex &gt; size ||
-     *         fromIndex &gt; toIndex</tt>)
+     *         (<code>fromIndex &lt; 0 || toIndex &gt; size ||
+     *         fromIndex &gt; toIndex</code>)
      */
     ListNumber subList(int fromIndex, int toIndex);
 
