@@ -78,7 +78,7 @@ public class CAChannelTest {
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
         PV<VType, Object> pv = gpClient.readAndWrite("ca://test_double_0").addListener(recorder).start();
-        recorder.wait(500, PVEventRecorder.forAConnectionEvent());
+        recorder.wait(1000, PVEventRecorder.forAConnectionEvent());
         recorder.wait(100, PVEventRecorder.anEventOfType(PVEvent.Type.VALUE));
         pv.write(VDouble.of(1.0, Alarm.none(), Time.now(), Display.none()));
         Thread.sleep(1000);
