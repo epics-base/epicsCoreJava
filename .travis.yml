@@ -4,8 +4,6 @@ language: java
 matrix:
   include:
     - jdk: openjdk8
-      before_install:
-        - export MVN_OPT='--projects "!gpclient/gpclient-javafx"'
     - jdk: openjdk11
 
 env:

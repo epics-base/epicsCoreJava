@@ -14,8 +14,7 @@
         <dependency>
             <groupId>org.epics</groupId>
             <artifactId>epics-pvaccess</artifactId>
-            <version>5.1.1</version>
-        </dependency>
+            </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>gpclient-core</artifactId>
