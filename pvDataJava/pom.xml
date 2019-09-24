@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>epics-parent</artifactId>
-        <version>7.0.3-SNAPSHOT</version>
+        <version>7.0.4</version>
     </parent>
 
     <artifactId>epics-pvdata</artifactId>
-    <version>6.1.3-SNAPSHOT</version>
+    <version>6.1.3</version>
 
     <name>pvDataJava</name>
     <url>https://github.com/epics-base/pvDataJava</url>
@@ -40,13 +40,13 @@
     	<url>https://github.com/epics-base/pvDataJava</url>
     	<connection>https://github.com/epics-base/pvDataJava</connection>
     	<developerConnection>https://github.com/epics-base/pvDataJava</developerConnection>
-      <tag>HEAD</tag>
+      <tag>epics-parent-7.0.4</tag>
   </scm>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>epics-util</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
