@@ -82,11 +82,7 @@ public class JsonArrays {
     public static ListDouble toListDouble(JsonArray array) {
         double[] values = new double[array.size()];
         for (int i = 0; i < values.length; i++) {
-            if (array.isNull(i)) {
-                values[i] = Double.NaN;
-            } else {
-                values[i] = array.getJsonNumber(i).doubleValue();
-            }
+            values[i] = VTypeToJsonV1.getDoubleFromJsonString(array.get(i).toString());
         }
         return ArrayDouble.of(values);
     }
@@ -313,10 +309,16 @@ public class JsonArrays {
         } else {
             for (int i = 0; i < list.size(); i++) {
                 double value = list.getDouble(i);
-                if (Double.isNaN(value) || Double.isInfinite(value)) {
-                    b.addNull();
-                } else {
+                if(Double.isFinite(value)){
                     b.add(value);
+                }
+                else if (Double.isNaN(value)) {
+                    b.add(VTypeJsonMapper.NAN);
+                } else if(Double.valueOf(value).equals(Double.POSITIVE_INFINITY)){
+                    b.add(VTypeJsonMapper.POS_INF);
+                }
+                else if(Double.valueOf(value).equals(Double.NEGATIVE_INFINITY)){
+                    b.add(VTypeJsonMapper.NEG_INF);
                 }
             }
         }
