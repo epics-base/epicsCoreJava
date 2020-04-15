@@ -11,7 +11,6 @@ import java.io.StringWriter;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
@@ -289,45 +288,5 @@ public class VTypeToJsonTest {
         testDeserialization("VByteArray1", vByteArray1);
         testDeserialization("VByteArray1a", vByteArray1);
     }
-
-    /**
-     * Tests serialization and de-serialization of a Double.NaN. See {@link JsonVTypeBuilder#add} and
-     * {@link VTypeToJsonV1#toVNumber}
-     */
-    @Test
-    public void testDoubleNaN(){
-        VDouble vDouble = VDouble.of(Double.NaN, Alarm.none(), Time.of(Instant.EPOCH), Display.none());
-        JsonObject jsonObject = VTypeToJson.toJson(vDouble);
-        assertEquals("NaN", jsonObject.getString("value"));
-        vDouble = (VDouble)VTypeToJson.toVType(jsonObject);
-        assertTrue(Double.isNaN(vDouble.getValue()));
-    }
-
-    @Test
-    public void testDoublePositiveInfinity(){
-        VDouble vDouble = VDouble.of(Double.POSITIVE_INFINITY, Alarm.none(), Time.of(Instant.EPOCH), Display.none());
-        JsonObject jsonObject = VTypeToJson.toJson(vDouble);
-        assertEquals(Double.toString(Double.POSITIVE_INFINITY), jsonObject.getString("value"));
-        vDouble = (VDouble)VTypeToJson.toVType(jsonObject);
-        assertTrue(vDouble.getValue().equals(Double.POSITIVE_INFINITY));
-    }
-
-    @Test
-    public void testDoubleNegativeInfinity(){
-        VDouble vDouble = VDouble.of(Double.NEGATIVE_INFINITY, Alarm.none(), Time.of(Instant.EPOCH), Display.none());
-        JsonObject jsonObject = VTypeToJson.toJson(vDouble);
-        assertEquals(VTypeJsonMapper.NEG_INF, jsonObject.getString("value"));
-        vDouble = (VDouble)VTypeToJson.toVType(jsonObject);
-        assertTrue(vDouble.getValue().equals(Double.NEGATIVE_INFINITY));
-    }
-
-    @Test
-    public void testDoubleNaNInArray(){
-        VDoubleArray vDoubleArray1 = VDoubleArray.of(ArrayDouble.of(0, Double.NaN, 2), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
-        JsonObject jsonObject = VTypeToJson.toJson(vDoubleArray1);
-        List valueObject = (List)jsonObject.get("value");
-        assertEquals(VTypeJsonMapper.NAN_QUOTED, valueObject.get(1).toString());
-        vDoubleArray1 = (VDoubleArray)VTypeToJson.toVType(jsonObject);
-        assertTrue(Double.isNaN(vDoubleArray1.getData().getDouble(1)));
-    }
+    
 }

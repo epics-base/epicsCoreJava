@@ -11,7 +11,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonNumber;
-import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonValue;
 import org.epics.util.array.ArrayByte;
@@ -83,11 +82,9 @@ public class JsonArrays {
     public static ListDouble toListDouble(JsonArray array) {
         double[] values = new double[array.size()];
         for (int i = 0; i < values.length; i++) {
-            Double doubleValue = VTypeToJsonV1.getDoubleFromJsonString(array.get(i).toString());
-            if(doubleValue != null){
-                values[i] = doubleValue;
-            }
-            else {
+            if (array.isNull(i)) {
+                values[i] = Double.NaN;
+            } else {
                 values[i] = array.getJsonNumber(i).doubleValue();
             }
         }
@@ -316,18 +313,9 @@ public class JsonArrays {
         } else {
             for (int i = 0; i < list.size(); i++) {
                 double value = list.getDouble(i);
-                if(Double.isFinite(value)){
-                    b.add(value);
-                }
-                else if (Double.isNaN(value)) {
-                    b.add(VTypeJsonMapper.NAN);
-                } else if(Double.valueOf(value).equals(Double.POSITIVE_INFINITY)){
-                    b.add(VTypeJsonMapper.POS_INF);
-                }
-                else if(Double.valueOf(value).equals(Double.NEGATIVE_INFINITY)){
-                    b.add(VTypeJsonMapper.NEG_INF);
-                }
-                else {
+                if (Double.isNaN(value) || Double.isInfinite(value)) {
+                    b.addNull();
+                } else {
                     b.add(value);
                 }
             }

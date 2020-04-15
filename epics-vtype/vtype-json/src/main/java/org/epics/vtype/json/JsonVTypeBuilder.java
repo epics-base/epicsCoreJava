@@ -70,25 +70,12 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
         return this;
     }
 
-    /**
-     * For the special cases of {@link Double#NaN}, {@link Double#POSITIVE_INFINITY} and
-     * {@link Double#NEGATIVE_INFINITY} this method adds a string representation of the value.
-     * @param string Name of property to set.
-     * @param d Value to set.
-     * @return The {@link JsonVTypeBuilder} instance.
-     */
     @Override
     public JsonVTypeBuilder add(String string, double d) {
-        if(Double.isFinite(d)){
+        if (Double.isNaN(d) || Double.isInfinite(d)) {
+            builder.addNull(string);
+        } else {
             builder.add(string, d);
-        }
-        else if (Double.isNaN(d)) {
-            builder.add(string, VTypeJsonMapper.NAN);
-        } else if(Double.valueOf(d).equals(Double.POSITIVE_INFINITY)){
-            builder.add(string, VTypeJsonMapper.POS_INF);
-        }
-        else if(Double.valueOf(d).equals(Double.NEGATIVE_INFINITY)){
-            builder.add(string, VTypeJsonMapper.NEG_INF);
         }
         return this;
     }
