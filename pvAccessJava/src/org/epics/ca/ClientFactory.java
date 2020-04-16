@@ -301,10 +301,7 @@ public class ClientFactory  {
         /* (non-Javadoc)
          * @see org.epics.ioc.util.RunnableReady#run(org.epics.ioc.util.ThreadReady)
          */
-        public void run(ThreadReady threadReady) {        
-System.out.println("CaV3Client");
-context.printInfo();
-System.out.println();
+        public void run(ThreadReady threadReady) {
             threadReady.ready();
             try {
                 while(true) {
