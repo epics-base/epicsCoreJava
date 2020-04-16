@@ -20,9 +20,7 @@ final class IVEnum extends VEnum {
         VType.argumentNotNull("enumDisplay", enumDisplay);
         VType.argumentNotNull("alarm", alarm);
         VType.argumentNotNull("time", time);
-        if (index < 0 || index >= enumDisplay.getChoices().size()) {
-            throw new IndexOutOfBoundsException("VEnum index must be within the label range");
-        }
+        VType.argumentNotNull("index", index);
         this.index = index;
         this.enumDisplay = enumDisplay;
         this.alarm = alarm;
@@ -31,7 +29,11 @@ final class IVEnum extends VEnum {
 
     @Override
     public String getValue() {
-        return enumDisplay.getChoices().get(index);
+        try {
+            return enumDisplay.getChoices().get(index);
+        } catch (IndexOutOfBoundsException ex) {
+            return "Invalid index : " + index + " must be within the label range " + enumDisplay.getChoices().toString();
+        }
     }
 
     @Override

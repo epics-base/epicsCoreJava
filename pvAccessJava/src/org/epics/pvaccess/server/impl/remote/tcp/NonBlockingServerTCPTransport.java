@@ -108,12 +108,13 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 		
 		context.getLogger().fine("Transport to " + socketAddress + " still has " + channels.size() + " channel(s) active and closing...");
 	
-		
-		for(ServerChannel serverChannel : channels.values()) {
-			serverChannel.destroy();
-		}
-		
-		channels.clear();
+        synchronized (channels) {
+            for (ServerChannel serverChannel : channels.values()) {
+                serverChannel.destroy();
+            }
+
+            channels.clear();
+        }
 	}
 
 	/**
@@ -122,13 +123,13 @@ public class NonBlockingServerTCPTransport extends NonBlockingTCPTransport
 	 */
 	public int preallocateChannelSID()
 	{
-		
+		synchronized (channels) {
 			// search first free (theoretically possible loop of death)
 			int sid = lastChannelSID.incrementAndGet();
 			while (channels.containsKey(sid))
 				sid = lastChannelSID.incrementAndGet();
 			return sid;
-		
+		}
 	}
 
 	/**

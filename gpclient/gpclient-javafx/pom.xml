@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>gpclient</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
     <artifactId>gpclient-javafx</artifactId>
     <packaging>jar</packaging>
@@ -35,6 +35,27 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>gpclient-loc</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <!-- JavaFX, since JDK 11 a separate module -->
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-controls</artifactId>
+          <version>11.0.2</version>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-web</artifactId>
+          <version>11.0.2</version>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-swing</artifactId>
+          <version>11.0.2</version>
+        </dependency>
+        <dependency>
+          <groupId>org.openjfx</groupId>
+          <artifactId>javafx-fxml</artifactId>
+          <version>11.0.2</version>
         </dependency>
     </dependencies>
 </project>

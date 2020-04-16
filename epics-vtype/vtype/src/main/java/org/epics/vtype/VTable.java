@@ -21,7 +21,7 @@ public abstract class VTable extends VType {
      *
      * @return the number of columns
      */
-    abstract int getColumnCount();
+    public abstract int getColumnCount();
 
     /**
      * The number of rows in the table.
@@ -33,7 +33,7 @@ public abstract class VTable extends VType {
      *
      * @return the number of rows
      */
-    abstract int getRowCount();
+    public abstract int getRowCount();
 
     /**
      * The type of the elements in the column. The column array will be an array of
@@ -44,7 +44,7 @@ public abstract class VTable extends VType {
      * @param column the column index
      * @return the type of this column
      */
-    abstract Class<?> getColumnType(int column);
+    public abstract Class<?> getColumnType(int column);
 
     /**
      * The name of the given column.
@@ -52,7 +52,7 @@ public abstract class VTable extends VType {
      * @param column the column index
      * @return the name of the column
      */
-    abstract String getColumnName(int column);
+    public abstract String getColumnName(int column);
 
     /**
      * The data for the given column.
@@ -63,7 +63,7 @@ public abstract class VTable extends VType {
      * @param column the column index
      * @return the data of the column
      */
-    abstract Object getColumnData(int column);
+    public abstract Object getColumnData(int column);
 
     /**
      * Create a new VTable
