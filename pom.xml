@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.epics</groupId>
@@ -51,8 +52,8 @@
         <connection>scm:git:https://github.com/epics-base/epicsCoreJava.git</connection>
         <developerConnection>scm:git:https://github.com/epics-base/epicsCoreJava.git</developerConnection>
         <url>https://github.com/epics-base/epicsCoreJava</url>
-    <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <!-- Project developers (alphabetically) taken from SCM logs -->
     <developers>
@@ -316,7 +317,7 @@
                     <!-- Hardcoding the java 8 docs since 11.0.2 and maven javadoc 
                       plugin hit the following jdk bug https://bugs.openjdk.java.net/browse/JDK-8212233 -->
                     <links>
-                      <link>https://docs.oracle.com/javase/8/docs/api/</link>
+                        <link>https://docs.oracle.com/javase/8/docs/api/</link>
                     </links>
                     <source>8</source>
                 </configuration>
@@ -329,11 +330,11 @@
                     </execution>
                 </executions>
                 <dependencies>
-                  <dependency>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm</artifactId>
-                    <version>${asm.version}</version>
-                  </dependency>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm</artifactId>
+                        <version>${asm.version}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
 
@@ -361,6 +362,30 @@
                 </configuration>
             </plugin>
 
+            <!-- In case one wishes to integrate with Sonarqube running on localhost -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.5</version>
+                <executions>
+                    <execution>
+                        <id>default-prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <destFile>${build.directory}/jacoco.exec</destFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
@@ -398,46 +423,45 @@
         </profile>
 
         <profile>
-    			<id>java-9+</id>
-    			<activation>
-    				<jdk>[9,)</jdk>
-    			</activation>
-          <properties>
-            <javadoc.opts>-html5</javadoc.opts>
-          </properties>
-          <modules>
-              <module>bundleJava</module>
-          </modules>
-    			<build>
-    				<plugins>
-    					<plugin>
-    						<groupId>org.apache.maven.plugins</groupId>
-    						<artifactId>maven-javadoc-plugin</artifactId>
-    						<configuration>
-    							<overview>documentation/${mainpage.name}.html</overview>
-    						</configuration>
-    						<dependencies>
-    							<dependency>
-    								<groupId>org.apache.commons</groupId>
-    								<artifactId>commons-lang3</artifactId>
-    								<version>3.7</version>
-    							</dependency>
-    						</dependencies>
-    						<executions>
-    							<execution>
-    								<id>attach-javadocs</id>
-    								<goals>
-    									<goal>jar</goal>
-    								</goals>
-    								<configuration>
-    									<additionalOptions>-html5</additionalOptions>
-    								</configuration>
-    							</execution>
-    						</executions>
-    					</plugin>
-    				</plugins>
-    			</build>
-    		</profile>
+            <id>java-9+</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <properties>
+                <javadoc.opts>-html5</javadoc.opts>
+            </properties>
+            <modules>
+                <module>bundleJava</module>
+            </modules>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <overview>documentation/${mainpage.name}.html</overview>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.commons</groupId>
+                                <artifactId>commons-lang3</artifactId>
+                                <version>3.7</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalOptions>-html5</additionalOptions>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-
 </project>
