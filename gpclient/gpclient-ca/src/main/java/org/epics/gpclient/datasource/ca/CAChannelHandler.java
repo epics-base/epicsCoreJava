@@ -4,29 +4,6 @@
  */
 package org.epics.gpclient.datasource.ca;
 
-import static org.epics.gpclient.datasource.ca.CADataSource.log;
-
-import static org.epics.util.array.UnsafeUnwrapper.wrappedArray;
-import static org.epics.util.array.UnsafeUnwrapper.wrappedDoubleArray;
-
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
-import org.epics.gpclient.ReadCollector;
-import org.epics.gpclient.WriteCollector.WriteRequest;
-import org.epics.gpclient.datasource.MultiplexedChannelHandler;
-import org.epics.gpclient.datasource.ca.types.CATypeAdapter;
-import org.epics.util.array.CollectionNumbers;
-import org.epics.util.array.ListNumber;
-import org.epics.vtype.VByte;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VFloat;
-import org.epics.vtype.VInt;
-import org.epics.vtype.VLong;
-import org.epics.vtype.VShort;
-
 import gov.aps.jca.CAException;
 import gov.aps.jca.Channel;
 import gov.aps.jca.Monitor;
@@ -48,6 +25,27 @@ import gov.aps.jca.event.ConnectionEvent;
 import gov.aps.jca.event.ConnectionListener;
 import gov.aps.jca.event.MonitorEvent;
 import gov.aps.jca.event.MonitorListener;
+import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.WriteCollector.WriteRequest;
+import org.epics.gpclient.datasource.MultiplexedChannelHandler;
+import org.epics.gpclient.datasource.ca.types.CATypeAdapter;
+import org.epics.util.array.ListNumber;
+import org.epics.vtype.VByte;
+import org.epics.vtype.VDouble;
+import org.epics.vtype.VEnum;
+import org.epics.vtype.VFloat;
+import org.epics.vtype.VInt;
+import org.epics.vtype.VLong;
+import org.epics.vtype.VShort;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
+
+import static org.epics.gpclient.datasource.ca.CADataSource.log;
+import static org.epics.util.array.UnsafeUnwrapper.wrappedArray;
+import static org.epics.util.array.UnsafeUnwrapper.wrappedDoubleArray;
 
 public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayload, CAMessagePayload> {
 
@@ -294,6 +292,7 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
         }
         try {
             if (newValue instanceof Double[]) {
+
                 log.warning("You are writing a Double[] to channel " + getChannelName()
                         + ": use org.epics.util.array.ListDouble instead");
                 final Double dbl[] = (Double[]) newValue;
@@ -302,8 +301,10 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
                     val[i] = dbl[i].doubleValue();
                 }
                 newValue = val;
+                channel.put((double[])newValue);
+
             }
-            if (newValue instanceof Integer[]) {
+            else if (newValue instanceof Integer[]) {
                 log.warning("You are writing a Integer[] to channel " + getChannelName()
                         + ": use org.epics.util.array.ListInt instead");
                 final Integer ival[] = (Integer[]) newValue;
@@ -312,9 +313,28 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
                     val[i] = ival[i].intValue();
                 }
                 newValue = val;
+                channel.put((int[])newValue);
             }
 
-            if (newValue instanceof String) {
+            else if(newValue instanceof Double){
+                channel.put(((Double) newValue).doubleValue());
+            }
+            else if(newValue instanceof Integer){
+                channel.put(((Integer) newValue).intValue());
+            }
+            else if(newValue instanceof BigInteger){
+                channel.put(((BigInteger) newValue).intValue());
+            }
+            else if(newValue instanceof Short){
+                channel.put(((Short) newValue).shortValue());
+            }
+            else if(newValue instanceof Float){
+                channel.put(((Float) newValue).floatValue());
+            }
+            else if(newValue instanceof Byte){
+                channel.put(((Byte) newValue).byteValue());
+            }
+            else if (newValue instanceof String) {
                 if (isLongString()) {
                     channel.put(toBytes(newValue.toString()));
                 } else {
@@ -336,6 +356,13 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
                 channel.put((float[]) newValue);
             } else if (newValue instanceof double[]) {
                 channel.put((double[]) newValue);
+            } else if (newValue instanceof long[]) {
+                long[] longs = (long[])newValue;
+                double[] value = new double[longs.length];
+                for(int i = 0; i < longs.length; i++){
+                    value[i] = (double)longs[i];
+                }
+                channel.put(value);
             } else if (newValue instanceof VByte) {
                 channel.put(((VByte) newValue).getValue());
             } else if (newValue instanceof VShort) {
@@ -356,7 +383,10 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
                 channel.put(((VFloat) newValue).getValue());
             } else if (newValue instanceof VDouble) {
                 channel.put(((VDouble) newValue).getValue());
-            } else {
+            } else if(newValue instanceof VEnum){
+                channel.put(((VEnum) newValue).getValue());
+            }
+            else {
                 // callback.channelWritten(new Exception(new RuntimeException("Unsupported type
                 // for CA: " + newValue.getClass())));
                 return;
