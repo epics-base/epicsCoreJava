@@ -1,0 +1,31 @@
+variables:
+    GIT_SSL_NO_VERIFY: "true"
+    MAVEN_CLI_OPTS: "--batch-mode"
+    
+.maven: &maven
+    image: registry.esss.lu.se/ics-docker/maven:openjdk-8
+
+build.maven:
+    <<: *maven
+    stage: build
+    script:
+        - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true install'
+
+test:
+    <<: *maven
+    stage: test
+    script:
+        - 'export EPICS_PVA_ADDR_LIST=127.255.255.255'
+        - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
+        - '! grep "Build failures were ignored" std.out'
+    artifacts:
+        reports:
+            junit:
+                - "target/surefire-reports/TEST-*.xml"
+                - "*/target/surefire-reports/TEST-*.xml"
+
+publish:
+    <<: *maven
+    stage: deploy
+    script:
+        - 'mvn $MAVEN_CLI_OPTS deploy -DskipTests -Dmaven.javadoc.skip=true -Dartifactory.username=${ARTIFACTORY_USERNAME} -Dartifactory.password=${ARTIFACTORY_PASSWORD}'
