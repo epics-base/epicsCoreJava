@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
@@ -20,6 +21,7 @@ import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListFloat;
 import org.epics.util.stats.Range;
 import org.epics.util.text.NumberFormats;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -28,6 +30,11 @@ import org.mockito.Mockito;
  * @author carcassi
  */
 public class SimpleValueFormatTest {
+
+    static {
+        Locale.setDefault(new Locale("en", "US"));
+    }
+
     Range maxDoubleRange = Range.of(Double.MIN_VALUE, Double.MAX_VALUE);
     Display display = Display.of(maxDoubleRange, maxDoubleRange, maxDoubleRange, maxDoubleRange, "",
             NumberFormats.precisionFormat(3));

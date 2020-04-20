@@ -5,7 +5,12 @@
 package org.epics.util.text;
 
 import java.text.NumberFormat;
+import java.util.Locale;
+
 import static org.hamcrest.CoreMatchers.equalTo;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -17,6 +22,11 @@ import static org.hamcrest.Matchers.*;
 public class NumberFormatsTest {
     
     public NumberFormatsTest() {
+    }
+
+    @Before
+    public void setLocale(){
+        Locale.setDefault(new Locale("en", "US"));
     }
 
     @Test
