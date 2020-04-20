@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>epics-deploy</artifactId>
-  <version>7.0.4-SNAPSHOT</version>
+
     <packaging>pom</packaging>
 
     <name>EPICS Core Nexus Deploy</name>

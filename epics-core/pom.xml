@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>epics-core</artifactId>
-  <version>7.0.4-SNAPSHOT</version>
+
     <packaging>pom</packaging>
 
     <name>EPICS Core Libraries POM</name>

@@ -8,7 +8,7 @@
     </parent>
 
     <artifactId>epics-bundle-java</artifactId>
-  <version>7.0.4-SNAPSHOT</version>
+
     <packaging>pom</packaging>
 
     <name>EPICS Core Distribution Bundle</name>
