@@ -256,14 +256,29 @@ public class CAVTypeAdapterSet implements CATypeAdapterSet {
         }
     };
 
-//    // DBR_TIME_Enum -> VEnum
-//    final static CATypeAdapter DBREnumToVEnum = new CATypeAdapter(VEnum.class, DBR_TIME_Enum.TYPE, DBR_LABELS_Enum.TYPE, false) {
-//
-//        @Override
-//        public VEnum createValue(DBR value, DBR metadata, CAConnectionPayload connPayload) {
-//            return new VEnumFromDbr((DBR_TIME_Enum) value, (DBR_LABELS_Enum) metadata, connPayload);
-//        }
-//    };
+    // DBR_TIME_Enum -> VEnum
+    final static CATypeAdapter DBREnumToVEnum = new CATypeAdapter(VEnum.class, DBR_TIME_Enum.TYPE, DBR_LABELS_Enum.TYPE, false) {
+
+        @Override
+        public VEnum createValue(DBR rawMessage, DBR rawMetadata, CAConnectionPayload connPayload) {
+            DBR_TIME_Enum message = (DBR_TIME_Enum)rawMessage;
+            DBR_LABELS_Enum metadata = (DBR_LABELS_Enum) rawMetadata;
+            Alarm alarm;
+            if (!connPayload.isChannelConnected()) {
+                alarm = Alarm.disconnected();
+            } else {
+                alarm = CADataUtils.fromEpics(message.getSeverity());
+            }
+            Time timestamp;
+            if (!connPayload.isChannelConnected()) {
+                timestamp = Time.of(connPayload.getEventTime());
+            } else {
+                timestamp = CADataUtils.timestampOf(message.getTimeStamp());
+            }
+            EnumDisplay enumDisplay = EnumDisplay.of(metadata.getLabels());
+            return VEnum.of(message.getEnumValue()[0], enumDisplay, alarm, timestamp);
+        }
+    };
 
     // DBR_TIME_Float -> VFloatArray
     final static CATypeAdapter DBRFloatToVFloatArray = new CATypeAdapter(VFloatArray.class, DBR_TIME_Float.TYPE, DBR_CTRL_Double.TYPE, true) {
@@ -451,7 +466,7 @@ public class CAVTypeAdapterSet implements CATypeAdapterSet {
         newFactories.add(DBRIntToVInt);
         newFactories.add(DBRStringToVString);
         newFactories.add(DBRByteToVString);
-//        newFactories.add(DBREnumToVEnum);
+        newFactories.add(DBREnumToVEnum);
 
         // Add all ARRAYs
         newFactories.add(DBRFloatToVFloatArray);
