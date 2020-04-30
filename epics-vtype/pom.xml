@@ -3,12 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>epics-vtype-all</artifactId>
     <name>epics-vtype</name>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>epics-parent</artifactId>
-        <version>7.0.5-SNAPSHOT</version>
+        <version>7.0.6-SNAPSHOT</version>
     </parent>
     <description>A set of standard types for value processing.</description>
     <properties>
