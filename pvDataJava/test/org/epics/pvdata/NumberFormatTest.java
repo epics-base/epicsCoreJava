@@ -7,6 +7,7 @@ package org.epics.pvdata;
 import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.Locale;
 
 import junit.framework.TestCase;
 
@@ -18,7 +19,9 @@ import junit.framework.TestCase;
  */
 public class NumberFormatTest extends TestCase {
 
+
 	public void testNumberFormat() {
+		Locale.setDefault(new Locale("en", "US"));
 		NumberFormat nf = new NumberFormatDouble("%12.2f");
 		StringBuffer sb = new StringBuffer();
 		FieldPosition fp = new FieldPosition(0);

@@ -4,6 +4,8 @@
  */
 package org.epics.gpclient.datasource.ca.types;
 
+import org.epics.vtype.EnumDisplay;
+import org.epics.vtype.VEnumArray;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VString;
@@ -259,14 +261,28 @@ public class CAVTypeAdapterSet implements CATypeAdapterSet {
         }
     };
 
-//    // DBR_TIME_Enum -> VEnum
-//    final static CATypeAdapter DBREnumToVEnum = new CATypeAdapter(VEnum.class, DBR_TIME_Enum.TYPE, DBR_LABELS_Enum.TYPE, false) {
-//
-//        @Override
-//        public VEnum createValue(DBR value, DBR metadata, CAConnectionPayload connPayload) {
-//            return new VEnumFromDbr((DBR_TIME_Enum) value, (DBR_LABELS_Enum) metadata, connPayload);
-//        }
-//    };
+    // DBR_TIME_Enum -> VEnum
+    final static CATypeAdapter DBREnumToVEnum = new CATypeAdapter(VEnum.class, DBR_TIME_Enum.TYPE, DBR_LABELS_Enum.TYPE, false) {
+
+        @Override
+        public VEnum createValue(DBR value, DBR rawMetadata, CAConnectionPayload connPayload) {
+            DBR_TIME_Enum message = (DBR_TIME_Enum)value;
+            DBR_LABELS_Enum metadata = (DBR_LABELS_Enum)rawMetadata;
+            Alarm alarm;
+            if (!connPayload.isChannelConnected()) {
+                alarm = Alarm.disconnected();
+            } else {
+                alarm = CADataUtils.fromEpics(message.getSeverity());
+            }
+            Time timestamp;
+            if (!connPayload.isChannelConnected()) {
+                timestamp = Time.of(connPayload.getEventTime());
+            } else {
+                timestamp = CADataUtils.timestampOf(message.getTimeStamp());
+            }
+            return VEnum.of(message.getEnumValue()[0], EnumDisplay.of(metadata.getLabels()), alarm, timestamp);
+        }
+    };
 
     // DBR_TIME_Float -> VFloatArray
     final static CATypeAdapter DBRFloatToVFloatArray = new CATypeAdapter(VFloatArray.class, DBR_TIME_Float.TYPE, DBR_CTRL_Double.TYPE, true) {
@@ -410,7 +426,7 @@ public class CAVTypeAdapterSet implements CATypeAdapterSet {
     };
 
     // DBR_TIME_Int -> VIntArray
-    final static CATypeAdapter DBRIntToVIntArray = new CATypeAdapter(VIntArray.class, DBR_TIME_Int.TYPE, DBR_CTRL_Double.TYPE, true) {
+        final static CATypeAdapter DBRIntToVIntArray = new CATypeAdapter(VIntArray.class, DBR_TIME_Int.TYPE, DBR_CTRL_Double.TYPE, true) {
 
         @Override
         public VIntArray createValue(DBR value, DBR rawMetadata, CAConnectionPayload connPayload) {
@@ -443,7 +459,7 @@ public class CAVTypeAdapterSet implements CATypeAdapterSet {
     };
     
     // DBR_TIME_String -> VString
-    final static CATypeAdapter DBRStringToVStringArray = new CATypeAdapter(VStringArray.class, DBR_TIME_String.TYPE, null, false) {
+    final static CATypeAdapter DBRStringToVStringArray = new CATypeAdapter(VStringArray.class, DBR_TIME_String.TYPE, null, true) {
 
         @Override
         public VStringArray createValue(DBR rawMessage, DBR metadata, CAConnectionPayload connPayload) {
@@ -476,7 +492,7 @@ public class CAVTypeAdapterSet implements CATypeAdapterSet {
         newFactories.add(DBRIntToVInt);
         newFactories.add(DBRStringToVString);
         newFactories.add(DBRByteToVString);
-//        newFactories.add(DBREnumToVEnum);
+        newFactories.add(DBREnumToVEnum);
 
         // Add all ARRAYs
         newFactories.add(DBRFloatToVFloatArray);
