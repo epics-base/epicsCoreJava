@@ -220,11 +220,10 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
                 nativeDBRType = DBRType.STRING;
             }
         }
-        String[] propertyNames = new String[propertyList.size()];
-        for(int i=0; i<propertyNames.length; i++) propertyNames[i] = propertyList.get(i);
+        
         DBRProperty dbrProperty = DBRProperty.none;
-        if(propertyNames.length>0) {
-            for(String propertyName : propertyNames) {
+        if(propertyList.size()>0) {
+            for(String propertyName : propertyList) {
                 if(propertyName.equals("alarm")&& (dbrProperty.compareTo(DBRProperty.status)<0)) {
                     dbrProperty = DBRProperty.status;
                     continue;
@@ -911,15 +910,18 @@ public class BaseV3ChannelStructure implements V3ChannelStructure {
             String message = status.getName();
             setAlarm(statusMap.get(status),alarmSeverity,message);
         }
-        if(displayLow<displayHigh) {
+        if(units!=null) {
             pvStructure = this.pvStructure.getStructureField("display");
             if(pvStructure!=null) {
-                if(units!=null) {
                     PVString pvUnits = pvStructure.getStringField("units");
                     if(pvUnits!=null) {
                         pvUnits.put(units.toString());
                     }
                 }
+        }
+        if(displayLow<displayHigh) {
+            pvStructure = this.pvStructure.getStructureField("display");
+            if(pvStructure!=null) {
                 PVDouble pvLow = pvStructure.getDoubleField("limitLow");
                 PVDouble pvHigh = pvStructure.getDoubleField("limitHigh");
                 if(pvLow!=null && pvHigh!=null) {
