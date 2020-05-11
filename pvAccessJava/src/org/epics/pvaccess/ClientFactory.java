@@ -96,6 +96,7 @@ public class ClientFactory {
     	{
     		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
     		factory.destroySharedInstance();
+                 factory=null;
     	}
     }
 }
