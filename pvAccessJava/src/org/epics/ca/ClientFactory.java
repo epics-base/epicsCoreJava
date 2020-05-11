@@ -149,7 +149,7 @@ public class ClientFactory  {
                 context.destroy();
             } catch (CAException e) {
                 e.printStackTrace();
-        }
+            }
         }
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelProvider#channelFind(java.lang.String, org.epics.pvaccess.client.ChannelFindRequester)
