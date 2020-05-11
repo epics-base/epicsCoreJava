@@ -78,12 +78,18 @@ public class ClientFactory  {
 	        }
 		}
     	
-		public synchronized void destroySharedInstance() {
+		public synchronized boolean destroySharedInstance() {
+			boolean destroyed = true;
 			if (channelProvider != null)
 			{
-				channelProvider.destroy();
-				channelProvider = null;
+    				try{
+    				    	channelProvider.destroy();
+    				    	channelProvider = null;
+    				} catch (Exception ex) {
+    				    	destroyed = false;
+    				}
 			}
+			return destroyed;
 		}
     }
 
@@ -103,7 +109,10 @@ public class ClientFactory  {
     	if (factory != null)
     	{
     		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
-    		factory.destroySharedInstance();
+    		if(factory.destroySharedInstance())  
+    		{
+    			factory=null;
+    		}
     	}
     }
 
