@@ -16,7 +16,7 @@
         <epics-pvdata.version>6.1.5-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.3.5-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>5.1.5-SNAPSHOT</epics-pvaccess.version>
-        <jca.version>2.4.4</jca.version>
+        <jca.version>2.4.5-SNAPSHOT</jca.version>
         <!-- Versions of examples bundled with Core -->
         <!-- Name of javadoc overview page -->
         <mainpage.name>${project.name}</mainpage.name>
@@ -218,18 +218,18 @@
             <dependency>
                 <groupId>org.epics</groupId>
                 <artifactId>jca</artifactId>
-                <version>2.4.5-SNAPSHOT</version>
+                <version>${jca.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.epics</groupId>
                 <artifactId>jca</artifactId>
-                <version>2.4.5-SNAPSHOT</version>
+                <version>${jca.version}</version>
                 <classifier>sources</classifier>
             </dependency>
             <dependency>
                 <groupId>org.epics</groupId>
                 <artifactId>jca</artifactId>
-                <version>2.4.5-SNAPSHOT</version>
+                <version>${jca.version}</version>
                 <classifier>javadoc</classifier>
             </dependency>
 
