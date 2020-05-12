@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -540,22 +541,21 @@ public class ClientContextImpl implements Context {
 
 	}
 
-	/**
-	 * Destroy all channels.
-	 */
-	private void destroyAllChannels() {
-
-		for (Channel channel : channelsByCID.values()) {
-			try {
-				channel.destroy();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		channelsByCID.clear();
-
-	}
+    /**
+     * Destroy all channels.
+     */
+    private void destroyAllChannels() {
+        synchronized (channelsByCID) {
+            for (Channel channel : new ArrayList<>(channelsByCID.values())) {
+                try {
+                    channel.destroy();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            channelsByCID.clear();
+        }
+    }
 
 	/**
 	 * Check channel name.
@@ -587,7 +587,6 @@ public class ClientContextImpl implements Context {
 		boolean lockAcquired = namedLocker.acquireSynchronizationObject(name, LOCK_TIMEOUT);
 		if (lockAcquired) {
 			try {
-
 				int cid = generateCID();
 				return new ChannelImpl(this, cid, name, requester, priority, addresses);
 			} finally {
@@ -933,18 +932,23 @@ public class ClientContextImpl implements Context {
 	 * 
 	 * @return Client channel ID (CID).
 	 */
-	private int generateCID() {
-		// reserve CID
-		channelsByCID.put(lastCID, null);
-		return lastCID;
-	}
+    private int generateCID() {
+        synchronized (channelsByCID) {
+            // reserve CID
+            // search first free (theoretically possible loop of death)
+            while (getChannel(++lastCID) != null)
+                ;
+            // reserve CID
+            channelsByCID.put(lastCID, null);
+            return lastCID;
+        }
+    }
 
 	/**
 	 * Free generated channel ID (CID).
 	 */
 	private void freeCID(int cid) {
 		channelsByCID.remove(cid);
-
 	}
 
 	/**
@@ -954,10 +958,9 @@ public class ClientContextImpl implements Context {
 	 *            I/O ID.
 	 * @return request response with given I/O ID.
 	 */
-	public ResponseRequest getResponseRequest(int ioid) {
-
-		return (ResponseRequest) pendingResponseRequests.get(ioid);
-	}
+    public ResponseRequest getResponseRequest(int ioid) {
+            return (ResponseRequest) pendingResponseRequests.get(ioid);
+    }
 
 	/**
 	 * Register response request.
@@ -967,10 +970,11 @@ public class ClientContextImpl implements Context {
 	 * @return request ID (IOID).
 	 */
 	public int registerResponseRequest(ResponseRequest request) {
-
-		int ioid = generateIOID();
-		pendingResponseRequests.put(ioid, request);
-		return ioid;
+        synchronized (pendingResponseRequests) {
+            int ioid = generateIOID();
+            pendingResponseRequests.put(ioid, request);
+            return ioid;
+        }
 
 	}
 
@@ -990,15 +994,16 @@ public class ClientContextImpl implements Context {
 	 * 
 	 * @return IOID.
 	 */
-	private int generateIOID() {
-
-		// search first free (theoretically possible loop of death)
-		while (pendingResponseRequests.get(++lastIOID) != null || lastIOID == PVAConstants.PVA_INVALID_IOID)
-			;
-		// reserve IOID
-		pendingResponseRequests.put(lastIOID, null);
-		return lastIOID;
-	}
+    private int generateIOID() {
+        synchronized (pendingResponseRequests) {
+            // search first free (theoretically possible loop of death)
+            while (pendingResponseRequests.get(++lastIOID) != null || lastIOID == PVAConstants.PVA_INVALID_IOID)
+                ;
+            // reserve IOID
+            pendingResponseRequests.put(lastIOID, null);
+            return lastIOID;
+        }
+    }
 
 	/**
 	 * Get (and if necessary create) beacon handler.

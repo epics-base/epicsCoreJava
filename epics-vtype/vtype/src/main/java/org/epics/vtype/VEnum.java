@@ -4,9 +4,7 @@
  */
 package org.epics.vtype;
 
-import java.util.List;
 import java.util.Objects;
-import static org.epics.vtype.VType.typeOf;
 
 /**
  * Scalar enum with alarm and timestamp.

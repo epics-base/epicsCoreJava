@@ -72,10 +72,16 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
 
     @Override
     public JsonVTypeBuilder add(String string, double d) {
-        if (Double.isNaN(d) || Double.isInfinite(d)) {
-            builder.addNull(string);
-        } else {
+        if(Double.isFinite(d)){
             builder.add(string, d);
+        }
+        else if (Double.isNaN(d)) {
+            builder.add(string, VTypeJsonMapper.NAN);
+        } else if(Double.valueOf(d).equals(Double.POSITIVE_INFINITY)){
+            builder.add(string, VTypeJsonMapper.POS_INF);
+        }
+        else if(Double.valueOf(d).equals(Double.NEGATIVE_INFINITY)){
+            builder.add(string, VTypeJsonMapper.NEG_INF);
         }
         return this;
     }

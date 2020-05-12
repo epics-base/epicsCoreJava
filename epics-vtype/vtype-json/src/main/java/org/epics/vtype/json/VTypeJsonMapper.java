@@ -44,6 +44,25 @@ class VTypeJsonMapper implements JsonObject {
     
     private final JsonObject json;
 
+    public static final String NAN = Double.toString(Double.NaN);
+    /**
+     * Quoted version of {@link Double#NaN}. Needed for comparison when de-serializing,
+     * as serialization of {@link Double#NaN} creates a quotes string.
+     */
+    public static final String NAN_QUOTED = "\"" + NAN + "\"";
+    public static final String POS_INF = Double.toString(Double.POSITIVE_INFINITY);
+    /**
+     * Quoted version of {@link Double#POSITIVE_INFINITY}. Needed for comparison when de-serializing,
+     * as serialization of {@link Double#POSITIVE_INFINITY} creates a quotes string.
+     */
+    public static final String POS_INF_QUOTED = "\"" + POS_INF + "\"";
+    public static final String NEG_INF = Double.toString(Double.NEGATIVE_INFINITY);
+    /**
+     * Quoted version of {@link Double#NEGATIVE_INFINITY}. Needed for comparison when de-serializing,
+     * as serialization of {@link Double#NEGATIVE_INFINITY} creates a quotes string.
+     */
+    public static final String NEG_INF_QUOTED = "\"" + NEG_INF + "\"";
+
     public VTypeJsonMapper(JsonObject json) {
         this.json = json;
     }

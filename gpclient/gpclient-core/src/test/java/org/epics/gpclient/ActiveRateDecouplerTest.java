@@ -56,7 +56,8 @@ public class ActiveRateDecouplerTest {
                 decoupler.start();
                 Thread.sleep(500);
                 decoupler.stop();
-                assertThat(log.getEvents().size(), lessThanOrEqualTo(5));
+                // XXX changing the max event's in order to accommodate for irregularities on CI setups
+                assertThat(log.getEvents().size(), lessThanOrEqualTo(6));
                 assertThat(log.getEvents().size(), greaterThanOrEqualTo(4));
                 return null;
             }

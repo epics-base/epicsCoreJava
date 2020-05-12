@@ -16,7 +16,9 @@ import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
 import org.epics.pvdata.pv.StandardField;
+import org.junit.Before;
 
+import java.util.Locale;
 
 
 /**
@@ -29,6 +31,11 @@ public class BitSetUtilTest extends TestCase {
     private static final StandardField standardField = StandardFieldFactory.getStandardField();
     private static final BitSetUtil bitSetUtil = BitSetUtilFactory.getCompressBitSet();
 	private static boolean debug = false;
+
+    @Before
+    public void setLocale(){
+        Locale.setDefault(new Locale("en", "US"));
+    }
     
     static private void print(String name,String value) {
         if(!debug) return;

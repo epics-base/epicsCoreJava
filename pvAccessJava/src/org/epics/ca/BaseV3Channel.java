@@ -381,7 +381,7 @@ V3Channel,ConnectionListener
             }
         }
         String properties = "timeStamp,alarm";
-        if(extraProperties) properties += ",display,control";
+        if(extraProperties) properties += ",display,control,valueAlarm";
         Structure structure =  null;
         switch(valueType) {
         case scalar:

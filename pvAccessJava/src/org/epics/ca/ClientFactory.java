@@ -78,12 +78,18 @@ public class ClientFactory  {
 	        }
 		}
     	
-		public synchronized void destroySharedInstance() {
+		public synchronized boolean destroySharedInstance() {
+			boolean destroyed = true;
 			if (channelProvider != null)
 			{
-				channelProvider.destroy();
-				channelProvider = null;
+    				try{
+    				    	channelProvider.destroy();
+    				    	channelProvider = null;
+    				} catch (Exception ex) {
+    				    	destroyed = false;
+    				}
 			}
+			return destroyed;
 		}
     }
 
@@ -103,7 +109,10 @@ public class ClientFactory  {
     	if (factory != null)
     	{
     		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
-    		factory.destroySharedInstance();
+    		if(factory.destroySharedInstance())  
+    		{
+    			factory=null;
+    		}
     	}
     }
 
@@ -301,10 +310,7 @@ public class ClientFactory  {
         /* (non-Javadoc)
          * @see org.epics.ioc.util.RunnableReady#run(org.epics.ioc.util.ThreadReady)
          */
-        public void run(ThreadReady threadReady) {        
-System.out.println("CaV3Client");
-context.printInfo();
-System.out.println();
+        public void run(ThreadReady threadReady) {
             threadReady.ready();
             try {
                 while(true) {

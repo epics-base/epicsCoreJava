@@ -70,12 +70,15 @@ public class ClientFactory {
 	        }
 		}
     	
-		public synchronized void destroySharedInstance() {
+		public synchronized boolean destroySharedInstance() {
+			boolean destroyed = true;
 			if (context != null)
 			{
 				context.dispose();
+				destroyed = context.isDestroyed();
 				context = null;
 			}
+			return destroyed;
 		}
     }
     
@@ -95,7 +98,10 @@ public class ClientFactory {
     	if (factory != null)
     	{
     		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
-    		factory.destroySharedInstance();
+    		if(factory.destroySharedInstance())  
+    		{
+    			factory=null;
+    		}
     	}
     }
 }

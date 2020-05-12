@@ -67,7 +67,7 @@ public class CAChannelTest {
         PVEventRecorder recorder = probe.getRecorder();
         PVReader<VType> pv = gpClient.read("ca://test_double_0").addListener(recorder).start();
         recorder.wait(500, PVEventRecorder.forAConnectionEvent());
-        recorder.wait(100, PVEventRecorder.anEventOfType(PVEvent.Type.VALUE));
+        recorder.wait(200, PVEventRecorder.anEventOfType(PVEvent.Type.VALUE));
         pv.close();
         Thread.sleep(1000);
     }
@@ -78,8 +78,8 @@ public class CAChannelTest {
         ProbeCollector probe = ProbeCollector.create();
         PVEventRecorder recorder = probe.getRecorder();
         PV<VType, Object> pv = gpClient.readAndWrite("ca://test_double_0").addListener(recorder).start();
-        recorder.wait(500, PVEventRecorder.forAConnectionEvent());
-        recorder.wait(100, PVEventRecorder.anEventOfType(PVEvent.Type.VALUE));
+        recorder.wait(1000, PVEventRecorder.forAConnectionEvent());
+        recorder.wait(200, PVEventRecorder.anEventOfType(PVEvent.Type.VALUE));
         pv.write(VDouble.of(1.0, Alarm.none(), Time.now(), Display.none()));
         Thread.sleep(1000);
         pv.write(VDouble.of(2.0, Alarm.none(), Time.now(), Display.none()));

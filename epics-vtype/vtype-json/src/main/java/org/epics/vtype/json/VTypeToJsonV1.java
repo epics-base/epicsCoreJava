@@ -12,6 +12,7 @@ import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
 import org.epics.util.number.UShort;
 import org.epics.vtype.EnumDisplay;
+import org.epics.vtype.VDouble;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VNumber;
 import org.epics.vtype.VNumberArray;
@@ -83,6 +84,10 @@ class VTypeToJsonV1 {
         Number value;
         switch(mapper.getTypeName()) {
             case "VDouble":
+                Double doubleValue = getDoubleFromJsonString(json.get("value").toString());
+                if(doubleValue != null){
+                    return VDouble.of(doubleValue, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
+                }
                 value = mapper.getJsonNumber("value").doubleValue();
                 break;
             case "VFloat":
@@ -206,5 +211,29 @@ class VTypeToJsonV1 {
                 .addTime(vEnum.getTime())
                 .addEnum(vEnum)
                 .build();
+    }
+
+    /**
+     * Converts an input (JSON) string to a {@link Double}, taking into account the special cases
+     * {@link Double#NaN}, {@link Double#POSITIVE_INFINITY} and {@link Double#NEGATIVE_INFINITY}.
+     * If the input string is not parseable as a double (including the special cases), a
+     * {@link NumberFormatException} is thrown.
+     * @param valueAsString
+     * @return A valid double number, otherwise
+     * {@link Double#NaN}, {@link Double#POSITIVE_INFINITY} and {@link Double#NEGATIVE_INFINITY}.
+     */
+    public static Double getDoubleFromJsonString(String valueAsString){
+        if(VTypeJsonMapper.NAN_QUOTED.equals(valueAsString)){
+            return Double.NaN;
+        }
+        else if(VTypeJsonMapper.POS_INF_QUOTED.equals(valueAsString)){
+            return Double.POSITIVE_INFINITY;
+        }
+        else if(VTypeJsonMapper.NEG_INF_QUOTED.equals(valueAsString)){
+            return Double.NEGATIVE_INFINITY;
+        }
+        else{
+            return Double.parseDouble(valueAsString);
+        }
     }
 }
