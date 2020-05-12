@@ -21,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -545,7 +546,7 @@ public class ClientContextImpl implements Context {
      */
     private void destroyAllChannels() {
         synchronized (channelsByCID) {
-            for (Channel channel : channelsByCID.values()) {
+            for (Channel channel : new ArrayList<>(channelsByCID.values())) {
                 try {
                     channel.destroy();
                 } catch (Exception e) {
