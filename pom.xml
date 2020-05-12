@@ -12,11 +12,11 @@
 
     <properties>
         <!-- Matching versions of Core modules -->
-        <epics-util.version>1.0.3-SNAPSHOT</epics-util.version>
-        <epics-pvdata.version>6.1.5-SNAPSHOT</epics-pvdata.version>
-        <epics-ntypes.version>0.3.5-SNAPSHOT</epics-ntypes.version>
-        <epics-pvaccess.version>5.1.5-SNAPSHOT</epics-pvaccess.version>
-        <jca.version>2.4.5-SNAPSHOT</jca.version>
+        <epics-util.version>1.0.3</epics-util.version>
+        <epics-pvdata.version>6.1.5</epics-pvdata.version>
+        <epics-ntypes.version>0.3.5</epics-ntypes.version>
+        <epics-pvaccess.version>5.1.5</epics-pvaccess.version>
+        <jca.version>2.4.5</jca.version>
         <!-- Versions of examples bundled with Core -->
         <!-- Name of javadoc overview page -->
         <mainpage.name>${project.name}</mainpage.name>
