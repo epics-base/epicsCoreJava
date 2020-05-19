@@ -15,6 +15,7 @@
 package org.epics.pvaccess.impl.remote.udp;
 
 import java.net.InetSocketAddress;
+import java.net.StandardProtocolFamily;
 import java.nio.channels.DatagramChannel;
 
 import org.epics.pvaccess.impl.remote.ConnectionException;
@@ -73,7 +74,7 @@ public class BlockingUDPConnector implements Connector {
 		DatagramChannel socket = null;
 		try
 		{        
-			socket = DatagramChannel.open();
+			socket = DatagramChannel.open(StandardProtocolFamily.INET);
 
 			// use blocking channel
 			socket.configureBlocking(true);
