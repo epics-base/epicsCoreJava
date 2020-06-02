@@ -47,6 +47,7 @@ import org.epics.gpclient.datasource.MultiplexedChannelHandler;
 import org.epics.util.array.CollectionNumbers;
 import org.epics.util.array.ListNumber;
 import org.epics.util.array.UnsafeUnwrapper;
+import org.epics.vtype.VNumberArray;
 
 /**
  * 
@@ -533,11 +534,14 @@ class PVAChannelHandler extends
         }
         else if (channelPutValueField instanceof PVScalarArray)
         {
+        	if(newValue instanceof VNumberArray){
+        		newValue = ((VNumberArray) newValue).getData();
+			}
             // if it's a ListNumber, extract the array
             if (newValue instanceof ListNumber) {
                 ListNumber data = (ListNumber) newValue;
                 // FIXME: Optimize!!! You should get the array type of whatever it is and write the exact boundaries
-                Object wrappedArray = UnsafeUnwrapper.readSafeDoubleArray(data).array;
+                newValue = UnsafeUnwrapper.readSafeDoubleArray(data).array;
             }
             else if (!newValue.getClass().isArray())
             {

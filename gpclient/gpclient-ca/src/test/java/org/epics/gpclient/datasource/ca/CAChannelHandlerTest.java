@@ -5,6 +5,7 @@ import gov.aps.jca.Context;
 import gov.aps.jca.dbr.DBRType;
 import gov.aps.jca.event.ConnectionListener;
 import org.epics.util.array.ArrayDouble;
+import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListNumber;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
@@ -12,9 +13,11 @@ import org.epics.vtype.EnumDisplay;
 import org.epics.vtype.Time;
 import org.epics.vtype.VByte;
 import org.epics.vtype.VDouble;
+import org.epics.vtype.VDoubleArray;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
+import org.epics.vtype.VIntArray;
 import org.epics.vtype.VLong;
 import org.epics.vtype.VShort;
 import org.junit.Before;
@@ -45,19 +48,26 @@ public class CAChannelHandlerTest {
         caChannelHandler.connect();
     }
 
-    /**
-     * This is deliberately disabled. It should be fine, but the logic
-     * handling {@link ListNumber}s is broken as type information is lost
-     * in the transformations happening in other classes.
-     * @throws Exception
-     */
     @Test
-    @Ignore
     public void testWriteListNumberDouble() throws Exception{
 
         ListNumber doubles = ArrayDouble.of(Double.valueOf(1.1d), Double.valueOf(2.2d));
         caChannelHandler.write(doubles);
         verify(channel).put(new double[]{1.1d, 2.2d});
+    }
+
+    @Test
+    public void testWriteVDoubleArray() throws Exception{
+        VDoubleArray vDoubleArray = VDoubleArray.of(ArrayDouble.of(1.1d, 2.2d), Alarm.none(), Time.now(), Display.none());
+        caChannelHandler.write(vDoubleArray);
+        verify(channel).put(new double[]{1.1d, 2.2d});
+    }
+
+    @Test
+    public void testWriteVIntArray() throws Exception{
+        VIntArray vIntArray = VIntArray.of(ArrayInteger.of(1, 2), Alarm.none(), Time.now(), Display.none());
+        caChannelHandler.write(vIntArray);
+        verify(channel).put(new int[]{1, 2});
     }
 
     @Test

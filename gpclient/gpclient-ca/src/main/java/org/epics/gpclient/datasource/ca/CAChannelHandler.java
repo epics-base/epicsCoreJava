@@ -30,12 +30,14 @@ import org.epics.gpclient.WriteCollector.WriteRequest;
 import org.epics.gpclient.datasource.MultiplexedChannelHandler;
 import org.epics.gpclient.datasource.ca.types.CATypeAdapter;
 import org.epics.util.array.ListNumber;
+import org.epics.util.array.UnsafeUnwrapper;
 import org.epics.vtype.VByte;
 import org.epics.vtype.VDouble;
 import org.epics.vtype.VEnum;
 import org.epics.vtype.VFloat;
 import org.epics.vtype.VInt;
 import org.epics.vtype.VLong;
+import org.epics.vtype.VNumberArray;
 import org.epics.vtype.VShort;
 
 import java.math.BigInteger;
@@ -280,15 +282,17 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
     @Override
     protected void write(Object newValue) {
+        if(newValue instanceof VNumberArray){
+            newValue = ((VNumberArray) newValue).getData();
+        }
         // If it's a ListNumber, extract the array
         if (newValue instanceof ListNumber) {
             ListNumber data = (ListNumber) newValue;
-            Object wrappedArray = wrappedArray(data);
+            UnsafeUnwrapper.Array<?> wrappedArray = wrappedArray(data);
             if (wrappedArray == null) {
-                newValue = wrappedDoubleArray(data);
-            } else {
-                newValue = wrappedArray;
+                wrappedArray = wrappedDoubleArray(data);
             }
+            newValue = wrappedArray.array;
         }
         try {
             if (newValue instanceof Double[]) {
