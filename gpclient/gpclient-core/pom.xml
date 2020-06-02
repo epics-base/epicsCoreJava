@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.epics</groupId>
         <artifactId>gpclient</artifactId>
-        <version>1.0.4-SNAPSHOT</version>
+        <version>1.0.4</version>
     </parent>
     <artifactId>gpclient-core</artifactId>
     <name>org.epics.gpclient</name>
@@ -13,7 +13,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vtype</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
 </project>

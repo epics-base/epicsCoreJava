@@ -6,9 +6,9 @@
   <parent>
     <groupId>org.epics</groupId>
     <artifactId>epics-parent</artifactId>
-    <version>7.0.7-SNAPSHOT</version>
+    <version>7.0.6</version>
   </parent>
-  <version>1.0.4-SNAPSHOT</version>
+  <version>1.0.4</version>
   <packaging>pom</packaging>
   <description>The generic purpose JAVA EPICS client.</description>
   <properties>
@@ -96,7 +96,7 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>epics-util</artifactId>
-      <version>${project.version}</version>
+      <version>1.0.3</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -127,4 +127,8 @@
       </modules>
     </profile>
   </profiles>
+
+  <scm>
+    <tag>gpclient-1.0.4</tag>
+  </scm>
 </project>
