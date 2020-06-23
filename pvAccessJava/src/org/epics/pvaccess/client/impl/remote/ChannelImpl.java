@@ -446,8 +446,8 @@ public class ChannelImpl implements Channel, SearchInstance, TransportClient, Tr
 			{
 				requester.message("More than one channel with name '" + name +
 							 "' detected, connected to: " + transport.getRemoteAddress() + ", ignored: " + serverAddress, MessageType.warning);
-				return;
 			}
+			return;
 		}
 		
 		transport = context.getTransport(this, serverAddress, minorRevision, priority);
