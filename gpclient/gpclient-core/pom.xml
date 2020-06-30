@@ -9,6 +9,19 @@
     <artifactId>gpclient-core</artifactId>
     <name>org.epics.gpclient</name>
     <description>The main library for the generic purpose JAVA EPICS client.</description>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                    <SPI-Consumer>*</SPI-Consumer>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>       
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
