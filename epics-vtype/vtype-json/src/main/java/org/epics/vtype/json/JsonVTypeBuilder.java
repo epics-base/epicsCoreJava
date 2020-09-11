@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Collections;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
@@ -31,8 +32,9 @@ import org.epics.vtype.VType;
  * @author carcassi
  */
 class JsonVTypeBuilder implements JsonObjectBuilder {
-    
-    private final JsonObjectBuilder builder = Json.createObjectBuilder();
+
+    private static final JsonBuilderFactory factory = Json.createBuilderFactory(Collections.emptyMap());
+    private final JsonObjectBuilder builder = factory.createObjectBuilder();
 
     @Override
     public JsonVTypeBuilder add(String string, JsonValue jv) {
