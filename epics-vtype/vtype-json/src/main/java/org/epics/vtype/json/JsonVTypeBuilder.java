@@ -34,7 +34,7 @@ import org.epics.vtype.VType;
  */
 class JsonVTypeBuilder implements JsonObjectBuilder {
 
-    private static final JsonBuilderFactory factory = Json.createBuilderFactory(Collections.emptyMap());
+    public static final JsonBuilderFactory factory = Json.createBuilderFactory(Collections.emptyMap());
     private final JsonObjectBuilder builder = factory.createObjectBuilder();
 
     @Override
@@ -161,7 +161,7 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
     }
     
     public JsonVTypeBuilder addListColumnType(String string, List<Class<?>> ls) {
-        JsonArrayBuilder b = Json.createArrayBuilder();
+        JsonArrayBuilder b = factory.createArrayBuilder();
         for (Class<?> element : ls) {
             if (element.equals(String.class)) {
                 b.add("String");
@@ -193,7 +193,7 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
     }
     
     public JsonVTypeBuilder addListBoolean(String string, ListBoolean lb) {
-        JsonArrayBuilder b = Json.createArrayBuilder();
+        JsonArrayBuilder b = factory.createArrayBuilder();
         for (int i = 0; i < lb.size(); i++) {
             b.add(lb.getBoolean(i));
         }

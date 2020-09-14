@@ -257,7 +257,7 @@ public class JsonArrays {
      * @return an array of strings
      */
     public static JsonArrayBuilder fromListString(List<String> list) {
-        JsonArrayBuilder b = Json.createArrayBuilder();
+        JsonArrayBuilder b = JsonVTypeBuilder.factory.createArrayBuilder();
         for (String element : list) {
             // TODO: Not clear how to handle nulls. Converting them to empty strings.
             if (element == null) {
@@ -275,7 +275,7 @@ public class JsonArrays {
      * @return an array
      */
     public static JsonArrayBuilder fromListTimestamp(List<Instant> list) {
-        JsonArrayBuilder b = Json.createArrayBuilder();
+        JsonArrayBuilder b = JsonVTypeBuilder.factory.createArrayBuilder();
         for (Instant element : list) {
             if (element == null) {
                 b.addNull();
@@ -293,7 +293,7 @@ public class JsonArrays {
      * @return an array of numbers
      */
     public static JsonArrayBuilder fromListNumber(ListNumber list) {
-        JsonArrayBuilder b = Json.createArrayBuilder();
+        JsonArrayBuilder b = JsonVTypeBuilder.factory.createArrayBuilder();
         if (list instanceof ListInteger || list instanceof ListUShort || list instanceof ListShort || list instanceof ListUByte || list instanceof ListByte) {
             for (int i = 0; i < list.size(); i++) {
                 b.add(list.getInt(i));
