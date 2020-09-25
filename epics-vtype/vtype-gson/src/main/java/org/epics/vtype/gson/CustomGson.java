@@ -31,7 +31,7 @@ import java.util.Date;
 /**
  * Custom Gson object creator having some TypeAdapters and options
  *
- * @author <a href='mailto:changj@frib.msu.edu>Genie Jhang</a>
+ * @author <a href="mailto:changj@frib.msu.edu">Genie Jhang</a>
  */
 
 public class CustomGson {
