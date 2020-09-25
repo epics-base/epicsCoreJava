@@ -1,0 +1,23 @@
+{
+    "type":{
+        "name":"VUIntArray",
+        "version":1
+    },
+    "value":[
+        4294967295,
+        4294967294,
+        4294967293
+    ],
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

@@ -17,6 +17,7 @@
     <modules>
         <module>vtype</module>
         <module>vtype-json</module>
+        <module>vtype-gson</module>
     </modules>
     <build>
         <!-- Reset to standard source directories -->

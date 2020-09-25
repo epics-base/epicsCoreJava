@@ -1,0 +1,30 @@
+{
+   "type":{
+      "name":"VDoubleArray",
+      "version":1
+   },
+   "value":[
+      0.0,
+      1.0,
+      2.0
+   ],
+   "alarm":{
+      "severity":"NONE",
+      "status":"NONE",
+      "name":"None"
+   },
+   "time":{
+      "unixSec":0,
+      "nanoSec":0,
+      "userTag":null
+   },
+   "display":{
+      "lowAlarm":null,
+      "highAlarm":null,
+      "lowDisplay":null,
+      "highDisplay":null,
+      "lowWarning":null,
+      "highWarning":null,
+      "units":""
+   }
+}

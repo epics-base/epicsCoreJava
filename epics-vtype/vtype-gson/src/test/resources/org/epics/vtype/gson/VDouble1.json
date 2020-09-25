@@ -1,0 +1,19 @@
+{
+    "type":{
+        "name":"VDouble",
+        "version":1
+    },
+    "value":3.14,
+    "alarm":{
+        "severity":"MINOR",
+        "status":"DB",
+        "name":"LOW"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

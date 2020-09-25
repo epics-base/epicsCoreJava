@@ -1,0 +1,19 @@
+{
+    "type":{
+        "name":"VUInt",
+        "version":1
+    },
+    "value":4294967295,
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}
