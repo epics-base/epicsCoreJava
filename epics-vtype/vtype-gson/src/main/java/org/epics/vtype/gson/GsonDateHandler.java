@@ -26,6 +26,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
@@ -41,10 +42,7 @@ import java.util.Date;
 public class GsonDateHandler implements JsonSerializer<Date>, JsonDeserializer<Date> {
     @Override
     public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("Date", src.toInstant().toEpochMilli());
-
-        return jsonObject;
+        return new JsonPrimitive(src.toInstant().toEpochMilli());
     }
 
     @Override

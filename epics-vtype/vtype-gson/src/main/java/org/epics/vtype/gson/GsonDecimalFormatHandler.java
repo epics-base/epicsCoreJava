@@ -26,6 +26,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
@@ -41,10 +42,7 @@ import java.text.DecimalFormat;
 public class GsonDecimalFormatHandler implements JsonSerializer<DecimalFormat>, JsonDeserializer<DecimalFormat> {
     @Override
     public JsonElement serialize(DecimalFormat src, Type typeOfSrc, JsonSerializationContext context) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("DecimalFormat", src.toPattern());
-
-        return jsonObject;
+        return new JsonPrimitive(src.toPattern());
     }
 
     @Override

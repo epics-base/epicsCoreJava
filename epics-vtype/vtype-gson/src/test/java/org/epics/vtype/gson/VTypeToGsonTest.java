@@ -81,14 +81,14 @@ public class VTypeToGsonTest {
      * @param expectedJsonFileName the filename to compare
      */
     public static void testSerialization(VType value, String expectedJsonFileName) {
-        JsonElement json = VTypeToGson.toJson(value);
+        JsonElement json = JsonParser.parseString(CustomGson.getGson().toJson(value, VType.class));
 
         boolean success = false;
         try {
             JsonElement reference = loadJson(expectedJsonFileName + ".json");
             assertThat(json, equalTo(reference));
             success = true;
-        } finally {
+        } finally{
             File failedJsonFile = new File("src/test/resources/org/epics/vtype/gson/" + expectedJsonFileName + ".failed.json");
             if (!success) {
                 saveErrorJson(json, failedJsonFile);
@@ -107,7 +107,7 @@ public class VTypeToGsonTest {
      * @param expected the object to compare to
      */
     public static void testDeserialization(String jsonFileName, VType expected) {
-        VType actual = VTypeToGson.toVType(loadJson(jsonFileName + ".json"));
+        VType actual = CustomGson.getGson().fromJson(loadJson(jsonFileName + ".json"), VType.class);
         assertThat(actual, equalTo(expected));
     }
 
