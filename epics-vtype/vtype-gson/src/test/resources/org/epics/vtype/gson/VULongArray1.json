@@ -1,0 +1,23 @@
+{
+    "type":{
+        "name":"VULongArray",
+        "version":1
+    },
+    "value":[
+        18446744073709551615,
+        18446744073709551614,
+        18446744073709551613
+    ],
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

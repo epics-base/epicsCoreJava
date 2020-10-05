@@ -1,0 +1,23 @@
+{
+    "type":{
+        "name":"VLongArray",
+        "version":1
+    },
+    "value":[
+        0,
+        1,
+        2
+    ],
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}

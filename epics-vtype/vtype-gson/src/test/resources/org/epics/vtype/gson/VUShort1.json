@@ -1,0 +1,19 @@
+{
+    "type":{
+        "name":"VUShort",
+        "version":1
+    },
+    "value":65535,
+    "alarm":{
+        "severity":"MINOR",
+        "status":"DB",
+        "name":"HIGH"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    },
+    "display":{
+        "units":""
+    }
+}
