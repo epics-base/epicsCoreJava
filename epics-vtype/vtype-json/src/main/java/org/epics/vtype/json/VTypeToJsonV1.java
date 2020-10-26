@@ -17,6 +17,7 @@ import org.epics.vtype.VEnum;
 import org.epics.vtype.VNumber;
 import org.epics.vtype.VNumberArray;
 import org.epics.vtype.VString;
+import org.epics.vtype.VStringArray;
 import org.epics.vtype.VType;
 
 /**
@@ -51,6 +52,8 @@ class VTypeToJsonV1 {
                 return toVNumberArray(json);
             case "VString":
                 return toVString(json);
+            case "VStringArray":
+                return toVStringArray(json);
             case "VEnum":
                 return toVEnum(json);
             default:
@@ -73,6 +76,8 @@ class VTypeToJsonV1 {
             return toJson((VNumberArray) vType);
         } else if (vType instanceof VString) {
             return toJson((VString) vType);
+        } else if (vType instanceof VStringArray) {
+            return toJson((VStringArray) vType);
         } else if (vType instanceof VEnum) {
             return toJson((VEnum) vType);
         }
@@ -174,6 +179,13 @@ class VTypeToJsonV1 {
         return VNumberArray.of(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
     }
     
+
+    static VStringArray toVStringArray(JsonObject json) {
+        VTypeJsonMapper mapper = new VTypeJsonMapper(json);
+        return VStringArray.of(mapper.getListString("value"), mapper.getAlarm(), mapper.getTime());
+        
+    }
+    
     static JsonObject toJson(VNumber vNumber) {
         return new JsonVTypeBuilder()
                 .addType(vNumber)
@@ -191,6 +203,15 @@ class VTypeToJsonV1 {
                 .addAlarm(vNumberArray.getAlarm())
                 .addTime(vNumberArray.getTime())
                 .addDisplay(vNumberArray.getDisplay())
+                .build();
+    }
+    
+    static JsonObject toJson(VStringArray vStringArray) {
+        return new JsonVTypeBuilder()
+                .addType(vStringArray)
+                .addListString("value", vStringArray.getData())
+                .addAlarm(vStringArray.getAlarm())
+                .addTime(vStringArray.getTime())
                 .build();
     }
     
