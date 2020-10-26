@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -293,7 +294,11 @@ public class VTypeToGsonTest {
 
     @Test
     public void vStringArray1() {
-        VStringArray vStringArray1 = VStringArray.of(List.of(new String[] {"a", "b", "c"}), Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
+        List<String> data = new ArrayList<String>();
+        data.add("a");
+        data.add("b");
+        data.add("c");
+        VStringArray vStringArray1 = VStringArray.of(data, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
         testSerialization(vStringArray1, "vStringArray1");
         testDeserialization("vStringArray1", vStringArray1);
     }
