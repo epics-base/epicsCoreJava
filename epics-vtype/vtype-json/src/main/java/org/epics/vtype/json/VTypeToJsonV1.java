@@ -178,7 +178,6 @@ class VTypeToJsonV1 {
         }
         return VNumberArray.of(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
     }
-    
 
     static VStringArray toVStringArray(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);

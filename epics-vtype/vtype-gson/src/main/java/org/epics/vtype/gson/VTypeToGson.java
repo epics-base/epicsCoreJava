@@ -16,6 +16,7 @@ import org.epics.vtype.VEnum;
 import org.epics.vtype.VNumber;
 import org.epics.vtype.VNumberArray;
 import org.epics.vtype.VString;
+import org.epics.vtype.VStringArray;
 import org.epics.vtype.VType;
 
 import java.util.List;
@@ -56,6 +57,8 @@ public class VTypeToGson {
                 return toVNumberArray(json);
             case "VString":
                 return toVString(json);
+            case "VStringArray":
+                return toVStringArray(json);
             case "VEnum":
                 return toVEnum(json);
             default:
@@ -78,6 +81,8 @@ public class VTypeToGson {
             return toJson((VNumberArray) vType);
         } else if (vType instanceof VString) {
             return toJson((VString) vType);
+        } else if (vType instanceof VStringArray) {
+            return toJson((VStringArray) vType);
         } else if (vType instanceof VEnum) {
             return toJson((VEnum) vType);
         }
@@ -131,6 +136,12 @@ public class VTypeToGson {
     static VString toVString(JsonElement json) {
         VTypeGsonMapper mapper = new VTypeGsonMapper(json.getAsJsonObject());
         return VString.of(mapper.getString("value"), mapper.getAlarm(), mapper.getTime());
+    }
+
+    static VStringArray toVStringArray(JsonElement json) {
+        VTypeGsonMapper mapper = new VTypeGsonMapper(json.getAsJsonObject());
+        return VStringArray.of(mapper.getListString("value"), mapper.getAlarm(), mapper.getTime());
+        
     }
     
     static VEnum toVEnum(JsonElement json) {
@@ -207,7 +218,16 @@ public class VTypeToGson {
                 .addTime(vString.getTime())
                 .build();
     }
-    
+
+    static JsonElement toJson(VStringArray vStringArray) {
+        return new GsonVTypeBuilder()
+                .addType(vStringArray)
+                .addListString("value", vStringArray.getData())
+                .addAlarm(vStringArray.getAlarm())
+                .addTime(vStringArray.getTime())
+                .build();
+    }
+
     static JsonElement toJson(VEnum vEnum) {
         return new GsonVTypeBuilder()
                 .addType(vEnum)
