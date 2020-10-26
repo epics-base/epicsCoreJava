@@ -299,8 +299,8 @@ public class VTypeToGsonTest {
         data.add("b");
         data.add("c");
         VStringArray vStringArray1 = VStringArray.of(data, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
-        testSerialization(vStringArray1, "vStringArray1");
-        testDeserialization("vStringArray1", vStringArray1);
+        testSerialization(vStringArray1, "VStringArray1");
+        testDeserialization("VStringArray1", vStringArray1);
     }
 
     /**
