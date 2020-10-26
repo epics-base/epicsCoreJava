@@ -1,6 +1,7 @@
 package org.epics.vtype;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListInteger;
@@ -38,6 +39,30 @@ public abstract class VStringArray extends Array implements AlarmProvider, TimeP
                 .append(getTime())
                 .append(']');
         return builder.toString();
+    }
+    
+    @Override
+    public final boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof VStringArray) {
+                VStringArray other = (VStringArray) obj;
+                return getClass().equals(other.getClass()) &&
+                        getData().equals(other.getData()) &&
+                        getAlarm().equals(other.getAlarm()) &&
+                        getTime().equals(other.getTime());
+        }
+        return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        int hash = 7;
+        hash = 23 * hash + Objects.hashCode(getData());
+        hash = 23 * hash + Objects.hashCode(getAlarm());
+        hash = 23 * hash + Objects.hashCode(getTime());
+        return hash;
     }
 
 }
