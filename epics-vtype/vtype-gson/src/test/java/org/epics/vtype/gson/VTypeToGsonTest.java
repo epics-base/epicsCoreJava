@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,6 +52,7 @@ import org.epics.vtype.VLongArray;
 import org.epics.vtype.VShort;
 import org.epics.vtype.VShortArray;
 import org.epics.vtype.VString;
+import org.epics.vtype.VStringArray;
 import org.epics.vtype.VType;
 import org.epics.vtype.VUByte;
 import org.epics.vtype.VUByteArray;
@@ -288,6 +290,17 @@ public class VTypeToGsonTest {
         testSerialization(vByteArray1, "VByteArray1");
         testDeserialization("VByteArray1", vByteArray1);
         testDeserialization("VByteArray1a", vByteArray1);
+    }
+
+    @Test
+    public void vStringArray1() {
+        List<String> data = new ArrayList<String>();
+        data.add("a");
+        data.add("b");
+        data.add("c");
+        VStringArray vStringArray1 = VStringArray.of(data, Alarm.none(), Time.of(Instant.ofEpochSecond(0, 0)));
+        testSerialization(vStringArray1, "VStringArray1");
+        testDeserialization("VStringArray1", vStringArray1);
     }
 
     /**

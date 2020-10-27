@@ -1,0 +1,20 @@
+{
+    "type":{
+        "name":"VStringArray",
+        "version":1
+    },
+    "value":[
+        "a",
+        "b",
+        "c"
+    ],
+    "alarm":{
+        "severity":"NONE",
+        "status":"NONE",
+        "name":"None"
+    },
+    "time":{
+        "unixSec":0,
+        "nanoSec":0
+    }
+}
