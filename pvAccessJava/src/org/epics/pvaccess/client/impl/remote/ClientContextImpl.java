@@ -1023,7 +1023,7 @@ public class ClientContextImpl implements Context {
 			Map<InetSocketAddress, BeaconHandlerImpl> protocolBeaconHandlersMap = beaconHandlers.get(protocol);
 			if (protocolBeaconHandlersMap == null) {
 				protocolBeaconHandlersMap = new HashMap<InetSocketAddress, BeaconHandlerImpl>();
-				beaconHandlers.get(protocolBeaconHandlersMap);
+				beaconHandlers.put(protocol, protocolBeaconHandlersMap);
 			}
 
 			BeaconHandlerImpl handler = protocolBeaconHandlersMap.get(responseFrom);
