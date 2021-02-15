@@ -4,7 +4,7 @@ import org.epics.util.array.ListNumber;
 
 /**
  * An immutable implementation of the {@link VImage}
- * 
+ *
  * @author Kunal Shroff
  *
  */
@@ -45,12 +45,10 @@ public class IVImage extends VImage {
         return data;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }

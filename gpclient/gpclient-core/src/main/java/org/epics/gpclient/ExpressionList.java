@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -15,9 +15,9 @@ import java.util.List;
  * @author carcassi
  */
 public class ExpressionList<R, W> {
-    
+
     private final List<Expression<R, W>> expressions = new ArrayList<Expression<R, W>>();
-    
+
     final void addThis() {
         expressions.add((Expression<R, W>) this);
     }
@@ -30,7 +30,7 @@ public class ExpressionList<R, W> {
 
     /**
      * Adds the given expressions to this list.
-     * 
+     *
      * @param expressions a list of expressions
      * @return this
      */
@@ -43,11 +43,11 @@ public class ExpressionList<R, W> {
 
     /**
      * The expressions of this list.
-     * 
+     *
      * @return a list of expressions
      */
     public final List<Expression<R, W>> getExpressions() {
         return expressions;
     }
-    
+
 }

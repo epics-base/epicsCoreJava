@@ -36,14 +36,12 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Field#getID()
 	 */
-	@Override
 	public String getID() {
 		return structure.getID() + "[]";
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.StructureArray#getStructure()
 	 */
-	@Override
 	public Structure getStructure() {
 		return structure;
 	}
@@ -74,40 +72,36 @@ public class BaseStructureArray extends BaseField implements StructureArray {
 			return false;
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
 	 */
-	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		buffer.put((byte)0x88);
 		control.cachedSerialize(structure, buffer);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
-	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 		// must be done via FieldCreate
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getArraySizeType()
 	 */
-	@Override
 	public ArraySizeType getArraySizeType() {
 		return ArraySizeType.variable;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getMaximumCapacity()
 	 */
-	@Override
 	public int getMaximumCapacity() {
 		return 0;
 	}
-	
+
 }

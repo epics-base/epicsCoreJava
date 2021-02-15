@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -16,13 +16,13 @@ public interface ChannelProviderFactory {
 	 * @return the factory name.
 	 */
 	String getFactoryName();
-	
+
 	/**
 	 * Get a shared instance.
 	 * @return a shared instance.
 	 */
 	ChannelProvider sharedInstance();
-	
+
 	/**
 	 * Create a new instance.
 	 * @return a new instance.

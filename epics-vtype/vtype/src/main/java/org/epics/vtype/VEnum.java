@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 
 /**
  * Scalar enum with alarm and timestamp.
@@ -16,7 +16,7 @@ import java.util.Objects;
  * @author carcassi
  */
 public abstract class VEnum extends Scalar {
-    
+
     /**
      * {@inheritDoc }
      */
@@ -29,17 +29,17 @@ public abstract class VEnum extends Scalar {
      * @return the current index
      */
     public abstract int getIndex();
-    
+
     /**
      * Returns the display information, including all possible choice names.
-     * 
+     *
      * @return the enum display
      */
     public abstract EnumDisplay getDisplay();
 
     /**
      * Create a new VEnum.
-     * 
+     *
      * @param index the index in the label array
      * @param metaData the metadata
      * @param alarm the alarm
@@ -55,16 +55,16 @@ public abstract class VEnum extends Scalar {
         if (this == obj) {
             return true;
         }
-        
+
 	if (obj instanceof VEnum) {
             VEnum other = (VEnum) obj;
-        
+
             return getIndex() == other.getIndex() &&
                     getDisplay().equals(other.getDisplay()) &&
                     getAlarm().equals(other.getAlarm()) &&
                     getTime().equals(other.getTime());
         }
-        
+
         return false;
     }
 
@@ -76,7 +76,7 @@ public abstract class VEnum extends Scalar {
         hash = 23 * hash + Objects.hashCode(getTime());
         return hash;
     }
-    
+
     @Override
     public final String toString() {
         StringBuilder builder = new StringBuilder();

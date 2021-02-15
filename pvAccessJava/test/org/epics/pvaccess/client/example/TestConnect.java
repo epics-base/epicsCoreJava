@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -31,13 +31,13 @@ public class TestConnect {
         org.epics.pvaccess.ClientFactory.stop();
         System.exit(0);
     }
-    
+
     private static final String providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
     private static final ChannelProviderRegistry channelAccess = ChannelProviderRegistryFactory.getChannelProviderRegistry();
     //private static final PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-    
+
     private static class Client implements ChannelRequester {
-        
+
         private final ChannelProvider channelProvider;
         private final AtomicInteger counter = new AtomicInteger(100000);
         Client() {
@@ -46,8 +46,8 @@ public class TestConnect {
             for (int i = 0; i < totalCh; i++)
             	channelProvider.createChannel("test"+i, this, ChannelProvider.PRIORITY_DEFAULT);
         }
-        
-        
+
+
         public void waitUntilDone(long timeoutMs) {
         	System.out.println("waiting");
         	int i = 0;
@@ -64,17 +64,16 @@ public class TestConnect {
 				}
 			}
         }
-        
+
         private void done() {
         	synchronized (this) {
         		this.notifyAll();
         	}
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelRequester#channelCreated(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.Channel)
          */
-        @Override
         public void channelCreated(Status status, Channel channel) {
             if(!status.isSuccess()) {
                 return;
@@ -83,7 +82,6 @@ public class TestConnect {
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelRequester#channelStateChange(org.epics.pvaccess.client.Channel, org.epics.pvaccess.client.Channel.ConnectionState)
          */
-        @Override
         public void channelStateChange(Channel c,ConnectionState connectionState) {
             if(connectionState==ConnectionState.CONNECTED) {
                 if (counter.decrementAndGet() == 0)
@@ -97,14 +95,12 @@ public class TestConnect {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Requester#getRequesterName()
          */
-        @Override
         public String getRequesterName() {
             return "example";
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Requester#message(java.lang.String, org.epics.pvdata.pv.MessageType)
          */
-        @Override
         public void message(String message, MessageType messageType) {
             if(messageType!=MessageType.info) {
                // System.err.println(messageType + " " + message);
@@ -112,6 +108,6 @@ public class TestConnect {
                 System.out.println(message);
             }
         }
-        
+
     }
 }

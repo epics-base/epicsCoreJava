@@ -46,15 +46,15 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	// put data container
 	protected PVStructure putData = null;
 	protected BitSet putDataBitSet = null;
-	
+
 	// get data container
 	protected PVStructure getData = null;
 	protected BitSet getDataBitSet = null;
-	
+
 	// putGet reference store
 	protected PVStructure putPutData = null;
 	protected BitSet putPutDataBitSet = null;
-	
+
 	public static ChannelPutGetRequestImpl create(ChannelImpl channel,
 			ChannelPutGetRequester callback,
 	        PVStructure pvRequest)
@@ -64,16 +64,16 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 		thisInstance.activate();
 		return thisInstance;
 	}
-	
+
 	protected ChannelPutGetRequestImpl(ChannelImpl channel,
 			ChannelPutGetRequester callback,
 	        PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, false);
-		
+
 		this.callback = callback;
 	}
-	
+
 	protected void activate()
 	{
 		super.activate();
@@ -98,13 +98,13 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			super.send(buffer, control);
 			return;
 		}
-		
+
 		control.startMessage((byte)12, 2*Integer.SIZE/Byte.SIZE+1);
 		buffer.putInt(channel.getServerChannelID());
 		buffer.putInt(ioid);
 		if (pendingRequest != QoS.INIT.getMaskValue())
 			buffer.put((byte)pendingRequest);
-		
+
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// qos
@@ -126,11 +126,11 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				// release references
 				putPutData = null;
 				putPutDataBitSet = null;
-				
+
 				unlock();
 			}
 		}
-		
+
 		stopRequest();
 	}
 
@@ -146,7 +146,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				callback.channelPutGetConnect(status, this, null, null);
 				return;
 			}
-			
+
 			lock();
 			try {
 				putData = SerializationHelper.deserializeStructureAndCreatePVStructure(payloadBuffer, transport, putData);
@@ -156,7 +156,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 			} finally {
 				unlock();
 			}
-	
+
 			// notify
 			callback.channelPutGetConnect(status, this, putData.getStructure(), getData.getStructure());
 		} catch (Throwable th) {
@@ -175,7 +175,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status) {
 		try
 		{
-			
+
 			if (QoS.GET.isSet(qos))
 			{
 				if (!status.isSuccess())
@@ -183,7 +183,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 					callback.getGetDone(status, this, null, null);
 					return;
 				}
-				
+
 				lock();
 				try {
 					// deserialize get data
@@ -192,7 +192,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				} finally {
 					unlock();
 				}
-				
+
 				callback.getGetDone(status, this, getData, getDataBitSet);
 			}
 			else if (QoS.GET_PUT.isSet(qos))
@@ -202,7 +202,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 					callback.getPutDone(status, this, null, null);
 					return;
 				}
-				
+
 				lock();
 				try {
 					// deserialize put data
@@ -211,17 +211,17 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				} finally {
 					unlock();
 				}
-				
+
 				callback.getPutDone(status, this, putData, putDataBitSet);
 			}
-			else 
+			else
 			{
 				if (!status.isSuccess())
 				{
 					callback.putGetDone(status, this, null, null);
 					return;
 				}
-				
+
 				lock();
 				try {
 					// deserialize data
@@ -230,7 +230,7 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 				} finally {
 					unlock();
 				}
-				
+
 				callback.putGetDone(status, this, getData, getDataBitSet);
 			}
 		} catch (Throwable th) {
@@ -245,24 +245,24 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelPutGet#putGet(PVStructure, BitSet)
 	 */
-	@Override
+
 	public void putGet(PVStructure pvPutStructure, BitSet bitSet) {
 		if (destroyed) {
 			callback.putGetDone(destroyedStatus, this, null, null);
 			return;
 		}
-		
+
 		if (!putData.getStructure().equals(pvPutStructure.getStructure()))
 		{
 			callback.putGetDone(invalidPutStructureStatus, this, null, null);
 			return;
 		}
-		
+
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
 			callback.putGetDone(otherRequestPendingStatus, this, null, null);
 			return;
 		}
-		
+
 		try {
 			lock();
 			putPutData = pvPutStructure;
@@ -278,18 +278,17 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelPutGet#getGet()
 	 */
-	@Override
 	public void getGet() {
 		if (destroyed) {
 			callback.getGetDone(destroyedStatus, this, null, null);
 			return;
 		}
-		
+
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET.getMaskValue() : QoS.GET.getMaskValue())) {
 			callback.getGetDone(otherRequestPendingStatus, this, null, null);
 			return;
 		}
-		
+
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
@@ -301,18 +300,17 @@ public class ChannelPutGetRequestImpl extends BaseRequestImpl implements Channel
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelPutGet#getPut()
 	 */
-	@Override
 	public void getPut() {
 		if (destroyed) {
 			callback.getPutDone(destroyedStatus, this, null, null);
 			return;
 		}
-		
+
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET_PUT.getMaskValue() : QoS.GET_PUT.getMaskValue())) {
 			callback.getPutDone(otherRequestPendingStatus, this, null, null);
 			return;
 		}
-		
+
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {

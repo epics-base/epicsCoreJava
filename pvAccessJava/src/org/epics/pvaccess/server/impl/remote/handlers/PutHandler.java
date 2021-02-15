@@ -45,10 +45,10 @@ public class PutHandler extends AbstractServerResponseHandler {
 	}
 
 	private static class ChannelPutRequesterImpl extends BaseChannelRequester implements ChannelPutRequester, TransportSender {
-		
+
 		private volatile ChannelPut channelPut;
 		private volatile Status status;
-		
+
 		private volatile Structure structure;
 
 		// reference store for get
@@ -62,10 +62,10 @@ public class PutHandler extends AbstractServerResponseHandler {
 		public ChannelPutRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				 PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
-			
+
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			
+
 			try {
 				channelPut = channel.getChannel().createChannelPut(this, pvRequest);
 			} catch (Throwable th) {
@@ -76,19 +76,18 @@ public class PutHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
 			// will JVM optimize subsequent volatile sets?
 			this.status = status;
 			this.channelPut = channelPut;
 			this.structure = structure;
-			
+
 			if (status.isSuccess())
 			{
 				this.putPVStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(structure, putPVStructure);
 				this.putBitSet = BaseRequestImpl.createBitSetFor(putPVStructure, putBitSet);
 			}
-			
+
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -97,19 +96,17 @@ public class PutHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void putDone(Status status, ChannelPut channelPut) {
 			this.status = status;
-			
+
 			transport.enqueueSendRequest(this);
 		}
 
-		@Override
 		public void getDone(Status status, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
 			this.status = status;
 			this.pvStructure = pvStructure;
 			this.bitSet = bitSet;
-			
+
 			// TODO should we check if pvStructure and bitSet are consistent/valid
 
 			transport.enqueueSendRequest(this);
@@ -118,13 +115,12 @@ public class PutHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Destroyable#destroy()
 		 */
-		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
 
 			// asCheck
 			channel.getChannelSecuritySession().release(ioid);
-			
+
 			if (channelPut != null)
 				channelPut.destroy();
 		}
@@ -153,7 +149,6 @@ public class PutHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// TODO
 		}
@@ -161,7 +156,6 @@ public class PutHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// TODO
 		}
@@ -169,7 +163,6 @@ public class PutHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final int request = getPendingRequest();
 
@@ -188,13 +181,13 @@ public class PutHandler extends AbstractServerResponseHandler {
 				{
 					bitSet.serialize(buffer, control);
 					pvStructure.serialize(buffer, control, bitSet);
-					
+
 					// release references
 					pvStructure = null;
 					bitSet = null;
 				}
 			}
-			
+
 			stopRequest();
 
 			// lastRequest
@@ -219,7 +212,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 
 		// mode
 		final byte qosCode = payloadBuffer.get();
-		
+
 		final ServerChannelImpl channel = (ServerChannelImpl)casTransport.getChannel(sid);
 		if (channel == null) {
 			BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, qosCode, BaseChannelRequester.badCIDStatus);
@@ -239,7 +232,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
 				return;
 			}
-	
+
 			// create...
 		    new ChannelPutRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -247,7 +240,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 		{
 			final boolean lastRequest = QoS.DESTROY.isSet(qosCode);
 			final boolean get = QoS.GET.isSet(qosCode);
-			
+
 			ChannelPutRequesterImpl request = (ChannelPutRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
 				BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, qosCode, BaseChannelRequester.badIOIDStatus);
@@ -258,12 +251,12 @@ public class PutHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)11, transport, ioid, qosCode, BaseChannelRequester.otherRequestPendingStatus);
 				return;
 			}
-			
+
 			ChannelPut channelPut = request.getChannelPut();
 
 			if (lastRequest)
 				channelPut.lastRequest();
-			
+
 			if (get)
 			{
 				// asCheck
@@ -285,7 +278,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 				final PVStructure putPVStructure = request.getPutPVStructure();
 				putBitSet.deserialize(payloadBuffer, transport);
 				putPVStructure.deserialize(payloadBuffer, transport, putBitSet);
-				
+
 				// asCheck
 				Status asStatus = channel.getChannelSecuritySession().authorizePut(ioid, putPVStructure, putBitSet);
 				if (!asStatus.isSuccess())
@@ -295,7 +288,7 @@ public class PutHandler extends AbstractServerResponseHandler {
 						request.destroy();
 					return;
 				}
-				
+
 				channelPut.put(putPVStructure, putBitSet);
 			}
 		}

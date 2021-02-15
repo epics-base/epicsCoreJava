@@ -49,17 +49,17 @@ import org.epics.pvdata.pv.Status;
 public class SearchHandler extends AbstractServerResponseHandler {
 
 	private final ChannelFindRequesterImplObjectPool objectPool = new ChannelFindRequesterImplObjectPool();
-	
+
 	private final Random random = new Random();
 	private static final int MAX_SERVER_SEARCH_RESPONSE_DELAY_MS = 100;
-	
+
 	public SearchHandler(ServerContextImpl context) {
 		super(context, "Search request");
 	}
 
 	// TODO for now only TCP supported
 	private static final String SUPPORTED_PROTOCOL = ProtocolType.tcp.name();
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.AbstractResponseHandler#handleResponse(java.net.InetSocketAddress, org.epics.pvaccess.core.Transport, byte, byte, int, java.nio.ByteBuffer)
 	 */
@@ -79,14 +79,14 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		payloadBuffer.getShort();
 
 		// 128-bit IPv6 address
-		byte[] byteAddress = new byte[16]; 
+		byte[] byteAddress = new byte[16];
 		payloadBuffer.get(byteAddress);
-		
+
 		final int port = payloadBuffer.getShort() & 0xFFFF;
-		
-		
+
+
 		// NOTE: Java knows how to compare IPv4/IPv6 :)
-		
+
 		InetAddress addr;
 		try {
 			addr = InetAddress.getByAddress(byteAddress);
@@ -102,7 +102,7 @@ public class SearchHandler extends AbstractServerResponseHandler {
 			responseFrom = new InetSocketAddress(responseFrom.getAddress(), port);
 
 
-		// 
+		//
 		// locally broadcast if unicast (qosCode & 0x80 == 0x80)
 		//
 		if ((qosCode & 0x80) == 0x80)
@@ -112,20 +112,20 @@ public class SearchHandler extends AbstractServerResponseHandler {
 			{
 				// clear unicast flag
 				payloadBuffer.put(startPosition+4, (byte)(qosCode & ~0x80));
-				
+
 				// update response address
 				payloadBuffer.position(startPosition+8);
 				InetAddressUtil.encodeAsIPv6Address(payloadBuffer, responseFrom.getAddress());
-				
+
 				payloadBuffer.position(payloadBuffer.limit());		// send will call flip()
-				
+
 				bt.send(payloadBuffer);
 				return;
 			}
 		}
-		
-		
-		
+
+
+
 		final int protocolsCount = SerializeHelper.readSize(payloadBuffer, transport);
 		boolean allowed = (protocolsCount == 0);
 		for (int i = 0; i < protocolsCount; i++)
@@ -134,17 +134,17 @@ public class SearchHandler extends AbstractServerResponseHandler {
 			if (SUPPORTED_PROTOCOL.equals(protocol))
 				allowed = true;
 		}
-		
+
 		// NOTE: we do not stop reading the buffer
-		
+
 		transport.ensureData(2);
 		final int count = payloadBuffer.getShort() & 0xFFFF;
-		
+
 		// TODO DoS attack
 		final boolean responseRequired = QoS.REPLY_REQUIRED.isSet(qosCode);
-		
+
 		// TODO bloom filter or similar server selection (by GUID)
-		
+
 		if (count > 0)
 		{
 			for (int i = 0; i < count; i++) {
@@ -152,8 +152,8 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				final int cid = payloadBuffer.getInt();
 				final String name = SerializeHelper.deserializeString(payloadBuffer, transport);
 				// no name check here...
-	
-				if (allowed) 
+
+				if (allowed)
 				{
 					List<ChannelProvider> providers = context.getChannelProviders();
 					ChannelFindRequesterImpl cfri = objectPool.get().set(context.getLogger(), searchSequenceId, name, cid, responseFrom, responseRequired, providers.size());
@@ -170,13 +170,11 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				double delay = random.nextInt(MAX_SERVER_SEARCH_RESPONSE_DELAY_MS) / 1000.0;
 				final InetSocketAddress rf = responseFrom;
 				TimerNode timerNode = TimerFactory.createNode(new TimerCallback() {
-					
-					@Override
+
 					public void timerStopped() {
 						// noop
 					}
-					
-					@Override
+
 					public void callback() {
 						objectPool.get().set(context.getLogger(), searchSequenceId, rf).channelFindResult(StatusFactory.getStatusCreate().getStatusOK(), null, false);
 					}
@@ -188,21 +186,21 @@ public class SearchHandler extends AbstractServerResponseHandler {
 	}
 
 	private class ChannelFindRequesterImpl implements ChannelFindRequester, TransportSender {
-		
+
 		private Logger logger;
-		
+
 		private boolean serverSearch;
 		private int searchSequenceId;
 		private String channelName;
 		private int cid;
 		private InetSocketAddress sendTo;
 		private boolean responseRequired;
-		
+
 		private boolean wasFound;
-		
+
 		private int expectedResponseCount;
 		private int responseCount;
-		
+
 		public ChannelFindRequesterImpl() {
 			// noop
 		}
@@ -217,7 +215,7 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				wasFound = false;
 			}
 		}
-		
+
 		public ChannelFindRequesterImpl set(Logger logger, int searchSequenceId, String channelName, int cid, InetSocketAddress sendTo, boolean responseRequired, int expectedResponseCount)
 		{
 			synchronized (this) {
@@ -231,7 +229,7 @@ public class SearchHandler extends AbstractServerResponseHandler {
 			}
 			return this;
 		}
-		
+
 		// server search
 		public ChannelFindRequesterImpl set(Logger logger, int searchSequenceId, InetSocketAddress sendTo)
 		{
@@ -248,7 +246,6 @@ public class SearchHandler extends AbstractServerResponseHandler {
 			return this;
 		}
 
-		@Override
 		public void channelFindResult(Status status, ChannelFind channelFind, boolean wasFound) {
 			// TODO status
 			synchronized (this)
@@ -260,13 +257,13 @@ public class SearchHandler extends AbstractServerResponseHandler {
 						logger.fine("More responses received than expected for channel '" + channelName + "'!");
 					return;
 				}
-				
+
 				if (this.wasFound && wasFound)
 				{
 			        logger.fine("Channel '" + channelName + "' is hosted by different channel providers!");
 			        return;
 			    }
-				
+
 			    if (wasFound || (responseRequired && (responseCount == expectedResponseCount)))
 			    {
 			    	// register mapping
@@ -282,7 +279,6 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// noop
 		}
@@ -290,15 +286,13 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// noop
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 
 			control.startMessage((byte)4, 12+4+16+2);
@@ -308,16 +302,16 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				buffer.put(context.getGUID());
 
 				buffer.putInt(searchSequenceId);
-				
+
 				// NOTE: is it possible (very likely) that address is any local address ::ffff:0.0.0.0
 				InetAddressUtil.encodeAsIPv6Address(buffer, context.getServerInetAddress());
 				buffer.putShort((short)context.getServerPort());
-				
+
 				SerializeHelper.serializeString(SUPPORTED_PROTOCOL, buffer, control);
 
 				control.ensureBuffer(1);
 				buffer.put(wasFound ? (byte)1 : (byte)0);
-				
+
 				/*
 				if (count > PVAConstants.MAX_SEARCH_BATCH_COUNT)
 					throw new IllegalArgumentException("too many search responses in a batch message");
@@ -332,7 +326,7 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				{
 					buffer.putShort((short)0);
 				}
-				
+
 				control.setRecipient(sendTo);
 			}
 
@@ -341,11 +335,11 @@ public class SearchHandler extends AbstractServerResponseHandler {
 		}
 
 	};
-	
+
 	// TODO limit max, cleanup after some time
 	private class ChannelFindRequesterImplObjectPool {
 		private final ArrayList<ChannelFindRequesterImpl> elements = new ArrayList<ChannelFindRequesterImpl>();
-		
+
 		public ChannelFindRequesterImpl get() {
 			synchronized (elements) {
 				final int count = elements.size();
@@ -364,8 +358,8 @@ public class SearchHandler extends AbstractServerResponseHandler {
 				elements.add(element);
 			}
 		}
-	
+
 	}
-	
+
 }
- 
+

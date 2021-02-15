@@ -23,7 +23,7 @@ import org.epics.pvdata.pv.StringArrayData;
 public class BasePVStringArray extends AbstractPVScalarArray implements PVStringArray
 {
     protected String[] value;
-    
+
     /**
      * Constructor.
      * @param array The introspection interface.
@@ -32,19 +32,19 @@ public class BasePVStringArray extends AbstractPVScalarArray implements PVString
     {
         super(array);
     }
-    
+
     @Override
     protected void allocate(int newCapacity) {
     	value = new String[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -59,7 +59,7 @@ public class BasePVStringArray extends AbstractPVScalarArray implements PVString
     		SerializeHelper.serializeString(value[i], buffer, control);
 		return length;
 	}
-	
+
     @Override
 	protected int getFromBuffer(ByteBuffer buffer, DeserializableControl control, int offset, int length)
 	{
@@ -72,15 +72,13 @@ public class BasePVStringArray extends AbstractPVScalarArray implements PVString
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStringArray#get(int, int, org.epics.pvdata.pv.StringArrayData)
      */
-    @Override
     public int get(int offset, int len, StringArrayData data) {
     	return internalGet(offset, len, data);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStringArray#put(int, int, java.lang.String[], int)
      */
-    @Override
     public int put(int offset, int len, String[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
@@ -89,7 +87,6 @@ public class BasePVStringArray extends AbstractPVScalarArray implements PVString
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStringArray#shareData(java.lang.String[])
      */
-    @Override
     public void shareData(String[] from) {
     	internalShareData(from);
     }
@@ -103,7 +100,7 @@ public class BasePVStringArray extends AbstractPVScalarArray implements PVString
 	    b.get(0, b.getLength(), arrayData);
 		return Arrays.equals(arrayData.data, value);
     }
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

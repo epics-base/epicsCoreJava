@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,12 +14,10 @@ public class ListUShortTest extends FeatureTestListNumber {
     public ListUShort createConstantCollection() {
         return new ListUShort() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public short getShort(int index) {
                 return 1;
             }
@@ -30,12 +28,10 @@ public class ListUShortTest extends FeatureTestListNumber {
     public ListUShort createRampCollection() {
         return new ListUShort() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public short getShort(int index) {
                 return (short) index;
             }
@@ -45,10 +41,9 @@ public class ListUShortTest extends FeatureTestListNumber {
     @Override
     public ListUShort createModifiableCollection() {
         return new ListUShort() {
-            
+
             private short[] array = new short[10];
-            
-            @Override
+
             public short getShort(int index) {
                 return array[index];
             }
@@ -58,7 +53,6 @@ public class ListUShortTest extends FeatureTestListNumber {
                 array[index] = value;
             }
 
-            @Override
             public int size() {
                 return array.length;
             }
@@ -69,12 +63,10 @@ public class ListUShortTest extends FeatureTestListNumber {
     public ListUShort createEmpty() {
         return new ListUShort() {
 
-            @Override
             public int size() {
                 return 0;
             }
 
-            @Override
             public short getShort(int index) {
                 return 1;
             }

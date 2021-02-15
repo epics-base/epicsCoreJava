@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.impl.remote.codec.impl;
 
@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.logging.Logger;
 
-/**
+/*
  * @author msekoranja
  *
  */
@@ -18,7 +18,7 @@ public abstract class BlockingSocketAbstractCodec extends BlockingAbstractCodec 
 
 	protected final SocketChannel channel;
 	protected final InetSocketAddress socketAddress;
-	
+
 	public BlockingSocketAbstractCodec(
 			boolean serverFlag,
 			SocketChannel channel,
@@ -29,17 +29,15 @@ public abstract class BlockingSocketAbstractCodec extends BlockingAbstractCodec 
 		this.channel = channel;
 		this.socketAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
 	}
-	
-	@Override
+
 	public int read(ByteBuffer dst) throws IOException {
 		return channel.read(dst);
 	}
 
-	@Override
 	public int write(ByteBuffer src) throws IOException {
 		return channel.write(src);
 	}
-	
+
 	@Override
 	protected void internalDestroy() {
 		if (channel.isOpen())

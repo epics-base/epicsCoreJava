@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 import org.epics.util.array.ListByte;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListFloat;
@@ -26,15 +26,15 @@ import org.epics.util.array.ListUShort;
  * @author carcassi
  */
 public abstract class VNumberArray extends Array implements AlarmProvider, TimeProvider, DisplayProvider {
-    
+
     /**
      * The numeric value.
-     * 
+     *
      * @return the value
      */
     @Override
     public abstract ListNumber getData();
-    
+
     /**
      * Default toString implementation for VNumberArray.
      *
@@ -56,10 +56,10 @@ public abstract class VNumberArray extends Array implements AlarmProvider, TimeP
                 .append(']');
         return builder.toString();
     }
-    
+
     /**
      * Creates a new {@code VNumberArray} based on the type of the data
-     * 
+     *
      * @param data the value
      * @param alarm the alarm
      * @param time the time
@@ -90,10 +90,10 @@ public abstract class VNumberArray extends Array implements AlarmProvider, TimeP
         }
 	throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Creates a new {@code VNumberArray} based on the type of the data
-     * 
+     *
      * @param data the value
      * @param sizes the sizes
      * @param alarm the alarm
@@ -131,17 +131,17 @@ public abstract class VNumberArray extends Array implements AlarmProvider, TimeP
         if (this == obj) {
             return true;
         }
-        
+
 	if (obj instanceof VNumberArray) {
             VNumberArray other = (VNumberArray) obj;
-        
+
             return getClass().equals(other.getClass()) &&
                     getData().equals(other.getData()) &&
                     getAlarm().equals(other.getAlarm()) &&
                     getTime().equals(other.getTime()) &&
                     getDisplay().equals(other.getDisplay());
         }
-        
+
         return false;
     }
 
@@ -154,5 +154,5 @@ public abstract class VNumberArray extends Array implements AlarmProvider, TimeP
         hash = 23 * hash + Objects.hashCode(getDisplay());
         return hash;
     }
-    
+
 }

@@ -1,12 +1,13 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
+import org.epics.util.compat.legacy.functional.Consumer;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * A collector that queues all the values.
@@ -15,8 +16,8 @@ import java.util.function.Consumer;
  * @author carcassi
  */
 class AllValuesCollector<T> extends ReadCollector<T, List<T>> {
-    
-    private List<T> currentValues = new ArrayList<>();
+
+    private List<T> currentValues = new ArrayList<T>();
 
     public AllValuesCollector(Class<T> type) {
         super(type);
@@ -26,7 +27,7 @@ class AllValuesCollector<T> extends ReadCollector<T, List<T>> {
     public List<T> getValue() {
         synchronized (lock) {
             List<T> values = currentValues;
-            currentValues = new ArrayList<>();
+            currentValues = new ArrayList<T>();
             return values;
         }
     }
@@ -57,5 +58,5 @@ class AllValuesCollector<T> extends ReadCollector<T, List<T>> {
             listener.accept(PVEvent.readConnectionValueEvent());
         }
     }
-    
+
 }

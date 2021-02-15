@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,11 +14,11 @@ public class CollectionNumbers {
     private CollectionNumbers() {
         // prevent instances
     }
-    
+
     /**
      * Takes a primitive array and wraps it into the appropriate mutable
      * array wrapper.
-     * 
+     *
      * @param values a primitive array (e.g. int[])
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -41,8 +41,8 @@ public class CollectionNumbers {
             throw new IllegalArgumentException(values + " is not a an array of primitive numbers");
         }
     }
-    
-    
+
+
     // Design tradeoff:
     // Ideally, it would have been better to have all the methods named
     // the same (i.e. toList) and let the compiler pick the correct one. Unfortunately,
@@ -55,10 +55,10 @@ public class CollectionNumbers {
     // on the wider primitive in the list, which may make it confusing to use.
     // Last, byte and short can't really use varargs as one would have to cast
     // every single element of the list. This remains a somewhat imperfect solution.
-    
+
     /**
      * Takes a double array and wraps it into an ArrayDouble.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -67,10 +67,10 @@ public class CollectionNumbers {
     public static ArrayDouble toListDouble(double... values) {
         return new ArrayDouble(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes a float array and wraps it into an ArrayFloat.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -79,10 +79,10 @@ public class CollectionNumbers {
     public static ArrayFloat toListFloat(float... values) {
         return new ArrayFloat(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes a long array and wraps it into an ArrayLong.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -91,10 +91,10 @@ public class CollectionNumbers {
     public static ArrayLong toListLong(long... values) {
         return new ArrayLong(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes an unsigned long array and wraps it into an ArrayULong.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -103,10 +103,10 @@ public class CollectionNumbers {
     public static ArrayULong toListULong(long... values) {
         return new ArrayULong(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes an int array and wraps it into an ArrayInteger.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -115,10 +115,10 @@ public class CollectionNumbers {
     public static ArrayInteger toListInt(int... values) {
         return new ArrayInteger(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes an unsigned int array and wraps it into an ArrayUInteger.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -127,10 +127,10 @@ public class CollectionNumbers {
     public static ArrayUInteger toListUInt(int... values) {
         return new ArrayUInteger(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes a short array and wraps it into an ArrayShort.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -139,10 +139,10 @@ public class CollectionNumbers {
     public static ArrayShort toListShort(short... values) {
         return new ArrayShort(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes an unsigned short array and wraps it into an ArrayUShort.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -151,10 +151,10 @@ public class CollectionNumbers {
     public static ArrayUShort toListUShort(short... values) {
         return new ArrayUShort(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes a byte array and wraps it into an ArrayByte.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -163,10 +163,10 @@ public class CollectionNumbers {
     public static ArrayByte toListByte(byte... values) {
         return new ArrayByte(values, 0, values.length, false);
     }
-    
+
     /**
      * Takes an unsigned byte array and wraps it into an ArrayUByte.
-     * 
+     *
      * @param values a primitive array
      * @return a mutable wrapper
      * @exception IllegalArgumentException  if the given object is not
@@ -175,10 +175,10 @@ public class CollectionNumbers {
     public static ArrayUByte toListUByte(byte... values) {
         return new ArrayUByte(values, 0, values.length, false);
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
@@ -199,10 +199,10 @@ public class CollectionNumbers {
             throw new IllegalArgumentException(list + " does not implement a particular ListXxx type");
         }
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
@@ -210,23 +210,21 @@ public class CollectionNumbers {
         if (list instanceof ArrayDouble) {
             return unmodifiableList((ArrayDouble) list);
         }
-        
+
         return new ListDouble() {
-            @Override
             public double getDouble(int index) {
                 return list.getDouble(index);
             }
 
-            @Override
             public int size() {
                 return list.size();
             }
         };
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
@@ -235,21 +233,19 @@ public class CollectionNumbers {
             return unmodifiableList((ArrayFloat) list);
         }
         return new ListFloat() {
-            @Override
             public float getFloat(int index) {
                 return list.getFloat(index);
             }
 
-            @Override
             public int size() {
                 return list.size();
             }
         };
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
@@ -257,23 +253,21 @@ public class CollectionNumbers {
         if (list instanceof ArrayLong) {
             return unmodifiableList((ArrayLong) list);
         }
-        
+
         return new ListLong() {
-            @Override
             public long getLong(int index) {
                 return list.getLong(index);
             }
 
-            @Override
             public int size() {
                 return list.size();
             }
         };
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
@@ -283,21 +277,19 @@ public class CollectionNumbers {
         }
 
         return new ListInteger() {
-            @Override
             public int getInt(int index) {
                 return list.getInt(index);
             }
 
-            @Override
             public int size() {
                 return list.size();
             }
         };
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
@@ -307,21 +299,19 @@ public class CollectionNumbers {
         }
 
         return new ListShort() {
-            @Override
             public short getShort(int index) {
                 return list.getShort(index);
             }
 
-            @Override
             public int size() {
                 return list.size();
             }
         };
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
@@ -331,178 +321,176 @@ public class CollectionNumbers {
         }
 
         return new ListByte() {
-            @Override
             public byte getByte(int index) {
                 return list.getByte(index);
             }
 
-            @Override
             public int size() {
                 return list.size();
             }
         };
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
     public static ArrayDouble unmodifiableList(ArrayDouble list) {
         return new ArrayDouble(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
     public static ArrayFloat unmodifiableList(ArrayFloat list) {
         return new ArrayFloat(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
     public static ArrayLong unmodifiableList(ArrayLong list) {
         return new ArrayLong(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
     public static ArrayInteger unmodifiableList(ArrayInteger list) {
         return new ArrayInteger(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
     public static ArrayShort unmodifiableList(ArrayShort list) {
         return new ArrayShort(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
-    
+
     /**
      * Returns an unmodifiable view of the specified list.
-     * 
+     *
      * @param list the list for which an unmodifiable view is to be returned.
      * @return an unmodifiable view of the specified list.
      */
     public static ArrayByte unmodifiableList(ArrayByte list) {
         return new ArrayByte(list.wrappedArray(), list.startIndex(), list.size(), true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayDouble} wrapper for the given {@code double} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayDouble unmodifiableListDouble(double... values) {
         return new ArrayDouble(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayFloat} wrapper for the given {@code float} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayFloat unmodifiableListFloat(float... values) {
         return new ArrayFloat(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayLong} wrapper for the given {@code long} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayLong unmodifiableListLong(long... values) {
         return new ArrayLong(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayULong} wrapper for the given unsigned {@code long} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayULong unmodifiableListULong(long... values) {
         return new ArrayULong(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayInteger} wrapper for the given {@code int} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayInteger unmodifiableListInt(int... values) {
         return new ArrayInteger(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayUInteger} wrapper for the given unsigned {@code int} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayUInteger unmodifiableListUInt(int... values) {
         return new ArrayUInteger(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayShort} wrapper for the given {@code short} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayShort unmodifiableListShort(short... values) {
         return new ArrayShort(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayUShort} wrapper for the given unsigned {@code short} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayUShort unmodifiableListUShort(short... values) {
         return new ArrayUShort(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayByte} wrapper for the given {@code byte} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayByte unmodifiableListByte(byte... values) {
         return new ArrayByte(values, 0, values.length, true);
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayUByte} wrapper for the given unsigned {@code byte} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */
     public static ArrayUByte unmodifiableListUByte(byte... values) {
         return new ArrayUByte(values, 0, values.length, true);
     }
-    
+
     /**
      * This is the implementation of the default CollectionNumber.toArray(array).
      * See that method for the specification.
@@ -585,7 +573,7 @@ public class CollectionNumbers {
         if (destPos + src.size() > dest.length) {
             throw new IndexOutOfBoundsException("Length of target array too small");
         }
-        
+
         IteratorNumber iter = src.iterator();
         int index = destPos;
         while (iter.hasNext()) {
@@ -610,7 +598,7 @@ public class CollectionNumbers {
         if (destPos + src.size() > dest.length) {
             throw new IndexOutOfBoundsException("Length of target array too small");
         }
-        
+
         IteratorNumber iter = src.iterator();
         int index = destPos;
         while (iter.hasNext()) {
@@ -635,7 +623,7 @@ public class CollectionNumbers {
         if (destPos + src.size() > dest.length) {
             throw new IndexOutOfBoundsException("Length of target array too small");
         }
-        
+
         IteratorNumber iter = src.iterator();
         int index = destPos;
         while (iter.hasNext()) {
@@ -660,7 +648,7 @@ public class CollectionNumbers {
         if (destPos + src.size() > dest.length) {
             throw new IndexOutOfBoundsException("Length of target array too small");
         }
-        
+
         IteratorNumber iter = src.iterator();
         int index = destPos;
         while (iter.hasNext()) {
@@ -685,7 +673,7 @@ public class CollectionNumbers {
         if (destPos + src.size() > dest.length) {
             throw new IndexOutOfBoundsException("Length of target array too small");
         }
-        
+
         IteratorNumber iter = src.iterator();
         int index = destPos;
         while (iter.hasNext()) {
@@ -710,7 +698,7 @@ public class CollectionNumbers {
         if (destPos + src.size() > dest.length) {
             throw new IndexOutOfBoundsException("Length of target array too small");
         }
-        
+
         IteratorNumber iter = src.iterator();
         int index = destPos;
         while (iter.hasNext()) {

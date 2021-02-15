@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -25,7 +25,7 @@ public class TriangleWaveform extends VDoubleArraySimFunction {
     public TriangleWaveform() {
         this(5.0, 100.0, DEFAULT_INTERVAL);
     }
-    
+
     /**
      * Creates a triangle wave of 100 samples, with given period and given wavelength of
      * 100 samples, updating at given rate.
@@ -73,5 +73,5 @@ public class TriangleWaveform extends VDoubleArraySimFunction {
         }
         return ArrayDouble.of(newArray);
     }
-    
+
 }

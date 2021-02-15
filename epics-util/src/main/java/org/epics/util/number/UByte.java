@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,13 +10,13 @@ package org.epics.util.number;
  * @author carcassi
  */
 public final class UByte extends Number {
-    
+
     private final byte unsignedValue;
 
     /**
      * Constructs a newly allocated {@code UByte} object that represent
      * the specified unsigned {@code byte} value.
-     * 
+     *
      * @param unsignedValue the value to be represented by the {@code UByte}
      */
     public UByte(byte unsignedValue) {
@@ -42,10 +42,10 @@ public final class UByte extends Number {
     public double doubleValue() {
         return UnsignedConversions.toDouble(unsignedValue);
     }
-    
+
     /**
      * A wrapper for the given unsigned {@code byte}.
-     * 
+     *
      * @param unsignedValue an unsigned {@code byte} value
      * @return a {@code UByte} instance representing {@code unsignedValue}
      */
@@ -65,16 +65,18 @@ public final class UByte extends Number {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof UByte) {
-            return unsignedValue == ((UByte)obj).unsignedValue;
-        }
-        return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UByte)) return false;
+
+        UByte uByte = (UByte) o;
+
+        return unsignedValue == uByte.unsignedValue;
     }
 
     @Override
     public int hashCode() {
-        return Byte.hashCode(unsignedValue);
+        return unsignedValue;
     }
 
     @Override

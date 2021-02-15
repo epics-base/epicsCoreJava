@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -6,7 +6,7 @@ package org.epics.gpclient;
 
 
 /**
- * A reader of a channel expression created through the {@link GPClient}. 
+ * A reader of a channel expression created through the {@link GPClient}.
  * The payload is specified by the generic type,
  * and is returned by {@link #getValue()}. Changes in
  * values are notified through the {@link PVReaderListener}.
@@ -44,7 +44,7 @@ package org.epics.gpclient;
  * @author carcassi
  * @param <T> the type of the PVReader.
  */
-public interface PVReader<T> extends AutoCloseable {
+public interface PVReader<T> {
 
     /**
      * Returns the current value of the PVReader.
@@ -78,11 +78,11 @@ public interface PVReader<T> extends AutoCloseable {
      * reader, though, is changed immediately.
      * <p>
      * This method is thread-safe.
-     * 
+     *
      * @param paused whether the reader should be paused or not
      */
     public void setPaused(boolean paused);
-    
+
     /**
      * Whether the reader is paused. If a reader is paused, all the notifications
      * are skipped. While the channels remains open, and data is still being collected,
@@ -90,11 +90,11 @@ public interface PVReader<T> extends AutoCloseable {
      * resources.
      * <p>
      * This method is thread-safe.
-     * 
+     *
      * @return true if it is paused
      */
     public boolean isPaused();
-    
+
     /**
      * True if the reader is connected.
      * <p>
@@ -111,7 +111,7 @@ public interface PVReader<T> extends AutoCloseable {
      * is connected or not.
      * <p>
      * This method is thread-safe.
-     * 
+     *
      * @return true if reader is connected
      */
     public boolean isConnected();

@@ -23,18 +23,18 @@ public class CounterTopStructure extends PVTopStructure implements TimerCallback
 	private final int timeStampFieldOffset;
 	private final PVTimeStamp timeStampField;
 	private final TimerNode timerNode;
-	
+
 	private final TimeStamp timeStamp = TimeStampFactory.create();
 
 	private final BitSet changedBitSet;
-	
+
 	public CounterTopStructure(double scanPeriodHz, Timer timer) {
 		super(fieldCreate.createScalar(ScalarType.pvInt));
 
 		changedBitSet = new BitSet(getPVStructure().getNumberFields());
-		
+
 		valueField = getPVStructure().getIntField("value");
-		
+
 		timeStampField = PVTimeStampFactory.create();
 		PVField ts = getPVStructure().getStructureField("timeStamp");
 		timeStampField.attach(ts);
@@ -46,7 +46,7 @@ public class CounterTopStructure extends PVTopStructure implements TimerCallback
 		}
 		else
 			timerNode = null;
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -55,31 +55,29 @@ public class CounterTopStructure extends PVTopStructure implements TimerCallback
 	@Override
 	public void process() {
 		changedBitSet.clear();
-		
+
 		valueField.put((valueField.get() + 1) % 11);
 		changedBitSet.set(valueField.getFieldOffset());
-		
+
 		timeStamp.getCurrentTime();
 		timeStampField.set(timeStamp);
 		changedBitSet.set(timeStampFieldOffset);
 		notifyListeners(changedBitSet);
 	}
 
-	@Override
 	public void callback() {
 		// TODO this causes deadlock !!! with topStructure
 	//	lock();
 		try
 		{
 			process();
-		} 
+		}
 		finally
 		{
 	//		unlock();
 		}
 	}
 
-	@Override
 	public void timerStopped() {
 	}
 

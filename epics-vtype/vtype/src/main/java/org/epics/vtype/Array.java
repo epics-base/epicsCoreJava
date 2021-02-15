@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -25,7 +25,7 @@ import org.epics.util.array.ListNumber;
  *     }
  *   }
  * }</pre></blockquote>
- * 
+ *
  * @author carcassi
  */
 public abstract class Array extends VType {
@@ -41,7 +41,7 @@ public abstract class Array extends VType {
      * regardless of numeric type.
      * <p>
      * If a numeric array is actually needed, refer to {@link CollectionNumbers}.
-     * 
+     *
      * @return the array data
      */
     public abstract Object getData();
@@ -53,7 +53,7 @@ public abstract class Array extends VType {
      * Each number represents the size of each dimension. The total number
      * of elements in the array is therefore the product of all the
      * numbers in the list returned.
-     * 
+     *
      * @return the dimension sizes
      */
     public abstract ListInteger getSizes();

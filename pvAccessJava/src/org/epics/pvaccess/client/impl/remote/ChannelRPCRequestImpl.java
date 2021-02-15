@@ -42,7 +42,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	protected final ChannelRPCRequester callback;
 
 	protected PVStructure argumentData;
-	
+
 	public static ChannelRPCRequestImpl create(ChannelImpl channel,
 			ChannelRPCRequester callback,
 	        PVStructure pvRequest)
@@ -52,20 +52,20 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 		thisInstance.activate();
 		return thisInstance;
 	}
-	
+
 	protected ChannelRPCRequestImpl(ChannelImpl channel,
 			ChannelRPCRequester callback,
 	        PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, true);
-		
+
 		this.callback = callback;
 	}
 
 	protected void activate()
 	{
 		super.activate();
-		
+
 		// subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
@@ -74,7 +74,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			destroy(true);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 	 */
@@ -86,13 +86,13 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			super.send(buffer, control);
 			return;
 		}
-		
+
 		control.startMessage((byte)20, 2*Integer.SIZE/Byte.SIZE+1);
 		buffer.putInt(channel.getServerChannelID());
 		buffer.putInt(ioid);
 		if (pendingRequest != QoS.INIT.getMaskValue())
 			buffer.put((byte)pendingRequest);
-		
+
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// qos
@@ -100,7 +100,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 
 			// pvRequest
 			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
-		    
+
 		}
 		else
 		{
@@ -112,9 +112,9 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 			} finally {
 				unlock();
 			}
-			
+
 		}
-		
+
 		stopRequest();
 	}
 
@@ -130,7 +130,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 				callback.channelRPCConnect(status, this);
 				return;
 			}
-			
+
 			// notify
 			callback.channelRPCConnect(status, this);
 		}
@@ -156,7 +156,7 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 				callback.requestDone(status, this, null);
 				return;
 			}
-			
+
 			// deserialize data
 			final PVStructure retVal = SerializationHelper.deserializeStructureFull(payloadBuffer, transport);
 			callback.requestDone(status, this, retVal);
@@ -174,18 +174,17 @@ public class ChannelRPCRequestImpl extends BaseRequestImpl implements ChannelRPC
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelRPC#request(org.epics.pvdata.pv.PVStructure)
 	 */
-	@Override
 	public void request(PVStructure pvArgument) {
 		if (destroyed) {
 			callback.requestDone(destroyedStatus, this, null);
 			return;
 		}
-		
+
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
 			callback.requestDone(otherRequestPendingStatus, this, null);
 			return;
 		}
-		
+
 		try {
 			lock();
 			this.argumentData = pvArgument;

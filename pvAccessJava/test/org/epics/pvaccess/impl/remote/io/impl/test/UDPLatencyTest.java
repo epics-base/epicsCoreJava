@@ -1,12 +1,11 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.impl.remote.io.impl.test;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.util.logging.Logger;
 
@@ -18,6 +17,7 @@ import org.epics.pvaccess.impl.remote.io.PollEvents;
 import org.epics.pvaccess.impl.remote.io.Poller;
 import org.epics.pvaccess.impl.remote.io.impl.PollerImpl;
 import org.epics.pvdata.pv.Field;
+import java.nio.channels.DatagramChannel;
 
 /**
  * @author msekoranja
@@ -28,7 +28,7 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 	interface ReadyListener {
 		void ready(AbstractCodec codec);
 	}
-	
+
 	final Poller poller;
 	final DatagramChannel channel;
 	SelectionKey key;
@@ -48,7 +48,6 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 	/* (non-Javadoc)
 	 * @see com.cosylab.jam.io.PollEvents#registeredNotify(java.nio.channels.SelectionKey, java.lang.Throwable)
 	 */
-	@Override
 	public void registeredNotify(SelectionKey key,
 			Throwable registrationException) {
 		setSenderThread();
@@ -60,7 +59,6 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 	/* (non-Javadoc)
 	 * @see com.cosylab.jam.io.PollEvents#pollNotify(java.nio.channels.SelectionKey)
 	 */
-	@Override
 	public void pollNotify(SelectionKey key) throws IOException {
 		if (key.isReadable())
 			processRead();
@@ -72,7 +70,6 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		}
 	}
 
-	@Override
 	public int read(ByteBuffer dst) throws IOException {
 		if (channel.isConnected())
 			return channel.read(dst);
@@ -109,17 +106,14 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		return socketAddress;
 	}
 
-	@Override
 	public void close() throws IOException {
 		channel.close();
 	}
 
-	@Override
 	public boolean isOpen() {
 		return channel.isOpen();
 	}
 
-	@Override
 	public int write(ByteBuffer src) throws IOException {
 		if (channel.isConnected())
 			return channel.write(src);
@@ -136,21 +130,19 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.Lockable#lock()
 		 */
-		@Override
 		public void lock() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.Lockable#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		int c = 0;
 		long avg = 0;
 
@@ -158,7 +150,6 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			long t = System.nanoTime();
 			avg += t-lastTime;
@@ -172,13 +163,13 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 			control.ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 			buffer.put(PVAConstants.PVA_MAGIC);
 			buffer.put(PVAConstants.PVA_VERSION);
-			buffer.put((byte)0x81);		
-			buffer.put((byte)0);		
-			buffer.putInt(0);		
+			buffer.put((byte)0x81);
+			buffer.put((byte)0);
+			buffer.putInt(0);
 		}
-	
+
 	};
-	
+
 	@Override
 	public void processControlMessage() {
 		//System.out.println("processControlMessage():" + command);
@@ -224,14 +215,13 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		return false;
 	}
 
-	@Override
 	public void cachedSerialize(Field field, ByteBuffer buffer) {
 		// no cache
 		field.serialize(buffer, this);
 	}
 
 	public static void main(String[] args) throws Throwable {
-		
+
 		final PollerImpl poller = new PollerImpl();
 		poller.start();
 
@@ -240,7 +230,7 @@ public class UDPLatencyTest extends AbstractCodec implements PollEvents {
 		serverSocket.configureBlocking(false);
 		poller.add(serverSocket, new UDPLatencyTest(poller, serverSocket, null), SelectionKey.OP_READ);
 
-		
+
 		DatagramChannel clientSocket = DatagramChannel.open();
 		clientSocket.configureBlocking(false);
 		UDPLatencyTest ult = new UDPLatencyTest(poller, clientSocket, null);

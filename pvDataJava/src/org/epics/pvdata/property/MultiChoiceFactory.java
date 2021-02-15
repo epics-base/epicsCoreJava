@@ -39,15 +39,13 @@ public class MultiChoiceFactory {
         PVStringArray pvChoices = (PVStringArray)pva;
         return new MultiChoiceImpl(pvBitMask,pvChoices);
 	}
-    
+
 	private static class ChoicesImpl implements MultiChoice.Choices {
         private String[] choices = null;
         private int length = 0;
-		@Override
 		public String[] getChoices() {
 			return choices;
 		}
-		@Override
 		public int getNumberChoices() {
 			// TODO Auto-generated method stub
 			return length;
@@ -55,9 +53,9 @@ public class MultiChoiceFactory {
 		private void setChoices(String[] choices) { this.choices = choices;}
 		private void setLength(int length) {this.length = length;}
 		private void setChoice(String choice,int index) {choices[index] = choice;}
-		
+
 	}
-   
+
     private static class MultiChoiceImpl implements MultiChoice {
     	private final ByteArrayData byteArrayData = new ByteArrayData();
     	private final StringArrayData stringArrayData = new StringArrayData();
@@ -65,7 +63,7 @@ public class MultiChoiceFactory {
     	private final PVStringArray pvChoices;
     	private ChoicesImpl choices = new ChoicesImpl();
     	private String[] choiceValues = null;
-    	
+
         private MultiChoiceImpl(PVByteArray pvBitMask,PVStringArray pvChoices) {
         	this.pvBitMask = pvBitMask;
         	this.pvChoices = pvChoices;
@@ -73,7 +71,6 @@ public class MultiChoiceFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.property.MultiChoice#registerChoice(java.lang.String)
 		 */
-		@Override
 		public int registerChoice(String choice) {
 			ensureLength();
 			int length = pvChoices.getLength();
@@ -96,7 +93,6 @@ public class MultiChoiceFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.property.MultiChoice#getBitMask()
 		 */
-		@Override
 		public byte[] getBitMask() {
 			ensureLength();
 			pvBitMask.get(0, pvBitMask.getLength(), byteArrayData);
@@ -106,7 +102,6 @@ public class MultiChoiceFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.property.MultiChoice#getChoices()
 		 */
-		@Override
 		public String[] getChoices() {
 			pvChoices.get(0, pvChoices.getLength(), stringArrayData);
 			return stringArrayData.data;
@@ -115,7 +110,6 @@ public class MultiChoiceFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.property.MultiChoice#getSelectedChoices()
 		 */
-		@Override
 		public Choices getSelectedChoices() {
 			ensureLength();
 			int length = pvChoices.getLength();
@@ -133,11 +127,10 @@ public class MultiChoiceFactory {
 			choices.setLength(index);
 			return choices;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.property.MultiChoice#clear()
 		 */
-		@Override
 		public void clear() {
 			ensureLength();
 			pvBitMask.get(0, pvBitMask.getLength(), byteArrayData);
@@ -148,7 +141,6 @@ public class MultiChoiceFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.property.MultiChoice#setBit(int)
 		 */
-		@Override
 		public void setBit(int index) {
 			ensureLength();
 			pvBitMask.get(0, pvBitMask.getLength(), byteArrayData);
@@ -157,7 +149,7 @@ public class MultiChoiceFactory {
 			byte mask = (byte)(1 << offset);
 			data[index/nBitsPerByte] |= mask;
 		}
-		
+
 		private void ensureLength() {
 			int length = pvChoices.getLength();
 			pvChoices.get(0, length, stringArrayData);

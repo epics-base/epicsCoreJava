@@ -22,7 +22,7 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBooleanArray
 {
     protected boolean[] value;
-    
+
     /**
      * Constructor.
      * @param array The introspection interface.
@@ -31,19 +31,19 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
     {
         super(array);
     }
-    
+
     @Override
     protected void allocate(int newCapacity) {
     	value = new boolean[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -58,7 +58,7 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
     		buffer.put(value[i] ? (byte)1 : (byte)0);
 		return length;
 	}
-	
+
     @Override
 	protected int getFromBuffer(ByteBuffer buffer, DeserializableControl control, int offset, int length)
 	{
@@ -71,15 +71,13 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVBooleanArray#get(int, int, org.epics.pvdata.pv.BooleanArrayData)
      */
-    @Override
     public int get(int offset, int len, BooleanArrayData data) {
     	return internalGet(offset, len, data);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVBooleanArray#put(int, int, boolean[], int)
      */
-    @Override
     public int put(int offset, int len, boolean[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
@@ -88,7 +86,6 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVBooleanArray#shareData(boolean[])
      */
-    @Override
     public void shareData(boolean[] from) {
     	internalShareData(from);
     }
@@ -102,7 +99,7 @@ public class BasePVBooleanArray extends AbstractPVScalarArray implements PVBoole
 	    b.get(0, b.getLength(), arrayData);
 		return Arrays.equals(arrayData.data, value);
     }
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

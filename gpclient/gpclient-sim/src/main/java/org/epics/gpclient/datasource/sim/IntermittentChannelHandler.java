@@ -1,8 +1,15 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
+
+import org.epics.gpclient.datasource.MultiplexedChannelHandler;
+import org.epics.util.text.FunctionParser;
+import org.epics.vtype.Alarm;
+import org.epics.vtype.Display;
+import org.epics.vtype.Time;
+import org.epics.vtype.VType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,13 +19,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.gpclient.datasource.MultiplexedChannelHandler;
-import org.epics.util.text.FunctionParser;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.AlarmSeverity;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VType;
 
 /**
  * Implementation class for a channel that keeps connecting and disconnecting.
@@ -26,18 +26,17 @@ import org.epics.vtype.VType;
  * @author carcassi
  */
 class IntermittentChannelHandler extends MultiplexedChannelHandler<Object, Object> {
-    
+
     private final Object value;
     private final double delayInSeconds;
     private final ScheduledExecutorService exec;
     private final Runnable task = new Runnable() {
 
-        @Override
         public void run() {
             // Protect the timer thread for possible problems.
             try {
                 boolean toConnect = !isConnected();
-                
+
                 if (toConnect) {
                     processConnection(new Object());
                     processMessage(VType.toVTypeChecked(value));
@@ -88,7 +87,7 @@ class IntermittentChannelHandler extends MultiplexedChannelHandler<Object, Objec
 
     @Override
     public Map<String, Object> getProperties() {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<String, Object>();
         result.put("delayInSeconds", delayInSeconds);
         result.put("value", value);
         return result;
@@ -98,10 +97,10 @@ class IntermittentChannelHandler extends MultiplexedChannelHandler<Object, Objec
     protected boolean isConnected(Object payload) {
         return payload != null;
     }
-    
+
     @Override
     public void write(Object newValue) {
         throw new UnsupportedOperationException("Can't write to simulation channel.");
     }
-    
+
 }

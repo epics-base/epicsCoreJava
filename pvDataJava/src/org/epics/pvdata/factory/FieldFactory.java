@@ -30,7 +30,7 @@ import org.epics.pvdata.pv.UnionArray;
  * @author mrk
  *
  */
-public final class FieldFactory {   
+public final class FieldFactory {
     private FieldFactory(){} // don't create
     private static FieldCreateImpl singleImplementation = null;
     private static Scalar[] scalars = null;
@@ -55,29 +55,26 @@ public final class FieldFactory {
         }
         return singleImplementation;
     }
-    
+
     private static final class FieldCreateImpl implements FieldCreate{
         /* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createFieldBuilder()
 		 */
-		@Override
 		public FieldBuilder createFieldBuilder() {
 			return new BaseFieldBuilder();
 		}
 		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#createScalar(org.epics.pvdata.pv.ScalarType)
          */
-        @Override
         public Scalar createScalar(ScalarType scalarType)
         {
             return scalars[scalarType.ordinal()];
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#createBoundedString(int)
          */
-        @Override
-		public BoundedString createBoundedString(int maxLength) {
+        public BoundedString createBoundedString(int maxLength) {
 			return new BaseBoundedString(maxLength);
 		}
 		/* (non-Javadoc)
@@ -87,40 +84,35 @@ public final class FieldFactory {
         {
             return scalarArrays[elementType.ordinal()];
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#createFixedScalarArray(org.epics.pvdata.pv.ScalarType, int)
          */
-        @Override
-		public ScalarArray createFixedScalarArray(ScalarType elementType, int size) {
+        public ScalarArray createFixedScalarArray(ScalarType elementType, int size) {
         	return new BaseScalarFixedArray(elementType, size);
 		}
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createBoundedScalarArray(org.epics.pvdata.pv.ScalarType, int)
 		 */
-		@Override
 		public ScalarArray createBoundedScalarArray(ScalarType elementType, int bound) {
         	return new BaseScalarBoundedArray(elementType, bound);
 		}
 		/* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#createArray(java.lang.String, org.epics.pvdata.pv.Structure)
          */
-        @Override
-		public StructureArray createStructureArray(Structure elementStructure)
+        public StructureArray createStructureArray(Structure elementStructure)
         {
 			return new BaseStructureArray(elementStructure);
 		}
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createUnionArray(org.epics.pvdata.pv.Union)
 		 */
-		@Override
 		public UnionArray createUnionArray(Union elementUnion) {
 			return new BaseUnionArray(elementUnion);
 		}
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createVariantUnionArray()
 		 */
-		@Override
 		public UnionArray createVariantUnionArray() {
 			return variantUnionArray;
 		}
@@ -132,11 +124,10 @@ public final class FieldFactory {
             validateFieldNames(fieldNames);
             return new BaseStructure(fieldNames,fields);
         }
-        
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createStructure(java.lang.String, java.lang.String[], org.epics.pvdata.pv.Field[])
 		 */
-		@Override
 		public Structure createStructure(String id, String[] fieldNames, Field[] fields) {
             validateFieldNames(fieldNames);
             return new BaseStructure(id,fieldNames,fields);
@@ -144,8 +135,7 @@ public final class FieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createStructure(org.epics.pvdata.pv.Structure)
 		 */
-		@Override
-        public Structure createStructure(Structure structToClone) {
+		public Structure createStructure(Structure structToClone) {
 		    String[] oldFieldNames = structToClone.getFieldNames();
 		    Field[] oldFields = structToClone.getFields();
 		    int n = oldFieldNames.length;
@@ -163,7 +153,6 @@ public final class FieldFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#appendField(org.epics.pvdata.pv.Structure, java.lang.String, org.epics.pvdata.pv.Field)
          */
-        @Override
         public Structure appendField(Structure structure, String fieldName, Field field) {
 		    validateFieldName(fieldName);
 		    String[] oldNames = structure.getFieldNames();
@@ -179,12 +168,11 @@ public final class FieldFactory {
 		    newNames[oldlen] = fieldName;
 		    newFields[oldlen] = field;
             return createStructure(oldID,newNames,newFields);
-            
+
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.FieldCreate#appendFields(org.epics.pvdata.pv.Structure, java.lang.String[], org.epics.pvdata.pv.Field[])
          */
-        @Override
         public Structure appendFields(Structure structure, String[] fieldNames,Field[] fields) {
             validateFieldNames(fieldNames);
             String[] oldNames = structure.getFieldNames();
@@ -205,18 +193,16 @@ public final class FieldFactory {
             }
             return createStructure(oldID,newNames,newFields);
         }
-        
+
     	/* (non-Javadoc)
     	 * @see org.epics.pvdata.pv.FieldCreate#createVariantUnion()
     	 */
-    	@Override
-		public Union createVariantUnion() {
+    	public Union createVariantUnion() {
 			return variantUnion;
 		}
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createUnion(java.lang.String[], org.epics.pvdata.pv.Field[])
 		 */
-		@Override
 		public Union createUnion(String[] fieldNames, Field[] fields) {
 			validateFieldNames(fieldNames);
 			return new BaseUnion(fieldNames, fields);
@@ -224,7 +210,6 @@ public final class FieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#createUnion(java.lang.String, java.lang.String[], org.epics.pvdata.pv.Field[])
 		 */
-		@Override
 		public Union createUnion(String id, String[] fieldNames, Field[] fields) {
 			validateFieldNames(fieldNames);
 			return new BaseUnion(id, fieldNames, fields);
@@ -251,9 +236,9 @@ public final class FieldFactory {
     		null, // 16-bits
     		ScalarType.pvFloat,   // 32-bits
     		ScalarType.pvDouble,  // 64-bits
-    		null, 
     		null,
-    		null, 
+    		null,
+    		null,
     		null
     	};
 
@@ -269,22 +254,21 @@ public final class FieldFactory {
     		default: return null;
     		}
     	}
-        
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.FieldCreate#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 		 */
-		@Override
 		public Field deserialize(ByteBuffer buffer, DeserializableControl control) {
     		control.ensureData(1);
     		final byte code = buffer.get();
     		if (code == (byte)-1)
     			return null;
-    		
+
     		final int typeCode = code & 0xE7;
     		final int scalarOrArray = code & 0x18;
     		final boolean notArray = (scalarOrArray == 0);
     		if (notArray)
-    		{			
+    		{
     			if (typeCode < 0x80)
     			{
     				// Type type = Type.scalar;
@@ -323,7 +307,7 @@ public final class FieldFactory {
     			final boolean isVariable = (scalarOrArray == 0x08);
     			// bounded == 0x10;
     			final boolean isFixed = (scalarOrArray == 0x18);
- 
+
 				int size = (isVariable ? 0 : SerializeHelper.readSize(buffer, control));
 
     			if (typeCode < 0x80)
@@ -344,7 +328,7 @@ public final class FieldFactory {
     				// TODO fixed and bounded array support
     				if (!isVariable)
        					throw new IllegalArgumentException("fixed and bounded structure array not supported");
-    				    				
+
     				// Type type = Type.structureArray;
     				final Structure elementStructure = (Structure)control.cachedDeserialize(buffer);
     				return new BaseStructureArray(elementStructure);
@@ -354,7 +338,7 @@ public final class FieldFactory {
     				// TODO fixed and bounded array support
     				if (!isVariable)
        					throw new IllegalArgumentException("fixed and bounded union array not supported");
-    				
+
     				// Type type = unionArray;
     				final Union elementUnion = (Union)control.cachedDeserialize(buffer);
     				return new BaseUnionArray(elementUnion);
@@ -364,14 +348,14 @@ public final class FieldFactory {
     				// TODO fixed and bounded array support
     				if (!isVariable)
        					throw new IllegalArgumentException("fixed and bounded union array not supported");
-    				
+
     				// Type type = unionArray; variant union (aka any type)
     				return variantUnionArray;
     			}
     			else
     				throw new IllegalArgumentException("invalid type encoding");
     		}
-		}  
+		}
 
 		private void validateFieldNames(String[] names)
 		{

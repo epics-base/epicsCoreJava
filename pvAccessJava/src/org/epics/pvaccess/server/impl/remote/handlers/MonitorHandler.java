@@ -47,7 +47,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 	}
 
 	private static class MonitorRequesterImpl extends BaseChannelRequester implements MonitorRequester, TransportSender {
-		
+
 		private volatile Monitor channelMonitor;
 		private Status status;
 		private volatile Structure structure;
@@ -60,7 +60,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			
+
 			try {
 				channelMonitor = channel.getChannel().createMonitor(this, pvRequest);
 			} catch (Throwable th) {
@@ -71,13 +71,11 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void unlisten(Monitor monitor) {
 			unlisten = true;
 			transport.enqueueSendRequest(this);
 		}
-		
-		@Override
+
 		public void monitorConnect(Status status, Monitor monitor, Structure structure) {
 			synchronized (this) {
 				this.status = status;
@@ -92,13 +90,12 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 				destroy();
 			}
 		}
-		
-		@Override
+
 		public void monitorEvent(Monitor monitor) {
 
 			// TODO !!! if queueSize==0, monitor.poll() has to be called and returned NOW (since there is no cache)
 			//sendEvent(transport);
-			
+
 			// TODO implement via TransportSender
 			/*
 			// initiate submit to dispatcher queue, if necessary
@@ -110,21 +107,20 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			// multiple ((BlockingServerTCPTransport)transport).enqueueMonitorSendRequest(this);
 			transport.enqueueSendRequest(this);
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Destroyable#destroy()
 		 */
-		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
 
 			// asCheck
 			channel.getChannelSecuritySession().release(ioid);
-			
+
 			if (channelMonitor != null)
 				channelMonitor.destroy();
 		}
-		
+
 		/**
 		 * @return the channelMonitor
 		 */
@@ -135,7 +131,6 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// noop
 		}
@@ -143,7 +138,6 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// noop
 		}
@@ -151,7 +145,6 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final int request = getPendingRequest();
 
@@ -165,7 +158,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 				control.startMessage((byte)13, Integer.SIZE/Byte.SIZE + 1);
 				buffer.putInt(ioid);
 				buffer.put((byte)request);
-				
+
 				synchronized (this) {
 					status.serialize(buffer, control);
 				}
@@ -174,7 +167,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 				{
 					control.cachedSerialize(structure, buffer);
 				}
-				
+
 				stopRequest(); startRequest(QoS.DEFAULT.getMaskValue());
 			}
 			else
@@ -187,18 +180,18 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 					// multiple control.ensureBuffer(Integer.SIZE/Byte.SIZE + 1);
 					buffer.putInt(ioid);
 					buffer.put((byte)request);
-					
+
 					// changedBitSet and data, if not notify only (i.e. queueSize == -1)
 					final BitSet changedBitSet = element.getChangedBitSet();
 					if (changedBitSet != null)
 					{
 						changedBitSet.serialize(buffer, control);
 						element.getPVStructure().serialize(buffer, control, changedBitSet);
-						
+
 						// overrunBitset
 						element.getOverrunBitSet().serialize(buffer, control);
 					}
-					
+
 					monitor.release(element);
 				}
 				else
@@ -222,7 +215,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 				destroy();
 			*/
 		}
-		
+
 	};
 
 	/* (non-Javadoc)
@@ -247,14 +240,14 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			BaseChannelRequester.sendFailureMessage((byte)13, transport, ioid, qosCode, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-		
+
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
-			
+
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
-			
+
 			// asCheck
 			Status asStatus = channel.getChannelSecuritySession().authorizeCreateMonitor(ioid, pvRequest);
 			if (!asStatus.isSuccess())
@@ -262,10 +255,10 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)13, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
 				return;
 			}
-			
+
 			// create...
 			new MonitorRequesterImpl(context, channel, ioid, transport, pvRequest);
-			
+
 			// pipelining monitor (i.e. w/ flow control)
 			final boolean ack = QoS.GET_PUT.isSet(qosCode);
 	        if (ack)
@@ -284,13 +277,13 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 			final boolean get = QoS.GET.isSet(qosCode);
 			final boolean process = QoS.PROCESS.isSet(qosCode);
 			final boolean ack = QoS.GET_PUT.isSet(qosCode);
-			
+
 			MonitorRequesterImpl request = (MonitorRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
 				BaseChannelRequester.sendFailureMessage((byte)13, transport, ioid, qosCode, BaseChannelRequester.badIOIDStatus);
 				return;
 			}
-			
+
 			// pipelining monitor (i.e. w/ flow control)
 	        if (ack)
 	        {
@@ -320,7 +313,7 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 					request.destroy();
 				return;
 			}
-			
+
 
 			if (process)
 			{
@@ -337,9 +330,9 @@ public class MonitorHandler extends AbstractServerResponseHandler {
 
 			if (lastRequest)
 				request.destroy();
-			
+
 		}
-		
+
 	}
-	
+
 }

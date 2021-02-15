@@ -1,8 +1,25 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.pva;
+
+import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.WriteCollector.WriteRequest;
+import org.epics.gpclient.datasource.MultiplexedChannelHandler;
+import org.epics.pvaccess.client.*;
+import org.epics.pvaccess.client.Channel.ConnectionState;
+import org.epics.pvdata.copy.CreateRequest;
+import org.epics.pvdata.factory.ConvertFactory;
+import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.misc.BitSet;
+import org.epics.pvdata.monitor.Monitor;
+import org.epics.pvdata.monitor.MonitorElement;
+import org.epics.pvdata.monitor.MonitorRequester;
+import org.epics.pvdata.pv.*;
+import org.epics.util.array.ListNumber;
+import org.epics.util.array.UnsafeUnwrapper;
+import org.epics.vtype.VNumberArray;
 
 import java.lang.reflect.Array;
 import java.util.HashMap;
@@ -12,45 +29,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.gpclient.ReadCollector;
-import org.epics.gpclient.WriteCollector;
-import org.epics.gpclient.WriteCollector.WriteRequest;
-import org.epics.gpclient.datasource.DataSourceTypeAdapter;
-
-import org.epics.pvaccess.client.Channel;
-import org.epics.pvaccess.client.Channel.ConnectionState;
-import org.epics.pvaccess.client.ChannelProvider;
-import org.epics.pvaccess.client.ChannelPut;
-import org.epics.pvaccess.client.ChannelPutRequester;
-import org.epics.pvaccess.client.ChannelRequester;
-import org.epics.pvaccess.client.GetFieldRequester;
-import org.epics.pvdata.copy.CreateRequest;
-import org.epics.pvdata.factory.ConvertFactory;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.misc.BitSet;
-import org.epics.pvdata.monitor.Monitor;
-import org.epics.pvdata.monitor.MonitorElement;
-import org.epics.pvdata.monitor.MonitorRequester;
-import org.epics.pvdata.pv.Convert;
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.MessageType;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVInt;
-import org.epics.pvdata.pv.PVScalar;
-import org.epics.pvdata.pv.PVScalarArray;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.Status;
-import org.epics.pvdata.pv.StringArrayData;
-import org.epics.pvdata.pv.Structure;
-import org.epics.gpclient.datasource.MultiplexedChannelHandler;
-import org.epics.util.array.CollectionNumbers;
-import org.epics.util.array.ListNumber;
-import org.epics.util.array.UnsafeUnwrapper;
-import org.epics.vtype.VNumberArray;
 
 /**
- * 
+ *
  * @author msekoranja
  */
 class PVAChannelHandler extends
@@ -66,10 +47,10 @@ class PVAChannelHandler extends
 	private final AtomicBoolean monitorCreated = new AtomicBoolean(false);
 	private final AtomicLong monitorLossCounter = new AtomicLong(0);
 	//private volatile Monitor monitor = null;
-	
+
 	private volatile Field channelType = null;
 	private volatile boolean isChannelEnumType = false;
-	
+
 	private final AtomicBoolean channelPutCreated = new AtomicBoolean(false);
 	private volatile ChannelPut channelPut = null;
 	private volatile PVStructure channelPutStructure = null;
@@ -83,16 +64,16 @@ class PVAChannelHandler extends
 	private static PVStructure allPVRequest = createRequest.createRequest("field()");
 	private static PVStructure standardPutPVRequest = createRequest.createRequest("field(value)");
 	private static PVStructure enumPutPVRequest = createRequest.createRequest("field(value.index)");
-	
+
 	private static final String PVREQUEST_PREFIX = "?request=";
 	private final PVStructure pvRequest;
 	private final String extractPVField;
-	
+
 	public static PVAChannelHandler create(String channelName,
 			ChannelProvider channelProvider, short priority,
 			PVATypeSupport typeSupport) {
-		
-		int pos = channelName.indexOf(PVREQUEST_PREFIX); 
+
+		int pos = channelName.indexOf(PVREQUEST_PREFIX);
 		if (pos == -1)
 		{
 			return new PVAChannelHandler(channelName, null, channelProvider, priority, typeSupport);
@@ -103,7 +84,7 @@ class PVAChannelHandler extends
 			channelName = channelName.substring(0, pos);
 			return new PVAChannelHandler(channelName, pvRequestString, channelProvider, priority, typeSupport);
 		}
-		
+
 	}
 
 	public PVAChannelHandler(String channelName, String pvRequestString,
@@ -114,7 +95,7 @@ class PVAChannelHandler extends
 		this.pvaChannelProvider = channelProvider;
 		this.priority = priority;
 		this.pvaTypeSupport = typeSupport;
-		
+
 		if (pvRequest != null)
 		{
 			PVStructure field = pvRequest.getStructureField("field");
@@ -122,14 +103,14 @@ class PVAChannelHandler extends
 		}
 		else
 			extractPVField = null;
-		
+
 		// NOTE: mind "return" above
 	}
 
 	private static final String _OPTIONS = "_options";
 	private static final String TAKE_PARENT = _OPTIONS;
 	private static final String getOnlyChildFieldName(PVStructure field)
-	{		
+	{
 		if (field != null)
 		{
 			String[] fieldNames = field.getStructure().getFieldNames();
@@ -147,7 +128,7 @@ class PVAChannelHandler extends
 							return null;
 					}
 				}
-				
+
 				if (name == null)
 				{
 					// only "_options" field, that's OK
@@ -173,8 +154,8 @@ class PVAChannelHandler extends
 		else
 			return null;
 	}
-	
-	
+
+
 	/**
 	 * @return the channel
 	 */
@@ -193,12 +174,10 @@ class PVAChannelHandler extends
 		return extractPVField;
 	}
 
-	@Override
 	public String getRequesterName() {
 		return this.getClass().getName();
 	}
 
-	@Override
 	public void message(String message, MessageType messageType) {
 		logger.log(toLoggerLevel(messageType), message);
 	}
@@ -221,7 +200,7 @@ class PVAChannelHandler extends
 			return Level.INFO;
 		}
 	}
-	
+
 	private void reportStatus(String message, Status status)
 	{
 		if (!status.isSuccess()) {
@@ -229,23 +208,21 @@ class PVAChannelHandler extends
 
 			// for developers
 			String dump = status.getStackDump();
-			if (dump != null && !dump.isEmpty())
+			if (dump != null && dump.trim().length() != 0)
 				logger.log(Level.FINER, message + ": " + status.getMessage() + ", cause:\n" + dump);
 		}
 	}
-	
+
 	@Override
 	public void connect() {
 		pvaChannelProvider.createChannel(getChannelName(), this, priority);
 	}
 
-	@Override
 	public void channelCreated(Status status, Channel channel) {
 		reportStatus("Failed to create channel instance '" + channel.getChannelName(), status);
 		this.channel = channel;
 	}
-	
-    @Override
+
     public void channelStateChange(Channel channel, ConnectionState connectionState) {
         try {
 
@@ -268,14 +245,13 @@ class PVAChannelHandler extends
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.GetFieldRequester#getDone(org.epics.pvdata.pv.Status, org.epics.pvdata.pv.Field)
 	 */
-	@Override
 	public void getDone(Status status, Field field) {
 		reportStatus("Failed to instrospect channel '" + channel.getChannelName() + "'", status);
-		
+
 		if (status.isSuccess())
 		{
 			channelType = field;
-		
+
 			Field valueField = (channelType instanceof Structure) ? ((Structure)channelType).getField("value") : null;
 			if (valueField != null && valueField.getID().equals("enum_t"))
 			{
@@ -285,10 +261,10 @@ class PVAChannelHandler extends
 			else
 				isChannelEnumType = false;
 		}
-	
+
 		processConnection(newConnectionPayload());
 	}
-    
+
     private PVAConnectionPayload newConnectionPayload() {
         return new PVAConnectionPayload(channelType, channel != null && channel.isConnected(), extractPVField);
     }
@@ -331,19 +307,19 @@ class PVAChannelHandler extends
 			channel.destroy();
 		} finally {
 			channel = null;
-			
+
 			//monitor = null;
 			monitorCreated.set(false);
-			
+
 			channelType = null;
-			
+
 			channelPut = null;
 			channelPutValueField = null;
 			channelPutCreated.set(false);
 		}
 	}
-	
-	private final LinkedList<WriteRequest<?>> writeRequests = new LinkedList<WriteRequest<?>>(); 
+
+	private final LinkedList<WriteRequest<?>> writeRequests = new LinkedList<WriteRequest<?>>();
 
     @Override
     protected void processWriteRequest(WriteRequest<?> request) {
@@ -381,22 +357,21 @@ class PVAChannelHandler extends
         }
 
     }
-	
-	@Override
+
 	public void channelPutConnect(Status status, ChannelPut channelPut, Structure putStructure) {
 		reportStatus("Failed to create ChannelPut instance", status);
 
 		if (status.isSuccess())
 		{
 			this.channelPut = channelPut;
-			
+
 			if (channelPutStructure == null ||
 				!channelPutStructure.getStructure().equals(putStructure))
 			{
 				channelPutStructure = PVDataFactory.getPVDataCreate().createPVStructure(putStructure);
 				bitSet = new BitSet(channelPutStructure.getNumberFields());
 			}
-			
+
 			if (isChannelEnumType)
 			{
 				// handle inconsistent behavior
@@ -409,20 +384,19 @@ class PVAChannelHandler extends
 				this.channelPutValueField = channelPutStructure.getSubField("value");
 			}
 
-			
+
 			// set BitSet
 			bitSet.clear();	// re-connect case
 			if (this.channelPutValueField != null)
 				bitSet.set(channelPutValueField.getFieldOffset());
 		}
-		
+
 		doNextWrite();
 	}
 
-	@Override
 	public void putDone(Status status, ChannelPut channePut) {
 		reportStatus("Failed to put value", status);
-		
+
 		WriteRequest writeRequest;
 		synchronized (writeRequests)
 		{
@@ -439,19 +413,18 @@ class PVAChannelHandler extends
 			{
 				writeRequest.writeFailed(new Exception(status.getMessage()));
 			}
-			
+
 			doNextWrite();
 		}
-		
+
 	}
-	
-	@Override
+
 	public void getDone(Status status, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
 		// never used, i.e. ChannelPut.get() never called
 	}
 
 	private final static Convert convert = ConvertFactory.getConvert();
-	
+
 	// TODO check if non-V types can ever be given as newValue
 	private final void fromObject(PVField field, Object newValue)
 	{
@@ -460,7 +433,7 @@ class PVAChannelHandler extends
 		{
 			// value.index int field expected
 			PVInt indexPutField = (PVInt)channelPutValueField;
-			
+
 			int index = -1;
 			if (newValue instanceof Number)
 			{
@@ -468,17 +441,17 @@ class PVAChannelHandler extends
 			}
 			else if (newValue instanceof String)
 			{
-				String nv = (String)newValue; 
-				
+				String nv = (String)newValue;
+
 				PVStructure lastValue = getLastMessagePayload();
 				if (lastValue == null)
 					throw new IllegalArgumentException("no monitor on '" + getChannelName() +"' created to get list of valid enum choices");
-				
+
 				PVStringArray pvChoices = (PVStringArray)lastValue.getSubField("value.choices");
 				StringArrayData data = new StringArrayData();
 				pvChoices.get(0, pvChoices.getLength(), data);
 				final String[] choices = data.data;
-				
+
 				for (int i = 0; i < choices.length; i++)
 				{
 					if (nv.equals(choices[i]))
@@ -487,7 +460,7 @@ class PVAChannelHandler extends
 						break;
 					}
 				}
-				
+
 				// fallback: try to convert string to an number (index)
 				if (index == -1)
 				{
@@ -499,16 +472,16 @@ class PVAChannelHandler extends
 						// failed to convert, noop
 					}
 				}
-				
+
 				if (index == -1)
 					throw new IllegalArgumentException("enumeration '" + nv +"' is not a valid choice");
 			}
-			
+
 			indexPutField.put(index);
-			
+
 			return;
 		}
-		
+
         if (channelPutValueField instanceof PVScalar)
         {
 	        if (newValue instanceof Double)
@@ -550,7 +523,7 @@ class PVAChannelHandler extends
             	Array.set(newValueArray, 0, newValue);
             	newValue = newValueArray;
             }
-            
+
             if (newValue instanceof double[])
     			convert.fromDoubleArray((PVScalarArray)field, 0, ((double[])newValue).length, (double[])newValue, 0);
     		else if (newValue instanceof int[])
@@ -561,16 +534,16 @@ class PVAChannelHandler extends
     		else if (newValue instanceof String)
     		{
     			String str = ((String)newValue).trim();
-    			
+
     			// remove []
     			if (str.charAt(0) == '[' && str.charAt(str.length()-1) == ']')
     				str = str.substring(1, str.length()-1);
-    			
+
     			// split on commas and whitespaces
     			String[] splitValues = str.split("[,\\s]+");
     			convert.fromStringArray((PVScalarArray)field, 0, splitValues.length, splitValues, 0);
     		}
-    		
+
     		else if (newValue instanceof byte[])
     			convert.fromByteArray((PVScalarArray)field, 0, ((byte[])newValue).length, (byte[])newValue, 0);
     		else if (newValue instanceof short[])
@@ -593,11 +566,11 @@ class PVAChannelHandler extends
 		else
 			throw new RuntimeException("Unsupported write, cannot put '" + newValue.getClass() + "' into '" + channelPutValueField.getField() + "'");
 
-        
-	}
-	
 
-        
+	}
+
+
+
     @Override
     protected PVATypeAdapter findTypeAdapter(ReadCollector<?, ?> cache, PVAConnectionPayload connection) {
         return pvaTypeSupport.find(cache, connection);
@@ -606,7 +579,7 @@ class PVAChannelHandler extends
 	@Override
 	public void addReader(ReadCollector subscription) {
 		super.addReader(subscription);
-		
+
 		if (!monitorCreated.getAndSet(true))
 		{
 			// TODO remove this....
@@ -624,10 +597,9 @@ class PVAChannelHandler extends
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.monitor.MonitorRequester#monitorConnect(org.epics.pvdata.pv.Status, org.epics.pvdata.monitor.Monitor, org.epics.pvdata.pv.Structure)
 	 */
-	@Override
 	public void monitorConnect(Status status, Monitor monitor, Structure structure) {
 		reportStatus("Failed to create monitor", status);
-		
+
 		if (status.isSuccess())
 		{
 			//this.monitor = monitor;
@@ -638,14 +610,13 @@ class PVAChannelHandler extends
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.monitor.MonitorRequester#monitorEvent(org.epics.pvdata.monitor.Monitor)
 	 */
-	@Override
 	public void monitorEvent(Monitor monitor) {
 		MonitorElement monitorElement;
 		while ((monitorElement = monitor.poll()) != null)
 		{
 			if (monitorElement.getOverrunBitSet().cardinality() > 0)
 				monitorLossCounter.incrementAndGet();
-			
+
 			// TODO combine bitSet, etc.... do we need to copy structure?
 			processMessage(monitorElement.getPVStructure());
 			monitor.release(monitorElement);
@@ -655,11 +626,10 @@ class PVAChannelHandler extends
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.monitor.MonitorRequester#unlisten(org.epics.pvdata.monitor.Monitor)
 	 */
-	@Override
 	public void unlisten(Monitor monitor) {
 		// TODO Auto-generated method stub
 	}
-	
+
 	@Override
 	public String toString() {
 		return "PVAChannelHandler [getChannelName()=" + getChannelName() + "]";

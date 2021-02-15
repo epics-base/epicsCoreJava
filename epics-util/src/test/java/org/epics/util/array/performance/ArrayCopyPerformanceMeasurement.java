@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -9,9 +9,9 @@ import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayInteger;
-import java.util.Random;
+import org.epics.util.compat.legacy.lang.Random;
 import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ListNumbers;
+
 import static org.epics.util.array.CollectionNumbers.*;
 
 /**
@@ -28,7 +28,7 @@ public class ArrayCopyPerformanceMeasurement {
         int arraySize = 100000;
         // Number of iterations to perform
         int nIterations = 10000;
-        
+
         System.out.println("");
         System.out.println("Preparing data");
         double[] doubleArray = new double[arraySize];
@@ -169,9 +169,7 @@ public class ArrayCopyPerformanceMeasurement {
     private static void profileJavaArrayLoop(double[] src, double[] dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            for (int j = 0; j < src.length; j++) {
-                dst[j]= src[j];
-            }
+            System.arraycopy(src, 0, dst, 0, src.length);
             // NOTE: this check is required or the whole computation will be optimized away
             if (dst[0] == 0) {
                 System.out.println("Unexpected value " + dst[0]);
@@ -185,9 +183,7 @@ public class ArrayCopyPerformanceMeasurement {
     private static void profileJavaArrayLoop(float[] src, float[] dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            for (int j = 0; j < src.length; j++) {
-                dst[j]= src[j];
-            }
+            System.arraycopy(src, 0, dst, 0, src.length);
             // NOTE: this check is required or the whole computation will be optimized away
             if (dst[0] == 0) {
                 System.out.println("Unexpected value " + dst[0]);
@@ -201,9 +197,7 @@ public class ArrayCopyPerformanceMeasurement {
     private static void profileJavaArrayLoop(long[] src, long[] dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            for (int j = 0; j < src.length; j++) {
-                dst[j]= src[j];
-            }
+            System.arraycopy(src, 0, dst, 0, src.length);
             // NOTE: this check is required or the whole computation will be optimized away
             if (dst[0] == 0) {
                 System.out.println("Unexpected value " + dst[0]);
@@ -217,9 +211,7 @@ public class ArrayCopyPerformanceMeasurement {
     private static void profileJavaArrayLoop(int[] src, int[] dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            for (int j = 0; j < src.length; j++) {
-                dst[j]= src[j];
-            }
+            System.arraycopy(src, 0, dst, 0, src.length);
             // NOTE: this check is required or the whole computation will be optimized away
             if (dst[0] == 0) {
                 System.out.println("Unexpected value " + dst[0]);
@@ -233,9 +225,7 @@ public class ArrayCopyPerformanceMeasurement {
     private static void profileJavaArrayLoop(short[] src, short[] dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            for (int j = 0; j < src.length; j++) {
-                dst[j]= src[j];
-            }
+            System.arraycopy(src, 0, dst, 0, src.length);
             // NOTE: this check is required or the whole computation will be optimized away
             if (dst[0] == 0) {
                 System.out.println("Unexpected value " + dst[0]);
@@ -249,9 +239,7 @@ public class ArrayCopyPerformanceMeasurement {
     private static void profileJavaArrayLoop(byte[] src, byte[] dst, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
-            for (int j = 0; j < src.length; j++) {
-                dst[j]= src[j];
-            }
+            System.arraycopy(src, 0, dst, 0, src.length);
             // NOTE: this check is required or the whole computation will be optimized away
             if (dst[0] == 0) {
                 System.out.println("Unexpected value " + dst[0]);

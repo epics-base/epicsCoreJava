@@ -1,60 +1,18 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.pva;
 
+import org.epics.pvdata.factory.FieldFactory;
+import org.epics.pvdata.pv.*;
+import org.epics.util.array.*;
+import org.epics.vtype.*;
+
 import java.util.Arrays;
 
-import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.pv.BooleanArrayData;
-import org.epics.pvdata.pv.ByteArrayData;
-import org.epics.pvdata.pv.DoubleArrayData;
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.FloatArrayData;
-import org.epics.pvdata.pv.IntArrayData;
-import org.epics.pvdata.pv.LongArrayData;
-import org.epics.pvdata.pv.PVBooleanArray;
-import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVFloatArray;
-import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVScalarArray;
-import org.epics.pvdata.pv.PVShortArray;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVUByteArray;
-import org.epics.pvdata.pv.PVUIntArray;
-import org.epics.pvdata.pv.PVULongArray;
-import org.epics.pvdata.pv.PVUShortArray;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.ShortArrayData;
-import org.epics.pvdata.pv.StringArrayData;
-import org.epics.util.array.ArrayBoolean;
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInteger;
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ArrayShort;
-import org.epics.vtype.VBoolean;
-import org.epics.vtype.VByte;
-import org.epics.vtype.VByteArray;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VDoubleArray;
-import org.epics.vtype.VFloat;
-import org.epics.vtype.VFloatArray;
-import org.epics.vtype.VInt;
-import org.epics.vtype.VIntArray;
-import org.epics.vtype.VLong;
-import org.epics.vtype.VLongArray;
-import org.epics.vtype.VShort;
-import org.epics.vtype.VShortArray;
-import org.epics.vtype.VString;
-
 final class NTUtils {
-	
+
 	private static final Class<?>[] classLUT = {
 		boolean.class, // pvBoolean
 		byte.class,    // pvByte
@@ -80,16 +38,16 @@ final class NTUtils {
 		return scalarClass(scalarArray.getScalarArray().getElementType());
 	}
 
-	
+
 	private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-	
+
 	public static Field vtypeToField(Class<?> vtypeClass)
 	{
 	    if (vtypeClass == null)
 	      throw new IllegalArgumentException("vtypeClass == null");
 
 	    // TODO no complex types
-	    
+
 	    if (vtypeClass.isAssignableFrom(VDouble.class)) {
 	      return fieldCreate.createScalar(ScalarType.pvDouble);
 	    } else if (vtypeClass.isAssignableFrom(VFloat.class)) {
@@ -106,7 +64,7 @@ final class NTUtils {
 	      return fieldCreate.createScalar(ScalarType.pvByte);
 	    } else if (vtypeClass.isAssignableFrom(VBoolean.class)) {
 	      return fieldCreate.createScalar(ScalarType.pvBoolean);
-	      
+
 	    } else if (vtypeClass.isAssignableFrom(VDoubleArray.class)) {
 	      return fieldCreate.createScalarArray(ScalarType.pvDouble);
 	    } else if (vtypeClass.isAssignableFrom(VFloatArray.class)) {
@@ -122,10 +80,10 @@ final class NTUtils {
 	    } else if (vtypeClass.isAssignableFrom(VByteArray.class)) {
 	      return fieldCreate.createScalarArray(ScalarType.pvByte);
 	    }
-	    
+
 	    throw new IllegalArgumentException("V-type class " + vtypeClass.getSimpleName() + " not supported");
 	}
-	
+
 	public static Object scalarArrayToList(PVScalarArray scalarArray, boolean readOnly)
 	{
             // FIXME: This should all go away
@@ -133,7 +91,7 @@ final class NTUtils {
             if (!readOnly) {
                 throw new RuntimeException("Modifiable arrays are not supported by this function");
             }
-    	int len = scalarArray.getLength(); 
+    	int len = scalarArray.getLength();
 		ScalarType elementType = scalarArray.getScalarArray().getElementType();
 		switch (elementType)
 		{

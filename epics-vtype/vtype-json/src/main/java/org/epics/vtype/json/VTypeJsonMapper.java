@@ -1,47 +1,25 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype.json;
 
-import java.text.DecimalFormat;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.json.JsonArray;
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import static org.epics.vtype.json.JsonArrays.*;
-import org.epics.util.array.ArrayBoolean;
-import org.epics.util.array.ListBoolean;
-import org.epics.util.array.ListByte;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInteger;
-import org.epics.util.array.ListLong;
-import org.epics.util.array.ListShort;
-import org.epics.util.array.ListUByte;
-import org.epics.util.array.ListUInteger;
-import org.epics.util.array.ListULong;
-import org.epics.util.array.ListUShort;
+import org.epics.util.array.*;
+import org.joda.time.Instant;
 import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.AlarmSeverity;
-import org.epics.vtype.AlarmStatus;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
+import org.epics.vtype.*;
+
+import javax.json.*;
+import java.text.DecimalFormat;
+import java.util.*;
+
+import static org.epics.vtype.json.JsonArrays.*;
 
 /**
- *
  * @author carcassi
  */
 class VTypeJsonMapper implements JsonObject {
-    
+
     private final JsonObject json;
 
     public static final String NAN = Double.toString(Double.NaN);
@@ -66,7 +44,7 @@ class VTypeJsonMapper implements JsonObject {
     public VTypeJsonMapper(JsonObject json) {
         this.json = json;
     }
-    
+
     public String getTypeName() {
         JsonObject type = json.getJsonObject("type");
         if (type == null) {
@@ -74,7 +52,7 @@ class VTypeJsonMapper implements JsonObject {
         }
         return type.getString("name");
     }
-    
+
     public Alarm getAlarm() {
         JsonObject alarm = json.getJsonObject("alarm");
         if (alarm == null) {
@@ -82,15 +60,15 @@ class VTypeJsonMapper implements JsonObject {
         }
         return Alarm.of(AlarmSeverity.valueOf(alarm.getString("severity")), AlarmStatus.valueOf(alarm.getString("status")), alarm.getString("name"));
     }
-    
+
     public Time getTime() {
         VTypeJsonMapper time = getJsonObject("time");
         if (time == null) {
             return null;
         }
-        return Time.of(Instant.ofEpochSecond(time.getInt("unixSec"), time.getInt("nanoSec")), time.getInteger("userTag"), true);
+        return Time.of(Instant.ofEpochSecond(time.getInt("unixSec")).plus(time.getInt("nanoSec")/1000000L), time.getInteger("userTag"), true);
     }
-    
+
     public Display getDisplay() {
         VTypeJsonMapper display = getJsonObject("display");
         if (display == null) {
@@ -102,61 +80,61 @@ class VTypeJsonMapper implements JsonObject {
                 Range.of(display.getNotNullDouble("lowControl"), display.getNotNullDouble("highControl")),
                 display.getString("units"), new DecimalFormat());
     }
-    
+
     public ListDouble getListDouble(String string) {
         JsonArray array = getJsonArray(string);
         return toListDouble(array);
     }
-    
-    
+
+
     public ListFloat getListFloat(String string) {
         JsonArray array = getJsonArray(string);
         return toListFloat(array);
     }
-    
+
     public ListULong getListULong(String string) {
         JsonArray array = getJsonArray(string);
         return toListULong(array);
     }
-    
+
     public ListLong getListLong(String string) {
         JsonArray array = getJsonArray(string);
         return toListLong(array);
     }
-    
-    
+
+
     public ListUInteger getListUInteger(String string) {
         JsonArray array = getJsonArray(string);
         return toListUInteger(array);
     }
-    
+
     public ListInteger getListInt(String string) {
         JsonArray array = getJsonArray(string);
         return toListInt(array);
     }
-    
-    
+
+
     public ListUShort getListUShort(String string) {
         JsonArray array = getJsonArray(string);
         return toListUShort(array);
     }
-    
+
     public ListShort getListShort(String string) {
         JsonArray array = getJsonArray(string);
         return toListShort(array);
     }
-    
-    
+
+
     public ListUByte getListUByte(String string) {
         JsonArray array = getJsonArray(string);
         return toListUByte(array);
     }
-    
+
     public ListByte getListByte(String string) {
         JsonArray array = getJsonArray(string);
         return toListByte(array);
     }
-    
+
 
     public ListBoolean getListBoolean(String string) {
         JsonArray array = getJsonArray(string);
@@ -166,16 +144,16 @@ class VTypeJsonMapper implements JsonObject {
         }
         return new ArrayBoolean(values);
     }
-    
+
     public List<String> getListString(String string) {
         JsonArray array = getJsonArray(string);
         return toListString(array);
     }
-    
+
 
     public List<Class<?>> getColumnTypes(String string) {
         JsonArray array = getJsonArray(string);
-        List<Class<?>> types = new ArrayList<>();
+        List<Class<?>> types = new ArrayList<Class<?>>();
         for (int i = 0; i < array.size(); i++) {
             String type = array.getString(i);
             if ("String".equals(type)) {
@@ -203,7 +181,7 @@ class VTypeJsonMapper implements JsonObject {
 
     public List<Object> getColumnValues(String string, List<Class<?>> types) {
         JsonArray array = getJsonArray(string);
-        List<Object> result = new ArrayList<>();
+        List<Object> result = new ArrayList<Object>();
         for (int i = 0; i < types.size(); i++) {
             Class<?> type = types.get(i);
             if (String.class.equals(type)) {
@@ -228,14 +206,14 @@ class VTypeJsonMapper implements JsonObject {
         }
         return result;
     }
-    
+
     public Integer getInteger(String string) {
         if (isNull(string)) {
             return null;
         }
         return getInt(string);
     }
-    
+
     public Double getNotNullDouble(String string) {
         if (isNull(string)) {
             return Double.NaN;
@@ -243,122 +221,98 @@ class VTypeJsonMapper implements JsonObject {
         return getJsonNumber(string).doubleValue();
     }
 
-    @Override
     public JsonArray getJsonArray(String string) {
         return json.getJsonArray(string);
     }
 
-    @Override
     public VTypeJsonMapper getJsonObject(String string) {
         return new VTypeJsonMapper(json.getJsonObject(string));
     }
 
-    @Override
     public JsonNumber getJsonNumber(String string) {
         return json.getJsonNumber(string);
     }
 
-    @Override
     public JsonString getJsonString(String string) {
         return json.getJsonString(string);
     }
 
-    @Override
     public String getString(String string) {
         return json.getString(string);
     }
 
-    @Override
     public String getString(String string, String string1) {
         return json.getString(string, string1);
     }
 
-    @Override
     public int getInt(String string) {
         return json.getInt(string);
     }
 
-    @Override
     public int getInt(String string, int i) {
         return json.getInt(string, i);
     }
 
-    @Override
     public boolean getBoolean(String string) {
         return json.getBoolean(string);
     }
 
-    @Override
     public boolean getBoolean(String string, boolean bln) {
         return json.getBoolean(string, bln);
     }
 
-    @Override
     public boolean isNull(String string) {
         return !json.containsKey(string) || json.isNull(string);
     }
 
-    @Override
     public ValueType getValueType() {
         return json.getValueType();
     }
 
-    @Override
     public int size() {
         return json.size();
     }
 
-    @Override
     public boolean isEmpty() {
         return json.isEmpty();
     }
 
-    @Override
     public boolean containsKey(Object key) {
         return json.containsKey(key);
     }
 
-    @Override
     public boolean containsValue(Object value) {
         return json.containsValue(value);
     }
 
-    @Override
     public JsonValue get(Object key) {
         return json.get(key);
     }
 
-    @Override
     public JsonValue put(String key, JsonValue value) {
         return json.put(key, value);
     }
 
-    @Override
     public JsonValue remove(Object key) {
         return json.remove(key);
     }
 
-    @Override
     public void putAll(Map<? extends String, ? extends JsonValue> m) {
         json.putAll(m);
     }
 
-    @Override
     public void clear() {
         json.clear();
     }
 
-    @Override
     public Set<String> keySet() {
         return json.keySet();
     }
 
-    @Override
     public Collection<JsonValue> values() {
         return json.values();
     }
 
-    @Override
     public Set<Entry<String, JsonValue>> entrySet() {
         return json.entrySet();
     }

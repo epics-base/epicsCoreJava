@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -11,82 +11,67 @@ import org.epics.util.number.UnsignedConversions;
  *
  * @author Gabriele Carcassi
  */
-public abstract class ListUByte implements ListNumber, CollectionUByte {
+public abstract class ListUByte extends AbstractCollectionNumber implements ListNumber, CollectionUByte {
 
-    @Override
     public IteratorUByte iterator() {
         return new IteratorUByte() {
 
             private int index;
 
-            @Override
             public boolean hasNext() {
                 return index < size();
             }
 
-            @Override
             public byte nextByte() {
                 return getByte(index++);
             }
         };
     }
 
-    @Override
     public double getDouble(int index) {
         return UnsignedConversions.toDouble(getByte(index));
     }
 
-    @Override
     public float getFloat(int index) {
         return UnsignedConversions.toFloat(getByte(index));
     }
 
-    @Override
     public long getLong(int index) {
         return UnsignedConversions.toLong(getByte(index));
     }
 
-    @Override
     public int getInt(int index) {
         return UnsignedConversions.toInt(getByte(index));
     }
 
-    @Override
     public short getShort(int index) {
         return UnsignedConversions.toShort(getByte(index));
     }
 
-    @Override
     public void setDouble(int index, double value) {
         setByte(index, (byte) value);
     }
 
-    @Override
     public void setFloat(int index, float value) {
         setByte(index, (byte) value);
     }
 
-    @Override
     public void setLong(int index, long value) {
         setByte(index, (byte) value);
     }
 
-    @Override
     public void setInt(int index, int value) {
         setByte(index, (byte) value);
     }
 
-    @Override
     public void setShort(int index, short value) {
         setByte(index, (byte) value);
     }
 
-    @Override
     public void setByte(int index, byte value) {
         throw new UnsupportedOperationException("Read only list.");
     }
 
-    @Override
     public void setAll(int index, ListNumber list) {
         if ((index+list.size()) > size()) {
             throw new IndexOutOfBoundsException("Index: "+index+", Elements: "+list.size()+", Size: "+size());
@@ -139,15 +124,13 @@ public abstract class ListUByte implements ListNumber, CollectionUByte {
         builder.append(getShort(i)).append("]");
         return builder.toString();
     }
-    
-    @Override
+
     public ListUByte subList(final int fromIndex, final int toIndex) {
         if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
             throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
         }
         final int size = toIndex - fromIndex;
         return new ListUByte() {
-            @Override
             public byte getByte(int index) {
                 if (index < 0 || index >= size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
@@ -161,7 +144,6 @@ public abstract class ListUByte implements ListNumber, CollectionUByte {
                 ListUByte.this.setByte(fromIndex + index, value);
             }
 
-            @Override
             public int size() {
                 return size;
             }

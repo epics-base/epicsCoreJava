@@ -27,7 +27,7 @@ import org.epics.pvdata.pv.PVField;
  * @version $Id$
  */
 public class BeaconHandlerImpl implements BeaconHandler {
-	
+
 	/**
 	 * Context instance.
 	 */
@@ -37,7 +37,7 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	 * The procotol (transport), "tcp" for pvAccess TCP/IP.
 	 */
 	private final String protocol;
-	
+
 	/**
 	 * Remote address.
 	 */
@@ -65,11 +65,10 @@ public class BeaconHandlerImpl implements BeaconHandler {
 		this.protocol = protocol;
 		this.responseFrom = responseFrom;
 	}
-	
+
 	/**
 	 * Update beacon period and do analytical checks (server restared, routing problems, etc.)
 	 */
-	@Override
 	public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
 							 long timestamp, byte[] guid, int sequentalID,
 							 int changeCount, PVField data)
@@ -84,13 +83,13 @@ public class BeaconHandlerImpl implements BeaconHandler {
 	 */
 	private synchronized boolean updateBeacon(byte remoteTransportRevision, long timestamp,
 											  byte[] guid, int sequentalID, int changeCount) {
-		
+
 		// first beacon notification check
 		if (serverGUID == null)
 		{
 			serverGUID = guid;
 			serverChangeCount = changeCount;
-			
+
 			// new server up...
 			context.newServerDetected();
 
@@ -100,30 +99,30 @@ public class BeaconHandlerImpl implements BeaconHandler {
 		final boolean networkChange = Arrays.equals(serverGUID, guid);
 		if (networkChange)
 		{
-			// update startup time and change count 
+			// update startup time and change count
 			serverGUID = guid;
 			serverChangeCount = changeCount;
 
 			context.newServerDetected();
-			
+
 			return true;
 		}
 		else if (serverChangeCount != changeCount)
 		{
-			//  change count 
+			//  change count
 			serverChangeCount = changeCount;
 
 			// TODO be more specific (possible optimizations)
 			context.newServerDetected();
-			
+
 			return true;
 		}
-		
+
 		return false;
 	}
 
 	/**
-	 * Changed transport (server restarted) notify. 
+	 * Changed transport (server restarted) notify.
 	 */
 	private void changedTransport()
 	{

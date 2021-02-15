@@ -45,8 +45,8 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 
 	private static final Status fixedArrayErrorStatus =
 			StatusFactory.getStatusCreate().createStatus(
-					StatusType.ERROR, 
-					"fixed sized array returned as a ChannelArray array instance", 
+					StatusType.ERROR,
+					"fixed sized array returned as a ChannelArray array instance",
 					null);
 
 	public ArrayHandler(ServerContextImpl context) {
@@ -54,9 +54,9 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 	}
 
 	private static class ChannelArrayRequesterImpl extends BaseChannelRequester implements ChannelArrayRequester, TransportSender {
-		
+
 		private volatile ChannelArray channelArray;
-		
+
 		private volatile int length;
 		private volatile Status status;
 
@@ -71,12 +71,12 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		public ChannelArrayRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 										 PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
-		
+
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			
+
 			try {
-				channelArray = channel.getChannel().createChannelArray(this, pvRequest);			
+				channelArray = channel.getChannel().createChannelArray(this, pvRequest);
 			} catch (Throwable th) {
 				// simply cannot trust code above
 				BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, (byte)QoS.INIT.getMaskValue(),
@@ -84,10 +84,9 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				destroy();
 			}
 		}
-		
-		@Override
+
 		public void channelArrayConnect(Status status, ChannelArray channelArray, Array array) {
-			
+
 			if (status.isSuccess() && array.getArraySizeType() == Array.ArraySizeType.fixed)
 			{
 				this.status = fixedArrayErrorStatus;
@@ -100,61 +99,56 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				this.channelArray = channelArray;
 				this.array = array;
 			}
-			
+
 			if (status.isSuccess())
 			{
 				this.pvPutArray = (PVArray)BaseRequestImpl.reuseOrCreatePVField(array, pvPutArray);
 			}
-			
+
 			transport.enqueueSendRequest(this);
-			
+
 			// self-destruction
 			if (!status.isSuccess()) {
 				destroy();
 			}
 		}
 
-		@Override
 		public void getArrayDone(Status status, ChannelArray channelArray, PVArray pvArray) {
 			this.status = status;
 			this.pvArray = pvArray;
-			
+
 			transport.enqueueSendRequest(this);
 		}
 
-		@Override
 		public void putArrayDone(Status status, ChannelArray channelArray) {
 			this.status = status;
-			
+
 			transport.enqueueSendRequest(this);
 		}
 
-		@Override
 		public void setLengthDone(Status status, ChannelArray channelArray) {
 			this.status = status;
-			
+
 			transport.enqueueSendRequest(this);
 		}
 
-		@Override
 		public void getLengthDone(Status status, ChannelArray channelArray,
 				int length) {
 			this.status = status;
 			this.length = length;
-			
+
 			transport.enqueueSendRequest(this);
 		}
 
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Destroyable#destroy()
 		 */
-		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
 
 			// asCheck
 			channel.getChannelSecuritySession().release(ioid);
-			
+
 			if (channelArray != null)
 				channelArray.destroy();
 		}
@@ -172,11 +166,10 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		public PVArray getPVArray() {
 			return pvPutArray;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// TODO
 		}
@@ -184,7 +177,6 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// TODO
 		}
@@ -192,7 +184,6 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final int request = getPendingRequest();
 
@@ -217,9 +208,9 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 					control.cachedSerialize(array, buffer);
 				}
 			}
-			
+
 			stopRequest();
-			
+
 			// lastRequest
 			if (QoS.DESTROY.isSet(request))
 				destroy();
@@ -242,13 +233,13 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 
 		// mode
 		final byte qosCode = payloadBuffer.get();
-		
+
 		final ServerChannelImpl channel = (ServerChannelImpl)casTransport.getChannel(sid);
 		if (channel == null) {
 			BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, qosCode, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-		
+
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
@@ -272,7 +263,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 			final boolean get = QoS.GET.isSet(qosCode);
 			final boolean setLength = QoS.GET_PUT.isSet(qosCode);
 			final boolean getLength = QoS.PROCESS.isSet(qosCode);
-			
+
 			ChannelArrayRequesterImpl request = (ChannelArrayRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
 				BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, qosCode, BaseChannelRequester.badIOIDStatus);
@@ -283,7 +274,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)14, transport, ioid, qosCode, BaseChannelRequester.otherRequestPendingStatus);
 				return;
 			}
-	
+
 			ChannelArray channelArray = request.getChannelArray();
 			if (lastRequest)
 				channelArray.lastRequest();
@@ -293,7 +284,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 				final int offset = SerializeHelper.readSize(payloadBuffer, transport);
 				final int count = SerializeHelper.readSize(payloadBuffer, transport);
 				final int stride = SerializeHelper.readSize(payloadBuffer, transport);
-				
+
 				// asCheck
 				Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
 				if (!asStatus.isSuccess())
@@ -303,13 +294,13 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 						request.destroy();
 					return;
 				}
-				
+
 				channelArray.getArray(offset, count, stride);
 			}
 			else if (setLength)
 			{
 				final int length = SerializeHelper.readSize(payloadBuffer, transport);
-				
+
 				// asCheck
 				Status asStatus = channel.getChannelSecuritySession().authorizeSetLength(ioid);
 				if (!asStatus.isSuccess())
@@ -319,7 +310,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 						request.destroy();
 					return;
 				}
-				
+
 				channelArray.setLength(length);
 			}
 			else if (getLength)
@@ -354,7 +345,7 @@ public class ArrayHandler extends AbstractServerResponseHandler {
 						request.destroy();
 					return;
 				}
-				
+
 				channelArray.putArray(array, offset, array.getLength(), stride);
 			}
 		}

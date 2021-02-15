@@ -1,6 +1,6 @@
 package org.epics.pvaccess.server.test.helpers;
 
-import java.util.Random;
+import org.epics.util.compat.legacy.lang.Random;
 
 import org.epics.pvaccess.PVFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
@@ -35,26 +35,26 @@ public class ChangingVariantUnionTopStructure extends PVTopStructure implements 
 	private final TimerNode timerNode;
 	private int counter = 0;
 	private final Random random = new Random(System.currentTimeMillis());
-	
+
 	private final TimeStamp timeStamp = TimeStampFactory.create();
 
 	private final BitSet changedBitSet;
-	
-	private static final Structure structure = 
-		fieldCreate.createStructure(new String[] { "value", "timeStamp" }, 
-									new Field[] { 
+
+	private static final Structure structure =
+		fieldCreate.createStructure(new String[] { "value", "timeStamp" },
+									new Field[] {
 										fieldCreate.createVariantUnion(),
 										StandardFieldFactory.getStandardField().timeStamp()
 									}
 		);
-	
+
 	public ChangingVariantUnionTopStructure(double scanPeriodHz, Timer timer) {
 		super(structure);
 
 		changedBitSet = new BitSet(getPVStructure().getNumberFields());
-		
+
 		valueField = getPVStructure().getUnionField("value");
-		
+
 		timeStampField = PVTimeStampFactory.create();
 		PVField ts = getPVStructure().getStructureField("timeStamp");
 		timeStampField.attach(ts);
@@ -66,7 +66,7 @@ public class ChangingVariantUnionTopStructure extends PVTopStructure implements 
 		}
 		else
 			timerNode = null;
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -75,40 +75,38 @@ public class ChangingVariantUnionTopStructure extends PVTopStructure implements 
 	@Override
 	public void process() {
 		changedBitSet.clear();
-		
+
 		PVField value = null;
 		switch (counter++ % 4)
 		{
 		case 0: value = null; break;
 		case 1: value = pvDataCreate.createPVScalar(ScalarType.pvDouble); ((PVDouble)value).put(random.nextDouble()); break;
-		case 2: value = pvDataCreate.createPVScalarArray(ScalarType.pvByte); ((PVByteArray)value).setLength(random.nextInt(10)); break;  
+		case 2: value = pvDataCreate.createPVScalarArray(ScalarType.pvByte); ((PVByteArray)value).setLength(random.nextInt(10)); break;
 		case 3: value = StandardPVFieldFactory.getStandardPVField().enumerated(new String[] { "on", "off" }); break;
 		}
 		valueField.set(value);
 		changedBitSet.set(valueField.getFieldOffset());
-		
+
 		timeStamp.getCurrentTime();
 		timeStampField.set(timeStamp);
 		changedBitSet.set(timeStampFieldOffset);
-		
+
 		notifyListeners(changedBitSet);
 	}
 
-	@Override
 	public void callback() {
 		// TODO this causes deadlock !!! with topStructure
 	//	lock();
 		try
 		{
 			process();
-		} 
+		}
 		finally
 		{
 	//		unlock();
 		}
 	}
 
-	@Override
 	public void timerStopped() {
 	}
 

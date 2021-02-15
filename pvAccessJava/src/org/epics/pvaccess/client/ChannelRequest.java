@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -12,13 +12,13 @@ import org.epics.pvdata.misc.Destroyable;
  * @author mse
  */
 public interface ChannelRequest extends Lockable, Destroyable {
-	
+
 	/**
 	 * Get a channel instance this request belongs to.
 	 * @return the channel instance.
 	 */
 	Channel getChannel();
-	
+
 	/**
 	 * Cancel any pending request.
 	 * Completion will be reported via request's response callback:
@@ -28,7 +28,7 @@ public interface ChannelRequest extends Lockable, Destroyable {
 	 * </ul>
 	 */
 	void cancel();
-	
+
 	/**
 	 * Announce next request as last request.
 	 * When last request will be completed (regardless of completion status) the remote and local instance will be destroyed.

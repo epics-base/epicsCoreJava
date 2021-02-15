@@ -26,7 +26,7 @@ public abstract class BaseField implements Field
             throw new IllegalArgumentException("type is null");
         }
         this.type = type;
-    }   
+    }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Field#getType()
      */
@@ -36,12 +36,10 @@ public abstract class BaseField implements Field
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Field#toString(java.lang.StringBuilder, int)
      */
-    @Override
     public abstract void toString(StringBuilder buf, int indentLevel);
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Field#toString(java.lang.StringBuilder)
      */
-    @Override
     public void toString(StringBuilder buf) {
         toString(buf,0);
     }

@@ -1,49 +1,21 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.ca.types;
 
-import org.epics.vtype.EnumDisplay;
-import org.epics.vtype.VEnumArray;
-import org.epics.vtype.VFloat;
-import org.epics.vtype.VInt;
-import org.epics.vtype.VString;
-import org.epics.vtype.VStringArray;
-import org.epics.vtype.VShort;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VIntArray;
+import gov.aps.jca.dbr.*;
 import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.datasource.ca.CAConnectionPayload;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.CollectionNumbers;
-import org.epics.util.array.ListByte;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInteger;
-import org.epics.util.array.ListNumbers;
-import org.epics.util.array.ListShort;
+import org.epics.util.array.*;
 import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.AlarmSeverity;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VByte;
-import org.epics.vtype.VByteArray;
-import org.epics.vtype.VShortArray;
-import org.epics.vtype.VDoubleArray;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VFloatArray;
-import gov.aps.jca.Channel;
-import gov.aps.jca.dbr.*;
+import org.epics.vtype.*;
 
 import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -51,7 +23,6 @@ import java.util.regex.Pattern;
  */
 public class CAVTypeAdapterSet implements CATypeAdapterSet {
 
-    @Override
     public Set<CATypeAdapter> getAdapters() {
         return converters;
     }
@@ -457,7 +428,7 @@ public class CAVTypeAdapterSet implements CATypeAdapterSet {
             return VIntArray.of(data, alarm, timestamp, display);
         }
     };
-    
+
     // DBR_TIME_String -> VString
     final static CATypeAdapter DBRStringToVStringArray = new CATypeAdapter(VStringArray.class, DBR_TIME_String.TYPE, null, true) {
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -19,7 +19,7 @@ public class Ramp extends VDoubleSimFunction {
     protected final double max;
     private double currentValue;
     protected final double step;
-    
+
     /**
      * Creates a ramp shaped signal between -5 and +5, incrementing 1 every 500ms (2Hz).
      */

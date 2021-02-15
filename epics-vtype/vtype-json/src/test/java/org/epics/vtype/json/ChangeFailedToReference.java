@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,6 +10,7 @@
 package org.epics.vtype.json;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 /**
  *
@@ -22,13 +23,20 @@ public class ChangeFailedToReference {
      */
     public static void main(String[] args) {
         File file = new File("src/test/resources/org/epics/vtype/json/");
-        for (File failed : file.listFiles((File dir, String name) -> name.contains(".failed."))) {
-            File reference = new File(failed.getPath().subSequence(0, failed.getPath().indexOf(".failed.")) + ".json");
-            if (reference.exists()) {
-                reference.delete();
+        File[] files = file.listFiles(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
+                        return name.contains(".failed.");
+                    }
+                });
+        if (files != null) {
+            for (File failed : files) {
+                File reference = new File(failed.getPath().subSequence(0, failed.getPath().indexOf(".failed.")) + ".json");
+                if (reference.exists()) {
+                    reference.delete();
+                }
+                failed.renameTo(reference);
             }
-            failed.renameTo(reference);
         }
     }
-    
+
 }

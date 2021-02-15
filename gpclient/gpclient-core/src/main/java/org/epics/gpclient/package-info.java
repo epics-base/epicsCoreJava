@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 /**
  * Defines the core EPICS Generic Purpose client (gpclient) API.
  * <p>
- * The generic purpose client is meant to be used to build applications that 
+ * The generic purpose client is meant to be used to build applications that
  * are not specific to a particular deployment environment or to a particular use
  * case. It provides a system of queuing and caching that is appropriate
  * in most instances of multi-threaded applications. It isolates each reader
@@ -36,12 +36,11 @@
  * <li>the ability to specify on which thread or thread pool the notification
  * should happen</li>
  * <li>a pluggable way to connect to different publish/subscribe sources of
- * data (i.e. {@link DataSource})</li>
+ * data (i.e. {@code DataSource})</li>
  * <li>the ability to create your own data channel implementations, even if
  * they do not follow the common patterns</li>
  * </ul>
- * 
+ *
  */
 package org.epics.gpclient;
 
-import org.epics.gpclient.datasource.DataSource;

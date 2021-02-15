@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.server.rpc.impl;
 
@@ -46,24 +46,24 @@ import org.epics.pvdata.pv.StatusCreate;
 public class RPCChannel implements Channel {
 
 	private static final StatusCreate statusCreate = StatusFactory.getStatusCreate();
-	
-	private static final Status notSupportedStatus = 
+
+	private static final Status notSupportedStatus =
 		statusCreate.createStatus(StatusType.ERROR, "only channelRPC requests are supported by this channel", null);
-	private static final Status destroyedStatus = 
+	private static final Status destroyedStatus =
 		statusCreate.createStatus(StatusType.ERROR, "channel destroyed", null);
 	private static final Status okStatus = statusCreate.getStatusOK();
-	
+
 	private final AtomicBoolean destroyed = new AtomicBoolean(false);
 	private final ArrayList<ChannelRPC> channelRPCRequests = new ArrayList<ChannelRPC>();
-	
+
 	private final ChannelProvider provider;
 	private final String channelName;
 	private final ChannelRequester channelRequester;
-	
+
 	private final Service service;
 	private final ThreadPoolExecutor threadPool;
-	
-	
+
+
 	public RPCChannel(ChannelProvider provider, String channelName,
 			ChannelRequester channelRequester, Service service,
 			ThreadPoolExecutor threadPool)
@@ -75,28 +75,23 @@ public class RPCChannel implements Channel {
 		this.threadPool = threadPool;
 	}
 
-	@Override
 	public ChannelProvider getProvider() {
 		return provider;
 	}
 
-	@Override
 	public String getChannelName() {
 		return channelName;
 	}
 
-	@Override
 	public ChannelRequester getChannelRequester() {
 		return channelRequester;
 	}
 
-	@Override
 	public String getRemoteAddress() {
 		// local
 		return getChannelName();
 	}
 
-	@Override
 	public void destroy() {
 		if (!destroyed.getAndSet(true))
 		{
@@ -109,42 +104,40 @@ public class RPCChannel implements Channel {
 		}
 	}
 
-	@Override
 	public boolean isConnected() {
 		// server-side implementation, always connected
 		return !destroyed.get();
 	}
 
-	@Override
 	public ConnectionState getConnectionState() {
 		return isConnected() ?
 				ConnectionState.CONNECTED :
 				ConnectionState.DESTROYED;
 	}
 
-	
+
 	private class ChannelRPCImpl implements ChannelRPC, RPCResponseCallback
 	{
 		private final ChannelRPCRequester channelRPCRequester;
 		private final Channel channel;
 		private volatile boolean lastRequest = false;
 
-		
+
 		public ChannelRPCImpl(Channel channel, ChannelRPCRequester channelRPCRequester) {
 			this.channel = channel;
 			this.channelRPCRequester = channelRPCRequester;
-			
+
 			// add to the list, careful: "this" in the constructor
 			synchronized (channelRPCRequests) {
 				channelRPCRequests.add(this);
 			}
 		}
-		
+
 		public void lastRequest()
 		{
 			lastRequest = true;
 		}
-		
+
 		public Channel getChannel()
 		{
 			return channel;
@@ -171,13 +164,13 @@ public class RPCChannel implements Channel {
 			catch (Throwable th)
 			{
 				// handle user unexpected errors
-				status = 
+				status =
 					statusCreate.createStatus(StatusType.FATAL,
 								"Unexpected exception caught while calling RPCService.request(PVStructure).",
 								th);
 				ok = false;
 			}
-		
+
 			// check null result
 			if (ok && result == null)
 			{
@@ -187,21 +180,20 @@ public class RPCChannel implements Channel {
 							"RPCService.request(PVStructure) returned null.",
 							null);
 			}
-			
+
 			channelRPCRequester.requestDone(status, this, result);
-			
+
 			if (lastRequest)
 				destroy();
 		}
-		
-		@Override
+
 		public void requestDone(Status status, PVStructure result) {
 			channelRPCRequester.requestDone(status, this, result);
-			
+
 			if (lastRequest)
 				destroy();
 		}
-		
+
 		private void processRequest(RPCServiceAsync rpcServiceAsync, PVStructure pvArgument)
 		{
 			try
@@ -211,33 +203,31 @@ public class RPCChannel implements Channel {
 			catch (Throwable th)
 			{
 				// handle user unexpected errors
-				Status status = 
+				Status status =
 					statusCreate.createStatus(StatusType.FATAL,
 								"Unexpected exception caught while calling RPCService.request(PVStructure).",
 								th);
 
 				channelRPCRequester.requestDone(status, this, null);
-				
+
 				if (lastRequest)
 					destroy();
 			}
-		
+
 			// we wait for callback to be called
 		}
 
-		@Override
 		public void request(final PVStructure pvArgument) {
-			
+
 			if (service instanceof RPCService)
 			{
 				final RPCService rpcService = (RPCService)service;
-				
+
 				if (threadPool == null)
 					processRequest(rpcService, pvArgument);
 				else
 				{
 					threadPool.execute(new Runnable() {
-						@Override
 						public void run() {
 							processRequest(rpcService, pvArgument);
 						}
@@ -253,7 +243,6 @@ public class RPCChannel implements Channel {
 				throw new RuntimeException("unsupported Service type");
 		}
 
-		@Override
 		public void destroy() {
 			// remove from the list
 			synchronized (channelRPCRequests) {
@@ -261,28 +250,24 @@ public class RPCChannel implements Channel {
 			}
 		}
 
-		@Override
 		public void lock() {
 			// noop
 		}
 
-		@Override
 		public void unlock() {
 			// noop
 		}
 
-		@Override
 		public void cancel() {
 			// TODO do we need to extend API?
 		}
 	}
-	
-	@Override
+
 	public ChannelRPC createChannelRPC(ChannelRPCRequester channelRPCRequester,
 			PVStructure pvRequest) {
-		
+
 		// nothing expected to be in pvRequest
-		
+
 		if (channelRPCRequester == null)
 			throw new IllegalArgumentException("channelRPCRequester == null");
 
@@ -291,25 +276,22 @@ public class RPCChannel implements Channel {
 			channelRPCRequester.channelRPCConnect(destroyedStatus, null);
 			return null;
 		}
-		
+
 		ChannelRPCImpl channelRPCImpl = new ChannelRPCImpl(this, channelRPCRequester);
 		channelRPCRequester.channelRPCConnect(okStatus, channelRPCImpl);
 		return channelRPCImpl;
 	}
-	
-	
-	
-	@Override
+
+
+
 	public AccessRights getAccessRights(PVField pvField) {
 		return AccessRights.none;
 	}
 
-	@Override
 	public void getField(GetFieldRequester requester, String subField) {
 		requester.getDone(notSupportedStatus, null);
 	}
 
-	@Override
 	public ChannelProcess createChannelProcess(
 			ChannelProcessRequester channelProcessRequester,
 			PVStructure pvRequest) {
@@ -317,47 +299,40 @@ public class RPCChannel implements Channel {
 		return null;
 	}
 
-	@Override
 	public ChannelGet createChannelGet(ChannelGetRequester channelGetRequester,
 			PVStructure pvRequest) {
 		channelGetRequester.channelGetConnect(notSupportedStatus, null, null);
 		return null;
 	}
 
-	@Override
 	public ChannelPut createChannelPut(ChannelPutRequester channelPutRequester,
 			PVStructure pvRequest) {
 		channelPutRequester.channelPutConnect(notSupportedStatus, null, null);
 		return null;
 	}
 
-	@Override
 	public ChannelPutGet createChannelPutGet(
 			ChannelPutGetRequester channelPutGetRequester, PVStructure pvRequest) {
 		channelPutGetRequester.channelPutGetConnect(notSupportedStatus, null, null, null);
 		return null;
 	}
 
-	@Override
 	public Monitor createMonitor(MonitorRequester monitorRequester,
 			PVStructure pvRequest) {
 		monitorRequester.monitorConnect(notSupportedStatus, null, null);
 		return null;
 	}
 
-	@Override
 	public ChannelArray createChannelArray(
 			ChannelArrayRequester channelArrayRequester, PVStructure pvRequest) {
 		channelArrayRequester.channelArrayConnect(notSupportedStatus, null, null);
 		return null;
 	}
 
-	@Override
 	public String getRequesterName() {
 		return getChannelName();
 	}
 
-	@Override
 	public void message(String message, MessageType messageType) {
 		// just delegate
 		channelRequester.message(message, messageType);

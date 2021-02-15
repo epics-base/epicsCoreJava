@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -72,10 +72,10 @@ public class ExampleChannelMonitor {
 			// wait forever
 			doneSignal.await();
 		}
-        
+
         org.epics.pvaccess.ClientFactory.stop();
     }
-    
+
     static class ChannelRequesterImpl implements ChannelRequester
     {
     	private final Logger logger;
@@ -84,34 +84,30 @@ public class ExampleChannelMonitor {
     		this.logger = logger;
     	}
 
-		@Override
 		public String getRequesterName() {
 			return getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			logger.log(LoggingUtils.toLevel(messageType), message);
 		}
 
-		@Override
 		public void channelCreated(Status status, Channel channel) {
 			logger.info("Channel '" + channel.getChannelName() + "' created with status: " + status + ".");
 		}
-		
-		@Override
+
 		public void channelStateChange(Channel channel, ConnectionState connectionState) {
 			logger.info("Channel '" + channel.getChannelName() + "' " + connectionState + ".");
 		}
-    	
+
     }
-    
+
     static class MonitorRequesterImpl implements MonitorRequester
     {
     	private final Logger logger;
     	private final Channel channel;
     	private final CountDownLatch doneSignaler;
-    	
+
     	public MonitorRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler)
     	{
     		this.logger = logger;
@@ -119,17 +115,14 @@ public class ExampleChannelMonitor {
     		this.doneSignaler = doneSignaler;
     	}
 
-		@Override
 		public String getRequesterName() {
 			return getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			logger.log(LoggingUtils.toLevel(messageType), message);
 		}
-		
-		@Override
+
 		public void monitorConnect(Status status, Monitor monitor,
 				Structure structure) {
 			logger.info("ChannelMonitor for '" + channel.getChannelName() + "' connected with status: " + status + ".");
@@ -138,7 +131,7 @@ public class ExampleChannelMonitor {
 			{
 				status = monitor.start();
 				logger.info("Monitor.start() status: " + status + ".");
-				
+
 				if (!status.isSuccess())
 					doneSignaler.countDown();
 			}
@@ -146,9 +139,8 @@ public class ExampleChannelMonitor {
 				doneSignaler.countDown();
 		}
 
-		@Override
 		public void monitorEvent(Monitor monitor) {
-			
+
 			MonitorElement element;
 			while ((element = monitor.poll()) != null)
 			{
@@ -158,10 +150,9 @@ public class ExampleChannelMonitor {
 				System.out.println();
 				monitor.release(element);
 			}
-			
+
 		}
 
-		@Override
 		public void unlisten(Monitor monitor) {
 			logger.info("ChannelMonitor for '" + channel.getChannelName() + "' unlisten called.");
 		}

@@ -1,4 +1,4 @@
-/**
+/*
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
  */
@@ -41,34 +41,31 @@ import org.epics.pvdata.pv.Status.StatusType;
 public class ClientFactory  {
     private static ChannelProviderImpl channelProvider = null;
     private static final ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
-	private static ChannelProviderFactoryImpl factory = null; 
+	private static ChannelProviderFactoryImpl factory = null;
 
     public static final String PROVIDER_NAME = "ca";
-    
+
     public static final String JCA_CONTEXT_CLASS_PROPERTY_NAME = ClientFactory.class.getName() + ".jcaContextClass";
-    
+
     private static class ChannelProviderFactoryImpl implements ChannelProviderFactory
     {
 
-		@Override
 		public String getFactoryName() {
 			return PROVIDER_NAME;
 		}
 
-		@Override
 		public synchronized ChannelProvider sharedInstance() {
 	        try
 	        {
 	        	if (channelProvider == null)
 	        		channelProvider = new ChannelProviderImpl();
-	        	
+
 				return channelProvider;
 	        } catch (Throwable e) {
 	            throw new RuntimeException("Failed to initialize shared CA client instance.", e);
 	        }
 		}
 
-		@Override
 		public ChannelProvider newInstance() {
 	        try
 	        {
@@ -77,7 +74,7 @@ public class ClientFactory  {
 	            throw new RuntimeException("Failed to initialize new CA client instance.", e);
 	        }
 		}
-    	
+
 		public synchronized boolean destroySharedInstance() {
 			boolean destroyed = true;
 			if (channelProvider != null)
@@ -101,7 +98,7 @@ public class ClientFactory  {
         factory = new ChannelProviderFactoryImpl();
         ChannelProviderRegistryFactory.registerChannelProviderFactory(factory);
     }
-    
+
     /**
      * Unregisters CA client channel provider factory and destroys shared channel provider instance (if necessary).
      */
@@ -109,7 +106,7 @@ public class ClientFactory  {
     	if (factory != null)
     	{
     		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
-    		if(factory.destroySharedInstance())  
+    		if(factory.destroySharedInstance())
     		{
     			factory=null;
     		}
@@ -121,7 +118,7 @@ public class ClientFactory  {
     {
         private final Context context;
         private final CAThread caThread;
-        
+
         ChannelProviderImpl() {
         	Context c = null;
             try {
@@ -134,7 +131,7 @@ public class ClientFactory  {
                 return;
             }
             context = c;
-        	
+
             CAThread t;
             try {
                 context.addContextExceptionListener(this);
@@ -144,13 +141,12 @@ public class ClientFactory  {
                 e.printStackTrace();
                 caThread = null;
                 return;
-            }     
+            }
             caThread = t;
-        } 
+        }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.ChannelProvider#destroy()
          */
-        @Override
         public void destroy() {
             caThread.stop();
             try {
@@ -162,41 +158,36 @@ public class ClientFactory  {
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelProvider#channelFind(java.lang.String, org.epics.pvaccess.client.ChannelFindRequester)
          */
-        @Override
         public ChannelFind channelFind(String channelName,ChannelFindRequester channelFindRequester) {
             LocateFind locateFind = new LocateFind(this,channelName,context);
             locateFind.find(channelFindRequester);
             return locateFind;
         }
-        
-        private static final Status listNotSupported = 
+
+        private static final Status listNotSupported =
         	StatusFactory.getStatusCreate()
         		.createStatus(StatusType.ERROR, "channelList not supported", null);
 
     	private ChannelFind channelFind =
     		new ChannelFind() {
-    			
-    			@Override
+
     			public ChannelProvider getChannelProvider() {
     				return ChannelProviderImpl.this;
     			}
-    			
-    			@Override
+
     			public void cancel() {
     				// noop
     			}
     		};
 
-    		@Override
 		public ChannelFind channelList(ChannelListRequester channelListRequester) {
         	channelListRequester.channelListResult(listNotSupported, channelFind, null, false);
 			return channelFind;
 		}
-        
+
 		/* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short)
          */
-        @Override
         public Channel createChannel(String channelName,
                 ChannelRequester channelRequester, short priority)
         {
@@ -206,7 +197,6 @@ public class ClientFactory  {
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short, java.lang.String)
          */
-        @Override
 		public Channel createChannel(String channelName,
 				ChannelRequester channelRequester, short priority,
 				String address) {
@@ -245,29 +235,29 @@ public class ClientFactory  {
             System.out.flush();
         }
     }
-    
+
     private static class LocateFind implements ChannelFind,ChannelFindRequester{
-        
+
         private final ChannelProvider channelProvider;
         private volatile ChannelFindRequester channelFindRequester = null;
         private volatile BaseV3Channel v3Channel = null;
         private final String channelName;
         private final Context context;
-        
-        
+
+
         LocateFind(ChannelProvider channelProvider, String channelName, Context context) {
         	this.channelProvider = channelProvider;
             this.channelName = channelName;
             this.context = context;
         }
-        
+
         void find(ChannelFindRequester channelFindRequester) {
             this.channelFindRequester = channelFindRequester;
             v3Channel = new BaseV3Channel(channelProvider,
                     this,null,context,channelName);
             v3Channel.connectCaV3();
         }
-        
+
         Channel create(ChannelRequester channelRequester) {
             v3Channel = new BaseV3Channel(channelProvider,
                     null,channelRequester,context,channelName);
@@ -277,14 +267,12 @@ public class ClientFactory  {
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelFind#cancel()
          */
-        @Override
         public void cancel() {
             v3Channel.destroy();
         }
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelFind#getChannelProvider()
          */
-        @Override
         public ChannelProvider getChannelProvider() {
             return channelProvider;
         }
@@ -292,13 +280,12 @@ public class ClientFactory  {
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelFindRequester#channelFindResult(Stayus,org.epics.pvaccess.client.ChannelFind, boolean)
          */
-        @Override
         public void channelFindResult(Status status, ChannelFind channelFind, boolean wasFound) {
             channelFindRequester.channelFindResult(status, channelFind, wasFound);
             v3Channel.destroy();
         }
     }
-    
+
     private static class CAThread implements RunnableReady {
         private final Thread thread;
         private final Context context;
@@ -306,7 +293,7 @@ public class ClientFactory  {
         {
             this.context = context;
             this.thread = threadCreate.create(threadName, threadPriority, this);
-        }         
+        }
         /* (non-Javadoc)
          * @see org.epics.ioc.util.RunnableReady#run(org.epics.ioc.util.ThreadReady)
          */
@@ -326,7 +313,7 @@ public class ClientFactory  {
 
             }
         }
-        
+
         private void stop() {
             thread.interrupt();
         }

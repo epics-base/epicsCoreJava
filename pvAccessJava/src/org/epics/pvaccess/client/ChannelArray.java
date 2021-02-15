@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -28,12 +28,12 @@ public interface ChannelArray extends ChannelRequest{
      * @param stride 1 means all the elements from offset to count, 2 means every other, 3 means every third, etc.
      */
     void getArray(int offset, int count, int stride);
-    
+
     /**
      * Get the length and the capacity.
      */
     void getLength();
-    
+
     /**
      * Set the length and/or the capacity.
      * @param length The new length.

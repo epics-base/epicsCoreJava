@@ -1,16 +1,11 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.ca;
 
 import gov.aps.jca.Channel;
-import gov.aps.jca.dbr.DBR;
-import gov.aps.jca.dbr.DBR_String;
-import gov.aps.jca.dbr.DBR_TIME_String;
-import gov.aps.jca.dbr.Severity;
-import gov.aps.jca.dbr.Status;
-import gov.aps.jca.dbr.TimeStamp;
+import gov.aps.jca.dbr.*;
 import gov.aps.jca.event.MonitorEvent;
 
 public class CAMessagePayload {
@@ -39,7 +34,7 @@ public class CAMessagePayload {
 
     /**
      * The event returned by the monitor.
-     * 
+     *
      * @return the monitor event
      */
     public MonitorEvent getEvent() {
@@ -48,7 +43,7 @@ public class CAMessagePayload {
 
     /**
      * The data taken with a GET at connection time.
-     * 
+     *
      * @return the dbr type for the metadata
      */
     public DBR getMetadata() {

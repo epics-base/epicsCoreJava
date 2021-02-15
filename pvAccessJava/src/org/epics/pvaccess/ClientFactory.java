@@ -24,24 +24,22 @@ import org.epics.pvaccess.client.impl.remote.ClientContextImpl;
  * @author msekoranja
  */
 public class ClientFactory {
-	
+
 	/**
 	 * Name if the provider this factory registers.
 	 */
 	public static final String PROVIDER_NAME = ClientContextImpl.PROVIDER_NAME;
 
-	static private ChannelProviderFactoryImpl factory = null; 
+	static private ChannelProviderFactoryImpl factory = null;
     static private ClientContextImpl context = null;
-    
+
     private static class ChannelProviderFactoryImpl implements ChannelProviderFactory
     {
 
-		@Override
 		public String getFactoryName() {
 			return PROVIDER_NAME;
 		}
 
-		@Override
 		public synchronized ChannelProvider sharedInstance() {
 	        try
 	        {
@@ -51,14 +49,13 @@ public class ClientFactory {
 					lcontext.initialize();
 					context = lcontext;
 	        	}
-	        	
+
 				return context.getProvider();
 	        } catch (Throwable e) {
 	            throw new RuntimeException("Failed to initialize shared pvAccess client instance.", e);
 	        }
 		}
 
-		@Override
 		public ChannelProvider newInstance() {
 	        try
 	        {
@@ -69,7 +66,7 @@ public class ClientFactory {
 	            throw new RuntimeException("Failed to initialize new pvAccess client instance.", e);
 	        }
 		}
-    	
+
 		public synchronized boolean destroySharedInstance() {
 			boolean destroyed = true;
 			if (context != null)
@@ -81,7 +78,7 @@ public class ClientFactory {
 			return destroyed;
 		}
     }
-    
+
     /**
      * Registers pvAccess client channel provider factory.
      */
@@ -90,7 +87,7 @@ public class ClientFactory {
         factory = new ChannelProviderFactoryImpl();
         ChannelProviderRegistryFactory.registerChannelProviderFactory(factory);
     }
-    
+
     /**
      * Unregisters pvAccess client channel provider factory and destroys shared channel provider instance (if necessary).
      */
@@ -98,7 +95,7 @@ public class ClientFactory {
     	if (factory != null)
     	{
     		ChannelProviderRegistryFactory.unregisterChannelProviderFactory(factory);
-    		if(factory.destroySharedInstance())  
+    		if(factory.destroySharedInstance())
     		{
     			factory=null;
     		}

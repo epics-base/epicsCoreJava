@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ExecutorFactory {
     /**
      * Create a new set of threads.
-     * 
+     *
      * @param threadName the name for the set of threads
      * @param priority the ScanPriority for the thread
      * @return the IOCExecutor interface
@@ -24,14 +24,14 @@ public class ExecutorFactory {
     static public Executor create(String threadName, ThreadPriority priority) {
         return new ExecutorInstance(threadName,priority);
     }
-    
+
     static private class ExecutorInstance implements Executor {
         private ThreadInstance thread;
 
         private ExecutorInstance(String threadName, ThreadPriority priority) {
             thread = new ThreadInstance(threadName,priority.getJavaPriority());
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvdata.misc.Executor#createNode(java.lang.Runnable)
          */
@@ -53,12 +53,12 @@ public class ExecutorFactory {
             thread.stop();
         }
     }
-    
+
     static private ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
     static private LinkedListCreate<ExecutorNodeImpl> linkedListCreate = new LinkedListCreate<ExecutorNodeImpl>();
-    
+
     static private class ThreadInstance implements RunnableReady {
-        
+
         private LinkedList<ExecutorNodeImpl> runList = linkedListCreate.create();
         private ReentrantLock lock = new ReentrantLock();
         private Condition moreWork = lock.newCondition();
@@ -66,11 +66,10 @@ public class ExecutorFactory {
 
         private ThreadInstance(String name,int priority) {
             threadCreate.create(name, priority, this);
-        } 
+        }
         /* (non-Javadoc)
          * @see org.epics.pvdata.misc.RunnableReady#run(org.epics.pvdata.misc.ThreadReady)
          */
-        @Override
         public void run(ThreadReady threadReady) {
             boolean firstTime = true;
             try {
@@ -98,10 +97,10 @@ public class ExecutorFactory {
                     }
                 }
             } catch(InterruptedException e) {
-                
+
             }
         }
-        
+
         private void add(LinkedListNode<ExecutorNodeImpl> listNode) {
             lock.lock();
             try {
@@ -114,7 +113,7 @@ public class ExecutorFactory {
                 lock.unlock();
             }
         }
-        
+
         private void stop() {
             lock.lock();
             try {
@@ -126,15 +125,15 @@ public class ExecutorFactory {
             }
         }
     }
-    
+
     private static class ExecutorNodeImpl implements ExecutorNode {
         private LinkedListNode<ExecutorNodeImpl> listNode;
         private Runnable command;
-        
+
         private ExecutorNodeImpl(Runnable command) {
             this.command = command;
             listNode = linkedListCreate.createNode(this);
         }
     }
-        
+
 }

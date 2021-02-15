@@ -18,9 +18,9 @@ import org.epics.pvdata.pv.Structure;
 public class RPCServiceAsyncExample {
 
 	private final static Status statusOk = StatusFactory.getStatusCreate().getStatusOK();
-	
+
 	private final static FieldCreate fieldCreate = FieldFactory.getFieldCreate();
-	
+
 	private final static Structure resultStructure =
 			fieldCreate.createFieldBuilder().
 				add("c", ScalarType.pvDouble).
@@ -28,13 +28,12 @@ public class RPCServiceAsyncExample {
 
 	static class SumServiceImpl implements RPCServiceAsync
 	{
-		@Override
 		public void request(PVStructure args, RPCResponseCallback callback) {
-			
+
 	        // NTURI support
 			if (args.getStructure().getID().startsWith("epics:nt/NTURI:1."))
 				args = args.getStructureField("query");
-			
+
 	        // get fields and check their existence
 	        PVString af = args.getStringField("a");
 	        PVString bf = args.getStringField("b");
@@ -45,7 +44,7 @@ public class RPCServiceAsyncExample {
 				callback.requestDone(errorStatus, null);
 				return;
 	        }
-	        
+
 	        // convert
 	        double a, b;
 	        try {
@@ -57,22 +56,22 @@ public class RPCServiceAsyncExample {
 				callback.requestDone(errorStatus, null);
 				return;
 	        }
-			
+
 			PVStructure result = PVDataFactory.getPVDataCreate().createPVStructure(resultStructure);
 			result.getDoubleField("c").put(a+b);
-			
+
 			callback.requestDone(statusOk, result);
 		}
 	}
-	
+
 	public static void main(String[] args) throws PVAException
 	{
 
 		RPCServer server = new RPCServer();
-		
+
 		server.registerService("sum", new SumServiceImpl());
 		// you can register as many services as you want here ...
-		
+
 		server.printInfo();
 		server.run(0);
 	}

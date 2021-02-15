@@ -32,13 +32,12 @@ public interface PVDoubleArray extends PVNumberArray{
      * array.
      */
     int get(int offset, int length, DoubleArrayData data);
-    
+
     /**
      * Returns an unmodifiable view of the data.
-     * 
+     *
      * @return an unmodifiable view of the data
      */
-    @Override
     ArrayDouble get();
 
     /**

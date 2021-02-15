@@ -40,23 +40,22 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUnionArray#getUnionArray()
      */
-    @Override
-	public UnionArray getUnionArray() {
+    public UnionArray getUnionArray() {
 		return unionArray;
     }
-    
+
     @Override
     protected void allocate(int newCapacity) {
     	value = new PVUnion[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -66,30 +65,27 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUnionArray#get(int, int, org.epics.pvdata.pv.UnionArrayData)
      */
-    @Override
     public int get(int offset, int len, UnionArrayData data) {
     	return internalGet(offset, len, data);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUnionArray#put(int, int, org.epics.pvdata.pv.PVUnion[], int)
      */
-    @Override
     public int put(int offset, int len, PVUnion[] from, int fromOffset) {
-    	
+
     	// first check if all the PVUnion-s are of the right type
     	Union elementField = unionArray.getUnion();
     	for (PVUnion pvu : from)
     		if (pvu != null && !pvu.getUnion().equals(elementField))
     			throw new IllegalStateException("element is not a compatible union");
-    	
+
     	return internalPut(offset, len, from, fromOffset);
     }
 
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUnionArray#shareData(org.epics.pvdata.pv.PVUnion[])
      */
-    @Override
     public void shareData(PVUnion[] from) {
     	internalShareData(from);
     }
@@ -103,7 +99,7 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
 	    b.get(0, b.getLength(), arrayData);
 		return Arrays.equals(arrayData.data, value);
     }
-	
+
 	@Override
 	protected Serializable getAt(int index) {
 		return value[index];
@@ -126,5 +122,5 @@ public class BasePVUnionArray extends AbstractPVComplexArray implements PVUnionA
 	public int hashCode() {
 		return Arrays.hashCode(value);
 	}
-	
+
 }

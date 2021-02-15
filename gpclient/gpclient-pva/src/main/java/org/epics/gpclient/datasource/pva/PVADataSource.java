@@ -1,17 +1,17 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.pva;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.epics.gpclient.datasource.ChannelHandler;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.pvaccess.ClientFactory;
 import org.epics.pvaccess.client.ChannelProvider;
 import org.epics.pvaccess.client.ChannelProviderRegistry;
 import org.epics.pvaccess.client.ChannelProviderRegistryFactory;
+
+import java.util.logging.Logger;
 
 /**
  *

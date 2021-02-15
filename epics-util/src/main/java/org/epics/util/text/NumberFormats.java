@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class NumberFormats {
     private static final Locale currentLocale;
     private static final DecimalFormatSymbols symbols;
-    
+
     static {
         Locale newLocale = Locale.getDefault();
         DecimalFormatSymbols newSymbols = new DecimalFormatSymbols(newLocale);
@@ -73,7 +73,7 @@ public final class NumberFormats {
         }
         return precisionFormats.get(precision);
     }
-    
+
     private static final NumberFormat toStringFormat = new NumberFormat() {
 
         @Override
@@ -152,7 +152,7 @@ public final class NumberFormats {
 
     public static NumberFormat printfFormat(String format) {
         if (format == null
-                || format.trim().isEmpty()
+                || format.trim().length() == 0
                 || format.equals("%s")) {
             return NumberFormats.toStringFormat();
         } else {

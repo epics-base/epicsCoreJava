@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -22,100 +22,100 @@ public class UnsignedConversions {
     private UnsignedConversions() {
         // Do not instantiate
     }
-    
+
     /**
      * Converts an unsigned byte to a short.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static short toShort(byte unsignedValue) {
         return (short) (unsignedValue & 0xff);
     }
-    
+
     /**
      * Converts an unsigned byte to a int.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static int toInt(byte unsignedValue) {
         return (int) (unsignedValue & 0xff);
     }
-    
+
     /**
      * Converts an unsigned short to a int.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static int toInt(short unsignedValue) {
         return (int) (unsignedValue & 0xffff);
     }
-    
+
     /**
      * Converts an unsigned byte to a long.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static long toLong(byte unsignedValue) {
         return unsignedValue & 0xffL;
     }
-    
+
     /**
      * Converts an unsigned short to a long.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static long toLong(short unsignedValue) {
         return unsignedValue & 0xffff;
     }
-    
+
     /**
      * Converts an unsigned int to a long.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static long toLong(int unsignedValue) {
         return unsignedValue & 0xffffffffL;
     }
-    
+
     /**
      * Converts an unsigned byte to a float.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static float toFloat(byte unsignedValue) {
         return (float) (unsignedValue & 0xff);
     }
-    
+
     /**
      * Converts an unsigned short to a float.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static float toFloat(short unsignedValue) {
         return (float) (unsignedValue & 0xffff);
     }
-    
+
     /**
      * Converts an unsigned int to a float.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static float toFloat(int unsignedValue) {
         return (float) (unsignedValue & 0xffffffffL);
     }
-    
+
     /**
      * Converts an unsigned long to a float.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
@@ -126,40 +126,40 @@ public class UnsignedConversions {
         }
         return result;
     }
-    
+
     /**
      * Converts an unsigned byte to a double.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static double toDouble(byte unsignedValue) {
         return (double) (unsignedValue & 0xff);
     }
-    
+
     /**
      * Converts an unsigned short to a double.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static double toDouble(short unsignedValue) {
         return (double) (unsignedValue & 0xffff);
     }
-    
+
     /**
      * Converts an unsigned int to a double.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
     public static double toDouble(int unsignedValue) {
         return (double) (unsignedValue & 0xffffffffL);
     }
-    
+
     /**
      * Converts an unsigned long to a double.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */
@@ -170,12 +170,12 @@ public class UnsignedConversions {
         }
         return result;
     }
-    
+
     private static final BigInteger LONG_BASE = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE).multiply(BigInteger.valueOf(2));
-    
+
     /**
      * Converts an unsigned long to a {@code BigInteger}.
-     * 
+     *
      * @param unsignedValue unsigned value
      * @return the converted value
      */

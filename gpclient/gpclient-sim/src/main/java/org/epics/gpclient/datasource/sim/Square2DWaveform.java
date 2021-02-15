@@ -1,11 +1,9 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Duration;
-import java.time.Instant;
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListDouble;
 import org.epics.util.stats.Range;
@@ -13,6 +11,7 @@ import org.epics.vtype.Alarm;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
 import org.epics.vtype.VDoubleArray;
+import org.joda.time.Instant;
 
 /**
  * Function to simulate a 2D waveform containing a sine wave.
@@ -35,7 +34,7 @@ public class Square2DWaveform extends SimFunction<VDoubleArray> {
     public Square2DWaveform() {
         this(1.0, 100.0, DEFAULT_INTERVAL);
     }
-    
+
     /**
      * Creates sine wave of 100 samples, with given period and given wavelength of
      * 100 samples along the x axis, updating at given rate.
@@ -88,7 +87,6 @@ public class Square2DWaveform extends SimFunction<VDoubleArray> {
         final double ky = Math.sin(angle * Math.PI / 180.0) * k;
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 int x = index % xSamples;
                 int y = index / xSamples;
@@ -103,13 +101,12 @@ public class Square2DWaveform extends SimFunction<VDoubleArray> {
                 }
             }
 
-            @Override
             public int size() {
                 return xSamples*ySamples;
             }
         };
     }
-    
+
     private static Range UNIT_RANGE = Range.of(-1.0, 1.0);
     private static Display DISPLAY = Display.of(UNIT_RANGE, UNIT_RANGE.shrink(0.9), UNIT_RANGE.shrink(0.8), Range.undefined(), "", Display.defaultNumberFormat());
 
@@ -118,7 +115,7 @@ public class Square2DWaveform extends SimFunction<VDoubleArray> {
         if (initialReference == null) {
             initialReference = instant;
         }
-        double t = Duration.between(initialReference, instant).getSeconds();
+        double t = instant.minus(initialReference.getMillis()).getMillis()*1000;
         double omega = 2 * Math.PI / periodInSeconds;
         double k = 2 * Math.PI / wavelengthInSamples;
         return VDoubleArray.of(generateNewValue(omega, t, k), ArrayInteger.of(ySamples, xSamples), Alarm.none(),

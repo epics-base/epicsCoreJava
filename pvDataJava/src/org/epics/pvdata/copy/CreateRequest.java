@@ -3,19 +3,13 @@
  */
 package org.epics.pvdata.copy;
 
+import org.epics.pvdata.factory.FieldFactory;
+import org.epics.pvdata.factory.PVDataFactory;
+import org.epics.pvdata.pv.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVString;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.Structure;
 
 /**
  * @author mrk
@@ -38,7 +32,7 @@ public class CreateRequest {
      * See the package overview documentation for details.
      * @param request The field request. See the package overview documentation for details.
      * @return The request structure.
-     * If an invalid request was given null is returned and getMessage can be called to find the reason for the failure. 
+     * If an invalid request was given null is returned and getMessage can be called to find the reason for the failure.
      */
     public PVStructure createRequest(String request) {
         return createRequestInternal(request);

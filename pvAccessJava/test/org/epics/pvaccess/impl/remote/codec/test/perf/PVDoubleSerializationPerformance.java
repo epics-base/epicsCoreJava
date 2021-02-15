@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.impl.remote.codec.test.perf;
 
@@ -23,72 +23,65 @@ import com.sun.japex.TestCase;
 public class PVDoubleSerializationPerformance extends JapexDriverBase implements SerializableControl, DeserializableControl {
 
 	PVDouble pvField;
-	
+
 	final int DEFAULT_BUFFER_SIZE = 102400;
 	final int ELEMENTS = DEFAULT_BUFFER_SIZE/8;
 
 	final ByteBuffer buffer = ByteBuffer.allocate(DEFAULT_BUFFER_SIZE);
-	
-	
-	
+
+
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.DeserializableControl#ensureData(int)
 	 */
-	@Override
 	public void ensureData(int size) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.DeserializableControl#alignData(int)
 	 */
-	@Override
 	public void alignData(int alignment) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.SerializableControl#flushSerializeBuffer()
 	 */
-	@Override
 	public void flushSerializeBuffer() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.SerializableControl#ensureBuffer(int)
 	 */
-	@Override
 	public void ensureBuffer(int size) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.SerializableControl#alignBuffer(int)
 	 */
-	@Override
 	public void alignBuffer(int alignment) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	@Override
 	public void cachedSerialize(Field field, ByteBuffer buffer) {
 		// no cache
 		field.serialize(buffer, this);
 	}
-	
+
 	static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
-	
-	@Override
+
 	public Field cachedDeserialize(ByteBuffer buffer) {
 		// no cache
 		return fieldCreate.deserialize(buffer, this);
@@ -100,14 +93,14 @@ public class PVDoubleSerializationPerformance extends JapexDriverBase implements
 	@Override
 	public void initializeDriver() {
 		super.initializeDriver();
-		
+
 		Field field = fieldCreate.createScalar(ScalarType.pvDouble);
 		pvField = (PVDouble)PVFactory.getPVDataCreate().createPVField(field);
 	}
-	
+
 	int index;
 	boolean testSerialization;
-	
+
 	/* (non-Javadoc)
 	 * @see com.sun.japex.JapexDriverBase#prepare(com.sun.japex.TestCase)
 	 */
@@ -131,7 +124,7 @@ public class PVDoubleSerializationPerformance extends JapexDriverBase implements
 		}
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see com.sun.japex.JapexDriverBase#run(com.sun.japex.TestCase)
 	 */
@@ -146,7 +139,7 @@ public class PVDoubleSerializationPerformance extends JapexDriverBase implements
 			}
 			pvField.put(index);
 			pvField.serialize(buffer, this);
-			
+
 		}
 		else
 		{

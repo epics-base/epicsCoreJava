@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -23,7 +23,7 @@ public class DebugSimChannel {
         Thread.sleep(5000);
         sim.stopRead(new ReadSubscription("gaussianWaveform()", probe.getReadCollector()));
         sim.close();
-        
+
     }
-    
+
 }

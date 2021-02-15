@@ -1,19 +1,20 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
 import org.epics.util.stats.Range;
 import org.epics.util.stats.TimeInterval;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
 import org.epics.vtype.VDouble;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Base class for all simulated functions. It provide constant rate data generation
@@ -39,7 +40,7 @@ abstract class SimFunction<T> extends Simulation<T> {
         // The timer only accepts interval up to the millisecond.
         // For intervals shorter than that, we calculate the extra samples
         // we need to generate within each time execution.
-        super(Duration.ofMillis(Math.max((int) (secondsBeetwenSamples * 1000) / 2, 1)), classToken);
+        super(Duration.millis(Math.max((int) (secondsBeetwenSamples * 1000) / 2, 1)), classToken);
 
         if (secondsBeetwenSamples <= 0.0) {
             throw new IllegalArgumentException("Interval must be greater than zero (was " + secondsBeetwenSamples + ")");
@@ -49,7 +50,7 @@ abstract class SimFunction<T> extends Simulation<T> {
             throw new IllegalArgumentException("Interval must be greater than 0.000001 - no faster than 100KHz (was " + secondsBeetwenSamples + ")");
         }
 
-        timeBetweenSamples = Duration.ofNanos((long) (secondsBeetwenSamples * 1000000000));
+        timeBetweenSamples = Duration.millis((long) (secondsBeetwenSamples * 1000));
     }
 
     @Override
@@ -104,16 +105,16 @@ abstract class SimFunction<T> extends Simulation<T> {
 
     /**
      * Returns the time between each sample.
-     * 
+     *
      * @return a time duration
      */
     public Duration getTimeBetweenSamples() {
         return timeBetweenSamples;
     }
-    
+
     static Display createDisplay(double min, double max) {
         Range range = Range.of(min, max);
         return Display.of(range, range.shrink(0.9), range.shrink(0.8), Range.undefined(), "", Display.defaultNumberFormat());
     }
-    
+
 }

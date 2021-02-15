@@ -1,14 +1,15 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource;
 
+import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.TypeMismatchException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.epics.gpclient.ReadCollector;
-import org.epics.gpclient.TypeMismatchException;
 
 /**
  * The type support for a datasource. This optional class is provided to help
@@ -20,13 +21,13 @@ import org.epics.gpclient.TypeMismatchException;
  * @author carcassi
  */
 public class DataSourceTypeSupport {
-    
+
     /**
      * Given a collection of type datapters, finds the one that can store
      * data in the cache given the channel information described in the
      * connection payload. If there isn't a unique match, an exception
      * is thrown.
-     * 
+     *
      * @param <C> type of connection payload
      * @param <T> datasource specific type adapter type
      * @param typeAdapters a collection of type adapters
@@ -41,18 +42,18 @@ public class DataSourceTypeSupport {
                 matchedConverters.add(converter);
             }
         }
-        
+
         if (matchedConverters.size() != 1) {
             throw new TypeMismatchException(formatMessage(cache, connection, matchedConverters));
         }
-        
+
         return matchedConverters.get(0);
     }
-    
+
     /**
      * Formats the error message in case of not unique match. This
      * allows data sources to give more specific error messages.
-     * 
+     *
      * @param cache the cache used for the match
      * @param connection the connection payload used for the match
      * @param matchedConverters the matched converters; will either be 0 (no match)

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -9,82 +9,67 @@ package org.epics.util.array;
  *
  * @author Gabriele Carcassi
  */
-public abstract class ListDouble implements ListNumber, CollectionDouble {
+public abstract class ListDouble extends AbstractCollectionNumber implements ListNumber, CollectionDouble {
 
-    @Override
     public IteratorDouble iterator() {
         return new IteratorDouble() {
 
             private int index;
 
-            @Override
             public boolean hasNext() {
                 return index < size();
             }
 
-            @Override
             public double nextDouble() {
                 return getDouble(index++);
             }
         };
     }
 
-    @Override
     public float getFloat(int index) {
         return (float) getDouble(index);
     }
 
-    @Override
     public long getLong(int index) {
         return (long) getDouble(index);
     }
 
-    @Override
     public int getInt(int index) {
         return (int) getDouble(index);
     }
 
-    @Override
     public short getShort(int index) {
         return (short) getDouble(index);
     }
 
-    @Override
     public byte getByte(int index) {
         return (byte) getDouble(index);
     }
 
-    @Override
     public void setDouble(int index, double value) {
         throw new UnsupportedOperationException("Read only list.");
     }
 
-    @Override
     public void setFloat(int index, float value) {
         setDouble(index, (double) value);
     }
 
-    @Override
     public void setLong(int index, long value) {
         setDouble(index, (double) value);
     }
 
-    @Override
     public void setInt(int index, int value) {
         setDouble(index, (double) value);
     }
 
-    @Override
     public void setShort(int index, short value) {
         setDouble(index, (double) value);
     }
 
-    @Override
     public void setByte(int index, byte value) {
         setDouble(index, (double) value);
     }
 
-    @Override
     public void setAll(int index, ListNumber list) {
         if ((index+list.size()) > size()) {
             throw new IndexOutOfBoundsException("Index: "+index+", Elements: "+list.size()+", Size: "+size());
@@ -138,14 +123,13 @@ public abstract class ListDouble implements ListNumber, CollectionDouble {
         builder.append(getDouble(i)).append("]");
         return builder.toString();
     }
-    
+
     public ListDouble subList(final int fromIndex, final int toIndex) {
         if (fromIndex < 0 || toIndex > size() || fromIndex > toIndex) {
             throw new IndexOutOfBoundsException("fromIndex: " + fromIndex + " toIndex: " + toIndex + ", size: " + size() );
         }
         final int size = toIndex - fromIndex;
         return new ListDouble() {
-            @Override
             public double getDouble(int index) {
                 if (index < 0 || index >= size)
                     throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
@@ -159,7 +143,6 @@ public abstract class ListDouble implements ListNumber, CollectionDouble {
                 ListDouble.this.setDouble(fromIndex + index, value);
             }
 
-            @Override
             public int size() {
                 return size;
             }

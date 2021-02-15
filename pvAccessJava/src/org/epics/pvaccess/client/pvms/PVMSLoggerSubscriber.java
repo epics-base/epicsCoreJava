@@ -12,9 +12,9 @@ import org.epics.pvdata.pv.PVString;
 import org.epics.pvdata.pv.PVStructure;
 
 public class PVMSLoggerSubscriber {
-	
+
 	/**
-	 * Line separator string. 
+	 * Line separator string.
 	 */
 	private static String lineSeparator = System.getProperty("line.separator");
 
@@ -22,21 +22,21 @@ public class PVMSLoggerSubscriber {
 	 * ISO 8601 date formatter.
 	 */
 	private static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-	
+
 	/**
 	 * Date object (used not to recreate it every time).
 	 */
 	private static Date date = new Date();
-	
+
 	public static String formatNTLogRecord(PVStructure log)
 	{
 		StringBuffer sb = new StringBuffer(128);
-	
+
 		PVStructure time = log.getSubField(PVStructure.class, "time");
 		PVLong secsPastEpoch = time.getSubField(PVLong.class, "secsPastEpoch");
 		PVInt nanoseconds = time.getSubField(PVInt.class, "nanoseconds");
 		long millis = secsPastEpoch.get() * 1000 + nanoseconds.get() / 1000000;
-			
+
 		synchronized (date)
 		{
 			date.setTime(millis);
@@ -73,7 +73,7 @@ public class PVMSLoggerSubscriber {
 		sb.append(message.get());
 		sb.append(' ');
 
-		
+
 		PVString stackTrace = log.getSubField(PVString.class, "stackTrace");
 		String stack = stackTrace.get();
 
@@ -93,15 +93,14 @@ public class PVMSLoggerSubscriber {
 		final int port = 5678;
 
 		final PVMSSubscriber subscriber = new PVMSSubscriber(address, port);
-		
+
 		new Thread(new Runnable() {
-			
-			@Override
+
 			public void run() {
 				try
 				{
 					String[] filterTags = new String[] {};
-					
+
 					PVMSSubscriber.PVMSMessage message = new PVMSSubscriber.PVMSMessage(PVMSLogger.TOPIC_ID, null, null);
 					while (true)
 					{
@@ -116,7 +115,7 @@ public class PVMSLoggerSubscriber {
 				}
 			}
 		}, "receiver-thread").start();
-		
+
 	}
 
 }

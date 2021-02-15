@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVShort extends AbstractPVScalar implements PVShort
 {
     protected short value;
-    
+
     /**
      * Constructor
      * @param scalar The introspection interface.
@@ -32,14 +32,12 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVShort#get()
      */
-    @Override
     public short get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVShort#put(short)
      */
-    @Override
     public void put(short value) {
         if(super.isImmutable()) {
             throw new IllegalArgumentException("field is immutable");
@@ -50,7 +48,6 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-    @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
     	flusher.ensureBuffer(Short.SIZE/Byte.SIZE);
     	buffer.putShort(value);
@@ -58,7 +55,6 @@ public class BasePVShort extends AbstractPVScalar implements PVShort
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
      */
-    @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
     	control.ensureData(Short.SIZE/Byte.SIZE);
         value = buffer.getShort();

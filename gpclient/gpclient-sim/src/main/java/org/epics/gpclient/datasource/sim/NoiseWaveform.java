@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.util.Random;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ListDouble;
+import org.epics.util.compat.legacy.lang.Random;
 
 /**
  * Function to simulate a waveform containing a uniformly distributed
@@ -26,7 +26,7 @@ public class NoiseWaveform extends VDoubleArraySimFunction {
     public NoiseWaveform() {
         this(-5.0, 5.0, DEFAULT_INTERVAL);
     }
-    
+
     /**
      * Creates a gaussian waveform signal with a gaussian distribution, updating at the rate
      * specified.

@@ -1,11 +1,7 @@
 package org.epics.gpclient.datasource.ca;
 
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.cosylab.epics.caj.cas.util.DefaultServerImpl;
 import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
-
 import gov.aps.jca.CAException;
 import gov.aps.jca.JCALibrary;
 import gov.aps.jca.cas.ServerContext;
@@ -13,10 +9,13 @@ import gov.aps.jca.dbr.DBR_Double;
 import gov.aps.jca.dbr.DBR_Float;
 import gov.aps.jca.dbr.DBR_Int;
 import gov.aps.jca.dbr.DBR_String;
+import org.epics.util.compat.legacy.lang.Random;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Create an inmemory channel access server
- * 
+ *
  * @author Kunal Shroff
  *
  */
@@ -39,7 +38,9 @@ public class InMemoryCAServer {
         if (initialized.get()) {
             try {
                 context.destroy();
-            } catch (IllegalStateException | CAException e) {
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            } catch (CAException e) {
                 e.printStackTrace();
             }
         }
@@ -74,8 +75,8 @@ public class InMemoryCAServer {
 
     static void registerProcessVariables(DefaultServerImpl server) {
         for (int i = 0; i < 10000; i++) {
-            createDoubleProcessVariable("test_double_" + i, generator.doubles(-10, 10).findAny().getAsDouble(), server);
-            createIntProcessVariable("test_int_" + i, generator.ints(-10, 10).findAny().getAsInt(), server);
+            createDoubleProcessVariable("test_double_" + i, generator.nextDouble(-10, 10), server);
+            createIntProcessVariable("test_int_" + i, generator.nextInt(-10, 10), server);
             createFloatProcessVariable("test_long_" + i, generator.nextFloat(), server);
             createStringProcessVariable("test_String_" + i, String.valueOf(i), server);
         }

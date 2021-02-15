@@ -18,8 +18,8 @@ import org.epics.pvdata.pv.PVStringArray;
 import org.epics.pvdata.pv.StringArrayData;
 
 /**
- * GetHelper is a utility class with methods to help application level code 
- * copy the contents of PVData array types out to Java vectors. 
+ * GetHelper is a utility class with methods to help application level code
+ * copy the contents of PVData array types out to Java vectors.
  *
  * <p> As described in the <a
  * href="http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/tip/documentation/pvDataJava.html">pvDataJava
@@ -32,9 +32,9 @@ import org.epics.pvdata.pv.StringArrayData;
  * the required size need not be known by the caller.  </p> <p>If the
  * calling code will know the size of the returned data a priori, then
  * see also the utilities in {@link org.epics.pvdata.pv.Convert
- * Convert}.  
+ * Convert}.
  * </p>
- * 
+ *
  * @see <a
  * href="http://epics-pvdata.sourceforge.net/docbuild/pvDataJava/tip/documentation/pvDataJava.html#pvfield_">
  * pvDataJava Reference Guide, pvField data interface</a>
@@ -44,11 +44,11 @@ import org.epics.pvdata.pv.StringArrayData;
  *
  */
 
-public class GetHelper 
+public class GetHelper
 {
     /**
      * Copy out the entire array of doubles into a Vector of Double.
-     * 
+     *
      * @param pv the PVDoubleArray to copy to
      * @return the Vector containg the values from the specified array
      */
@@ -66,12 +66,12 @@ public class GetHelper
         return ret;
     }
 
-    /** 
+    /**
      * Copy out the entire array of longs into a Vector of Long.
-     * 
+     *
      * @param pv the PVLongArray to copy to
-     * @return the Vector containg the values from the specified array    
-     */    
+     * @return the Vector containg the values from the specified array
+     */
     public static Vector<Long> getLongVector( PVLongArray pv )
     {
         int len = pv.getLength();
@@ -85,12 +85,12 @@ public class GetHelper
         }
         return ret;
     }
-    
-    /** 
+
+    /**
      * Copy out the entire array of bytes into a Vector of Byte.
-     * 
+     *
      * @param pv the PVByteArray to copy to
-     * @return the Vector containg the values from the specified array      
+     * @return the Vector containg the values from the specified array
      */
     public static Vector<Byte> getByteVector( PVByteArray pv )
     {
@@ -105,12 +105,12 @@ public class GetHelper
         }
         return ret;
     }
-    
-    /** 
+
+    /**
      * Copy out the entire array of strings into a Vector of String.
      *
      * @param pv the PVStringArray to copy to
-     * @return the Vector containg the values from the specified array      
+     * @return the Vector containg the values from the specified array
      */
     public static Vector<String> getStringVector( PVStringArray pv )
     {
@@ -134,7 +134,7 @@ public class GetHelper
         return ret;
     }
 
-    /** 
+    /**
      * Copy out the entire array of booleans into a Vector of Boolean.
      *
      * @param pv the PVBooleanArray to copy to
@@ -149,7 +149,7 @@ public class GetHelper
         int offset = 0;
         while(offset < len) {
             int num = pv.get(offset,(len-offset),data);
-            for (int i=0; i<num; i++) ret.add(new Boolean(data.data[offset+i]));
+            for (int i=0; i<num; i++) ret.add(data.data[offset + i]);
             // System.arraycopy(data.data,data.offset,storage,offset,num);
             offset += num;
         }

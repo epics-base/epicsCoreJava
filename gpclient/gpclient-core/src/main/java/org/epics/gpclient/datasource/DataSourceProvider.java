@@ -1,11 +1,12 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource;
 
-import java.util.ServiceLoader;
-import java.util.function.Consumer;
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.epics.util.compat.legacy.service.ServiceLoader;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,36 +24,41 @@ import java.util.logging.Logger;
  * @author carcassi
  */
 public abstract class DataSourceProvider {
-    
+
     private static final Logger log = Logger.getLogger(DataSourceProvider.class.getName());
-    
+
     /**
      * The name to be used when registering the DataSource with the
      * CompositeDataSource.
-     * 
+     *
      * @return a short String
      */
     public abstract String getName();
-    
+
     /**
      * Creates a new instance of the DataSource.
-     * 
+     *
      * @return a new DataSource
      */
     public abstract DataSource createInstance();
-    
+
     /**
      * Looks up the registered factories and creates a {@link CompositeDataSource}
      * using them.
-     * 
+     *
      * @return a new DataSource
      */
     public static CompositeDataSource createDataSource() {
-        CompositeDataSource composite = new CompositeDataSource();
-        load(DataSourceProvider.class, log, composite::putDataSource);
+        final CompositeDataSource composite = new CompositeDataSource();
+        load(DataSourceProvider.class, log, new Consumer<DataSourceProvider>() {
+            @Override
+            public void accept(DataSourceProvider dataSourceProvider) {
+                composite.putDataSource(dataSourceProvider);
+            }
+        });
         return composite;
     }
-    
+
     private static <T> void load(Class<T> serviceClazz, Logger log, Consumer<T> consumer) {
         log.log(Level.CONFIG, "Fetching {0}s", serviceClazz.getSimpleName());
         int count = 0;

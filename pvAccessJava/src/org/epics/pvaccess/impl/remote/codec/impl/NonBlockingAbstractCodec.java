@@ -25,11 +25,10 @@ public abstract class NonBlockingAbstractCodec extends AbstractCodec implements 
 	}
 
 	protected abstract void ready();
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.io.PollEvents#registeredNotify(java.nio.channels.SelectionKey, java.lang.Throwable)
 	 */
-	@Override
 	public void registeredNotify(SelectionKey key,
 			Throwable registrationException) {
 		setSenderThread();
@@ -40,7 +39,6 @@ public abstract class NonBlockingAbstractCodec extends AbstractCodec implements 
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.io.PollEvents#pollNotify(java.nio.channels.SelectionKey)
 	 */
-	@Override
 	public void pollNotify(SelectionKey key) throws IOException {
 		if (key.isReadable())
 			processRead();
@@ -82,7 +80,6 @@ public abstract class NonBlockingAbstractCodec extends AbstractCodec implements 
 	/* (non-Javadoc)
 	 * @see java.nio.channels.Channel#close()
 	 */
-	@Override
 	public void close() throws IOException {
 		if (isOpen.getAndSet(false))
 		{
@@ -104,9 +101,8 @@ public abstract class NonBlockingAbstractCodec extends AbstractCodec implements 
 	/* (non-Javadoc)
 	 * @see java.nio.channels.Channel#isOpen()
 	 */
-	@Override
 	public boolean isOpen() {
 		return isOpen.get();
-	}	
+	}
 
 }

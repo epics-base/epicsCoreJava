@@ -1,12 +1,8 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.array;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -18,12 +14,10 @@ public class ListIntegerTest extends FeatureTestListNumber {
     public ListInteger createConstantCollection() {
         return new ListInteger() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public int getInt(int index) {
                 return 1;
             }
@@ -34,12 +28,10 @@ public class ListIntegerTest extends FeatureTestListNumber {
     public ListInteger createRampCollection() {
         return new ListInteger() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public int getInt(int index) {
                 return index;
             }
@@ -49,10 +41,9 @@ public class ListIntegerTest extends FeatureTestListNumber {
     @Override
     public ListNumber createModifiableCollection() {
         return new ListInteger() {
-            
+
             private int[] array = new int[10];
-            
-            @Override
+
             public int getInt(int index) {
                 return array[index];
             }
@@ -62,7 +53,6 @@ public class ListIntegerTest extends FeatureTestListNumber {
                 array[index] = value;
             }
 
-            @Override
             public int size() {
                 return array.length;
             }
@@ -73,12 +63,10 @@ public class ListIntegerTest extends FeatureTestListNumber {
     public ListNumber createEmpty() {
         return new ListInteger() {
 
-            @Override
             public int size() {
                 return 0;
             }
 
-            @Override
             public int getInt(int index) {
                 return 1;
             }

@@ -1,25 +1,24 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.array;
 
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.CollectionNumbers;
+import org.junit.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  *
  * @author carcassi
  */
 public class ArrayByteTest extends FeatureTestListNumber {
-
     @Override
     public ArrayByte createConstantCollection() {
         return CollectionNumbers.unmodifiableListByte(new byte[] {1, 1, 1, 1, 1, 1, 1, 1, 1, 1});

@@ -31,13 +31,12 @@ public interface PVFloatArray extends PVNumberArray{
      * array.
      */
     int get(int offset, int length, FloatArrayData data);
-    
+
     /**
      * Returns an unmodifiable view of the data.
-     * 
+     *
      * @return an unmodifiable view of the data
      */
-    @Override
     ArrayFloat get();
 
     /**

@@ -1,40 +1,16 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype.json;
 
-import java.time.Instant;
+import org.epics.util.array.*;
+import org.epics.util.number.UnsignedConversions;
+import org.joda.time.Instant;
+
+import javax.json.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonNumber;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInteger;
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ArrayShort;
-import org.epics.util.array.ArrayUByte;
-import org.epics.util.array.ArrayUInteger;
-import org.epics.util.array.ArrayULong;
-import org.epics.util.array.ArrayUShort;
-import org.epics.util.array.ListByte;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInteger;
-import org.epics.util.array.ListLong;
-import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListShort;
-import org.epics.util.array.ListUByte;
-import org.epics.util.array.ListUInteger;
-import org.epics.util.array.ListULong;
-import org.epics.util.array.ListUShort;
-import org.epics.util.number.UnsignedConversions;
 
 /**
  * Utility classes to convert JSON arrays to and from Lists and ListNumbers.
@@ -42,10 +18,10 @@ import org.epics.util.number.UnsignedConversions;
  * @author carcassi
  */
 public class JsonArrays {
-    
+
     /**
      * Checks whether the array contains only numbers.
-     * 
+     *
      * @param array a JSON array
      * @return true if all elements are JSON numbers
      */
@@ -57,10 +33,10 @@ public class JsonArrays {
         }
         return true;
     }
-    
+
     /**
      * Checks whether the array contains only strings.
-     * 
+     *
      * @param array a JSON array
      * @return true if all elements are JSON strings
      */
@@ -72,10 +48,10 @@ public class JsonArrays {
         }
         return true;
     }
-    
+
     /**
      * Converts the given numeric JSON array to a ListDouble.
-     * 
+     *
      * @param array an array of numbers
      * @return a new ListDouble
      */
@@ -86,10 +62,10 @@ public class JsonArrays {
         }
         return ArrayDouble.of(values);
     }
-    
+
     /**
      * Converts the given numeric JSON array to a ListFloat.
-     * 
+     *
      * @param array an array of numbers
      * @return a new ListFloat
      */
@@ -107,7 +83,7 @@ public class JsonArrays {
 
     /**
      * Converts the given numeric JSON array to a {@code ListULong}.
-     * 
+     *
      * @param array an array of numbers
      * @return a new {@code ListULong}
      */
@@ -121,7 +97,7 @@ public class JsonArrays {
 
     /**
      * Converts the given numeric JSON array to a ListLong.
-     * 
+     *
      * @param array an array of numbers
      * @return a new ListLong
      */
@@ -135,7 +111,7 @@ public class JsonArrays {
 
     /**
      * Converts the given numeric JSON array to a {@code ListUInteger}.
-     * 
+     *
      * @param array an array of numbers
      * @return a new {@code ListUInteger}
      */
@@ -146,10 +122,10 @@ public class JsonArrays {
         }
         return ArrayUInteger.of(values);
     }
-    
+
     /**
      * Converts the given numeric JSON array to a ListInteger.
-     * 
+     *
      * @param array an array of numbers
      * @return a new ListInteger
      */
@@ -163,7 +139,7 @@ public class JsonArrays {
 
     /**
      * Converts the given numeric JSON array to a {@code ListUShort}.
-     * 
+     *
      * @param array an array of numbers
      * @return a new {@code ListUShort}
      */
@@ -177,7 +153,7 @@ public class JsonArrays {
 
     /**
      * Converts the given numeric JSON array to a ListShort.
-     * 
+     *
      * @param array an array of numbers
      * @return a new ListShort
      */
@@ -191,7 +167,7 @@ public class JsonArrays {
 
     /**
      * Converts the given numeric JSON array to a {@code ListUByte}.
-     * 
+     *
      * @param array an array of numbers
      * @return a new {@code ListUByte}
      */
@@ -205,7 +181,7 @@ public class JsonArrays {
 
     /**
      * Converts the given numeric JSON array to a ListByte.
-     * 
+     *
      * @param array an array of numbers
      * @return a new ListByte
      */
@@ -219,12 +195,12 @@ public class JsonArrays {
 
     /**
      * Converts the given string JSON array to a List of Strings.
-     * 
+     *
      * @param array an array of strings
      * @return a new List of Strings
      */
     public static List<String> toListString(JsonArray array) {
-        List<String> strings = new ArrayList<>();
+        List<String> strings = new ArrayList<String>();
         for (int i = 0; i < array.size(); i++) {
             strings.add(array.getString(i));
         }
@@ -234,17 +210,17 @@ public class JsonArrays {
 
     /**
      * Converts the given JSON array to a List of Instants.
-     * 
+     *
      * @param array an array
      * @return a new List of Timestamps
      */
     public static List<Instant> toListTimestamp(JsonArray array) {
-        List<Instant> timestamps = new ArrayList<>();
+        List<Instant> timestamps = new ArrayList<Instant>();
         for (int i = 0; i < array.size(); i++) {
             if (array.isNull(i)) {
                 timestamps.add(null);
             } else {
-                timestamps.add(Instant.ofEpochSecond(array.getJsonNumber(i).longValue() / 1000, (int) (array.getJsonNumber(i).longValue() % 1000) * 1000000));
+                timestamps.add(Instant.ofEpochMilli(array.getJsonNumber(i).longValue()));
             }
         }
         return timestamps;
@@ -252,7 +228,7 @@ public class JsonArrays {
 
     /**
      * Converts the given List of String to a string JSON array.
-     * 
+     *
      * @param list a List of Strings
      * @return an array of strings
      */
@@ -270,7 +246,7 @@ public class JsonArrays {
 
     /**
      * Converts the given List of Timestamp to a JSON array.
-     * 
+     *
      * @param list a List of Timestamps
      * @return an array
      */
@@ -280,7 +256,7 @@ public class JsonArrays {
             if (element == null) {
                 b.addNull();
             } else {
-                b.add(element.getEpochSecond() * 1000 + element.getNano() / 1000000);
+                b.add(element.getMillis());
             }
         }
         return b;
@@ -288,7 +264,7 @@ public class JsonArrays {
 
     /**
      * Converts the given ListNumber to a number JSON array.
-     * 
+     *
      * @param list a list of numbers
      * @return an array of numbers
      */
@@ -309,20 +285,18 @@ public class JsonArrays {
         } else {
             for (int i = 0; i < list.size(); i++) {
                 double value = list.getDouble(i);
-                if(Double.isFinite(value)){
-                    b.add(value);
-                }
-                else if (Double.isNaN(value)) {
+                if (java.lang.Double.isNaN(value)) {
                     b.add(VTypeJsonMapper.NAN);
-                } else if(Double.valueOf(value).equals(Double.POSITIVE_INFINITY)){
+                } else if (java.lang.Double.valueOf(value).equals(java.lang.Double.POSITIVE_INFINITY)) {
                     b.add(VTypeJsonMapper.POS_INF);
-                }
-                else if(Double.valueOf(value).equals(Double.NEGATIVE_INFINITY)){
+                } else if (java.lang.Double.valueOf(value).equals(java.lang.Double.NEGATIVE_INFINITY)) {
                     b.add(VTypeJsonMapper.NEG_INF);
+                } else if (!Double.isInfinite(value)) {
+                    b.add(value);
                 }
             }
         }
         return b;
     }
-    
+
 }

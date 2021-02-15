@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -67,7 +67,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     private final V3Channel v3Channel;
     private final V3ChannelStructure v3ChannelStructure;
     private final gov.aps.jca.Channel jcaChannel;
-    
+
     private volatile int elementCount;
 
     private final ReentrantLock lock = new ReentrantLock();
@@ -81,7 +81,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     private final FloatArrayData floatArrayData = new FloatArrayData();
     private final DoubleArrayData doubleArrayData = new DoubleArrayData();
     private final StringArrayData stringArrayData = new StringArrayData();
-    
+
     private final AtomicBoolean isActive = new AtomicBoolean(false);
     private final AtomicBoolean isGetActive = new AtomicBoolean(false);
 
@@ -102,7 +102,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         this.pvRequest = pvRequest;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
-        
+
         this.jcaChannel = v3Channel.getJCAChannel();
         try {
             jcaChannel.addConnectionListener(this);
@@ -117,7 +117,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
 		if (jcaChannel.getConnectionState() == Channel.CONNECTED)
 			connectionChanged(new ConnectionEvent(jcaChannel, true));
     }
-    
+
     protected void initializePut()
     {
         PVString pvString = pvRequest.getSubField(PVString.class,"record._options.block");
@@ -131,7 +131,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
             destroy();
             return;
         }
-        
+
         elementCount = jcaChannel.getElementCount();
 
         DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
@@ -140,7 +140,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
             destroy();
             return;
         }
-        
+
         channelPutRequester.channelPutConnect(okStatus,this,
             v3ChannelStructure.getPVStructure().getStructure());
     }
@@ -156,11 +156,10 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
 			// noop
 		}
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvaccess.client.ChannelPut#get()
      */
-    @Override
     public void get() {
         if(isDestroyed) {
             getDone(channelDestroyedStatus);
@@ -170,7 +169,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
             getDone(channelNotConnectedStatus);
             return;
         }
-        
+
         isGetActive.set(true);
         try {
             jcaChannel.get(v3ChannelStructure.getRequestDBRType(), elementCount, this);
@@ -181,7 +180,6 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     /* (non-Javadoc)
      * @see gov.aps.jca.event.GetListener#getCompleted(gov.aps.jca.event.GetEvent)
      */
-    @Override
     public void getCompleted(GetEvent getEvent) {
         DBR fromDBR = getEvent.getDBR();
         if(fromDBR==null) {
@@ -202,8 +200,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         if (lastRequest) destroy();
         channelPutRequester.getDone(success, this, v3ChannelStructure.getPVStructure(), v3ChannelStructure.getBitSet());
     }
-    
-    @Override
+
     public void put(PVStructure pvPutStructure, BitSet bitSet) {
         if(isDestroyed) {
     		putDone(channelDestroyedStatus);
@@ -213,7 +210,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     		putDone(channelNotConnectedStatus);
         	return;
         };
-        
+
         DBRType nativeDBRType = v3ChannelStructure.getNativeDBRType();
 
         PVField pvField = pvPutStructure.getSubField("value");
@@ -222,13 +219,13 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         	channelPutRequester.putDone(statusCreate.createStatus(StatusType.ERROR, "invalid put structure, value field required", null), this);
         	return;
         }
-        
+
         PVInt pvIndex;
         if(nativeDBRType.isENUM())
             pvIndex = ((PVStructure)pvField).getIntField("index");
         else
         	pvIndex = null;
-        
+
         // do a simple bitSet check
         boolean bitSetCheck = bitSet.get(0) || bitSet.get(pvField.getFieldOffset()) ||
         					  (pvIndex != null && bitSet.get(pvIndex.getFieldOffset()));
@@ -332,7 +329,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
             putDone(okStatus);
         }
     }
-    
+
     /* (non-Javadoc)
      * @see gov.aps.jca.event.PutListener#putCompleted(gov.aps.jca.event.PutEvent)
      */
@@ -356,7 +353,7 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
     public void message(String message, MessageType messageType) {
         channelPutRequester.message(message, messageType);
     }
-   
+
     /* (non-Javadoc)
      * @see gov.aps.jca.event.ConnectionListener#connectionChanged(gov.aps.jca.event.ConnectionEvent)
      */
@@ -370,34 +367,29 @@ implements ChannelPut,GetListener,PutListener,ConnectionListener
         	initializePut();
         }
     }
-    
+
     private void putDone(Status success) {
         if(!isActive.getAndSet(false)) return;
         if(lastRequest) destroy();
         channelPutRequester.putDone(success,this);
     }
 
-    @Override
 	public void lock() {
 		lock.lock();
 	}
 
-	@Override
 	public void unlock() {
 		lock.unlock();
 	}
 
-	@Override
 	public void cancel() {
 		// noop, not supported
 	}
 
-	@Override
 	public void lastRequest() {
 		lastRequest = true;
 	}
-	
-	@Override
+
 	public org.epics.pvaccess.client.Channel getChannel() {
 		return v3Channel;
 	}

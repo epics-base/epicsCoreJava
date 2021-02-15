@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2010-18 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
@@ -67,7 +67,7 @@ public abstract class VTable extends VType {
 
     /**
      * Create a new VTable
-     * 
+     *
      * @param types the types of each column
      * @param names the name of each column
      * @param values the values of each column

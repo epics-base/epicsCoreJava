@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,7 +14,6 @@ import java.util.Collection;
  * methods are specified. At this moment, the class is read-only. If in the
  * future the class is extended, the new methods should match the names from
  * {@link Collection}.
- * 
  */
 public interface CollectionNumber {
 
@@ -33,17 +32,14 @@ public interface CollectionNumber {
     int size();
 
     /**
-     * 
-     * @param <T> the type of the array
+     * @param <T>   the type of the array
      * @param array the array into which the elements of this list are to
-     *          be stored, if it is big enough; otherwise, a new array of the
-     *          same runtime type is allocated for this purpose.
-     * @throws ArrayStoreException if the type of the specified array
-     *         is not a primitive number array
-     * @throws NullPointerException if the specified array is null
+     *              be stored, if it is big enough; otherwise, a new array of the
+     *              same runtime type is allocated for this purpose.
      * @return an array containing the elements
+     * @throws ArrayStoreException  if the type of the specified array
+     *                              is not a primitive number array
+     * @throws NullPointerException if the specified array is null
      */
-    default <T> T toArray(T array) {
-        return CollectionNumbers.defaultToArray(this, array);
-    }
+    <T> T toArray(T array);
 }

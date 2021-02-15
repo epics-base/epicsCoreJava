@@ -1,10 +1,12 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -21,12 +23,12 @@ import java.util.logging.Logger;
  * @author carcassi
  */
 public class CompositeDataSource extends DataSource {
-    
+
     private static final Logger log = Logger.getLogger(CompositeDataSource.class.getName());
 
     // Stores all data sources by name
-    private final Map<String, DataSource> dataSources = new ConcurrentHashMap<>();
-    private final Map<String, DataSourceProvider> dataSourceProviders = new ConcurrentHashMap<>();
+    private final Map<String, DataSource> dataSources = new ConcurrentHashMap<String, DataSource>();
+    private final Map<String, DataSourceProvider> dataSourceProviders = new ConcurrentHashMap<String, DataSourceProvider>();
 
     private final String delimiter;
     private final String defaultDataSource;
@@ -37,10 +39,10 @@ public class CompositeDataSource extends DataSource {
     public CompositeDataSource() {
         this(new CompositeDataSourceConfiguration());
     }
-    
+
     /**
      * Creates a new CompositeDataSource with the given configuration.
-     * 
+     *
      * @param conf the configuration for the new CompositeDataSource
      */
     public CompositeDataSource(CompositeDataSourceConfiguration conf) {
@@ -88,29 +90,29 @@ public class CompositeDataSource extends DataSource {
         dataSources.remove(dataSourceProvider.getName());
         dataSourceProviders.put(dataSourceProvider.getName(), dataSourceProvider);
     }
-    
+
     /**
      * Returns the data sources used by this composite data source.
      * <p>
      * Returns only the data sources that have been created.
-     * 
+     *
      * @return the registered data sources
      */
     public Map<String, DataSource> getDataSources() {
         return Collections.unmodifiableMap(dataSources);
     }
-    
+
     /**
      * Returns the data source providers registered to this composite data source.
      * <p>
      * Returns all registered data sources.
-     * 
+     *
      * @return the registered data source providers
      */
     public Map<String, DataSourceProvider> getDataSourceProviders() {
         return Collections.unmodifiableMap(dataSourceProviders);
     }
-    
+
     private  String nameOf(String channelName) {
         int indexDelimiter = channelName.indexOf(delimiter);
         if (indexDelimiter == -1) {
@@ -119,7 +121,7 @@ public class CompositeDataSource extends DataSource {
             return channelName.substring(indexDelimiter + delimiter.length());
         }
     }
-    
+
     private String sourceOf(String channelName) {
         int indexDelimiter = channelName.indexOf(delimiter);
         if (indexDelimiter == -1) {
@@ -136,7 +138,7 @@ public class CompositeDataSource extends DataSource {
             throw new IllegalArgumentException("Data source " + source + " for " + channelName + " was not configured.");
         }
     }
-    
+
     @Override
     public void startRead(final ReadSubscription readRecipe) {
         try {
@@ -168,7 +170,7 @@ public class CompositeDataSource extends DataSource {
             readRecipe.getCollector().notifyError(ex);
         }
     }
-    
+
     private DataSource retrieveDataSource(String name) {
         DataSource dataSource = dataSources.get(name);
         if (dataSource == null) {
@@ -218,7 +220,7 @@ public class CompositeDataSource extends DataSource {
             writeRecipe.getCollector().notifyError(ex);
         }
     }
-    
+
 
     @Override
     ChannelHandler channel(String channelName) {
@@ -226,7 +228,7 @@ public class CompositeDataSource extends DataSource {
         String dataSource = sourceOf(channelName);
         return retrieveDataSource(dataSource).channel(name);
     }
-    
+
     @Override
     protected ChannelHandler createChannel(String channelName) {
         throw new UnsupportedOperationException("Composite data source can't create channels directly.");
@@ -254,7 +256,7 @@ public class CompositeDataSource extends DataSource {
                 channels.put(dataSourceName + delimiter + channelName, channelHandler);
             }
         }
-        
+
         return channels;
     }
 

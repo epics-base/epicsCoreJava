@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -29,7 +29,8 @@ public class VUByteTest extends FeatureTestVNumber<UByte, VUByte> {
 
     @Override
     String getToString() {
-        return "VUByte[255, MINOR(DB) - LOW, 2012-12-05T14:57:21.521786982Z]";
+        // Modified precision of test to match joda time's millisecond precision
+        return "VUByte[255, MINOR(DB) - LOW, 2012-12-05T14:57:21.521Z]";
     }
-    
+
 }

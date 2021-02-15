@@ -32,13 +32,12 @@ public interface PVULongArray extends PVNumberArray{
      * array.
      */
     int get(int offset, int length, LongArrayData data);
-    
+
     /**
      * Returns an unmodifiable view of the data.
-     * 
+     *
      * @return an unmodifiable view of the data
      */
-    @Override
     ArrayULong get();
 
     /**

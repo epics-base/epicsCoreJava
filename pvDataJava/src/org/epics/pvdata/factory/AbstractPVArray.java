@@ -40,7 +40,7 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
      */
     protected AbstractPVArray(Array field) {
         super(field);
-        
+
         // if array is a fixed-size type
         // make array fixed-size and capacity immutable
         if (getArray().getArraySizeType() == Array.ArraySizeType.fixed)
@@ -51,20 +51,19 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 
         allocate(capacity);
     }
-    
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVArray#getArray()
 	 */
-	@Override
 	public Array getArray() {
 		return (Array)getField();
 	}
-	
+
 	protected abstract Object getValue();
     protected abstract void setValue(Object array);
 	protected abstract void allocate(int newCapacity);
     protected abstract boolean valueEquals(Object obj);
-	
+
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#setCapacity(int)
      */
@@ -74,19 +73,19 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 
     	if (!capacityMutable)
     		throw new IllegalStateException("not capacityMutable");
-    	
+
     	checkLength(newCapacity);
-        
+
         Object oldValue = getValue();
         allocate(newCapacity);
 
         if (length > newCapacity)
         	length = newCapacity;
-        
+
         if (length > 0)
         	System.arraycopy(oldValue, 0, getValue(), 0, length);
     }
-    
+
     protected int internalGet(int offset, int len, ArrayData<?> data) {
         int n = len;
         if (offset+len > length)
@@ -99,11 +98,11 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 
     	if (super.isImmutable())
         	throw new IllegalStateException("field is immutable");
- 
+
     	Object value = getValue();
         if (from == value)
         	return len;
-        
+
         int newLength = offset + len;
         if (newLength > length)
         {
@@ -112,16 +111,16 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
         	value = getValue();
         	length = newLength;
         }
-        
+
         System.arraycopy(from, fromOffset, value, offset, len);
         super.postPut();
-        return len;      
+        return len;
     }
 
     public void put(int offset, ListNumber list) {
     	if (super.isImmutable())
         	throw new IllegalStateException("field is immutable");
- 
+
         int newLength = offset + list.size();
         if (newLength > length)
         {
@@ -129,7 +128,7 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
         	setCapacity(newLength);
         	length = newLength;
         }
-        
+
         CollectionNumbers.toList(getValue()).setAll(offset, list);
         super.postPut();
     }
@@ -146,12 +145,12 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 	    		throw new IllegalArgumentException("new array capacity too large for a bounded size array");
     	}
     }
-    
+
     protected void internalShareData(Object from) {
     	int len = java.lang.reflect.Array.getLength(from);
 
     	checkLength(len);
-    	
+
     	setValue(from);
     	capacity = length = len;
     }
@@ -167,56 +166,50 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#isCapacityMutable()
      */
-    @Override
     public boolean isCapacityMutable() {
         return capacityMutable;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#setCapacityMutable(boolean)
      */
-    @Override
     public void setCapacityMutable(boolean isMutable) {
         if (isMutable && super.isImmutable())
         	throw new IllegalStateException("field is immutable");
-        
+
         capacityMutable = isMutable;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#getCapacity()
      */
-    @Override
     public int getCapacity() {
         return capacity;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#getLength()
      */
-    @Override
     public int getLength() {
         return length;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#setLength(int)
      */
-    @Override
     public void setLength(int len) {
     	if (len == length)
     		return;
-        
+
     	if (super.isImmutable())
         	throw new IllegalStateException("field is immutable");
 
     	checkLength(len);
-    	
+
         if (len > capacity)
         	setCapacity(len);
-        
+
         length = len;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-    @Override
 	public void serialize(ByteBuffer buffer, SerializableControl flusher) {
 		serialize(buffer, flusher, 0, -1);
 	}
@@ -226,10 +219,10 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		
+
 		if (this == obj)
 			return true;
-		
+
 		if (obj instanceof PVArray)
 		{
 			final PVArray other = (PVArray)obj;
@@ -240,8 +233,8 @@ public abstract class AbstractPVArray extends AbstractPVField implements PVArray
 					   valueEquals(obj);
 			}
 		}
-		
+
 		return false;
 	}
-    
+
 }

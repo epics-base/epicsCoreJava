@@ -31,17 +31,17 @@ public interface ChannelHostingTransport {
 
 	/**
 	 * De-preallocate new channel SID.
-	 * @param sid preallocated channel SID. 
+	 * @param sid preallocated channel SID.
 	 */
-	public void depreallocateChannelSID(int sid);
+	public void dePreAllocateChannelSID(int sid);
 
 	/**
 	 * Register a new channel.
-	 * @param sid preallocated channel SID. 
+	 * @param sid preallocated channel SID.
 	 * @param channel channel to register.
 	 */
 	public void registerChannel(int sid, ServerChannel channel);
-	
+
 	/**
 	 * Unregister a new channel (and deallocates its handle).
 	 * @param sid SID
@@ -54,16 +54,16 @@ public interface ChannelHostingTransport {
 	 * @return channel with given SID, <code>null</code> otherwise
 	 */
 	public ServerChannel getChannel(int sid);
-	
+
 	/**
 	 * Get channel count.
 	 * @return channel count.
 	 */
 	public int getChannelCount();
-	
+
 	/**
 	 * Get an array of all hosted channels.
 	 * @return an array of all hosted channels.
 	 */
-	public ServerChannel[] getChannels(); 
+	public ServerChannel[] getChannels();
 }

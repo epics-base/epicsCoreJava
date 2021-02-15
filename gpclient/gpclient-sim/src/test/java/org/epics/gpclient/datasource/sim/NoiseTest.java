@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -15,7 +15,7 @@ import org.junit.Test;
  * @author carcassi
  */
 public class NoiseTest extends FeatureTestSimFunction {
-    
+
     @Test
     public void values1() {
         Noise noise = new Noise(-10.0, 10.0, 1.0);

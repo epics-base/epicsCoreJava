@@ -24,7 +24,7 @@ import org.epics.util.array.CollectionNumbers;
 public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatArray
 {
     protected float[] value;
-    
+
     /**
      * Constructor.
      * @param array The introspection interface.
@@ -33,19 +33,19 @@ public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatAr
     {
         super(array);
     }
-    
+
     @Override
     protected void allocate(int newCapacity) {
     	value = new float[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -59,7 +59,7 @@ public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatAr
 		buffer.position(buffer.position() + length*4);
 		return length;
 	}
-	
+
     @Override
 	protected int getFromBuffer(ByteBuffer buffer, DeserializableControl control, int offset, int length)
 	{
@@ -71,20 +71,17 @@ public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatAr
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVFloatArray#get(int, int, org.epics.pvdata.pv.FloatArrayData)
      */
-    @Override
     public int get(int offset, int len, FloatArrayData data) {
     	return internalGet(offset, len, data);
     }
 
-    @Override
     public ArrayFloat get() {
         return CollectionNumbers.unmodifiableListFloat(value);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVFloatArray#put(int, int, float[], int)
      */
-    @Override
     public int put(int offset, int len, float[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
@@ -93,7 +90,6 @@ public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatAr
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVFloatArray#shareData(float[])
      */
-    @Override
     public void shareData(float[] from) {
     	internalShareData(from);
     }
@@ -107,7 +103,7 @@ public class BasePVFloatArray extends AbstractPVScalarArray implements PVFloatAr
 	    b.get(0, b.getLength(), arrayData);
 		return Arrays.equals(arrayData.data, value);
     }
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

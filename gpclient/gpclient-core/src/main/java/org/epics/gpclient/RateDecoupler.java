@@ -1,12 +1,13 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
-import java.time.Duration;
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.joda.time.Duration;
+
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,13 +18,13 @@ import java.util.logging.Logger;
  * @author carcassi
  */
 abstract class RateDecoupler {
-    
+
     private static final Logger log = Logger.getLogger(RateDecoupler.class.getName());
     private final Consumer<PVEvent> listener;
     private final Consumer<Exception> exceptionHandler;
     private final ScheduledExecutorService scannerExecutor;
     private final Duration maxDuration;
-    
+
     protected final Object lock = new Object();
     private boolean eventProcessing = false;
     private boolean paused = false;
@@ -32,7 +33,7 @@ abstract class RateDecoupler {
     /**
      * Creates a new rate decoupler that will send the events to the
      * given listener.
-     * 
+     *
      * @param scannerExecutor executor for the scanner tasks
      * @param maxDuration max interval between notifications
      * @param listener the event callback
@@ -53,7 +54,7 @@ abstract class RateDecoupler {
     public Duration getMaxDuration() {
         return maxDuration;
     }
-    
+
     /**
      * Starts the scanning. From this moment on, source rate events
      * may trigger desired rate events.
@@ -61,7 +62,7 @@ abstract class RateDecoupler {
     public final void start() {
         onStart();
     }
-    
+
     /**
      * Initialization to be done when the pv is started.
      * <p>
@@ -69,7 +70,7 @@ abstract class RateDecoupler {
      */
     void onStart() {
     }
-    
+
     /**
      * Pause the scanning. Events will be collected and delayed until a resume.
      */
@@ -81,7 +82,7 @@ abstract class RateDecoupler {
             paused = true;
         }
     }
-    
+
     /**
      * Resumes the scanning. If events were collected during the pause,
      * they will be sent right away.
@@ -95,7 +96,7 @@ abstract class RateDecoupler {
         }
         onResume();
     }
-    
+
     /**
      * Task to be executed on pv resume.
      * <p>
@@ -103,7 +104,7 @@ abstract class RateDecoupler {
      */
     void onResume() {
     }
-    
+
     /**
      * Stops the scanning. From this moment on, the pv will no longer be
      * notified. Can't be restarted.
@@ -114,7 +115,7 @@ abstract class RateDecoupler {
         }
         onStop();
     }
-    
+
     /**
      * Cleanup to be done when the pv is stopped.
      * <p>
@@ -135,21 +136,21 @@ abstract class RateDecoupler {
                 }
             }
         }
-        
+
     };
-    
+
     /**
      * Returns the listener on which to notify the new events from the
      * collectors.
-     * 
+     *
      * @return the listener for the events
      */
     public final Consumer<PVEvent> getUpdateListener() {
         return updateListener;
     }
-    
+
     protected abstract void newEvent(PVEvent event);
-    
+
     /**
      * Call when a new event should be triggered at the desired rate.
      * After calling this method, one should wait for the next {@link #readyForNextEvent() }
@@ -164,7 +165,7 @@ abstract class RateDecoupler {
         }
         listener.accept(event);
     }
-    
+
     /**
      * Called after a pv is notified. Once {@link #sendDesiredRateEvent(org.epics.gpclient.PVEvent) }
      * is called, it should not be called again before this method is called.
@@ -178,7 +179,7 @@ abstract class RateDecoupler {
         }
         onDesiredEventProcessed();
     }
-    
+
     /**
      * Called after an event was successfully processed.
      * <p>
@@ -189,7 +190,7 @@ abstract class RateDecoupler {
 
     /**
      * True if an event was sent, but the ready for next event wasn't received.
-     * 
+     *
      * @return ture if there is still an event in-flight
      */
     public boolean isEventProcessing() {
@@ -213,5 +214,5 @@ abstract class RateDecoupler {
     public boolean isStopped() {
         return stopped;
     }
-    
+
 }

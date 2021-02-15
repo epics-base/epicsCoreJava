@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -13,15 +13,14 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- *
  * @author carcassi
  */
 public class JavaFXLaunchUtil {
-    
+
     private JavaFXLaunchUtil() {
         // No instances allowed
     }
-    
+
     public static void launch(String title, Class<? extends Parent> rootClass, String... args) {
         appTitle = title;
         appRootClass = rootClass;
@@ -34,14 +33,16 @@ public class JavaFXLaunchUtil {
             stage.setTitle(title);
             stage.setScene(new Scene(rootClass.newInstance()));
             stage.show();
-        } catch (InstantiationException | IllegalAccessException instantiationException) {
+        } catch (InstantiationException instantiationException) {
+            // TODO put an Alert, but requires jdk 8u40
+        } catch (IllegalAccessException instantiationException) {
             // TODO put an Alert, but requires jdk 8u40
         }
     }
-    
+
     private static volatile String appTitle;
     private static volatile Class<? extends Parent> appRootClass;
-    
+
     public static class SimpleApplication extends Application {
         @Override
         public void start(Stage primaryStage) throws Exception {
@@ -49,7 +50,6 @@ public class JavaFXLaunchUtil {
             Scene scene = new Scene(appRootClass.newInstance());
             primaryStage.setScene(scene);
             primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
                 public void handle(WindowEvent t) {
                     Platform.exit();
                     System.exit(0);

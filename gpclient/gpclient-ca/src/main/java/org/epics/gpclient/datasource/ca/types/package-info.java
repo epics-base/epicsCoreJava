@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -15,7 +15,7 @@
  * MONITOR event).
  * <p>
  * The conversion between JCAMessagePayload and the actual type, is done through
- * the {@link CATypeAdapter}. A CATypeSupport can be
+ * the {@code CATypeAdapter}. A CATypeSupport can be
  * passed directly to the JCADataSource so that one can configure support for
  * different types.
  */

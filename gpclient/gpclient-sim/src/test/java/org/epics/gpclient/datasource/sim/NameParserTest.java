@@ -1,16 +1,18 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Duration;
+import org.epics.util.stats.Range;
+import org.joda.time.Duration;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
-import org.epics.util.stats.Range;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test simulated pv function names parsing
@@ -82,7 +84,7 @@ public class NameParserTest {
         Ramp ramp = (Ramp) NameParser.createFunction("ramp(1.0, 10.0, 1.0, 1.0)");
         assertThat(ramp.display.getDisplayRange(), equalTo(Range.of(1, 10)));
         assertThat(ramp.step, equalTo(1.0));
-        assertThat(ramp.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        assertThat(ramp.getTimeBetweenSamples(), equalTo(Duration.standardSeconds(1)));
 
     }
 
@@ -91,33 +93,33 @@ public class NameParserTest {
         Sine sine = (Sine) NameParser.createFunction("sine(0.0, 10.0, 4.0, 1.0)");
         assertThat(sine.display.getDisplayRange(), equalTo(Range.of(0, 10)));
         assertThat(sine.samplesPerCycle, equalTo(4.0));
-        assertThat(sine.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        assertThat(sine.getTimeBetweenSamples(), equalTo(Duration.standardSeconds(1)));
     }
 
     @Test
     public void testNoise() {
         Noise noise1 = (Noise) NameParser.createFunction("noise(0.0, 10.0, 1.0)");
         assertThat(noise1.display.getDisplayRange(), equalTo(Range.of(0, 10)));
-        assertThat(noise1.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
-        
+        assertThat(noise1.getTimeBetweenSamples(), equalTo(Duration.standardSeconds(1)));
+
         Noise noise2 = (Noise) NameParser.createFunction("noise");
         assertThat(noise2.display.getDisplayRange(), equalTo(Range.of(-5, 5)));
-        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofMillis(500)));
+        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.millis(500)));
     }
 
     @Test
     public void gaussianNoise() {
         GaussianNoise noise1 = (GaussianNoise) NameParser.createFunction("gaussianNoise(0.0, 10.0, 1.0)");
         assertThat(noise1.display.getDisplayRange(), equalTo(Range.of(-40, 40)));
-        assertThat(noise1.getTimeBetweenSamples(), equalTo(Duration.ofSeconds(1)));
+        assertThat(noise1.getTimeBetweenSamples(), equalTo(Duration.standardSeconds(1)));
 
         GaussianNoise noise2 = (GaussianNoise) NameParser.createFunction("gaussianNoise");
         assertThat(noise2.display.getDisplayRange(), equalTo(Range.of(-4, 4)));
-        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.ofMillis(500)));
-        
+        assertThat(noise2.getTimeBetweenSamples(), equalTo(Duration.millis(500)));
+
         GaussianNoise noise3 = (GaussianNoise) NameParser.createFunction("gaussianNoise()");
         assertThat(noise3.display.getDisplayRange(), equalTo(Range.of(-4, 4)));
-        assertThat(noise3.getTimeBetweenSamples(), equalTo(Duration.ofMillis(500)));
+        assertThat(noise3.getTimeBetweenSamples(), equalTo(Duration.millis(500)));
     }
 
 }

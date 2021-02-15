@@ -4,14 +4,14 @@
  */
 package org.epics.pvdata;
 
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
-
 import org.epics.pvdata.misc.LinkedList;
 import org.epics.pvdata.misc.LinkedListArray;
 import org.epics.pvdata.misc.LinkedListCreate;
 import org.epics.pvdata.misc.LinkedListNode;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * JUnit test for LinkedList.
@@ -23,14 +23,14 @@ public class LinkedListTest extends TestCase {
     private static LinkedListCreate<Basic> basicListCreate = new LinkedListCreate<Basic>();
     private static LinkedListCreate<Element> linkedListCreate = new LinkedListCreate<Element>();
     //private static private static LinkedList<Node> linkedList = linkedListCreate.create();
-    
+
     private static class Basic {
     	Basic(int i) {
     		index = i;
     	}
     	int index;
     }
-    
+
     public static void testBasic() {
     	LinkedList<Basic> basicList = basicListCreate.create();
     	Basic[] basics = new Basic[numNodes];
@@ -47,19 +47,19 @@ public class LinkedListTest extends TestCase {
     		assertTrue(length==(numNodes-(i+1)));
     	}
     }
-    
+
     private static class Element {
         private LinkedListNode<Element> listNode = null;
         private int number = 0;
-        
-        
+
+
         private Element(int number) {
             this.number = number;
             listNode = linkedListCreate.createNode(this);
         }
-        
+
     }
-    
+
     public static void testQueue() {
     	LinkedList<Element> linkedList = linkedListCreate.create();
         LinkedListArray<Element> linkedListArray = linkedListCreate.createArray();
@@ -79,22 +79,22 @@ public class LinkedListTest extends TestCase {
             linkedListNodes = linkedListArray.getNodes();
             length = linkedListArray.getLength();
         }
-        System.out.printf("    LinkedListArray ");
+        System.out.print("    LinkedListArray ");
         for(int i=0; i<length; i++) {
-            System.out.printf(" " + linkedListNodes[i].getObject().number);
+            System.out.print(" " + linkedListNodes[i].getObject().number);
         }
         System.out.println();
-        System.out.printf("    removeHead ");
+        System.out.print("    removeHead ");
         listNode = linkedList.removeHead();
         while(listNode!=null) {
             Element element = listNode.getObject();
-            System.out.printf(" " + element.number);
+            System.out.print(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
         assertTrue(linkedList.isEmpty());
     }
-    
+
     public static void testStack() {
     	LinkedList<Element> linkedList = linkedListCreate.create();
         Element[] elements = new Element[numNodes];
@@ -109,13 +109,13 @@ public class LinkedListTest extends TestCase {
         listNode = linkedList.removeHead();
         while(listNode!=null) {
             Element element = listNode.getObject();
-            System.out.printf(" " + element.number);
+            System.out.print(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
         assertTrue(linkedList.isEmpty());
     }
-    
+
     public static void testRandomInsertRemove() {
     	LinkedList<Element> linkedList = linkedListCreate.create();
         Element[] elements = new Element[numNodes];
@@ -131,13 +131,13 @@ public class LinkedListTest extends TestCase {
         LinkedListNode<Element> listNode = linkedList.removeHead();
         while(listNode!=null) {
             Element element = listNode.getObject();
-            System.out.printf(" " + element.number);
+            System.out.print(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
         assertTrue(linkedList.isEmpty());
     }
-    
+
     public static void testList() {
     	LinkedList<Element> linkedList = linkedListCreate.create();
         Element[] elements = new Element[numNodes];
@@ -149,7 +149,7 @@ public class LinkedListTest extends TestCase {
         LinkedListNode<Element> listNode = linkedList.getHead();
         while(listNode!=null) {
             Element element = (Element)listNode.getObject();
-            System.out.printf(" " + element.number);
+            System.out.print(" " + element.number);
             listNode = linkedList.getNext(listNode);
         }
         System.out.println();
@@ -160,7 +160,7 @@ public class LinkedListTest extends TestCase {
         }
         assertTrue(linkedList.isEmpty());
     }
-    
+
     public static void testOrderedQueue() {
     	LinkedList<Element> linkedList = linkedListCreate.create();
         Element[] elements = new Element[numNodes];
@@ -186,13 +186,13 @@ public class LinkedListTest extends TestCase {
         LinkedListNode<Element> listNode = linkedList.removeHead();
         while(listNode!=null) {
             Element element = (Element)listNode.getObject();
-            System.out.printf(" " + element.number);
+            System.out.print(" " + element.number);
             listNode = linkedList.removeHead();
         }
         System.out.println();
         assertTrue(linkedList.isEmpty());
     }
-    
+
     public static void testTime() {
     	LinkedList<Element> linkedList = linkedListCreate.create();
         numNodes = 1000;
@@ -223,7 +223,7 @@ public class LinkedListTest extends TestCase {
         System.out.println("time per addTail/removeHead " + diff + " microseconds");
         assertTrue(linkedList.isEmpty());
     }
-    
+
     public static void testTimeLocked() {
     	LinkedList<Element> linkedList = linkedListCreate.create();
         numNodes = 1000;
@@ -255,7 +255,7 @@ public class LinkedListTest extends TestCase {
         System.out.println("time per addTail/removeHead " + diff + " microseconds");
         assertTrue(linkedList.isEmpty());
     }
-    
+
     public static void testArrayListTime() {
         numNodes = 1000;
         ArrayList<Element> arrayList = new ArrayList<Element>();
@@ -267,11 +267,10 @@ public class LinkedListTest extends TestCase {
         System.out.printf("%nTime ArrayList test%n");
         long beginTime = System.currentTimeMillis();
         for(int i=0; i<ntimes; i++) {
-            for(Element element: elements) arrayList.add(element);
-            while(true) {
+            Collections.addAll(arrayList, elements);
+            do {
                 arrayList.remove(0);
-                if(arrayList.isEmpty()) break;
-            }
+            } while (!arrayList.isEmpty());
         }
         long endTime = System.currentTimeMillis();
         double diff = endTime - beginTime;
@@ -284,7 +283,7 @@ public class LinkedListTest extends TestCase {
         System.out.println("time per addTail/removeHead " + diff + " microseconds");
         assertTrue(arrayList.isEmpty());
     }
-    
+
     public static void testArrayListTimeLocked() {
         numNodes = 1000;
         ArrayList<Element> arrayList = new ArrayList<Element>();

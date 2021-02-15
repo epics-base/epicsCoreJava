@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,20 +16,17 @@ public class CollectionDoubleTest extends FeatureTestCollectionNumber {
 
     @Override
     public CollectionNumber createConstantCollection() {
-        return new CollectionDouble() {
+        return new AbstractCollectionDouble() {
 
-            @Override
             public IteratorDouble iterator() {
                 return new IteratorDouble() {
 
                     int n=0;
 
-                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
-                    @Override
                     public double nextDouble() {
                         n++;
                         return 1.0;
@@ -37,7 +34,6 @@ public class CollectionDoubleTest extends FeatureTestCollectionNumber {
                 };
             }
 
-            @Override
             public int size() {
                 return 10;
             }

@@ -77,7 +77,7 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	 * pvRequest structure.
 	 */
 	protected final PVStructure pvRequest;
-	
+
 	/**
 	 * Last request flag.
 	 */
@@ -87,25 +87,25 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	 * Destroyed flag.
 	 */
 	protected volatile boolean destroyed = false;
-	
+
 	/**
 	 * Remote instance destroyed.
 	 */
 	protected volatile boolean remotelyDestroyed = false;
-	
+
 	/**
 	 * Initialized flag.
 	 */
 	protected volatile boolean subscribed = false;
-	
+
 	protected int pendingRequest = NULL_REQUEST;
 	/* negative... */
 	protected static final int NULL_REQUEST = -1;
 	protected static final int PURE_DESTROY_REQUEST = -2;
 	protected static final int PURE_CANCEL_REQUEST = -2;
-	
+
 	protected final ReentrantLock lock = new ReentrantLock();
-	
+
 	public BaseRequestImpl(ChannelImpl channel, Requester requester,
 				PVStructure pvRequest, boolean allowNullPVRequest)
 	{
@@ -117,7 +117,7 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 
 		this.channel = channel;
 		this.context = (ClientContextImpl)channel.getContext();
-		
+
 		this.requester = requester;
 		this.pvRequest = pvRequest;
 
@@ -126,7 +126,7 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 		// however it is not used until registerToChannel is called
 		this.ioid = context.registerResponseRequest(this);
 	}
-	
+
 	protected void activate()
 	{
 		channel.registerResponseRequest(this);
@@ -137,11 +137,11 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 			// we allow pure destroy and cancel...
 			if (pendingRequest != NULL_REQUEST && qos != PURE_DESTROY_REQUEST && qos != PURE_CANCEL_REQUEST)
 				return false;
-			
+
 			pendingRequest = qos;
 			return true;
 		}
-		
+
 		/*
 		if (qos == PURE_DESTROY_REQUEST)
 		{
@@ -157,14 +157,14 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 			return pendingRequest.compareAndSet(NULL_REQUEST, qos);
 		 */
 	}
-	
+
 	public final void stopRequest() {
 		synchronized (this) {
 			pendingRequest = NULL_REQUEST;
 		}
 		// pendingRequest.set(NULL_REQUEST);
 	}
-	
+
 	public final int getPendingRequest() {
 		synchronized (this) {
 			return pendingRequest;
@@ -175,7 +175,6 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.ResponseRequest#getRequester()
 	 */
-	@Override
 	public Requester getRequester() {
 		return requester;
 	}
@@ -189,14 +188,14 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 
 	abstract void initResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
 	abstract void normalResponse(Transport transport, byte version, ByteBuffer payloadBuffer, byte qos, Status status);
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.core.DataResponse#response(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer)
 	 */
 	public void response(Transport transport, byte version, ByteBuffer payloadBuffer) {
 		boolean destroy = false;
 		try
-		{	
+		{
 			transport.ensureData(1);
 			final byte qos = payloadBuffer.get();
 			final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
@@ -212,7 +211,7 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 					remotelyDestroyed = true;
 					destroy = true;
 				}
-				
+
 				normalResponse(transport, version, payloadBuffer, qos, status);
 			}
 		}
@@ -242,7 +241,7 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 			else
 				startRequest(PURE_CANCEL_REQUEST);
 		}
-		
+
 		if (canceledBeforeRequestSent)
 		{
 			reportCancellation();
@@ -262,7 +261,7 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	 * @param createRequestFailed set to true if create request failed.
 	 */
 	protected void destroy(boolean createRequestFailed) {
-		
+
 		synchronized (this) {
 			if (destroyed)
 				return;
@@ -285,14 +284,14 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 			}
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelRequest#destroy()
 	 */
 	public void destroy() {
 		destroy(false);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.core.ResponseRequest#timeout()
 	 */
@@ -319,15 +318,13 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 	 */
-	@Override
 	public void lock() {
 		lock.lock();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 	 */
-	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {
 		final int qos = getPendingRequest();
 		if (qos == -1)
@@ -350,7 +347,6 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 	 */
-	@Override
 	public void unlock() {
 		lock.unlock();
 	}
@@ -368,7 +364,7 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 		else
 			return new BitSet(pvStructureSize);
 	}
-	
+
 	public static final PVField reuseOrCreatePVField(Field field, PVField existingPVField)
 	{
 		if (existingPVField != null && field.equals(existingPVField.getField()))
@@ -376,11 +372,10 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 		else
 			return pvDataCreate.createPVField(field);
 	}
-	
+
 	/* Called on server restart...
 	 * @see org.epics.pvaccess.core.SubscriptionRequest#resubscribeSubscription(org.epics.pvaccess.core.Transport)
 	 */
-	@Override
 	public void resubscribeSubscription(Transport transport) {
 		// NOTE: transport is null if channel was never connected
 		if (transport != null && !subscribed && startRequest(QoS.INIT.getMaskValue()))
@@ -393,7 +388,6 @@ public abstract class BaseRequestImpl implements DataResponse, SubscriptionReque
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.core.SubscriptionRequest#updateSubscription()
 	 */
-	@Override
 	public void updateSubscription() {
 		// default is noop
 	}

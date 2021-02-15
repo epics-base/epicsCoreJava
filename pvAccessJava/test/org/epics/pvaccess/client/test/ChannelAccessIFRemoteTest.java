@@ -25,7 +25,7 @@ import org.epics.pvaccess.server.test.TestChannelProviderImpl;
  * @version $Id$
  */
 public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
-	
+
 	private static ServerContextImpl serverContext;
 
 	public synchronized void initializeServerContext()
@@ -33,11 +33,11 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 		// already initialized
 		if (serverContext != null)
 			return;
-		
+
 		// Create a context with default configuration values.
 		/*final ServerContextImpl*/ serverContext = new ServerContextImpl();
 		serverContext.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(serverContext));
-		
+
 		try {
 			serverContext.initialize(new TestChannelProviderImpl());
 		} catch (Throwable th) {
@@ -49,9 +49,7 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
         serverContext.printInfo(); System.out.println();
 
         new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
+        	public void run() {
 		        try {
 	                System.out.println("Running server...");
 	                serverContext.run(0);
@@ -69,9 +67,9 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 		// not yet initialized
 		if (serverContext == null)
 			return;
-		
+
 		serverContext.dispose();
-		
+
 		serverContext = null;
 	}
 
@@ -79,7 +77,7 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
      * PVA context.
      */
     protected ClientContextImpl context = null;
-    
+
     /* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -117,7 +115,7 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 	public long getTimeoutMs() {
 		return 3000;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.test.ChannelAccessIFTest#isLocal()
 	 */
@@ -127,32 +125,32 @@ public class ChannelAccessIFRemoteTest extends ChannelAccessIFTest {
 	}
 
 	// *************************************************************************** //
-	
+
 	// addition tests for the remote part
-	
+
 	// TODO does not work now, since beacons are triggering alive timestamp
 	/*
 	// this can take a while, e.g. 1min
 	public void testNoTraffic() throws Throwable {
 		// echo request is issued
-		
+
 		Channel ch = syncCreateChannel("valueOnly");
 		assertEquals(ConnectionState.CONNECTED, ch.getConnectionState());
 
 		Thread.sleep((long)((context.getConnectionTimeout()+1.0)*1000));
-		
+
 		// still connected
 		assertEquals(ConnectionState.CONNECTED, ch.getConnectionState());
-		
+
 		Thread.sleep((long)((context.getConnectionTimeout()+1.0)*1000));
-		
+
 		// still connected
 		assertEquals(ConnectionState.CONNECTED, ch.getConnectionState());
 
 		ch.destroy();
 	}
 	*/
-	
+
 	protected void internalFinalize() throws Throwable
 	{
 		destroyServerContext();

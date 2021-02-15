@@ -31,7 +31,6 @@ public final class PVControlFactory implements PVControl{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#attach(org.epics.pvdata.pv.PVField)
      */
-    @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
             throw new IllegalArgumentException(noControlFound);
@@ -57,7 +56,6 @@ public final class PVControlFactory implements PVControl{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#detach()
      */
-    @Override
     public void detach() {
         pvLow = null;
         pvHigh = null;
@@ -66,7 +64,6 @@ public final class PVControlFactory implements PVControl{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#isAttached()
      */
-    @Override
     public boolean isAttached() {
         if(pvLow==null || pvHigh==null || pvMinStep==null) return false;
         return true;
@@ -74,7 +71,6 @@ public final class PVControlFactory implements PVControl{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#get(org.epics.pvdata.property.Control)
      */
-    @Override
     public void get(Control control) {
         if(pvLow==null || pvHigh==null || pvMinStep==null) {
             throw new IllegalStateException(notAttached);
@@ -86,7 +82,6 @@ public final class PVControlFactory implements PVControl{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#set(org.epics.pvdata.property.Control)
      */
-    @Override
     public boolean set(Control control) {
         if(pvLow==null || pvHigh==null || pvMinStep==null) {
             throw new IllegalStateException(notAttached);
@@ -99,18 +94,18 @@ public final class PVControlFactory implements PVControl{
         {
             pvLow.put(control.getLow());
             returnValue = true;
-        }    
+        }
         if(current.getHigh()!=control.getHigh())
         {
             pvHigh.put(control.getHigh());
             returnValue = true;
-        } 
+        }
         if(current.getMinStep()!=control.getMinStep())
         {
             pvMinStep.put(control.getMinStep());
             returnValue = true;
-        }    
-        return returnValue;                            
+        }
+        return returnValue;
     }
 
 }

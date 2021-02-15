@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
-import java.util.function.Consumer;
+import org.epics.util.compat.legacy.functional.Consumer;
 
 /**
  * A collector that keeps only the latest value.
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  * @author carcassi
  */
 class LatestValueCollector<T> extends ReadCollector<T, T> {
-    
+
     private T value;
 
     public LatestValueCollector(Class<T> type) {
@@ -53,5 +53,5 @@ class LatestValueCollector<T> extends ReadCollector<T, T> {
             listener.accept(PVEvent.readConnectionValueEvent());
         }
     }
-    
+
 }

@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.util.Random;
 import org.epics.util.array.ArrayDouble;
 import org.epics.util.array.ListDouble;
+import org.epics.util.compat.legacy.lang.Random;
 import org.epics.util.stats.Range;
 import org.epics.vtype.Display;
 /**

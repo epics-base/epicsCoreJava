@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,13 +10,13 @@ import javafx.scene.layout.VBox;
 
 
 public class Probe extends VBox {
-    
+
     public Probe() {
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("Probe.fxml"));
 
         fxmlLoader.setRoot(this);
-        
+
         try {
             fxmlLoader.load();
         } catch (IOException exception) {

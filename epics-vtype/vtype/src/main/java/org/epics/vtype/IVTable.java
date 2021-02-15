@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2010-18 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
@@ -9,7 +9,7 @@ import org.epics.util.array.ListNumber;
 
 /**
  * An immutable table that extends {@link VTable}
- * 
+ *
  * @author carcassi, shroff
  */
 class IVTable extends VTable {

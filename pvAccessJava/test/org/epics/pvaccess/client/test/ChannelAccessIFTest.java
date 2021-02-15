@@ -17,6 +17,7 @@ package org.epics.pvaccess.client.test;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -72,6 +73,8 @@ import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.Structure;
 import org.epics.pvdata.pv.Type;
 
+import static org.junit.Assert.assertNotEquals;
+
 /**
  * Channel Access IF test.
  * Requires "counter" (int, increases with 1Hz), "simpleCounter" (int), and "valueOnly" (double) standard channels.
@@ -97,9 +100,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	 * @return local or not.
 	 */
 	public abstract boolean isLocal();
-	
-	protected Set<Channel> channels = new HashSet<Channel>();
-	
+
+	protected final Set<Channel> channels = new HashSet<Channel>();
+
 	/**
 	 * If provider cannot be destroyed,
 	 * channel must be registered so that is destroyed by tearDown().
@@ -109,12 +112,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	{
 		if (channel == null)
 			return;
-		
+
 		synchronized (channels) {
 			channels.add(channel);
 		}
-	};
-	
+	}
+
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#tearDown()
 	 */
@@ -139,62 +142,57 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				getChannelProvider(), getChannelProvider());
 		assertTrue("getTimeoutMs() <= 0", getTimeoutMs() > 0);
 	}
-	
+
 	public void testProviderName()
 	{
 		final ChannelProvider provider = getChannelProvider();
-		
+
 		assertNotNull(provider.getProviderName());
-		assertSame("getProviderName() returns different String instace for each call", provider.getProviderName(), provider.getProviderName());
+		assertSame("getProviderName() returns different String instance for each call", provider.getProviderName(), provider.getProviderName());
 		assertTrue("empty getProviderName()", provider.getProviderName().length() > 0);
 	}
-	
+
 	protected static class ChannelRequesterCreatedTestImpl implements ChannelRequester {
-		
+
 		public Channel channel;
 		public Status status;
 		public int createdCount = 0;
 		public int stateChangeCount = 0;
-		
-		@Override
+
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-		
-		@Override
+
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
-		
-		@Override
+
 		public synchronized void channelStateChange(Channel c, ConnectionState connectionState) {
 			stateChangeCount++;
 			this.notifyAll();
 		}
-		
-		@Override
+
 		public synchronized void channelCreated(Status status, Channel channel) {
 			createdCount++;
 			this.status = status;
 			this.channel = channel;
 			this.notifyAll();
 		}
-	};
+	}
 
 	protected static class ChannelFindRequesterTestImpl implements ChannelFindRequester {
-		
+
 		public Status status;
 		public boolean wasFound;
 		public int findCount = 0;
 
-		@Override
 		public synchronized void channelFindResult(Status status, ChannelFind channelFind, boolean wasFound) {
 			findCount++;
 			this.status = status;
 			this.wasFound = wasFound;
 			this.notifyAll();
 		}
-	};
+	}
 
 	public void testCreateChannel() throws Throwable
 	{
@@ -214,9 +212,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		Channel channel;
-		
+
 		//
 		// null channel name
 		//
@@ -263,24 +261,24 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			channel = provider.createChannel("counter", crcti, (short)(ChannelProvider.PRIORITY_DEFAULT + 1));
 			registerChannelForDestruction(channel);
 			assertNotNull(channel);
-			
+
 			if (crcti.createdCount == 0)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			assertTrue(crcti.status.isSuccess());
 			assertNotNull(crcti.channel);
-			
+
 			// let's be mean and wait for some time
 			crcti.wait(1000);
 
 			assertEquals(1, crcti.createdCount);
 		}
-		
+
 		// local PVA does not recreate provider, so we don't want to destroy it
 		if (isLocal())
 			return;
-		
+
 		provider.destroy();
 
 		//
@@ -291,17 +289,17 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			channel = provider.createChannel("counter", crcti, ChannelProvider.PRIORITY_DEFAULT);
 			registerChannelForDestruction(channel);
 			assertNull(channel);
-			
+
 			if (crcti.createdCount == 0)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			assertFalse(crcti.status.isSuccess());
 			assertNull(crcti.channel);
 		}
 	}
 
-	
+
 	public void testFindChannel() throws Throwable
 	{
 		final ChannelProvider provider = getChannelProvider();
@@ -322,15 +320,15 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		ChannelFind channelFind;
-		
+
 		//
 		// null channel name
 		//
 		ChannelFindRequesterTestImpl cfrti = new ChannelFindRequesterTestImpl();
 		try {
-			channelFind = provider.channelFind(null, cfrti);
+			provider.channelFind(null, cfrti);
 			fail("null channel name accepted");
 		} catch (AssertionFailedError afe) {
 			throw afe;
@@ -342,7 +340,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		//
 		// finally, find that channel
 		//
@@ -352,21 +350,21 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			if (channelFind == null)
 				return;	// not supported/implemented (e.g. client provider)
 			//assertNotNull(channelFind);
-			
+
 			if (cfrti.findCount == 0)
 				cfrti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, cfrti.findCount);
 			assertTrue(cfrti.status.isSuccess());
 			assertTrue(cfrti.wasFound);
-			
+
 			// let's be mean and wait for some time
 			cfrti.wait(1000);
 
 			assertEquals(1, cfrti.findCount);
 		}
 
-		
+
 		//
 		// finally, find non-existing channel
 		//
@@ -375,12 +373,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		synchronized (cfrti) {
 			channelFind = provider.channelFind("nonExisting", cfrti);
 			assertNotNull(channelFind);
-			
+
 			if (cfrti.findCount == 0)
 				cfrti.wait(getTimeoutMs());
-			
+
 			// 2 possible scenarios
-	
+
 			// 1. immediate response (local PVA)
 			count = cfrti.findCount;
 			if (count == 1)
@@ -395,10 +393,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 			else
 				fail("invalid count on channelFindResult() call");
-			
+
 			// let's be mean and wait for some time
 			cfrti.wait(1000);
-			
+
 			assertEquals(count, cfrti.findCount);
 		}
 
@@ -409,10 +407,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		synchronized (cfrti) {
 			// let's be mean and wait for some time
 			cfrti.wait(1000);
-			
+
 			assertEquals(count, cfrti.findCount);
 		}
-		
+
 		// local PVA does not recreate provider, so we don't want to destroy it
 		if (isLocal())
 			return;
@@ -426,10 +424,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		synchronized (cfrti) {
 			channelFind = provider.channelFind("nonExisting", cfrti);
 			assertNull(channelFind);
-			
+
 			if (cfrti.findCount == 0)
 				cfrti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, cfrti.findCount);
 			assertFalse(cfrti.status.isSuccess());
 			assertFalse(cfrti.wasFound);
@@ -446,12 +444,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			channel = provider.createChannel("counter", crcti, (short)(ChannelProvider.PRIORITY_DEFAULT + 1));
 			registerChannelForDestruction(channel);
 			assertNotNull(channel);
-			
+
 			if (crcti.createdCount == 0)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals("channelCreated not called", 1, crcti.createdCount);
-			assertTrue(crcti.stateChangeCount <= 1);	
+			assertTrue(crcti.stateChangeCount <= 1);
 			assertTrue(crcti.status.isSuccess());
 			assertNotNull(crcti.channel);
 		}
@@ -468,7 +466,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		assertNull(channel.getRemoteAddress());
 		assertFalse(channel.isConnected());
 		assertEquals(ConnectionState.NEVER_CONNECTED, channel.getConnectionState());
-		
+
 		// disconnect on never connected test
 		channel.disconnect();
 		// state should not change at all
@@ -480,7 +478,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			assertEquals(0, crcti.stateChangeCount);
 		}
 		*/
-		
+
 		// now we really connect
 		synchronized (crcti) {
 			//channel.connect();
@@ -488,7 +486,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			// wait if not connected
 			if (crcti.stateChangeCount == 0)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			assertEquals("channel failed to connect (or no connect notification via channelStateChange)", 1, crcti.stateChangeCount);
 			assertTrue(crcti.status.isSuccess());
@@ -505,7 +503,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			// wait for new event (failure)... or timeoutMs
 			if (crcti.stateChangeCount == 1)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			assertEquals(1, crcti.stateChangeCount);
 			assertTrue(crcti.status.isSuccess());
@@ -513,8 +511,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		assertEquals(channelRemoteAddress, channel.getRemoteAddress());
 		assertTrue(channel.isConnected());
 		assertEquals(ConnectionState.CONNECTED, channel.getConnectionState());
-		
-		
+
+
 		// now we disconnect
 		synchronized (crcti) {
 			channel.disconnect();
@@ -522,7 +520,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			// wait for new event (failure)... or timeoutMs
 			if (crcti.stateChangeCount == 1)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			assertEquals("no disconnect notification via channelStateChange", 2, crcti.stateChangeCount);
 			assertTrue(crcti.status.isSuccess());
@@ -530,8 +528,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		assertNull(channel.getRemoteAddress());
 		assertFalse(channel.isConnected());
 		assertEquals(ConnectionState.DISCONNECTED, channel.getConnectionState());
-		
-		
+
+
 		// double disconnect
 		synchronized (crcti) {
 			channel.disconnect();
@@ -539,7 +537,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			// wait for new event (failure)... or timeoutMs
 			if (crcti.stateChangeCount == 2)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			assertEquals(2, crcti.stateChangeCount);
 			assertTrue(crcti.status.isSuccess());
@@ -549,7 +547,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		assertEquals(ConnectionState.DISCONNECTED, channel.getConnectionState());
 		*/
 
-		
+
 
 		// ... and finally we destroy
 		synchronized (crcti) {
@@ -559,7 +557,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			if (crcti.stateChangeCount == 1)
 			//if (crcti.stateChangeCount == 2)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			// disconnected might be called first
 			assertTrue("no destroy notification via channelStateChange", 2 <= crcti.stateChangeCount);
@@ -571,7 +569,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		assertEquals(ConnectionState.DESTROYED, channel.getConnectionState());
 
 		final int count = crcti.stateChangeCount;
-		
+
 		// of course, we do destroy-again test
 		synchronized (crcti) {
 			// noop expected
@@ -580,7 +578,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			// wait for new event (failure)... or timeoutMs
 			if (crcti.stateChangeCount == count)
 				crcti.wait(getTimeoutMs());
-			
+
 			assertEquals(1, crcti.createdCount);
 			// we allow warning message
 			if (crcti.status.getType() != StatusType.WARNING)
@@ -589,7 +587,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 //		assertNull(channel.getRemoteAddress());
 		assertFalse(channel.isConnected());
 		assertEquals(ConnectionState.DESTROYED, channel.getConnectionState());
-		
+
 		// just send a message...
 		channel.message("testing 1, 2, 3...", MessageType.info);
 	}
@@ -601,22 +599,21 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 		    // TODO for now just call with null (meaning all?)
 		    assertEquals(AccessRights.readWrite, ch.getAccessRights(null));
-		    
+
 		    ch.destroy();
 		}
 	}
-	
-	
+
+
 	/** ----------------------- REQUEST TESTS  -----------------------**/
-	
+
     private class ConnectionListener implements ChannelRequester
     {
     	private Boolean notification = null;
-    	
+
  		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelRequester#channelCreated(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.Channel)
 		 */
-		@Override
 		public void channelCreated(Status status,
 				org.epics.pvaccess.client.Channel channel) {
 			/*
@@ -626,7 +623,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			*/
 			if (!status.isSuccess()) {
 				synchronized (this) {
-					notification = new Boolean(false);
+					notification = Boolean.FALSE;
 					this.notify();
 				}
 			}
@@ -635,48 +632,44 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelRequester#channelStateChange(org.epics.pvaccess.client.Channel, org.epics.pvaccess.client.Channel.ConnectionState)
 		 */
-		@Override
 		public void channelStateChange(
 				org.epics.pvaccess.client.Channel c,
 				ConnectionState connectionStatus) {
  			synchronized (this) {
-				notification = new Boolean(connectionStatus == ConnectionState.CONNECTED);
+				notification = connectionStatus == ConnectionState.CONNECTED;
 				this.notify();
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-		
+
 		public void waitAndCheck() {
 			synchronized (this) {
-				final long timeOutMs = getTimeoutMs();
+				final long timeOutMs = getTimeoutMs()*10;
 				final long t1 = System.currentTimeMillis();
-				while (notification == null)
+				final long timeout = t1+timeOutMs;
+
+				// Wait for the status to change or time out
+				while (notification == null && System.currentTimeMillis() < timeout)
 				{
 					try {
-						this.wait(timeOutMs);
-						final long t2 = System.currentTimeMillis();
-						if (timeOutMs != 0 && (t2-t1) >= timeOutMs)
-							break;
+						this.wait(1000L);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
-						// noop
 					}
 				}
 
 				assertNotNull("channel connect timeout", notification);
-				assertTrue("channel not connected", notification.booleanValue());
+				assertTrue("channel not connected", notification);
 			}
 		}
-    };
+    }
 
 	protected Channel syncCreateChannel(String name, boolean waitForConnectEvent) throws Throwable
 	{
@@ -700,26 +693,25 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		BitSet bitSet;
 		PVStructure pvStructure;
 		Structure structure;
-		
+
 		private Boolean connected = null;
 		private Boolean success = null;
-		
-		@Override
+
 		public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
 			synchronized (this) {
 				this.channelGet = channelGet;
 				this.structure = structure;
 
-				connected = new Boolean(status.isOK());
+				connected = status.isOK();
 				this.notify();
 			}
 		}
-		
+
 		public void waitAndCheckConnect()
 		{
 			waitAndCheckConnect(true);
 		}
-		
+
 		public void waitAndCheckConnect(boolean expectedSuccess)
 		{
 			synchronized (this) {
@@ -731,7 +723,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 						// noop
 					}
 				}
-				
+
 				assertNotNull("channel get connect timeout", connected);
 				if (expectedSuccess) {
 					assertTrue("channel get failed to connect", connected.booleanValue());
@@ -748,25 +740,25 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			syncGet(lastRequest, true);
 		}
-		
+
 		public void syncGet(boolean lastRequest, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel get not connected", connected);
-					
+
 				success = null;
 				if (lastRequest)
 					channelGet.lastRequest();
 				channelGet.get();
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel get timeout", success);
 				if (expectedSuccess)
 					assertTrue("channel get failed", success.booleanValue());
@@ -774,28 +766,25 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertFalse("channel get has not failed", success.booleanValue());
 			}
 		}
-		
-		@Override
+
 		public void getDone(Status success, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.bitSet = bitSet;
 				this.pvStructure = pvStructure;
 				this.notify();
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-		
-	};
+
+	}
 
 	private class ChannelPutRequesterImpl implements ChannelPutRequester
 	{
@@ -807,13 +796,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		private Boolean connected = null;
 		private Boolean success = null;
 
-		@Override
 		public void channelPutConnect(Status status, ChannelPut channelPut, Structure structure) {
 			synchronized (this) {
 				this.channelPut = channelPut;
 				this.structure = structure;
-				
-				connected = new Boolean(status.isOK());
+
+				connected = status.isOK();
 				this.notify();
 			}
 		}
@@ -834,7 +822,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 						// noop
 					}
 				}
-				
+
 				assertNotNull("channel put connect timeout", connected);
 				if (expectedSuccess) {
 					assertTrue("channel put failed to connect", connected.booleanValue());
@@ -852,55 +840,54 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel put not connected", connected);
-					
+
 				success = null;
 				channelPut.get();
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel get timeout", success);
 				assertTrue("channel get failed", success.booleanValue());
 			}
 		}
-		
-		@Override
+
 		public void getDone(Status success, ChannelPut channelPut, PVStructure pvStructure, BitSet bitSet) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.pvStructure = pvStructure;
 				this.bitSet = bitSet;
 				this.notify();
 			}
 		}
-		
+
 		public void syncPut(boolean lastRequest, PVStructure pvPutStructure, BitSet pvPutBitSet)
 		{
 			syncPut(lastRequest, pvPutStructure, pvPutBitSet, true);
 		}
-		
+
 		public void syncPut(boolean lastRequest, PVStructure pvPutStructure, BitSet pvPutBitSet, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel put not connected", connected);
-					
+
 				success = null;
 				if (lastRequest)
 					channelPut.lastRequest();
 				channelPut.put(pvPutStructure, pvPutBitSet);
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel put timeout", success);
 				if (expectedSuccess)
 					assertTrue("channel put failed", success.booleanValue());
@@ -908,27 +895,24 @@ public abstract class ChannelAccessIFTest extends TestCase {
 					assertFalse("channel put has not failed", success.booleanValue());
 			}
 		}
-		
-		@Override
+
 		public void putDone(Status success, ChannelPut channelPut) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.notify();
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-	};
-	
-	
+	}
+
+
 	private class ChannelPutGetRequesterImpl implements ChannelPutGetRequester
 	{
 		ChannelPutGet channelPutGet;
@@ -947,7 +931,6 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelPutGetRequester#channelPutGetConnect(Status,org.epics.pvaccess.client.ChannelPutGet, org.epics.pvdata.pv.PVStructure, org.epics.pvdata.pv.PVStructure)
 		 */
-		@Override
 		public void channelPutGetConnect(
 				Status status,
 				ChannelPutGet channelPutGet,
@@ -958,7 +941,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				this.putStructure = putStructure;
 				this.getStructure = getStructure;
 
-				connected = new Boolean(status.isOK());
+				connected = status.isOK();
 				this.notify();
 			}
 		}
@@ -968,7 +951,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			waitAndCheckConnect(true);
 		}
-		
+
 		public void waitAndCheckConnect(boolean expectedSuccess)
 		{
 			synchronized (this) {
@@ -980,15 +963,15 @@ public abstract class ChannelAccessIFTest extends TestCase {
 						// noop
 					}
 				}
-				
+
 				assertNotNull("channel put-get connect timeout", connected);
 				if (expectedSuccess) {
-					assertTrue("channel put-get failed to connect", connected.booleanValue());
+					assertTrue("channel put-get failed to connect", connected);
 					assertNotNull(channelPutGet);
 					assertNotNull(putStructure);
 					assertNotNull(getStructure);
 				} else {
-					assertFalse("channel put-get has not failed to connect", connected.booleanValue());
+					assertFalse("channel put-get has not failed to connect", connected);
 					assertNull(pvPutStructure);
 					assertNull(pvGetStructure);
 				}
@@ -999,38 +982,38 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			syncPutGet(lastRequest, pvPutGetStructure, pvPutGetBitSet, true);
 		}
-		
+
 		public void syncPutGet(boolean lastRequest,
 				PVStructure pvPutGetStructure, BitSet pvPutGetBitSet, boolean expectedSuccess)
 		{
 			synchronized (this) {
-				if (connected == null)
+				if (connected == null) {
 					assertNotNull("channel put-get not connected", connected);
-					
+				}
+
 				success = null;
 				if (lastRequest)
 					channelPutGet.lastRequest();
 				channelPutGet.putGet(pvPutGetStructure, pvPutGetBitSet);
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel put-get timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel put-get failed", success.booleanValue());
+					assertTrue("channel put-get failed", success);
 				else
-					assertFalse("channel put-get has not failed", success.booleanValue());
+					assertFalse("channel put-get has not failed", success);
 			}
 		}
-	
-		@Override
+
 		public void putGetDone(Status success, ChannelPutGet channelPutGet, PVStructure pvGetStructure, BitSet pvGetBitSet) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.pvGetStructure = pvGetStructure;
 				this.notify();
 			}
@@ -1040,35 +1023,34 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			syncGetGet(true);
 		}
-		
+
 		public void syncGetGet(boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel put-get not connected", connected);
-					
+
 				success = null;
 				channelPutGet.getGet();
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel get-get timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel get-get failed", success.booleanValue());
+					assertTrue("channel get-get failed", success);
 				else
-					assertFalse("channel get-get has not failed", success.booleanValue());
+					assertFalse("channel get-get has not failed", success);
 			}
 		}
-	
-		@Override
+
 		public void getGetDone(Status success, ChannelPutGet channelPutGet, PVStructure pvGetStructure, BitSet pvGetBitSet) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.pvGetStructure = pvGetStructure;
 				this.notify();
 			}
@@ -1083,46 +1065,43 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel put-get not connected", connected);
-					
+
 				success = null;
 				channelPutGet.getPut();
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel get-put timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel get-put failed", success.booleanValue());
+					assertTrue("channel get-put failed", success);
 				else
-					assertFalse("channel get-put has not failed", success.booleanValue());
+					assertFalse("channel get-put has not failed", success);
 			}
 		}
 
-		@Override
 		public void getPutDone(Status success, ChannelPutGet channelPutGet, PVStructure pvPutStructure, BitSet pvPutBitSet) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.pvPutStructure = pvPutStructure;
 				this.notify();
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-		
-	};
-	
+
+	}
+
 	private class ChannelRPCRequesterImpl implements ChannelRPCRequester
 	{
 		ChannelRPC channelRPC;
@@ -1131,32 +1110,30 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		private Boolean connected = null;
 		private Boolean success = null;
 
-		@Override
 		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
 			synchronized (this)
 			{
 				this.channelRPC = channelRPC;
 
-				connected = new Boolean(status.isOK());
+				connected = status.isOK();
 				this.notify();
 			}
 		}
 
 
-		@Override
 		public void requestDone(Status status, ChannelRPC channelRPC, PVStructure pvResponse) {
 			synchronized (this) {
-				this.success = new Boolean(status.isOK());
+				this.success = status.isOK();
 				this.result = pvResponse;
 				this.notify();
 			}
 		}
-		
+
 		public void waitAndCheckConnect()
 		{
 			waitAndCheckConnect(true);
 		}
-		
+
 		public void waitAndCheckConnect(boolean expectedSuccess)
 		{
 			synchronized (this) {
@@ -1168,12 +1145,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 						// noop
 					}
 				}
-				
+
 				assertNotNull("channel rpc connect timeout", connected);
 				if (expectedSuccess) {
-					assertTrue("channel rpc failed to connect", connected.booleanValue());
+					assertTrue("channel rpc failed to connect", connected);
 				} else {
-					assertFalse("channel rpc has not failed to connect", connected.booleanValue());
+					assertFalse("channel rpc has not failed to connect", connected);
 				}
 			}
 		}
@@ -1182,83 +1159,76 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			return syncRPC(arguments, lastRequest, true);
 		}
-		
+
 		public PVStructure syncRPC(PVStructure arguments, boolean lastRequest, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel rpc not connected", connected);
-					
+
 				success = null;
 				result = null;
 				if (lastRequest)
 					channelRPC.lastRequest();
 				channelRPC.request(arguments);
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel rpc timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel rpc failed", success.booleanValue());
+					assertTrue("channel rpc failed", success);
 				else
-					assertFalse("channel rpc has not failed", success.booleanValue());
-				
+					assertFalse("channel rpc has not failed", success);
+
 				return result;
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-	};
+	}
 
 	ChannelProcessRequester channelProcessRequester = new ChannelProcessRequester() {
-		
-		@Override
+
 		public void processDone(Status success, ChannelProcess channelProcess) {
 			channelProcess.lastRequest();
 			channelProcess.process();
 		}
-		
-		@Override
+
 		public void channelProcessConnect(Status status, ChannelProcess channelProcess) {
 			channelProcess.process();
 		}
-		
-		@Override
+
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-		
+
 	};
 
 	private class GetFieldRequesterImpl implements GetFieldRequester {
 
 		Field field;
-		
+
 		private Boolean success;
-		
-		@Override
+
 		public void getDone(Status status, Field field) {
 			synchronized (this) {
 				this.field = field;
-				this.success = new Boolean(status.isOK());
+				this.success = status.isOK();
 				this.notify();
 			}
 		}
@@ -1267,61 +1237,57 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			syncGetField(ch, subField, true);
 		}
-		
-		public void syncGetField(Channel ch, String subField, boolean expectedSucces)
+
+		public void syncGetField(Channel ch, String subField, boolean expectedSuccess)
 		{
 			synchronized (this) {
-					
+
 				success = null;
 				ch.getField(this, subField);
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel getField timeout", success);
-				if (expectedSucces)
-					assertTrue("channel getField failed", success.booleanValue());
+				if (expectedSuccess)
+					assertTrue("channel getField failed", success);
 				else
-					assertFalse("channel getField has not failed", success.booleanValue());
+					assertFalse("channel getField has not failed", success);
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-	};
+	}
 
 	private class ChannelProcessRequesterImpl implements ChannelProcessRequester {
-		
+
 		ChannelProcess channelProcess;
 
 		private Boolean success;
 		private Boolean connected;
-		
-		@Override
+
 		public void processDone(Status success, ChannelProcess channelProcess) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.notify();
 			}
 		}
-		
-		@Override
+
 		public void channelProcessConnect(Status status, ChannelProcess channelProcess) {
 			synchronized (this) {
 				this.channelProcess = channelProcess;
 
-				connected = new Boolean(status.isOK());
+				connected = status.isOK();
 				this.notify();
 			}
 		}
@@ -1330,7 +1296,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			waitAndCheckConnect(true);
 		}
-		
+
 		public void waitAndCheckConnect(boolean expectedSuccess)
 		{
 			synchronized (this) {
@@ -1342,77 +1308,74 @@ public abstract class ChannelAccessIFTest extends TestCase {
 						// noop
 					}
 				}
-				
+
 				assertNotNull("channel process connect timeout", connected);
 				if (expectedSuccess)
-					assertTrue("channel process failed to connect", connected.booleanValue());
+					assertTrue("channel process failed to connect", connected);
 				else
-					assertFalse("channel process has not failed to connect", connected.booleanValue());
+					assertFalse("channel process has not failed to connect", connected);
 			}
 		}
-		
+
 		public void syncProcess(boolean lastRequest)
 		{
 			syncProcess(lastRequest, true);
 		}
-		
+
 		public void syncProcess(boolean lastRequest, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel process not connected", connected);
-					
+
 				success = null;
 				if (lastRequest)
 					channelProcess.lastRequest();
 				channelProcess.process();
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel process timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel process failed", success.booleanValue());
+					assertTrue("channel process failed", success);
 				else
-					assertFalse("channel process hass not failed", success.booleanValue());
+					assertFalse("channel process has not failed", success);
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-		
-	};
-	
-	
+
+	}
+
+
 	private class ChannelArrayRequesterImpl implements ChannelArrayRequester {
 
 		ChannelArray channelArray;
 		PVArray pvArray;
 		Array array;
-		
+
 		int length = -1;
-		
+
 		private Boolean connected = null;
 		private Boolean success = null;
 
-		@Override
 		public void channelArrayConnect(Status status, ChannelArray channelArray, Array array) {
 			synchronized (this)
 			{
 				this.channelArray = channelArray;
 				this.array = array;
-				connected = new Boolean(status.isOK());
+				connected = status.isOK();
 				this.notify();
 			}
 		}
@@ -1433,26 +1396,25 @@ public abstract class ChannelAccessIFTest extends TestCase {
 						// noop
 					}
 				}
-				
+
 				assertNotNull("channel array connect timeout", connected);
 				if (expectedSuccess)
 				{
-					assertTrue("channel array failed to connect", connected.booleanValue());
+					assertTrue("channel array failed to connect", connected);
 					assertNotNull(channelArray);
 					assertNotNull(array);
 				}
 				else
 				{
-					assertFalse("channel array has not failed to connect", connected.booleanValue());
+					assertFalse("channel array has not failed to connect", connected);
 					assertNull(pvArray);
 				}
 			}
 		}
 
-		@Override
 		public void getArrayDone(Status success, ChannelArray channelArray, PVArray pvArray) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.pvArray = pvArray;
 				this.notify();
 			}
@@ -1462,38 +1424,37 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			syncGet(lastRequest, offset, count, stride, true);
 		}
-		
+
 		public void syncGet(boolean lastRequest, int offset, int count, int stride, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel array not connected", connected);
-					
+
 				success = null;
 				if (lastRequest)
 					channelArray.lastRequest();
 				// TODO stride
 				channelArray.getArray(offset, count, stride);
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel array get timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel array get failed", success.booleanValue());
+					assertTrue("channel array get failed", success);
 				else
-					assertFalse("channel array get has not failed", success.booleanValue());
+					assertFalse("channel array get has not failed", success);
 			}
 		}
 
-		@Override
 		public void putArrayDone(Status success, ChannelArray channelArray) {
 			synchronized (this) {
-				this.success = new Boolean(success.isOK());
+				this.success = success.isOK();
 				this.notify();
 			}
 		}
@@ -1508,24 +1469,24 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel array not connected", connected);
-					
+
 				success = null;
 				if (lastRequest)
 					channelArray.lastRequest();
 				channelArray.putArray(pvArray, offset, count, stride);
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel array put timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel array put failed", success.booleanValue());
+					assertTrue("channel array put failed", success);
 				else
-					assertFalse("channel array put has not failed", success.booleanValue());
+					assertFalse("channel array put has not failed", success);
 			}
 		}
 
@@ -1533,37 +1494,36 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			syncSetLength(lastRequest, length, true);
 		}
-		
+
 		public void syncSetLength(boolean lastRequest, int length, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel array not connected", connected);
-					
+
 				success = null;
 				if (lastRequest)
 					channelArray.lastRequest();
 				channelArray.setLength(length);
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel array setLength timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel array setLength failed", success.booleanValue());
+					assertTrue("channel array setLength failed", success);
 				else
-					assertFalse("channel array setLength has not failed", success.booleanValue());
+					assertFalse("channel array setLength has not failed", success);
 			}
 		}
 
-		@Override
 		public void setLengthDone(Status status, ChannelArray channelArray) {
 			synchronized (this) {
-				this.success = new Boolean(status.isOK());
+				this.success = status.isOK();
 				this.notify();
 			}
 		}
@@ -1572,74 +1532,70 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		{
 			syncGetLength(lastRequest, true);
 		}
-		
+
 		public void syncGetLength(boolean lastRequest, boolean expectedSuccess)
 		{
 			synchronized (this) {
 				if (connected == null)
 					assertNotNull("channel array not connected", connected);
-					
+
 				success = null;
 				if (lastRequest)
 					channelArray.lastRequest();
 				channelArray.getLength();
-				
+
 				try {
 					if (success == null)
 						this.wait(getTimeoutMs());
 				} catch (InterruptedException e) {
 					// noop
 				}
-				
+
 				assertNotNull("channel array getLength timeout", success);
 				if (expectedSuccess)
-					assertTrue("channel array getLength failed", success.booleanValue());
+					assertTrue("channel array getLength failed", success);
 				else
-					assertFalse("channel array getLength has not failed", success.booleanValue());
+					assertFalse("channel array getLength has not failed", success);
 			}
 		}
 
-		@Override
 		public void getLengthDone(Status status, ChannelArray channelArray,
 				int length) {
 			synchronized (this) {
-				this.success = new Boolean(status.isOK());
+				this.success = status.isOK();
 				this.length = length;
 				this.notify();
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-		
-	};
+
+	}
 
 	private class ChannelMonitorRequesterImpl implements MonitorRequester {
-		
+
 		PVStructure pvStructure;
 		BitSet changeBitSet;
 		BitSet overrunBitSet;
-		
+
 		AtomicInteger monitorCounter = new AtomicInteger();
-			
+
 		Monitor channelMonitor;
-		
+
 		private Boolean connected = null;
 
-		@Override
 		public void monitorConnect(Status status, Monitor channelMonitor, Structure structure) {
 			synchronized (this)
 			{
 				this.channelMonitor = channelMonitor;
 
-				connected = new Boolean(status.isOK());
+				connected = status.isOK();
 				this.notify();
 			}
 		}
@@ -1655,22 +1611,20 @@ public abstract class ChannelAccessIFTest extends TestCase {
 						// noop
 					}
 				}
-				
+
 				assertNotNull("channel monitor connect timeout", connected);
-				assertTrue("channel monitor failed to connect", connected.booleanValue());
+				assertTrue("channel monitor failed to connect", connected);
 			}
 		}
 
-		@Override
 		public void unlisten(Monitor monitor) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.monitor.MonitorRequester#monitorEvent(org.epics.pvdata.monitor.Monitor)
 		 */
-		@Override
 		public void monitorEvent(Monitor monitor) {
 			synchronized (this) {
 				MonitorElement monitorElement = monitor.poll();
@@ -1682,7 +1636,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				assertNotNull(this.pvStructure);
 				assertNotNull(this.changeBitSet);
 				assertNotNull(this.overrunBitSet);
-			
+
 				monitorCounter.incrementAndGet();
 				this.notify();
 
@@ -1690,33 +1644,31 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			}
 		}
 
-		@Override
 		public String getRequesterName() {
 			return this.getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			System.err.println("[" + messageType + "] " + message);
 		}
-	};
+	}
 
 	public void testChannelGet() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("valueOnly");
-	    
+
 	    channelGetTestParameters(ch);
-	    
+
 		channelGetTestNoProcess(ch, false);
 		//channelGetTestNoProcess(ch, true);
-		
+
 		ch.destroy();
-		
+
 	    ch = syncCreateChannel("simpleCounter");
-		
+
 		channelGetTestIntProcess(ch, false);
 		//channelGetTestIntProcess(ch, true);
-		
+
 		channelGetTestNoConnection(ch, true);
 		channelGetTestNoConnection(ch, false);
 		/*
@@ -1728,7 +1680,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// channel not yet connected
 		channelGetTestIntProcess(ch, false);
 	}
-	
+
 	private void channelGetTestParameters(Channel ch) throws Throwable
 	{
 		CreateRequest createRequest = CreateRequest.create();
@@ -1738,7 +1690,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		String message ="createRequest failed " + createRequest.getMessage();
     		throw new IllegalArgumentException(message);
     	}
-    	try 
+    	try
         {
         	ch.createChannelGet(null, pvRequest);
 			fail("null ChannelGetRequester accepted");
@@ -1749,9 +1701,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
-		try 
+		try
         {
         	ch.createChannelGet(channelGetRequester, null);
 			fail("null pvRequest accepted");
@@ -1762,7 +1714,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 	}
 
 	private void channelGetTestNoConnection(Channel ch, boolean disconnect) throws Throwable
@@ -1777,14 +1729,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
 		channelGetRequester.waitAndCheckConnect(disconnect);
-		if (disconnect) 
+		if (disconnect)
 		{
 			//ch.disconnect();
 			ch.destroy();
 			channelGetRequester.syncGet(false, false);
 		}
 	}
-	
+
 	private void channelGetTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
     	CreateRequest createRequest = CreateRequest.create();
@@ -1798,14 +1750,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
 		channelGetRequester.waitAndCheckConnect();
-		
+
 		//assertEquals("get-test", channelGetRequester.pvStructure.getFullName());
-		
+
 		channelGetRequester.syncGet(false);
 		// only first bit must be set
 		assertEquals(1, channelGetRequester.bitSet.cardinality());
 		assertTrue(channelGetRequester.bitSet.get(0));
-		
+
 		channelGetRequester.syncGet(false);
 		// no changes
 		assertEquals(0, channelGetRequester.bitSet.cardinality());
@@ -1813,12 +1765,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelGetRequester.syncGet(true);
 		// no changes, again
 		assertEquals(0, channelGetRequester.bitSet.cardinality());
-		
+
 		channelGetRequester.channelGet.destroy();
 		// this must fail (callback with unsuccessful completion status)
 		channelGetRequester.syncGet(true, false);
 	}
-	
+
 	private void channelGetTestIntProcess(Channel ch, boolean share) throws Throwable
 	{
     	CreateRequest createRequest = CreateRequest.create();
@@ -1832,7 +1784,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
 		channelGetRequester.waitAndCheckConnect();
-		
+
 		//assertEquals("get-test", channelGetRequester.pvStructure.getFullName());
 		channelGetRequester.syncGet(false);
 		PVInt value = channelGetRequester.pvStructure.getIntField("value");
@@ -1843,17 +1795,17 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// only first bit must be set
 		assertEquals(1, channelGetRequester.bitSet.cardinality());
 		assertTrue(channelGetRequester.bitSet.get(0));
-		
-		// multiple tests 
+
+		// multiple tests
 		final int TIMES = 3;
 		for (int i = 1; i <= TIMES; i++)
 		{
 			int previousValue = value.get();
 			long previousTimestampSec = timestamp.getSecondsPastEpoch();
-			
+
 			// 2 seconds to have different timestamps
 			Thread.sleep(1000);
-			
+
 			channelGetRequester.syncGet(i == TIMES);
 			pvTimeStamp.get(timestamp);
 			// changes of value and timeStamp
@@ -1865,20 +1817,20 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// this must fail (callback with unsuccessful completion status)
 		channelGetRequester.syncGet(true, false);
 	}
-	
+
 	public void testChannelPut() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("valueOnly");
-	
+
 	    channelPutTestParameters(ch);
-	    
+
 		channelPutTestNoProcess(ch, false);
 		//channelPutTestNoProcess(ch, true);
-		
+
 		ch.destroy();
-		
+
 	    ch = syncCreateChannel("simpleCounter");
-		
+
 		channelPutTestIntProcess(ch, false);
 		//channelPutTestIntProcess(ch, true);
 
@@ -1892,7 +1844,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    // channel not yet connected
 		channelPutTestIntProcess(ch, false);
 	}
-	
+
 	private void channelPutTestParameters(Channel ch) throws Throwable
 	{
     	CreateRequest createRequest = CreateRequest.create();
@@ -1902,7 +1854,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		String message ="createRequest failed " + createRequest.getMessage();
     		throw new IllegalArgumentException(message);
     	}
-        try 
+        try
         {
         	ch.createChannelPut(null, pvRequest);
 			fail("null ChannelPutRequester accepted");
@@ -1913,9 +1865,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
-		try 
+		try
         {
         	ch.createChannelPut(channelPutRequester, null);
 			fail("null pvRequest accepted");
@@ -1926,7 +1878,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 	}
 
 	private void channelPutTestNoConnection(Channel ch, boolean disconnect) throws Throwable
@@ -1941,14 +1893,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
 		channelPutRequester.waitAndCheckConnect(disconnect);
-		if (disconnect) 
+		if (disconnect)
 		{
 			//ch.disconnect();
 			ch.destroy();
 			channelPutRequester.syncPut(false, null, null, false);
 		}
 	}
-	
+
 	private void channelPutTestNoProcess(Channel ch, boolean share) throws Throwable
 	{
     	CreateRequest createRequest = CreateRequest.create();
@@ -1961,18 +1913,18 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
 		channelPutRequester.waitAndCheckConnect();
-		
+
 		//assertEquals("put-test", channelPutRequester.pvStructure.getFullName());
 
 		channelPutRequester.syncGet();
-		
+
 		// set and get test
 		PVDouble value = channelPutRequester.pvStructure.getDoubleField("value");
 		assertNotNull(value);
 		final double INIT_VAL = 123.0;
 		value.put(INIT_VAL);
 		channelPutRequester.bitSet.set(value.getFieldOffset());
-		
+
 		channelPutRequester.syncPut(false, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 		// TODO should put bitSet be reset here
 		//assertEquals(0, channelPutRequester.bitSet.cardinality());
@@ -1990,7 +1942,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			assertEquals(INIT_VAL+2, value.get());
 		else
 			assertEquals(INIT_VAL, value.get());
-			
+
 		// now should change
 		value.put(INIT_VAL+1);
 		channelPutRequester.bitSet.set(value.getFieldOffset());
@@ -2018,18 +1970,18 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelPutRequesterImpl channelPutRequester = new ChannelPutRequesterImpl();
 		ch.createChannelPut(channelPutRequester, pvRequest);
 		channelPutRequester.waitAndCheckConnect();
-		
+
 		//assertEquals("put-test", channelPutRequester.pvStructure.getFullName());
 
 		channelPutRequester.syncGet();
-		
+
 		// set and get test
 		PVInt value = channelPutRequester.pvStructure.getIntField("value");
 		assertNotNull(value);
 		final int INIT_VAL = 3;
 		value.put(INIT_VAL);
 		channelPutRequester.bitSet.set(value.getFieldOffset());
-		
+
 		channelPutRequester.syncPut(false, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 		// TODO should put bitSet be reset here
 		//assertEquals(0, channelPutRequester.bitSet.cardinality());
@@ -2046,7 +1998,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 			assertEquals(INIT_VAL+4, value.get());
 		else
 			assertEquals(INIT_VAL+2, value.get());
-		
+
 		// destroy
 		channelPutRequester.syncPut(true, channelPutRequester.pvStructure, channelPutRequester.bitSet);
 
@@ -2058,36 +2010,36 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	public void testChannelGetField() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("simpleCounter");
-	
+
 		GetFieldRequesterImpl channelGetField = new GetFieldRequesterImpl();
-		
+
 		// get all
 		channelGetField.syncGetField(ch, null);
 		assertNotNull(channelGetField.field);
 		assertEquals(Type.structure, channelGetField.field.getType());
 		// TODO there is no name
 		// assertEquals(ch.getChannelName(), channelGetField.field.getFieldName());
-		
+
 		// value only
 		channelGetField.syncGetField(ch, "value");
 		assertNotNull(channelGetField.field);
 		assertEquals(Type.scalar, channelGetField.field.getType());
 
-		// non-existant
+		// non-existent
 		channelGetField.syncGetField(ch, "invalid", false);
 		assertNull(channelGetField.field);
-		
+
 		/*
 		ch.disconnect();
-		
+
 		channelGetField.syncGetField(ch, "value", false);
 		*/
-		
+
 		ch.destroy();
-		
+
 		channelGetField.syncGetField(ch, "value", false);
 	}
-	
+
 	public void testChannelProcess() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("simpleCounter");
@@ -2103,12 +2055,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest);
 		channelGetRequester.waitAndCheckConnect();
-		
+
 		// get initial state
 		channelGetRequester.syncGet(false);
 
 		// null requester test
-        try 
+        try
         {
         	ch.createChannelProcess(null, null);
 			fail("null ChannelProcessRequester accepted");
@@ -2119,16 +2071,16 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		// create process
 		ChannelProcessRequesterImpl channelProcessRequester = new ChannelProcessRequesterImpl();
 		ch.createChannelProcess(channelProcessRequester, null);
 		channelProcessRequester.waitAndCheckConnect();
-		
+
 		// there should be no changes
 		channelGetRequester.syncGet(false);
 		assertEquals(0, channelGetRequester.bitSet.cardinality());
-		
+
 		channelProcessRequester.syncProcess(false);
 
 		// there should be a change
@@ -2139,17 +2091,17 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelProcessRequesterImpl channelProcessRequester2 = new ChannelProcessRequesterImpl();
 		ch.createChannelProcess(channelProcessRequester2, null);
 		channelProcessRequester2.waitAndCheckConnect();
-		
+
 		// and process
 		channelProcessRequester2.syncProcess(false);
 
 		// there should be a change
 		channelGetRequester.syncGet(false);
 		assertEquals(1, channelGetRequester.bitSet.cardinality());
-		
+
 		// TODO since there is no good error handling I do not know that creating of second process failed !!!
-		// however it shoudn't, right!!!
-		
+		// however it shouldn't, right!!!
+
 		// check if process works with destroy option
 		channelProcessRequester.syncProcess(true);
 
@@ -2160,20 +2112,20 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		channelProcessRequester.channelProcess.destroy();
 		// this must fail (callback with unsuccessful completion status)
 		channelProcessRequester.syncProcess(true, false);
-		
+
 		channelProcessTestNoConnection(ch, true);
 		channelProcessTestNoConnection(ch, false);
 		/*
 		ch.destroy();
 		channelProcessTestNoConnection(ch, false);
 		*/
-		
+
 	    ch = syncCreateChannel("simpleCounter", false);
 		// channel not yet connected
 		channelProcessRequester = new ChannelProcessRequesterImpl();
 		ch.createChannelProcess(channelProcessRequester, null);
 		channelProcessRequester.waitAndCheckConnect();
-		
+
 	}
 
 	private void channelProcessTestNoConnection(Channel ch, boolean disconnect) throws Throwable
@@ -2181,7 +2133,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelProcessRequesterImpl channelProcessRequester = new ChannelProcessRequesterImpl();
 		ch.createChannelProcess(channelProcessRequester, null);
 		channelProcessRequester.waitAndCheckConnect(disconnect);
-		if (disconnect) 
+		if (disconnect)
 		{
 			//ch.disconnect();
 			ch.destroy();
@@ -2199,10 +2151,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester, pvRequest, "get-process-test", true, true, null);
 		channelGetRequester.waitAndCheckConnect();
-		
+
 		// get initial state
 		channelGetRequester.syncGet(false);
-		
+
 		// there should be a change
 		channelGetRequester.syncGet(false);
 		assertEquals(1, channelGetRequester.bitSet.cardinality());
@@ -2211,7 +2163,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelGetRequesterImpl channelGetRequester2 = new ChannelGetRequesterImpl();
 		ch.createChannelGet(channelGetRequester2, pvRequest, "get-process-test-2", true, true, null);
 		channelGetRequester2.waitAndCheckConnect();
-		
+
 		// get initial state
 		channelGetRequester2.syncGet(false);
 
@@ -2220,39 +2172,39 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		assertEquals(1, channelGetRequester2.bitSet.cardinality());
 
 		// TODO since there is no good error handling I do not know that creating of second process failed !!!
-		// however it shoudn't, right!!!
+		// however it shouldn't, right!!!
 	}
 	*/
-	
+
 	public void testChannelPutGet() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("valueOnly");
 
 	    channelPutGetTestParameters(ch);
-	
+
 		channelPutGetTestNoProcess(ch, false);
 		//channelPutGetTestNoProcess(ch, true);
-		
+
 		ch.destroy();
-		
+
 	    ch = syncCreateChannel("simpleCounter");
-		
+
 		channelPutGetTestIntProcess(ch, false);
 		//channelPutGetTestIntProcess(ch, true);
 
 		channelPutGetTestNoConnection(ch, true);
 		channelPutGetTestNoConnection(ch, false);
-		
+
 		/*
 		ch.destroy();
 		channelPutGetTestNoConnection(ch, false);
 		*/
-		
+
 	    ch = syncCreateChannel("simpleCounter", false);
 		// channel not yet connected
 		channelPutGetTestIntProcess(ch, false);
 	}
-	
+
 	private void channelPutGetTestParameters(Channel ch) throws Throwable
 	{
        	CreateRequest createRequest = CreateRequest.create();
@@ -2262,7 +2214,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		String message ="createRequest failed " + createRequest.getMessage();
     		throw new IllegalArgumentException(message);
     	}
-        try 
+        try
         {
         	ch.createChannelPutGet(null, pvRequest);
 			fail("null ChannelProcessRequester accepted");
@@ -2273,9 +2225,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
-		try 
+		try
         {
         	ch.createChannelPutGet(channelPutGetRequester, null);
 			fail("null pvRequest accepted");
@@ -2300,7 +2252,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
 		channelPutGetRequester.waitAndCheckConnect(disconnect);
-		if (disconnect) 
+		if (disconnect)
 		{
 			//ch.disconnect();
 			ch.destroy();
@@ -2322,25 +2274,25 @@ public abstract class ChannelAccessIFTest extends TestCase {
         ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
 		channelPutGetRequester.waitAndCheckConnect();
-		
+
 		//assertEquals("put-test", channelPutGetRequester.pvPutStructure.getFullName());
 		//assertEquals("get-test", channelPutGetRequester.pvGetStructure.getFullName());
 
 		channelPutGetRequester.syncGetPut();
 		channelPutGetRequester.syncGetGet();
-		
+
 		// set and get test
 		PVDouble putValue = channelPutGetRequester.pvPutStructure.getDoubleField("value");
 		assertNotNull(putValue);
 		final double INIT_VAL = 321.0;
 		putValue.put(INIT_VAL);
-		
+
 		PVDouble getValue = channelPutGetRequester.pvGetStructure.getDoubleField("value");
 		assertNotNull(getValue);
 
 		BitSet entireStructure = new BitSet(channelPutGetRequester.pvPutStructure.getNumberFields());
 		entireStructure.set(0);
-			
+
 		channelPutGetRequester.syncPutGet(false, channelPutGetRequester.pvPutStructure, entireStructure);
 		assertEquals(INIT_VAL, getValue.get());
 
@@ -2352,11 +2304,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// test get-put
 		channelPutGetRequester.syncGetPut();
 		// TODO
-		
+
 		// test get-get
 		channelPutGetRequester.syncGetGet();
 		// TODO
-		
+
 		// destroy
 		channelPutGetRequester.syncPutGet(true, channelPutGetRequester.pvPutStructure, entireStructure);
 
@@ -2377,7 +2329,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
         ChannelPutGetRequesterImpl channelPutGetRequester = new ChannelPutGetRequesterImpl();
 		ch.createChannelPutGet(channelPutGetRequester, pvRequest);
 		channelPutGetRequester.waitAndCheckConnect();
-		
+
 		//assertEquals("put-test", channelPutGetRequester.pvPutStructure.getFullName());
 		//assertEquals("get-test", channelPutGetRequester.pvGetStructure.getFullName());
 
@@ -2387,13 +2339,13 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		BitSet entireStructure = new BitSet(channelPutGetRequester.pvPutStructure.getNumberFields());
 		entireStructure.set(0);
 
-		
+
 		// set and get test
 		PVInt putValue = channelPutGetRequester.pvPutStructure.getIntField("value");
 		assertNotNull(putValue);
 		final int INIT_VAL = 3;
 		putValue.put(INIT_VAL);
-		
+
 		PVInt getValue = channelPutGetRequester.pvGetStructure.getIntField("value");
 		assertNotNull(getValue);
 		PVTimeStamp pvTimeStamp = PVTimeStampFactory.create();
@@ -2402,19 +2354,19 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// get all
 		channelPutGetRequester.syncGetGet();
         pvTimeStamp.get(timestamp);
-		
-		// multiple tests 
+
+		// multiple tests
 		final int TIMES = 3;
 		for (int i = 1; i <= TIMES; i++)
 		{
 			int previousValue = getValue.get();
 			long previousTimestampSec = timestamp.getSecondsPastEpoch();
-			
+
 			putValue.put((previousValue + 1)%11);
-			
+
 			// 2 seconds to have different timestamps
 			Thread.sleep(1500);
-			
+
 			channelPutGetRequester.syncPutGet(i == TIMES, channelPutGetRequester.pvPutStructure, entireStructure);
 	        pvTimeStamp.get(timestamp);
 
@@ -2427,24 +2379,24 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		// this must fail (callback with unsuccessful completion status)
 		channelPutGetRequester.syncPutGet(true, channelPutGetRequester.pvPutStructure, entireStructure, false);
 	}
-	
+
 	public void testChannelRPC() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("sum");
 
 	    channelRPCTestParameters(ch);
-	
+
 		channelRPCTest(ch);
-		
+
 		channelRPCTestNoConnection(ch, true);
 		channelRPCTestNoConnection(ch, false);
 
-		
+
 		ch = syncCreateChannel("sum", false);
 		// channel not yet connected
 		channelRPCTest(ch);
 	}
-	
+
 	private void channelRPCTestParameters(Channel ch) throws Throwable
 	{
     	CreateRequest createRequest = CreateRequest.create();
@@ -2454,7 +2406,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		String message ="createRequest failed " + createRequest.getMessage();
     		throw new IllegalArgumentException(message);
     	}
-        try 
+        try
         {
         	ch.createChannelRPC(null, pvRequest);
 			fail("null ChannelRPCRequesterImpl accepted");
@@ -2465,10 +2417,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
 		/*
 		ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl();
-		try 
+		try
         {
         	ch.createRPC(channelRPCRequester, null);
 			fail("null pvRequest accepted");
@@ -2493,30 +2445,30 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	        fields[1] = fieldCreate.createScalar(ScalarType.pvDouble);
 	        args = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] { "a", "b" }, fields));
 		}
-		
+
 		args.getDoubleField("a").put(12.3);
 		args.getDoubleField("b").put(45.6);
-		
+
 		return args;
 	}
-	
+
     private void channelRPCTest(Channel ch)
     {
     	PVStructure pvRequest = null; //CreateRequestFactory.createRequest("",ch);
     	PVStructure arguments = createRPCArguments();
-    	
+
 		ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl();
 		ch.createChannelRPC(channelRPCRequester, pvRequest);
 		channelRPCRequester.waitAndCheckConnect();
-		
+
 		PVStructure result = channelRPCRequester.syncRPC(arguments, false);
 		assertNotNull(result);
 		PVDouble c = result.getDoubleField("c");
 		assertNotNull(c);
 		assertEquals(12.3+45.6, c.get());
-		
+
 		channelRPCRequester.channelRPC.destroy();
-		
+
 		channelRPCRequester.syncRPC(arguments, false, false);
     }
 
@@ -2524,11 +2476,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	{
     	PVStructure pvRequest = null; //CreateRequestFactory.createRequest("",ch);
     	PVStructure arguments = createRPCArguments();
-    	
+
 		ChannelRPCRequesterImpl channelRPCRequester = new ChannelRPCRequesterImpl();
 		ch.createChannelRPC(channelRPCRequester, pvRequest);
 		channelRPCRequester.waitAndCheckConnect(disconnect);
-		if (disconnect) 
+		if (disconnect)
 		{
 			//ch.disconnect();
 			ch.destroy();
@@ -2545,7 +2497,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		String message ="createRequest failed " + createRequest.getMessage();
     		throw new IllegalArgumentException(message);
     	}
-        try 
+        try
         {
         	ch.createChannelArray(null, pvRequest);
 			fail("null ChannelArrayRequesterImpl accepted");
@@ -2556,10 +2508,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
-		
+
+
 		ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
-		try 
+		try
         {
         	ch.createChannelArray(channelArrayRequester, null);
 			fail("null pvRequest accepted");
@@ -2576,7 +2528,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	public void testChannelArray() throws Throwable
 	{
 	    Channel ch = syncCreateChannel("arrayDouble");
-	    
+
 	    channelArrayTestParameters(ch);
 
 	    // TODO !!
@@ -2588,11 +2540,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		String message ="createRequest failed " + createRequest.getMessage();
     		throw new IllegalArgumentException(message);
     	}
-    	
+
     	ChannelArrayRequesterImpl channelArrayRequester = new ChannelArrayRequesterImpl();
 	    ch.createChannelArray(channelArrayRequester, pvRequest);
 	    channelArrayRequester.waitAndCheckConnect();
-	    
+
 	    // test get
 	    channelArrayRequester.syncGet(true, 1, 2, 1);
 	    PVDoubleArray array = (PVDoubleArray)channelArrayRequester.pvArray;
@@ -2601,21 +2553,21 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    assertEquals(2, count);
 	    assertEquals(2.2, data.data[0]);
 	    assertEquals(3.3, data.data[1]);
-	 
+
 	    ch.destroy();
 
 		channelArrayRequester.channelArray.destroy();
 		// this must fail (callback with unsuccessful completion status)
 		channelArrayRequester.syncGet(true, 1, 2, 1, false);
-	    
+
     	//pvFieldName.put("value");
 	    ch = syncCreateChannel("arrayDouble");
 	    channelArrayRequester = new ChannelArrayRequesterImpl();
 	    ch.createChannelArray(channelArrayRequester, pvRequest);
 	    channelArrayRequester.waitAndCheckConnect();
-	    
+
 	    // test put
-	    final double[] ARRAY_VALUE = new double[] { 1.1, 2.2, 3.3, 4.4, 5.5 }; 
+	    final double[] ARRAY_VALUE = new double[] { 1.1, 2.2, 3.3, 4.4, 5.5 };
 	    channelArrayRequester.syncGet(false, 0, ARRAY_VALUE.length /*0*/, 1); // this allows multiple runs on the same JavaIOC
 	    PVDoubleArray doubleArray = (PVDoubleArray)channelArrayRequester.pvArray;
 	    doubleArray.put(0, ARRAY_VALUE.length, ARRAY_VALUE, 0);
@@ -2626,7 +2578,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    assertEquals(ARRAY_VALUE.length, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
-	    
+
 	    channelArrayRequester.syncPut(false, channelArrayRequester.pvArray, 4, 0, 1);	// result: 1.1, 2.2, 3.3, 4.4, 1.1, 2.2, 3.3, 4.4, 5.5
 	    channelArrayRequester.syncGet(false, 3, 3, 1);
 	    count = doubleArray.get(0, 3, doubleData);
@@ -2634,14 +2586,14 @@ public abstract class ChannelAccessIFTest extends TestCase {
 	    final double[] EXPECTED_VAL = new double[] { 4.4, 1.1, 2.2 };
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(EXPECTED_VAL[i], doubleData.data[i]);
-	    
+
 	    channelArrayRequester.syncSetLength(false, 3);  // result: 1.1, 2.2, 3.3
 	    channelArrayRequester.syncGet(false, 0, 0, 1);
 	    count = doubleArray.get(0, 1000, doubleData);
 	    assertEquals(3, count);
 	    for (int i = 0; i < count; i++)
 	    	assertEquals(ARRAY_VALUE[i], doubleData.data[i]);
-	    
+
 	    // big array test
 	    final int BIG_CAPACITY = 10000;
 	    channelArrayRequester.syncSetLength(false, BIG_CAPACITY);
@@ -2655,8 +2607,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	    // test setLength and  getLength
 	    final int NEW_LEN = BIG_CAPACITY/2;
-	    channelArrayRequester.syncSetLength(false, NEW_LEN);	
-	    channelArrayRequester.syncGetLength(false);	
+	    channelArrayRequester.syncSetLength(false, NEW_LEN);
+	    channelArrayRequester.syncGetLength(false);
 	    assertEquals(NEW_LEN, channelArrayRequester.length);
 
 		channelArrayTestNoConnection(ch, true);
@@ -2665,7 +2617,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		ch.destroy();
 		channelArrayTestNoConnection(ch, false);
 		*/
-		
+
 	    ch = syncCreateChannel("arrayDouble", false);
 	    // channel not yet connected
 	    channelArrayRequester = new ChannelArrayRequesterImpl();
@@ -2688,7 +2640,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
     	ch.createChannelArray(channelArrayRequester, pvRequest);
 		channelArrayRequester.waitAndCheckConnect(disconnect);
-		if (disconnect) 
+		if (disconnect)
 		{
 			//ch.disconnect();
 			ch.destroy();
@@ -2711,7 +2663,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		throw new IllegalArgumentException(message);
     	}
         // null requester test
-        try 
+        try
         {
         	ch.createMonitor(null, pvRequest);
 			fail("null MonitorRequester accepted");
@@ -2722,10 +2674,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		} catch (Throwable th) {
 			fail("other than IllegalArgumentException exception was thrown");
 		}
-		
+
         // null pvRequest test
 	    ChannelMonitorRequesterImpl channelMonitorRequester = new ChannelMonitorRequesterImpl();
-        try 
+        try
         {
         	ch.createMonitor(channelMonitorRequester, null);
 			fail("null pvRequest accepted");
@@ -2744,8 +2696,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		//channelMonitorTest(2);
 		channelMonitorTest(1);
 //		channelMonitorTest(0);
-		
-		
+
+
         ch = syncCreateChannel("counter", false);
         // channel not yet connected
         channelMonitorRequester = new ChannelMonitorRequesterImpl();
@@ -2771,10 +2723,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	    // not start, no monitors
 	    assertEquals(0, channelMonitorRequester.monitorCounter.get());
-	    
+
 	    synchronized (channelMonitorRequester) {
 		    channelMonitorRequester.channelMonitor.start();
-		    
+
 		    if (channelMonitorRequester.monitorCounter.get() == 0)
 		    	channelMonitorRequester.wait(getTimeoutMs());
 		    //assertEquals("monitor-test", channelMonitorRequester.pvStructure.getFullName());
@@ -2785,8 +2737,8 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		    PVField valueField = channelMonitorRequester.pvStructure.getSubField("value");
 		    PVField previousValue = pvDataCreate.createPVField(valueField.getField());
 		    convert.copy(valueField, previousValue);
-		    assertTrue(valueField.equals(previousValue));
-		    
+			assertEquals(valueField, previousValue);
+
 		    // all subsequent only timestamp and value
 		    for (int i = 2; i < 5; i++) {
 			    channelMonitorRequester.wait(getTimeoutMs());
@@ -2803,9 +2755,9 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				    assertTrue(channelMonitorRequester.changeBitSet.get(1));
 				    assertTrue(channelMonitorRequester.changeBitSet.get(4));
 			    }
-			    
+
 			    valueField = channelMonitorRequester.pvStructure.getSubField("value");
-			    assertFalse(valueField.equals(previousValue));
+				assertNotEquals(valueField, previousValue);
 			    convert.copy(valueField, previousValue);
 		    }
 
@@ -2817,10 +2769,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		    assertEquals(mc, channelMonitorRequester.monitorCounter.get());
 	    }
 	    ch.destroy();
-	}	
-	
-	// ----------------- stress tests -------------- 
-	
+	}
+
+	// ----------------- stress tests --------------
+
     public void testStressConnectDisconnect() throws Throwable
     {
     	final int COUNT = 300;
@@ -2830,7 +2782,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		channel.destroy();
     	}
     }
-	
+
     public void testStressConnectGetDisconnect() throws Throwable
     {
     	final int COUNT = 300;
@@ -2848,7 +2800,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     		channel.createChannelGet(channelGetRequesterImpl, pvRequest);
     		channelGetRequesterImpl.waitAndCheckConnect();
     		channelGetRequesterImpl.syncGet(true);
-    		
+
     		channel.destroy();
     	}
     }
@@ -2856,7 +2808,7 @@ public abstract class ChannelAccessIFTest extends TestCase {
     public void testStressMonitorAndProcess() throws Throwable
     {
         Channel ch = syncCreateChannel("simpleCounter");
-		
+
     	CreateRequest createRequest = CreateRequest.create();
 		String request = "record[queueSize=3]field(timeStamp,value,alarm.severity.choices)";
     	PVStructure pvRequest = createRequest.createRequest(request);
@@ -2870,10 +2822,10 @@ public abstract class ChannelAccessIFTest extends TestCase {
 
 	    // not start, no monitors
 	    assertEquals(0, channelMonitorRequester.monitorCounter.get());
-	    
+
 	    synchronized (channelMonitorRequester) {
 		    channelMonitorRequester.channelMonitor.start();
-		    
+
 		    if (channelMonitorRequester.monitorCounter.get() == 0)
 		    	channelMonitorRequester.wait(getTimeoutMs());
 		    assertEquals(1, channelMonitorRequester.monitorCounter.get());
@@ -2894,11 +2846,11 @@ public abstract class ChannelAccessIFTest extends TestCase {
 				assertEquals(i, channelMonitorRequester.monitorCounter.get());
 			}
 		}
-	    
+
     }
-	
-	// ----------------- ... and at last destroy() -------------- 
-	
+
+	// ----------------- ... and at last destroy() --------------
+
 	public void testDestroy() throws Throwable
 	{
 		final ChannelProvider provider = getChannelProvider();
@@ -2912,12 +2864,12 @@ public abstract class ChannelAccessIFTest extends TestCase {
 		provider.destroy();
 	}
 
-	// last here, always pefromed last
+	// last here, always performed last
 	public void testFinalize() throws Throwable
 	{
 		internalFinalize();
 	}
-	
+
 	protected void internalFinalize() throws Throwable
 	{
 		// noop

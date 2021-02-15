@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -43,14 +43,14 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
     private static final Status getInitialStatus = statusCreate.createStatus(StatusType.ERROR, "get initial failed", null);
 
     private final MonitorRequester monitorRequester;
-    
+
     private final V3Channel v3Channel;
     private final gov.aps.jca.Channel jcaChannel;
     private final V3ChannelStructure v3ChannelStructure;
-   
+
     private volatile Monitor monitor = null;
     private volatile boolean isDestroyed = false;
-    
+
     private volatile BitSet overrunBitSet;
     private volatile MonitorElement monitorElement;
 
@@ -68,7 +68,7 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
         this.pvRequest = pvRequest;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
-        
+
         jcaChannel = v3Channel.getJCAChannel();
         try {
             jcaChannel.addConnectionListener(this);
@@ -78,13 +78,13 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
             destroy();
             return;
         };
-        
+
 		// there is a possible run condition, but it's OK
 		if (jcaChannel.getConnectionState() == Channel.CONNECTED)
 			connectionChanged(new ConnectionEvent(jcaChannel, true));
-        
+
     }
-    
+
     protected void initializeMonitor()
     {
         if(v3ChannelStructure.createPVStructure(pvRequest,true)==null) {
@@ -106,7 +106,7 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
         overrunBitSet = new BitSet(pvStructure.getNumberFields());
         monitorElement = new MonitorElementImpl(pvStructure,v3ChannelStructure.getBitSet(),overrunBitSet);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.ioc.ca.ChannelMonitor#destroy()
      */
@@ -165,7 +165,6 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
     /* (non-Javadoc)
      * @see org.epics.pvdata.monitor.Monitor#poll()
      */
-    @Override
     public MonitorElement poll() {
         if(v3ChannelStructure.getBitSet().nextSetBit(0)<0) return null;
         return monitorElement;
@@ -173,7 +172,6 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
     /* (non-Javadoc)
      * @see org.epics.pvdata.monitor.Monitor#release(org.epics.pvdata.monitor.MonitorElement)
      */
-    @Override
     public void release(MonitorElement monitorElement) {
         v3ChannelStructure.getBitSet().clear();
     }
@@ -199,12 +197,12 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
     	if (event.isConnected())
     		initializeMonitor();
     }
-    
+
     private static class MonitorElementImpl implements MonitorElement {
         private final PVStructure pvStructure;
         private final BitSet changedBitSet;
         private final BitSet overrunBitSet;
-        
+
         MonitorElementImpl(PVStructure pvStructure,BitSet changedBitSet, BitSet overrunBitSet) {
             this.pvStructure = pvStructure;
             this.changedBitSet = changedBitSet;
@@ -213,24 +211,21 @@ public class BaseV3Monitor implements org.epics.pvdata.monitor.Monitor,MonitorLi
         /* (non-Javadoc)
          * @see org.epics.pvdata.monitor.MonitorElement#getChangedBitSet()
          */
-        @Override
         public BitSet getChangedBitSet() {
             return changedBitSet;
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.monitor.MonitorElement#getOverrunBitSet()
          */
-        @Override
         public BitSet getOverrunBitSet() {
             return overrunBitSet;
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.monitor.MonitorElement#getPVStructure()
          */
-        @Override
         public PVStructure getPVStructure() {
             return pvStructure;
         }
-        
+
     }
 }

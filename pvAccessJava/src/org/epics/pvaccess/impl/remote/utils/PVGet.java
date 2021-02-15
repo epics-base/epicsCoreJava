@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -8,6 +8,7 @@ package org.epics.pvaccess.impl.remote.utils;
 import java.io.PrintStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +76,7 @@ public class PVGet {
 
 	private static final float DEFAULT_TIMEOUT = 3.0f;	// sec
 	private static final String DEFAULT_REQUEST = "field(value)";
-	
+
 	// TODO pvDataJava is missing output of a value only !!!
 	private static void terseScalar(PrintStream o, PVScalar scalar)
 	{
@@ -121,7 +122,7 @@ public class PVGet {
 			throw new RuntimeException("unsupported scalar_t");
 		}
 	}
-	
+
 	private static void terse(PrintStream o, PVField pv, char separator)
 	{
 		switch (pv.getField().getType())
@@ -148,7 +149,7 @@ public class PVGet {
 			throw new RuntimeException("unsupported field type");
 		}
 	}
-	
+
 	private static void terseStructure(PrintStream o, PVStructure pvStructure, char separator)
 	{
 		if (pvStructure == null)
@@ -156,7 +157,7 @@ public class PVGet {
 			o.print("(null)");
 			return;
 		}
-		
+
 		PVField[] fieldsData = pvStructure.getPVFields();
 		boolean first = true;
 		for (PVField fieldData : fieldsData)
@@ -165,7 +166,7 @@ public class PVGet {
 				first = false;
 			else
 				o.print(separator);
-			
+
 			terse(o, fieldData, separator);
 		}
 	}
@@ -177,7 +178,7 @@ public class PVGet {
 			o.print("(null)");
 			return;
 		}
-		
+
 		terse(o, pvUnion.get(), separator);
 	}
 
@@ -195,13 +196,13 @@ public class PVGet {
 			o.print(length);
 			o.print(separator);
 		}
-		
+
 		// TODO direct access to an element is missing in pvDataJava !!!
 		// convert to string array as workaround
-		
+
 		String[] values = new String[length];
 		ConvertFactory.getConvert().toStringArray(pvArray, 0, length, values, 0);
-		
+
 		boolean first = true;
 		for (String value : values)
 		{
@@ -209,7 +210,7 @@ public class PVGet {
 				first = false;
 			else
 				o.print(separator);
-			
+
 			o.print(value);
 		}
 	}
@@ -231,7 +232,7 @@ public class PVGet {
 
 		StructureArrayData sad = new StructureArrayData();
 		pvArray.get(0, length, sad);
-		
+
 	    boolean first = true;
 	    for (PVStructure pvStructure : sad.data)
 	    {
@@ -261,7 +262,7 @@ public class PVGet {
 
 		UnionArrayData sad = new UnionArrayData();
 		pvArray.get(0, length, sad);
-		
+
 	    boolean first = true;
 	    for (PVUnion pvUnion : sad.data)
 	    {
@@ -275,7 +276,7 @@ public class PVGet {
 	}
 
 	enum PrintMode { ValueOnlyMode, StructureMode, TerseMode };
-	
+
 	public static void usage()
 	{
 	    System.err.println (
@@ -287,14 +288,14 @@ public class PVGet {
 		    "  -t:                Terse mode - print only value, without names\n" +
 	//	    "  -m:                Monitor mode\n" +
 	//	    "  -q:                Quiet mode, print only error messages\n" +
-		    "  -d:                Enable debug output\n" + 
+		    "  -d:                Enable debug output\n" +
 		    "  -F <ofs>:          Use <ofs> as an alternate output field separator\n" // +
 	//	    "  -f <input file>:   Use <input file> as an input that provides a list PV name(s) to be read, use '-' for stdin\n" +
 	//	    "  -c:                Wait for clean shutdown and report used instance count (for expert users)\n" +
 	//	    "\nexample: pvget double01\n"
 	    );
 	}
-	
+
     public static void main(String[] args) throws Throwable
     {
 
@@ -372,15 +373,14 @@ public class PVGet {
 		}
 
 		List<String> pvs = new ArrayList<String>(nPvs);
-		for (int i = g.getOptind(); i < args.length; i++)
-			pvs.add(args[i]);
+		pvs.addAll(Arrays.asList(args).subList(g.getOptind(), args.length));
 
         // initialize console logging
         ConsoleLogHandler.defaultConsoleLogging(
         		debug || Integer.getInteger(PVAConstants.PVACCESS_DEBUG, 0) > 0 ? Level.ALL : Level.INFO
         				);
         Logger logger = Logger.getLogger(PVGet.class.getName());
-        
+
         // setup pvAccess client
         org.epics.pvaccess.ClientFactory.start();
 
@@ -388,7 +388,7 @@ public class PVGet {
         ChannelProvider channelProvider =
         	ChannelProviderRegistryFactory.getChannelProviderRegistry()
         		.getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
-        
+
         // create channels
         List<Channel> channels = new ArrayList<Channel>(pvs.size());
         for (String channelName : pvs)
@@ -397,7 +397,7 @@ public class PVGet {
             Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
             channels.add(channel);
         }
-       
+
         CreateRequest createRequest = CreateRequest.create();
         PVStructure pvRequest = createRequest.createRequest(request);
         if (pvRequest != null)
@@ -406,11 +406,11 @@ public class PVGet {
 	        if (monitor)
 	        {
 		        CountDownLatch doneSignal = new CountDownLatch(channels.size());
-		        
+
 		        // do get
 		        for (Channel channel : channels)
 		        {
-			        
+
 			        MonitorRequester monitorRequester =
 			        		new MonitorRequesterImpl(logger, channel, doneSignal, printMode, fieldSeparator);
 		        	channel.createMonitor(monitorRequester, pvRequest);
@@ -425,11 +425,11 @@ public class PVGet {
 		        for (Channel channel : channels)
 		        {
 			        CountDownLatch doneSignal = new CountDownLatch(1);
-			        
+
 			        ChannelGetRequester channelGetRequester =
 			        		new ChannelGetRequesterImpl(logger, channel, doneSignal, printMode, fieldSeparator);
 		        	channel.createChannelGet(channelGetRequester,pvRequest);
-		
+
 		        	// wait up-to 3 seconds for completion
 		        	if (!doneSignal.await((long)(DEFAULT_TIMEOUT*1000), TimeUnit.MILLISECONDS))
 		        		logger.info("[" + channel.getChannelName() + "] connection timeout");
@@ -440,11 +440,11 @@ public class PVGet {
         {
         	logger.info("createRequest failed " + createRequest.getMessage());
         }
-        
+
         // stop pvAccess client
         org.epics.pvaccess.ClientFactory.stop();
     }
-    
+
     private static void printData(Channel channel,
 			PrintMode printMode, char fieldSeparator, PVStructure pvStructure) {
 		if (printMode == PrintMode.ValueOnlyMode)
@@ -469,9 +469,9 @@ public class PVGet {
 						System.out.printf("%-30s", channel.getChannelName());
 					else
 						System.out.print(channel.getChannelName());
-					
+
 					System.out.print(fieldSeparator);
-					
+
 					terse(System.out, value, fieldSeparator);
 					System.out.println();
 				}
@@ -494,28 +494,24 @@ public class PVGet {
     		this.logger = logger;
     	}
 
-		@Override
 		public String getRequesterName() {
 			return getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			logger.log(LoggingUtils.toLevel(messageType), message);
 		}
 
-		@Override
 		public void channelCreated(Status status, Channel channel) {
 			logger.fine("Channel '" + channel.getChannelName() + "' created with status: " + status + ".");
 		}
-		
-		@Override
+
 		public void channelStateChange(Channel channel, ConnectionState connectionState) {
 			logger.fine("Channel '" + channel.getChannelName() + "' " + connectionState + ".");
 		}
-    	
+
     }
-    
+
     static class ChannelGetRequesterImpl implements ChannelGetRequester
     {
     	private final Logger logger;
@@ -523,7 +519,7 @@ public class PVGet {
     	private final CountDownLatch doneSignaler;
     	private final PrintMode printMode;
     	private final char fieldSeparator;
-    	
+
     	public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler,
     			PrintMode printMode, char fieldSeparator)
     	{
@@ -534,17 +530,14 @@ public class PVGet {
     		this.fieldSeparator = fieldSeparator;
     	}
 
-		@Override
 		public String getRequesterName() {
 			return getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			logger.log(LoggingUtils.toLevel(messageType), message);
 		}
-		
-		@Override
+
 		public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
 			logger.fine("ChannelGet for '" + channel.getChannelName() + "' connected with status: " + status + ".");
 			if (status.isSuccess())
@@ -556,17 +549,16 @@ public class PVGet {
 				doneSignaler.countDown();
 		}
 
-		@Override
 		public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet changedBitSet) {
 			logger.fine("getDone for '" + channel.getChannelName() + "' called with status: " + status + ".");
 
 			if (status.isSuccess())
 				printData(channel, printMode, fieldSeparator, pvStructure);
-			
+
 			doneSignaler.countDown();
 		}
     }
-    
+
     static class MonitorRequesterImpl implements MonitorRequester
     {
     	private final Logger logger;
@@ -574,7 +566,7 @@ public class PVGet {
     	private final CountDownLatch doneSignaler;
     	private final PrintMode printMode;
     	private final char fieldSeparator;
-    	
+
     	public MonitorRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler,
     			PrintMode printMode, char fieldSeparator)
     	{
@@ -584,18 +576,15 @@ public class PVGet {
     		this.printMode = printMode;
     		this.fieldSeparator = fieldSeparator;
     	}
-    	
-		@Override
+
 		public String getRequesterName() {
 			return getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			logger.log(LoggingUtils.toLevel(messageType), message);
 		}
-		
-		@Override
+
 		public void monitorConnect(Status status, Monitor monitor, Structure structure) {
 			logger.fine("Monitor for '" + channel.getChannelName() + "' connected with status: " + status + ".");
 			if (status.isSuccess())
@@ -607,13 +596,12 @@ public class PVGet {
 				{
 					logger.fine("Monitor::start() for '" + channel.getChannelName() + "' status: " + status + ".");
 					doneSignaler.countDown();
-				}	
+				}
 			}
 			else
 				doneSignaler.countDown();
 		}
-		
-		@Override
+
 		public void monitorEvent(Monitor monitor) {
 			MonitorElement element;
 			while ((element = monitor.poll()) != null)
@@ -623,8 +611,7 @@ public class PVGet {
 				monitor.release(element);
 			}
 		}
-		
-		@Override
+
 		public void unlisten(Monitor monitor) {
 			logger.log(Level.FINE, "unlisten");
 			doneSignaler.countDown();

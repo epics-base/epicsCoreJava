@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2020 Facility for Rare Isotope Beams
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,6 +29,8 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -40,12 +42,10 @@ import java.util.Date;
  */
 
 public class GsonDateHandler implements JsonSerializer<Date>, JsonDeserializer<Date> {
-    @Override
     public JsonElement serialize(Date src, Type typeOfSrc, JsonSerializationContext context) {
-        return new JsonPrimitive(src.toInstant().toEpochMilli());
+        return new JsonPrimitive(new Instant(src).getMillis());
     }
 
-    @Override
     public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         return new Date(json.getAsJsonPrimitive().getAsLong());
     }

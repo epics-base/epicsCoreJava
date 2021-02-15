@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,7 +10,7 @@ package org.epics.util.array;
  *
  * @author Gabriele Carcassi
  */
-public abstract class ListBoolean {
+public abstract class ListBoolean extends AbstractCollection {
 
     /**
      * Returns the element at the specified position in this list.

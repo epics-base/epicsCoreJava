@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this disctibution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.Requester;
  *
  */
 public interface Channel extends Requester{
-	
+
 	/**
 	 * Channel connection status.
 	 */
@@ -146,7 +146,7 @@ public interface Channel extends Requester{
     Monitor createMonitor(
         MonitorRequester monitorRequester,
         PVStructure pvRequest);
-    
+
     /**
      * Create a ChannelArray.
      * @param channelArrayRequester The ChannelArrayRequester

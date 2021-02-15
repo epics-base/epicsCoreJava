@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -17,15 +17,13 @@ public class IntArrayField implements NumericArrayField {
     public IntArrayField(int[] backendArray) {
         this.backendArray = backendArray;
     }
-    
+
     int[] backendArray;
 
-    @Override
     public ArrayInteger get() {
         return unmodifiableListInt(backendArray);
     }
 
-    @Override
     public void put(int index, ListNumber data) {
         toListInt(backendArray).setAll(index, data);
     }

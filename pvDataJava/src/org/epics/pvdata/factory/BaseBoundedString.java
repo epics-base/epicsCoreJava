@@ -18,7 +18,7 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BaseBoundedString extends BaseScalar implements BoundedString {
 
 	public final int maxLength;
-	
+
 	/**
 	 * Constructor
 	 * @param maxLength The maximum length the string can have.
@@ -28,7 +28,7 @@ public class BaseBoundedString extends BaseScalar implements BoundedString {
 
 		if (maxLength <= 0)
 			throw new IllegalArgumentException("maxLength <= 0");
-		
+
 		this.maxLength = maxLength;
 	}
 
@@ -53,7 +53,6 @@ public class BaseBoundedString extends BaseScalar implements BoundedString {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.BoundedString#getMaximumLength()
 	 */
-	@Override
 	public int getMaximumLength() {
 		return maxLength;
 	}
@@ -78,6 +77,4 @@ public class BaseBoundedString extends BaseScalar implements BoundedString {
 		final BaseBoundedString other = (BaseBoundedString) obj;
 		return (maxLength == other.maxLength);
 	}
-	
-	
 }

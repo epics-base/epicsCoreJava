@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -11,7 +11,7 @@ package org.epics.gpclient;
  * @author carcassi
  */
 abstract class ChannelExpression<R, W> extends Expression<R, W> {
-    
+
     private final ReadCollector<?, R> readCollector;
     private final WriteCollector<W> writeCollector;
 
@@ -34,7 +34,7 @@ abstract class ChannelExpression<R, W> extends Expression<R, W> {
         director.registerCollector(readCollector);
         connectRead(director);
     }
-    
+
     protected abstract void connectRead(PVDirector director);
 
     @Override
@@ -42,7 +42,7 @@ abstract class ChannelExpression<R, W> extends Expression<R, W> {
         director.deregisterCollector(readCollector);
         disconnectRead(director);
     }
-    
+
     protected abstract void disconnectRead(PVDirector director);
 
     @Override
@@ -50,7 +50,7 @@ abstract class ChannelExpression<R, W> extends Expression<R, W> {
         director.registerCollector(writeCollector);
         connectWrite(director);
     }
-    
+
     protected abstract void connectWrite(PVDirector director);
 
     @Override
@@ -58,9 +58,9 @@ abstract class ChannelExpression<R, W> extends Expression<R, W> {
         director.deregisterCollector(writeCollector);
         disconnectRead(director);
     }
-    
+
     protected abstract void disconnectWrite(PVDirector director);
-    
-    
-    
+
+
+
 }

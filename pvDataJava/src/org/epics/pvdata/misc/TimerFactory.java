@@ -38,7 +38,7 @@ public class TimerFactory {
     static public TimerNode createNode(TimerCallback timerCallback) {
         return new TimerNodeImpl(timerCallback);
     }
-    
+
     static private final ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
 
     static private class TimerInstance implements Timer, Comparator<TimerNodeImpl> {
@@ -118,7 +118,7 @@ public class TimerFactory {
 
             private ThreadInstance(String name,int priority) {
                 threadCreate.create(name, priority, this);
-            } 
+            }
             /* (non-Javadoc)
              * @see org.epics.pvdata.misc.RunnableReady#run(org.epics.pvdata.misc.ThreadReady)
              */
@@ -168,7 +168,7 @@ public class TimerFactory {
                         	}
                         }
                     }catch(InterruptedException e) {}
-                } 
+                }
             }
 
             private boolean wokenUp = false;
@@ -218,11 +218,10 @@ public class TimerFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Timer.TimerNode#isScheduled()
 		 */
-		@Override
 		public boolean isScheduled() {
 			return isQueued;
 		}
-        
-        
+
+
     }
 }

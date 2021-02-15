@@ -23,9 +23,9 @@ import org.epics.pvaccess.util.configuration.ConfigurationProvider;
  * @author msekoranja
  */
 public class ConfigurationFactory {
-	
+
 	private static ConfigurationProvider provider;
-	
+
 	public static synchronized ConfigurationProvider getProvider()
 	{
 		if (provider == null) {
@@ -35,12 +35,11 @@ public class ConfigurationFactory {
 		}
 		return provider;
 	}
-	
+
 	private static class ConfigurationProviderImpl implements ConfigurationProvider {
-		
+
 		private HashMap<String, Configuration> configs = new HashMap<String, Configuration>();
-		
-		@Override
+
 		public void registerConfiguration(String name, Configuration configuration) {
 			synchronized (configs) {
 				if (configs.containsKey(name))
@@ -48,13 +47,12 @@ public class ConfigurationFactory {
 				configs.put(name, configuration);
 			}
 		}
-		
-		@Override
+
 		public Configuration getConfiguration(String name) {
 			synchronized (configs) {
 				return configs.get(name);
 			}
 		}
-		
+
 	}
 }

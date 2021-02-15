@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,11 +14,11 @@ import java.util.Collection;
  * @author carcassi
  */
 public interface DataSourceTypeAdapterSet {
-    
+
     /**
      * Returns a collation of adapters. The collection must be
      * immutable.
-     * 
+     *
      * @return a collection; not null
      */
     Collection<? extends DataSourceTypeAdapter<?, ?>> getAdapters();

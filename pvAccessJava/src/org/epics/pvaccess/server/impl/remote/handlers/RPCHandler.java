@@ -41,20 +41,20 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		super(context, "RPC request");
 	}
 
-    
+
 	private static class ChannelRPCRequesterImpl extends BaseChannelRequester implements ChannelRPCRequester, TransportSender {
-		
+
 		private volatile ChannelRPC channelRPC;
 		private volatile PVStructure pvResponse;
 		private volatile Status status;
-		
+
 		public ChannelRPCRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
-			
+
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			
+
 			try {
 				channelRPC = channel.getChannel().createChannelRPC(this, pvRequest);
 			} catch (Throwable th) {
@@ -68,7 +68,6 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelRPCRequester#channelRPCConnect(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.ChannelRPC, org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)
 		 */
-		@Override
 		public void channelRPCConnect(Status status, ChannelRPC channelRPC) {
 			this.status = status;
 			this.channelRPC = channelRPC;
@@ -81,24 +80,22 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void requestDone(Status status, ChannelRPC channelRPC, PVStructure pvResponse) {
 			this.status = status;
 			this.pvResponse = pvResponse;
-			
+
 			transport.enqueueSendRequest(this);
 		}
 
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Destroyable#destroy()
 		 */
-		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
 
 			// asCheck
 			channel.getChannelSecuritySession().release(ioid);
-			
+
 			if (channelRPC != null)
 				channelRPC.destroy();
 		}
@@ -113,7 +110,6 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// noop
 		}
@@ -121,7 +117,6 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// noop
 		}
@@ -129,7 +124,6 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final int request = getPendingRequest();
 
@@ -150,14 +144,14 @@ public class RPCHandler extends AbstractServerResponseHandler {
 					pvResponse = null;
 				}
 			}
-				
+
 			stopRequest();
 
 			// lastRequest
 			if (QoS.DESTROY.isSet(request))
 				destroy();
 		}
-		
+
 	};
 
 	/* (non-Javadoc)
@@ -181,13 +175,13 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			BaseChannelRequester.sendFailureMessage((byte)20, transport, ioid, qosCode, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-		
+
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
-		    
+
 			// asCheck
 			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelRPC(ioid, pvRequest);
 			if (!asStatus.isSuccess())
@@ -202,7 +196,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 		else
 		{
 			final boolean lastRequest = QoS.DESTROY.isSet(qosCode);
-			
+
 			ChannelRPCRequesterImpl request = (ChannelRPCRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
 				BaseChannelRequester.sendFailureMessage((byte)20, transport, ioid, qosCode, BaseChannelRequester.badIOIDStatus);
@@ -216,7 +210,7 @@ public class RPCHandler extends AbstractServerResponseHandler {
 
 			// deserialize put data
 			final PVStructure pvArgument = SerializationHelper.deserializeStructureFull(payloadBuffer, transport);
-			
+
 			// asCheck
 			Status asStatus = channel.getChannelSecuritySession().authorizeRPC(ioid, pvArgument);
 			if (!asStatus.isSuccess())
@@ -228,10 +222,10 @@ public class RPCHandler extends AbstractServerResponseHandler {
 			}
 
 			ChannelRPC channelRPC = request.getChannelRPC();
-			
+
 			if (lastRequest)
 				channelRPC.lastRequest();
-			
+
 			channelRPC.request(pvArgument);
 		}
 	}

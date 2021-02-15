@@ -1,12 +1,12 @@
-/**
+/*
  * Copyright (C) 2010-18 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
 package org.epics.vtype;
 /**
- * 
+ *
  * Data type description for {@link VImage} data.
- * 
+ *
  * based on the the VImageDataType from org.epics.pvdata.pv
  * @author mrk
  *
@@ -74,7 +74,7 @@ public enum VImageDataType {
 
     /**
      * Is this an unsigned integer. true if ubyte, ushort, uint, or ulong.
-     * 
+     *
      * @return true if it is an unsigned integer type
      */
     public boolean isUInteger() {
@@ -86,7 +86,7 @@ public enum VImageDataType {
 
     /**
      * Is this a Java numeric type?
-     * 
+     *
      * @return true if the type is a Java numeric type.
      * The numeric types are byte, short, int, long, float, and double.
      */
@@ -99,7 +99,7 @@ public enum VImageDataType {
 
     /**
      * Is this a Java primitive type?
-     * 
+     *
      * @return true if the type is a Java primitive type.
      * The numeric types and boolean are primitive types.
      */
@@ -111,7 +111,7 @@ public enum VImageDataType {
 
     /**
      * Get the VImageDataType for a string defining the type.
-     * 
+     *
      * @param type a character string defining the type
      * @return the VImageDataType or null if an illegal type
      */

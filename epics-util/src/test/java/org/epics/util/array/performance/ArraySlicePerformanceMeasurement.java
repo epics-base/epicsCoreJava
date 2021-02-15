@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -6,15 +6,13 @@ package org.epics.util.array.performance;
 
 import org.epics.util.array.ArrayShort;
 import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.CollectionNumber;
 import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayInteger;
-import java.util.Random;
+import org.epics.util.compat.legacy.lang.Random;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.IteratorNumber;
-import org.epics.util.array.ListInteger;
-import org.epics.util.array.ListNumbers;
+
 import static org.epics.util.array.CollectionNumbers.*;
 
 /**
@@ -31,7 +29,7 @@ public class ArraySlicePerformanceMeasurement {
         int arraySize = 100000;
         // Number of iterations to perform
         int nIterations = 10000;
-        
+
         System.out.println("");
         System.out.println("Preparing data");
         double[] doubleArray = new double[arraySize];
@@ -85,7 +83,7 @@ public class ArraySlicePerformanceMeasurement {
         profileJavaArray(intArray, nIterations);
         profileJavaArray(shortArray, nIterations);
         profileJavaArray(byteArray, nIterations);
-        
+
         // The only performance penalty introduced by the iterator is the
         // cost of the method calls.
         // The implementation is such that the number of operations are
@@ -173,7 +171,7 @@ public class ArraySlicePerformanceMeasurement {
         profileArrayLoop(byteCollectionBig, 10);
         System.out.print("Sliced array after warmup - ");
         profileArrayLoop(byteCollectionBig, nIterations);
-        
+
         System.out.println("");
         System.out.println("See code comments for details on how to interpret the numbers");
     }
@@ -392,8 +390,8 @@ public class ArraySlicePerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (double v : array) {
+                sum += v;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -409,8 +407,8 @@ public class ArraySlicePerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             float sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (float v : array) {
+                sum += v;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -426,8 +424,8 @@ public class ArraySlicePerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             long sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (long l : array) {
+                sum += l;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -443,8 +441,8 @@ public class ArraySlicePerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             int sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (int k : array) {
+                sum += k;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -460,8 +458,8 @@ public class ArraySlicePerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             short sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (short value : array) {
+                sum += value;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -477,8 +475,8 @@ public class ArraySlicePerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             byte sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (byte b : array) {
+                sum += b;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {

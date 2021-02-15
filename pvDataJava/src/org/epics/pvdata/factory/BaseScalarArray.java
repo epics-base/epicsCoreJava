@@ -19,9 +19,9 @@ import org.epics.pvdata.pv.Type;
  *
  */
 public class BaseScalarArray extends BaseField implements ScalarArray {
-    
+
     private final ScalarType elementType;
-    
+
     /**
      * Constructor for BaseArray.
      * @param elementType The element Type.
@@ -53,7 +53,6 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Field#getID()
 	 */
-	@Override
 	public String getID() {
 		return idLUT[elementType.ordinal()];
 	}
@@ -91,20 +90,18 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 			return false;
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
 	 */
-	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		buffer.put((byte)(0x08 | BaseScalar.typeCodeLUT[elementType.ordinal()]));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
-	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 		// must be done via FieldCreate
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
@@ -113,17 +110,15 @@ public class BaseScalarArray extends BaseField implements ScalarArray {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getArraySizeType()
 	 */
-	@Override
 	public ArraySizeType getArraySizeType() {
 		return ArraySizeType.variable;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getMaximumCapacity()
 	 */
-	@Override
 	public int getMaximumCapacity() {
 		return 0;
 	}
-	
+
 }

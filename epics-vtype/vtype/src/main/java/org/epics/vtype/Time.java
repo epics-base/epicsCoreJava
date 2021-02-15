@@ -1,11 +1,12 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
-import java.time.Instant;
-import java.util.Objects;
+import org.joda.time.Instant;
+
+import org.epics.util.compat.legacy.lang.Objects;
 
 /**
  * Time information.
@@ -13,16 +14,16 @@ import java.util.Objects;
  * @author carcassi
  */
 public abstract class Time {
-    
+
     /**
      * The timestamp of the value, typically indicating when it was
      * generated. If disconnected, it returns the
      * time at which the disconnection was detected.
-     * 
+     *
      * @return the timestamp; not null
      */
     public abstract Instant getTimestamp();
-    
+
     /**
      * Returns a user defined tag, that can be used to store extra
      * time information, such as beam shot.
@@ -45,15 +46,15 @@ public abstract class Time {
         if (this == obj) {
             return true;
         }
-        
+
 	if (obj instanceof Time) {
             Time other = (Time) obj;
-        
+
             return Objects.equals(getTimestamp(), other.getTimestamp()) &&
                 Objects.equals(getUserTag(), other.getUserTag()) &&
                 isValid() == other.isValid();
         }
-        
+
         return false;
     }
 
@@ -74,10 +75,10 @@ public abstract class Time {
             return getTimestamp().toString() + "(" + getUserTag()+ ")";
         }
     }
-    
+
     /**
      * Creates a new time.
-     * 
+     *
      * @param timestamp the timestamp
      * @param userTag the user tag
      * @param valid whether the time is valid
@@ -86,35 +87,35 @@ public abstract class Time {
     public static Time of(final Instant timestamp, final Integer userTag, final boolean valid) {
         return new ITime(timestamp, userTag, valid);
     }
-    
+
     /**
      * New time, with no user tag and valid data.
-     * 
+     *
      * @param timestamp the timestamp
      * @return the new time
      */
     public static Time of(final Instant timestamp) {
         return Time.of(timestamp, null, true);
     }
-    
+
     /**
      * New time with the current timestamp, no user tag and valid data.
-     * 
+     *
      * @return the new time
      */
     public static Time now() {
         return Time.of(Instant.now(), null, true);
     }
-    
+
     /**
      * New time with the current timestamp, no user tag and invalid data.
-     * 
+     *
      * @return the new time
      */
     public static Time nowInvalid() {
         return Time.of(Instant.now(), null, false);
     }
-    
+
     /**
      * Null and non-VType safe utility to extract time information.
      * <ul>
@@ -130,8 +131,8 @@ public abstract class Time {
         if (value instanceof TimeProvider) {
             return ((TimeProvider) value).getTime();
         }
-        
+
         return nowInvalid();
     }
-    
+
 }

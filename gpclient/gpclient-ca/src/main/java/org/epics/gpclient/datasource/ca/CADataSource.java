@@ -1,23 +1,21 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.ca;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import com.cosylab.epics.caj.CAJContext;
+import gov.aps.jca.CAException;
+import gov.aps.jca.Context;
+import gov.aps.jca.JCALibrary;
+import gov.aps.jca.Monitor;
 import org.epics.gpclient.datasource.ChannelHandler;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.datasource.ca.types.CATypeSupport;
 import org.epics.gpclient.datasource.ca.types.CAVTypeAdapterSet;
 
-import com.cosylab.epics.caj.CAJContext;
-
-import gov.aps.jca.CAException;
-import gov.aps.jca.Context;
-import gov.aps.jca.JCALibrary;
-import gov.aps.jca.Monitor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CADataSource extends DataSource {
 
@@ -34,7 +32,7 @@ public class CADataSource extends DataSource {
     private boolean honorZeroPrecision = true;
 
     private final CATypeSupport caTypeSupport = new CATypeSupport(new CAVTypeAdapterSet());
-    
+
     public CADataSource() {
         super();
         // Some properties are not pre-initialized to the default,

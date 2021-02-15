@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -6,7 +6,9 @@ package org.epics.util.array;
 
 import java.util.Arrays;
 import java.util.List;
-import static org.epics.util.array.CollectionNumbers.*;
+
+import static org.epics.util.array.CollectionNumbers.toListDouble;
+import static org.epics.util.array.CollectionNumbers.unmodifiableList;
 
 /**
  * Math operations defined on lists of numbers.
@@ -32,12 +34,10 @@ public class ListMath {
             return add(data, offset);
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return factor * data.getDouble(index) + offset;
             }
 
-            @Override
             public int size() {
                 return data.size();
             }
@@ -55,12 +55,10 @@ public class ListMath {
     public static ListDouble inverseRescale(final ListNumber data, final double numerator, final double offset) {
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return numerator / data.getDouble(index) + offset;
             }
 
-            @Override
             public int size() {
                 return data.size();
             }
@@ -77,12 +75,10 @@ public class ListMath {
     public static ListDouble pow(final ListNumber data, final double expon) {
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return Math.pow(data.getDouble(index), expon);
             }
 
-            @Override
             public int size() {
                 return data.size();
             }
@@ -99,12 +95,10 @@ public class ListMath {
     public static ListDouble pow(final double base, final ListNumber expons) {
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return Math.pow(base, expons.getDouble(index));
             }
 
-            @Override
             public int size() {
                 return expons.size();
             }
@@ -121,12 +115,10 @@ public class ListMath {
     public static ListDouble add(final ListNumber data, final double offset) {
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return data.getDouble(index) + offset;
             }
 
-            @Override
             public int size() {
                 return data.size();
             }
@@ -146,12 +138,10 @@ public class ListMath {
             throw new IllegalArgumentException("Can't sum ListNumbers of different size (" + data1.size() + " - " + data2.size() + ")");
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return data1.getDouble(index) + data2.getDouble(index);
             }
 
-            @Override
             public int size() {
                 return data1.size();
             }
@@ -171,12 +161,10 @@ public class ListMath {
             throw new IllegalArgumentException("Can't subtract ListNumbers of different size (" + data1.size() + " - " + data2.size() + ")");
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return data1.getDouble(index) - data2.getDouble(index);
             }
 
-            @Override
             public int size() {
                 return data1.size();
             }
@@ -198,12 +186,10 @@ public class ListMath {
                      + data1.size() + " - " + data2.size() + ")");
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return data1.getDouble(index) * data2.getDouble(index);
             }
 
-            @Override
             public int size() {
                 return data1.size();
             }
@@ -225,12 +211,10 @@ public class ListMath {
                      + data1.size() + " - " + data2.size() + ")");
         return new ListDouble() {
 
-            @Override
             public double getDouble(int index) {
                 return data1.getDouble(index) / data2.getDouble(index);
             }
 
-            @Override
             public int size() {
                 return data1.size();
             }

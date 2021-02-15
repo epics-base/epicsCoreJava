@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,7 +14,7 @@ public class TypeMismatchException extends RuntimeException {
 
     /**
      * Creates a new exception with the given message.
-     * 
+     *
      * @param message the message
      */
     public TypeMismatchException(String message) {
@@ -23,14 +23,14 @@ public class TypeMismatchException extends RuntimeException {
 
     /**
      * Creates a new exception with the given message and cause.
-     * 
+     *
      * @param message the message
      * @param cause the cause
      */
     public TypeMismatchException(String message, Throwable cause) {
         super(message, cause);
     }
-    
-    
-    
+
+
+
 }

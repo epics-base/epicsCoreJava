@@ -1,16 +1,20 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource;
 
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.epics.util.concurrent.ProcessingQueue;
+
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.function.Consumer;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import static org.epics.util.concurrent.Executors.namedPool;
-import org.epics.util.concurrent.ProcessingQueue;
 
 /**
  * A source for data that is going to be processed by the general purpose client.
@@ -38,7 +42,7 @@ public abstract class DataSource {
     /**
      * Returns a channel from the given name, either cached or it
      * will create it.
-     * 
+     *
      * @param channelName name of a channel
      * @return a new or cached handler
      */
@@ -52,7 +56,7 @@ public abstract class DataSource {
         }
         return channel;
     }
-    
+
     /**
      * Returns the lookup name to use to find the channel handler in
      * the cache. By default, it returns the channel name itself.
@@ -60,23 +64,23 @@ public abstract class DataSource {
      * be the same channel handler (e.g. parts of the channel name
      * are initialization parameters) then it can override this method
      * to change the lookup.
-     * 
+     *
      * @param channelName the channel name
      * @return the channel handler to look up in the cache
      */
     protected String channelHandlerLookupName(String channelName) {
         return channelName;
     }
-    
+
     /**
      * Returns the name the given handler should be registered as.
      * By default, it returns the lookup name, so that lookup and
      * registration in the cache are consistent. If a datasource
-     * needs multiple different channel names to be the same 
+     * needs multiple different channel names to be the same
      * channel handler (e.g. parts of the channel name are read/write
      * parameters) then it can override this method to change the
      * registration.
-     * 
+     *
      * @param channelName the name under which the ChannelHandler was created
      * @param handler the handler to register
      * @return the name under which to register in the cache
@@ -88,7 +92,7 @@ public abstract class DataSource {
     /**
      * Creates a channel handler for the given name. In the simplest
      * case, this is the only method a data source needs to implement.
-     * 
+     *
      * @param channelName the name for a new channel
      * @return a new handler
      */
@@ -98,14 +102,13 @@ public abstract class DataSource {
     // such as connections and writes. We use one extra thread for each datasource,
     // mainly to be able to shut it down during cleanup
     protected final ExecutorService exec = Executors.newSingleThreadExecutor(namedPool("PVMgr " + getClass().getSimpleName() + " Worker "));
-    
+
     // Keeps track of the recipes that were opened with
     // this data source.
-    private final Set<ReadSubscription> readSubscriptions = Collections.synchronizedSet(new HashSet<>());
-    private final Set<WriteSubscription> writeSubscriptions = Collections.synchronizedSet(new HashSet<>());
+    private final Set<ReadSubscription> readSubscriptions = Collections.synchronizedSet(new HashSet<ReadSubscription>());
+    private final Set<WriteSubscription> writeSubscriptions = Collections.synchronizedSet(new HashSet<WriteSubscription>());
 
-    private final ProcessingQueue<ReadSubscription> startReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
-        @Override
+    private final ProcessingQueue<ReadSubscription> startReadQueue = new ProcessingQueue<ReadSubscription>(exec, new Consumer<List<ReadSubscription>>() {
         public void accept(List<ReadSubscription> list) {
             for (ReadSubscription readSubscription : list) {
                 try {
@@ -124,17 +127,17 @@ public abstract class DataSource {
             }
         }
     });
-    
+
     /**
      * Starts the given read subscription.
-     * 
+     *
      * @param readSubscription the subscription information
      */
     public void startRead(final ReadSubscription readSubscription) {
         startReadQueue.submit(readSubscription);
     }
 
-    private final ProcessingQueue<ReadSubscription> stopReadQueue = new ProcessingQueue<>(exec, new Consumer<List<ReadSubscription>>() {
+    private final ProcessingQueue<ReadSubscription> stopReadQueue = new ProcessingQueue<ReadSubscription>(exec, new Consumer<List<ReadSubscription>>() {
         @Override
         public void accept(List<ReadSubscription> list) {
             for (ReadSubscription readSubscription : list) {
@@ -159,17 +162,17 @@ public abstract class DataSource {
             }
         }
     });
-    
+
     /**
      * Stops the given read subscription.
-     * 
+     *
      * @param readSubscription the subscription information
      */
     public void stopRead(final ReadSubscription readSubscription) {
         stopReadQueue.submit(readSubscription);
     }
 
-    private final ProcessingQueue<WriteSubscription> startWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<WriteSubscription>>() {
+    private final ProcessingQueue<WriteSubscription> startWriteQueue = new ProcessingQueue<WriteSubscription>(exec, new Consumer<List<WriteSubscription>>() {
         @Override
         public void accept(List<WriteSubscription> list) {
             for (WriteSubscription writeSubscription : list) {
@@ -189,17 +192,17 @@ public abstract class DataSource {
             }
         }
     });
-    
+
     /**
      * Starts the given write subscription.
-     * 
+     *
      * @param writeSubscription the subscription information
      */
     public void startWrite(final WriteSubscription writeSubscription) {
         startWriteQueue.submit(writeSubscription);
     }
 
-    private final ProcessingQueue<WriteSubscription> stopWriteQueue = new ProcessingQueue<>(exec, new Consumer<List<WriteSubscription>>() {
+    private final ProcessingQueue<WriteSubscription> stopWriteQueue = new ProcessingQueue<WriteSubscription>(exec, new Consumer<List<WriteSubscription>>() {
         @Override
         public void accept(List<WriteSubscription> list) {
             for (WriteSubscription writeSubscription : list) {
@@ -224,10 +227,10 @@ public abstract class DataSource {
             }
         }
     });
-    
+
     /**
      * Stops the given write subscription.
-     * 
+     *
      * @param writeRecipe the subscription information
      */
     public void stopWrite(final WriteSubscription writeRecipe) {
@@ -236,7 +239,7 @@ public abstract class DataSource {
 
     /**
      * Returns the channel handlers for this data source.
-     * 
+     *
      * @return an unmodifiable collection
      */
     public Map<String, ChannelHandler> getChannels() {
@@ -249,5 +252,5 @@ public abstract class DataSource {
     public void close() {
         exec.shutdownNow();
     }
-    
+
 }

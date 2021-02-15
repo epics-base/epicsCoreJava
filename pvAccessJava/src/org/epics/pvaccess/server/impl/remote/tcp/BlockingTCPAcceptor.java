@@ -40,7 +40,7 @@ public class BlockingTCPAcceptor {
 	 * Context instance.
 	 */
 	private Context context;
-	
+
 	/**
 	 * Bind server socket address.
 	 */
@@ -55,7 +55,7 @@ public class BlockingTCPAcceptor {
 	 * Receive buffer size.
 	 */
 	private int receiveBufferSize;
-	
+
 	/**
 	 * Destroyed flag.
 	 */
@@ -95,19 +95,19 @@ public class BlockingTCPAcceptor {
 
 				SocketAddress address = socket.socket().getRemoteSocketAddress();
 				context.getLogger().finer("Accepted connection from PVA client: " + address);
-				
+
 				// enable TCP_NODELAY (disable Nagle's algorithm)
 				socket.socket().setTcpNoDelay(true);
-				
+
 				// enable TCP_KEEPALIVE
 				socket.socket().setKeepAlive(true);
 
 				// do NOT tune socket buffer sizes, this will disable auto-tuning
-				
+
 				// create transport
 				final Transport transport = new BlockingServerTCPTransport(context, socket, ((ServerContextImpl)context).getServerResponseHandler(), receiveBufferSize);
 				//final Transport transport = new NonBlockingServerTCPTransport(context, poller, socket, ((ServerContextImpl)context).getServerResponseHandler(), receiveBufferSize);
-	
+
 				// validate connection
 				if (!validateConnection(transport, address))
 				{
@@ -115,15 +115,15 @@ public class BlockingTCPAcceptor {
 					// wait for negative response to be sent back and
 					// hold off the client for retrying at very high rate
 					Thread.sleep(1000);
-					
+
 					transport.close();
 					context.getLogger().finer("Connection to PVA client " + address + " failed to be validated, closing it.");
 					continue;
 				}
-				
+
 				context.getLogger().finer("Serving to PVA client: " + address);
-	
-			} 
+
+			}
 			catch (AsynchronousCloseException ace)
 			{
 				// noop
@@ -152,9 +152,9 @@ public class BlockingTCPAcceptor {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Initialize connection acceptance. 
+	 * Initialize connection acceptance.
 	 * @return port where server is listening
 	 */
 	private int initialize(int port) throws PVAException
@@ -167,15 +167,15 @@ public class BlockingTCPAcceptor {
 		while (true)
 		{
 			tryCount++;
-			
+
 			try
 			{
 				context.getLogger().finer("Creating acceptor to " + bindAddress + ".");
-	
+
 				serverSocketChannel = ServerSocketChannel.open();
 				serverSocketChannel.socket().bind(bindAddress);
 				serverSocketChannel.configureBlocking(true);
-				
+
 				// update bind address, if dynamically port selection was used
 				if (bindAddress.getPort() == 0)
 				{
@@ -184,13 +184,12 @@ public class BlockingTCPAcceptor {
 				}
 
 				new Thread(new Runnable() {
-					
-					@Override
+
 					public void run() {
 						handleEvents();
 					}
 				}, "TCP-acceptor").start();
-				
+
 				// all OK, return
 				return bindAddress.getPort();
 			}
@@ -206,29 +205,29 @@ public class BlockingTCPAcceptor {
 				else
 				{
 					throw new PVAException("Failed to create acceptor to " + bindAddress, be);
-				}				
+				}
 			}
 			catch (Throwable th)
 			{
 				throw new PVAException("Failed to create acceptor to " + bindAddress, th);
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * Bind socket address.
 	 * @return bind socket address, <code>null</code> if not binded.
 	 */
-	public InetSocketAddress getBindAddress() 
+	public InetSocketAddress getBindAddress()
 	{
 		return bindAddress;
 		/*
-		return (serverSocketChannel != null) ? 
+		return (serverSocketChannel != null) ?
 				serverSocketChannel.socket().getInetAddress() : null;
 		*/
 	}
-	
+
 	/**
 	 * Destroy acceptor (stop listening).
 	 */
@@ -236,7 +235,7 @@ public class BlockingTCPAcceptor {
 	{
 		if (destroyed.getAndSet(true))
 			return;
-		
+
 		if (serverSocketChannel != null)
 		{
 			context.getLogger().finer("Stopped accepting connections at " + bindAddress + ".");
@@ -248,5 +247,5 @@ public class BlockingTCPAcceptor {
 			}
 		}
 	}
-	
+
 }

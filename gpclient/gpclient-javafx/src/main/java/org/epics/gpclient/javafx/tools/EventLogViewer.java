@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -12,20 +12,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 public final class EventLogViewer extends HBox {
-    
+
     @FXML
     private ListView<Event> eventList;
     @FXML
     private ValueViewer valueViewer;
     @FXML
     private EventViewer eventViewer;
-    
+
     private Log eventLog = new Log(new Runnable() {
-        @Override
         public void run() {
             onNewEvent();
         }
-        
+
     });
 
     public EventLogViewer() {
@@ -33,27 +32,26 @@ public final class EventLogViewer extends HBox {
 
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
-        
+
         try {
             fxmlLoader.load();
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        
+
         eventList.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Event>() {
 
-            @Override
             public void changed(ObservableValue<? extends Event> observable, Event oldValue, Event newValue) {
                 eventViewer.setEvent(newValue);
                 valueViewer.setValue(newValue.getValue(), newValue.isConnected());
             }
         });
     }
-    
+
     public Log eventLog() {
         return eventLog;
     }
-    
+
     private void onNewEvent() {
         eventList.getItems().add(0, eventLog.getEvents().get(eventLog.getEvents().size() - 1));
     }

@@ -1,13 +1,14 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.concurrent;
 
+import org.epics.util.compat.legacy.functional.Consumer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 
 /**
  * Allows to submit data to be processed on another thread, allowing for
@@ -19,16 +20,15 @@ public class ProcessingQueue<T> {
     private final Executor exec;
     private final Consumer<List<T>> batchConsumer;
     private final Object lock = new Object();
-    private List<T> queue = new ArrayList<>();
+    private List<T> queue = new ArrayList<T>();
     private boolean processing = false;
-    
+
     private final Runnable processingTask = new Runnable() {
-        @Override
         public void run() {
             List<T> dataToProcess;
             synchronized(lock) {
                 dataToProcess = queue;
-                queue = new ArrayList<>();
+                queue = new ArrayList<T>();
                 processing = false;
             }
             batchConsumer.accept(dataToProcess);
@@ -39,7 +39,7 @@ public class ProcessingQueue<T> {
         this.exec = exec;
         this.batchConsumer = batchConsumer;
     }
-    
+
     public void submit(T data) {
         synchronized(lock) {
             queue.add(data);

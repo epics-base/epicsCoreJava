@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -13,7 +13,7 @@ import org.epics.util.array.ListUShort;
  * @author carcassi
  */
 final class IVUShortArray extends VUShortArray {
-    
+
     private final ListUShort data;
     private final ListInteger sizes;
     private final Alarm alarm;
@@ -43,17 +43,14 @@ final class IVUShortArray extends VUShortArray {
         return data;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }
 
-    @Override
     public Display getDisplay() {
         return display;
     }

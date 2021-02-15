@@ -45,49 +45,46 @@ public class DestroyChannelHandler extends AbstractServerResponseHandler {
 
 		// NOTE: we do not explicitly check if transport OK
 		final ChannelHostingTransport casTransport = (ChannelHostingTransport)transport;
-		
+
 		transport.ensureData(2*Integer.SIZE/Byte.SIZE);
 		final int sid = payloadBuffer.getInt();
 		final int cid = payloadBuffer.getInt();
-		
+
 		// get channel by SID
 		final ServerChannelImpl channel = (ServerChannelImpl)casTransport.getChannel(sid);
-		if (channel == null) 
+		if (channel == null)
 		{
 			if (transport.isOpen())
 				context.getLogger().log(Level.WARNING, "Trying to destroy a channel that no longer exists (SID: " + sid + ", CID: " + cid + ", client: " + responseFrom + ").");
 			return;
-		} 
+		}
 
 		// destroy
 		channel.destroy();
-		
+
 		// .. and unregister
 		casTransport.unregisterChannel(sid);
-		
+
 		// send response back
 		transport.enqueueSendRequest(
 				new TransportSender() {
 
-					@Override
 					public void send(ByteBuffer buffer, TransportSendControl control) {
 						control.startMessage((byte)8, 2*Integer.SIZE/Byte.SIZE);
 						buffer.putInt(sid);
 						buffer.putInt(cid);
 					}
 
-					@Override
 					public void lock() {
 						// noop
 					}
 
-					@Override
 					public void unlock() {
 						// noop
 					}
-					
+
 			});
-		
+
 	}
 
 }

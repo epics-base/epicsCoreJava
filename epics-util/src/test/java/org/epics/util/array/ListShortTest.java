@@ -1,16 +1,8 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.array;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -22,12 +14,10 @@ public class ListShortTest extends FeatureTestListNumber {
     public ListShort createConstantCollection() {
         return new ListShort() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public short getShort(int index) {
                 return 1;
             }
@@ -38,12 +28,10 @@ public class ListShortTest extends FeatureTestListNumber {
     public ListShort createRampCollection() {
         return new ListShort() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public short getShort(int index) {
                 return (short) index;
             }
@@ -53,10 +41,9 @@ public class ListShortTest extends FeatureTestListNumber {
     @Override
     public ListNumber createModifiableCollection() {
         return new ListShort() {
-            
+
             private short[] array = new short[10];
-            
-            @Override
+
             public short getShort(int index) {
                 return array[index];
             }
@@ -66,7 +53,6 @@ public class ListShortTest extends FeatureTestListNumber {
                 array[index] = value;
             }
 
-            @Override
             public int size() {
                 return array.length;
             }
@@ -77,12 +63,10 @@ public class ListShortTest extends FeatureTestListNumber {
     public ListNumber createEmpty() {
         return new ListShort() {
 
-            @Override
             public int size() {
                 return 0;
             }
 
-            @Override
             public short getShort(int index) {
                 return 1;
             }

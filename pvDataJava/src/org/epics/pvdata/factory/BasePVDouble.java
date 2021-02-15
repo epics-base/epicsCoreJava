@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVDouble extends AbstractPVScalar implements PVDouble
 {
     protected double value;
-    
+
     /**
      * Constructor
      * @param scalar The introspection interface.
@@ -28,29 +28,26 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
     public BasePVDouble(Scalar scalar) {
         super(scalar);
         value = 0;
-    }        
+    }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVDouble#get()
      */
-    @Override
     public double get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVDouble#put(double)
      */
-    @Override
     public void put(double value) {
         if(super.isImmutable()) {
             throw new IllegalArgumentException("field is immutable");
         }
         this.value = value;
         super.postPut();
-    }        
+    }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-    @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
     	flusher.ensureBuffer(Double.SIZE/Byte.SIZE);
         buffer.putDouble(value);
@@ -58,7 +55,6 @@ public class BasePVDouble extends AbstractPVScalar implements PVDouble
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer)
      */
-    @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
     	control.ensureData(Double.SIZE/Byte.SIZE);
         value = buffer.getDouble();

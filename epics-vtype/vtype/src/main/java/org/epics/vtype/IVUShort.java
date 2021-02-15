@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -12,7 +12,7 @@ import org.epics.util.number.UShort;
  * @author carcassi
  */
 final class IVUShort extends VUShort {
-    
+
     private final UShort value;
     private final Alarm alarm;
     private final Time time;
@@ -34,17 +34,14 @@ final class IVUShort extends VUShort {
         return value;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }
 
-    @Override
     public Display getDisplay() {
         return display;
     }

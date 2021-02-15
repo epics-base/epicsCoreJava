@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
-import java.time.Duration;
+import org.joda.time.Duration;
 
 /**
  *
@@ -15,7 +15,7 @@ class GPClientGlobalChecks {
         if (maxRate == null) {
             throw new IllegalArgumentException("maxRate cannot be null");
         }
-        if (maxRate.getSeconds() == 0 && maxRate.toMillis() < 5) {
+        if (maxRate.getStandardSeconds() == 0 && maxRate.getMillis() < 5) {
             throw new IllegalArgumentException("Current implementation limits the rate to >5ms or <200Hz (requested " + maxRate + "s)");
         }
     }

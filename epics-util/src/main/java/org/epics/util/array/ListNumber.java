@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -143,7 +143,7 @@ public interface ListNumber extends CollectionNumber {
     /**
      * Changes the elements starting at the specified position, taking them
      * based on the internal representation.
-     * 
+     *
      * @param index position of the first element to change
      * @param list the new values
      * @throws IndexOutOfBoundsException if the index is out of range
@@ -151,11 +151,11 @@ public interface ListNumber extends CollectionNumber {
      *         list is too short to hold the data.
      */
     void setAll(int index, ListNumber list);
-    
+
     /**
      * Returns a view of the portion of this list between the specified
      * <var>fromIndex</var>, inclusive, and <var>toIndex</var>, exclusive.
-     * 
+     *
      * @param fromIndex low endpoint (inclusive) of the subList
      * @param toIndex high endpoint (exclusive) of the subList
      * @return a view of the specified range within this list

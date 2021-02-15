@@ -32,7 +32,6 @@ public final class PVAlarmFactory implements PVAlarm{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVAlarm#attach(org.epics.pvdata.pv.PVField)
      */
-    @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
             throw new IllegalArgumentException(noAlarmFound);
@@ -62,7 +61,6 @@ public final class PVAlarmFactory implements PVAlarm{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVAlarm#detach()
      */
-    @Override
     public void detach() {
         pvSeverity = null;
         pvMessage = null;
@@ -70,7 +68,6 @@ public final class PVAlarmFactory implements PVAlarm{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVAlarm#isAttached()
      */
-    @Override
     public boolean isAttached() {
         if(pvSeverity==null || pvMessage==null) return false;
         return true;
@@ -78,7 +75,6 @@ public final class PVAlarmFactory implements PVAlarm{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVAlarm#get(org.epics.pvdata.property.Alarm)
      */
-    @Override
     public void get(Alarm alarm) {
         if(pvSeverity==null || pvMessage==null) {
             throw new IllegalStateException(notAttached);
@@ -90,7 +86,6 @@ public final class PVAlarmFactory implements PVAlarm{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVAlarm#set(org.epics.pvdata.property.Alarm)
      */
-    @Override
     public boolean set(Alarm alarm) {
         if(pvSeverity==null || pvMessage==null) {
             throw new IllegalStateException(notAttached);
@@ -114,7 +109,7 @@ public final class PVAlarmFactory implements PVAlarm{
             pvMessage.put(alarm.getMessage());
             returnValue = true;
         }
-        return returnValue; 
+        return returnValue;
     }
 
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,12 +16,12 @@ import static org.epics.vtype.gson.GsonArrays.*;
  * @author carcassi
  */
 public class GsonArraysTest {
-    
+
     public String integerArray = "[0,1,2]";
     public String doubleArray = "[0.0,0.1,0.2]";
     public String stringArray = "[\"A\",\"B\",\"C\"]";
     public String mixedArray = "[\"A\",1,\"C\"]";
-    
+
     public JsonArray parseJson(String json) {
         return JsonParser.parseString(json).getAsJsonArray();
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,14 +14,13 @@ import org.epics.gpclient.datasource.WriteSubscription;
  * @author carcassi
  */
 class DataSourceChannelExpression<R, C ,W> extends ChannelExpression<R, W> {
-    
+
     private final String channelName;
 
     /**
      * A new datasource channel with the given name.
-     * 
+     *
      * @param channelName the name of the channel
-     * @param readType the type to read
      */
     DataSourceChannelExpression(String channelName, ReadCollector<C, R> readCollector, WriteCollector<W> writeCollector) {
         super(readCollector, writeCollector);
@@ -47,5 +46,5 @@ class DataSourceChannelExpression<R, C ,W> extends ChannelExpression<R, W> {
     protected void disconnectWrite(PVDirector pvDirector) {
         pvDirector.getDataSource().stopWrite(new WriteSubscription(channelName, getWriteCollector()));
     }
-    
+
 }

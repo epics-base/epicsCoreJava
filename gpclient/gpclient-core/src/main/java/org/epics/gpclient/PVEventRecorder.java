@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.epics.util.compat.legacy.functional.Function;
 
 /**
  * Utility class to record the flow of events mainly for debugging and testing
@@ -19,12 +19,12 @@ import java.util.function.Function;
  *
  * @author carcassi
  */
-public class PVEventRecorder implements Consumer<PVEvent> {
-    
+public class PVEventRecorder extends Consumer<PVEvent> {
+
     private final Object lock = new Object();
-    private final List<PVEvent> events = new ArrayList<>();
+    private final List<PVEvent> events = new ArrayList<PVEvent>();
     private Runnable test;
-    
+
     @Override
     public final void accept(PVEvent event) {
         synchronized (lock) {
@@ -35,11 +35,11 @@ public class PVEventRecorder implements Consumer<PVEvent> {
             }
         }
     }
-    
+
     /**
      * Custom logic executed at each event. This method is executed after the event
      * is added to the list but before the check is performed.
-     * 
+     *
      * @param event a new event
      */
     protected void onEvent(PVEvent event) {
@@ -47,7 +47,7 @@ public class PVEventRecorder implements Consumer<PVEvent> {
 
     /**
      * Returns all the events collected so far.
-     * 
+     *
      * @return the events in the order recorded
      */
     public List<PVEvent> getEvents() {
@@ -60,14 +60,13 @@ public class PVEventRecorder implements Consumer<PVEvent> {
      * Waits until the condition is met. If the conditions is already met, it
      * returns right away. If the condition is not met after the time specified,
      * an {@link AssertionError} is thrown.
-     * 
+     *
      * @param ms the timeout in millis
      * @param condition the condition
      */
-    public void wait(int ms, Function<List<PVEvent>, Boolean> condition) {
-        CountDownLatch latch = new CountDownLatch(1);
+    public void wait(int ms, final Function<List<PVEvent>, Boolean> condition) {
+        final CountDownLatch latch = new CountDownLatch(1);
         Runnable newTest = new Runnable() {
-            @Override
             public void run() {
                 if (condition.apply(events)) {
                     latch.countDown();
@@ -78,14 +77,14 @@ public class PVEventRecorder implements Consumer<PVEvent> {
             test = newTest;
             test.run();
         }
-        
+
         boolean success = false;
-        
+
         try {
             success = latch.await(ms, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException ignored) {
         }
-        
+
         if (!success) {
             throw new AssertionError("Didn't receive " + condition + " within " + ms + " ms");
         }
@@ -96,14 +95,13 @@ public class PVEventRecorder implements Consumer<PVEvent> {
      * only if the condition is not met within the timeout. If the conditions is
      * already met, or if it is met within the time specified, an
      * {@link AssertionError} is thrown.
-     * 
+     *
      * @param ms the timeout in millis
      * @param condition the condition
      */
-    public void dontExpect(int ms, Function<List<PVEvent>, Boolean> condition) {
-        CountDownLatch latch = new CountDownLatch(1);
+    public void dontExpect(int ms, final Function<List<PVEvent>, Boolean> condition) {
+        final CountDownLatch latch = new CountDownLatch(1);
         Runnable newTest = new Runnable() {
-            @Override
             public void run() {
                 if (condition.apply(events)) {
                     latch.countDown();
@@ -114,14 +112,14 @@ public class PVEventRecorder implements Consumer<PVEvent> {
             test = newTest;
             test.run();
         }
-        
+
         boolean success = false;
-        
+
         try {
             success = latch.await(ms, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException ignored) {
         }
-        
+
         if (success) {
             throw new AssertionError("Received " + condition + " against expectation");
         }
@@ -129,29 +127,29 @@ public class PVEventRecorder implements Consumer<PVEvent> {
 
     /**
      * Returns an {@link AssertionError} if the condition is not already met.
-     * 
+     *
      * @param condition the condition
-     */    
+     */
     public void hasReceived(Function<List<PVEvent>, Boolean> condition) {
         if (!condition.apply(events)) {
             throw new AssertionError("Didn't receive " + condition);
         }
     }
-    
+
     /**
      * Returns an {@link AssertionError} if the condition is already met.
-     * 
+     *
      * @param condition the condition
-     */    
+     */
     public void hasNotReceived(Function<List<PVEvent>, Boolean> condition) {
         if (condition.apply(events)) {
             throw new AssertionError("Received " + condition);
         }
     }
-    
+
     /**
      * Checks that any event was received.
-     * 
+     *
      * @return any event condition
      */
     public static Function<List<PVEvent>, Boolean> forAnEvent() {
@@ -167,23 +165,23 @@ public class PVEventRecorder implements Consumer<PVEvent> {
             }
         };
     }
-    
+
     /**
      * Checks that a connection event was received.
-     * 
+     *
      * @return connection event condition
      */
     public static Function<List<PVEvent>, Boolean> forAConnectionEvent() {
         return anEventOfType(PVEvent.Type.READ_CONNECTION);
     }
-    
+
     /**
      * Checks that an event of the given type was received.
-     * 
+     *
      * @param type the event type
      * @return type of event condition
      */
-    public static Function<List<PVEvent>, Boolean> anEventOfType(PVEvent.Type type) {
+    public static Function<List<PVEvent>, Boolean> anEventOfType(final PVEvent.Type type) {
         return new Function<List<PVEvent>, Boolean>() {
             @Override
             public Boolean apply(List<PVEvent> list) {
@@ -199,10 +197,10 @@ public class PVEventRecorder implements Consumer<PVEvent> {
 
     /**
      * Checks the given number of events were received.
-     * 
+     *
      * @param count the number of events
      * @return event count condition
-     */    
+     */
     public static Function<List<PVEvent>, Boolean> forEventCount(final int count) {
         return new Function<List<PVEvent>, Boolean>() {
             @Override
@@ -216,5 +214,5 @@ public class PVEventRecorder implements Consumer<PVEvent> {
             }
         };
     }
-    
+
 }

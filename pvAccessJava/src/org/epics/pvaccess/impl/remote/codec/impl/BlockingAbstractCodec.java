@@ -54,21 +54,20 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 	public void sendCompleted() {
 		// noop
 	}
-	
-	
-	
+
+
+
 	/* (non-Javadoc)
 	 * @see java.nio.channels.Channel#close()
 	 */
-	@Override
 	public void close() throws IOException {
 		if (isOpen.getAndSet(false))
 		{
 			// always close in the same thread, same way, etc.
-			
+
 			// unblock read
 			readThread.interrupt();
-			
+
 			// wakeup processSendQueue
 			sendQueue.wakeup();
 		}
@@ -85,34 +84,31 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 	/* (non-Javadoc)
 	 * @see java.nio.channels.Channel#isOpen()
 	 */
-	@Override
 	public boolean isOpen() {
 		return isOpen.get();
 	}
 
 	private volatile Thread readThread = null;
 	private volatile Thread sendThread = null;
-	
+
 	public void start()
 	{
 		readThread = new Thread(new Runnable() {
-			@Override
 			public void run() {
 				receiveThread();
 			}
 		}, "receiveThread");
 		readThread.start();
-		
+
 		sendThread = new Thread(new Runnable() {
-			@Override
 			public void run() {
 				sendThread();
 			}
 		}, "sendThread");
 		sendThread.start();
-		
+
 	}
-	
+
 	public void receiveThread()
 	{
 		while (isOpen())
@@ -142,7 +138,7 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 
 				if (debug)
 					logger.log(Level.FINER, "IO exception caught in send thread.", e);
-				
+
 			}
 		}
 
@@ -151,13 +147,13 @@ public abstract class BlockingAbstractCodec extends AbstractCodec {
 			readThread.join(3000);
 		} catch (InterruptedException e) {
 			// noop
-		}	
+		}
 
 		// call internal destroy
 		internalDestroy();
 	}
-	
+
 	abstract void internalDestroy();
-	
+
 }
 

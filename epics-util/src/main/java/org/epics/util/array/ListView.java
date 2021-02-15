@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -24,12 +24,10 @@ class ListView {
             this.indexes = indexes;
         }
 
-        @Override
         public double getDouble(int index) {
             return list.getDouble(indexes.getInt(index));
         }
 
-        @Override
         public int size() {
             return indexes.size();
         }
@@ -48,12 +46,10 @@ class ListView {
             this.indexes = indexes;
         }
 
-        @Override
         public float getFloat(int index) {
             return list.getFloat(indexes.getInt(index));
         }
 
-        @Override
         public int size() {
             return indexes.size();
         }
@@ -72,12 +68,10 @@ class ListView {
             this.indexes = indexes;
         }
 
-        @Override
         public long getLong(int index) {
             return list.getLong(indexes.getInt(index));
         }
 
-        @Override
         public int size() {
             return indexes.size();
         }
@@ -96,12 +90,10 @@ class ListView {
             this.indexes = indexes;
         }
 
-        @Override
         public int getInt(int index) {
             return list.getInt(indexes.getInt(index));
         }
 
-        @Override
         public int size() {
             return indexes.size();
         }
@@ -120,12 +112,10 @@ class ListView {
             this.indexes = indexes;
         }
 
-        @Override
         public short getShort(int index) {
             return list.getShort(indexes.getInt(index));
         }
 
-        @Override
         public int size() {
             return indexes.size();
         }
@@ -144,12 +134,10 @@ class ListView {
             this.indexes = indexes;
         }
 
-        @Override
         public byte getByte(int index) {
             return list.getByte(indexes.getInt(index));
         }
 
-        @Override
         public int size() {
             return indexes.size();
         }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -26,7 +26,7 @@ public class SquareWaveform extends VDoubleArraySimFunction {
     public SquareWaveform() {
         this(5.0, 100.0, DEFAULT_INTERVAL);
     }
-    
+
     /**
      * Creates a square wave of 100 samples, with given period and given wavelength of
      * 100 samples, updating at given rate.

@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 
 /**
  * Scalar string with alarm and timestamp.
@@ -12,17 +12,17 @@ import java.util.Objects;
  * @author carcassi
  */
 public abstract class VString extends Scalar {
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public abstract String getValue();
-    
-    
+
+
     /**
      * Creates a new VString.
-     * 
+     *
      * @param value the string value
      * @param alarm the alarm
      * @param time the time
@@ -37,15 +37,15 @@ public abstract class VString extends Scalar {
         if (this == obj) {
             return true;
         }
-        
+
 	if (obj instanceof VString) {
             VString other = (VString) obj;
-        
+
             return getValue().equals(other.getValue()) &&
                     getAlarm().equals(other.getAlarm()) &&
                     getTime().equals(other.getTime());
         }
-        
+
         return false;
     }
 
@@ -57,7 +57,7 @@ public abstract class VString extends Scalar {
         hash = 23 * hash + Objects.hashCode(getTime());
         return hash;
     }
-    
+
     @Override
     public final String toString() {
         StringBuilder builder = new StringBuilder();
@@ -72,5 +72,5 @@ public abstract class VString extends Scalar {
                 .append(']');
         return builder.toString();
     }
-    
+
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2020 Facility for Rare Isotope Beams
  *
  * This program is free software: you can redistribute it and/or modify

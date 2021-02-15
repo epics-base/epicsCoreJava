@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.*;
  * @author carcassi
  */
 public class PVEventTest {
-    
+
     @Test
     public void addEvent1() {
         assertThat(PVEvent.readConnectionEvent().addEvent(PVEvent.valueEvent()), equalTo(PVEvent.readConnectionValueEvent()));

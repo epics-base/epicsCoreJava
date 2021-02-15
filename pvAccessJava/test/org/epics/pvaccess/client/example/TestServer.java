@@ -10,7 +10,7 @@ public class TestServer {
 		// Create a context with default configuration values.
 		final ServerContextImpl context = new ServerContextImpl();
 		context.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(context));
-		
+
 		try {
 			context.initialize(new TestChannelProviderImpl());
 		} catch (Throwable th) {
@@ -22,8 +22,7 @@ public class TestServer {
         context.printInfo(); System.out.println();
 
         new Thread(new Runnable() {
-			
-			@Override
+
 			public void run() {
 		        try {
 	                System.out.println("Running server...");

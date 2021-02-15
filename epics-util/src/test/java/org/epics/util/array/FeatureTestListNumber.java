@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -13,18 +13,18 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
 
     @Override
     abstract public ListNumber createConstantCollection();
-    
+
     abstract public ListNumber createRampCollection();
-    
+
     abstract public ListNumber createModifiableCollection();
-    
+
     abstract public ListNumber createEmpty();
-    
+
     @Test
     public void getXxx() {
         testList(createConstantCollection());
     }
-    
+
     @Test
     public void equals() {
         ListNumber a = createRampCollection();
@@ -33,19 +33,19 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         assertThat(a, equalTo(b));
         assertThat(b, equalTo(a));
     }
-    
+
     @Test
     public void equalsSame() {
         ListNumber a = createRampCollection();
         assertThat(a, equalTo(a));
     }
-    
+
     @Test
     public void equalsNull() {
         ListNumber a = createRampCollection();
         assertThat(a, not(equalTo(null)));
     }
-    
+
     @Test
     public void notEquals() {
         ListNumber a = createConstantCollection();
@@ -53,7 +53,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         assertThat(a, not(equalTo(b)));
         assertThat(b, not(equalTo(a)));
     }
-    
+
     @Test
     public void hashcodeConsistency() {
         ListNumber a = createRampCollection();
@@ -61,7 +61,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         assertThat(a.hashCode(), equalTo(b.hashCode()));
         assertThat(b.hashCode(), equalTo(a.hashCode()));
     }
-    
+
     @Test
     public void equalsDouble() {
         ListNumber list = createRampCollection();
@@ -72,7 +72,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             assertThat(createRampCollection(), not(equalTo(doubleList)));
         }
     }
-    
+
     @Test
     public void equalsFloat() {
         ListNumber list = createRampCollection();
@@ -83,7 +83,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             assertThat(createRampCollection(), not(equalTo(floatList)));
         }
     }
-    
+
     @Test
     public void equalsLong() {
         ListNumber list = createRampCollection();
@@ -94,7 +94,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             assertThat(createRampCollection(), not(equalTo(longList)));
         }
     }
-    
+
     @Test
     public void equalsInt() {
         ListNumber list = createRampCollection();
@@ -105,7 +105,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             assertThat(createRampCollection(), not(equalTo(intList)));
         }
     }
-    
+
     @Test
     public void equalsShort() {
         ListNumber list = createRampCollection();
@@ -116,7 +116,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             assertThat(createRampCollection(), not(equalTo(shortList)));
         }
     }
-    
+
     @Test
     public void equalsByte() {
         ListNumber list = createRampCollection();
@@ -134,7 +134,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         if (list instanceof ListDouble || list instanceof ListFloat) {
             assertThat(list.toString(), equalTo("[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]"));
         } else {
-            assertThat(list.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));        
+            assertThat(list.toString(), equalTo("[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"));
         }
     }
 
@@ -143,42 +143,42 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         ListNumber list = createEmpty();
         assertThat(list.toString(), equalTo("[]"));
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetAll() {
         createRampCollection().setAll(0, unmodifiableListDouble(0.0));
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetDouble() {
         createRampCollection().setDouble(0, 0.0);
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetFloat() {
         createRampCollection().setFloat(0, 0.0F);
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetLong() {
         createRampCollection().setLong(0, 0L);
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetInt() {
         createRampCollection().setInt(0, 0);
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetShort() {
         createRampCollection().setShort(0, (short) 0);
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void defaultSetByte() {
         createRampCollection().setByte(0, (byte) 0);
     }
-    
+
     @Test
     public void setAllDouble() {
         ListNumber list = createModifiableCollection();
@@ -186,7 +186,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(0, data);
         testRamp(list);
     }
-    
+
     @Test
     public void setAllFloat() {
         ListNumber list = createModifiableCollection();
@@ -194,7 +194,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(0, data);
         testRamp(list);
     }
-    
+
     @Test
     public void setAllLong() {
         ListNumber list = createModifiableCollection();
@@ -202,7 +202,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(0, data);
         testRamp(list);
     }
-    
+
     @Test
     public void setAllInt() {
         ListNumber list = createModifiableCollection();
@@ -210,7 +210,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(0, data);
         testRamp(list);
     }
-    
+
     @Test
     public void setAllShort() {
         ListNumber list = createModifiableCollection();
@@ -218,7 +218,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(0, data);
         testRamp(list);
     }
-    
+
     @Test
     public void setAllByte() {
         ListNumber list = createModifiableCollection();
@@ -226,7 +226,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(0, data);
         testRamp(list);
     }
-    
+
     @Test
     public void setAllDouble2() {
         ListNumber list = createModifiableCollection();
@@ -234,7 +234,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(4, data);
         testMiddleInsert(list);
     }
-    
+
     @Test
     public void setAllFloat2() {
         ListNumber list = createModifiableCollection();
@@ -242,7 +242,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(4, data);
         testMiddleInsert(list);
     }
-    
+
     @Test
     public void setAllLong2() {
         ListNumber list = createModifiableCollection();
@@ -250,7 +250,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(4, data);
         testMiddleInsert(list);
     }
-    
+
     @Test
     public void setAllInt2() {
         ListNumber list = createModifiableCollection();
@@ -258,7 +258,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(4, data);
         testMiddleInsert(list);
     }
-    
+
     @Test
     public void setAllShort2() {
         ListNumber list = createModifiableCollection();
@@ -266,7 +266,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(4, data);
         testMiddleInsert(list);
     }
-    
+
     @Test
     public void setAllByte2() {
         ListNumber list = createModifiableCollection();
@@ -274,7 +274,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         list.setAll(4, data);
         testMiddleInsert(list);
     }
-    
+
     @Test
     public void setDouble() {
         ListNumber list = createModifiableCollection();
@@ -284,7 +284,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         testList(list);
         testIterationForAllTypes(list);
     }
-    
+
     @Test
     public void setFloat() {
         ListNumber list = createModifiableCollection();
@@ -294,7 +294,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         testList(list);
         testIterationForAllTypes(list);
     }
-    
+
     @Test
     public void setLong() {
         ListNumber list = createModifiableCollection();
@@ -304,7 +304,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         testList(list);
         testIterationForAllTypes(list);
     }
-    
+
     @Test
     public void setInt() {
         ListNumber list = createModifiableCollection();
@@ -314,7 +314,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         testList(list);
         testIterationForAllTypes(list);
     }
-    
+
     @Test
     public void setShort() {
         ListNumber list = createModifiableCollection();
@@ -324,7 +324,7 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         testList(list);
         testIterationForAllTypes(list);
     }
-    
+
     @Test
     public void setByte() {
         ListNumber list = createModifiableCollection();
@@ -361,31 +361,31 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
         ListNumber subSubList = subList.subList(1, 7);
         assertThat(subSubList.toArray(new double[subSubList.size()]), equalTo(new double[]{2.0, 3.0, 4.0, 5.0, 6.0, 7.0}));
     }
-    
+
     @Test(expected=IndexOutOfBoundsException.class)
     public void subListAccessOutOfBounds1() {
         ListNumber subList = createRampCollection().subList(2, 8);
         subList.getDouble(-1);
     }
-    
+
     @Test(expected=IndexOutOfBoundsException.class)
     public void subListAccessOutOfBounds2() {
         ListNumber subList = createRampCollection().subList(2, 8);
         subList.getDouble(subList.size());
     }
-    
+
     @Test(expected=IndexOutOfBoundsException.class)
     public void subListWriteOutOfBounds1() {
         ListNumber subList = createModifiableCollection().subList(2, 8);
         subList.setDouble(-1, 0.0);
     }
-    
+
     @Test(expected=IndexOutOfBoundsException.class)
     public void subListWriteOutOfBounds2() {
         ListNumber subList = createModifiableCollection().subList(2, 8);
         subList.setDouble(subList.size(), 0.0);
     }
-    
+
     @Test
     public void subListEquals() {
         ListNumber ramp = createRampCollection();
@@ -440,5 +440,5 @@ public abstract class FeatureTestListNumber extends FeatureTestCollectionNumber 
             }
         }
     }
-    
+
 }

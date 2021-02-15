@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.client.rpc;
 import org.epics.pvaccess.server.rpc.RPCRequestException;

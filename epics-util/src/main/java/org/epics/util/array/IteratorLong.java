@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -8,31 +8,25 @@ package org.epics.util.array;
  * An iterator of {@code long}s.
  *
  */
-public interface IteratorLong extends IteratorNumber {
+public abstract class IteratorLong implements IteratorNumber {
 
-    @Override
-    public default float nextFloat() {
+    public  float nextFloat() {
         return (float) nextLong();
     }
 
-    @Override
-    public default double nextDouble() {
+    public  double nextDouble() {
         return (double) nextLong();
     }
 
-    @Override
-    public default byte nextByte() {
+    public  byte nextByte() {
         return (byte) nextLong();
     }
 
-    @Override
-    public default short nextShort() {
+    public  short nextShort() {
         return (short) nextLong();
     }
 
-    @Override
-    public default int nextInt() {
+    public  int nextInt() {
         return (int) nextLong();
     }
-
 }

@@ -45,20 +45,20 @@ public class GetHandler extends AbstractServerResponseHandler {
 	}
 
 	private static class ChannelGetRequesterImpl extends BaseChannelRequester implements ChannelGetRequester, TransportSender {
-		
+
 		private volatile ChannelGet channelGet;
 		private volatile BitSet bitSet;
 		private volatile PVStructure pvStructure;
 		private volatile Structure structure;
 		private volatile Status status;
-		
+
 		public ChannelGetRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				 PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
-			
+
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			
+
 			try {
 				channelGet = channel.getChannel().createChannelGet(this, pvRequest);
 			} catch (Throwable th) {
@@ -68,14 +68,13 @@ public class GetHandler extends AbstractServerResponseHandler {
 				destroy();
 			}
 		}
-		
-		@Override
+
 		public void channelGetConnect(Status status, ChannelGet channelGet, Structure structure) {
 			// will JVM optimize subsequent volatile sets?
 			this.status = status;
 			this.channelGet = channelGet;
 			this.structure = structure;
-			
+
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -84,28 +83,26 @@ public class GetHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void getDone(Status status, ChannelGet channelGet, PVStructure pvStructure, BitSet bitSet) {
 			// will JVM optimize subsequent volatile sets?
 			this.status = status;
 			this.pvStructure = pvStructure;
 			this.bitSet = bitSet;
-			
+
 			// TODO should we check if pvStructure and bitSet are consistent/valid
-			
+
 			transport.enqueueSendRequest(this);
 		}
 
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Destroyable#destroy()
 		 */
-		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
 
 			// asCheck
 			channel.getChannelSecuritySession().release(ioid);
-			
+
 			if (channelGet != null)
 				channelGet.destroy();
 		}
@@ -116,11 +113,10 @@ public class GetHandler extends AbstractServerResponseHandler {
 		public ChannelGet getChannelGet() {
 			return channelGet;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// noop
 		}
@@ -128,7 +124,6 @@ public class GetHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// noop
 		}
@@ -136,7 +131,6 @@ public class GetHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final int request = getPendingRequest();
 
@@ -155,13 +149,13 @@ public class GetHandler extends AbstractServerResponseHandler {
 				{
 					bitSet.serialize(buffer, control);
 					pvStructure.serialize(buffer, control, bitSet);
-					
+
 					// release references
 					pvStructure = null;
 					bitSet = null;
 				}
 			}
-			
+
 			stopRequest();
 
 			// lastRequest
@@ -192,13 +186,13 @@ public class GetHandler extends AbstractServerResponseHandler {
 			BaseChannelRequester.sendFailureMessage((byte)10, transport, ioid, qosCode, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-		
+
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
-	
+
 			// asCheck
 			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelGet(ioid, pvRequest);
 			if (!asStatus.isSuccess())
@@ -206,7 +200,7 @@ public class GetHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)10, transport, ioid, (byte)QoS.INIT.getMaskValue(), asStatus);
 				return;
 			}
-			
+
 			// create...
 			new ChannelGetRequesterImpl(context, channel, ioid, transport, pvRequest);
 		}
@@ -224,7 +218,7 @@ public class GetHandler extends AbstractServerResponseHandler {
 				BaseChannelRequester.sendFailureMessage((byte)10, transport, ioid, qosCode, BaseChannelRequester.otherRequestPendingStatus);
 				return;
 			}
-			
+
 			// asCheck
 			Status asStatus = channel.getChannelSecuritySession().authorizeGet(ioid);
 			if (!asStatus.isSuccess())
@@ -236,10 +230,10 @@ public class GetHandler extends AbstractServerResponseHandler {
 			}
 
 			ChannelGet channelGet = request.getChannelGet();
-			
+
 			if (lastRequest)
 				channelGet.lastRequest();
-			
+
 			channelGet.get();
 		}
 	}

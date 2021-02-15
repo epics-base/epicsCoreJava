@@ -18,7 +18,7 @@ public class IVEnumArray extends VEnumArray {
     private final Time time;
     private final ListNumber indices;
     private final EnumDisplay enumDisplay;
-    
+
     private final List<String> labels;
 
     IVEnumArray(ListNumber indices, EnumDisplay enumDisplay, Alarm alarm, Time time) {
@@ -28,7 +28,7 @@ public class IVEnumArray extends VEnumArray {
         VType.argumentNotNull("alarm", alarm);
         VType.argumentNotNull("time", time);
 
-        labels = new ArrayList<>(indices.size());
+        labels = new ArrayList<String>(indices.size());
 
         for (int i = 0; i < indices.size(); i++) {
             int index = indices.getInt(i);
@@ -48,12 +48,10 @@ public class IVEnumArray extends VEnumArray {
         return enumDisplay;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }

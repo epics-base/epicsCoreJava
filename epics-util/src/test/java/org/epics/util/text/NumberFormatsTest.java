@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.*;
  * @author carcassi
  */
 public class NumberFormatsTest {
-    
+
     public NumberFormatsTest() {
     }
 
@@ -38,7 +38,7 @@ public class NumberFormatsTest {
         assertThat(format.format(Double.NEGATIVE_INFINITY), equalTo("-Infinity"));
         assertThat(NumberFormats.precisionFormat(2), sameInstance(format));
     }
-    
+
     @Test
     public void format2() {
         NumberFormat f = NumberFormats.precisionFormat(3);

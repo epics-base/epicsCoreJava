@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,10 +10,10 @@ import org.epics.util.array.CollectionNumber;
 import org.epics.util.array.ArrayFloat;
 import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayInteger;
-import java.util.Random;
+import org.epics.util.compat.legacy.lang.Random;
 import org.epics.util.array.ArrayLong;
 import org.epics.util.array.IteratorNumber;
-import org.epics.util.array.ListNumbers;
+
 import static org.epics.util.array.CollectionNumbers.*;
 
 /**
@@ -35,7 +35,7 @@ public class ArrayPerformanceMeasurement {
         System.out.println("The tests are conducted on straight array, wrapped array using ArrayXxx and through the abstract CollectionNumber");
         System.out.println("");
         System.out.println("Current Java version is " + System.getProperty("java.version"));
-        
+
         System.out.println("");
         System.out.println("Preparing data");
         double[] doubleArray = new double[arraySize];
@@ -78,7 +78,7 @@ public class ArrayPerformanceMeasurement {
         profileArray(intCollection, nIterations);
         profileArray(shortCollection, nIterations);
         profileArray(byteCollection, nIterations);
-        
+
         // As time of writing, the performance impact of the wrapper itself is negligible:
         // the difference is within the fluctuations within different runs.
         // This means one can always code to ArrayDouble instead of double[] and
@@ -87,7 +87,7 @@ public class ArrayPerformanceMeasurement {
         System.out.println("");
         System.out.println("Benchmark array wrappers through common abstract class");
         // Note: rearrenging the order will change which type executes faster
-        // The first couple of iterations will be faster: if only a couple of 
+        // The first couple of iterations will be faster: if only a couple of
         // implementation of an interface are used, the JIT will inline with a
         // simple switch.
         profileCollectionNumber(doubleCollection, nIterations);
@@ -102,14 +102,14 @@ public class ArrayPerformanceMeasurement {
         // Note that the double array performance regressed because of the JIT
         // de-optimization.
         profileCollectionNumber(doubleCollection, nIterations);
-        
-        // Conclusion: if a program uses only one implementation, say ArrayDouble, 
+
+        // Conclusion: if a program uses only one implementation, say ArrayDouble,
         // of CollectionNumber, using the interfaces has no penalty. If it uses
         // multiple implementations, it will introduce the penalty. The penalty
         // can be eliminated by writing multiple copies of the code for each
         // concrete array class. This is no worse than writing multiple versions
         // of the code to the different array classes.
-        
+
         // What one should do is first code to the abstract class:
         //    doStuff(CollectionNumber col) {
         //         ...
@@ -126,12 +126,12 @@ public class ArrayPerformanceMeasurement {
         //    doStuffImpl(ArrayDouble col) {
         //         ...
         //    }
-        // 
+        //
 
         System.out.println("");
         System.out.println("See code comments for details on how to interpret the numbers");
     }
-    
+
     // Iterations using abstract interfaces
 
     private static double computeSum(CollectionNumber collection) {
@@ -156,7 +156,7 @@ public class ArrayPerformanceMeasurement {
 
         System.out.println("Iteration using " + list.getClass().getSimpleName() + " through abstract class: ns " + (stopTime - startTime) / nIterations);
     }
-    
+
     // Iterations using concrete classes. Note that the implementation
     // differ only in the type of the array parameter
 
@@ -261,15 +261,15 @@ public class ArrayPerformanceMeasurement {
 
         System.out.println("Iteration using ArrayByte: ns " + (stopTime - startTime) / nIterations);
     }
-    
+
     // Iterations using direct arrays
 
     private static void profileJavaArray(double[] array, int nIterations) {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (double v : array) {
+                sum += v;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -285,8 +285,8 @@ public class ArrayPerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (float v : array) {
+                sum += v;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -302,8 +302,8 @@ public class ArrayPerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (long l : array) {
+                sum += l;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -319,8 +319,8 @@ public class ArrayPerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (int k : array) {
+                sum += k;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -336,8 +336,8 @@ public class ArrayPerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (short value : array) {
+                sum += value;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {
@@ -353,8 +353,8 @@ public class ArrayPerformanceMeasurement {
         long startTime = System.nanoTime();
         for (int i = 0; i < nIterations; i++) {
             double sum = 0;
-            for (int j = 0; j < array.length; j++) {
-                sum += array[j];
+            for (byte b : array) {
+                sum += b;
             }
             // NOTE: this check is required or the whole computation will be optimized away
             if (sum == 0) {

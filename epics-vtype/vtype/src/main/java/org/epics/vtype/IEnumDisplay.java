@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,7 +14,7 @@ import java.util.List;
 final class IEnumDisplay extends EnumDisplay {
 
     private final List<String> choices;
-    
+
     IEnumDisplay(List<String> choices) {
         VType.argumentNotNull("choices", choices);
         this.choices = choices;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS pvData is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -42,7 +42,7 @@ public interface ChannelArrayRequester extends Requester {
      * The request is done. This is always called with no locks held.
      * @param status Completion status.
      * @param channelArray The channelArray interface.
-     * @param length The length of the array, 0 if the request failed. 
+     * @param length The length of the array, 0 if the request failed.
      */
     void getLengthDone(Status status, ChannelArray channelArray, int length);
     /**

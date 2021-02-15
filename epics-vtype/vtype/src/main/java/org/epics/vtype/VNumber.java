@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
@@ -19,15 +19,15 @@ import org.epics.util.number.UShort;
  * @author carcassi
  */
 public abstract class VNumber extends Scalar implements DisplayProvider {
-    
+
     /**
      * The numeric value.
-     * 
+     *
      * @return the value
      */
     @Override
     public abstract Number getValue();
-    
+
     /**
      * Default toString implementation for VNumber.
      *
@@ -47,10 +47,10 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
                 .append(']');
         return builder.toString();
     }
-    
+
     /**
      * Creates a new VNumber based on the type of the data
-     * 
+     *
      * @param value the value
      * @param alarm the alarm
      * @param time the time
@@ -87,17 +87,17 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
         if (this == obj) {
             return true;
         }
-        
+
 	if (obj instanceof VNumber) {
             VNumber other = (VNumber) obj;
-        
+
             return getClass().equals(other.getClass()) &&
                     getValue().equals(other.getValue()) &&
                     getAlarm().equals(other.getAlarm()) &&
                     getTime().equals(other.getTime()) &&
                     getDisplay().equals(other.getDisplay());
         }
-        
+
         return false;
     }
 
@@ -110,5 +110,5 @@ public abstract class VNumber extends Scalar implements DisplayProvider {
         hash = 23 * hash + Objects.hashCode(getDisplay());
         return hash;
     }
-    
+
 }

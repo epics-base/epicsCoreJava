@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.array;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -21,37 +22,37 @@ public class CollectionNumbersTest {
     @Test
     public void toList1() {
         byte[] array = new byte[]{1,2,3};
-        assertThat(toList(array), equalTo(toListByte(array)));
+        assertThat(toList(array), Matchers.<ListNumber>equalTo(toListByte(array)));
     }
 
     @Test
     public void toList2() {
         short[] array = new short[]{1,2,3};
-        assertThat(toList(array), equalTo(toListShort(array)));
+        assertThat(toList(array), Matchers.<ListNumber>equalTo(toListShort(array)));
     }
 
     @Test
     public void toList3() {
         int[] array = new int[]{1,2,3};
-        assertThat(toList(array), equalTo(toListInt(array)));
+        assertThat(toList(array), Matchers.<ListNumber>equalTo(toListInt(array)));
     }
 
     @Test
     public void toList4() {
         long[] array = new long[]{1,2,3};
-        assertThat(toList(array), equalTo(toListLong(array)));
+        assertThat(toList(array), Matchers.<ListNumber>equalTo(toListLong(array)));
     }
 
     @Test
     public void toList5() {
         float[] array = new float[]{1,2,3};
-        assertThat(toList(array), equalTo(toListFloat(array)));
+        assertThat(toList(array), Matchers.<ListNumber>equalTo(toListFloat(array)));
     }
 
     @Test
     public void toList6() {
         double[] array = new double[]{1,2,3};
-        assertThat(toList(array), equalTo(toListDouble(array)));
+        assertThat(toList(array), Matchers.<ListNumber>equalTo(toListDouble(array)));
     }
 
     @Test(expected=NullPointerException.class)

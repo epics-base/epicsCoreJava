@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -54,7 +54,7 @@ public class UByteTest {
         assertThat(value1.hashCode(), equalTo(value2.hashCode()));
         assertThat(value1.hashCode(), not(equalTo(value3.hashCode())));
     }
-    
+
     @Test
     public void toString1() {
         UByte value1 = new UByte((byte) 0);

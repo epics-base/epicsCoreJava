@@ -1,48 +1,47 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.javafx.tools;
 
 import java.io.PrintStream;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import org.epics.gpclient.PV;
 import org.epics.gpclient.PVEvent;
 import org.epics.gpclient.PVListener;
+import org.epics.util.compat.legacy.lang.Objects;
+import org.joda.time.Instant;
 
 /**
  *
  * @author carcassi
  */
 public class Log {
-    
+
     private final Runnable callback;
     private final List<Event> events = Collections.synchronizedList(new ArrayList<Event>());
 
     public Log(Runnable callback) {
         this.callback = callback;
     }
-    
+
     public <R, W> PVListener<R, W> createReadListener() {
         return new org.epics.gpclient.PVListener<R, W>() {
-            @Override
             public void pvChanged(PVEvent event, PV<R, W> pv) {
                 events.add(new Event(Instant.now(), event, pv.isConnected(), pv.isWriteConnected(), pv.getValue()));
                 callback.run();
             }
         };
     }
-    
+
     public List<Event> getEvents() {
         return events;
     }
-    
+
 //    private TimestampFormat format = new TimestampFormat("ss.NNNNNNNNN");
-    
+
     public void print(PrintStream out) {
         for (Event event : events) {
             Event readEvent = (Event) event;

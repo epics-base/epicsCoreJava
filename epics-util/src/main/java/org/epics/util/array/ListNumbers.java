@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -209,7 +209,6 @@ public class ListNumbers {
             this.maxValue = maxValue;
         }
 
-        @Override
         public double getDouble(int index) {
             if (index < 0 || index >= size) {
                 throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
@@ -217,7 +216,6 @@ public class ListNumbers {
             return minValue + (index * (maxValue - minValue)) / (size - 1);
         }
 
-        @Override
         public int size() {
             return size;
         }
@@ -235,7 +233,6 @@ public class ListNumbers {
             this.increment = increment;
         }
 
-        @Override
         public double getDouble(int index) {
             if (index < 0 || index >= size) {
                 throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
@@ -243,7 +240,6 @@ public class ListNumbers {
             return initialValue + index * increment;
         }
 
-            @Override
             public int size() {
                 return size;
             }
@@ -273,7 +269,7 @@ public class ListNumbers {
         }
         throw new UnsupportedOperationException("Not yet supported");
     }
-    
+
 
     /**
      * Concatenates a sequence of lists into a single one. The returned list
@@ -289,10 +285,9 @@ public class ListNumbers {
         if (lists.length == 0) {
             return CollectionNumbers.unmodifiableListDouble(new double[0]);
         }
-        
+
         return new ListDouble() {
 
-            @Override
             public int size() {
                 int size = 0;
                 for (ListNumber list : lists) {
@@ -301,12 +296,11 @@ public class ListNumbers {
                 return size;
             }
 
-            @Override
             public double getDouble( int index ) {
                 if (index < 0 || index >= size()) {
                     throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
                 }
-                
+
                 // Iterate through the lists until the right spot is found
                 int currentListStart = 0;
                 for (ListNumber list : lists) {
@@ -325,7 +319,7 @@ public class ListNumbers {
                 if (index < 0 || index >= size()) {
                     throw new IndexOutOfBoundsException("Index out of bounds: " + index + ", size: " + size());
                 }
-                
+
                 // Iterate through the lists until the right spot is found
                 int currentListStart = 0;
                 for (ListNumber list : lists) {

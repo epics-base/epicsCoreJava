@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -37,19 +37,19 @@ public interface V3Channel extends Channel
      */
     boolean add(Monitor monitor);
     /**
-     * Remove a ChannelGet 
+     * Remove a ChannelGet
      * @param channelGet The channelGet to remove.
      * @return (false,true) if the channelGet (was not, was) removed.
      */
     boolean remove(ChannelGet channelGet);
     /**
-     * Remove a ChannelPut 
+     * Remove a ChannelPut
      * @param channelPut The channelPut to remove.
      * @return (false,true) if the channelPut (was not, was) removed.
      */
     boolean remove(ChannelPut channelPut);
     /**
-     * Remove a Monitor 
+     * Remove a Monitor
      * @param monitor The monitor to remove.
      * @return (false,true) if the monitor (was not, was) removed.
      */

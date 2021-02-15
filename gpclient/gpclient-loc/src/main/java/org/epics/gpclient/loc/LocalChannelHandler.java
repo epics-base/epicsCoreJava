@@ -1,8 +1,13 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.loc;
+
+import org.epics.gpclient.ReadCollector;
+import org.epics.gpclient.WriteCollector;
+import org.epics.gpclient.datasource.MultiplexedChannelHandler;
+import org.epics.vtype.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,17 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.gpclient.ReadCollector;
-import org.epics.gpclient.WriteCollector;
-import org.epics.gpclient.datasource.MultiplexedChannelHandler;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.EnumDisplay;
-import org.epics.vtype.Time;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VDoubleArray;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VString;
-import org.epics.vtype.VType;
 
 /**
  * Implementation for channels of a {@link LocalDataSource}.
@@ -28,7 +22,7 @@ import org.epics.vtype.VType;
  * @author carcassi
  */
 class LocalChannelHandler extends MultiplexedChannelHandler<Object, Object> {
-    
+
     private static Logger log = Logger.getLogger(LocalChannelHandler.class.getName());
 
     LocalChannelHandler(String channelName) {
@@ -70,7 +64,7 @@ class LocalChannelHandler extends MultiplexedChannelHandler<Object, Object> {
         // Override for test visibility purposes
         super.removeWriter(subscription);
     }
-    
+
     private Object checkValue(Object value) {
         if (type != null && !type.isInstance(value)) {
             throw new IllegalArgumentException("Value " + value + " is not of type " + type.getSimpleName());
@@ -111,11 +105,11 @@ class LocalChannelHandler extends MultiplexedChannelHandler<Object, Object> {
     protected boolean isWriteConnected(Object payload) {
         return isConnected(payload);
     }
-    
+
     private Object initialArguments;
     private Object initialValue;
     private Class<?> type;
-    
+
     synchronized void setInitialValue(Object value) {
         if (initialArguments != null && !initialArguments.equals(value)) {
             String message = "Different initialization for local channel " + getChannelName() + ": " + value + " but was " + initialArguments;
@@ -128,12 +122,12 @@ class LocalChannelHandler extends MultiplexedChannelHandler<Object, Object> {
                 List<?> args = (List<?>) initialArguments;
                 // TODO error message if not Number
                 int index = ((Number) args.get(0)).intValue();
-                List<String> labels = new ArrayList<>();
+                List<String> labels = new ArrayList<String>();
                 for (Object arg : args.subList(1, args.size())) {
                     // TODO error message if not String
                     labels.add((String) arg);
                 }
-                
+
                 initialValue = VEnum.of(index, EnumDisplay.of(labels), Alarm.none(), Time.now());
             } else {
                 initialValue = checkValue(VType.toVTypeChecked(value));
@@ -141,7 +135,7 @@ class LocalChannelHandler extends MultiplexedChannelHandler<Object, Object> {
             processMessage(initialValue);
         }
     }
-    
+
     synchronized void setType(String typeName) {
         if (typeName == null) {
             return;
@@ -176,11 +170,11 @@ class LocalChannelHandler extends MultiplexedChannelHandler<Object, Object> {
 
     @Override
     public synchronized Map<String, Object> getProperties() {
-        Map<String, Object> properties = new HashMap<>();
+        Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("Name", getChannelName());
         properties.put("Type", type);
         properties.put("Initial Value", initialArguments);
         return properties;
     }
-    
+
 }

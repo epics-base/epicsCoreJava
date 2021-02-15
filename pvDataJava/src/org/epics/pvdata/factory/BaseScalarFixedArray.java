@@ -20,11 +20,11 @@ import org.epics.pvdata.pv.Type;
  *
  */
 public class BaseScalarFixedArray extends BaseField implements ScalarArray {
-    
+
     private final ScalarType elementType;
     private final int size;
     private final String id;
-    
+
     /**
      * Constructor for fixed size scalar array.
      * @param elementType The element Type.
@@ -40,11 +40,10 @@ public class BaseScalarFixedArray extends BaseField implements ScalarArray {
         this.size = size;
         this.id = BaseScalar.idLUT[this.elementType.ordinal()] + "[" + size + "]";
     }
-    
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Field#getID()
 	 */
-	@Override
 	public String getID() {
 		return id;
 	}
@@ -84,21 +83,19 @@ public class BaseScalarFixedArray extends BaseField implements ScalarArray {
 			return false;
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
 	 */
-	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		buffer.put((byte)(0x18 | BaseScalar.typeCodeLUT[elementType.ordinal()]));
 		SerializeHelper.writeSize(size, buffer, control);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
-	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 		// must be done via FieldCreate
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
@@ -107,17 +104,15 @@ public class BaseScalarFixedArray extends BaseField implements ScalarArray {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getArraySizeType()
 	 */
-	@Override
 	public ArraySizeType getArraySizeType() {
 		return ArraySizeType.fixed;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getMaximumCapacity()
 	 */
-	@Override
 	public int getMaximumCapacity() {
 		return size;
 	}
-	
+
 }

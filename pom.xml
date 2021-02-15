@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.epics</groupId>
@@ -17,12 +18,21 @@
         <epics-pvdata.version>6.1.7-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.3.7-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>5.1.7-SNAPSHOT</epics-pvaccess.version>
-        <jca.version>2.4.7-SNAPSHOT</jca.version>
+        <jca.version>2.3.6</jca.version>
         <!-- Versions of examples bundled with Core -->
         <!-- Name of javadoc overview page -->
         <mainpage.name>${project.name}</mainpage.name>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <asm.version>7.0</asm.version>
+
+        <!--    3.7.0 original pre-VMS setting
+                3.6.2+ requires source and target 7+ for maven-compiler-plugin
+                3.5.1 last version allowing source and target less than 7
+                2.0.2 first version -->
+        <maven-compiler-plugin.version>3.5.1</maven-compiler-plugin.version>
+        <maven.compiler.source>1.5</maven.compiler.source>
+        <maven.compiler.target>1.5</maven.compiler.target>
+        <maven.compiler.forceJavacCompilerUse>true</maven.compiler.forceJavacCompilerUse>
     </properties>
 
     <modules>
@@ -89,6 +99,14 @@
             </roles>
         </developer>
         <developer>
+            <name>George McIntyre</name>
+            <email>sly@slac.stanford.edu</email>
+            <organization>SLAC</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
             <name>Kunal Shroff</name>
             <email>kunalshroff9@gmail.com</email>
             <roles>
@@ -130,7 +148,7 @@
         </snapshotRepository>
     </distributionManagement>
 
-    <!-- Common depoendencies -->
+    <!-- Common dependencies -->
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -140,7 +158,7 @@
         </dependency>
     </dependencies>
 
-    <!-- Preset dependency versions for core librraies -->
+    <!-- Preset dependency versions for core libraries -->
     <dependencyManagement>
         <dependencies>
 
@@ -242,6 +260,15 @@
         <sourceDirectory>${basedir}/src</sourceDirectory>
         <testSourceDirectory>${basedir}/test</testSourceDirectory>
 
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
         <plugins>
             <!-- Includes the OSGi manifest -->
             <plugin>
@@ -274,22 +301,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
+                <version>${maven-compiler-plugin.version}</version>
             </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>3.0.1</version>
-                <configuration>
-                    <additionalOptions>
-                        <additionalOption>${javadoc.opts}</additionalOption>
-                    </additionalOptions>
-                </configuration>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -314,7 +332,7 @@
                     <detectOfflineLinks>true</detectOfflineLinks>
                     <docfilessubdirs>true</docfilessubdirs>
                     <isOffline>false</isOffline>
-                    <!-- Hardcoding the java 8 docs since 11.0.2 and maven javadoc 
+                    <!-- Hardcoding the java 8 docs since 11.0.2 and maven javadoc
                       plugin hit the following jdk bug https://bugs.openjdk.java.net/browse/JDK-8212233 -->
                     <links>
                         <link>https://docs.oracle.com/javase/8/docs/api/</link>

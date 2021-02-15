@@ -24,7 +24,7 @@ import org.epics.util.array.CollectionNumbers;
 public class BasePVShortArray extends AbstractPVScalarArray implements PVShortArray
 {
     protected short[] value;
-    
+
     /**
      * Constructor.
      * @param array The introspection interface.
@@ -33,19 +33,19 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
     {
         super(array);
     }
-    
+
     @Override
     protected void allocate(int newCapacity) {
     	value = new short[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -59,7 +59,7 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
 		buffer.position(buffer.position() + length*2);
 		return length;
 	}
-	
+
     @Override
 	protected int getFromBuffer(ByteBuffer buffer, DeserializableControl control, int offset, int length)
 	{
@@ -71,20 +71,17 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVShortArray#get(int, int, org.epics.pvdata.pv.ShortArrayData)
      */
-    @Override
     public int get(int offset, int len, ShortArrayData data) {
     	return internalGet(offset, len, data);
     }
 
-    @Override
     public ArrayShort get() {
         return CollectionNumbers.unmodifiableListShort(value);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVShortArray#put(int, int, short[], int)
      */
-    @Override
     public int put(int offset, int len, short[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
@@ -93,7 +90,6 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVShortArray#shareData(short[])
      */
-    @Override
     public void shareData(short[] from) {
     	internalShareData(from);
     }
@@ -107,7 +103,7 @@ public class BasePVShortArray extends AbstractPVScalarArray implements PVShortAr
 	    b.get(0, b.getLength(), arrayData);
 		return Arrays.equals(arrayData.data, value);
     }
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

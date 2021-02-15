@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,20 +16,17 @@ public class CollectionByteTest extends FeatureTestCollectionNumber {
 
     @Override
     public CollectionNumber createConstantCollection() {
-        return new CollectionByte() {
+        return new AbstractCollectionByte() {
 
-            @Override
             public IteratorByte iterator() {
                 return new IteratorByte() {
 
                     int n=0;
 
-                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
-                    @Override
                     public byte nextByte() {
                         n++;
                         return (byte) 1;
@@ -37,7 +34,6 @@ public class CollectionByteTest extends FeatureTestCollectionNumber {
                 };
             }
 
-            @Override
             public int size() {
                 return 10;
             }

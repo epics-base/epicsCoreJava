@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -19,7 +19,7 @@ public class WriteSubscription {
 
     /**
      * Creates a new write subscription for the given channel and collector.
-     * 
+     *
      * @param channelName the name of the channel to connect to
      * @param writeCollector the collector for the write operations
      */
@@ -27,7 +27,7 @@ public class WriteSubscription {
         this.channelName = channelName;
         this.writeCollector = writeCollector;
     }
-    
+
     /**
      * The name of the channel to write to.
      *
@@ -71,7 +71,7 @@ public class WriteSubscription {
         }
         return true;
     }
-    
+
     @Override
     public String toString() {
         return "[WriteSubscription for " + channelName + ": " + writeCollector + "]";

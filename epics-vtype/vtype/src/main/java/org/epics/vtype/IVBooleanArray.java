@@ -31,12 +31,10 @@ public class IVBooleanArray extends VBooleanArray {
         return data;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }

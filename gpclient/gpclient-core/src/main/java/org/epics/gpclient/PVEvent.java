@@ -1,14 +1,15 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
+import org.epics.util.compat.legacy.lang.Objects;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * A notification event for a pv. This may represent an aggregated event of multiple events
@@ -31,26 +32,26 @@ public final class PVEvent {
          * changed, ...
          */
         READ_CONNECTION,
-        
+
         /**
          * The write connection value has changed. For example, the network
          * channel was connected/disconnected, the write access rights were
          * changed, ...
          */
         WRITE_CONNECTION,
-        
+
         /**
          * The value has changed. For example, a new value was posted for
          * this channel, the metadata associated with it changed, ...
          */
         VALUE,
-        
+
         /**
          * An error was posted on this channel. For example, a timeout expired,
          * the channel was not found, the value did not match the type requested, .,..
          */
         EXCEPTION,
-        
+
         /**
          * The write was successful. The exact meaning will depend on the
          * channel. For example, one channel may return successful if the value
@@ -58,7 +59,7 @@ public final class PVEvent {
          * was processed correctly, ...
          */
         WRITE_SUCCEEDED,
-        
+
         /**
          * The write was not successful. The exact meaning will depend on the
          * channel. For example, one channel may deem the write failed even
@@ -66,7 +67,7 @@ public final class PVEvent {
          * an error.
          */
         WRITE_FAILED};
-    
+
     private final List<Type> types;
     private final Exception exception;
     private final Exception writeError;
@@ -83,7 +84,7 @@ public final class PVEvent {
 
     /**
      * Checks whether the type of this event contains the given type.
-     * 
+     *
      * @param type an event type
      * @return true if this event is of that type
      */
@@ -94,7 +95,7 @@ public final class PVEvent {
     /**
      * All the types of this event. An event may be aggregated and can, therefore,
      * map to more than one type.
-     * 
+     *
      * @return the type list
      */
     public List<Type> getType() {
@@ -104,7 +105,7 @@ public final class PVEvent {
     /**
      * If the type is {@link Type#EXCEPTION}, it contains the exception. Null
      * otherwise.
-     * 
+     *
      * @return the error associated with the event
      */
     public Exception getException() {
@@ -114,7 +115,7 @@ public final class PVEvent {
     /**
      * If the type is {@link Type#WRITE_FAILED}, it contains the error. Null
      * otherwise.
-     * 
+     *
      * @return the error associated with the event
      */
     public Exception getWriteError() {
@@ -123,12 +124,12 @@ public final class PVEvent {
 
     /**
      * Returns a new event that aggregates this event with the given event.
-     * 
+     *
      * @param event the event to aggregate to this
      * @return the new aggregated event
      */
     public PVEvent addEvent(PVEvent event) {
-        List<Type> newTypes = new ArrayList<>(getType());
+        List<Type> newTypes = new ArrayList<Type>(getType());
         for (Type type : event.getType()) {
             newTypes.remove(type);
             newTypes.add(type);
@@ -137,9 +138,9 @@ public final class PVEvent {
         Exception newWriteError = (event.getWriteError() != null) ? event.getWriteError() : getWriteError();
         return new PVEvent(newException, newWriteError, newTypes);
     }
-    
+
     PVEvent removeType(Type type) {
-        List<Type> newTypes = new ArrayList<>(getType());
+        List<Type> newTypes = new ArrayList<Type>(getType());
         newTypes.remove(type);
         Exception newException = (type == Type.EXCEPTION) ? null : getException();
         Exception newWriteError = (type == Type.WRITE_FAILED) ? null : getWriteError();
@@ -190,10 +191,10 @@ public final class PVEvent {
             sb.append(" - wrEx: ").append(writeError.getMessage());
         }
         sb.append("}");
-        
+
         return sb.toString();
     }
-    
+
     // Cache events that don't have an exception to save memory creation/collection
     private static final PVEvent READ_CONNECTION_EVENT = new PVEvent(Type.READ_CONNECTION);
     private static final PVEvent VALUE_EVENT = new PVEvent( Type.VALUE);
@@ -203,16 +204,16 @@ public final class PVEvent {
 
     /**
      * A read connection event.
-     * 
+     *
      * @return an event
      */
     public static PVEvent readConnectionEvent() {
         return READ_CONNECTION_EVENT;
     }
-    
+
     /**
      * A value event.
-     * 
+     *
      * @return an event
      */
     public static PVEvent valueEvent() {
@@ -221,7 +222,7 @@ public final class PVEvent {
 
     /**
      * A read connection and value event.
-     * 
+     *
      * @return an event
      */
     public static PVEvent readConnectionValueEvent() {
@@ -230,26 +231,26 @@ public final class PVEvent {
 
     /**
      * An exception event.
-     * 
+     *
      * @param ex the exception to associate with the event
      * @return an event
      */
     public static PVEvent exceptionEvent(Exception ex) {
         return new PVEvent(ex, null, Collections.singletonList(Type.EXCEPTION));
     }
-    
+
     /**
      * A write connection event.
-     * 
+     *
      * @return an event
      */
     public static PVEvent writeConnectionEvent() {
         return WRITE_CONNECTION_EVENT;
     }
-    
+
     /**
      * A write succeeded event.
-     * 
+     *
      * @return an event
      */
     public static PVEvent writeSucceededEvent() {
@@ -258,7 +259,7 @@ public final class PVEvent {
 
     /**
      * A write failed event.
-     * 
+     *
      * @param writeError the error associated with the write
      * @return an event
      */

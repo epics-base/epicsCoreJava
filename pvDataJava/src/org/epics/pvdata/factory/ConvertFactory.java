@@ -4,74 +4,22 @@
  */
 package org.epics.pvdata.factory;
 
+import org.epics.pvdata.pv.*;
+
 import java.math.BigInteger;
 import java.util.regex.Pattern;
 
-import org.epics.pvdata.pv.BooleanArrayData;
-import org.epics.pvdata.pv.ByteArrayData;
-import org.epics.pvdata.pv.Convert;
-import org.epics.pvdata.pv.DoubleArrayData;
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.FloatArrayData;
-import org.epics.pvdata.pv.IntArrayData;
-import org.epics.pvdata.pv.LongArrayData;
-import org.epics.pvdata.pv.PVArray;
-import org.epics.pvdata.pv.PVBoolean;
-import org.epics.pvdata.pv.PVBooleanArray;
-import org.epics.pvdata.pv.PVByte;
-import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVDataCreate;
-import org.epics.pvdata.pv.PVDouble;
-import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVFloat;
-import org.epics.pvdata.pv.PVFloatArray;
-import org.epics.pvdata.pv.PVInt;
-import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVLong;
-import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVScalar;
-import org.epics.pvdata.pv.PVScalarArray;
-import org.epics.pvdata.pv.PVShort;
-import org.epics.pvdata.pv.PVShortArray;
-import org.epics.pvdata.pv.PVString;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.PVStructureArray;
-import org.epics.pvdata.pv.PVUByte;
-import org.epics.pvdata.pv.PVUByteArray;
-import org.epics.pvdata.pv.PVUInt;
-import org.epics.pvdata.pv.PVUIntArray;
-import org.epics.pvdata.pv.PVULong;
-import org.epics.pvdata.pv.PVULongArray;
-import org.epics.pvdata.pv.PVUShort;
-import org.epics.pvdata.pv.PVUShortArray;
-import org.epics.pvdata.pv.PVUnion;
-import org.epics.pvdata.pv.PVUnionArray;
-import org.epics.pvdata.pv.Scalar;
-import org.epics.pvdata.pv.ScalarArray;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.ShortArrayData;
-import org.epics.pvdata.pv.StringArrayData;
-import org.epics.pvdata.pv.Structure;
-import org.epics.pvdata.pv.StructureArray;
-import org.epics.pvdata.pv.StructureArrayData;
-import org.epics.pvdata.pv.Type;
-import org.epics.pvdata.pv.Union;
-import org.epics.pvdata.pv.UnionArray;
-import org.epics.pvdata.pv.UnionArrayData;
-
 /**
  * Factory to obtain the implementation of <i>Convert</i>
- * 
+ *
  * @author mrk
- * 
+ *
  */
 public final class ConvertFactory {
     /**
      * Implements <i>Convert</i>. The implementation ensures that a single
      * instance is created.
-     * 
+     *
      * @return the implementation of <i>Convert</i>
      */
     public static Convert getConvert() {
@@ -109,7 +57,6 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#getFullFieldName(java.lang.StringBuilder, org.epics.pvdata.pv.PVField)
          */
-        @Override
         public void getFullFieldName(StringBuilder buf,PVField pvField) {
             buf.setLength(0);
             PVStructure parent = pvField.getParent();
@@ -129,25 +76,22 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#getString(java.lang.StringBuilder, org.epics.pvdata.pv.PVField, int)
          */
-        @Override
         public void getString(StringBuilder buf, PVField pv, int indentLevel) {
             convertToString(buf,pv,indentLevel);
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#getString(java.lang.StringBuilder, org.epics.pvdata.pv.PVField)
          */
-        @Override
         public void getString(StringBuilder buf, PVField pv) {
             convertToString(buf,pv,0);
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#fromString(org.epics.pvdata.pv.PVScalar,
          * java.lang.String)
          */
-        @Override
         public void fromString(PVScalar pv, String from) {
             Scalar scalar = pv.getScalar();
             ScalarType scalarType = scalar.getScalarType();
@@ -174,7 +118,7 @@ public final class ConvertFactory {
             }
             case pvLong: {
                 PVLong value = (PVLong) pv;
-                value.put(stringToLong(from));                
+                value.put(stringToLong(from));
                 break;
             }
             case pvUByte: {
@@ -194,17 +138,17 @@ public final class ConvertFactory {
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
-                value.put(stringToULong(from)); 
+                value.put(stringToULong(from));
                 break;
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
-                value.put(stringToFloat(from)); 
+                value.put(stringToFloat(from));
                 break;
             }
             case pvDouble: {
                 PVDouble value = (PVDouble) pv;
-                value.put(stringToDouble(from)); 
+                value.put(stringToDouble(from));
                 break;
             }
             case pvString: {
@@ -220,12 +164,11 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#fromString(org.epics.pvdata.pv.PVScalarArray
          * , java.lang.String)
          */
-        @Override
         public int fromString(PVScalarArray pv, String from) {
             if ((from.charAt(0) == '[') && from.endsWith("]")) {
                 int offset = from.lastIndexOf(']');
@@ -242,11 +185,10 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromStringArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, java.lang.String[], int)
          */
-        @Override
         public int fromStringArray(PVScalarArray pv, int offset, int len,
                 String[] from, int fromOffset) {
             return convertFromStringArray(pv, offset, len, from, fromOffset);
@@ -254,11 +196,10 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#toStringArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, java.lang.String[], int)
          */
-        @Override
         public int toStringArray(PVScalarArray pv, int offset, int len,
                 String[] to, int toOffset) {
             return convertToStringArray(pv, offset, len, to, toOffset);
@@ -266,12 +207,11 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#isCopyCompatible(org.epics.pvdata.pv.
          * Field, org.epics.pvdata.pv.Field)
          */
-        @Override
         public boolean isCopyCompatible(Field from, Field to) {
             if (from.getType() != to.getType())
                 return false;
@@ -300,11 +240,10 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.epics.pvdata.pv.Convert#copy(org.epics.pvdata.pv.PVField,
          * org.epics.pvdata.pv.PVField)
          */
-        @Override
         public void copy(PVField from, PVField to) {
             switch (from.getField().getType()) {
             case scalar:
@@ -348,12 +287,11 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#isCopyScalarCompatible(org.epics.pvdata
          * .pv.Scalar, org.epics.pvdata.pv.Scalar)
          */
-        @Override
         public boolean isCopyScalarCompatible(Scalar fromField, Scalar toField) {
             ScalarType fromScalarType = fromField.getScalarType();
             ScalarType toScalarType = toField.getScalarType();
@@ -370,12 +308,11 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#copyScalar(org.epics.pvdata.pv.PVScalar,
          * org.epics.pvdata.pv.PVScalar)
          */
-        @Override
         public void copyScalar(PVScalar from, PVScalar to) {
             if (to.isImmutable()) {
                 if (from.equals(to))
@@ -478,12 +415,11 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#isCopyScalarArrayCompatible(org.epics
          * .pvData.pv.ScalarArray, org.epics.pvdata.pv.ScalarArray)
          */
-        @Override
         public boolean isCopyScalarArrayCompatible(ScalarArray fromArray,
                 ScalarArray toArray) {
             ScalarType fromType = fromArray.getElementType();
@@ -639,12 +575,11 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#isCopyStructureCompatible(org.epics.pvdata
          * .pv.Structure, org.epics.pvdata.pv.Structure)
          */
-        @Override
         public boolean isCopyStructureCompatible(Structure fromStruct,
                 Structure toStruct) {
             Field[] fromFields = fromStruct.getFields();
@@ -693,24 +628,22 @@ public final class ConvertFactory {
             }
             return true;
         }
-        
-        
+
+
 
         /* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.Convert#isCopyUnionCompatible(org.epics.pvdata.pv.Union, org.epics.pvdata.pv.Union)
 		 */
-		@Override
 		public boolean isCopyUnionCompatible(Union from, Union to) {
 			return from.equals(to);
 		}
 		/*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#copyStructure(org.epics.pvdata.pv.PVStructure
          * , org.epics.pvdata.pv.PVStructure)
          */
-        @Override
         public void copyStructure(PVStructure from, PVStructure to) {
             if (to.isImmutable()) {
                 if (from.equals(to))
@@ -725,7 +658,7 @@ public final class ConvertFactory {
             if (fromDatas.length != toDatas.length) {
                 throw new IllegalArgumentException("Illegal copyStructure");
             }
-            
+
             if (fromDatas.length == 2) {
                 String[] fromNames = from.getStructure().getFieldNames();
                 String[] toNames = to.getStructure().getFieldNames();
@@ -787,12 +720,11 @@ public final class ConvertFactory {
 
 		/*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#copyUnion(org.epics.pvdata.pv.PVUnion
          * , org.epics.pvdata.pv.PVUnion)
          */
-        @Override
         public void copyUnion(PVUnion from, PVUnion to) {
             if (to.isImmutable()) {
                 if (from.equals(to))
@@ -800,14 +732,14 @@ public final class ConvertFactory {
                 throw new IllegalArgumentException(
                         "Convert.copyUnion destination is immutable");
             }
-            
+
             if (from == to)
                 return;
-            
+
             if (!isCopyUnionCompatible(from.getUnion(), to.getUnion())) {
                 throw new IllegalArgumentException("Illegal copyUnion");
             }
-            
+
             // variant
             PVField fromValue = from.get();
             if (from.getUnion().isVariant())
@@ -829,16 +761,15 @@ public final class ConvertFactory {
              	    to.set(from.getSelectedIndex(),toValue);
             	}
             }
-            
+
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#isCopyStructureArrayCompatible(org.epics
          * .pvData.pv.StructureArray, org.epics.pvdata.pv.StructureArray)
          */
-        @Override
         public boolean isCopyStructureArrayCompatible(StructureArray from,
                 StructureArray to) {
             return isCopyStructureCompatible(from.getStructure(), to
@@ -847,18 +778,17 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#isCopyUnionArrayCompatible(org.epics
          * .pvData.pv.UnionArray, org.epics.pvdata.pv.UnionArray)
          */
-        @Override
         public boolean isCopyUnionArrayCompatible(UnionArray from,
                 UnionArray to) {
             return isCopyUnionCompatible(from.getUnion(), to
                     .getUnion());
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#copyStructureArray(org.epics.pvdata.pv.PVStructureArray, org.epics.pvdata.pv.PVStructureArray)
          */
@@ -866,7 +796,7 @@ public final class ConvertFactory {
         {
             copyStructureArray(from,0,to,0,from.getLength());
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#copyStructureArray(org.epics.pvdata.pv.PVStructureArray, int, org.epics.pvdata.pv.PVStructureArray, int, int)
          */
@@ -896,7 +826,7 @@ public final class ConvertFactory {
             }
             if (to.getCapacity() < count + toOffset)
                 to.setCapacity(count+toOffset);
-            
+
             PVStructure[] fromArray = null;
             synchronized (structureArrayData) {
                 from.get(0, count+fromOffset, structureArrayData);
@@ -923,7 +853,7 @@ public final class ConvertFactory {
             to.postPut();
             return count;
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#copyUnionArray(org.epics.pvdata.pv.PVUnionArray, org.epics.pvdata.pv.PVUnionArray)
          */
@@ -931,7 +861,7 @@ public final class ConvertFactory {
         {
             copyUnionArray(from,0,to,0,from.getLength());
         }
-      
+
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#copyUnionArray(org.epics.pvdata.pv.PVUnionArray, int, org.epics.pvdata.pv.PVUnionArray, int, int)
          */
@@ -987,13 +917,13 @@ public final class ConvertFactory {
             to.postPut();
             return count;
         }
-        
+
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.epics.pvdata.pv.Convert#toByte(org.epics.pvdata.pv.PVScalar)
          */
-        @Override
+
         public byte toByte(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1005,7 +935,7 @@ public final class ConvertFactory {
                 PVByte value = (PVByte) pv;
                 return (byte) value.get();
             }
-            case pvShort: 
+            case pvShort:
             {
                 PVShort value = (PVShort) pv;
                 return (byte) value.get();
@@ -1047,21 +977,20 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (byte) value.get();
             }
-            case pvString: {       
+            case pvString: {
                 PVString value = (PVString) pv;
                 return stringToByte(value.get());
-            }	
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#toShort(org.epics.pvdata.pv.PVScalar)
          */
-        @Override
         public short toShort(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1109,20 +1038,19 @@ public final class ConvertFactory {
                 PVDouble value = (PVDouble) pv;
                 return (short) value.get();
             }
-            case pvString: { 
+            case pvString: {
                 PVString value = (PVString) pv;
                 return stringToShort(value.get());
-            }	
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.epics.pvdata.pv.Convert#toInt(org.epics.pvdata.pv.PVScalar)
          */
-        @Override
         public int toInt(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1174,17 +1102,16 @@ public final class ConvertFactory {
             case pvString:{
                 PVString value = (PVString) pv;
                 return stringToInt(value.get());
-            }	
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.epics.pvdata.pv.Convert#toLong(org.epics.pvdata.pv.PVScalar)
          */
-        @Override
         public long toLong(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1237,18 +1164,17 @@ public final class ConvertFactory {
             case pvString: {
                 PVString value = (PVString) pv;
                 return stringToLong(value.get());
-            }	 
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#toFloat(org.epics.pvdata.pv.PVScalar)
          */
-        @Override
         public float toFloat(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1299,18 +1225,17 @@ public final class ConvertFactory {
             case pvString:  {
                 PVString value = (PVString) pv;
                 return stringToFloat(value.get());
-            }	 
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#toDouble(org.epics.pvdata.pv.PVScalar)
          */
-        @Override
         public double toDouble(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1361,19 +1286,18 @@ public final class ConvertFactory {
             case pvString:{
                 PVString value = (PVString) pv;
                  return stringToDouble(value.get());
-            }	 
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#fromByte(org.epics.pvdata.pv.PVScalar,
          * byte)
          */
-        @Override
         public void fromByte(PVScalar pv, byte from) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1431,12 +1355,11 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#fromShort(org.epics.pvdata.pv.PVScalar,
          * short)
          */
-        @Override
         public void fromShort(PVScalar pv, short from) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1497,12 +1420,11 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#fromInt(org.epics.pvdata.pv.PVScalar,
          * int)
          */
-        @Override
         public void fromInt(PVScalar pv, int from) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1563,12 +1485,11 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#fromLong(org.epics.pvdata.pv.PVScalar,
          * long)
          */
-        @Override
         public void fromLong(PVScalar pv, long from) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1630,7 +1551,6 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#fromUByte(org.epics.pvdata.pv.PVScalar, byte)
          */
-        @Override
         public void fromUByte(PVScalar pv, byte xxx)
         {
             short from = widenUnsigned(xxx);
@@ -1692,7 +1612,6 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#fromUShort(org.epics.pvdata.pv.PVScalar, short)
          */
-        @Override
         public void fromUShort(PVScalar pv, short xxx) {
             int from = widenUnsigned(xxx);
             ScalarType type = pv.getScalar().getScalarType();
@@ -1753,7 +1672,6 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#fromUInt(org.epics.pvdata.pv.PVScalar, int)
          */
-        @Override
         public void fromUInt(PVScalar pv, int xxx) {
             long from = widenUnsigned(xxx);
             ScalarType type = pv.getScalar().getScalarType();
@@ -1814,7 +1732,6 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#fromULong(org.epics.pvdata.pv.PVScalar, long)
          */
-        @Override
         public void fromULong(PVScalar pv, long from) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1872,7 +1789,6 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#fromFloat(org.epics.pvdata.pv.PVScalar, float)
          */
-        @Override
         public void fromFloat(PVScalar pv, float from) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1909,7 +1825,7 @@ public final class ConvertFactory {
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
-                value.put(floatToULong(from)); return;                
+                value.put(floatToULong(from)); return;
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1929,12 +1845,11 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#fromDouble(org.epics.pvdata.pv.PVScalar,
          * double)
          */
-        @Override
         public void fromDouble(PVScalar pv, double from) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -1971,7 +1886,7 @@ public final class ConvertFactory {
             }
             case pvULong: {
                 PVULong value = (PVULong) pv;
-                value.put(doubleToULong(from)); return; 
+                value.put(doubleToULong(from)); return;
             }
             case pvFloat: {
                 PVFloat value = (PVFloat) pv;
@@ -1991,80 +1906,73 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#toByteArray(org.epics.pvdata.pv.PVScalarArray
          * , int, int, byte[], int)
          */
-        @Override
         public int toByteArray(PVScalarArray pv, int offset, int len,
                 byte[] to, int toOffset) {
             return convertToByteArray(pv, offset, len, to, toOffset);
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#toShortArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, short[], int)
          */
-        @Override
         public int toShortArray(PVScalarArray pv, int offset, int len,
                 short[] to, int toOffset) {
             return convertToShortArray(pv, offset, len, to, toOffset);
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#toIntArray(org.epics.pvdata.pv.PVScalarArray
          * , int, int, int[], int)
          */
-        @Override
         public int toIntArray(PVScalarArray pv, int offset, int len, int[] to,
                 int toOffset) {
             return convertToIntArray(pv, offset, len, to, toOffset);
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see
          * org.epics.pvdata.pv.Convert#toLongArray(org.epics.pvdata.pv.PVScalarArray
          * , int, int, long[], int)
          */
-        @Override
         public int toLongArray(PVScalarArray pv, int offset, int len,
                 long[] to, int toOffset) {
             return convertToLongArray(pv, offset, len, to, toOffset);
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#toFloatArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, float[], int)
          */
-        @Override
         public int toFloatArray(PVScalarArray pv, int offset, int len,
                 float[] to, int toOffset) {
             return convertToFloatArray(pv, offset, len, to, toOffset);
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#toDoubleArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, double[], int)
          */
-        @Override
         public int toDoubleArray(PVScalarArray pv, int offset, int len,
                 double[] to, int toOffset) {
             return convertToDoubleArray(pv, offset, len, to, toOffset);
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromByteArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, byte[], int)
          */
-        @Override
         public int fromByteArray(PVScalarArray pv, int offset, int len,
                 byte[] from, int fromOffset) {
             int num = convertFromByteArray(pv, offset, len, from, fromOffset);
@@ -2072,11 +1980,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromShortArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, short[], int)
          */
-        @Override
         public int fromShortArray(PVScalarArray pv, int offset, int len,
                 short[] from, int fromOffset) {
             int num = convertFromShortArray(pv, offset, len, from, fromOffset);
@@ -2084,11 +1991,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromIntArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, int[], int)
          */
-        @Override
         public int fromIntArray(PVScalarArray pv, int offset, int len,
                 int[] from, int fromOffset) {
             int num = convertFromIntArray(pv, offset, len, from, fromOffset);
@@ -2096,11 +2002,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromLongArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, long[], int)
          */
-        @Override
         public int fromLongArray(PVScalarArray pv, int offset, int len,
                 long[] from, int fromOffset) {
             int num = convertFromLongArray(pv, offset, len, from, fromOffset);
@@ -2108,11 +2013,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromUByteArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, byte[], int)
          */
-        @Override
         public int fromUByteArray(PVScalarArray pv, int offset, int len,
                 byte[] from, int fromOffset) {
             int num = convertFromUByteArray(pv, offset, len, from, fromOffset);
@@ -2120,11 +2024,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromUShortArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, short[], int)
          */
-        @Override
         public int fromUShortArray(PVScalarArray pv, int offset, int len,
                 short[] from, int fromOffset) {
             int num = convertFromUShortArray(pv, offset, len, from, fromOffset);
@@ -2132,11 +2035,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromUIntArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, int[], int)
          */
-        @Override
         public int fromUIntArray(PVScalarArray pv, int offset, int len,
                 int[] from, int fromOffset) {
             int num = convertFromUIntArray(pv, offset, len, from, fromOffset);
@@ -2144,11 +2046,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromULongArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, long[], int)
          */
-        @Override
         public int fromULongArray(PVScalarArray pv, int offset, int len,
                 long[] from, int fromOffset) {
             int num = convertFromULongArray(pv, offset, len, from, fromOffset);
@@ -2156,11 +2057,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromFloatArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, float[], int)
          */
-        @Override
         public int fromFloatArray(PVScalarArray pv, int offset, int len,
                 float[] from, int fromOffset) {
             int num = convertFromFloatArray(pv, offset, len, from, fromOffset);
@@ -2168,11 +2068,10 @@ public final class ConvertFactory {
         }
         /*
          * (non-Javadoc)
-         * 
+         *
          * @seeorg.epics.pvdata.pv.Convert#fromDoubleArray(org.epics.pvdata.pv.
          * PVScalarArray, int, int, double[], int)
          */
-        @Override
         public int fromDoubleArray(PVScalarArray pv, int offset, int len,
                 double[] from, int fromOffset) {
             int num = convertFromDoubleArray(pv, offset, len, from, fromOffset);
@@ -2181,7 +2080,6 @@ public final class ConvertFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Convert#toString(org.epics.pvdata.pv.PVScalar)
          */
-        @Override
         public String toString(PVScalar pv) {
             ScalarType type = pv.getScalar().getScalarType();
             switch (type) {
@@ -2215,7 +2113,7 @@ public final class ConvertFactory {
                 PVUShort value = (PVUShort) pv;
                 return ushortToString(value.get());
             }
-            case pvUInt: {                
+            case pvUInt: {
                 PVUInt value = (PVUInt) pv;
                 return uintToString(value.get());
             }
@@ -2240,7 +2138,7 @@ public final class ConvertFactory {
                     "Logic error. Should never get here");
 
         }
-        
+
         private int convertFromByteArray(PVScalarArray pv, int offset, int len,
                 byte[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -2304,7 +2202,7 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvUByte: 
+            case pvUByte:
             {
                 PVUByteArray pvdata = (PVUByteArray) pv;
                 while (len > 0) {
@@ -2409,7 +2307,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertFromUByteArray(PVScalarArray pv, int offset, int len,
                 byte[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -2418,7 +2316,7 @@ public final class ConvertFactory {
             case pvBoolean:
                 throw new IllegalArgumentException(
                         "convert from byte[] to BooleanArray not legal");
-            case pvByte: 
+            case pvByte:
             {
                 PVByteArray pvdata = (PVByteArray) pv;
                 while (len > 0) {
@@ -2477,7 +2375,7 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvUByte: 
+            case pvUByte:
             {
                 PVUByteArray pvdata = (PVUByteArray) pv;
                 while (len > 0) {
@@ -2580,11 +2478,11 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            }                
+            }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertToByteArray(PVScalarArray pv, int offset, int len,
                 byte[] to, int toOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -2593,7 +2491,7 @@ public final class ConvertFactory {
             case pvBoolean:
                 throw new IllegalArgumentException(
                         "convert BooleanArray to byte[]] not legal");
-            case pvByte: 
+            case pvByte:
             {
                 PVByteArray pvdata = (PVByteArray) pv;
                 while (len > 0) {
@@ -2615,7 +2513,7 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvShort: 
+            case pvShort:
             {
                 PVShortArray pvdata = (PVShortArray) pv;
                 ShortArrayData data = new ShortArrayData();
@@ -2634,7 +2532,7 @@ public final class ConvertFactory {
                 }
                 return ntransfered;
             }
-            case pvInt: 
+            case pvInt:
             {
                 PVIntArray pvdata = (PVIntArray) pv;
                 IntArrayData data = new IntArrayData();
@@ -2809,8 +2707,8 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
 
-        }    
-        
+        }
+
         private int convertFromShortArray(PVScalarArray pv, int offset,
                 int len, short[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -2977,7 +2875,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertFromUShortArray(PVScalarArray pv, int offset,
                 int len, short[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -3148,7 +3046,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertToShortArray(PVScalarArray pv, int offset, int len,
                 short[] to, int toOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -3157,7 +3055,7 @@ public final class ConvertFactory {
             case pvBoolean:
                 throw new IllegalArgumentException(
                         "convert BooleanArray to short[]] not legal");
-            case pvByte: 
+            case pvByte:
             {
                 PVByteArray pvdata = (PVByteArray) pv;
                 ByteArrayData data = new ByteArrayData();
@@ -3175,8 +3073,8 @@ public final class ConvertFactory {
                     ntransfered += num;
                 }
                 return ntransfered;
-            } 
-           
+            }
+
             case pvShort:
             {
                 PVShortArray pvdata = (PVShortArray) pv;
@@ -3378,7 +3276,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertFromIntArray(PVScalarArray pv, int offset, int len,
                 int[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -3550,7 +3448,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertFromUIntArray(PVScalarArray pv, int offset, int len,
                 int[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -3681,7 +3579,7 @@ public final class ConvertFactory {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 float[] data = new float[1];
                 while (len > 0) {
-                    long value = widenUnsigned(from[fromOffset]); 
+                    long value = widenUnsigned(from[fromOffset]);
                     data[0] = (float)value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -3696,7 +3594,7 @@ public final class ConvertFactory {
                 PVDoubleArray pvdata = (PVDoubleArray) pv;
                 double[] data = new double[1];
                 while (len > 0) {
-                    long value = widenUnsigned(from[fromOffset]); 
+                    long value = widenUnsigned(from[fromOffset]);
                     data[0] = (double)value;;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -3725,7 +3623,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertToIntArray(PVScalarArray pv, int offset, int len,
                 int[] to, int toOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -3963,7 +3861,7 @@ public final class ConvertFactory {
             case pvBoolean:
                 throw new IllegalArgumentException(
                         "convert from long[] to BooleanArray not legal");
-            case pvByte: 
+            case pvByte:
             {
                 PVByteArray pvdata = (PVByteArray) pv;
                 byte[] data = new byte[1];
@@ -4127,7 +4025,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertFromULongArray(PVScalarArray pv, int offset, int len,
                 long[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -4136,7 +4034,7 @@ public final class ConvertFactory {
             case pvBoolean:
                 throw new IllegalArgumentException(
                         "convert from long[] to BooleanArray not legal");
-            case pvByte: 
+            case pvByte:
             {
                 PVByteArray pvdata = (PVByteArray) pv;
                 byte[] data = new byte[1];
@@ -4258,7 +4156,7 @@ public final class ConvertFactory {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 float[] data = new float[1];
                 while (len > 0) {
-                    float value = ulongToFloat(from[fromOffset]); 
+                    float value = ulongToFloat(from[fromOffset]);
                     data[0] = value;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -4273,7 +4171,7 @@ public final class ConvertFactory {
                 PVDoubleArray pvdata = (PVDoubleArray) pv;
                 double[] data = new double[1];
                 while (len > 0) {
-                    double value = ulongToDouble(from[fromOffset]); 
+                    double value = ulongToDouble(from[fromOffset]);
                     data[0] = value;;
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
@@ -4302,7 +4200,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertToLongArray(PVScalarArray pv, int offset, int len,
                 long[] to, int toOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -4534,7 +4432,7 @@ public final class ConvertFactory {
             throw new IllegalStateException(
                     "Logic error. Should never get here");
         }
-        
+
         private int convertFromFloatArray(PVScalarArray pv, int offset,
                 int len, float[] from, int fromOffset) {
             ScalarType elemType = pv.getScalarArray().getElementType();
@@ -5083,7 +4981,7 @@ public final class ConvertFactory {
                     ++fromOffset;
                 }
                 return ntransfered;
-            }                
+            }
             }
             throw new IllegalStateException(
                     "Logic error. Should never get here");
@@ -5418,7 +5316,7 @@ public final class ConvertFactory {
                 byte[] data = new byte[1];
                 while (len > 0) {
                     String fromString = removeWhiteSpace(from[fromOffset]);
-                    data[0] = stringToUByte(fromString);                  
+                    data[0] = stringToUByte(fromString);
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -5448,7 +5346,7 @@ public final class ConvertFactory {
                 int[] data = new int[1];
                 while (len > 0) {
                     String fromString = removeWhiteSpace(from[fromOffset]);
-                    data[0] = stringToInt(fromString);                    
+                    data[0] = stringToInt(fromString);
                     if (pvdata.put(offset, 1, data, 0) == 0)
                         return ntransfered;
                     --len;
@@ -5636,7 +5534,7 @@ public final class ConvertFactory {
                 }
             }
                 break;
-                
+
             case pvFloat: {
                 PVFloatArray pvdata = (PVFloatArray) pv;
                 FloatArrayData data = new FloatArrayData();
@@ -5694,7 +5592,7 @@ public final class ConvertFactory {
 
         /*
          * (non-Javadoc)
-         * 
+         *
          * @see org.epics.pvdata.pv.Convert#newLine(java.lang.StringBuilder,
          * int)
          */
@@ -5813,31 +5711,31 @@ public final class ConvertFactory {
             }
         }
 
-        private void convertStructure(StringBuilder buffer,PVStructure data, int indentLevel) {
+        private void convertStructure(StringBuilder buffer, PVStructure data, int indentLevel) {
             String id = data.getStructure().getID();
-            if (!id.isEmpty()) buffer.append(id).append(' ');
+            if (id.trim().length() != 0) buffer.append(id).append(' ');
             buffer.append(data.getFieldName());
             PVField[] fieldsData = data.getPVFields();
             if (fieldsData != null) {
                 int length = fieldsData.length;
-                for(int i=0; i<length; i++) {
+                for (int i = 0; i < length; i++) {
                     newLine(buffer, indentLevel + 1);
                     PVField fieldField = fieldsData[i];
-                    fieldField.toString(buffer,indentLevel + 1);
+                    fieldField.toString(buffer, indentLevel + 1);
                 }
             }
         }
 
-        private void convertUnion(StringBuilder buffer,PVUnion data, int indentLevel) {
+        private void convertUnion(StringBuilder buffer, PVUnion data, int indentLevel) {
             String id = data.getUnion().getID();
-            if (!id.isEmpty()) buffer.append(id).append(' ');
+            if (id.trim().length() != 0) buffer.append(id).append(' ');
             buffer.append(data.getFieldName());
             newLine(buffer, indentLevel + 1);
             PVField fieldField = data.get();
             if (fieldField == null)
-            	buffer.append("(no data)");
+                buffer.append("(no data)");
             else
-            	fieldField.toString(buffer,indentLevel + 1);
+                fieldField.toString(buffer, indentLevel + 1);
         }
 
         private void convertArray(StringBuilder builder,PVScalarArray pv, int indentLevel) {
@@ -5903,7 +5801,7 @@ public final class ConvertFactory {
                 builder.append("]");
                 break;
             }
-            
+
             case pvShort:
             {
                 PVShortArray pvdata = (PVShortArray) pv;
@@ -6662,10 +6560,10 @@ public final class ConvertFactory {
 
         // used in unsigned integer conversions
         private static final BigInteger twoToTheSixtyFour = new BigInteger("10000000000000000", 16);
-        private static final double twoToTheSixtyFourReal = Math.pow(2.0, 64); 
+        private static final double twoToTheSixtyFourReal = Math.pow(2.0, 64);
         private static final double twoToTheThirtyTwoReal = Math.pow(2.0, 32);
 
-        // functions which convert the n-bit signed representation of an n-bit 
+        // functions which convert the n-bit signed representation of an n-bit
         // unsigned integer (sometimes called the raw value) to a wider (2n-bit)
         // signed type with the value returned being the unsigned integer
         // represented by the raw value (i.e. it is guarenteed to be positive).
@@ -6680,17 +6578,17 @@ public final class ConvertFactory {
             int wide = rawValue;
             wide &= 0x0ffff;
             return wide;
-        }       
-        
+        }
+
         private static long widenUnsigned(int rawValue) {
             long wide = rawValue;
             wide &= 0x0ffffffffL;
             return wide;
-        }        
+        }
 
-        // unsigned long requires special handling as there is no wider primitive type 
-        // to promote to. BigInteger has to be used, but is avoided where possible 
-        // (conversion to float or double and for string conversions when ulong is 
+        // unsigned long requires special handling as there is no wider primitive type
+        // to promote to. BigInteger has to be used, but is avoided where possible
+        // (conversion to float or double and for string conversions when ulong is
         // less than 2^63).
 
         private static BigInteger widenUnsigned(long rawValue) {
@@ -6700,7 +6598,7 @@ public final class ConvertFactory {
                 wide = wide.add(twoToTheSixtyFour);
             }
             return wide;
-        } 
+        }
 
         private static float ulongToFloat(long rawValue) {
             float val = rawValue;
@@ -6708,8 +6606,8 @@ public final class ConvertFactory {
             {
                 val += twoToTheSixtyFourReal;
             }
-            return val; 
-        } 
+            return val;
+        }
 
         private static double ulongToDouble(long rawValue) {
             double val = rawValue;
@@ -6717,7 +6615,7 @@ public final class ConvertFactory {
             {
                 val += twoToTheSixtyFourReal;
             }
-            return val;      
+            return val;
         }
 
         private static String byteToString(byte from) {
@@ -6726,79 +6624,79 @@ public final class ConvertFactory {
 
         private static String shortToString(short from) {
         	return String.valueOf(from);
-        }        
+        }
 
         private static String intToString(int from) {
         	return String.valueOf(from);
-        }       
-        
+        }
+
         private static String longToString(long from) {
         	return String.valueOf(from);
-        }         
-        
+        }
+
         private static String ubyteToString(byte from) {
         	return String.valueOf(widenUnsigned(from));
         }
 
         private static String ushortToString(short from) {
          	return String.valueOf(widenUnsigned(from));
-        }        
+        }
 
         private static String uintToString(int from) {
         	return String.valueOf(widenUnsigned(from));
-        }               
-        
+        }
+
         private static String ulongToString(long from) {
             // only widen to BigInteger if negative
             if (from < 0)
             {
                 return widenUnsigned(from).toString();
-            } 
-            return String.valueOf(from);      
-        }        
-        
+            }
+            return String.valueOf(from);
+        }
+
         private static byte stringToByte(String from) {
-            return (byte)convertToLong(from);        
+            return (byte)convertToLong(from);
         }
         private static short stringToShort(String from) {
-           return (short)convertToLong(from);           
-        } 
-        private static int stringToInt(String from) {
-            return (int)convertToLong(from);        
+           return (short)convertToLong(from);
         }
-        private static long stringToLong(String from) { 	
-            return convertToLong(from);      
+        private static int stringToInt(String from) {
+            return (int)convertToLong(from);
+        }
+        private static long stringToLong(String from) {
+            return convertToLong(from);
         }
         private static byte stringToUByte(String from) {
-            return (byte)convertToLong(from);       
+            return (byte)convertToLong(from);
         }
         private static short stringToUShort(String from) {
-            return (short)convertToLong(from);       
-        } 
-        private static int stringToUInt(String from) {
-            return (int)convertToLong(from);            
+            return (short)convertToLong(from);
         }
-        private static long stringToULong(String from) { 	
-            return (long)convertToLong(from);        
+        private static int stringToUInt(String from) {
+            return (int)convertToLong(from);
+        }
+        private static long stringToULong(String from) {
+            return (long)convertToLong(from);
         }
         private static float stringToFloat(String from) {
-            return Float.valueOf(from);            
+            return Float.valueOf(from);
         }
-        private static double stringToDouble(String from) { 	
-            return Double.valueOf(from);        
+        private static double stringToDouble(String from) {
+            return Double.valueOf(from);
         }
-        private static String floatToString(float from) { 
+        private static String floatToString(float from) {
         	return String.valueOf(from);
         }
         private static String doubleToString(double from) {
         	return String.valueOf(from);
         }
-        private static long convertToLong(String from) { 	
+        private static long convertToLong(String from) {
             try {
                 return Long.decode(from);
             }
             catch (NumberFormatException e) {
-                try {                    
+                try {
                     BigInteger big = new BigInteger(from);
                     return big.longValue();
                 }
@@ -6826,21 +6724,21 @@ public final class ConvertFactory {
                             str = str.substring(1);
                             big = new BigInteger(str, 8);
                 		}
-                		
+
                 		if (big != null) {
                 			if (negative)
-                			{                				
-                			    big = big.negate();	
+                			{
+                			    big = big.negate();
                 			}
-                            return big.longValue(); 
+                            return big.longValue();
                         }
                 	}
-                    catch (NumberFormatException e3) {           	
+                    catch (NumberFormatException e3) {
                     }
                 }
             }
-            throw new NumberFormatException("For input string: " + from); 
-        } 
+            throw new NumberFormatException("For input string: " + from);
+        }
 
 
         // functions which convert floating point numbers to unsigned integer types
@@ -6923,7 +6821,7 @@ public final class ConvertFactory {
                 }
             }
             return (long)d;
-        } 
-    
+        }
+
     }
 }

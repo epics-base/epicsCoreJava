@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -17,17 +17,15 @@ public class DoubleArrayField implements NumericArrayField {
     public DoubleArrayField(double[] backendArray) {
         this.backendArray = backendArray;
     }
-    
+
     double[] backendArray;
 
-    @Override
     public ArrayDouble get() {
         return unmodifiableListDouble(backendArray);
     }
 
-    @Override
     public void put(int index, ListNumber data) {
         toList(backendArray).setAll(index, data);
     }
-    
+
 }

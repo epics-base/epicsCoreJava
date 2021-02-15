@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
-import java.time.Duration;
+import org.joda.time.Duration;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import org.epics.gpclient.datasource.DataSource;
@@ -20,7 +20,7 @@ public class GPClientConfiguration {
     DataSource defaultDataSource;
     ScheduledExecutorService dataProcessingThreadPool;
     Duration defaultMaxRate;
-    
+
     /**
      * Sets the default executor on which all notifications are going to be posted.
      *
@@ -69,14 +69,14 @@ public class GPClientConfiguration {
         this.defaultMaxRate = defaultMaxRate;
         return this;
     }
-    
+
     private void validateConfiguration() {
-        
+
     }
-    
+
     public GPClientInstance build() {
         validateConfiguration();
         return new GPClientInstance(this);
     }
-   
+
 }

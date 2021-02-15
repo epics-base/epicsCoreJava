@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -17,17 +17,21 @@ import static org.hamcrest.Matchers.*;
  * @author carcassi
  */
 public class DisplayTest {
-    
+
     public DisplayTest() {
     }
-    
+
     @Test
     public void displayOf1() {
         assertThat(Display.displayOf(null), equalTo(Display.none()));
         assertThat(Display.displayOf(new Object()), equalTo(Display.none()));
         NumberFormat format = new DecimalFormat();
-        Display display = Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), "m", format);        
-        assertThat(Display.displayOf((DisplayProvider) () -> display),
+        final Display display = Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), "m", format);
+        assertThat(Display.displayOf(new DisplayProvider() {
+                    public Display getDisplay() {
+                        return display;
+                    }
+                }),
                 equalTo(display));
     }
 
@@ -138,7 +142,7 @@ public class DisplayTest {
         NumberFormat format = new DecimalFormat();
         Display display = Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), "m", null);
     }
-    
+
     @Test
     public void none1() {
         Display display = Display.none();
@@ -148,7 +152,7 @@ public class DisplayTest {
         assertThat(display.getControlRange(), equalTo(Range.undefined()));
         assertThat(display.getUnit(), equalTo(""));
     }
-    
+
     @Test
     public void newAlarmFor1() {
         Display display = Display.of(Range.of(-10, 10), Range.of(-9, 9), Range.of(-8, 8), Range.undefined(),
@@ -159,7 +163,7 @@ public class DisplayTest {
         assertThat(display.newAlarmFor(-8.5), equalTo(Alarm.low()));
         assertThat(display.newAlarmFor(-9.5), equalTo(Alarm.lolo()));
     }
-    
+
     @Test
     public void newAlarmFor2() {
         Display display = Display.of(Range.undefined(), Range.of(0, 100), Range.of(20, 80), Range.undefined(),
@@ -170,7 +174,7 @@ public class DisplayTest {
         assertThat(display.newAlarmFor(15), equalTo(Alarm.low()));
         assertThat(display.newAlarmFor(-0.3), equalTo(Alarm.lolo()));
     }
-    
+
     @Test
     public void newAlarmFor3() {
         Display display = Display.of(Range.undefined(), Range.undefined(), Range.undefined(), Range.undefined(),
@@ -181,7 +185,7 @@ public class DisplayTest {
         assertThat(display.newAlarmFor(15), equalTo(Alarm.none()));
         assertThat(display.newAlarmFor(-0.3), equalTo(Alarm.none()));
     }
-    
+
     @Test
     public void newAlarmFor4() {
         Display display = Display.of(Range.undefined(), Range.undefined(), Range.of(20, 80), Range.undefined(),
@@ -192,7 +196,7 @@ public class DisplayTest {
         assertThat(display.newAlarmFor(15), equalTo(Alarm.low()));
         assertThat(display.newAlarmFor(-0.3), equalTo(Alarm.low()));
     }
-     
+
     @Test
     public void newAlarmFor5() {
         Display display = Display.of(Range.of(-10, 10), Range.of(-9, 9), Range.undefined(), Range.undefined(),
@@ -203,5 +207,5 @@ public class DisplayTest {
         assertThat(display.newAlarmFor(-8.5), equalTo(Alarm.none()));
         assertThat(display.newAlarmFor(-9.5), equalTo(Alarm.lolo()));
     }
-   
+
 }

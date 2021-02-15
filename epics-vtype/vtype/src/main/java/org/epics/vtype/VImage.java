@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright (C) 2010-18 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
 package org.epics.vtype;
 
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 
 import org.epics.util.array.ListNumber;
 
@@ -38,7 +38,7 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
 
     /**
      * Describes the type in which the data is stored {@link VImageDataType}
-     * 
+     *
      * @return image data type
      */
     public abstract VImageDataType getDataType();
@@ -47,14 +47,14 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
      * Returns the image type, The image type describes the mechanism in which the
      * data is encoded and how it can be converted to something that can be
      * rendered.
-     * 
+     *
      * @return the image type {@link VImageType}
      */
     public abstract VImageType getVImageType();
 
     /**
-     * Creates a new VImage. 
-     * 
+     * Creates a new VImage.
+     *
      * @param height image height
      * @param width image width
      * @param data image data
@@ -77,7 +77,7 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
         if (obj instanceof VImage) {
             VImage other = (VImage) obj;
 
-            return getClass().equals(other.getClass()) 
+            return getClass().equals(other.getClass())
                     && getHeight() == other.getHeight()
                     && getWidth() == other.getWidth()
                     && getData().equals(other.getData())

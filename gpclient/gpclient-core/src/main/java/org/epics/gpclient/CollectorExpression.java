@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -13,13 +13,13 @@ package org.epics.gpclient;
  * @param <W> the type written by the GPClient
  */
 public class CollectorExpression<R, C ,W> extends ChannelExpression<R, W> {
-    
+
     private boolean readConnected;
     private boolean writeConnected;
 
     /**
      * A new collector expression.
-     * 
+     *
      */
     CollectorExpression(ReadCollector<C, R> readCollector, WriteCollector<W> writeCollector) {
         super(readCollector, writeCollector);
@@ -46,7 +46,7 @@ public class CollectorExpression<R, C ,W> extends ChannelExpression<R, W> {
     /**
      * Retrieves the collector that can be used to send updates to the reader.
      * Note that the PVReader must first be started.
-     * 
+     *
      * @return the read collector
      */
     @Override
@@ -60,7 +60,7 @@ public class CollectorExpression<R, C ,W> extends ChannelExpression<R, W> {
     /**
      * Retrieves the collector that can be used to send/receives updates
      * from the writer. Note that the PVWrite must first be started.
-     * 
+     *
      * @return the write collecto
      */
     @Override
@@ -70,5 +70,5 @@ public class CollectorExpression<R, C ,W> extends ChannelExpression<R, W> {
         }
         return super.getWriteCollector();
     }
-    
+
 }

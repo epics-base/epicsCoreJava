@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -20,11 +20,11 @@ package org.epics.util.array;
  * safe to write to.
  */
 public class UnsafeUnwrapper {
-    
+
     /**
      * A primitive array together with the starting index and the number
      * of elements to be read from the starting index.
-     * 
+     *
      * @param <T> the array type
      */
     public static final class Array<T> {
@@ -37,7 +37,7 @@ public class UnsafeUnwrapper {
             this.startIndex = startIndex;
             this.size = size;
         }
-        
+
     }
 
     /**
@@ -91,7 +91,7 @@ public class UnsafeUnwrapper {
     public static Array<float[]> wrappedFloatArray(CollectionNumber coll) {
         if (coll instanceof ArrayFloat) {
             ArrayFloat wrapper = (ArrayFloat) coll;
-            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
+            return new Array<float[]>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -110,7 +110,7 @@ public class UnsafeUnwrapper {
     public static Array<double[]> wrappedDoubleArray(CollectionNumber coll) {
         if (coll instanceof ArrayDouble) {
             ArrayDouble wrapper = (ArrayDouble) coll;
-            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
+            return new Array<double[]>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -129,7 +129,7 @@ public class UnsafeUnwrapper {
     public static Array<byte[]> wrappedByteArray(CollectionNumber coll) {
         if (coll instanceof ArrayByte) {
             ArrayByte wrapper = (ArrayByte) coll;
-            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
+            return new Array<byte[]>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -148,7 +148,7 @@ public class UnsafeUnwrapper {
     public static Array<short[]> wrappedShortArray(CollectionNumber coll) {
         if (coll instanceof ArrayShort) {
             ArrayShort wrapper = (ArrayShort) coll;
-            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
+            return new Array<short[]>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -167,7 +167,7 @@ public class UnsafeUnwrapper {
     public static Array<int[]> wrappedIntArray(CollectionNumber coll) {
         if (coll instanceof ArrayInteger) {
             ArrayInteger wrapper = (ArrayInteger) coll;
-            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
+            return new Array<int[]>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -186,7 +186,7 @@ public class UnsafeUnwrapper {
     public static Array<long[]> wrappedLongArray(CollectionNumber coll) {
         if (coll instanceof ArrayLong) {
             ArrayLong wrapper = (ArrayLong) coll;
-            return new Array<>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
+            return new Array<long[]>(wrapper.wrappedArray(), wrapper.startIndex(), wrapper.size());
         }
 
         return null;
@@ -207,7 +207,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new double[coll.size()]), 0, coll.size());
+        return new Array<double[]>(coll.toArray(new double[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -225,7 +225,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new float[coll.size()]), 0, coll.size());
+        return new Array<float[]>(coll.toArray(new float[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -243,7 +243,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new long[coll.size()]), 0, coll.size());
+        return new Array<long[]>(coll.toArray(new long[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -261,7 +261,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new int[coll.size()]), 0, coll.size());
+        return new Array<int[]>(coll.toArray(new int[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -279,7 +279,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new short[coll.size()]), 0, coll.size());
+        return new Array<short[]>(coll.toArray(new short[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -297,7 +297,7 @@ public class UnsafeUnwrapper {
         if (array != null) {
             return array;
         }
-        return new Array<>(coll.toArray(new byte[coll.size()]), 0, coll.size());
+        return new Array<byte[]>(coll.toArray(new byte[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -315,7 +315,7 @@ public class UnsafeUnwrapper {
         if (array != null && !((ArrayDouble) coll).isReadOnly()) {
             return array;
         }
-        return new Array<>(coll.toArray(new double[coll.size()]), 0, coll.size());
+        return new Array<double[]>(coll.toArray(new double[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -333,7 +333,7 @@ public class UnsafeUnwrapper {
         if (array != null && !((ArrayFloat) coll).isReadOnly()) {
             return array;
         }
-        return new Array<>(coll.toArray(new float[coll.size()]), 0, coll.size());
+        return new Array<float[]>(coll.toArray(new float[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -351,7 +351,7 @@ public class UnsafeUnwrapper {
         if (array != null && !((ArrayLong) coll).isReadOnly()) {
             return array;
         }
-        return new Array<>(coll.toArray(new long[coll.size()]), 0, coll.size());
+        return new Array<long[]>(coll.toArray(new long[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -369,7 +369,7 @@ public class UnsafeUnwrapper {
         if (array != null && !((ArrayInteger) coll).isReadOnly()) {
             return array;
         }
-        return new Array<>(coll.toArray(new int[coll.size()]), 0, coll.size());
+        return new Array<int[]>(coll.toArray(new int[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -387,7 +387,7 @@ public class UnsafeUnwrapper {
         if (array != null && !((ArrayShort) coll).isReadOnly()) {
             return array;
         }
-        return new Array<>(coll.toArray(new short[coll.size()]), 0, coll.size());
+        return new Array<short[]>(coll.toArray(new short[coll.size()]), 0, coll.size());
     }
 
     /**
@@ -405,7 +405,7 @@ public class UnsafeUnwrapper {
         if (array != null && !((ArrayByte) coll).isReadOnly()) {
             return array;
         }
-        return new Array<>(coll.toArray(new byte[coll.size()]), 0, coll.size());
+        return new Array<byte[]>(coll.toArray(new byte[coll.size()]), 0, coll.size());
     }
-    
+
 }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,20 +16,17 @@ public class CollectionFloatTest extends FeatureTestCollectionNumber {
 
     @Override
     public CollectionNumber createConstantCollection() {
-        return new CollectionFloat() {
+        return new AbstractCollectionFloat() {
 
-            @Override
             public IteratorFloat iterator() {
                 return new IteratorFloat() {
 
                     int n=0;
 
-                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
-                    @Override
                     public float nextFloat() {
                         n++;
                         return (float) 1.0;
@@ -37,7 +34,6 @@ public class CollectionFloatTest extends FeatureTestCollectionNumber {
                 };
             }
 
-            @Override
             public int size() {
                 return 10;
             }

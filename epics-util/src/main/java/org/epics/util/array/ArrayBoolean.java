@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -51,11 +51,8 @@ public final class ArrayBoolean extends ListBoolean implements Serializable {
 
     @Override
     public void setBoolean(int index, boolean value) {
-        if (!readOnly) {
-            array[index] = value;
-        } else {
-            throw new UnsupportedOperationException("Read only list.");
-        }
+        checkBounds(index, readOnly, false, array.length);
+        array[index] = value;
     }
 
     @Override
@@ -70,10 +67,10 @@ public final class ArrayBoolean extends ListBoolean implements Serializable {
     boolean[] wrappedArray() {
         return array;
     }
-    
+
     /**
      * Returns an unmodifiable {@link ArrayBoolean} wrapper for the given {@code boolean} array.
-     * 
+     *
      * @param values a primitive array.
      * @return an immutable wrapper.
      */

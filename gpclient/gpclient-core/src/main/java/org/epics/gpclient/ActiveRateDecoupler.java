@@ -1,14 +1,15 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
-import java.time.Duration;
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.joda.time.Duration;
+
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * Decouples the rate by simply scanning the PV status at the given rate.
@@ -19,26 +20,24 @@ import java.util.function.Consumer;
  * @author carcassi
  */
 class ActiveRateDecoupler extends RateDecoupler {
-    
+
     private volatile ScheduledFuture<?> scanTaskHandle;
 
     public ActiveRateDecoupler(ScheduledExecutorService scannerExecutor,
-            Duration maxDuration, Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
+                               Duration maxDuration, Consumer<PVEvent> listener, Consumer<Exception> exceptionHandler) {
         super(scannerExecutor, maxDuration, listener, exceptionHandler);
     }
 
     @Override
     void onStart() {
         scanTaskHandle = getScannerExecutor().scheduleWithFixedDelay(new Runnable() {
-
-            @Override
             public void run() {
                 if (!isStopped() && !isPaused() && !isEventProcessing()) {
                     PVEvent event = PVEvent.readConnectionValueEvent();
                     sendDesiredRateEvent(event);
                 }
             }
-        }, 0, getMaxDuration().toNanos(), TimeUnit.NANOSECONDS);
+        }, 0, getMaxDuration().getMillis() * 1000000, TimeUnit.NANOSECONDS);
     }
 
     @Override
@@ -55,9 +54,10 @@ class ActiveRateDecoupler extends RateDecoupler {
     protected void newEvent(PVEvent event) {
         // Do nothing
     }
-    
+
     /**
      * If possible, submit the event right away, otherwise try again later.
+     *
      * @param event the event to submit
      */
     private void scheduleWriteOutcome(final PVEvent event) {
@@ -65,13 +65,11 @@ class ActiveRateDecoupler extends RateDecoupler {
             sendDesiredRateEvent(event);
         } else {
             getScannerExecutor().submit(new Runnable() {
-
-                @Override
                 public void run() {
                     scheduleWriteOutcome(event);
                 }
             });
         }
     }
-    
+
 }

@@ -68,7 +68,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		if (count != 1)
 			throw new UnsupportedOperationException("only 1 supported for now");
 		final int cid = payloadBuffer.getInt();
-		
+
 		final String channelName = SerializeHelper.deserializeString(payloadBuffer, transport);
 		if (channelName == null || channelName.length() == 0)
 		{
@@ -82,7 +82,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			disconnect(transport);
 			return;
 		}
-		
+
 		SecuritySession securitySession = transport.getSecuritySession();
 		ChannelSecuritySession channelSecuritySession;
 		try {
@@ -102,9 +102,9 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			cr.channelCreated(asStatus, null);
 			return;
 		}
-		
+
 		final ChannelRequester cr = new ChannelRequesterImpl(transport, channelName, cid, channelSecuritySession);
-		
+
 		if (channelName.equals(SERVER_CHANNEL_NAME))
 		{
 			RPCChannel serverChannel =
@@ -149,8 +149,8 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			// noop
 		}
 	}
-	
-	
+
+
 	/**
 	 * Async. completion callback support.
 	 * @author msekoranja
@@ -164,15 +164,14 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 
 		private Status status;
 		private Channel channel;
-		
+
 		public ChannelRequesterImpl(Transport transport, String channelName, int cid, ChannelSecuritySession css) {
 			this.transport = transport;
 			this.channelName = channelName;
 			this.cid = cid;
 			this.css = css;
 		}
-		
-		@Override
+
 		public void channelCreated(Status status, Channel channel) {
 			synchronized (this) {
 				this.status = status;
@@ -182,17 +181,14 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		}
 
 
-		@Override
 		public void channelStateChange(Channel c, ConnectionState isConnected) {
 			// noop
 		}
 
-		@Override
 		public String getRequesterName() {
 			return transport + "/" + cid;
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			// no requester yet
 			System.err.println("[" + messageType + "] " + message);
@@ -201,7 +197,6 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// noop
 		}
@@ -209,7 +204,6 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// noop
 		}
@@ -217,7 +211,6 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final Channel channel;
 			final Status status;
@@ -234,7 +227,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			}
 			// OK
 			else {
-				
+
 				ServerChannelImpl serverChannel = null;
 				try
 				{
@@ -248,16 +241,16 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 					try
 					{
 						serverChannel = new ServerChannelImpl(channel, cid, sid, css);
-						
+
 						// ack allocation and register
 						casTransport.registerChannel(sid, serverChannel);
-						
+
 					} catch (Throwable th) {
 						// depreallocate and rethrow
-						casTransport.depreallocateChannelSID(sid);
+						casTransport.dePreAllocateChannelSID(sid);
 						throw th;
 					}
-					
+
 					control.startMessage((byte)7, 2*Integer.SIZE/Byte.SIZE);
 					buffer.putInt(cid);
 					buffer.putInt(sid);
@@ -277,9 +270,9 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 		}
 
 		/**
-		 * @param buffer
-		 * @param control
-		 * @param status
+		 * @param buffer buffer
+		 * @param control control
+		 * @param status status
 		 */
 		private void createChannelFailedResponse(ByteBuffer buffer, TransportSendControl control, final Status status)
 		{
@@ -290,7 +283,7 @@ public class CreateChannelHandler extends AbstractServerResponseHandler {
 			//control.flush(true);
 		}
 
-		
+
 	}
-	
+
 }

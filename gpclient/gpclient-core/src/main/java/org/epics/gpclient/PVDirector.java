@@ -1,29 +1,24 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
+import org.epics.gpclient.datasource.DataSource;
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.epics.util.compat.legacy.functional.Supplier;
+import org.epics.util.compat.legacy.lang.Objects;
+import org.epics.vtype.VType;
+import org.joda.time.Duration;
+
 import java.lang.ref.WeakReference;
-import java.time.Duration;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.epics.gpclient.datasource.DataSource;
-import org.epics.vtype.VType;
 
 /**
  * Orchestrates the different elements of pvmanager to make a reader functional.
@@ -39,33 +34,49 @@ import org.epics.vtype.VType;
  * or if it's garbage collected</li>
  * </ul>
  *
- * @author carcassi
  * @param <R> the read object type
  * @param <W> the write object type
+ * @author carcassi
  */
 public class PVDirector<R, W> {
-    
+
     private static final Logger log = Logger.getLogger(PVDirector.class.getName());
 
     // Required for connection and exception notification
 
-    /** Executor used to notify of new values/connection/exception */
+    /**
+     * Executor used to notify of new values/connection/exception
+     */
     final Executor notificationExecutor;
-    /** Executor used to scan the connection/exception queues */
+    /**
+     * Executor used to scan the connection/exception queues
+     */
     final ScheduledExecutorService scannerExecutor;
-    /** PVReader to update during the notification */
+    /**
+     * PVReader to update during the notification
+     */
     private final WeakReference<PVImpl<R, W>> pvRef;
-    /** Function for the new value */
+    /**
+     * Function for the new value
+     */
     final Supplier<R> readFunction;
-    /** Function to write values */
+    /**
+     * Function to write values
+     */
     final Consumer<W> writeFunction;
-    /** Creation for stack trace */
+    /**
+     * Creation for stack trace
+     */
     private final Exception creationStackTrace = new Exception("Open PV was garbage collected: see stack trace for where it was created");
-    /** Used to ignore duplicated errors */
-    private final AtomicReference<Notification> lastNotification = new AtomicReference<>();
-    /** Maximum rate for notification */
+    /**
+     * Used to ignore duplicated errors
+     */
+    private final AtomicReference<Notification> lastNotification = new AtomicReference<Notification>();
+    /**
+     * Maximum rate for notification
+     */
     final Duration maxRate;
-    
+
     private class Notification {
         final R readValue;
         final boolean readConnection;
@@ -81,7 +92,7 @@ public class PVDirector<R, W> {
 
         @Override
         public String toString() {
-            Map<String, Object> properties = new LinkedHashMap<>();
+            Map<String, Object> properties = new LinkedHashMap<String, Object>();
             properties.put("event", event);
             properties.put("readConnection", readConnection);
             properties.put("writeConnection", writeConnection);
@@ -89,43 +100,47 @@ public class PVDirector<R, W> {
             return properties.toString();
         }
     }
-    
+
     private RateDecoupler scanStrategy;
 
-    
+
     // Required to connect/disconnect expressions
     private final DataSource dataSource;
     private final Object lock = new Object();
-    private final Set<Expression<?, ?>> readExpressions = new HashSet<>();
-    private final Set<Expression<?, ?>> writeExpressions = new HashSet<>();
+    private final Set<Expression<?, ?>> readExpressions = new HashSet<Expression<?, ?>>();
+    private final Set<Expression<?, ?>> writeExpressions = new HashSet<Expression<?, ?>>();
 
     // Required for multiple operations
-    /** Collector required to connect/disconnect expressions and for connection calculation */
-    private final Set<ReadCollector<?,?>> readCollectors = new HashSet<>();
-    /** Collector required to connect/disconnect expressions and for connection calculation */
-    private final Set<WriteCollector<?>> writeCollectors = new HashSet<>();
-    
+    /**
+     * Collector required to connect/disconnect expressions and for connection calculation
+     */
+    private final Set<ReadCollector<?, ?>> readCollectors = new HashSet<ReadCollector<?, ?>>();
+    /**
+     * Collector required to connect/disconnect expressions and for connection calculation
+     */
+    private final Set<WriteCollector<?>> writeCollectors = new HashSet<WriteCollector<?>>();
+
     void setScanner(final RateDecoupler scanStrategy) {
-        synchronized(lock) {
+        synchronized (lock) {
             this.scanStrategy = scanStrategy;
         }
     }
-    
+
     public void registerCollector(ReadCollector<?, ?> collector) {
         collector.setUpdateListener(scanStrategy.getUpdateListener());
         readCollectors.add(collector);
     }
-    
+
     public void registerCollector(WriteCollector<?> collector) {
         collector.setUpdateListener(scanStrategy.getUpdateListener());
         writeCollectors.add(collector);
     }
-    
+
     public void deregisterCollector(ReadCollector<?, ?> collector) {
         collector.setUpdateListener(null);
         readCollectors.remove(collector);
     }
-    
+
     public void deregisterCollector(WriteCollector<?> collector) {
         collector.setUpdateListener(null);
         writeCollectors.remove(collector);
@@ -134,9 +149,9 @@ public class PVDirector<R, W> {
     public DataSource getDataSource() {
         return dataSource;
     }
-    
+
     private boolean calculateConnection() {
-        synchronized(lock) {
+        synchronized (lock) {
             boolean connection = true;
             for (ReadCollector<?, ?> readCollector : readCollectors) {
                 connection = connection && readCollector.getConnection();
@@ -144,9 +159,9 @@ public class PVDirector<R, W> {
             return connection;
         }
     }
-    
+
     private boolean calculateWriteConnection() {
-        synchronized(lock) {
+        synchronized (lock) {
             boolean writeConnection = true;
             for (WriteCollector<?> writeCollector : writeCollectors) {
                 writeConnection = writeConnection && writeCollector.getConnection();
@@ -154,30 +169,30 @@ public class PVDirector<R, W> {
             return writeConnection;
         }
     }
-    
+
     /**
      * Connects the given expression.
      * <p>
      * This can be used for dynamic expression to add and connect child expressions.
      * The added expression will be automatically closed when the associated
      * reader is closed, if it's not disconnected first.
-     * 
+     *
      * @param expression the expression to connect
      */
     public void connectReadExpression(Expression<?, ?> expression) {
-        synchronized(lock) {
+        synchronized (lock) {
             expression.startRead(this);
             readExpressions.add(expression);
         }
     }
 
     public void connectWriteExpression(Expression<?, ?> expression) {
-        synchronized(lock) {
+        synchronized (lock) {
             expression.startWrite(this);
             writeExpressions.add(expression);
         }
     }
-    
+
     /**
      * Disconnects the given expression.
      * <p>
@@ -187,7 +202,7 @@ public class PVDirector<R, W> {
      * @param expression the expression to disconnect
      */
     public void disconnectReadExpression(Expression<?, ?> expression) {
-        synchronized(lock) {
+        synchronized (lock) {
             if (!readExpressions.remove(expression)) {
                 log.log(Level.SEVERE, "Director was asked to disconnect expression '" + expression + "' which was not found.");
             }
@@ -196,16 +211,16 @@ public class PVDirector<R, W> {
     }
 
     public void disconnectWriteExpression(Expression<?, ?> expression) {
-        synchronized(lock) {
+        synchronized (lock) {
             if (!writeExpressions.remove(expression)) {
                 log.log(Level.SEVERE, "Director was asked to disconnect expression '" + expression + "' which was not found.");
             }
             expression.stopWrite(this);
         }
     }
-    
+
     private volatile boolean closed = false;
-    
+
     void close() {
         closed = true;
         disconnect();
@@ -215,7 +230,7 @@ public class PVDirector<R, W> {
      * Close and disconnects all the child expressions.
      */
     private void disconnect() {
-        synchronized(lock) {
+        synchronized (lock) {
             while (!readExpressions.isEmpty()) {
                 Expression<?, ?> expression = readExpressions.iterator().next();
                 disconnectReadExpression(expression);
@@ -232,11 +247,9 @@ public class PVDirector<R, W> {
      * dataSource is appropriately closed.
      *
      * @param pv the pv on which to notify
-     * @param function the function used to calculate new values
-     * @param notificationExecutor the thread switching mechanism
      */
     PVDirector(PVImpl<R, W> pv, PVConfiguration<R, W> pvConf) {
-        this.pvRef = new WeakReference<>(pv);
+        this.pvRef = new WeakReference<PVImpl<R, W>>(pv);
         this.readFunction = pvConf.expression.getFunction();
         if (pvConf.mode == PVConfiguration.Mode.WRITE || pvConf.mode == PVConfiguration.Mode.READ_WRITE) {
             this.writeFunction = pvConf.expression.getWriteFunction();
@@ -274,17 +287,17 @@ public class PVDirector<R, W> {
             return false;
         }
     }
-    
+
     void pause() {
         scanStrategy.pause();
     }
-    
+
     void resume() {
         scanStrategy.resume();
     }
-    
+
     private volatile boolean notificationInFlight = false;
-    
+
     /**
      * Notifies the PVReader of a new value.
      */
@@ -300,7 +313,7 @@ public class PVDirector<R, W> {
         }
 
         Notification previousNotification = lastNotification.get();
-        
+
         // Calculate new value if it is a value event
         R newValue = previousNotification != null ? previousNotification.readValue : null;
         if (event.isType(PVEvent.Type.VALUE)) {
@@ -318,18 +331,18 @@ public class PVDirector<R, W> {
                 log.log(Level.SEVERE, "Unrecoverable error during scanning", ex);
             }
         }
-        
+
         // Calculate new connection if it is a connection value
         boolean newConnection = previousNotification != null ? previousNotification.readConnection : false;
         if (event.isType(PVEvent.Type.READ_CONNECTION)) {
             newConnection = calculateConnection();
-            
+
             // If we are connected after a timeout, ignore the timeout
             if (newConnection && event.getException() instanceof TimeoutException) {
                 event = event.removeType(PVEvent.Type.EXCEPTION);
             }
         }
-        
+
         // Calculate new write connection if it is a connection value
         boolean newWriteConnection = previousNotification != null ? previousNotification.writeConnection : false;
         if (event.isType(PVEvent.Type.WRITE_CONNECTION)) {
@@ -346,11 +359,11 @@ public class PVDirector<R, W> {
             if (event.isType(PVEvent.Type.WRITE_CONNECTION) && previousNotification.writeConnection == newWriteConnection) {
                 event = event.removeType(PVEvent.Type.WRITE_CONNECTION);
             }
-            
+
             if (event.isType(PVEvent.Type.VALUE) && previousNotification.readValue == newValue) {
                 event = event.removeType(PVEvent.Type.VALUE);
             }
-            
+
             Exception previousReadException = previousNotification.event.getException();
             Exception currentReadException = event.getException();
             if (event.isType(PVEvent.Type.EXCEPTION) && previousReadException != null && currentReadException != null &&
@@ -369,19 +382,18 @@ public class PVDirector<R, W> {
                 event = event.removeType(PVEvent.Type.VALUE);
             }
         }
-        
+
         if (event.getType().isEmpty()) {
             scanStrategy.readyForNextEvent();
             return;
         }
-        
+
         // Prepare values to ship to the other thread.
         lastNotification.set(new Notification(newValue, newConnection, newWriteConnection, event));
-        
+
         notificationInFlight = true;
         notificationExecutor.execute(new Runnable() {
 
-            @Override
             public void run() {
                 try {
                     PVImpl<R, W> pv = pvRef.get();
@@ -389,7 +401,7 @@ public class PVDirector<R, W> {
                     // Proceed with notification only if the PV was not garbage
                     // collected
                     if (pv != null) {
-                        
+
                         // Atomicity guaranteed by:
                         //  - all the modification on the PV
                         //    are done here, on the same thread where the listeners will be called.
@@ -400,7 +412,7 @@ public class PVDirector<R, W> {
                         //    the next event is serialized after the end of this one.
                         //    notificationInFlight double checks this for now and
                         //    can be removed in a second phase.
-                        
+
                         pv.fireEvent(notification.event, notification.readConnection, notification.writeConnection, notification.readValue);
                     }
                 } finally {
@@ -413,7 +425,7 @@ public class PVDirector<R, W> {
 
     /**
      * Posts a readTimeout exception in the exception queue.
-     * 
+     *
      * @param timeoutMessage the message for the readTimeout
      */
     private void processReadTimeout(String timeoutMessage) {
@@ -422,58 +434,60 @@ public class PVDirector<R, W> {
             scanStrategy.getUpdateListener().accept(PVEvent.exceptionEvent(new TimeoutException(timeoutMessage)));
         }
     }
-    
+
     private void readTimeout(Duration timeout, final String timeoutMessage) {
         scannerExecutor.schedule(new Runnable() {
-            @Override
             public void run() {
                 processReadTimeout(timeoutMessage);
             }
-        }, timeout.toNanos(), TimeUnit.NANOSECONDS);
+        }, timeout.getMillis()*1000000, TimeUnit.NANOSECONDS);
     }
-    
-    private final Consumer<PVEvent> desiredRateEventListener = (PVEvent event) -> {
-        try {
-            if (isActive()) {
-                notifyPv(event);
-            } else {
-                close();
+
+    private final Consumer<PVEvent> desiredRateEventListener = new Consumer<PVEvent>() {
+        @Override
+        public void accept(PVEvent event) {
+            try {
+                if (isActive()) {
+                    notifyPv(event);
+                } else {
+                    close();
+                }
+            } catch (Exception ex) {
+                log.log(Level.SEVERE, "GPClient fatal error", ex);
             }
-        } catch(Exception ex) {
-            log.log(Level.SEVERE, "GPClient fatal error", ex);
         }
     };
 
     Consumer<PVEvent> getDesiredRateEventListener() {
         return desiredRateEventListener;
     }
-    
+
     private static final Random rand = new Random();
-    
+
     /**
      * Implements the asynchronous write. Starts the process for
      * writing the value so that the result will be notified on the given
      * callback.
-     * 
-     * @param value the value to be written; can be null
+     *
+     * @param value    the value to be written; can be null
      * @param callback the callback for the write result; if null, notify
-     * with the other events
+     *                 with the other events
      */
-    void submitWrite(W value, Consumer<PVEvent> callback) {
+    void submitWrite(final W value, Consumer<PVEvent> callback) {
         if (writeFunction == null) {
             throw new IllegalStateException("This pv is read only");
         }
 
-        Consumer<PVEvent> finalCallback;
+        final Consumer<PVEvent> finalCallback;
         if (callback == null) {
             finalCallback = scanStrategy.getUpdateListener();
         } else {
             finalCallback = callback;
         }
-        
+
         // TODO: the current implementation writes all values. We may want to skip if there is a
         // write burst.
-        
+
         // Design for the write communication
         //
         // The write value is in general something that will be decomposed into
@@ -491,45 +505,47 @@ public class PVDirector<R, W> {
         // Once the write requests are sent, the WriteTab collects the write
         // results for each channel and constructs a single event for the
         // write callback.
-        
-        scannerExecutor.execute(() -> {
-            try {
-                // Take a copy of the write collectors so that if there is a dynamic
-                // change of the connected expressions we at least have a stable
-                // snapshot
-                Set<WriteCollector<?>> writeCollectors;
-                synchronized (lock) {
-                    writeCollectors = new HashSet<>(this.writeCollectors);
-                    
-                    int id = rand.nextInt();
-                    for (WriteCollector<?> writeCollector : writeCollectors) {
-                        writeCollector.prepareWrite(id);
-                    }
 
-                    // Use writeFunction to prepare the values in the WriteCollectors.
-                    // If writeFunction fails, clear the collectors and return failure.
-                    try {
-                        writeFunction.accept(value);
-                    } catch (Exception ex) {
-                        for (WriteCollector<?> writeCollector : writeCollectors) {
-                            writeCollector.cancelWrite(id);
+        scannerExecutor.execute(new Runnable() {
+            public void run() {
+                try {
+                    // Take a copy of the write collectors so that if there is a dynamic
+                    // change of the connected expressions we at least have a stable
+                    // snapshot
+                    Set<WriteCollector<?>> writeCollectorsCopy;
+                    synchronized (lock) {
+                        writeCollectorsCopy = new HashSet<WriteCollector<?>>(writeCollectors);
+
+                        int id = rand.nextInt();
+                        for (WriteCollector<?> writeCollector : writeCollectorsCopy) {
+                            writeCollector.prepareWrite(id);
                         }
-                        finalCallback.accept(PVEvent.writeFailedEvent(ex));
-                        return;
-                    }
 
-                    WriteTab tab = new WriteTab(writeCollectors.size(), finalCallback);
-                    for (WriteCollector<?> writeCollector : writeCollectors) {
-                        writeCollector.sendWriteRequest(id, tab);
+                        // Use writeFunction to prepare the values in the WriteCollectors.
+                        // If writeFunction fails, clear the collectors and return failure.
+                        try {
+                            writeFunction.accept(value);
+                        } catch (Exception ex) {
+                            for (WriteCollector<?> writeCollector : writeCollectorsCopy) {
+                                writeCollector.cancelWrite(id);
+                            }
+                            finalCallback.accept(PVEvent.writeFailedEvent(ex));
+                            return;
+                        }
+
+                        WriteTab tab = new WriteTab(writeCollectorsCopy.size(), finalCallback);
+                        for (WriteCollector<?> writeCollector : writeCollectorsCopy) {
+                            writeCollector.sendWriteRequest(id, tab);
+                        }
                     }
+                } catch (Exception ex) {
+                    log.log(Level.SEVERE, "Error while processing write", ex);
                 }
-            } catch (Exception ex) {
-                log.log(Level.SEVERE, "Error while processing write", ex);
             }
         });
     }
-    
-    private class WriteTab implements Consumer<PVEvent> {
+
+    private class WriteTab extends Consumer<PVEvent> {
         private final Object lock = new Object();
         private int counter;
         private boolean done;
@@ -542,12 +558,12 @@ public class PVDirector<R, W> {
 
         @Override
         public void accept(PVEvent event) {
-            synchronized(lock) {
+            synchronized (lock) {
                 // If we are done, we ignore incoming events
                 if (done) {
                     return;
                 }
-                
+
                 if (event.isType(PVEvent.Type.WRITE_SUCCEEDED)) {
                     // Decerement counter. If we are not zero we have nothing to do
                     counter--;
@@ -556,7 +572,7 @@ public class PVDirector<R, W> {
                         return;
                     }
                 }
-                
+
                 // If we haven't returned, then this event should be sent, and
                 // no other shoule be sent after this
                 done = true;
@@ -564,8 +580,8 @@ public class PVDirector<R, W> {
 
             callback.accept(event);
         }
-        
-        
+
+
     }
-    
+
 }

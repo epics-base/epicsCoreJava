@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,7 +10,7 @@ package org.epics.vtype;
  * @author carcassi
  */
 final class IVEnum extends VEnum {
-    
+
     private final Alarm alarm;
     private final Time time;
     private final int index;
@@ -46,12 +46,10 @@ final class IVEnum extends VEnum {
         return enumDisplay;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,9 +10,9 @@
 package org.epics.vtype.gson;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 /**
- *
  * @author carcassi
  */
 public class ChangeFailedToReference {
@@ -22,13 +22,20 @@ public class ChangeFailedToReference {
      */
     public static void main(String[] args) {
         File file = new File("src/test/resources/org/epics/vtype/gson/");
-        for (File failed : file.listFiles((File dir, String name) -> name.contains(".failed."))) {
-            File reference = new File(failed.getPath().subSequence(0, failed.getPath().indexOf(".failed.")) + ".json");
-            if (reference.exists()) {
-                reference.delete();
+        File[] files = file.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.contains(".failed.");
             }
-            failed.renameTo(reference);
+        });
+        if (files != null) {
+            for (File failed : files) {
+                File reference = new File(failed.getPath().subSequence(0, failed.getPath().indexOf(".failed.")) + ".json");
+                if (reference.exists()) {
+                    reference.delete();
+                }
+                failed.renameTo(reference);
+            }
         }
     }
-    
+
 }

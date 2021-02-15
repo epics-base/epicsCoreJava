@@ -56,12 +56,12 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	 * Response callback listener.
 	 */
 	protected final GetFieldRequester callback;
-	
+
 	/**
 	 * Sub-field name.
 	 */
 	protected final String subField;
-	
+
 	/**
 	 * Destroyed flag.
 	 */
@@ -76,7 +76,7 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 		thisInstance.activate();
 		return thisInstance;
 	}
-	
+
 	protected ChannelGetFieldRequestImpl(ChannelImpl channel,
 			GetFieldRequester callback,
             String subField)
@@ -86,14 +86,14 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 
 		this.channel = channel;
 		this.context = (ClientContextImpl)channel.getContext();
-		
+
 		this.callback = callback;
 		this.subField = subField;
-		
+
 		// register response request
 		this.ioid = context.registerResponseRequest(this);
 	}
-	
+
 	protected void activate()
 	{
 		channel.registerResponseRequest(this);
@@ -108,11 +108,10 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 		}
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 	 */
-	@Override
 	public void lock() {
 		// noop
 	}
@@ -121,10 +120,9 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 	 */
-	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {
 		control.startMessage((byte)17, 2*Integer.SIZE/Byte.SIZE);
-		
+
 		// SID
 		buffer.putInt(channel.getServerChannelID());
 
@@ -138,7 +136,6 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 	 */
-	@Override
 	public void unlock() {
 		// noop
 	}
@@ -153,7 +150,6 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.ResponseRequest#getRequester()
 	 */
-	@Override
 	public Requester getRequester() {
 		return callback;
 	}
@@ -162,9 +158,9 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	 * @see org.epics.pvaccess.core.DataResponse#response(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer)
 	 */
 	public void response(Transport transport, byte version, ByteBuffer payloadBuffer) {
-		
+
 		try
-		{	
+		{
 			final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
 			if (status.isSuccess())
 			{
@@ -196,7 +192,7 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 	 * @see org.epics.pvaccess.client.ChannelRequest#destroy()
 	 */
 	public void destroy() {
-		
+
 		synchronized (this) {
 			if (destroyed)
 				return;
@@ -207,7 +203,7 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 		context.unregisterResponseRequest(this);
 		channel.unregisterResponseRequest(this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.core.ResponseRequest#timeout()
 	 */
@@ -225,6 +221,6 @@ public class ChannelGetFieldRequestImpl implements DataResponse, TransportSender
 			destroy();
 		// TODO notify?
 	}
-	
-	
+
+
 }

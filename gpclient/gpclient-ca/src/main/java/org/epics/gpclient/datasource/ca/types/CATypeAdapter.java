@@ -1,18 +1,17 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.ca.types;
 
 
+import gov.aps.jca.Channel;
+import gov.aps.jca.dbr.DBR;
+import gov.aps.jca.dbr.DBRType;
 import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.datasource.DataSourceTypeAdapter;
 import org.epics.gpclient.datasource.ca.CAConnectionPayload;
 import org.epics.gpclient.datasource.ca.CAMessagePayload;
-
-import gov.aps.jca.Channel;
-import gov.aps.jca.dbr.DBR;
-import gov.aps.jca.dbr.DBRType;
 
 abstract public class CATypeAdapter implements DataSourceTypeAdapter<CAConnectionPayload, CAMessagePayload> {
 
@@ -23,7 +22,7 @@ abstract public class CATypeAdapter implements DataSourceTypeAdapter<CAConnectio
 
     /**
      * Creates a new type adapter.
-     * 
+     *
      * @param typeClass the java type this adapter will create
      * @param epicsValueType the epics type used for the monitor
      * @param epicsMetaType the epics type for the get at connection time; null if no metadata is needed
@@ -36,8 +35,7 @@ abstract public class CATypeAdapter implements DataSourceTypeAdapter<CAConnectio
         this.array = array;
     }
 
-    
-    @Override
+
     public boolean match(ReadCollector<?, ?> cache, CAConnectionPayload connectionPayload) {
 
         Channel channel = connectionPayload.getChannel();
@@ -76,13 +74,11 @@ abstract public class CATypeAdapter implements DataSourceTypeAdapter<CAConnectio
                 aType.isSHORT() && anotherType.isSHORT() ||
                 aType.isSTRING() && anotherType.isSTRING();
     }
-    @Override
     public Object getSubscriptionParameter(ReadCollector<?, ?> cache, CAConnectionPayload connection) {
         throw new UnsupportedOperationException("Not implemented: CAChannelHandler is multiplexed, will not use this method");
 
     }
 
-    @Override
     public void updateCache(ReadCollector cache, CAConnectionPayload connection, CAMessagePayload message) {
         Channel channel = connection.getChannel();
         // If metadata is required and not present, no update
@@ -97,11 +93,11 @@ abstract public class CATypeAdapter implements DataSourceTypeAdapter<CAConnectio
 
     /**
      * Given the value create the new value.
-     * 
-     * @param message the value taken from the monitor 
-     * @param metadata the value field metadata, optional 
+     *
+     * @param message the value taken from the monitor
+     * @param metadata the value field metadata, optional
      * @param connPayload connection playload
-     * 
+     *
      * @return the new value
      */
     public abstract Object createValue(DBR message, DBR metadata, CAConnectionPayload connPayload);

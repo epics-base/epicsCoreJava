@@ -36,16 +36,16 @@ public class BlockingTCPConnector implements Connector {
 
 	public interface TransportFactory {
 		public Transport create(Context context, SocketChannel channel,
-				ResponseHandler responseHandler, int receiveBufferSize, 
+				ResponseHandler responseHandler, int receiveBufferSize,
 				TransportClient client, short transportRevision,
 				float heartbeatInterval, short priority);
 	}
-	
+
 	/**
 	 * Context instance.
 	 */
 	private final Context context;
-	
+
 	/**
 	 * Context instance.
 	 */
@@ -65,16 +65,16 @@ public class BlockingTCPConnector implements Connector {
 	 * Receive buffer size.
 	 */
 	private final int receiveBufferSize;
-	
+
 	/**
 	 * Heartbeat interval.
 	 */
-	private final float heartbeatInterval; 
+	private final float heartbeatInterval;
 
 	/**
 	 * Transport factory.
 	 */
-	private final TransportFactory transportFactory; 
+	private final TransportFactory transportFactory;
 
 	public BlockingTCPConnector(Context context, TransportFactory transportFactory, int receiveBufferSize, float heartbeatInterval) {
 		this.context = context;
@@ -83,8 +83,8 @@ public class BlockingTCPConnector implements Connector {
 		this.heartbeatInterval = heartbeatInterval;
 		namedLocker = new NamedLockPattern();
 	}
-	
-	
+
+
 	/**
 	 * @see org.epics.pvaccess.impl.remote.Connector#connect(org.epics.pvaccess.impl.remote.TransportClient, org.epics.pvaccess.impl.remote.request.ResponseHandler, java.net.InetSocketAddress, byte, short)
 	 */
@@ -94,7 +94,7 @@ public class BlockingTCPConnector implements Connector {
 	{
 
 		SocketChannel socket = null;
-		
+
 		// first try to check cache w/o named lock...
 		Transport transport = context.getTransportRegistry().get(ProtocolType.tcp.name(), address, priority);
 		if (transport != null)
@@ -106,10 +106,10 @@ public class BlockingTCPConnector implements Connector {
 
 		boolean lockAcquired = namedLocker.acquireSynchronizationObject(address, LOCK_TIMEOUT);
 		if (lockAcquired)
-		{ 
+		{
 			try
-			{   
-				// ... transport created during waiting in lock 
+			{
+				// ... transport created during waiting in lock
 				transport = context.getTransportRegistry().get(ProtocolType.tcp.name(), address, priority);
 				if (transport != null)
 				{
@@ -117,22 +117,22 @@ public class BlockingTCPConnector implements Connector {
 					if (transport.acquire(client))
 						return transport;
 				}
-				     
+
 				context.getLogger().finer("Connecting to PVA server: " + address);
-				
+
 				socket = tryConnect(address, 3);
 
 				// use blocking channel
 				socket.configureBlocking(true);
-			
+
 				// enable TCP_NODELAY (disable Nagle's algorithm)
 				socket.socket().setTcpNoDelay(true);
-				
+
 				// enable TCP_KEEPALIVE
 				socket.socket().setKeepAlive(true);
-			
+
 				// do NOT tune socket buffer sizes, this will disable auto-tuning
-	
+
 				// create transport
 				transport = transportFactory.create(context, socket, responseHandler, receiveBufferSize, client, transportRevision, heartbeatInterval, priority);
 
@@ -143,11 +143,11 @@ public class BlockingTCPConnector implements Connector {
                 	transport.close();
 					throw new ConnectionException("Failed to verify connection to '" + address + "'.", address, ProtocolType.tcp.name(), null);
 				}
-				
+
 				// TODO send security token
-				
+
 				context.getLogger().finer("Connected to PVA server: " + address);
-	
+
 				return transport;
 			}
 			catch (Throwable th)
@@ -159,33 +159,33 @@ public class BlockingTCPConnector implements Connector {
 						socket.close();
 				}
 				catch (Throwable t) { /* noop */ }
-	
+
 				throw new ConnectionException("Failed to connect to '" + address + "'.", address, ProtocolType.tcp.name(), th);
 			}
 			finally
 			{
-				namedLocker.releaseSynchronizationObject(address);	
+				namedLocker.releaseSynchronizationObject(address);
 			}
 		}
 		else
-		{     
+		{
 			throw new ConnectionException("Failed to obtain synchronization lock for '" + address + "', possible deadlock.", address, ProtocolType.tcp.name(), null);
 		}
 	}
 
 	/**
-	 * Tries to connect to the given adresss.
-	 * @param address
-	 * @param tries
-	 * @return
-	 * @throws IOException
+	 * Tries to connect to the given addresses.
+	 * @param address address
+	 * @param tries tries
+	 * @return socket channel
+	 * @throws IOException for IO exceptions
 	 */
 	private SocketChannel tryConnect(InetSocketAddress address, int tries)
 		throws IOException
 	{
-		
+
 		IOException lastException = null;
-				
+
 		for (int tryCount = 0; tryCount < tries; tryCount++)
 		{
 

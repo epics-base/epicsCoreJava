@@ -17,7 +17,7 @@ public class TimeStampTest extends TestCase {
 
    	/**
 	 * Constructor for InetAddressUtilTest.
-	 * @param methodName
+	 * @param methodName method name
 	 */
 	public TimeStampTest(String methodName) {
 		super(methodName);

@@ -1,13 +1,13 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Instant;
 import org.epics.vtype.Display;
 import org.epics.vtype.Time;
 import org.epics.vtype.VDouble;
+import org.joda.time.Instant;
 
 /**
  * Base class for all simulated functions that return numbers.
@@ -24,15 +24,15 @@ abstract class VDoubleSimFunction extends SimFunction<VDouble> {
     /**
      * Creates a new simulation function.
      *
-     * @param secondsBeetwenSamples seconds between each samples
-     * @param classToken simulated class
+     * @param secondsBetweenSamples seconds between each samples
+     * @param display display
      */
-    VDoubleSimFunction(double secondsBeetwenSamples, Display display) {
-        super(secondsBeetwenSamples, VDouble.class);
+    VDoubleSimFunction(double secondsBetweenSamples, Display display) {
+        super(secondsBetweenSamples, VDouble.class);
         this.display = display;
     }
-    
-    
+
+
     @Override
     final VDouble nextValue(Instant instant) {
         double value = nextDouble();
@@ -41,9 +41,9 @@ abstract class VDoubleSimFunction extends SimFunction<VDouble> {
 
     /**
      * Returns the next value in the sequence.
-     * 
+     *
      * @return the new value
      */
     abstract double nextDouble();
-    
+
 }

@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.javafx.tools;
 
-import java.time.Instant;
+import org.joda.time.Instant;
 import org.epics.gpclient.PVEvent;
 
 
@@ -26,7 +26,7 @@ public class Event {
         this.writeConnected = writeConnected;
         this.value = value;
     }
-    
+
     public Instant getTimestamp() {
         return timestamp;
     }
@@ -51,5 +51,5 @@ public class Event {
     public String toString() {
         return event.toString();
     }
-    
+
 }

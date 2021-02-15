@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -39,7 +39,7 @@ public class AlarmTest {
     public void of4() {
         Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DEVICE, null);
     }
-    
+
     @Test
     public void none1() {
         Alarm alarm = Alarm.none();
@@ -48,7 +48,7 @@ public class AlarmTest {
         assertThat(alarm.getName(), equalTo("None"));
         assertThat(alarm.toString(), equalTo("NONE(NONE) - None"));
     }
-    
+
     @Test
     public void noValue1() {
         Alarm alarm = Alarm.noValue();
@@ -57,7 +57,7 @@ public class AlarmTest {
         assertThat(alarm.getName(), equalTo("No value"));
         assertThat(alarm.toString(), equalTo("INVALID(CLIENT) - No value"));
     }
-    
+
     @Test
     public void disconnected1() {
         Alarm alarm = Alarm.disconnected();
@@ -66,7 +66,7 @@ public class AlarmTest {
         assertThat(alarm.getName(), equalTo("Disconnected"));
         assertThat(alarm.toString(), equalTo("INVALID(CLIENT) - Disconnected"));
     }
-    
+
     @Test
     public void equals1() {
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH")));
@@ -76,7 +76,7 @@ public class AlarmTest {
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "HIGH"))));
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH"), not(equalTo(Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DB, "HIGH"))));
     }
-    
+
     @Test
     public void hashCode1() {
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode(), equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode()));
@@ -85,20 +85,28 @@ public class AlarmTest {
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode(), not(equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "HIGH").hashCode())));
         assertThat(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "HIGH").hashCode(), not(equalTo(Alarm.of(AlarmSeverity.MAJOR, AlarmStatus.DB, "HIGH").hashCode())));
     }
-    
+
     @Test
     public void alarmOf1() {
         assertThat(Alarm.alarmOf(null), equalTo(Alarm.noValue()));
         assertThat(Alarm.alarmOf(new Object()), equalTo(Alarm.none()));
-        assertThat(Alarm.alarmOf((AlarmProvider) () -> Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1")),
+        assertThat(Alarm.alarmOf(new AlarmProvider() {
+                    public Alarm getAlarm() {
+                        return Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1");
+                    }
+                }),
                 equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1")));
     }
-    
+
     @Test
     public void alarmOf2() {
         assertThat(Alarm.alarmOf(null, false), equalTo(Alarm.disconnected()));
         assertThat(Alarm.alarmOf(new Object(), false), equalTo(Alarm.none()));
-        assertThat(Alarm.alarmOf((AlarmProvider) () -> Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1"), false),
+        assertThat(Alarm.alarmOf(new AlarmProvider() {
+                    public Alarm getAlarm() {
+                        return Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1");
+                    }
+                }, false),
                 equalTo(Alarm.of(AlarmSeverity.MINOR, AlarmStatus.CLIENT, "alarmOf1")));
     }
 

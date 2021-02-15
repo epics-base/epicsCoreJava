@@ -57,7 +57,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	 * Owners (users) of the transport.
 	 */
 	private Set<TransportClient> owners;
-	
+
 	/**
 	 * Connection timeout (no-traffic) flag.
 	 */
@@ -77,7 +77,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	 * Timestamp of last "live" event on this transport.
 	 */
 	private volatile long aliveTimestamp;
-	
+
 	/**
 	 * Client TCP transport constructor.
 	 * @param context context where transport lives in.
@@ -92,27 +92,27 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	 * @throws SocketException thrown on any socket exception.
 	 */
 	public NonBlockingClientTCPTransport(Context context, /* TODO */ Poller poller, SocketChannel channel,
-					ResponseHandler responseHandler, int receiveBufferSize, 
+					ResponseHandler responseHandler, int receiveBufferSize,
 					TransportClient client, short remoteTransportRevision,
 					float heartbeatInterval, short priority) throws SocketException {
 		super(context, poller, channel, responseHandler, receiveBufferSize, priority);
-		
+
 		// initialize owners list, send queue
 		owners = new HashSet<TransportClient>();
 		acquire(client);
-		
+
 		// use immediate for clients
 		//setSendQueueFlushStrategy(SendQueueFlushStrategy.IMMEDIATE);
-		
+
 		// setup connection timeout timer (watchdog)
 		connectionTimeout = (long)(heartbeatInterval * 1000);
 		aliveTimestamp = System.currentTimeMillis();
 		timerNode = TimerFactory.createNode(this);
 		context.getTimer().schedulePeriodic(timerNode, heartbeatInterval, heartbeatInterval);
-		
+
 		//start();
 	}
-	
+
 	/**
 	 * @see org.epics.pvaccess.impl.remote.tcp.NonBlockingTCPTransport#internalClose()
 	 */
@@ -136,7 +136,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 			// check if still acquired
 			int refs = owners.size();
 			if (refs > 0)
-			{ 
+			{
 				context.getLogger().fine("Transport to " + socketAddress + " still has " + refs + " client(s) active and closing...");
 				TransportClient[] clients = new TransportClient[refs];
 				owners.toArray(clients);
@@ -153,12 +153,12 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 					}
 				}
 			}
-			
+
 			owners.clear();
 		}
 	}
 
-	/** 
+	/**
 	 * Acquires transport.
 	 * @param client client (channel) acquiring the transport
 	 * @return <code>true</code> if transport was granted, <code>false</code> otherwise.
@@ -167,21 +167,21 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 
 		if (!isOpen())
 			return false;
-			
+
 		context.getLogger().finer("Acquiring transport to " + socketAddress + ".");
 
 		synchronized (owners)
 		{
 			if (!isOpen())
 				return false;
-				
+
 			owners.add(client);
 		}
-		
+
 		return true;
 	}
 
-	/** 
+	/**
 	 * Releases transport.
 	 * @param client client (channel) releasing the transport
 	 */
@@ -189,7 +189,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 
 		if (!isOpen())
 			return;
-			
+
 		context.getLogger().finer("Releasing transport to " + socketAddress + ".");
 
 		synchronized (owners)
@@ -216,7 +216,6 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	 * at least once in this period, if not echo will be issued
 	 * and if there is not reponse to it, transport will be considered as unresponsive.
 	 */
-	@Override
 	public final void aliveNotification()
 	{
 		aliveTimestamp = System.currentTimeMillis();
@@ -227,7 +226,6 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.misc.Timer.TimerCallback#timerStopped()
 	 */
-	@Override
 	public void timerStopped() {
 		// noop
 	}
@@ -236,7 +234,6 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	 * Live-check timer.
 	 * @see org.epics.pvdata.misc.Timer.TimerCallback#callback()
 	 */
-	@Override
 	public void callback()
 	{
 		final long diff = System.currentTimeMillis() - aliveTimestamp;
@@ -253,7 +250,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	}
 
 	/**
-	 * Responsive transport notify. 
+	 * Responsive transport notify.
 	 */
 	private void responsiveTransport()
 	{
@@ -279,7 +276,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	}
 
 	/**
-	 * Unresponsive transport notify. 
+	 * Unresponsive transport notify.
 	 */
 	private void unresponsiveTransport()
 	{
@@ -307,13 +304,13 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 
 
 	/**
-	 * Changed transport (server restared) notify. 
+	 * Changed transport (server restared) notify.
 	 */
 	@Override
 	public void changedTransport()
 	{
 		outgoingIR.reset();
-		
+
 		synchronized (owners)
 		{
 			for (TransportClient client : owners)
@@ -331,11 +328,10 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 		}
 	}
 
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 	 */
-	@Override
 	public void lock() {
 		// noop
 	}
@@ -343,51 +339,49 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 	 */
-	@Override
 	public void unlock() {
 		// noop
 	}
 
 	// always called from the same thread, therefore no sync needed
 	private boolean verifyOrEcho = true;
-	
+
 	/**
 	 * PVA connection validation response
 	 */
-	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {
-		
+
 		if (verifyOrEcho)
 		{
 			//
 			// send verification response message
 			//
-			
+
 			control.startMessage((byte)1, 4+2+2);
-	
+
 			// receive buffer size
 			buffer.putInt(getReceiveBufferSize());
-	
+
 			// max introspection registry size
 			// TODO
 			buffer.putShort(Short.MAX_VALUE);
-			
+
 			// QoS (aka connection priority(
 			buffer.putShort(getPriority());
-			
+
 			// selected authNZ plug-in name
 			String securityPluginName = (securitySession != null) ? securitySession.getSecurityPlugin().getId() : "";
 			SerializeHelper.serializeString(securityPluginName, buffer, control);
-			
+
 			// optional authNZ plug-in initialization data
 			if (securitySession != null)
 				SerializationHelper.serializeFull(buffer, control, securitySession.initializationData());
 			else
 				SerializationHelper.serializeNullField(buffer, control);
-			
+
 			// send immediately
 			control.flush(true);
-			
+
 			verifyOrEcho = false;
 		}
 		else
@@ -398,16 +392,15 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 		}
 	}
 
-	@Override
 	public void authNZInitialize(Object data) {
-		
+
 		@SuppressWarnings("unchecked")
 		List<String> offeredSecurityPlugins = (List<String>)(data);
 		if (!offeredSecurityPlugins.isEmpty())
 		{
 			InetSocketAddress remoteAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
 			Map<String, SecurityPlugin> availableSecurityPlugins = context.getSecurityPlugins();
-		
+
 			for (String offeredSPName : offeredSecurityPlugins)
 			try
 			{
@@ -421,14 +414,13 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 				context.getLogger().log(Level.SEVERE, "Unexpected exception caught while calling SecurityPluin.isValidFor(InetAddress) methods.", th);
 			}
 		}
-		
+
 		enqueueSendRequest(this);
-		
+
 	}
-	
+
 	private volatile SecuritySession securitySession = null;
 
-	@Override
 	public void authNZMessage(PVField data) {
 		SecuritySession ss = securitySession;
 		if (ss != null)
@@ -436,14 +428,12 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 		else
 			context.getLogger().warning("authNZ message received but no security plug-in session active");
 	}
-	
-	@Override
+
 	public void sendSecurityPluginMessage(PVField data) {
 		// TODO not optimal since it allocates a new object every time
 		enqueueSendRequest(new SecurityPluginMessageTransportSender(data));
 	}
 
-	@Override
 	public void authenticationCompleted(Status status) {
 		// noop for client side (server will send ConnectionValidation message)
 	}
@@ -451,7 +441,7 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 	// TODO move to proper place
 	@Override
 	public void close() throws IOException {
-		
+
 		if (securitySession != null)
 		{
 			try {
@@ -459,18 +449,17 @@ public class NonBlockingClientTCPTransport extends NonBlockingTCPTransport
 			} catch (Throwable th) {
 				context.getLogger().log(Level.WARNING, "Unexpection exception caight while closing secutiry session.", th);
 			}
-			
+
 			securitySession = null;
 		}
-		
+
 		super.close();
 	}
 
-	@Override
 	public SecuritySession getSecuritySession() {
 		return securitySession;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.codec.impl.NonBlockingAbstractCodec#ready()
 	 */

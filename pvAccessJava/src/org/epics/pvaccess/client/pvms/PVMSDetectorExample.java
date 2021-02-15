@@ -29,10 +29,9 @@ public class PVMSDetectorExample {
 		final int port = 5678;
 
 		final PVMSSubscriber subscriber = new PVMSSubscriber(address, port);
-		
+
 		new Thread(new Runnable() {
-			
-			@Override
+
 			public void run() {
 				try
 				{
@@ -54,17 +53,17 @@ public class PVMSDetectorExample {
 				}
 			}
 		}, "receiver-thread").start();
-		
-		
+
+
 		// 8000 frames per scan
 		final int FRAMES_PER_SCAN = 3; //8000;
 		// 1K data per frame
 		final int FRAME_DATA_SIZE = 1024;
-		
+
 		// create data structure
 		PVStructure data = PVDataFactory.getPVDataCreate().
 								createPVStructure(scanStructure);
-		
+
 		//
 		// set static data
 		//
@@ -72,7 +71,7 @@ public class PVMSDetectorExample {
 		byte[] dataArray = new byte[FRAME_DATA_SIZE];
 		PVByteArray ba = (PVByteArray)data.getScalarArrayField("data", ScalarType.pvByte);
 		ba.shareData(dataArray);
-		
+
 		PVMSPublisher publisher = new PVMSPublisher(address, port);
 
 		//
@@ -83,26 +82,26 @@ public class PVMSDetectorExample {
 		{
 			if (scanId == 10)
 				break;
-			
+
 			for (int frameSeq = 0; frameSeq < FRAMES_PER_SCAN; frameSeq++)
 			{
 				// NOTE: field references could be cached
 
 				data.getIntField("scanId").put(scanId);
 				data.getIntField("frameSeq").put(frameSeq);
-				
+
 				// gen some data
 				Arrays.fill(dataArray, (byte)(frameSeq % 255));
-				
+
 				publisher.publishData(topicId, tags, data);
 			}
-			
+
 			Thread.sleep(1000);
-			
+
 			// increment scan id
 			scanId++;
 		}
-		
+
 		publisher.destroy();
 		subscriber.destroy();
 	}

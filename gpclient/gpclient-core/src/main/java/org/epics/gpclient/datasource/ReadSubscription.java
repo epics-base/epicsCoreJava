@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -27,7 +27,7 @@ public class ReadSubscription {
         this.channelName = channelName;
         this.readCollector = readCollector;
     }
-    
+
     /**
      * The name of the channel to read from.
      *
@@ -72,5 +72,5 @@ public class ReadSubscription {
     public String toString() {
         return "[ReadSubscription for " + channelName + ": " + readCollector + "]";
     }
-    
+
 }

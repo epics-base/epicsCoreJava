@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2010-18 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
@@ -58,17 +58,14 @@ class IVStatistics extends VStatistics {
         return nSamples;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }
 
-    @Override
     public Display getDisplay() {
         return display;
     }

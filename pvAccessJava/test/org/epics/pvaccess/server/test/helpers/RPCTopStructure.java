@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.server.test.helpers;
 
@@ -30,18 +30,18 @@ public class RPCTopStructure extends PVTopStructure {
 	public PVStructure request(PVStructure pvArgument) {
 		double a = pvArgument.getDoubleField("a").get();
 		double b = pvArgument.getDoubleField("b").get();
-		
+
 		PVStructure result;
 		{
 	        Field[] fields = new Field[1];
 	        fields[0] = fieldCreate.createScalar(ScalarType.pvDouble);
 	        result = pvDataCreate.createPVStructure(fieldCreate.createStructure(new String[] { "c" } , fields)
 	        );
-	        
+
 		}
-		
+
 		result.getDoubleField("c").put(a+b);
-		
+
 		return result;
 	}
 

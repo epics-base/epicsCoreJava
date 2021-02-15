@@ -40,7 +40,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 {
     private static final PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
     private PVField[] pvFields;
-    
+
     private void setParentAndName() {
         String[] fieldNames = getStructure().getFieldNames();
         Field[] fields = getStructure().getFields();
@@ -57,7 +57,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
             }
         }
     }
-   
+
     /**
      * Constructor.
      * @param structure the reflection interface for the PVStructure data.
@@ -88,8 +88,8 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     @Override
     public void setImmutable() {
         super.setImmutable();
-        for(int i=0; i < pvFields.length; i++) {
-            pvFields[i].setImmutable();
+        for (PVField pvField : pvFields) {
+            pvField.setImmutable();
         }
         super.setImmutable();
     }
@@ -97,14 +97,12 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getSubField(java.lang.String)
      */
-    @Override
     public PVField getSubField(String fieldName) {
         return findSubField(fieldName,this);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getSubField(int)
      */
-    @Override
     public PVField getSubField(int fieldOffset) {
         if(fieldOffset<=getFieldOffset()) {
             return null;
@@ -122,7 +120,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getStructure()
      */
-    @Override
     public Structure getStructure() {
         return (Structure)getField();
     }
@@ -130,14 +127,12 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getPVFields()
      */
-    @Override
     public PVField[] getPVFields() {
         return pvFields;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getBooleanField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVBoolean getBooleanField(String fieldName) {
     	return getSubField(PVBoolean.class, fieldName);
@@ -145,7 +140,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getByteField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVByte getByteField(String fieldName) {
     	return getSubField(PVByte.class, fieldName);
@@ -153,7 +147,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getShortField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVShort getShortField(String fieldName) {
     	return getSubField(PVShort.class, fieldName);
@@ -161,16 +154,14 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getIntField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVInt getIntField(String fieldName) {
     	return getSubField(PVInt.class, fieldName);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getSubField(java.lang.Class, java.lang.String)
      */
-    @Override
 	public <T extends PVField> T getSubField(Class<T> c, String fieldName)
 	{
 		PVField pv = findSubField(fieldName, this);
@@ -179,11 +170,10 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 		else
 			return null;
 	}
-	
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getSubField(java.lang.Class, int)
      */
-    @Override
 	public <T extends PVField> T getSubField(Class<T> c, int fieldOffset)
 	{
 		PVField pv = getSubField(fieldOffset);
@@ -196,7 +186,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getLongField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVLong getLongField(String fieldName) {
     	return getSubField(PVLong.class, fieldName);
@@ -204,7 +193,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getFloatField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVFloat getFloatField(String fieldName) {
     	return getSubField(PVFloat.class, fieldName);
@@ -212,7 +200,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getDoubleField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVDouble getDoubleField(String fieldName) {
     	return getSubField(PVDouble.class, fieldName);
@@ -220,7 +207,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getStringField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVString getStringField(String fieldName) {
     	return getSubField(PVString.class, fieldName);
@@ -228,7 +214,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getStructureField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVStructure getStructureField(String fieldName) {
     	return getSubField(PVStructure.class, fieldName);
@@ -236,7 +221,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 	/* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getUnionField(java.lang.String)
      */
-    @Override
     //@Deprecated
     public PVUnion getUnionField(String fieldName) {
     	return getSubField(PVUnion.class, fieldName);
@@ -244,7 +228,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getArrayField(java.lang.String, org.epics.pvdata.pv.ScalarType)
      */
-    @Override
     //@Deprecated
     public PVScalarArray getScalarArrayField(String fieldName, ScalarType elementType) {
         PVField pvField = findSubField(fieldName,this);
@@ -265,7 +248,6 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getStructureArrayField(java.lang.String)
      */
-    @Override
     //@Deprecated
 	public PVStructureArray getStructureArrayField(String fieldName) {
     	return getSubField(PVStructureArray.class, fieldName);
@@ -273,12 +255,11 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#getUnionArrayField(java.lang.String)
      */
-    @Override
     //@Deprecated
 	public PVUnionArray getUnionArrayField(String fieldName) {
     	return getSubField(PVUnionArray.class, fieldName);
     }
-    
+
     private static boolean checkValid(PVStructure pvStructure,String fullName) {
         boolean result = true;
         PVField[] pvFields = pvStructure.getPVFields();
@@ -324,11 +305,10 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         return result;
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructure#checkValid()
      */
-    @Override
     public boolean checkValid() {
         PVStructure xxx = this;
         while(xxx.getParent()!=null) {
@@ -336,7 +316,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         }
         return checkValid(xxx,"");
     }
-    
+
     private PVField findSubField(String fieldName,PVStructure pvStructure) {
         if(fieldName==null || fieldName.length()<1) return null;
         int index = fieldName.indexOf('.');
@@ -362,20 +342,18 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         if(pvField.getField().getType()!=Type.structure) return null;
         return findSubField(restOfName,(PVStructure)pvField);
     }
-    
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
 	 */
 	public void serialize(ByteBuffer buffer, SerializableControl flusher) {
-        for (int i = 0; i < pvFields.length; i++)
-        	pvFields[i].serialize(buffer, flusher);
+        for (PVField pvField : pvFields) pvField.serialize(buffer, flusher);
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-        for (int i = 0; i < pvFields.length; i++)
-        	pvFields[i].deserialize(buffer, control);
+        for (PVField pvField : pvFields) pvField.deserialize(buffer, control);
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pvCopy.BitSetSerializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl, org.epics.pvdata.misc.BitSet)
@@ -384,7 +362,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         int offset = getFieldOffset();
         int numberFields = getNumberFields();
         int next = bitSet.nextSetBit(offset);
-        
+
         // no more changes or no changes in this structure
         if (next<0 || next>=offset+numberFields) return;
 
@@ -393,23 +371,21 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         	deserialize(buffer, control);
         	return;
         }
-        
-        for (int i = 0; i < pvFields.length; i++)
-        {
-        	final PVField pvField = pvFields[i];
+
+        for (final PVField pvField : pvFields) {
             offset = pvField.getFieldOffset();
             numberFields = pvField.getNumberFields();
             next = bitSet.nextSetBit(offset);
             // no more changes
-            if (next<0) return;
+            if (next < 0) return;
             //  no change in this pvField
-            if (next>=offset+numberFields) continue;
-            
+            if (next >= offset + numberFields) continue;
+
             // serialize field or fields
             if (numberFields == 1)
-            	pvField.deserialize(buffer, control);
+                pvField.deserialize(buffer, control);
             else
-            	((PVStructure)pvField).deserialize(buffer, control, bitSet);
+                ((PVStructure) pvField).deserialize(buffer, control, bitSet);
         }
 	}
 	/* (non-Javadoc)
@@ -419,7 +395,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         int offset = getFieldOffset();
         int numberFields = getNumberFields();
         int next = bitSet.nextSetBit(offset);
-        
+
         // no more changes or no changes in this structure
         if (next<0 || next>=offset+numberFields) return;
 
@@ -428,23 +404,21 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
         	serialize(buffer, flusher);
         	return;
         }
-        
-        for (int i = 0; i < pvFields.length; i++)
-        {
-        	final PVField pvField = pvFields[i];
+
+        for (final PVField pvField : pvFields) {
             offset = pvField.getFieldOffset();
             numberFields = pvField.getNumberFields();
             next = bitSet.nextSetBit(offset);
             // no more changes
-            if (next<0) return;
+            if (next < 0) return;
             //  no change in this pvField
-            if (next>=offset+numberFields) continue;
-            
+            if (next >= offset + numberFields) continue;
+
             // serialize field or fields
             if (numberFields == 1)
-            	pvField.serialize(buffer, flusher);
+                pvField.serialize(buffer, flusher);
             else
-            	((PVStructure)pvField).serialize(buffer, flusher, bitSet);
+                ((PVStructure) pvField).serialize(buffer, flusher, bitSet);
         }
 	}
 	/* (non-Javadoc)
@@ -458,7 +432,7 @@ public class BasePVStructure extends AbstractPVField implements PVStructure
 			if (!getStructure().equals(b.getStructure()))
 			    return false;
 
-			final PVField[] bfields = b.getPVFields(); 
+			final PVField[] bfields = b.getPVFields();
 			if (bfields.length == pvFields.length)
 			{
 		        for (int i = 0; i < pvFields.length; i++)

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -7,13 +7,13 @@ package org.epics.gpclient;
 import java.io.PrintStream;
 
 /**
- * Utility class used to test the communication between the collectors and the 
+ * Utility class used to test the communication between the collectors and the
  * data providers.
  *
  * @author carcassi
  */
 public class ProbeCollector<T> {
-    
+
     private final PVEventRecorder recorder;
     private final ReadCollector<T, T> readCollector;
     private final WriteCollector<T> writeCollector;
@@ -21,13 +21,13 @@ public class ProbeCollector<T> {
     /**
      * Creates a probe collector that reads/writes the given type and that
      * streams events to the given output.
-     * 
+     *
      * @param type the type of objects to read/write
      * @param out where to stream the log
      */
-    public ProbeCollector(Class<T> type, PrintStream out) {
-        this.readCollector = new LatestValueCollector<>(type);
-        this.writeCollector = new WriteCollector<>();
+    public ProbeCollector(Class<T> type, final PrintStream out) {
+        this.readCollector = new LatestValueCollector<T>(type);
+        this.writeCollector = new WriteCollector<T>();
         this.recorder = new PVEventRecorder() {
             @Override
             protected void onEvent(PVEvent event) {
@@ -43,7 +43,7 @@ public class ProbeCollector<T> {
                     }
                 }
             }
-            
+
         };
         this.readCollector.setUpdateListener(this.recorder);
         this.writeCollector.setUpdateListener(this.recorder);
@@ -51,7 +51,7 @@ public class ProbeCollector<T> {
 
     /**
      * The current connection value in the collector.
-     * 
+     *
      * @return the connection value
      */
     public boolean getConnection() {
@@ -60,7 +60,7 @@ public class ProbeCollector<T> {
 
     /**
      * The current value in the collector.
-     * 
+     *
      * @return the value
      */
     public T getValue() {
@@ -69,7 +69,7 @@ public class ProbeCollector<T> {
 
     /**
      * The read collector to send events to.
-     * 
+     *
      * @return the read collector
      */
     public ReadCollector<T, T> getReadCollector() {
@@ -78,7 +78,7 @@ public class ProbeCollector<T> {
 
     /**
      * The write collector to send events to.
-     * 
+     *
      * @return the write collector
      */
     public WriteCollector<T> getWriteCollector() {
@@ -87,7 +87,7 @@ public class ProbeCollector<T> {
 
     /**
      * Write a value to the collector.
-     * 
+     *
      * @param value the value to be written
      */
     public void writeValue(T value) {
@@ -95,10 +95,10 @@ public class ProbeCollector<T> {
         writeCollector.queueValue(value);
         writeCollector.sendWriteRequest(0, recorder);
     }
-    
+
     /**
      * The recorder that gives access to all the accumulated events.
-     * 
+     *
      * @return the event log
      */
     public PVEventRecorder getRecorder() {
@@ -107,11 +107,11 @@ public class ProbeCollector<T> {
 
     /**
      * Creates a simple probe collector that does not write a log.
-     * 
+     *
      * @return a probe collector
      */
     public static ProbeCollector<?> create() {
-        return new ProbeCollector<>(Object.class, null);
+        return new ProbeCollector<Object>(Object.class, null);
     }
-    
+
 }

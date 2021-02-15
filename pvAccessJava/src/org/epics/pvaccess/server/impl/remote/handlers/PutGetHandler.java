@@ -44,9 +44,9 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		super(context, "Put-get request");
 	}
 
-    
+
 	private static class ChannelPutGetRequesterImpl extends BaseChannelRequester implements ChannelPutGetRequester, TransportSender {
-		
+
 		private volatile ChannelPutGet channelPutGet;
 		private volatile Status status;
 
@@ -66,10 +66,10 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		public ChannelPutGetRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
-			
+
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			
+
 			try {
 				channelPutGet = channel.getChannel().createChannelPutGet(this, pvRequest);
 			} catch (Throwable th) {
@@ -80,7 +80,6 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void channelPutGetConnect(Status status, ChannelPutGet channelPutGet,
 				Structure putStructure, Structure getStructure) {
 
@@ -88,13 +87,13 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			this.channelPutGet = channelPutGet;
 			this.putStructure = putStructure;
 			this.getStructure = getStructure;
-			
+
 			if (status.isSuccess())
 			{
 				this.pvPutGetStructure = (PVStructure)BaseRequestImpl.reuseOrCreatePVField(putStructure, pvPutGetStructure);
 				this.pvPutGetBitSet = BaseRequestImpl.createBitSetFor(pvPutGetStructure, pvPutGetBitSet);
 			}
-				
+
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -103,37 +102,34 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void getGetDone(Status status, ChannelPutGet channelPutGet,
 				PVStructure pvGetStructure, BitSet pvGetBitSet) {
 			this.status = status;
 			this.pvGetStructure = pvGetStructure;
 			this.pvGetBitSet = pvGetBitSet;
-			
+
 			// TODO should we check if pvStructure and bitSet are consistent/valid
 
 			transport.enqueueSendRequest(this);
 		}
 
-		@Override
 		public void getPutDone(Status status, ChannelPutGet channelPutGet,
 				PVStructure pvPutStructure, BitSet pvPutBitSet) {
 			this.status = status;
 			this.pvPutStructure = pvPutStructure;
 			this.pvPutBitSet = pvPutBitSet;
-			
+
 			// TODO should we check if pvStructure and bitSet are consistent/valid
 
 			transport.enqueueSendRequest(this);
 		}
 
-		@Override
 		public void putGetDone(Status status, ChannelPutGet channelPutGet,
 				PVStructure pvGetStructure, BitSet pvGetBitSet) {
 			this.status = status;
 			this.pvGetStructure = pvGetStructure;
 			this.pvGetBitSet = pvGetBitSet;
-			
+
 			// TODO should we check if pvStructure and bitSet are consistent/valid
 
 			transport.enqueueSendRequest(this);
@@ -142,13 +138,12 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Destroyable#destroy()
 		 */
-		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
 
 			// asCheck
 			channel.getChannelSecuritySession().release(ioid);
-			
+
 			if (channelPutGet != null)
 				channelPutGet.destroy();
 		}
@@ -163,7 +158,7 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		public PVStructure getPVPutStructure() {
 			return pvPutGetStructure;
 		}
-		
+
 		public BitSet getPVPutBitSet() {
 			return pvPutGetBitSet;
 		}
@@ -171,7 +166,6 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// TODO
 		}
@@ -179,7 +173,6 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// TODO
 		}
@@ -187,7 +180,6 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final int request = getPendingRequest();
 
@@ -207,7 +199,7 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 				{
 					pvGetBitSet.serialize(buffer, control);
 					pvGetStructure.serialize(buffer, control, pvGetBitSet);
-					
+
 					// release references
 					pvGetStructure = null;
 					pvGetBitSet = null;
@@ -231,14 +223,14 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 					pvGetBitSet = null;
 				}
 			}
-			
+
 			stopRequest();
 
 			// lastRequest
 			if (QoS.DESTROY.isSet(request))
 				destroy();
 		}
-		
+
 	};
 
 	/* (non-Javadoc)
@@ -262,13 +254,13 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			BaseChannelRequester.sendFailureMessage((byte)12, transport, ioid, qosCode, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-		
+
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
 			// pvRequest
 		    final PVStructure pvRequest = SerializationHelper.deserializePVRequest(payloadBuffer, transport);
-		    
+
 			// asCheck
 			Status asStatus = channel.getChannelSecuritySession().authorizeCreateChannelPutGet(ioid, pvRequest);
 			if (!asStatus.isSuccess())
@@ -285,7 +277,7 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			final boolean lastRequest = QoS.DESTROY.isSet(qosCode);
 			final boolean getGet = QoS.GET.isSet(qosCode);
 			final boolean getPut = QoS.GET_PUT.isSet(qosCode);
-			
+
 			ChannelPutGetRequesterImpl request = (ChannelPutGetRequesterImpl)channel.getRequest(ioid);
 			if (request == null) {
 				BaseChannelRequester.sendFailureMessage((byte)12, transport, ioid, qosCode, BaseChannelRequester.badIOIDStatus);
@@ -300,7 +292,7 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 			ChannelPutGet channelPutGet = request.getChannelPutGet();
 			if (lastRequest)
 				channelPutGet.lastRequest();
-			
+
 			if (getGet)
 			{
 				// asCheck
@@ -336,7 +328,7 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 				final PVStructure pvStructure = request.getPVPutStructure();
 				bitSet.deserialize(payloadBuffer, transport);
 				pvStructure.deserialize(payloadBuffer, transport, bitSet);
-				
+
 				// asCheck
 				Status asStatus = channel.getChannelSecuritySession().authorizePutGet(ioid, pvStructure, bitSet);
 				if (!asStatus.isSuccess())
@@ -346,7 +338,7 @@ public class PutGetHandler extends AbstractServerResponseHandler {
 						request.destroy();
 					return;
 				}
-				
+
 				channelPutGet.putGet(pvStructure, bitSet);
 			}
 		}

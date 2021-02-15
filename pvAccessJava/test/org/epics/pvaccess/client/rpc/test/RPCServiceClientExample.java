@@ -1,19 +1,14 @@
 package org.epics.pvaccess.client.rpc.test;
 
-import java.util.logging.Logger;
-
 import org.epics.pvaccess.client.rpc.RPCClient;
 import org.epics.pvaccess.client.rpc.RPCClientImpl;
 import org.epics.pvaccess.client.rpc.RPCClientRequester;
 import org.epics.pvaccess.server.rpc.RPCRequestException;
 import org.epics.pvdata.factory.FieldFactory;
 import org.epics.pvdata.factory.PVDataFactory;
-import org.epics.pvdata.pv.FieldCreate;
-import org.epics.pvdata.pv.MessageType;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.Status;
-import org.epics.pvdata.pv.Structure;
+import org.epics.pvdata.pv.*;
+
+import java.util.logging.Logger;
 
 public class RPCServiceClientExample {
 
@@ -39,14 +34,14 @@ public class RPCServiceClientExample {
 				RPCClientImpl client = new RPCClientImpl("sum");
 				try
 				{
-					PVStructure result = client.request(arguments, 3.0); 
+					PVStructure result = client.request(arguments, 3.0);
 					System.out.println(result);
 				} catch (RPCRequestException rre) {
 					System.out.println(rre);
 				}
 				client.destroy();
 			}
-			
+
 			//
 			// async example
 			//
@@ -56,11 +51,11 @@ public class RPCServiceClientExample {
 				// we could sendRequest asynchronously, but this is soo much easier
 				if (!client.waitConnect(3.0))
 					throw new RuntimeException("connection timeout");
-				
-				client.sendRequest(arguments); 
+
+				client.sendRequest(arguments);
 				if (!client.waitResponse(3.0))
 					throw new RuntimeException("response timeout");
-				
+
 				Status status = requester.getStatus();
 				if (status.isSuccess())
 					System.out.println(requester.getResult());
@@ -73,30 +68,26 @@ public class RPCServiceClientExample {
 			org.epics.pvaccess.ClientFactory.stop();
 		}
 	}
-	
+
 	private static class ServiceClientRequesterImpl implements RPCClientRequester
 	{
 	    private static final Logger logger = Logger.getLogger(ServiceClientRequesterImpl.class.getName());
-	    
+
 	    private volatile Status status;
 	    private volatile PVStructure result;
 
-	    @Override
 		public String getRequesterName() {
 			return getClass().getName();
 		}
 
-		@Override
 		public void message(String message, MessageType messageType) {
 			logger.finer(getRequesterName() + ": [" +  messageType + "] " + message);
 		}
 
-		@Override
 		public void connectResult(RPCClient client, Status status) {
 			// noop
 		}
 
-		@Override
 		public void requestResult(RPCClient client, Status status, PVStructure pvResult) {
 			this.status = status;
 			this.result = pvResult;
@@ -115,7 +106,7 @@ public class RPCServiceClientExample {
 		public PVStructure getResult() {
 			return result;
 		}
-		
+
 	}
 
 }

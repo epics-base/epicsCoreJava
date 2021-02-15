@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -30,7 +30,7 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public final class ValueViewer extends ScrollPane {
-    
+
     @FXML
     private TitledPane commonMetadata;
     @FXML
@@ -73,22 +73,22 @@ public final class ValueViewer extends ScrollPane {
 
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
-        
+
         try {
             fxmlLoader.load();
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
 
-        columnNameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        columnTypeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
-        columnSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
-        
+        columnNameColumn.setCellValueFactory(new PropertyValueFactory<VTableColumn, String>("name"));
+        columnTypeColumn.setCellValueFactory(new PropertyValueFactory<VTableColumn, String>("type"));
+        columnSizeColumn.setCellValueFactory(new PropertyValueFactory<VTableColumn, Number>("size"));
+
         setValue(null, false);
     }
-    
+
     private Object value;
-    
+
     public void setValue(Object value, boolean connection) {
         commonMetadata(value, connection);
         numberDisplay(Display.displayOf(value));
@@ -96,7 +96,7 @@ public final class ValueViewer extends ScrollPane {
         tableMetadata(value);
         this.value = value;
     }
-    
+
     private void commonMetadata(Object value, boolean connection) {
         if (value == null) {
             typeField.setText(null);
@@ -113,7 +113,7 @@ public final class ValueViewer extends ScrollPane {
             timeField.setText(Time.timeOf(value).toString());
         }
     }
-    
+
     private void numberDisplay(Display display) {
         if (display == null || display.equals(Display.none())) {
             numberMetadata.setVisible(false);
@@ -128,7 +128,7 @@ public final class ValueViewer extends ScrollPane {
             unitField.setText(display.getUnit());
         }
     }
-    
+
     private void enumMetadata(Object value) {
         if (value instanceof VEnum) {
             enumMetadata.setVisible(true);
@@ -139,7 +139,7 @@ public final class ValueViewer extends ScrollPane {
             enumMetadata.setManaged(false);
         }
     }
-    
+
     public static class VTableColumn {
         private final Object vTable;
         private final int columnIndex;
@@ -148,17 +148,17 @@ public final class ValueViewer extends ScrollPane {
             this.vTable = vTable;
             this.columnIndex = columnIndex;
         }
-        
+
         public String getName() {
 //            return vTable.getColumnName(columnIndex);
             return "None";
         }
-        
+
         public String getType() {
 //            return vTable.getColumnType(columnIndex).getSimpleName();
             return "None";
         }
-        
+
         public int getSize() {
 //            Object data = vTable.getColumnData(columnIndex);
 //            if (data instanceof ListNumber) {
@@ -170,16 +170,16 @@ public final class ValueViewer extends ScrollPane {
 //            }
             return 0;
         }
-        
-        
+
+
     }
-//    
+//
     private void tableMetadata(Object value) {
 //        if (value instanceof org.diirt.vtype.VTable) {
 //            tableMetadata.setVisible(true);
 //            tableMetadata.setManaged(true);
 //            VTable vTable = (VTable) value;
-//            List<VTableColumn> columns = new ArrayList<>();
+//            List<VTableColumn> columns = new ArrayList<VTableColumn>();
 //            for (int n = 0; n < vTable.getColumnCount(); n++) {
 //                columns.add(new VTableColumn(vTable, n));
 //            }
@@ -187,7 +187,7 @@ public final class ValueViewer extends ScrollPane {
 //        } else {
             tableMetadata.setVisible(false);
             tableMetadata.setManaged(false);
-            columnsTable.setItems(unmodifiableObservableList(emptyObservableList()));
+            columnsTable.setItems(FXCollections.unmodifiableObservableList(FXCollections.<VTableColumn>emptyObservableList()));
 //        }
     }
 

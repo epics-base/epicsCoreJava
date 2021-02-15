@@ -16,7 +16,7 @@ import org.epics.pvdata.pv.PVStructure;
  *
  */
 public class MonitorQueueFactory {
-    
+
     /**
      * Create a MonitorQueue.
      *
@@ -40,7 +40,7 @@ public class MonitorQueueFactory {
         Queue<MonitorElement> queue = queueCreate.create(queueElements);
         return new MonitorQueueImpl(queue);
     }
-    
+
     /**
      * Create a MonitorElement.
      *
@@ -50,11 +50,11 @@ public class MonitorQueueFactory {
     public static MonitorElement createMonitorElement(PVStructure pvStructure) {
         return new MonitorElementImlp(pvStructure);
     }
-    
+
     private static final QueueCreate<MonitorElement> queueCreate = new QueueCreate<MonitorElement>();
-    
+
     private static class MonitorElementImlp implements MonitorElement {
-        
+
     	MonitorElementImlp(PVStructure pvStructure) {
     		this.pvStructure = pvStructure;
     		if(pvStructure!=null) {
@@ -66,75 +66,68 @@ public class MonitorQueueFactory {
     			overrunBitSet = null;
     		}
     	}
-        
+
         private final PVStructure pvStructure;
         private final BitSet changedBitSet;
         private final BitSet overrunBitSet;
         private QueueElement<MonitorElement> queueElement = null;
-        
+
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorQueue.MonitorQueueElement#getChangedBitSet()
          */
-        @Override
         public BitSet getChangedBitSet() {
             return changedBitSet;
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorQueue.MonitorQueueElement#getOverrunBitSet()
          */
-        @Override
         public BitSet getOverrunBitSet() {
             return overrunBitSet;
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorQueue.MonitorQueueElement#getPVStructure()
          */
-        @Override
         public PVStructure getPVStructure() {
             return pvStructure;
         }
-        
+
         private void setQueueElement(QueueElement<MonitorElement> queueElement) {
             this.queueElement = queueElement;
         }
-        
+
         private QueueElement<MonitorElement> getQueueElement() {
             return queueElement;
         }
     }
-    
+
     private static class MonitorQueueImpl implements MonitorQueue {
         private final Queue<MonitorElement> queue;
 
         MonitorQueueImpl(Queue<MonitorElement> queue) {
            this.queue = queue;
         }
-       
+
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorQueue#clear()
          */
-        @Override
         public void clear() {
            queue.clear();
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorQueue#capacity()
          */
-        @Override
         public int capacity() {
             return queue.capacity();
         }
         /* (non-Javadoc)
          * @see org.epics.ioc.channelAccess.MonitorQueue#getNumberFree()
          */
-        @Override
         public int getNumberFree() {
             return queue.getNumberFree();
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.monitor.MonitorQueue#getFree()
          */
-        @Override
         public MonitorElement getFree() {
             QueueElement<MonitorElement> queueElement = queue.getFree();
             if(queueElement==null) return null;
@@ -143,7 +136,6 @@ public class MonitorQueueFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.monitor.MonitorQueue#setUsed(org.epics.pvdata.monitor.MonitorElement)
          */
-        @Override
         public void setUsed(MonitorElement monitorElement) {
             MonitorElementImlp temp = (MonitorElementImlp)monitorElement;
             queue.setUsed(temp.getQueueElement());
@@ -151,7 +143,6 @@ public class MonitorQueueFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.monitor.MonitorQueue#getUsed()
          */
-        @Override
         public MonitorElement getUsed() {
             QueueElement<MonitorElement> queueElement = queue.getUsed();
             if(queueElement==null) return null;
@@ -160,7 +151,6 @@ public class MonitorQueueFactory {
         /* (non-Javadoc)
          * @see org.epics.pvdata.monitor.MonitorQueue#releaseUsed(org.epics.pvdata.monitor.MonitorElement)
          */
-        @Override
         public void releaseUsed(MonitorElement monitorElement) {
             MonitorElementImlp temp = (MonitorElementImlp)monitorElement;
             queue.releaseUsed(temp.getQueueElement());

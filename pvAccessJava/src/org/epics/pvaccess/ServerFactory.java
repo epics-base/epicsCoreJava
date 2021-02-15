@@ -33,30 +33,30 @@ public class ServerFactory {
     public static void start() {
         new ThreadInstance();
     }
-    
+
     private static final ThreadCreate threadCreate = ThreadCreateFactory.getThreadCreate();
-    
+
     private static class ThreadInstance implements RunnableReady {
 
         private ThreadInstance() {
             threadCreate.create("pvAccessServer", 3, this);
         }
-        
+
     	/**
          * JCA server context.
          */
         private ServerContextImpl context = null;
-        
+
         /**
          * Initialize JCA context.
          * @throws PVAException	throws on any failure.
          */
         private void initialize() throws PVAException {
-            
+
     		// Create a context with default configuration values.
     		context = new ServerContextImpl();
     		context.setBeaconServerStatusProvider(new DefaultBeaconServerDataProvider(context));
-    		
+
     		context.initialize(ChannelProviderRegistryFactory.getChannelProviderRegistry());
 
     		// Display basic information about the context.
@@ -68,29 +68,28 @@ public class ServerFactory {
          * Destroy JCA server  context.
          */
         private void destroy() {
-            
+
             try {
 
                 // Destroy the context, check if never initialized.
                 if (context != null)
                     context.destroy();
-                
+
             } catch (Throwable th) {
                 th.printStackTrace();
             }
-        }               
+        }
         /* (non-Javadoc)
          * @see org.epics.ioc.util.RunnableReady#run(org.epics.ioc.util.ThreadReady)
          */
         public void run(final ThreadReady threadReady) {
                 Thread runThread = new Thread(new Runnable() {
-					@Override
 					public void run() {
 			            try {
 			                // initialize context
 			                initialize();
 			                System.out.println("Running server...");
-			                // run server 
+			                // run server
 							context.run(0);
 			                System.out.println("Done.");
 			            } catch (Throwable th) {

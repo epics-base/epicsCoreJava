@@ -17,11 +17,7 @@ package org.epics.pvaccess.client.impl.remote.search;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.epics.pvaccess.PVAConstants;
@@ -43,7 +39,7 @@ import org.epics.pvdata.pv.Field;
  * @version $Id$
  */
 public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, TimerCallback, Runnable {
-	
+
 	/**
 	 * Context.
 	 */
@@ -58,28 +54,28 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	 * Search (datagram) sequence number.
 	 */
 	private final AtomicInteger sequenceNumber = new AtomicInteger(0);
-	
+
 	/**
 	 * Send byte buffer (frame)
 	 */
 	private final ByteBuffer sendBuffer;
-	
+
     /**
      * Set of registered channels.
      */
-    private final Map<Integer, SearchInstance> channels = 
+    private final Map<Integer, SearchInstance> channels =
     		Collections.synchronizedMap(new HashMap<Integer, SearchInstance>());
-    
+
     private final ArrayList<SearchInstance> immediateSearch = new ArrayList<SearchInstance>(128);
-    
+
     private final TimerNode timerNode;
     private long lastTimeSent = 0;
-    
+
     // 225ms +/- 25ms random
     private static final double ATOMIC_PERIOD = 0.225;
     private static final int PERIOD_JITTER_MS = 25;
 
-    
+
 	private final short responsePort;
 	private final InetAddress responseAddress;
 
@@ -91,16 +87,16 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		InetSocketAddress responseSocketAddress = context.getSearchTransport().getRemoteAddress();
 		responsePort = (short)responseSocketAddress.getPort();
 		responseAddress = responseSocketAddress.getAddress();
-		
+
 		// create and initialize send buffer
 		sendBuffer = ByteBuffer.allocate(PVAConstants.MAX_UDP_UNFRAGMENTED_SEND);
 		initializeSendBuffer();
-		
+
 		// add some jitter so that all the clients do not send at the same time
 		double period = ATOMIC_PERIOD + (new Random().nextInt(2*PERIOD_JITTER_MS+1) - PERIOD_JITTER_MS)/(double)1000;
 		timerNode = TimerFactory.createNode(this);
 		context.getTimer().schedulePeriodic(timerNode, period, period);
-		
+
 		new Thread(this, "pvAccess immediate-search").start();
 	}
 
@@ -115,17 +111,17 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 						// wait if empty
 						if (immediateSearch.size() == 0)
 							immediateSearch.wait();
-						
+
 						if (canceled)
 							return;
-						
+
 						// coalescence...
 						Thread.sleep(10);
 					} catch (InterruptedException e) {
 						// noop
 					}
 				}
-				
+
 				SearchInstance[] sis;
 				synchronized (immediateSearch) {
 					if (immediateSearch.size() == 0)
@@ -134,7 +130,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 					immediateSearch.toArray(sis);
 					immediateSearch.clear();
 				}
-					
+
 				send(sis);
 			}
 			catch (Exception th)
@@ -142,7 +138,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 				// should never happen, be we are careful and verbose
 				th.printStackTrace();
 			}
-			
+
 		}
 	}
 	/**
@@ -153,12 +149,12 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		if (canceled)
 			return;
 		canceled = true;
-		
+
 		// wake-up
 		synchronized (immediateSearch) {
 			immediateSearch.notifyAll();
-		}		
-		
+		}
+
 		timerNode.cancel();
 	}
 
@@ -181,96 +177,88 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		sendBuffer.putInt(sequenceNumber.incrementAndGet());
 
 		// multicast vs unicast mask
-		sendBuffer.put((byte)0x00);	
-		
+		sendBuffer.put((byte)0x00);
+
 		// reserved part
 		sendBuffer.put((byte)0);
 		sendBuffer.putShort((short)0);
-		
+
 		// NOTE: is it possible (very likely) that address is any local address ::ffff:0.0.0.0
 		InetAddressUtil.encodeAsIPv6Address(sendBuffer, responseAddress);
 		sendBuffer.putShort((short)responsePort);
-		
+
 		// TODO now not only TCP supported
 		// note: this affects DATA_COUNT_POSITION
 		sendBuffer.put((byte)1);
 		SerializeHelper.serializeString(ProtocolType.tcp.name(), sendBuffer);
 		sendBuffer.putShort((short)0);	// count
 	}
-	
+
 	/**
 	 * Flush send buffer.
 	 */
 	private synchronized void flushSendBuffer()
 	{
-		
+
 		sendBuffer.put(CAST_POSITION, (byte)0x80);	// unicast, no reply required
 		context.getSearchTransport().send(sendBuffer, InetAddressType.UNICAST);
-		
+
 		sendBuffer.put(CAST_POSITION, (byte)0x00);	// b/m-cast, no reply required
 		context.getSearchTransport().send(sendBuffer, InetAddressType.BROADCAST_MULTICAST);
-		
+
 		initializeSendBuffer();
 	}
-	
+
 	private static final TransportSendControl mockTransportSendControl = new TransportSendControl() {
 
-		@Override
 		public void endMessage() {
 		}
 
-		@Override
 		public void flush(boolean lastMessageCompleted) {
 		}
 
-		@Override
 		public void setRecipient(InetSocketAddress sendTo) {
 		}
 
-		@Override
 		public void startMessage(byte command, int ensureCapacity) {
 		}
 
-		@Override
 		public void ensureBuffer(int size) {
 		}
 
-		@Override
 		public void alignBuffer(int alignment) {
 			throw new UnsupportedOperationException("alignBuffer not supported");
 		}
 
-		@Override
 		public void flushSerializeBuffer() {
 		}
-		
-		@Override
+
 		public void cachedSerialize(Field field, ByteBuffer buffer) {
 			// no cache
 			field.serialize(buffer, this);
 		}
-		
+
 	};
-	
+
     /**
 	 * Send search message.
-	 * @return success status.  
+	 * @return success status.
 	 */
 	private static boolean generateSearchRequestMessage(SearchInstance si, ByteBuffer requestMessage, TransportSendControl control)
 	{
 	    short dataCount = requestMessage.getShort(DATA_COUNT_POSITION);
-		
+
 		dataCount++;
 		if (dataCount >= PVAConstants.MAX_SEARCH_BATCH_COUNT)
 			return false;
-		
+
 		final String name = si.getChannelName();
-		// not nice... 
-		final int addedPayloadSize = Integer.SIZE/Byte.SIZE + (1 + Integer.SIZE/Byte.SIZE + name.length()); 
-		
+		// not nice...
+		final int addedPayloadSize = Integer.SIZE/Byte.SIZE + (1 + Integer.SIZE/Byte.SIZE + name.length());
+
 		if (requestMessage.remaining() < addedPayloadSize)
 			return false;
-		
+
 		requestMessage.putInt(si.getChannelID());
 		SerializeHelper.serializeString(name, requestMessage, control);
 
@@ -281,8 +269,8 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	}
 
 	/**
-	 * Generate (put on send buffer) search request 
-	 * @param channel 
+	 * Generate (put on send buffer) search request
+	 * @param channel channel
 	 * @param allowNewFrame flag indicating if new search request message is allowed to be put in new frame.
 	 * @return <code>true</code> if new frame was sent.
 	 */
@@ -299,13 +287,13 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 				flushSendBuffer();
 			return true;
 		}
-		
+
 		if (flush)
 			flushSendBuffer();
 
 		return flush;
 	}
-	
+
 
 	/**
 	 * Get number of registered channels.
@@ -321,7 +309,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	{
 		register(channel, false);
 	}
-	
+
 	/**
 	 * Register channel.
 	 * @param channel channel to register.
@@ -342,7 +330,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		// put to immediate, batched list
 		synchronized (immediateSearch) {
 			immediateSearch.add(channel);
-			if (immediateSearch.size() == 1) 
+			if (immediateSearch.size() == 1)
 				immediateSearch.notify();
 		}
 	}
@@ -359,7 +347,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 			channels.remove(channel.getChannelID());
 		}
 	}
-	
+
 	/**
 	 * Search response from server (channel found).
 	 * @param guid server GUID.
@@ -375,7 +363,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		synchronized (channels) {
 			si = (SearchInstance)channels.remove(cid);
 		}
-		
+
 		if (si == null) {
 			// minor hack to enable duplicate reports
 			si = context.getChannel(cid);
@@ -383,11 +371,11 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 				si.searchResponse(guid, minorRevision, serverAddress);
 			return;
 		}
-		
+
 		// then notify SearchInstance
 		si.searchResponse(guid, minorRevision, serverAddress);
 	}
-	
+
 	/**
 	 * New server detected.
 	 * Boost searching of all channels.
@@ -403,7 +391,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	// must be power of two (so that search is done)
 	private final static int MAX_COUNT_VALUE = 1 << 8;
 	private final static int MAX_FALLBACK_COUNT_VALUE = (1 << 7) + 1;
-	
+
 	private void boost()
 	{
 //		synchronized (channels) {
@@ -413,8 +401,8 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 //			// TODO no copy when iterator is supported
 //			SearchInstance[] sis = new SearchInstance[channels.size()];
 //			channels.values().toArray(sis);
-//			
-//			
+//
+//
 //			for (SearchInstance si : sis)
 //				si.getUserValue().set(BOOST_VALUE);
 //		}
@@ -424,10 +412,9 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
             }
         }
 	}
-	
-	@Override
+
 	public void callback() {
-		
+
 		// high-frequency beacon anomaly trigger guard
 		synchronized (this)
 		{
@@ -437,7 +424,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 			lastTimeSent = now;
 		}
 
-		try 
+		try
 		{
 			SearchInstance[] sis;
 			synchronized (channels) {
@@ -446,7 +433,7 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 				sis = new SearchInstance[channels.size()];
 				channels.values().toArray(sis);
 			}
-			
+
 			send(sis);
 		}
 		catch (Throwable th)
@@ -460,10 +447,10 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 	{
 	  return ((x > 0) && (x & (x - 1)) == 0);
 	}
-	
+
 	private static final int MAX_FRAMES_AT_ONCE = 10;
 	private static final int DELAY_BETWEEN_FRAMES_MS = 50;
-	
+
 	private void send(SearchInstance[] sis) throws InterruptedException
 	{
 		if (sis.length == 0)
@@ -473,36 +460,35 @@ public class SimpleChannelSearchManagerImpl implements ChannelSearchManager, Tim
 		int frameSent = 0;
 		for (SearchInstance si : sis)
 		{
-			
+
 			// no more sync needed since we check/increase value only here
 			int countValue = si.getUserValue().get();
 			boolean skip = !isPowerOfTwo(countValue);
-			
+
 			if (countValue == MAX_COUNT_VALUE)
 				si.getUserValue().set(MAX_FALLBACK_COUNT_VALUE);
-			else 
+			else
 				si.getUserValue().incrementAndGet();
-			
+
 			// back-off
 			if (skip)
 				continue;
 
 			count++;
-			
+
 			if (generateSearchRequestMessage(si, true, false))
 				frameSent++;
-			if (frameSent == MAX_FRAMES_AT_ONCE) 
+			if (frameSent == MAX_FRAMES_AT_ONCE)
 			{
 				Thread.sleep(DELAY_BETWEEN_FRAMES_MS);
-				frameSent = 0; 
+				frameSent = 0;
 			}
 		}
-		
+
 		if (count > 0)
 			flushSendBuffer();
 	}
-	
-	@Override
+
 	public void timerStopped() {
 		// noop
 	}

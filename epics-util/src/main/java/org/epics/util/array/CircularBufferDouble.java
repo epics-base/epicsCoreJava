@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -56,7 +56,6 @@ public class CircularBufferDouble extends ListDouble {
     /**
      * {@inheritDoc }
      */
-    @Override
     public double getDouble(int index) {
         index += startOffset;
         if (index >= data.length) {
@@ -68,7 +67,6 @@ public class CircularBufferDouble extends ListDouble {
     /**
      * {@inheritDoc }
      */
-    @Override
     public int size() {
         int size = endOffset - startOffset;
         if (size < 0) {

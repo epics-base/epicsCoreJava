@@ -4,27 +4,10 @@
  */
 package org.epics.nt;
 
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.Scalar;
-import org.epics.pvdata.pv.ScalarArray;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.Structure;
-import org.epics.pvdata.pv.StructureArray;
-import org.epics.pvdata.pv.Union;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVInt;
-import org.epics.pvdata.pv.PVLong;
-import org.epics.pvdata.pv.PVScalar;
-import org.epics.pvdata.pv.PVScalarArray;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVString;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.PVStructureArray;
-import org.epics.pvdata.pv.StructureArrayData;
-import org.epics.pvdata.pv.PVUnion;
-import org.epics.pvdata.property.PVTimeStamp;
 import org.epics.pvdata.property.PVAlarm;
 import org.epics.pvdata.property.PVDisplay;
+import org.epics.pvdata.property.PVTimeStamp;
+import org.epics.pvdata.pv.*;
 
 /**
  * Wrapper class for NTNDArray.
@@ -32,8 +15,7 @@ import org.epics.pvdata.property.PVDisplay;
  * @author dgh
  */
 public class NTNDArray
-    implements HasTimeStamp, HasAlarm, HasDisplay
-{
+        implements HasTimeStamp, HasAlarm, HasDisplay {
     public static final String URI = "epics:nt/NTNDArray:1.0";
 
     /**
@@ -43,12 +25,11 @@ public class NTNDArray
      * and if so returns an NTNDArray which wraps it.
      * This method will return null if the structure is is not compatible
      * or is null.
-     * 
+     *
      * @param pvStructure the PVStructure to be wrapped
      * @return NTNDArray instance on success, null otherwise
      */
-    public static NTNDArray wrap(PVStructure pvStructure)
-    {
+    public static NTNDArray wrap(PVStructure pvStructure) {
         if (!isCompatible(pvStructure))
             return null;
         return wrapUnsafe(pvStructure);
@@ -60,12 +41,11 @@ public class NTNDArray
      * <p>
      * No checks are made as to whether the specified PVStructure
      * is compatible with NTNDArray or is non-null.
-     * 
+     *
      * @param pvStructure the PVStructure to be wrapped
      * @return NTNDArray instance
      */
-    public static NTNDArray wrapUnsafe(PVStructure pvStructure)
-    {
+    public static NTNDArray wrapUnsafe(PVStructure pvStructure) {
         return new NTNDArray(pvStructure);
     }
 
@@ -76,12 +56,11 @@ public class NTNDArray
      * version of NTNDArray through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
-     * 
+     *
      * @param structure the pvStructure to test
-     * @return (false,true) if (is not, is) a compatible NTNDArray
+     * @return (false, true) if (is not, is) a compatible NTNDArray
      */
-    public static boolean is_a(Structure structure)
-    {
+    public static boolean is_a(Structure structure) {
         return NTUtils.is_a(structure.getID(), URI);
     }
 
@@ -92,12 +71,11 @@ public class NTNDArray
      * version of NTNDArray through its type ID, including checking version numbers.
      * The return value does not depend on whether the structure is actually
      * compatible in terms of its introspection type.
-     * 
+     *
      * @param pvStructure the PVStructure to test
-     * @return (false,true) if (is not, is) a compatible NTNDArray
+     * @return (false, true) if (is not, is) a compatible NTNDArray
      */
-    public static boolean is_a(PVStructure pvStructure)
-    {
+    public static boolean is_a(PVStructure pvStructure) {
         return is_a(pvStructure.getStructure());
     }
 
@@ -106,15 +84,14 @@ public class NTNDArray
      * <p>
      * Checks if the specified Structure is compatible with this version
      * of NTNDArray through the introspection interface.
-     * 
+     *
      * @param structure the Structure to test
-     * @return (false,true) if (is not, is) a compatible NTNDArray
+     * @return (false, true) if (is not, is) a compatible NTNDArray
      */
-    public static boolean isCompatible(Structure structure)
-    {
+    public static boolean isCompatible(Structure structure) {
         if (structure == null) return false;
 
-        Union valueField = structure.getField(Union.class,"value");
+        Union valueField = structure.getField(Union.class, "value");
         if (valueField == null)
             return false;
 
@@ -125,7 +102,7 @@ public class NTNDArray
         Structure codecField = structure.getField(Structure.class, "codec");
 
         if (codecField == null)
-            return false;       
+            return false;
 
         if (!NTCodec.isCompatible(codecField))
             return false;
@@ -149,7 +126,7 @@ public class NTNDArray
 
         StructureArray dimensionField = structure.getField(StructureArray.class, "dimension");
         if (dimensionField == null)
-            return false;    
+            return false;
 
         Structure dimElementStruc = dimensionField.getStructure();
 
@@ -160,7 +137,7 @@ public class NTNDArray
         NTField ntField = NTField.get();
 
         Structure dataTimeStampField = structure.getField(Structure.class,
-            "dataTimeStamp");
+                "dataTimeStamp");
         if (dataTimeStampField == null || !ntField.isTimeStamp(dataTimeStampField))
             return false;
 
@@ -185,11 +162,10 @@ public class NTNDArray
 
 
         Field field = structure.getField("descriptor");
-        if (field != null)
-        {
+        if (field != null) {
             Scalar descriptorField = structure.getField(Scalar.class, "descriptor");
             if (descriptorField == null || descriptorField.getScalarType() != ScalarType.pvString)
-            return false;
+                return false;
         }
 
         field = structure.getField("alarm");
@@ -212,11 +188,11 @@ public class NTNDArray
      * <p>
      * Checks if the specified PVStructure is compatible with this version
      * of NTNDArray through the introspection interface.
+     *
      * @param pvStructure the PVStructure to test
-     * @return (false,true) if (is not, is) a compatible NTNDArray
+     * @return (false, true) if (is not, is) a compatible NTNDArray
      */
-    public static boolean isCompatible(PVStructure pvStructure)
-    {
+    public static boolean isCompatible(PVStructure pvStructure) {
         if (pvStructure == null) return false;
 
         return isCompatible(pvStructure.getStructure());
@@ -229,10 +205,9 @@ public class NTNDArray
      * Unlike isCompatible(), isValid() may perform checks on the value
      * data as well as the introspection data.
      *
-     * @return (false,true) if wrapped PVStructure (is not, is) a valid NTNDArray
+     * @return (false, true) if wrapped PVStructure (is not, is) a valid NTNDArray
      */
-    public boolean isValid()
-    {
+    public boolean isValid() {
         long valueSize = getValueSize();
         long compressedSize = getCompressedDataSize().get();
         if (valueSize != compressedSize)
@@ -250,16 +225,14 @@ public class NTNDArray
         return true;
     }
 
-    public static NTNDArrayBuilder createBuilder()
-    {
+    public static NTNDArrayBuilder createBuilder() {
         return new NTNDArrayBuilder();
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasDisplay#attachDisplay(org.epics.pvdata.property.PVDisplay)
-	 */
-    public boolean attachDisplay(PVDisplay pvDisplay)
-    {
+     * @see org.epics.pvdata.nt.HasDisplay#attachDisplay(org.epics.pvdata.property.PVDisplay)
+     */
+    public boolean attachDisplay(PVDisplay pvDisplay) {
         PVStructure dp = getDisplay();
         if (dp != null)
             return pvDisplay.attach(dp);
@@ -272,8 +245,7 @@ public class NTNDArray
      *
      * @return the PVStructure wrapped by this instance
      */
-    public PVStructure getPVStructure()
-    {
+    public PVStructure getPVStructure() {
         return pvNTNDArray;
     }
 
@@ -282,8 +254,7 @@ public class NTNDArray
      *
      * @return the value field
      */
-    public PVUnion getValue()
-    {
+    public PVUnion getValue() {
         return pvNTNDArray.getSubField(PVUnion.class, "value");
     }
 
@@ -292,8 +263,7 @@ public class NTNDArray
      *
      * @return the codec field
      */
-    public PVStructure getCodec()
-    {
+    public PVStructure getCodec() {
         return pvNTNDArray.getSubField(PVStructure.class, "codec");
     }
 
@@ -302,8 +272,7 @@ public class NTNDArray
      *
      * @return the compressedDataSize field
      */
-    public PVLong getCompressedDataSize()
-    {
+    public PVLong getCompressedDataSize() {
         return pvNTNDArray.getSubField(PVLong.class, "compressedSize");
     }
 
@@ -312,8 +281,7 @@ public class NTNDArray
      *
      * @return the uncompressedDataSize field
      */
-    public PVLong getUncompressedDataSize()
-    {
+    public PVLong getUncompressedDataSize() {
         return pvNTNDArray.getSubField(PVLong.class, "uncompressedSize");
     }
 
@@ -322,8 +290,7 @@ public class NTNDArray
      *
      * @return dimension field
      */
-    public PVStructureArray getDimension()
-    {
+    public PVStructureArray getDimension() {
         return pvNTNDArray.getSubField(PVStructureArray.class, "dimension");
     }
 
@@ -332,8 +299,7 @@ public class NTNDArray
      *
      * @return the uniqueId field
      */
-    public PVInt getUniqueId()
-    {
+    public PVInt getUniqueId() {
         return pvNTNDArray.getSubField(PVInt.class, "uniqueId");
     }
 
@@ -342,8 +308,7 @@ public class NTNDArray
      *
      * @return dataTimeStamp field
      */
-    public PVStructure getDataTimeStamp()
-    {    
+    public PVStructure getDataTimeStamp() {
         return pvNTNDArray.getSubField(PVStructure.class, "dataTimeStamp");
     }
 
@@ -352,8 +317,7 @@ public class NTNDArray
      *
      * @return the attribute field
      */
-    public PVStructureArray getAttribute()
-    {
+    public PVStructureArray getAttribute() {
         return pvNTNDArray.getSubField(PVStructureArray.class, "attribute");
     }
 
@@ -362,40 +326,35 @@ public class NTNDArray
      *
      * @return the descriptor field or null if no such field
      */
-    public PVString getDescriptor()
-    {
+    public PVString getDescriptor() {
         return pvNTNDArray.getSubField(PVString.class, "descriptor");
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
-	 */
-    public PVStructure getAlarm()
-    {
-       return pvNTNDArray.getSubField(PVStructure.class, "alarm");
+     * @see org.epics.pvdata.nt.HasAlarm#getAlarm()
+     */
+    public PVStructure getAlarm() {
+        return pvNTNDArray.getSubField(PVStructure.class, "alarm");
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
-	 */
-    public PVStructure getTimeStamp()
-    {
+     * @see org.epics.pvdata.nt.HasTimeStamp#getTimeStamp()
+     */
+    public PVStructure getTimeStamp() {
         return pvNTNDArray.getSubField(PVStructure.class, "timeStamp");
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.Has#getDisplay()
-	 */
-    public PVStructure getDisplay()
-    {
-       return pvNTNDArray.getSubField(PVStructure.class, "display");
+     * @see org.epics.pvdata.nt.Has#getDisplay()
+     */
+    public PVStructure getDisplay() {
+        return pvNTNDArray.getSubField(PVStructure.class, "display");
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasTimeStamp#attachTimeStamp(org.epics.pvdata.property.PVTimeStamp)
-	 */
-    public boolean attachTimeStamp(PVTimeStamp pvTimeStamp)
-    {
+     * @see org.epics.pvdata.nt.HasTimeStamp#attachTimeStamp(org.epics.pvdata.property.PVTimeStamp)
+     */
+    public boolean attachTimeStamp(PVTimeStamp pvTimeStamp) {
         PVStructure ts = getTimeStamp();
         if (ts != null)
             return pvTimeStamp.attach(ts);
@@ -404,10 +363,9 @@ public class NTNDArray
     }
 
     /* (non-Javadoc)
-	 * @see org.epics.pvdata.nt.HasAlarm#attachAlarm(org.epics.pvdata.property.PVAlarm)
-	 */
-    public boolean attachAlarm(PVAlarm pvAlarm)
-    {
+     * @see org.epics.pvdata.nt.HasAlarm#attachAlarm(org.epics.pvdata.property.PVAlarm)
+     */
+    public boolean attachAlarm(PVAlarm pvAlarm) {
         PVStructure al = getAlarm();
         if (al != null)
             return pvAlarm.attach(al);
@@ -417,9 +375,8 @@ public class NTNDArray
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
-     */ 
-    public String toString()
-    {
+     */
+    public String toString() {
         return getPVStructure().toString();
     }
 
@@ -428,23 +385,19 @@ public class NTNDArray
      *
      * @param pvStructure the PVStructure to be wrapped
      */
-    NTNDArray(PVStructure pvStructure)
-    {
+    NTNDArray(PVStructure pvStructure) {
         pvNTNDArray = pvStructure;
     }
 
-    private long getExpectedUncompressedSize()
-    {
+    private long getExpectedUncompressedSize() {
         long size = 0;
         PVStructureArray pvDim = getDimension();
 
-        if (pvDim.getLength() != 0)
-        {
+        if (pvDim.getLength() != 0) {
             size = getValueTypeSize();
             StructureArrayData data = new StructureArrayData();
-            pvDim.get(0, pvDim.getLength(),data);
-            for (PVStructure dim : data.data)
-            {
+            pvDim.get(0, pvDim.getLength(), data);
+            for (PVStructure dim : data.data) {
                 size *= dim.getSubField(PVInt.class, "size").get();
             }
         }
@@ -452,50 +405,45 @@ public class NTNDArray
         return size;
     }
 
-    private long getValueSize()
-    {
+    private long getValueSize() {
         long size = 0;
         PVScalarArray storedValue = getValue().get(PVScalarArray.class);
-        if (storedValue != null)
-        {
-            size = storedValue.getLength()*getValueTypeSize();
+        if (storedValue != null) {
+            size = (long) storedValue.getLength() * getValueTypeSize();
         }
         return size;
     }
 
-    private int getValueTypeSize()
-    {
+    private int getValueTypeSize() {
         int typeSize = 0;
         PVScalarArray storedValue = getValue().get(PVScalarArray.class);
-        if (storedValue != null)
-        {
-            switch (storedValue.getScalarArray().getElementType())
-            {
-            case pvBoolean:
-            case pvByte:
-            case pvUByte:
-                typeSize = 1;
-                break;
+        if (storedValue != null) {
+            switch (storedValue.getScalarArray().getElementType()) {
+                case pvBoolean:
+                case pvByte:
+                case pvUByte:
+                    typeSize = 1;
+                    break;
 
-            case pvShort:
-            case pvUShort:
-                typeSize = 2;
-                break;
+                case pvShort:
+                case pvUShort:
+                    typeSize = 2;
+                    break;
 
-            case pvInt:
-            case pvUInt:
-            case pvFloat:
-                typeSize = 4;
-                break;
+                case pvInt:
+                case pvUInt:
+                case pvFloat:
+                    typeSize = 4;
+                    break;
 
-            case pvLong:
-            case pvULong:
-            case pvDouble:
-                typeSize = 8;
-                break;
+                case pvLong:
+                case pvULong:
+                case pvDouble:
+                    typeSize = 8;
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
             }
         }
         return typeSize;
@@ -506,24 +454,20 @@ public class NTNDArray
 }
 
 
-class NTValueType
-{
-    public static boolean isCompatible(Union u)
-    {
+class NTValueType {
+    public static boolean isCompatible(Union u) {
         if (u == null) return false;
 
         if (u.getID() != Union.DEFAULT_ID) return false;
         if (u.isVariant()) return false;
 
-        for (ScalarType scalarType : ScalarType.values())
-        {
-            if (scalarType != ScalarType.pvString)
-            {
+        for (ScalarType scalarType : ScalarType.values()) {
+            if (scalarType != ScalarType.pvString) {
                 String name = scalarType.toString() + "Value";
                 ScalarArray scalarField = u.getField(ScalarArray.class, name);
                 if (scalarField == null ||
                         scalarField.getElementType() != scalarType)
-                   return false;
+                    return false;
             }
         }
 
@@ -531,10 +475,8 @@ class NTValueType
     }
 };
 
-class NTCodec
-{
-    public static boolean isCompatible(Structure structure)
-    {
+class NTCodec {
+    public static boolean isCompatible(Structure structure) {
         if (structure == null) return false;
 
         if (structure.getID() != "codec_t") return false;
@@ -552,11 +494,9 @@ class NTCodec
 };
 
 
-class NTDimension
-{
-    public static boolean isCompatible(Structure structure)
-    {
-        if(structure == null) return false;
+class NTDimension {
+    public static boolean isCompatible(Structure structure) {
+        if (structure == null) return false;
 
         if (structure.getID() != "dimension_t") return false;
 

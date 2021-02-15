@@ -1,13 +1,14 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.impl.remote.codec.impl;
+
+import java.nio.channels.DatagramChannel;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
 import java.util.logging.Logger;
 
 /**
@@ -18,12 +19,12 @@ public abstract class BlockingDatagramAbstractCodec extends BlockingAbstractCode
 
 	private final DatagramChannel channel;
 	private final InetSocketAddress socketAddress;
-	
+
 	public BlockingDatagramAbstractCodec(
 			boolean serverFlag,
 			DatagramChannel channel,
 			ByteBuffer receiveBuffer,
-			ByteBuffer sendBuffer, 
+			ByteBuffer sendBuffer,
 			Logger logger) throws SocketException {
 		super(serverFlag, receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
 		this.channel = channel;
@@ -32,12 +33,10 @@ public abstract class BlockingDatagramAbstractCodec extends BlockingAbstractCode
 		this.socketAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
 	}
 
-	@Override
 	public int read(ByteBuffer dst) throws IOException {
 		return channel.read(dst);
 	}
 
-	@Override
 	public int write(ByteBuffer src) throws IOException {
 		return channel.write(src);
 	}

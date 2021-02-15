@@ -36,14 +36,12 @@ public class BaseUnionArray extends BaseField implements UnionArray {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Field#getID()
 	 */
-	@Override
 	public String getID() {
 		return union.getID() + "[]";
 	}
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.UnionArray#getUnion()
 	 */
-	@Override
 	public Union getUnion() {
 		return union;
 	}
@@ -74,11 +72,10 @@ public class BaseUnionArray extends BaseField implements UnionArray {
 			return false;
 		return true;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
 	 */
-	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		if (union.isVariant())
@@ -92,30 +89,27 @@ public class BaseUnionArray extends BaseField implements UnionArray {
 			control.cachedSerialize(union, buffer);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
-	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 		// must be done via FieldCreate
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getArraySizeType()
 	 */
-	@Override
 	public ArraySizeType getArraySizeType() {
 		return ArraySizeType.variable;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Array#getMaximumCapacity()
 	 */
-	@Override
 	public int getMaximumCapacity() {
 		return 0;
 	}
-	
+
 }

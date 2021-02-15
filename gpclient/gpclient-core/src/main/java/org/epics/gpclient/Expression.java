@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.epics.util.compat.legacy.functional.Supplier;
 
 /**
  * An expression that can be read or written by the gpclient.
@@ -18,9 +18,9 @@ public class Expression<R, W> extends ExpressionList<R, W> {
 
     private final Supplier<R> readFunction;
     private final Consumer<W> writeFunction;
-    
+
     private final ExpressionList<?, ?> expressionChildren;
-    
+
     {
         // Make sure that the list includes this expression
         addThis();
@@ -29,7 +29,7 @@ public class Expression<R, W> extends ExpressionList<R, W> {
     /**
      * Creates a new expression. If not null, start/stop read/write will cascade on the
      * children.
-     * 
+     *
      * @param childExpressions the child expression, can be null
      * @param readFunction the read function, can't be null
      * @param writeFunction the write function, can't be null
@@ -63,7 +63,7 @@ public class Expression<R, W> extends ExpressionList<R, W> {
     public final Consumer<W> getWriteFunction() {
         return writeFunction;
     }
-    
+
     /**
      * Starts the read notifications for this expression.
      * <p>
@@ -83,7 +83,7 @@ public class Expression<R, W> extends ExpressionList<R, W> {
 
     /**
      * Stops all read notifications for this expression.
-     * 
+     *
      * @param director the director for the reader
      */
     public void stopRead(PVDirector director) {
@@ -93,7 +93,7 @@ public class Expression<R, W> extends ExpressionList<R, W> {
             }
         }
     }
-    
+
     /**
      * Starts the write notifications for this expression.
      * <p>
@@ -110,10 +110,10 @@ public class Expression<R, W> extends ExpressionList<R, W> {
             }
         }
     }
-    
+
     /**
      * Stops all write notifications for this expression.
-     * 
+     *
      * @param director the director for the writer
      */
     public void stopWrite(PVDirector director) {
@@ -123,5 +123,5 @@ public class Expression<R, W> extends ExpressionList<R, W> {
             }
         }
     }
-    
+
 }

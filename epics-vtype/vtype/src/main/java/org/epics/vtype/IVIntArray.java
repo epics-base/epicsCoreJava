@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -12,7 +12,7 @@ import org.epics.util.array.ListInteger;
  * @author carcassi
  */
 final class IVIntArray extends VIntArray {
-    
+
     private final ListInteger data;
     private final ListInteger sizes;
     private final Alarm alarm;
@@ -42,17 +42,14 @@ final class IVIntArray extends VIntArray {
         return data;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }
 
-    @Override
     public Display getDisplay() {
         return display;
     }

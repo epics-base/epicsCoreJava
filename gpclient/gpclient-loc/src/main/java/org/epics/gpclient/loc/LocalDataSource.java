@@ -1,16 +1,17 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.loc;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.epics.gpclient.datasource.ChannelHandler;
 import org.epics.gpclient.datasource.DataSource;
 import org.epics.gpclient.datasource.ReadSubscription;
 import org.epics.gpclient.datasource.WriteSubscription;
 import org.epics.util.text.FunctionParser;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Data source for locally written data. Each instance of this
@@ -26,18 +27,18 @@ public class LocalDataSource extends DataSource {
     public LocalDataSource() {
     }
 
-    private final String CHANNEL_SYNTAX_ERROR_MESSAGE = 
+    private final String CHANNEL_SYNTAX_ERROR_MESSAGE =
             "Syntax for local channel must be either name, name(Double) or name(String) (e.g \"foo\", \"foo(2.0)\" or \"foo(\"bar\")";
-    
+
     @Override
     protected ChannelHandler createChannel(String channelName) {
         // Parse the channel name
         List<Object> parsedTokens = parseName(channelName);
-        
+
         LocalChannelHandler channel = new LocalChannelHandler(parsedTokens.get(0).toString());
         return channel;
     }
-    
+
     private List<Object> parseName(String channelName) {
         List<Object> tokens = FunctionParser.parseFunctionWithScalarOrArrayArguments(".+", channelName, CHANNEL_SYNTAX_ERROR_MESSAGE);
         String nameAndType = tokens.get(0).toString();
@@ -48,7 +49,7 @@ public class LocalDataSource extends DataSource {
             name = nameAndType.substring(0, index);
             type = nameAndType.substring(index + 1, nameAndType.length() - 1);
         }
-        List<Object> newTokens = new ArrayList<>();
+        List<Object> newTokens = new ArrayList<Object>();
         newTokens.add(name);
         newTokens.add(type);
         if (tokens.size() > 1) {
@@ -62,10 +63,9 @@ public class LocalDataSource extends DataSource {
         List<Object> parsedTokens = parseName(channelName);
         return parsedTokens.get(0).toString();
     }
-    
+
     private void initialize(final String channelName) {
         exec.submit(new Runnable() {
-            @Override
             public void run() {
                 List<Object> parsedTokens = parseName(channelName);
 
@@ -81,7 +81,7 @@ public class LocalDataSource extends DataSource {
     @Override
     public void startRead(ReadSubscription subscription) {
         super.startRead(subscription);
-        
+
         // Initialize value
         initialize(subscription.getChannelName());
     }
@@ -89,7 +89,7 @@ public class LocalDataSource extends DataSource {
     @Override
     public void stopWrite(WriteSubscription subscription) {
         super.stopWrite(subscription);
-        
+
         // Initialize value
         initialize(subscription.getChannelName());
     }

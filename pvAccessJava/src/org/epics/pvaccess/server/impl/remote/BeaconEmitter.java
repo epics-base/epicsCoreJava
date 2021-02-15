@@ -44,7 +44,7 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	 * Minimal (initial) PVA beacon period (in seconds).
 	 */
 	protected static final float EPICS_PVA_MIN_BEACON_PERIOD = 1.0f;
-	
+
 	/**
 	 * Minimal PVA beacon count limit.
 	 */
@@ -54,7 +54,7 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	 * Timer.
 	 */
 	protected final Timer timer;
-	
+
 	/**
 	 * Logger.
 	 */
@@ -64,7 +64,7 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	 * Protocol.
 	 */
 	protected final String protocol;
-	
+
 	/**
 	 * Transport.
 	 */
@@ -99,12 +99,12 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	 * Server address.
 	 */
 	protected final InetAddress serverAddress;
-	
+
 	/**
 	 * Server port.
 	 */
 	protected final int serverPort;
-	
+
 	/**
 	 * Server status provider implementation (optional).
 	 */
@@ -115,7 +115,7 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	 */
 	private final TimerNode timerNode;
 
-	
+
 	/**
 	 * Constructor.
 	 * @param protocol what protocol to "beacon".
@@ -156,19 +156,17 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 		if (period > 0)
 			timer.scheduleAfterDelay(timerNode, period);
 	}
-		
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.misc.Timer.TimerCallback#callback()
 	 */
-	@Override
 	public void callback() {
 		transport.enqueueSendRequest(this);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 	 */
-	@Override
 	public void lock() {
 		// noop
 	}
@@ -176,7 +174,6 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 	 */
-	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {
 		// get server status
 		PVField serverStatus = null;
@@ -191,24 +188,24 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 				logger.log(Level.WARNING, "BeaconServerStatusProvider implementation thrown an exception.", th);
 			}
 		}
-		
+
 		// send beacon
 		control.startMessage((byte)0, 12+2+2+16+2);
-		
+
 		buffer.put(guid);
 
 		// TODO qosCode/flags (e.g. multicast/unicast)
 		buffer.put((byte)0);
-		
+
 		buffer.put(beaconSequenceID);
-		
+
 		// TODO for now fixed changeCount
 		buffer.putShort((short)0);
 
 		// NOTE: is it possible (very likely) that address is any local address ::ffff:0.0.0.0
 		InetAddressUtil.encodeAsIPv6Address(buffer, serverAddress);
 		buffer.putShort((short)serverPort);
-		
+
 		SerializeHelper.serializeString(protocol, buffer, control);
 
 		if (serverStatus != null)
@@ -221,17 +218,16 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 			SerializationHelper.serializeNullField(buffer, control);
 
 		control.flush(true);
-			
+
 		// increment beacon sequence ID
 		beaconSequenceID++;
-		
+
 		reschedule();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 	 */
-	@Override
 	public void unlock() {
 		// noop
 	}
@@ -239,7 +235,6 @@ public class BeaconEmitter implements TimerCallback, TransportSender {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.misc.Timer.TimerCallback#timerStopped()
 	 */
-	@Override
 	public void timerStopped() {
 		// noop
 	}

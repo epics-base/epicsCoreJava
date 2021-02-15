@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2020 Facility for Rare Isotope Beams
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,12 +37,10 @@ import java.lang.reflect.Type;
  * @author <a href="mailto:changj@frib.msu.edu">Genie Jhang</a>
  */
 public class GsonVTypeHandler implements JsonSerializer<VType>, JsonDeserializer<VType> {
-	@Override
 	public JsonElement serialize(VType vType, Type type, JsonSerializationContext jsonSerializationContext) {
 		return VTypeToGson.toJson(vType);
 	}
 
-	@Override
 	public VType deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 		return VTypeToGson.toVType(jsonElement);
 	}

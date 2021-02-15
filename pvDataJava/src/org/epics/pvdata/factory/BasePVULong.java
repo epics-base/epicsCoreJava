@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVULong extends AbstractPVScalar implements PVULong
 {
     protected long value;
-    
+
     /**
      * Constructor
      * @param scalar The introspection  interface.
@@ -32,14 +32,12 @@ public class BasePVULong extends AbstractPVScalar implements PVULong
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVLong#get()
      */
-    @Override
     public long get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVLong#put(long)
      */
-    @Override
     public void put(long value) {
         if(super.isImmutable()) {
             throw new IllegalArgumentException("field is immutable");
@@ -50,7 +48,6 @@ public class BasePVULong extends AbstractPVScalar implements PVULong
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-    @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
     	flusher.ensureBuffer(Long.SIZE/Byte.SIZE);
         buffer.putLong(value);
@@ -58,7 +55,6 @@ public class BasePVULong extends AbstractPVScalar implements PVULong
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
      */
-    @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
     	control.ensureData(Long.SIZE/Byte.SIZE);
         value = buffer.getLong();

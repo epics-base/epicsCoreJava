@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -12,9 +12,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author carcassi
  */
 public class MockDataSource extends DataSource {
-    
-    private final List<ReadSubscription> connectedReadRecipes = new CopyOnWriteArrayList<>();
-    private final List<WriteSubscription> connectedWriteRecipes = new CopyOnWriteArrayList<>();
+
+    private final List<ReadSubscription> connectedReadRecipes = new CopyOnWriteArrayList<ReadSubscription>();
+    private final List<WriteSubscription> connectedWriteRecipes = new CopyOnWriteArrayList<WriteSubscription>();
     private volatile ReadSubscription readRecipe;
     private volatile WriteSubscription writeRecipe;
     private volatile WriteSubscription writeRecipeForWrite;
@@ -67,5 +67,5 @@ public class MockDataSource extends DataSource {
     public List<WriteSubscription> getConnectedWriteRecipes() {
         return connectedWriteRecipes;
     }
-    
+
 }

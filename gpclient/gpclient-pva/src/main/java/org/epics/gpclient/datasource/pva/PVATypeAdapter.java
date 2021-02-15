@@ -1,18 +1,14 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.pva;
 
-import java.util.Arrays;
 import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.datasource.DataSourceTypeAdapter;
+import org.epics.pvdata.pv.*;
 
-import org.epics.pvdata.pv.Field;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.Structure;
-import org.epics.pvdata.pv.Type;
+import java.util.Arrays;
 
 /**
  * Type adapter for PVA data source. Will match a channel based on the value
@@ -24,14 +20,14 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
 
 	// e.g. VDouble.class
     private final Class<?> typeClass;
-    
+
     // PVStructure requirements
     private final String[] ntIds;
     private final Field[] valueFieldTypes;
 
     /**
      * Creates a new type adapter.
-     * 
+     *
      * @param typeClass the java type this adapter will create
      * @param ntIds array of IDs this adapter is able convert, <code>null</code> allowed
      */
@@ -41,7 +37,7 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
 
     /**
      * Creates a new type adapter.
-     * 
+     *
      * @param typeClass the java type this adapter will create
      * @param ntIds array of IDs this adapter is able convert, <code>null</code> allowed
      * @param fieldType <code>Field</code> instance this adapter is able convert
@@ -52,7 +48,7 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
 
     /**
      * Creates a new type adapter.
-     * 
+     *
      * @param typeClass the java type this adapter will create
      * @param ntIds array of IDs this adapter is able convert, <code>null</code> allowed
      * @param fieldTypes <code>Field</code> instances this adapter is able convert, <code>null</code> allowed
@@ -76,11 +72,11 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
         			match = true;
         			break;
         		}
-        	
+
         	if (!match)
         		return false;
         }
-        
+
         // If the type of the channel does not match, no match
         if (valueFieldTypes != null)
         {
@@ -95,7 +91,7 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
             			match = true;
             			break;
             		}
-            	
+
             	if (!match)
             		return false;
     		}
@@ -104,14 +100,13 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
         // Everything matches
         return true;
     }
-    
-    @Override
+
     public boolean match(ReadCollector<?, ?> cache, PVAConnectionPayload connection) {
-    	
+
     	// If the generated type can't be put in the cache, no match
         if (!cache.getType().isAssignableFrom(typeClass))
             return false;
-        
+
         // If the channel type is not available, no match
         if (connection.channelType == null)
             return false;
@@ -128,11 +123,11 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
         			match = true;
         			break;
         		}
-        	
+
         	if (!match)
         		return false;
         }
-        
+
         // If the type of the channel does not match, no match
         if (valueFieldTypes != null)
         {
@@ -149,7 +144,7 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
             			match = true;
             			break;
             		}
-            	
+
             	if (!match)
             		return false;
     		}
@@ -158,13 +153,11 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
         // Everything matches
         return true;
     }
-    
-    @Override
+
     public Object getSubscriptionParameter(ReadCollector<?, ?> cache, PVAConnectionPayload connection) {
         throw new UnsupportedOperationException("Not implemented: PVAChannelHandler is multiplexed, will not use this method");
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public void updateCache(@SuppressWarnings("rawtypes") ReadCollector cache, PVAConnectionPayload connection, PVStructure message) {
 
@@ -177,16 +170,16 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
     		else
     			// this avoids problem when scalars/scalar arrays needs to be passed as PVStructure message
     			valueField = message.getSubField(extractFieldName);
-  
+
     	}
-    	
+
         Object value = createValue(message, valueField, !connection.connected);
         cache.updateValue(value);
     }
 
     /**
      * Given the value create the new value.
-     * 
+     *
      * @param message the value taken from the monitor
      * @param valueField the value field data, optional
      * @param disconnected true if the value should report the channel is currently disconnected
@@ -200,5 +193,5 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
 				+ Arrays.toString(ntIds) + ", valueFieldTypes="
 				+ Arrays.toString(valueFieldTypes) + "]";
 	}
-    
+
 }

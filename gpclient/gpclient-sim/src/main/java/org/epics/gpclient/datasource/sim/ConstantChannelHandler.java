@@ -1,14 +1,15 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.util.List;
-import java.util.logging.Logger;
 import org.epics.gpclient.datasource.MultiplexedChannelHandler;
 import org.epics.util.text.FunctionParser;
 import org.epics.vtype.VType;
+
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Implementation for constant channel.
@@ -16,7 +17,7 @@ import org.epics.vtype.VType;
  * @author carcassi
  */
 class ConstantChannelHandler extends MultiplexedChannelHandler<Object, Object> {
-    
+
     private static final Logger log = Logger.getLogger(ConstantChannelHandler.class.getName());
 
     public ConstantChannelHandler(String channelName) {

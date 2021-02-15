@@ -15,7 +15,7 @@ class TestCodec extends AbstractCodec
 	static interface ReadPollOneCallback {
 		public void readPollOne() throws IOException;
 	}
-	
+
 	static interface WritePollOneCallback {
 		public void writePollOne() throws IOException;
 	}
@@ -28,28 +28,28 @@ class TestCodec extends AbstractCodec
 	int readPollOneCount = 0;
 	int writePollOneCount = 0;
 	int messagesProcessed = 0;
-	
+
 	boolean throwExceptionOnSend = false;
-	
+
 	ByteBuffer readBuffer;
 	final ByteBuffer writeBuffer;
-	
+
 	TestCodec.ReadPollOneCallback readPollOneCallback = null;
 	TestCodec.WritePollOneCallback writePollOneCallback = null;
-	
+
 	boolean readPayload = false;
 	boolean disconnected = false;
-	
+
 	int forcePayloadRead = -1;
-	
+
 	public TestCodec(int bufferSize) throws IOException {
 		this(bufferSize, bufferSize);
 	}
-	
+
 	public TestCodec(int receiveBufferSize, int sendBufferSize) throws IOException {
 		this(receiveBufferSize, sendBufferSize, false);
 	}
-	
+
 	public TestCodec(int receiveBufferSize, int sendBufferSize, boolean blocking) throws IOException {
 		super(false, ByteBuffer.allocate(receiveBufferSize), ByteBuffer.allocate(sendBufferSize),
 				sendBufferSize/10, blocking, Logger.getLogger("TestCodec"));
@@ -61,17 +61,17 @@ class TestCodec extends AbstractCodec
 	{
 		return readMode;
 	}
-	
+
 	public WriteMode getWriteMode()
 	{
 		return writeMode;
 	}
-	
+
 	public ByteBuffer getSendBuffer()
 	{
 		return sendBuffer;
 	}
-	
+
 	void reset()
 	{
 		closedCount = 0;
@@ -86,16 +86,15 @@ class TestCodec extends AbstractCodec
 		writeBuffer.clear();
 	}
 
-	@Override
 	public int read(ByteBuffer buffer) throws IOException {
 		if (disconnected)
 			return -1;
-		
+
 		int startPos = readBuffer.position();
 		//buffer.put(readBuffer);
 		//while (buffer.hasRemaining() && readBuffer.hasRemaining())
 		//	buffer.put(readBuffer.get());
-		
+
 		int bufferRemaining = buffer.remaining();
 		int readBufferRemaining = readBuffer.remaining();
 		if (bufferRemaining >= readBufferRemaining)
@@ -109,22 +108,21 @@ class TestCodec extends AbstractCodec
 		return readBuffer.position() - startPos;
 	}
 
-	@Override
 	public int write(ByteBuffer buffer) throws IOException {
 		if (disconnected)
 			return -1;	// TODO: not by the JavaDoc API spec
 		if (throwExceptionOnSend)
 			throw new IOException("text IO exception");
-		
+
 		// we could write remaining bytes, but for test this is enought
 		if (buffer.remaining() > writeBuffer.remaining())
 			return 0;
-		
+
 		int startPos = buffer.position();
 		writeBuffer.put(buffer);
 		return buffer.position() - startPos;
 	}
-	
+
 	public void transferToReadBuffer() throws IOException
 	{
 		flushSerializeBuffer();
@@ -133,7 +131,7 @@ class TestCodec extends AbstractCodec
 		readBuffer.clear();
 		readBuffer.put(writeBuffer);
 		readBuffer.flip();
-		
+
 		writeBuffer.clear();
 	}
 
@@ -145,16 +143,14 @@ class TestCodec extends AbstractCodec
 		//readBuffer.clear();
 		readBuffer.put(writeBuffer);
 		readBuffer.flip();
-		
+
 		writeBuffer.clear();
 	}
 
-	@Override
 	public void close() throws IOException {
 		closedCount++;
 	}
 
-	@Override
 	public boolean isOpen() {
 		return closedCount == 0;
 	}
@@ -168,13 +164,13 @@ class TestCodec extends AbstractCodec
 	}
 
 	ByteBuffer payload = ByteBuffer.allocate(MessageProcessPerformance.MAX_PAYLOAD_SIZE);
-	
+
 	@Override
 	public void processApplicationMessage() throws IOException {
 		// must be here so that to prevent optimizations
 		if (flags != (byte)0x80 || command != (byte)0x23)
 			throw new RuntimeException("bad data");
-		
+
 		if (readPayload && payloadSize > 0)
 		{
 			payload.clear();
@@ -246,7 +242,6 @@ class TestCodec extends AbstractCodec
 		return false;
 	}
 
-	@Override
 	public void cachedSerialize(Field field, ByteBuffer buffer) {
 		// no cache
 		field.serialize(buffer, this);

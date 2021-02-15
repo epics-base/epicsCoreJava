@@ -41,7 +41,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#getUnion()
 	 */
-	@Override
 	public Union getUnion() {
 		return union;
 	}
@@ -49,7 +48,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#get()
 	 */
-	@Override
 	public PVField get() {
 		return value;
 	}
@@ -57,7 +55,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUnion#get(java.lang.Class)
      */
-    @Override
 	public <T extends PVField> T get(Class<T> c)
 	{
 		if (c.isInstance(value))
@@ -65,11 +62,10 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 		else
 			return null;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#getSelectedIndex()
 	 */
-	@Override
 	public int getSelectedIndex() {
 		return selector;
 	}
@@ -77,7 +73,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#getSelectedFieldName()
 	 */
-	@Override
 	public String getSelectedFieldName() {
 		// no name for undefined and for variant unions
 		if (selector == UNDEFINED_INDEX)
@@ -89,12 +84,11 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#select(int)
 	 */
-	@Override
 	public PVField select(int index) {
 		// no change
 		if (selector == index)
 			return value;
-			
+
 		if (index == UNDEFINED_INDEX)
 		{
 			selector = UNDEFINED_INDEX;
@@ -105,7 +99,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			throw new IllegalArgumentException("index out of bounds");
 		else if (index < 0 || index > union.getFields().length)
 			throw new IllegalArgumentException("index out of bounds");
-		
+
 		Field field = union.getField(index);
 		selector = index;
 		value = pvDataCreate.createPVField(field);
@@ -116,7 +110,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#select(java.lang.String)
 	 */
-	@Override
 	public PVField select(String fieldName) {
 		int index = variant ? -1 : union.getFieldIndex(fieldName);
 		if (index == -1)
@@ -129,7 +122,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#select(java.lang.Class, int)
 	 */
-	@Override
 	public <T extends PVField> T select(Class<T> c, int index) {
 		PVField pv = select(index);
 		if (c.isInstance(pv))
@@ -141,7 +133,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#select(java.lang.Class, java.lang.String)
 	 */
-	@Override
 	public <T extends PVField> T select(Class<T> c, String fieldName) {
 		PVField pv = select(fieldName);
 		if (c.isInstance(pv))
@@ -153,7 +144,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#set(org.epics.pvdata.pv.PVField)
 	 */
-	@Override
 	public void set(PVField value) {
 		set(selector, value);
 	}
@@ -161,7 +151,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#set(int, org.epics.pvdata.pv.PVField)
 	 */
-	@Override
 	public void set(int index, PVField value) {
 		if (variant && index != UNDEFINED_INDEX)
 			throw new IllegalArgumentException("index out of bounds");
@@ -176,11 +165,15 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			else if (index < 0 || index > union.getFields().length)
 				throw new IllegalArgumentException("index out of bounds");
 
+			if ( value == null ) {
+				throw new IllegalArgumentException("PVField is null");
+			}
+
 			// value type must match
 			if (!value.getField().equals(union.getField(index)))
 				throw new IllegalArgumentException("selected field and its introspection data do not match");
 		}
-		
+
 		this.selector = index;
 		this.value = value;
 		super.postPut();
@@ -189,7 +182,6 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.PVUnion#set(java.lang.String, org.epics.pvdata.pv.PVField)
 	 */
-	@Override
 	public void set(String fieldName, PVField value) {
 		int index = variant ? -1 : union.getFieldIndex(fieldName);
 		if (index == -1)
@@ -221,7 +213,7 @@ public class BasePVUnion extends AbstractPVField implements PVUnion
 			// write selector value
 			SerializeHelper.writeSize(selector, buffer, flusher);
 			// write value, no value for UNDEFINED_INDEX
-			if (selector != UNDEFINED_INDEX) 
+			if (selector != UNDEFINED_INDEX)
 				value.serialize(buffer, flusher);
 
 		}

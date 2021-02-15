@@ -1,28 +1,26 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.sample;
 
-import java.time.Duration;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
-import org.epics.gpclient.PV;
-import org.epics.gpclient.PVEvent;
-import org.epics.gpclient.PVEventRecorder;
-import static org.epics.gpclient.PVEventRecorder.*;
-import static org.epics.gpclient.PVEvent.Type.*;
-import org.epics.gpclient.PVListener;
-import org.epics.gpclient.PVWriter;
+import org.epics.gpclient.*;
 import org.epics.gpclient.datasource.ReadOnlyChannelException;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 import org.epics.vtype.VString;
 import org.epics.vtype.VType;
+import org.joda.time.Duration;
+import org.junit.Test;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+
+import static org.epics.gpclient.PVEvent.Type.*;
+import static org.epics.gpclient.PVEventRecorder.anEventOfType;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author carcassi
  */
 public class WriteTest extends BlackBoxTestBase {
@@ -55,33 +53,42 @@ public class WriteTest extends BlackBoxTestBase {
 
     @Test(expected = RuntimeException.class)
     public void writeDisconnectedChannel() {
-                PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannel")
-                        .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
-                            // Do nothing
-                        })
-                        .start();
-//        assertThat(pv.isWriteConnected(), equalTo(false));
-                pv.write("Value");
-            }
-//    TODO this unit test fails on travis repeatedly, disabling it temporarily
-//    @Test(expected = RuntimeException.class)
-    public void writeDisconnectedChannelAsynch() {
-        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannelAsynch")
-                .addListener((PVEvent event, PV<VType, Object> pv1) -> {
-                    // Do nothing
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannel")
+                .addListener(new PVListener<VType, Object>() {
+                    public void pvChanged(PVEvent event, PV<VType, Object> pv) {
+                        // Do nothing
+                    }
                 })
                 .start();
 //        assertThat(pv.isWriteConnected(), equalTo(false));
-        pv.write("Value", (PVEvent event, PVWriter<Object> pv1) -> {
-            // Do nothing
+        pv.write("Value");
+    }
+
+    //    TODO this unit test fails on travis repeatedly, disabling it temporarily
+//    @Test(expected = RuntimeException.class)
+    public void writeDisconnectedChannelAsynch() {
+        PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannelAsynch")
+                .addListener(new PVListener<VType, Object>() {
+                    public void pvChanged(PVEvent event, PV<VType, Object> pv) {
+                        // Do Nothing
+                    }
+                })
+                .start();
+//        assertThat(pv.isWriteConnected(), equalTo(false));
+        pv.write("Value", new PVWriterListener<Object>() {
+            public void pvChanged(PVEvent event, PVWriter<Object> pvWriter) {
+                // Do nothing
+            }
         });
     }
 
     @Test(expected = RuntimeException.class)
     public void writeDisconnectedChannelSynch() {
         PV<VType, Object> pv = gpClient.readAndWrite("loc://writeDisconnectedChannelSynch")
-                .addListener((PVListener<VType, Object>) (PVEvent event, PV<VType, Object> pv1) -> {
-                    // Do nothing
+                .addListener(new PVListener<VType, Object>() {
+                    public void pvChanged(PVEvent event, PV<VType, Object> pv) {
+                        // Do Nothing
+                    }
                 })
                 .start();
 //        assertThat(pv.isWriteConnected(), equalTo(false));
@@ -128,13 +135,15 @@ public class WriteTest extends BlackBoxTestBase {
         assertThat(pv.isWriteConnected(), equalTo(false));
         recorder.wait(1000, anEventOfType(WRITE_CONNECTION));
         assertThat(pv.getValue(), equalTo(null));
-        CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<PVEvent> pvEvent = new AtomicReference<>();
-        pv.write("Value", (event, pvWriter) -> {
-            pvEvent.set(event);
-            latch.countDown();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<PVEvent> pvEvent = new AtomicReference<PVEvent>();
+        pv.write("Value", new PVWriterListener<Object>() {
+            public void pvChanged(PVEvent event, PVWriter<Object> pvWriter) {
+                pvEvent.set(event);
+                latch.countDown();
+            }
         });
-        awaitTimeout(latch, Duration.ofMillis(1000));
+        awaitTimeout(latch, Duration.millis(1000));
         recorder.wait(1000, anEventOfType(VALUE));
         assertThat(pv.getValue(), instanceOf(VString.class));
         assertThat(((VString) pv.getValue()).getValue(), equalTo("Value"));

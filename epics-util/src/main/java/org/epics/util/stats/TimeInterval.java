@@ -1,11 +1,11 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.stats;
 
-import java.time.Duration;
-import java.time.Instant;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 /**
  * A period of time that spans two instants (included) at the nanosecond
@@ -37,7 +37,7 @@ public class TimeInterval {
      * Returns the interval between the given timestamps.
      *
      * @param start the beginning of the interval
-     * @param end the end of the interval
+     * @param end   the end of the interval
      * @return a new interval
      */
     public static TimeInterval between(Instant start, Instant end) {
@@ -74,7 +74,7 @@ public class TimeInterval {
 
     @Override
     public String toString() {
-        return String.valueOf(start) + " - " + String.valueOf(end);
+        return start + " - " + end;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class TimeInterval {
             boolean endEqual = (getEnd() == other.getEnd()) || (getEnd() != null && getEnd().equals(other.getEnd()));
             return startEqual && endEqual;
         }
-        
+
         return false;
     }
 

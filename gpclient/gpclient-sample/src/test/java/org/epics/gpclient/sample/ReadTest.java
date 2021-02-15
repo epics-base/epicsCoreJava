@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.sample;
 
-import java.time.Duration;
+import org.joda.time.Duration;
 import org.epics.gpclient.PVEventRecorder;
 import static org.epics.gpclient.PVEventRecorder.*;
 import static org.epics.gpclient.PVEvent.Type.*;
@@ -63,7 +63,7 @@ public class ReadTest extends BlackBoxTestBase {
         PVEventRecorder recorder = new PVEventRecorder();
         PVReader<VType> pv = gpClient.read("sim://delayedConnectionChannel(2, \"Connected\")")
                 .addListener(recorder)
-                .connectionTimeout(Duration.ofMillis(500))
+                .connectionTimeout(Duration.millis(500))
                 .start();
         assertThat(pv.isConnected(), equalTo(false));
         assertThat(pv.getValue(), nullValue());

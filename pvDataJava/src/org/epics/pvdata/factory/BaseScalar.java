@@ -19,9 +19,9 @@ import org.epics.pvdata.pv.Type;
  *
  */
 public class BaseScalar extends BaseField implements Scalar {
-    
+
     private final ScalarType scalarType;
-    
+
     /**
      * Constructor for BaseScalar.
      * @param scalarType The scalar Type.
@@ -32,7 +32,7 @@ public class BaseScalar extends BaseField implements Scalar {
         	throw new NullPointerException("scalarType is null");
         this.scalarType = scalarType;
     }
-    
+
 	/**
 	 * ID for each scalarType
 	 */
@@ -54,7 +54,6 @@ public class BaseScalar extends BaseField implements Scalar {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Field#getID()
 	 */
-	@Override
 	public String getID() {
 		return idLUT[scalarType.ordinal()];
 	}
@@ -92,7 +91,7 @@ public class BaseScalar extends BaseField implements Scalar {
 			return false;
 		return true;
 	}
-	
+
 	/**
 	 * Type code for each scalarType.
 	 */
@@ -110,24 +109,22 @@ public class BaseScalar extends BaseField implements Scalar {
 		0x43, // pvDouble
 		0x60  // pvString
 	};
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
 	 */
-	@Override
 	public void serialize(ByteBuffer buffer, SerializableControl control) {
 		control.ensureBuffer(1);
 		buffer.put(typeCodeLUT[scalarType.ordinal()]);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
 	 */
-	@Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
 		// must be done via FieldCreate
 		throw new RuntimeException("not valid operation, use FieldCreate.deserialize instead");
 	}
-	
-	
+
+
 }

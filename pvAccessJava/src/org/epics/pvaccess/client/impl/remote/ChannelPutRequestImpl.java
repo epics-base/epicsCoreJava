@@ -45,7 +45,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	// get container
 	protected PVStructure data = null;
 	protected BitSet bitSet = null;
-	
+
 	// put reference store
 	protected PVStructure pvPutStructure = null;
 	protected BitSet putBitSet = null;
@@ -59,24 +59,24 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		thisInstance.activate();
 		return thisInstance;
 	}
-	
+
 	protected ChannelPutRequestImpl(ChannelImpl channel,
 			ChannelPutRequester callback,
             PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, false);
-		
+
 		this.callback = callback;
-		
+
 		// TODO low-overhead put
 		// TODO best-effort put
 	}
-	
-	
+
+
 	protected void activate()
 	{
 		super.activate();
-		
+
 		// subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
@@ -97,12 +97,12 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			super.send(buffer, control);
 			return;
 		}
-		
+
 		control.startMessage((byte)11, 2*Integer.SIZE/Byte.SIZE+1);
 		buffer.putInt(channel.getServerChannelID());
 		buffer.putInt(ioid);
 		buffer.put((byte)pendingRequest);
-		
+
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// pvRequest
@@ -124,7 +124,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 				unlock();
 			}
 		}
-		
+
 		stopRequest();
 	}
 
@@ -140,7 +140,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 				callback.channelPutConnect(status, this, null);
 				return;
 			}
-			
+
 			lock();
 			try {
 				// create data (for get) and its bitSet
@@ -149,7 +149,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			} finally {
 				unlock();
 			}
-			
+
 			// notify
 			callback.channelPutConnect(status, this, data.getStructure());
 		}
@@ -160,7 +160,7 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			PrintWriter printWriter = new PrintWriter(writer);
 			th.printStackTrace(printWriter);
 			requester.message("Unexpected exception caught: " + writer, MessageType.fatalError);
-		} 
+		}
 	}
 
 	/* (non-Javadoc)
@@ -177,14 +177,14 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 					callback.getDone(status, this, null, null);
 					return;
 				}
-				
+
 				lock();
 				try {
 					bitSet.deserialize(payloadBuffer, transport);
 					data.deserialize(payloadBuffer, transport, bitSet);
 				} finally {
 					unlock();
-				}		
+				}
 
 				callback.getDone(status, this, data, bitSet);
 			}
@@ -206,18 +206,17 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelPut#get()
 	 */
-	@Override
 	public void get() {
 		if (destroyed) {
 			callback.getDone(destroyedStatus, this, null, null);
 			return;
 		}
-		
+
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() | QoS.GET.getMaskValue() : QoS.GET.getMaskValue())) {
 			callback.getDone(otherRequestPendingStatus, this, null, null);
 			return;
 		}
-		
+
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
@@ -226,32 +225,31 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 		}
 	}
 
-	@Override
 	public void put(PVStructure pvPutStructure, BitSet bitSet) {
 		if (destroyed) {
 			callback.putDone(destroyedStatus, this);
 			return;
 		}
-		
+
 		// TODO do we need to check for null or just let NPE happens
-		
+
 		if (!data.getStructure().equals(pvPutStructure.getStructure()))
 		{
 			callback.putDone(invalidPutStructureStatus, this);
 			return;
 		}
-		
+
 		if (bitSet.size() < data.getNumberFields())
 		{
 			callback.putDone(invalidBitSetLengthStatus, this);
 			return;
 		}
-		
+
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
 			callback.putDone(otherRequestPendingStatus, this);
 			return;
 		}
-		
+
 		try {
 			lock();
 			this.pvPutStructure = pvPutStructure;
@@ -263,5 +261,5 @@ public class ChannelPutRequestImpl extends BaseRequestImpl implements ChannelPut
 			callback.putDone(channelNotConnected, this);
 		}
 	}
-	
+
 }

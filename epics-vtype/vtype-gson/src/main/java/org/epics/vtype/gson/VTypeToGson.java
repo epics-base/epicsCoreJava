@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -32,40 +32,21 @@ import java.util.List;
 public class VTypeToGson {
 
     static VType toVType(JsonElement json) {
-        switch(typeNameOf(json)) {
-            case "VDouble":
-            case "VFloat":
-            case "VULong":
-            case "VLong":
-            case "VUInt":
-            case "VInt":
-            case "VUShort":
-            case "VShort":
-            case "VUByte":
-            case "VByte":
-                return toVNumber(json);
-            case "VDoubleArray":
-            case "VFloatArray":
-            case "VULongArray":
-            case "VLongArray":
-            case "VUIntArray":
-            case "VIntArray":
-            case "VUShortArray":
-            case "VShortArray":
-            case "VUByteArray":
-            case "VByteArray":
-                return toVNumberArray(json);
-            case "VString":
-                return toVString(json);
-            case "VStringArray":
-                return toVStringArray(json);
-            case "VEnum":
-                return toVEnum(json);
-            default:
-                throw new UnsupportedOperationException("Not implemented yet");
+        String s = typeNameOf(json);
+        if ("VDouble".equals(s) || "VFloat".equals(s) || "VULong".equals(s) || "VLong".equals(s) || "VUInt".equals(s) || "VInt".equals(s) || "VUShort".equals(s) || "VShort".equals(s) || "VUByte".equals(s) || "VByte".equals(s)) {
+            return toVNumber(json);
+        } else if ("VDoubleArray".equals(s) || "VFloatArray".equals(s) || "VULongArray".equals(s) || "VLongArray".equals(s) || "VUIntArray".equals(s) || "VIntArray".equals(s) || "VUShortArray".equals(s) || "VShortArray".equals(s) || "VUByteArray".equals(s) || "VByteArray".equals(s)) {
+            return toVNumberArray(json);
+        } else if ("VString".equals(s)) {
+            return toVString(json);
+        } else if ("VStringArray".equals(s)) {
+            return toVStringArray(json);
+        } else if ("VEnum".equals(s)) {
+            return toVEnum(json);
         }
+        throw new UnsupportedOperationException("Not implemented yet");
     }
-    
+
     static String typeNameOf(JsonElement json) {
         JsonElement type = json.getAsJsonObject().get("type");
         if (type == null) {
@@ -73,7 +54,7 @@ public class VTypeToGson {
         }
         return type.getAsJsonObject().get("name").getAsString();
     }
-    
+
     static JsonElement toJson(VType vType) {
         if (vType instanceof VNumber) {
             return toJson((VNumber) vType);
@@ -88,51 +69,41 @@ public class VTypeToGson {
         }
         throw new UnsupportedOperationException("Not implemented yet");
     }
-    
+
     static VNumber toVNumber(JsonElement json) {
         VTypeGsonMapper mapper = new VTypeGsonMapper(json.getAsJsonObject());
         Number value;
-        switch(mapper.getTypeName()) {
-            case "VDouble":
-                Double doubleValue = json.getAsJsonObject().get("value").getAsDouble();
-                if(doubleValue != null){
-                    return VDouble.of(doubleValue, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
-                }
-                value = mapper.getJsonNumber("value").getAsDouble();
-                break;
-            case "VFloat":
-                value = (float) mapper.getJsonNumber("value").getAsDouble();
-                break;
-            case "VULong":
-                value = new ULong(mapper.getJsonNumber("value").getAsLong());
-                break;
-            case "VLong":
-                value = (long) mapper.getJsonNumber("value").getAsLong();
-                break;
-            case "VUInt":
-                value = new UInteger(mapper.getJsonNumber("value").getAsInt());
-                break;
-            case "VInt":
-                value = (int) mapper.getJsonNumber("value").getAsInt();
-                break;
-            case "VUShort":
-                value = new UShort((short) mapper.getJsonNumber("value").getAsInt());
-                break;
-            case "VShort":
-                value = (short) mapper.getJsonNumber("value").getAsInt();
-                break;
-            case "VUByte":
-                value = new UByte((byte) mapper.getJsonNumber("value").getAsInt());
-                break;
-            case "VByte":
-                value = (byte) mapper.getJsonNumber("value").getAsInt();
-                break;
-            default:
-                throw new UnsupportedOperationException("Not implemented yet");
+        String typeName = mapper.getTypeName();
+        if ("VDouble".equals(typeName)) {
+            Double doubleValue = json.getAsJsonObject().get("value").getAsDouble();
+            if (doubleValue != null) {
+                return VDouble.of(doubleValue, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
+            }
+            value = mapper.getJsonNumber("value").getAsDouble();
+        } else if ("VFloat".equals(typeName)) {
+            value = (float) mapper.getJsonNumber("value").getAsDouble();
+        } else if ("VULong".equals(typeName)) {
+            value = new ULong(mapper.getJsonNumber("value").getAsLong());
+        } else if ("VLong".equals(typeName)) {
+            value = (long) mapper.getJsonNumber("value").getAsLong();
+        } else if ("VUInt".equals(typeName)) {
+            value = new UInteger(mapper.getJsonNumber("value").getAsInt());
+        } else if ("VInt".equals(typeName)) {
+            value = (int) mapper.getJsonNumber("value").getAsInt();
+        } else if ("VUShort".equals(typeName)) {
+            value = new UShort((short) mapper.getJsonNumber("value").getAsInt());
+        } else if ("VShort".equals(typeName)) {
+            value = (short) mapper.getJsonNumber("value").getAsInt();
+        } else if ("VUByte".equals(typeName)) {
+            value = new UByte((byte) mapper.getJsonNumber("value").getAsInt());
+        } else if ("VByte".equals(typeName)) {
+            value = (byte) mapper.getJsonNumber("value").getAsInt();
+        } else {
+            throw new UnsupportedOperationException("Not implemented yet");
         }
         return VNumber.of(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
     }
-    
+
     static VString toVString(JsonElement json) {
         VTypeGsonMapper mapper = new VTypeGsonMapper(json.getAsJsonObject());
         return VString.of(mapper.getString("value"), mapper.getAlarm(), mapper.getTime());
@@ -141,55 +112,45 @@ public class VTypeToGson {
     static VStringArray toVStringArray(JsonElement json) {
         VTypeGsonMapper mapper = new VTypeGsonMapper(json.getAsJsonObject());
         return VStringArray.of(mapper.getListString("value"), mapper.getAlarm(), mapper.getTime());
-        
+
     }
-    
+
     static VEnum toVEnum(JsonElement json) {
         VTypeGsonMapper mapper = new VTypeGsonMapper(json.getAsJsonObject());
         List<String> labels = mapper.getJsonObject("enum").getListString("labels");
         return VEnum.of(mapper.getInt("value"), EnumDisplay.of(labels), mapper.getAlarm(), mapper.getTime());
     }
-    
+
     static VNumberArray toVNumberArray(JsonElement json) {
         VTypeGsonMapper mapper = new VTypeGsonMapper(json.getAsJsonObject());
         ListNumber value;
-        switch(mapper.getTypeName()) {
-            case "VDoubleArray":
-                value = mapper.getListDouble("value");
-                break;
-            case "VFloatArray":
-                value = mapper.getListFloat("value");
-                break;
-            case "VULongArray":
-                value = mapper.getListULong("value");
-                break;
-            case "VLongArray":
-                value = mapper.getListLong("value");
-                break;
-            case "VUIntArray":
-                value = mapper.getListUInteger("value");
-                break;
-            case "VIntArray":
-                value = mapper.getListInt("value");
-                break;
-            case "VUShortArray":
-                value = mapper.getListUShort("value");
-                break;
-            case "VShortArray":
-                value = mapper.getListShort("value");
-                break;
-            case "VUByteArray":
-                value = mapper.getListUByte("value");
-                break;
-            case "VByteArray":
-                value = mapper.getListByte("value");
-                break;
-            default:
-                throw new UnsupportedOperationException("Not implemented yet");
+        String typeName = mapper.getTypeName();
+        if ("VDoubleArray".equals(typeName)) {
+            value = mapper.getListDouble("value");
+        } else if ("VFloatArray".equals(typeName)) {
+            value = mapper.getListFloat("value");
+        } else if ("VULongArray".equals(typeName)) {
+            value = mapper.getListULong("value");
+        } else if ("VLongArray".equals(typeName)) {
+            value = mapper.getListLong("value");
+        } else if ("VUIntArray".equals(typeName)) {
+            value = mapper.getListUInteger("value");
+        } else if ("VIntArray".equals(typeName)) {
+            value = mapper.getListInt("value");
+        } else if ("VUShortArray".equals(typeName)) {
+            value = mapper.getListUShort("value");
+        } else if ("VShortArray".equals(typeName)) {
+            value = mapper.getListShort("value");
+        } else if ("VUByteArray".equals(typeName)) {
+            value = mapper.getListUByte("value");
+        } else if ("VByteArray".equals(typeName)) {
+            value = mapper.getListByte("value");
+        } else {
+            throw new UnsupportedOperationException("Not implemented yet");
         }
         return VNumberArray.of(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
     }
-    
+
     static JsonElement toJson(VNumber vNumber) {
         return new GsonVTypeBuilder()
                 .addType(vNumber)
@@ -199,7 +160,7 @@ public class VTypeToGson {
                 .addDisplay(vNumber.getDisplay())
                 .build();
     }
-    
+
     static JsonElement toJson(VNumberArray vNumberArray) {
         return new GsonVTypeBuilder()
                 .addType(vNumberArray)
@@ -209,7 +170,7 @@ public class VTypeToGson {
                 .addDisplay(vNumberArray.getDisplay())
                 .build();
     }
-    
+
     static JsonElement toJson(VString vString) {
         return new GsonVTypeBuilder()
                 .addType(vString)
@@ -243,7 +204,7 @@ public class VTypeToGson {
      * {@link Double#NaN}, {@link Double#POSITIVE_INFINITY} and {@link Double#NEGATIVE_INFINITY}.
      * If the input string is not parseable as a double (including the special cases), a
      * {@link NumberFormatException} is thrown.
-     * @param valueAsString
+     * @param valueAsString value as a string
      * @return A valid double number, otherwise
      * {@link Double#NaN}, {@link Double#POSITIVE_INFINITY} and {@link Double#NEGATIVE_INFINITY}.
      */

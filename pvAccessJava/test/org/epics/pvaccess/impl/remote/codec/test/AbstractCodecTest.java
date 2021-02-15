@@ -30,28 +30,28 @@ public class AbstractCodecTest extends TestCase {
  	public AbstractCodecTest(String methodName) {
 		super(methodName);
 	}
-	
+
 	static class PVAMessage {
 		byte version;
 		byte flags;
 		byte command;
 		int payloadSize;
 		ByteBuffer payload;
-		
+
 		public PVAMessage(byte version, byte flags, byte command, int payloadSize) {
 			this.version = version;
 			this.flags = flags;
 			this.command = command;
 			this.payloadSize = payloadSize;
 		}
-		
+
 	}
 	static class TestCodec extends AbstractCodec
 	{
 		static interface ReadPollOneCallback {
 			public void readPollOne() throws IOException;
 		}
-		
+
 		static interface WritePollOneCallback {
 			public void writePollOne() throws IOException;
 		}
@@ -63,31 +63,31 @@ public class AbstractCodecTest extends TestCase {
 		int sendBufferFullCount = 0;
 		int readPollOneCount = 0;
 		int writePollOneCount = 0;
-		
+
 		boolean throwExceptionOnSend = false;
-		
+
 		ByteBuffer readBuffer;
 		final ByteBuffer writeBuffer;
-		
+
 		ReadPollOneCallback readPollOneCallback = null;
 		WritePollOneCallback writePollOneCallback = null;
-		
+
 		final ArrayList<PVAMessage> receivedAppMessages = new ArrayList<PVAMessage>();
 		final ArrayList<PVAMessage> receivedControlMessages = new ArrayList<PVAMessage>();
-		
+
 		boolean readPayload = false;
 		boolean disconnected = false;
-		
+
 		int forcePayloadRead = -1;
-		
+
 		public TestCodec(int bufferSize) throws IOException {
 			this(bufferSize, bufferSize);
 		}
-		
+
 		public TestCodec(int receiveBufferSize, int sendBufferSize) throws IOException {
 			this(receiveBufferSize, sendBufferSize, false);
 		}
-		
+
 		public TestCodec(int receiveBufferSize, int sendBufferSize, boolean blocking) throws IOException {
 			super(false, ByteBuffer.allocate(receiveBufferSize), ByteBuffer.allocate(sendBufferSize),
 					sendBufferSize/10, blocking, Logger.getLogger("TestCodec"));
@@ -99,17 +99,17 @@ public class AbstractCodecTest extends TestCase {
 		{
 			return readMode;
 		}
-		
+
 		public WriteMode getWriteMode()
 		{
 			return writeMode;
 		}
-		
+
 		public ByteBuffer getSendBuffer()
 		{
 			return sendBuffer;
 		}
-		
+
 		void reset()
 		{
 			closedCount = 0;
@@ -125,16 +125,15 @@ public class AbstractCodecTest extends TestCase {
 			receivedControlMessages.clear();
 		}
 
-		@Override
 		public int read(ByteBuffer buffer) throws IOException {
 			if (disconnected)
 				return -1;
-			
+
 			int startPos = readBuffer.position();
 			//buffer.put(readBuffer);
 			//while (buffer.hasRemaining() && readBuffer.hasRemaining())
 			//	buffer.put(readBuffer.get());
-			
+
 			int bufferRemaining = buffer.remaining();
 			int readBufferRemaining = readBuffer.remaining();
 			if (bufferRemaining >= readBufferRemaining)
@@ -148,22 +147,21 @@ public class AbstractCodecTest extends TestCase {
 			return readBuffer.position() - startPos;
 		}
 
-		@Override
 		public int write(ByteBuffer buffer) throws IOException {
 			if (disconnected)
 				return -1;	// TODO: not by the JavaDoc API spec
 			if (throwExceptionOnSend)
 				throw new IOException("text IO exception");
-			
+
 			// we could write remaining bytes, but for test this is enought
 			if (buffer.remaining() > writeBuffer.remaining())
 				return 0;
-			
+
 			int startPos = buffer.position();
 			writeBuffer.put(buffer);
 			return buffer.position() - startPos;
 		}
-		
+
 		public void transferToReadBuffer() throws IOException
 		{
 			flushSerializeBuffer();
@@ -172,7 +170,7 @@ public class AbstractCodecTest extends TestCase {
 			readBuffer.clear();
 			readBuffer.put(writeBuffer);
 			readBuffer.flip();
-			
+
 			writeBuffer.clear();
 		}
 
@@ -184,16 +182,14 @@ public class AbstractCodecTest extends TestCase {
 			//readBuffer.clear();
 			readBuffer.put(writeBuffer);
 			readBuffer.flip();
-			
+
 			writeBuffer.clear();
 		}
 
-		@Override
 		public void close() throws IOException {
 			closedCount++;
 		}
 
-		@Override
 		public boolean isOpen() {
 			return closedCount == 0;
 		}
@@ -212,7 +208,7 @@ public class AbstractCodecTest extends TestCase {
 			// alignment check
 		 	if (socketBuffer.position() % PVAConstants.PVA_ALIGNMENT != 0)
 				throw new IllegalStateException("message not aligned");
-				
+
 			PVAMessage caMessage = new PVAMessage(version, flags, command, payloadSize);
 			if (readPayload && payloadSize > 0)
 			{
@@ -285,14 +281,13 @@ public class AbstractCodecTest extends TestCase {
 			return false;
 		}
 
-		@Override
 		public void cachedSerialize(Field field, ByteBuffer buffer) {
 			field.serialize(buffer, this);
 		}
 	}
-	
+
 	private static int DEFAULT_BUFFER_SIZE = 10240;
-	
+
 	public void testHeaderProcess() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
@@ -302,9 +297,9 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
@@ -314,30 +309,30 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(header.flags, 0x01);
 		assertEquals(header.command, 0x23);
 		assertEquals(header.payloadSize, 0x456789AB);
-		
+
 		codec.reset();
-		
+
 		// two at the time, app and control
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x00);
 		codec.readBuffer.put((byte)0x20);
 		codec.readBuffer.putInt(0x00000000);
-		
+
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x81);
 		codec.readBuffer.put((byte)0xEE);
 		codec.readBuffer.putInt(0xDDCCBBAA);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
 		assertEquals(1, codec.receivedAppMessages.size());
-		
+
 		// app, no payload
 		header = codec.receivedAppMessages.get(0);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
@@ -356,21 +351,21 @@ public class AbstractCodecTest extends TestCase {
 	public void testInvalidHeaderMagic() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		codec.readBuffer.put((byte)00);
+		codec.readBuffer.put((byte)0x00);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x01);
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(1, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
 	}
-	
+
 	public void testInvalidHeaderSegmentedInNormal() throws Throwable
 	{
 		byte[] invalidFlagsValues = new byte[] {(byte)0x20, (byte)(0x30+0x80)};
@@ -384,9 +379,9 @@ public class AbstractCodecTest extends TestCase {
 			//codec.readBuffer.putInt(0);
 			codec.readBuffer.putInt(i);   // to check zero-payload
 			codec.readBuffer.flip();
-			
+
 			codec.processRead();
-			
+
 			//assertEquals(1, codec.invalidDataStreamCount);
 			assertEquals(i != 0 ? 1 : 0, codec.invalidDataStreamCount);
 			assertEquals(0, codec.closedCount);
@@ -394,7 +389,7 @@ public class AbstractCodecTest extends TestCase {
 			assertEquals(0, codec.receivedAppMessages.size());
 		}
 	}
-	
+
 	public void testInvalidHeaderPayloadNotRead() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
@@ -404,9 +399,9 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(1, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -420,27 +415,27 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x01);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
 
 		assertEquals(0, codec.invalidDataStreamCount);
-		assertEquals(0, codec.closedCount);	
+		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
 
 		codec.readBuffer.clear();
-		
+
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
-		
+
 		// app, no payload
 		PVAMessage header = codec.receivedControlMessages.get(0);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
@@ -448,13 +443,13 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(header.command, (byte)0x23);
 		assertEquals(header.payloadSize, 0x456789AB);
 	}
-	
+
 	public void testNonEmptyPayload() throws Throwable
 	{
 		// no misalignment
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
@@ -463,9 +458,9 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)i);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -477,12 +472,12 @@ public class AbstractCodecTest extends TestCase {
 		header.payload.flip();
 		assertEquals(PVAConstants.PVA_ALIGNMENT, header.payload.limit());
 	}
-	
+
 	public void testNormalAlignment() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
@@ -495,7 +490,7 @@ public class AbstractCodecTest extends TestCase {
 		int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize1; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
-		
+
 
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -508,10 +503,10 @@ public class AbstractCodecTest extends TestCase {
 		aligned = AbstractCodec.alignedValue(payloadSize2, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize2; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
-	
+
 		codec.readBuffer.flip();
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -533,18 +528,18 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < msg.payloadSize; i++)
 			assertEquals((byte)i, msg.payload.get());
 	}
-	
+
 	public void testSplitAlignment() throws Throwable
 	{
 		// "<=" used instead of "==" to suppress compiler warning
 		if (PVAConstants.PVA_ALIGNMENT <= 1)
 			return;
-		
+
 		// used to suppress dead code
 		@SuppressWarnings("unused")
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x80);
@@ -553,14 +548,13 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.putInt(payloadSize1);
 		for (int i = 0; i < payloadSize1-2; i++)
 			codec.readBuffer.put((byte)i);
-		
+
 		final int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT-1;
 
 		ReadPollOneCallback pollCB = new ReadPollOneCallback() {
-			
-			@Override
+
 			public void readPollOne() throws IOException {
-				
+
 				if (codec.readPollOneCount == 1)
 				{
 					codec.readBuffer.clear();
@@ -570,8 +564,8 @@ public class AbstractCodecTest extends TestCase {
 					int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 					for (int i = payloadSize1; i < aligned; i++)
 						codec.readBuffer.put((byte)0xFF);
-					
-	
+
+
 					codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 					codec.readBuffer.put(PVAConstants.PVA_VERSION);
 					codec.readBuffer.put((byte)0x80);
@@ -582,7 +576,7 @@ public class AbstractCodecTest extends TestCase {
 					codec.readBuffer.flip();
 
 				}
-				
+
 				else if (codec.readPollOneCount == 2)
 				{
 					codec.readBuffer.clear();
@@ -591,16 +585,16 @@ public class AbstractCodecTest extends TestCase {
 						codec.readBuffer.put((byte)0xFF);
 					codec.readBuffer.flip();
 				}
-				
+
 				else
 					throw new RuntimeException("should not happen");
 			}
 		};
 		codec.readPollOneCallback = pollCB;
-		
+
 		codec.readBuffer.flip();
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -623,13 +617,13 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < msg.payloadSize; i++)
 			assertEquals((byte)i, msg.payload.get());
 	}
-	
+
 	public void testSegmentedMessage() throws Throwable
 	{
 		// no misalignment
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		// 1st
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -640,7 +634,7 @@ public class AbstractCodecTest extends TestCase {
 		int c = 0;
 		for (int i = 0; i < payloadSize1; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		// 2nd
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -650,7 +644,7 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.putInt(payloadSize2);
 		for (int i = 0; i < payloadSize2; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		// control in between
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -667,7 +661,7 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.putInt(payloadSize3);
 		for (int i = 0; i < payloadSize3; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		// 4t (last)
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -677,14 +671,14 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.putInt(payloadSize4);
 		for (int i = 0; i < payloadSize4; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		codec.readBuffer.flip();
-		
+
 		final int payloadSizeSum = payloadSize1+payloadSize2+payloadSize3+payloadSize4;
 		codec.forcePayloadRead = payloadSizeSum;
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
@@ -705,13 +699,13 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(msg.command, (byte)0xEE);
 		assertEquals(msg.payloadSize, 0xDDCCBBAA);
 	}
-	
+
 	public void testSegmentedInvalidInBetweenFlagsMessage() throws Throwable
 	{
 		// no misalignment
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		// 1st
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -722,7 +716,7 @@ public class AbstractCodecTest extends TestCase {
 		int c = 0;
 		for (int i = 0; i < payloadSize1; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		// 2nd
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -732,7 +726,7 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.putInt(payloadSize2);
 		for (int i = 0; i < payloadSize2; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		// control in between
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -749,7 +743,7 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.putInt(payloadSize3);
 		for (int i = 0; i < payloadSize3; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		// 4t (last)
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -759,14 +753,14 @@ public class AbstractCodecTest extends TestCase {
 		codec.readBuffer.putInt(payloadSize4);
 		for (int i = 0; i < payloadSize4; i++)
 			codec.readBuffer.put((byte)(c++));
-		
+
 		codec.readBuffer.flip();
-		
+
 		final int payloadSizeSum = payloadSize1+payloadSize2+payloadSize3+payloadSize4;
 		codec.forcePayloadRead = payloadSizeSum;
-		
+
 		codec.processRead();
-		
+
 		assertEquals(1, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -777,7 +771,7 @@ public class AbstractCodecTest extends TestCase {
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		// 1st
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -791,8 +785,8 @@ public class AbstractCodecTest extends TestCase {
 		int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize1; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
-		
-		
+
+
 		// 2nd
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -802,16 +796,16 @@ public class AbstractCodecTest extends TestCase {
 		final int payloadSize2Real = payloadSize2 + payloadSize1 % PVAConstants.PVA_ALIGNMENT;
 		codec.readBuffer.putInt(payloadSize2Real);
 
-		// pre-message padding 
+		// pre-message padding
 		for (int i = 0; i < payloadSize1 % PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)0xEE);
-		
+
 		for (int i = 0; i < payloadSize2; i++)
 			codec.readBuffer.put((byte)(c++));
 		aligned = AbstractCodec.alignedValue(payloadSize2Real, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize2Real; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
-		
+
 		// 3rd
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -824,13 +818,13 @@ public class AbstractCodecTest extends TestCase {
 		// pre-message padding required
 		for (int i = 0; i < payloadSize2Real % PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)0xEE);
-		
+
 		for (int i = 0; i < payloadSize3; i++)
 			codec.readBuffer.put((byte)(c++));
 		aligned = AbstractCodec.alignedValue(payloadSize3Real, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize3Real; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
-		
+
 		// 4t (last)
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -843,20 +837,20 @@ public class AbstractCodecTest extends TestCase {
 		// pre-message padding required
 		for (int i = 0; i < payloadSize3Real % PVAConstants.PVA_ALIGNMENT; i++)
 			codec.readBuffer.put((byte)0xEE);
-		
+
 		for (int i = 0; i < payloadSize4; i++)
 			codec.readBuffer.put((byte)(c++));
 		aligned = AbstractCodec.alignedValue(payloadSize4Real, PVAConstants.PVA_ALIGNMENT);
 		for (int i = payloadSize4Real; i < aligned; i++)
 			codec.readBuffer.put((byte)0xFF);
-		
+
 		codec.readBuffer.flip();
-		
+
 		final int payloadSizeSum = payloadSize1+payloadSize2+payloadSize3+payloadSize4;
 		codec.forcePayloadRead = payloadSizeSum;
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -891,7 +885,7 @@ public class AbstractCodecTest extends TestCase {
 					{
 						final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 						codec.readPayload = true;
-						
+
 						// 1st
 						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 						codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -905,7 +899,7 @@ public class AbstractCodecTest extends TestCase {
 						int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize1; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
-						
+
 						// 2nd
 						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 						codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -914,17 +908,17 @@ public class AbstractCodecTest extends TestCase {
 						final int payloadSize2 = secondMessagePayloadSize;
 						final int payloadSize2Real = payloadSize2 + payloadSize1 % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize2Real);
-				
-						// pre-message padding 
+
+						// pre-message padding
 						for (int i = 0; i < payloadSize1 % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
-						
+
 						for (int i = 0; i < payloadSize2; i++)
 							codec.readBuffer.put((byte)(c++));
 						aligned = AbstractCodec.alignedValue(payloadSize2Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize2Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
-						
+
 						// 3rd
 						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 						codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -933,31 +927,30 @@ public class AbstractCodecTest extends TestCase {
 						final int payloadSize3 = thirdMessagePayloadSize;
 						final int payloadSize3Real = payloadSize3 + payloadSize2Real % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize3Real);
-				
+
 						// pre-message padding required
 						for (int i = 0; i < payloadSize2Real % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
-						
+
 						for (int i = 0; i < payloadSize3; i++)
 							codec.readBuffer.put((byte)(c++));
 						aligned = AbstractCodec.alignedValue(payloadSize3Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize3Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
-						
+
 						//System.out.println("\tlastElement " + (c-1));
 						codec.readBuffer.flip();
-						
+
 						final int realReadBufferEnd = codec.readBuffer.limit();
 						if (splitAt++ == realReadBufferEnd)
 							break;
 						codec.readBuffer.limit(splitAt);
 						//System.out.println("\t" + splitAt);
-						
+
 						ReadPollOneCallback pollCB = new ReadPollOneCallback() {
-							
-							@Override
+
 							public void readPollOne() throws IOException {
-								
+
 								if (codec.readPollOneCount == 1)
 								{
 									codec.readBuffer.limit(realReadBufferEnd);
@@ -966,13 +959,13 @@ public class AbstractCodecTest extends TestCase {
 									throw new RuntimeException("should not happen");
 							}
 						};
-				
+
 						codec.readPollOneCallback = pollCB;
-						
-						
+
+
 						final int payloadSizeSum = payloadSize1+payloadSize2+payloadSize3;
 						codec.forcePayloadRead = payloadSizeSum;
-						
+
 						codec.processRead();
 						while (codec.invalidDataStreamCount == 0 && codec.readBuffer.position() != realReadBufferEnd)
 						{
@@ -980,7 +973,7 @@ public class AbstractCodecTest extends TestCase {
 							pollCB.readPollOne();
 							codec.processRead();
 						}
-						
+
 						assertEquals(0, codec.invalidDataStreamCount);
 						assertEquals(0, codec.closedCount);
 						assertEquals(0, codec.receivedControlMessages.size());
@@ -989,7 +982,7 @@ public class AbstractCodecTest extends TestCase {
 							assertEquals(0, codec.readPollOneCount);
 						else
 							assertEquals(1, codec.readPollOneCount);
-				
+
 						PVAMessage msg = codec.receivedAppMessages.get(0);
 						assertNotNull(msg.payload);
 						msg.payload.flip();
@@ -1001,16 +994,16 @@ public class AbstractCodecTest extends TestCase {
 			}
 		}
 	}
-	
+
 	public void testStartMessage() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.putControlMessage((byte)0x23, 0x456789AB);
 
 		codec.transferToReadBuffer();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
@@ -1020,9 +1013,9 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, 0x23);
 		assertEquals(header.payloadSize, 0x456789AB);
-		
+
 		codec.reset();
-		
+
 		// two at the time, app and control
 		codec.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		codec.startMessage((byte)0x20, 0x00000000);
@@ -1032,14 +1025,14 @@ public class AbstractCodecTest extends TestCase {
 		codec.putControlMessage((byte)0xEE, 0xDDCCBBAA);
 
 		codec.transferToReadBuffer();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
 		assertEquals(1, codec.receivedAppMessages.size());
-		
+
 		// app, no payload
 		header = codec.receivedAppMessages.get(0);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
@@ -1053,7 +1046,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
-	}	
+	}
 
 	public void testStartMessageNonEmptyPayload() throws Throwable
 	{
@@ -1065,11 +1058,11 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < PVAConstants.PVA_ALIGNMENT; i++)
 			codec.getSendBuffer().put((byte)i);
 		codec.endMessage();
-		
+
 		codec.transferToReadBuffer();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -1086,14 +1079,14 @@ public class AbstractCodecTest extends TestCase {
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		codec.startMessage((byte)0x23, 0);
 		int payloadSize1 = PVAConstants.PVA_ALIGNMENT+1;
 		codec.ensureBuffer(payloadSize1);
 		for (int i = 0; i < payloadSize1; i++)
 			codec.getSendBuffer().put((byte)i);
 		codec.endMessage();
-		
+
 		codec.startMessage((byte)0x45, 0);
 		int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT-1;
 		codec.ensureBuffer(payloadSize2);
@@ -1104,7 +1097,7 @@ public class AbstractCodecTest extends TestCase {
 		codec.transferToReadBuffer();
 
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -1126,22 +1119,22 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < msg.payloadSize; i++)
 			assertEquals((byte)i, msg.payload.get());
 	}
-	
+
 	public void testStartMessageSegmentedMessage() throws Throwable
 	{
 		// no misalignment
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		codec.startMessage((byte)0x01, 0);
-		
+
 		int c = 0;
-		
+
 		final int payloadSize1 = PVAConstants.PVA_ALIGNMENT;
 		for (int i = 0; i < payloadSize1; i++)
 			codec.getSendBuffer().put((byte)(c++));
 		codec.flush(false);
-		
+
 		final int payloadSize2 = 2*PVAConstants.PVA_ALIGNMENT;
 		for (int i = 0; i < payloadSize2; i++)
 			codec.getSendBuffer().put((byte)(c++));
@@ -1151,19 +1144,19 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < payloadSize3; i++)
 			codec.getSendBuffer().put((byte)(c++));
 		codec.flush(false);
-		
+
 		final int payloadSize4 = 2*PVAConstants.PVA_ALIGNMENT;
 		for (int i = 0; i < payloadSize4; i++)
 			codec.getSendBuffer().put((byte)(c++));
 		codec.endMessage();
-		
+
 		codec.transferToReadBuffer();
-		
+
 		final int payloadSizeSum = payloadSize1+payloadSize2+payloadSize3+payloadSize4;
 		codec.forcePayloadRead = payloadSizeSum;
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
@@ -1198,44 +1191,44 @@ public class AbstractCodecTest extends TestCase {
 					{
 						final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 						codec.readPayload = true;
-						
+
 						codec.startMessage((byte)0x01, 0);
-						
+
 						int c = 0;
-						
+
 						final int payloadSize1 = firstMessagePayloadSize;
 						for (int i = 0; i < payloadSize1; i++)
 							codec.getSendBuffer().put((byte)(c++));
 						codec.flush(false);
-						
+
 						final int payloadSize2 = secondMessagePayloadSize;
 						for (int i = 0; i < payloadSize2; i++)
 							codec.getSendBuffer().put((byte)(c++));
 						codec.flush(false);
-				
+
 						final int payloadSize3 = thirdMessagePayloadSize;
 						for (int i = 0; i < payloadSize3; i++)
 							codec.getSendBuffer().put((byte)(c++));
 						codec.flush(false);
-						
+
 						final int payloadSize4 = fourthMessagePayloadSize;
 						for (int i = 0; i < payloadSize4; i++)
 							codec.getSendBuffer().put((byte)(c++));
 						codec.endMessage();
-						
+
 						codec.transferToReadBuffer();
-						
+
 						final int payloadSizeSum = payloadSize1+payloadSize2+payloadSize3+payloadSize4;
 						codec.forcePayloadRead = payloadSizeSum;
-						
+
 						codec.processRead();
-						
+
 						assertEquals(0, codec.invalidDataStreamCount);
 						assertEquals(0, codec.closedCount);
 						assertEquals(0, codec.receivedControlMessages.size());
 						assertEquals(1, codec.receivedAppMessages.size());
 						assertEquals(0, codec.readPollOneCount);
-				
+
 						PVAMessage msg = codec.receivedAppMessages.get(0);
 						assertNotNull(msg.payload);
 						msg.payload.flip();
@@ -1253,22 +1246,22 @@ public class AbstractCodecTest extends TestCase {
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		codec.disconnected = true;
-		
+
 		codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 		codec.readBuffer.put(PVAConstants.PVA_VERSION);
 		codec.readBuffer.put((byte)0x01);
 		codec.readBuffer.put((byte)0x23);
 		codec.readBuffer.putInt(0x456789AB);
 		codec.readBuffer.flip();
-		
+
 		codec.processRead();
 
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(1, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
-	}	
-	
+	}
+
 	public void testSegmentedSplitConnectionLoss() throws Throwable
 	{
 		for (int firstMessagePayloadSize = 1;	// cannot be zero
@@ -1289,7 +1282,7 @@ public class AbstractCodecTest extends TestCase {
 					{
 						final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 						codec.readPayload = true;
-						
+
 						// 1st
 						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 						codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -1303,7 +1296,7 @@ public class AbstractCodecTest extends TestCase {
 						int aligned = AbstractCodec.alignedValue(payloadSize1, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize1; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
-						
+
 						// 2nd
 						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 						codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -1312,17 +1305,17 @@ public class AbstractCodecTest extends TestCase {
 						final int payloadSize2 = secondMessagePayloadSize;
 						final int payloadSize2Real = payloadSize2 + payloadSize1 % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize2Real);
-				
-						// pre-message padding 
+
+						// pre-message padding
 						for (int i = 0; i < payloadSize1 % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
-						
+
 						for (int i = 0; i < payloadSize2; i++)
 							codec.readBuffer.put((byte)(c++));
 						aligned = AbstractCodec.alignedValue(payloadSize2Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize2Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
-						
+
 						// 3rd
 						codec.readBuffer.put(PVAConstants.PVA_MAGIC);
 						codec.readBuffer.put(PVAConstants.PVA_VERSION);
@@ -1331,31 +1324,30 @@ public class AbstractCodecTest extends TestCase {
 						final int payloadSize3 = thirdMessagePayloadSize;
 						final int payloadSize3Real = payloadSize3 + payloadSize2Real % PVAConstants.PVA_ALIGNMENT;
 						codec.readBuffer.putInt(payloadSize3Real);
-				
+
 						// pre-message padding required
 						for (int i = 0; i < payloadSize2Real % PVAConstants.PVA_ALIGNMENT; i++)
 							codec.readBuffer.put((byte)0xEE);
-						
+
 						for (int i = 0; i < payloadSize3; i++)
 							codec.readBuffer.put((byte)(c++));
 						aligned = AbstractCodec.alignedValue(payloadSize3Real, PVAConstants.PVA_ALIGNMENT);
 						for (int i = payloadSize3Real; i < aligned; i++)
 							codec.readBuffer.put((byte)0xFF);
-						
+
 						//System.out.println("\tlastElement " + (c-1));
 						codec.readBuffer.flip();
-						
+
 						final int realReadBufferEnd = codec.readBuffer.limit();
 						if (splitAt++ == realReadBufferEnd-1)
 							break;
 						codec.readBuffer.limit(splitAt);
 						//System.out.println("\t" + splitAt);
-						
+
 						ReadPollOneCallback pollCB = new ReadPollOneCallback() {
-							
-							@Override
+
 							public void readPollOne() throws IOException {
-								
+
 								if (codec.readPollOneCount == 1)
 								{
 									codec.disconnected = true;
@@ -1364,13 +1356,13 @@ public class AbstractCodecTest extends TestCase {
 									throw new RuntimeException("should not happen");
 							}
 						};
-				
+
 						codec.readPollOneCallback = pollCB;
-						
-						
+
+
 						final int payloadSizeSum = payloadSize1+payloadSize2+payloadSize3;
 						codec.forcePayloadRead = payloadSizeSum;
-						
+
 						codec.processRead();
 						while (codec.closedCount == 0 && codec.invalidDataStreamCount == 0 && codec.readBuffer.position() != realReadBufferEnd)
 						{
@@ -1378,7 +1370,7 @@ public class AbstractCodecTest extends TestCase {
 							pollCB.readPollOne();
 							codec.processRead();
 						}
-						
+
 						assertEquals(1, codec.closedCount);
 						assertEquals(0, codec.invalidDataStreamCount);
 						/*
@@ -1399,7 +1391,7 @@ public class AbstractCodecTest extends TestCase {
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		codec.disconnected = true;
-		
+
 		codec.putControlMessage((byte)0x23, 0x456789AB);
 
 		try
@@ -1412,23 +1404,20 @@ public class AbstractCodecTest extends TestCase {
 		}
 
 		assertEquals(1, codec.closedCount);
-	}	
-	
+	}
+
 	public void testEnqueueSendRequest() throws Throwable
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		
+
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.startMessage((byte)0x20, 0x00000000);
 				codec.endMessage();
@@ -1436,16 +1425,13 @@ public class AbstractCodecTest extends TestCase {
 		};
 
 		TransportSender sender2 = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.putControlMessage((byte)0xEE, 0xDDCCBBAA);
 			}
@@ -1455,16 +1441,16 @@ public class AbstractCodecTest extends TestCase {
 		codec.enqueueSendRequest(sender);
 		codec.enqueueSendRequest(sender2);
 		codec.processSendQueue();
-		
+
 		codec.transferToReadBuffer();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
 		assertEquals(1, codec.receivedAppMessages.size());
-		
+
 		// app, no payload
 		PVAMessage header = codec.receivedAppMessages.get(0);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
@@ -1478,23 +1464,20 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
-	}	
-	
+	}
+
 	public void testEnqueueSendDirectRequest() throws Throwable
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		
+
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.startMessage((byte)0x20, 0x00000000);
 				codec.endMessage();
@@ -1502,16 +1485,13 @@ public class AbstractCodecTest extends TestCase {
 		};
 
 		TransportSender sender2 = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.putControlMessage((byte)0xEE, 0xDDCCBBAA);
 			}
@@ -1536,14 +1516,14 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(1, codec.sendCompletedCount);
 
 		codec.transferToReadBuffer();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(1, codec.receivedControlMessages.size());
 		assertEquals(1, codec.receivedAppMessages.size());
-		
+
 		// app, no payload
 		PVAMessage header = codec.receivedAppMessages.get(0);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
@@ -1559,7 +1539,7 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
 
 		assertEquals(0, codec.getSendBuffer().position());
-		
+
 		// now queue is empty and thread is right
 		codec.enqueueSendRequest(sender2, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 		assertEquals(PVAConstants.PVA_MESSAGE_HEADER_SIZE, codec.getSendBuffer().position());
@@ -1571,31 +1551,28 @@ public class AbstractCodecTest extends TestCase {
 		codec.processRead();
 		assertEquals(2, codec.receivedControlMessages.size());
 		assertEquals(1, codec.receivedAppMessages.size());
-		
+
 		header = codec.receivedControlMessages.get(1);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
 		assertEquals(header.flags, (byte)0x81);
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
-	}	
-	
+	}
+
 	public void testSendPerPartes() throws Throwable
 	{
 		final int bytesToSent = DEFAULT_BUFFER_SIZE - 2*PVAConstants.PVA_MESSAGE_HEADER_SIZE;
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
-		
+
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.startMessage((byte)0x12, bytesToSent);
 				for (int i = 0; i < bytesToSent; i++)
@@ -1607,16 +1584,16 @@ public class AbstractCodecTest extends TestCase {
 		// process
 		codec.enqueueSendRequest(sender);
 		codec.processSendQueue();
-		
+
 		codec.transferToReadBuffer();
-		
+
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(1, codec.receivedAppMessages.size());
-		
+
 		// app
 		PVAMessage header = codec.receivedAppMessages.get(0);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
@@ -1629,24 +1606,21 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < header.payloadSize; i++)
 			assertEquals((byte)i, header.payload.get());
 
-	}	
+	}
 
 	public void testSendException() throws Throwable
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.throwExceptionOnSend = true;
-		
+
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.putControlMessage((byte)0x01, 0x00112233);
 			}
@@ -1654,7 +1628,7 @@ public class AbstractCodecTest extends TestCase {
 
 		// process
 		codec.enqueueSendRequest(sender);
-		
+
 		try
 		{
 			codec.processSendQueue();
@@ -1662,12 +1636,12 @@ public class AbstractCodecTest extends TestCase {
 		} catch (ConnectionClosedException cce) {
 			// OK
 		}
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(1, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(0, codec.receivedAppMessages.size());
-	}	
+	}
 
 	public void testSendHugeMessagePartes() throws Throwable
 	{
@@ -1675,12 +1649,11 @@ public class AbstractCodecTest extends TestCase {
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		codec.readPayload = true;
 		codec.readBuffer = ByteBuffer.allocate(11*DEFAULT_BUFFER_SIZE);
-		
+
 		WritePollOneCallback wpollCB = new WritePollOneCallback() {
-			@Override
 			public void writePollOne() throws IOException {
 				codec.processWrite();	// this should return immediately
-				
+
 				// now we fake reading
 				codec.writeBuffer.flip();
 
@@ -1688,23 +1661,20 @@ public class AbstractCodecTest extends TestCase {
 				//System.out.println(codec.readBuffer.position() + "/" + codec.readBuffer.limit());
 				//System.out.println("after: " + (codec.readBuffer.position()+codec.writeBuffer.remaining()));
 				codec.readBuffer.put(codec.writeBuffer);
-				
+
 				codec.writeBuffer.clear();
 			}
 		};
 		codec.writePollOneCallback = wpollCB;
 
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.startMessage((byte)0x12, 0);
 				int toSend = bytesToSent;
@@ -1724,17 +1694,17 @@ public class AbstractCodecTest extends TestCase {
 		// process
 		codec.enqueueSendRequest(sender);
 		codec.processSendQueue();
-		
+
 		codec.addToReadBuffer();
-		
+
 		codec.forcePayloadRead = bytesToSent;
 		codec.processRead();
-		
+
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(0, codec.closedCount);
 		assertEquals(0, codec.receivedControlMessages.size());
 		assertEquals(1, codec.receivedAppMessages.size());
-		
+
 		// app
 		PVAMessage header = codec.receivedAppMessages.get(0);
 		assertEquals(header.version, PVAConstants.PVA_VERSION);
@@ -1747,32 +1717,29 @@ public class AbstractCodecTest extends TestCase {
 		for (int i = 0; i < header.payloadSize; i++)
 			assertEquals((byte)i, header.payload.get());
 
-	}	
+	}
 
 	public void testRecipient() throws Throwable
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
 		InetSocketAddress addr = new InetSocketAddress(InetAddress.getLocalHost(), 1234);
 		codec.setRecipient(addr);
-		
+
 		// nothing to test, depends on implementation
 	}
 
 	public void testClearSendQueue() throws Throwable
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		
+
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.startMessage((byte)0x20, 0x00000000);
 				codec.endMessage();
@@ -1780,16 +1747,13 @@ public class AbstractCodecTest extends TestCase {
 		};
 
 		TransportSender sender2 = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.putControlMessage((byte)0xEE, 0xDDCCBBAA);
 			}
@@ -1797,15 +1761,15 @@ public class AbstractCodecTest extends TestCase {
 
 		codec.enqueueSendRequest(sender);
 		codec.enqueueSendRequest(sender2);
-		
+
 		codec.clearSendQueue();
-		
+
 		codec.processSendQueue();
-		
+
 		assertEquals(0, codec.getSendBuffer().position());
 		assertEquals(0, codec.writeBuffer.position());
 	}
-	
+
 	// used to suppress "if (PVAConstants.PVA_ALIGNMENT > 1)" dead code
 	@SuppressWarnings("unused")
 	public void testInvalidArguments() throws Throwable
@@ -1818,7 +1782,7 @@ public class AbstractCodecTest extends TestCase {
 		} catch (IllegalArgumentException iae) {
 			// OK
 		}
-		
+
 		try
 		{
 			// too small
@@ -1838,7 +1802,7 @@ public class AbstractCodecTest extends TestCase {
 			} catch (IllegalArgumentException iae) {
 				// OK
 			}
-	
+
 			try
 			{
 				// non aligned
@@ -1848,9 +1812,9 @@ public class AbstractCodecTest extends TestCase {
 				// OK
 			}
 		}
-		
+
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		
+
 		try
 		{
 			codec.ensureBuffer(DEFAULT_BUFFER_SIZE+1);
@@ -1858,7 +1822,7 @@ public class AbstractCodecTest extends TestCase {
 		} catch (IllegalArgumentException iae) {
 			// OK
 		}
-		
+
 		try
 		{
 			codec.ensureData(AbstractCodec.MAX_ENSURE_DATA_SIZE+1);
@@ -1867,7 +1831,7 @@ public class AbstractCodecTest extends TestCase {
 			// OK
 		}
 	}
-	
+
 	public void testDefaultModes() throws Throwable
 	{
 		TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
@@ -1876,38 +1840,32 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(WriteMode.PROCESS_SEND_QUEUE, codec.getWriteMode());
 		assertEquals(WriteMode.PROCESS_SEND_QUEUE, WriteMode.valueOf("PROCESS_SEND_QUEUE"));
 	}
-	
+
 	public void testEnqueueSendRequestExceptionThrown() throws Throwable
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE);
-		
+
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				throw new RuntimeException("expected test exception");
 			}
 		};
 
 		TransportSender sender2 = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.putControlMessage((byte)0xEE, 0xDDCCBBAA);
 			}
@@ -1916,7 +1874,7 @@ public class AbstractCodecTest extends TestCase {
 		// process
 		codec.enqueueSendRequest(sender);
 		codec.enqueueSendRequest(sender2);
-		
+
 		try
 		{
 			codec.processSendQueue();
@@ -1926,9 +1884,9 @@ public class AbstractCodecTest extends TestCase {
 		}
 
 		codec.transferToReadBuffer();
-		
+
 		codec.processRead();
-		
+
 
 		assertEquals(0, codec.invalidDataStreamCount);
 		assertEquals(1, codec.closedCount);
@@ -1942,17 +1900,16 @@ public class AbstractCodecTest extends TestCase {
 		assertEquals(header.command, (byte)0xEE);
 		assertEquals(header.payloadSize, 0xDDCCBBAA);
 		*/
-	}	
+	}
 
 	public void testBlockingProcessQueueTest() throws Throwable
 	{
 		final TestCodec codec = new TestCodec(DEFAULT_BUFFER_SIZE, DEFAULT_BUFFER_SIZE, true);
 		final AtomicBoolean processTreadExited = new AtomicBoolean(false);
-		
+
 		Thread processThread = new Thread(
 				new Runnable() {
-					
-					@Override
+
 					public void run() {
 						try {
 							// this should block
@@ -1967,35 +1924,32 @@ public class AbstractCodecTest extends TestCase {
 					}
 				}, "processSendQueue");
 		processThread.start();
-		
+
 		Thread.sleep(3000);
-		
+
 		assertEquals(false, processTreadExited.get());
-		
+
 		// let's put something into it
 		TransportSender sender = new TransportSender() {
-			
-			@Override
+
 			public void unlock() {
 			}
-			
-			@Override
+
 			public void lock() {
 			}
-			
-			@Override
+
 			public void send(ByteBuffer buffer, TransportSendControl control) {
 				codec.putControlMessage((byte)0x01, 0x00112233);
 			}
 		};
 		codec.enqueueSendRequest(sender);
-		
+
 		processThread.interrupt();
-		
+
 		Thread.sleep(3000);
 
 		assertEquals(PVAConstants.PVA_MESSAGE_HEADER_SIZE, codec.writeBuffer.position());
 		assertEquals(true, processTreadExited.get());
-		
+
 	}
 }

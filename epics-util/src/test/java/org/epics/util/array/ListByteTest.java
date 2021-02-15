@@ -1,12 +1,8 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.array;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 /**
  *
@@ -18,12 +14,10 @@ public class ListByteTest extends FeatureTestListNumber {
     public ListByte createConstantCollection() {
         return new ListByte() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public byte getByte(int index) {
                 return 1;
             }
@@ -34,12 +28,10 @@ public class ListByteTest extends FeatureTestListNumber {
     public ListByte createRampCollection() {
         return new ListByte() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public byte getByte(int index) {
                 return (byte) index;
             }
@@ -49,10 +41,9 @@ public class ListByteTest extends FeatureTestListNumber {
     @Override
     public ListNumber createModifiableCollection() {
         return new ListByte() {
-            
+
             private byte[] array = new byte[10];
-            
-            @Override
+
             public byte getByte(int index) {
                 return array[index];
             }
@@ -62,7 +53,6 @@ public class ListByteTest extends FeatureTestListNumber {
                 array[index] = value;
             }
 
-            @Override
             public int size() {
                 return array.length;
             }
@@ -73,16 +63,14 @@ public class ListByteTest extends FeatureTestListNumber {
     public ListNumber createEmpty() {
         return new ListByte() {
 
-            @Override
             public int size() {
                 return 0;
             }
 
-            @Override
             public byte getByte(int index) {
                 return 1;
             }
         };
     }
-    
+
 }

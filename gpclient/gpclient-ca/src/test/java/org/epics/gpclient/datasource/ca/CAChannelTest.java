@@ -1,29 +1,16 @@
 package org.epics.gpclient.datasource.ca;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.function.Function;
-import java.util.logging.Logger;
-
-import org.epics.gpclient.GPClientConfiguration;
-import org.epics.gpclient.GPClientInstance;
-import org.epics.gpclient.PV;
-import org.epics.gpclient.PVEvent;
-import org.epics.gpclient.PVEventRecorder;
-import org.epics.gpclient.PVReader;
-import org.epics.gpclient.PVWriter;
-import org.epics.gpclient.PVWriterListener;
-import org.epics.gpclient.ProbeCollector;
-import org.epics.gpclient.datasource.DataSource;
+import org.epics.gpclient.*;
 import org.epics.gpclient.datasource.DataSourceProvider;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.Display;
-import org.epics.vtype.Time;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VType;
+import org.epics.util.compat.legacy.functional.Function;
+import org.epics.vtype.*;
+import org.joda.time.Duration;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.List;
+import java.util.logging.Logger;
 
 public class CAChannelTest {
     private static final Logger log = Logger.getLogger(CAChannelTest.class.getName());
@@ -37,7 +24,7 @@ public class CAChannelTest {
         // Start the test server
         InMemoryCAServer.initializeServerInstance();
 
-        gpClient = new GPClientConfiguration().defaultMaxRate(Duration.ofMillis(50))
+        gpClient = new GPClientConfiguration().defaultMaxRate(Duration.millis(50))
                 .notificationExecutor(org.epics.util.concurrent.Executors.localThread())
                 .dataSource(DataSourceProvider.createDataSource())
                 .dataProcessingThreadPool(java.util.concurrent.Executors.newScheduledThreadPool(
@@ -92,10 +79,25 @@ public class CAChannelTest {
         Thread.sleep(1000);
         pv.close();
         Thread.sleep(1000);
-        recorder.hasReceived(events -> {
-            return events.stream().filter(event -> {
-                return event.isType(PVEvent.Type.WRITE_SUCCEEDED);
-            }).count() == 5;
-        });
+        recorder.hasReceived(
+                new Function<List<PVEvent>, Boolean>() {
+                    @Override
+                    public Boolean apply(List<PVEvent> list) {
+                        // count where write has succeeded should be 5
+                        int count = 0;
+                        for (PVEvent event : list) {
+                            if (event.isType(PVEvent.Type.WRITE_SUCCEEDED)) {
+                                count++;
+                            }
+                        }
+                        return count == 5;
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "an event";
+                    }
+                }
+        );
     }
 }

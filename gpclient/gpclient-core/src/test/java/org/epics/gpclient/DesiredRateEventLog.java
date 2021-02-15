@@ -1,13 +1,14 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient;
 
-import java.time.Instant;
+import org.epics.util.compat.legacy.functional.Consumer;
+import org.joda.time.Instant;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,12 +16,12 @@ import java.util.logging.Logger;
  *
  * @author carcassi
  */
- class DesiredRateEventLog implements Consumer<PVEvent> {
-     
+ class DesiredRateEventLog extends Consumer<PVEvent> {
+
     private final Object lock = new Object();
-    
-    private final List<PVEvent> events = new ArrayList<>();
-    private final List<Instant> timestamps = new ArrayList<>();
+
+    private final List<PVEvent> events = new ArrayList<PVEvent>();
+    private final List<Instant> timestamps = new ArrayList<Instant>();
     private RateDecoupler decoupler;
     private final Integer pause;
 
@@ -63,7 +64,7 @@ import java.util.logging.Logger;
         }
         decoupler.readyForNextEvent();
     }
-    
+
     public List<PVEvent.Type> getEventTypes(int n) {
         synchronized(lock) {
             return events.get(n).getType();
@@ -75,7 +76,7 @@ import java.util.logging.Logger;
             return events;
         }
     }
-    
+
     public void printLog() {
         synchronized(lock) {
             for (int i = 0; i < events.size(); i++) {
@@ -83,5 +84,5 @@ import java.util.logging.Logger;
             }
         }
     }
-    
+
 }

@@ -1,13 +1,12 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.ca;
 
-import java.time.Instant;
-
 import gov.aps.jca.Channel;
 import gov.aps.jca.dbr.DBRType;
+import org.joda.time.Instant;
 
 /**
  * Represents the connection payload, which consists of the actual JCA
@@ -34,7 +33,7 @@ public class CAConnectionPayload {
 
     /**
      * The CADataSource that is using the channel.
-     * 
+     *
      * @return the CA data source
      */
     public CADataSource getCADataSource() {
@@ -43,29 +42,29 @@ public class CAConnectionPayload {
 
     /**
      * The JCA channel.
-     * 
+     *
      * @return JCA channel
      */
     public Channel getChannel() {
         return channel;
     }
-    
+
     public DBRType getFieldType() {
         return fieldType;
     }
-    
+
     /**
      * True if the channel is not null and the connection state is connected.
-     * 
+     *
      * @return ture if channel exists and is connected
      */
     public boolean isChannelConnected() {
         return connected;
     }
-    
+
     /**
      * True if the channel is not null, connected, and can be written to.
-     * 
+     *
      * @return true if the channel is ready for write
      */
     public boolean isWriteConnected() {
@@ -74,7 +73,7 @@ public class CAConnectionPayload {
 
     /**
      * Whether the message payload should be handled as a long string.
-     * 
+     *
      * @return true if long string support should be used
      */
     public boolean isLongString() {
@@ -83,7 +82,7 @@ public class CAConnectionPayload {
 
     /**
      * Returns the local time of the connection event.
-     * 
+     *
      * @return client connection/disconnection time
      */
     public Instant getEventTime() {

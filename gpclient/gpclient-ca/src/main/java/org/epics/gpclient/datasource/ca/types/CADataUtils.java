@@ -1,24 +1,21 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.ca.types;
 
-import java.text.NumberFormat;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-
+import gov.aps.jca.dbr.DBR;
+import gov.aps.jca.dbr.PRECISION;
+import gov.aps.jca.dbr.Severity;
+import gov.aps.jca.dbr.TimeStamp;
 import org.epics.util.text.NumberFormats;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
 import org.epics.vtype.Time;
+import org.joda.time.Instant;
 
-import gov.aps.jca.dbr.DBR;
-import gov.aps.jca.dbr.DBR_CTRL_Double;
-import gov.aps.jca.dbr.PRECISION;
-import gov.aps.jca.dbr.Severity;
-import gov.aps.jca.dbr.TimeStamp;
+import java.text.NumberFormat;
 
 public class CADataUtils {
 
@@ -42,24 +39,25 @@ public class CADataUtils {
             return Alarm.of(AlarmSeverity.UNDEFINED, AlarmStatus.UNDEFINED, "");
         }
     }
+
     /**
      * Constant to convert epics seconds to UNIX seconds. It counts the number
      * of seconds for 20 years, 5 of which leap years. It does _not_ count the
      * number of leap seconds (which should have been 15).
      */
-    static long TS_EPOCH_SEC_PAST_1970=631152000; //7305*86400;
-    
+    static long TS_EPOCH_SEC_PAST_1970 = 631152000; //7305*86400;
+
     /**
      * Converts a JCA timestamp to an epics.util timestamp.
-     * 
+     *
      * @param timeStamp the epics timestamp
      * @return a new epics.util timestamp
      */
     public static Time timestampOf(TimeStamp timeStamp) {
         if (timeStamp == null)
             return null;
-        return Time.of(Instant.ofEpochSecond(timeStamp.secPastEpoch() + TS_EPOCH_SEC_PAST_1970, 0)
-                .plus(timeStamp.nsec(), ChronoUnit.NANOS));
+        return Time.of(Instant.ofEpochSecond(timeStamp.secPastEpoch() + TS_EPOCH_SEC_PAST_1970)
+                .plus(timeStamp.nsec() * 1000));
     }
 
     public static NumberFormat getFormat(DBR metadata, boolean honorZeroPrecision) {
@@ -67,7 +65,7 @@ public class CADataUtils {
         if (metadata instanceof PRECISION) {
             precision = ((PRECISION) metadata).getPrecision();
         }
-        
+
         // If precision is 0 or less, we assume full precision
         if (precision < 0) {
             return NumberFormats.toStringFormat();

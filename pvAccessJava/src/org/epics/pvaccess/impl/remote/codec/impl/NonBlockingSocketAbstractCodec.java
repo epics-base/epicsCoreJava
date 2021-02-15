@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.impl.remote.codec.impl;
 
@@ -21,7 +21,7 @@ public abstract class NonBlockingSocketAbstractCodec extends NonBlockingAbstract
 
 	protected final SocketChannel channel;
 	protected final InetSocketAddress socketAddress;
-	
+
 	public NonBlockingSocketAbstractCodec(
 			boolean serverFlag,
 			Poller poller,
@@ -32,7 +32,7 @@ public abstract class NonBlockingSocketAbstractCodec extends NonBlockingAbstract
 		super(serverFlag, poller, receiveBuffer, sendBuffer, channel.socket().getSendBufferSize(), logger);
 		this.channel = channel;
 		this.socketAddress = (InetSocketAddress)channel.socket().getRemoteSocketAddress();
-	
+
 		// TODO
 		try {
 			channel.configureBlocking(false);
@@ -43,12 +43,10 @@ public abstract class NonBlockingSocketAbstractCodec extends NonBlockingAbstract
 		poller.add(channel, this, SelectionKey.OP_READ);
 	}
 
-	@Override
 	public int read(ByteBuffer dst) throws IOException {
 		return channel.read(dst);
 	}
 
-	@Override
 	public int write(ByteBuffer src) throws IOException {
 		return channel.write(src);
 	}

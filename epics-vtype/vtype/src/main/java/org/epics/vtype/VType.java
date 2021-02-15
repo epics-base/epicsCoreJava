@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,7 +16,7 @@ import org.epics.util.array.ListNumber;
  * @author carcassi
  */
 public abstract class VType {
-    
+
     private static final Collection<Class<?>> TYPES = Arrays.<Class<?>>asList(
             VDouble.class,
             VFloat.class,
@@ -44,7 +44,7 @@ public abstract class VType {
             VStringArray.class,
             VBooleanArray.class,
             VEnumArray.class,
-            VImage.class, 
+            VImage.class,
             VTable.class);
 
     /**
@@ -52,14 +52,14 @@ public abstract class VType {
      * of the VXxx interfaces. The getClass() methods returns the
      * concrete implementation type, which is of little use. If no
      * super-interface is found, Object.class is used.
-     * 
+     *
      * @param obj an object implementing a standard type
      * @return the type is implementing
      */
     public static Class<?> typeOf(Object obj) {
         if (obj == null)
             return null;
-        
+
         for (Class<?> type : TYPES) {
             if (type.isInstance(obj)) {
                 return type;
@@ -68,11 +68,11 @@ public abstract class VType {
 
         return Object.class;
     }
-    
+
     /**
      * As {@link #toVType(java.lang.Object)} but throws an exception
      * if conversion not possible.
-     * 
+     *
      * @param javaObject the value to wrap
      * @return the new VType value
      */
@@ -83,11 +83,11 @@ public abstract class VType {
         }
         return value;
     }
-    
+
     /**
      * As {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display)} but throws an exception
      * if conversion not possible.
-     * 
+     *
      * @param javaObject the value to wrap
      * @param alarm the alarm
      * @param time the time
@@ -101,24 +101,24 @@ public abstract class VType {
         }
         return value;
     }
-    
+
     /**
      * Converts a standard java type to VTypes. Returns null if no conversion
-     * is possible. Calls {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display) } 
+     * is possible. Calls {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display) }
      * with no alarm, time now and no display.
-     * 
+     *
      * @param javaObject the value to wrap
      * @return the new VType value
      */
     public static VType toVType(Object javaObject) {
         return toVType(javaObject, Alarm.none(), Time.now(), Display.none());
     }
-    
+
     /**
      * Converts a standard java type to VTypes. Returns null if no conversion
-     * is possible. Calls {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display) } 
+     * is possible. Calls {@link #toVType(java.lang.Object, org.epics.vtype.Alarm, org.epics.vtype.Time, org.epics.vtype.Display) }
      * with the given alarm, time now and no display.
-     * 
+     *
      * @param javaObject the value to wrap
      * @param alarm the alarm
      * @return the new VType value
@@ -126,7 +126,7 @@ public abstract class VType {
     public static VType toVType(Object javaObject, Alarm alarm) {
         return toVType(javaObject, alarm, Time.now(), Display.none());
     }
-    
+
     /**
      * Converts a standard java type to VTypes. Returns null if no conversion
      * is possible.
@@ -140,7 +140,7 @@ public abstract class VType {
      *   <li>ListNumber -&gt; corresponding VNumberArray</li>
      *   <li>List -&gt; if all elements are String, VStringArray</li>
      * </ul>
-     * 
+     *
      * @param javaObject the value to wrap
      * @param alarm the alarm
      * @param time the time
@@ -171,6 +171,7 @@ public abstract class VType {
             for (Object object : list) {
                 if (!(object instanceof String)) {
                     matches = false;
+                    break;
                 }
             }
             if (matches) {

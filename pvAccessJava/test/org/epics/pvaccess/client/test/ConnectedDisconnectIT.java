@@ -34,7 +34,7 @@ public class ConnectedDisconnectIT extends TestCase {
      * PVA context.
      */
     protected ClientContextImpl context = null;
-    
+
     /* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
@@ -59,11 +59,10 @@ public class ConnectedDisconnectIT extends TestCase {
     private static class ConnectionListener implements ChannelRequester
     {
     	private Boolean notification = null;
-    	
+
  		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelRequester#channelCreated(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.Channel)
 		 */
-		@Override
 		public void channelCreated(Status status,
 				org.epics.pvaccess.client.Channel channel) {
 			if (!status.isOK())
@@ -73,12 +72,11 @@ public class ConnectedDisconnectIT extends TestCase {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelRequester#channelStateChange(org.epics.pvaccess.client.Channel, org.epics.pvaccess.client.Channel.ConnectionState)
 		 */
-		@Override
 		public void channelStateChange(
 				org.epics.pvaccess.client.Channel c,
 				ConnectionState connectionStatus) {
  			synchronized (this) {
-				notification = new Boolean(connectionStatus == ConnectionState.CONNECTED);
+				notification = connectionStatus == ConnectionState.CONNECTED;
 				this.notify();
 			}
 		}
@@ -86,7 +84,6 @@ public class ConnectedDisconnectIT extends TestCase {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.Requester#getRequesterName()
 		 */
-		@Override
 		public String getRequesterName() {
 			// TODO Auto-generated method stub
 			return null;
@@ -95,12 +92,11 @@ public class ConnectedDisconnectIT extends TestCase {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.Requester#message(java.lang.String, org.epics.pvdata.pv.MessageType)
 		 */
-		@Override
 		public void message(String message, MessageType messageType) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		public void waitAndCheck() {
 			synchronized (this) {
 				if (notification == null)
@@ -122,7 +118,7 @@ public class ConnectedDisconnectIT extends TestCase {
     };
 
     final static int TIMEOUT_MS = 3000;
-    
+
     public void testConnectDisconnect() throws Throwable
     {
     	final long start = System.currentTimeMillis();
@@ -133,7 +129,7 @@ public class ConnectedDisconnectIT extends TestCase {
     		ConnectionListener cl = new ConnectionListener();
     	    Channel ch = context.getProvider().createChannel("valueOnly", cl, PVAConstants.PVA_DEFAULT_PRIORITY);
     		cl.waitAndCheck();
-    		if ((i % 100)==0) { 
+    		if ((i % 100)==0) {
     			System.out.println("done #" + i);
     			final long end = System.currentTimeMillis();
     			System.out.println("avg:" + (end-start)/(double)i);

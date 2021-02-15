@@ -27,7 +27,7 @@ import org.epics.pvdata.misc.Destroyable;
 /**
  * Server channel (client connection to local channel). This (default)
  * implementation grants all access rights.
- * 
+ *
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -49,7 +49,7 @@ public class ServerChannelImpl implements ServerChannel {
 	protected final int cid;
 
 	/**
-	 * Channel secutiry session.
+	 * Channel security session.
 	 */
 	protected final ChannelSecuritySession channelSecuritySession;
 
@@ -66,7 +66,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/**
 	 * Create server channel for given process variable.
-	 * 
+	 *
 	 * @param channel
 	 *            local channel.
 	 * @param cid
@@ -88,7 +88,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/**
 	 * Get local channel.
-	 * 
+	 *
 	 * @return local channel.
 	 */
 	public Channel getChannel() {
@@ -97,7 +97,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/**
 	 * Get channel CID.
-	 * 
+	 *
 	 * @return channel CID.
 	 */
 	public int getCID() {
@@ -106,7 +106,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.server.impl.remote.ServerChannel#getSID()
 	 */
 	public int getSID() {
@@ -119,7 +119,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/**
 	 * Register request
-	 * 
+	 *
 	 * @param id
 	 *            request ID.
 	 * @param request
@@ -134,7 +134,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/**
 	 * Unregister request.
-	 * 
+	 *
 	 * @param id
 	 *            request ID.
 	 */
@@ -146,7 +146,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/**
 	 * Get request by its ID.
-	 * 
+	 *
 	 * @param id
 	 *            request ID.
 	 * @return request with given ID, <code>null</code> if there is no request with
@@ -154,7 +154,7 @@ public class ServerChannelImpl implements ServerChannel {
 	 */
 	public Destroyable getRequest(int id) {
 
-		return (Destroyable) requests.get(id);
+		return requests.get(id);
 
 	}
 
@@ -178,8 +178,8 @@ public class ServerChannelImpl implements ServerChannel {
 
 		keys = new Integer[requests.keySet().size()];
 		requests.keySet().toArray(keys);
-		for (int i = 0; i < keys.length; i++) {
-			final Destroyable cr = (Destroyable) requests.remove(keys[i]);
+		for (Integer key : keys) {
+			final Destroyable cr = requests.remove(key);
 			cr.destroy();
 		}
 
@@ -187,7 +187,7 @@ public class ServerChannelImpl implements ServerChannel {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.server.impl.remote.ServerChannel#destroy()
 	 */
 	public synchronized void destroy() {
@@ -214,7 +214,7 @@ public class ServerChannelImpl implements ServerChannel {
 	/**
 	 * Prints detailed information about the process variable to the standard output
 	 * stream.
-	 * 
+	 *
 	 * @throws IllegalStateException
 	 *             if the context has been destroyed.
 	 */
@@ -225,7 +225,7 @@ public class ServerChannelImpl implements ServerChannel {
 	/**
 	 * Prints detailed information about the process variable to the specified
 	 * output stream.
-	 * 
+	 *
 	 * @param out
 	 *            the output stream.
 	 * @throws IllegalStateException

@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.client.rpc;
 
@@ -46,7 +46,7 @@ public class RPCClientFactory {
 	 * @param pvRequest  The structure sent in the request to create the Channel RPC.
 	 * @param requester The RPCClientRequester interface implemented by the requester.
 	 * @return The RPCClient interface.
-	 */	 
+	 */
 	public static RPCClient create(String serviceName, PVStructure pvRequest, RPCClientRequester requester) {
 		return new RPCClientImpl(serviceName,pvRequest,requester);
 	}

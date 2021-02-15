@@ -42,17 +42,17 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 	}
 
 	private static class ChannelProcessRequesterImpl extends BaseChannelRequester implements ChannelProcessRequester, TransportSender {
-		
+
 		private volatile ChannelProcess channelProcess;
 		private volatile Status status;
-		
+
 		public ChannelProcessRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport,
 				PVStructure pvRequest) {
 			super(context, channel, ioid, transport);
-			
+
 			startRequest(QoS.INIT.getMaskValue());
 			channel.registerRequest(ioid, this);
-			
+
 			try
 			{
 				channelProcess = channel.getChannel().createChannelProcess(this, pvRequest);
@@ -64,11 +64,10 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 			}
 		}
 
-		@Override
 		public void channelProcessConnect(Status status, ChannelProcess channelProcess) {
 			this.status = status;
 			this.channelProcess = channelProcess;
-			
+
 			transport.enqueueSendRequest(this);
 
 			// self-destruction
@@ -76,23 +75,21 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 				destroy();
 			}
 		}
-		
-		@Override
+
 		public void processDone(Status status, ChannelProcess channelProcess) {
 			this.status = status;
 			transport.enqueueSendRequest(this);
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.misc.Destroyable#destroy()
 		 */
-		@Override
 		public void destroy() {
 			channel.unregisterRequest(ioid);
 
 			// asCheck
 			channel.getChannelSecuritySession().release(ioid);
-			
+
 			if (channelProcess != null)
 				channelProcess.destroy();
 		}
@@ -103,11 +100,10 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 		public ChannelProcess getChannelProcess() {
 			return channelProcess;
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// noop
 		}
@@ -115,7 +111,6 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// noop
 		}
@@ -123,7 +118,6 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			final int request = getPendingRequest();
 
@@ -157,13 +151,13 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 
 		// mode
 		final byte qosCode = payloadBuffer.get();
-		
+
 		final ServerChannelImpl channel = (ServerChannelImpl)casTransport.getChannel(sid);
 		if (channel == null) {
 			BaseChannelRequester.sendFailureMessage((byte)16, transport, ioid, qosCode, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-		
+
 		final boolean init = QoS.INIT.isSet(qosCode);
 		if (init)
 		{
@@ -197,7 +191,7 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 			}
 
 			ChannelProcess channelProcess = request.getChannelProcess();
-			
+
 			if (lastRequest)
 				channelProcess.lastRequest();
 
@@ -210,9 +204,9 @@ public class ProcessHandler extends AbstractServerResponseHandler {
 					request.destroy();
 				return;
 			}
-			
+
 			channelProcess.process();
 		}
-		
+
 	}
 }

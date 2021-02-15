@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,12 +14,10 @@ public class ListUIntegerTest extends FeatureTestListNumber {
     public ListUInteger createConstantCollection() {
         return new ListUInteger() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public int getInt(int index) {
                 return 1;
             }
@@ -30,12 +28,10 @@ public class ListUIntegerTest extends FeatureTestListNumber {
     public ListUInteger createRampCollection() {
         return new ListUInteger() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public int getInt(int index) {
                 return index;
             }
@@ -45,10 +41,9 @@ public class ListUIntegerTest extends FeatureTestListNumber {
     @Override
     public ListUInteger createModifiableCollection() {
         return new ListUInteger() {
-            
+
             private int[] array = new int[10];
-            
-            @Override
+
             public int getInt(int index) {
                 return array[index];
             }
@@ -58,7 +53,6 @@ public class ListUIntegerTest extends FeatureTestListNumber {
                 array[index] = value;
             }
 
-            @Override
             public int size() {
                 return array.length;
             }
@@ -69,12 +63,10 @@ public class ListUIntegerTest extends FeatureTestListNumber {
     public ListUInteger createEmpty() {
         return new ListUInteger() {
 
-            @Override
             public int size() {
                 return 0;
             }
 
-            @Override
             public int getInt(int index) {
                 return 1;
             }

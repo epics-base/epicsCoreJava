@@ -36,7 +36,6 @@ public final class PVEnumeratedFactory implements PVEnumerated{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#attach(org.epics.pvdata.pv.PVField)
      */
-    @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
             throw new IllegalArgumentException(notStructure);
@@ -58,7 +57,6 @@ public final class PVEnumeratedFactory implements PVEnumerated{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#detach()
      */
-    @Override
     public void detach() {
         pvIndex = null;
         pvChoices = null;
@@ -67,20 +65,17 @@ public final class PVEnumeratedFactory implements PVEnumerated{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVControl#isAttached()
      */
-    @Override
     public boolean isAttached() {
         if(pvIndex==null || pvChoices==null) return false;
         return true;
 
     }
-    @Override
     public boolean choicesMutable() {
         if(pvIndex==null || pvChoices==null) {
             throw new IllegalStateException(notAttached);
        }
        return pvChoices.isImmutable();
     }
-    @Override
     public String getChoice() {
         if(pvIndex==null || pvChoices==null) {
             throw new IllegalStateException(notAttached);
@@ -93,7 +88,6 @@ public final class PVEnumeratedFactory implements PVEnumerated{
        return data.data[index];
 
     }
-    @Override
     public String[] getChoices() {
         if(pvIndex==null || pvChoices==null) {
             throw new IllegalStateException(notAttached);
@@ -102,7 +96,6 @@ public final class PVEnumeratedFactory implements PVEnumerated{
        return data.data;
 
     }
-    @Override
     public int getIndex() {
         if(pvIndex==null || pvChoices==null) {
             throw new IllegalStateException(notAttached);
@@ -110,7 +103,6 @@ public final class PVEnumeratedFactory implements PVEnumerated{
        return pvIndex.get();
 
     }
-    @Override
     public boolean setChoices(String[] choices) {
         if(pvIndex==null || pvChoices==null) {
             throw new IllegalStateException(notAttached);
@@ -120,7 +112,6 @@ public final class PVEnumeratedFactory implements PVEnumerated{
        return true;
 
     }
-    @Override
     public boolean setIndex(int index) {
         if(pvIndex==null || pvChoices==null) {
             throw new IllegalStateException(notAttached);
@@ -130,5 +121,5 @@ public final class PVEnumeratedFactory implements PVEnumerated{
        return true;
 
     }
-    
+
 }

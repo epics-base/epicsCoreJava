@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -43,7 +43,6 @@ public class BufferInteger extends ListInteger {
     /**
      * {@inheritDoc }
      */
-    @Override
     public int getInt(int index) {
         if (index >= endOffset) {
             throw new ArrayIndexOutOfBoundsException(index);
@@ -54,7 +53,6 @@ public class BufferInteger extends ListInteger {
     /**
      * {@inheritDoc }
      */
-    @Override
     public int size() {
         int size = endOffset;
         return size;

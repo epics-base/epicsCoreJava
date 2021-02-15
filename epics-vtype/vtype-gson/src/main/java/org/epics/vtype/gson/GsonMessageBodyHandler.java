@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2020 Facility for Rare Isotope Beams
  *
  * This program is free software: you can redistribute it and/or modify
@@ -66,13 +66,11 @@ public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, Messag
         return gson;
     }
 
-    @Override
     public boolean isReadable(Class<?> type, Type genericType,
                               Annotation[] annotations, MediaType mediaType) {
         return true;
     }
 
-    @Override
     public Object readFrom(Class<Object> type, Type genericType,
                            Annotation[] annotations, MediaType mediaType,
                            MultivaluedMap<String, String> httpHeaders, InputStream entityStream) {
@@ -99,19 +97,16 @@ public class GsonMessageBodyHandler implements MessageBodyWriter<Object>, Messag
         }
     }
 
-    @Override
     public boolean isWriteable(Class<?> type, Type genericType,
                                Annotation[] annotations, MediaType mediaType) {
         return true;
     }
 
-    @Override
     public long getSize(Object object, Class<?> type, Type genericType,
                         Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
-    @Override
     public void writeTo(Object object, Class<?> type, Type genericType,
                         Annotation[] annotations, MediaType mediaType,
                         MultivaluedMap<String, Object> httpHeaders,

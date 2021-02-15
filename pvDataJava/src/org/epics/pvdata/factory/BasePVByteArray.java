@@ -24,7 +24,7 @@ import org.epics.util.array.CollectionNumbers;
 public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArray
 {
     protected byte[] value;
-    
+
     /**
      * Constructor.
      * @param array The introspection interface.
@@ -33,19 +33,19 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
     {
         super(array);
     }
-    
+
     @Override
     protected void allocate(int newCapacity) {
     	value = new byte[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -58,7 +58,7 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 		buffer.put(value, offset, length);
 		return length;
 	}
-	
+
     @Override
 	protected int getFromBuffer(ByteBuffer buffer, DeserializableControl control, int offset, int length)
 	{
@@ -69,20 +69,17 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVByteArray#get(int, int, org.epics.pvdata.pv.ByteArrayData)
      */
-    @Override
     public int get(int offset, int len, ByteArrayData data) {
     	return internalGet(offset, len, data);
     }
 
-    @Override
     public ArrayByte get() {
         return CollectionNumbers.unmodifiableListByte(value);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVByteArray#put(int, int, byte[], int)
      */
-    @Override
     public int put(int offset, int len, byte[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
@@ -91,7 +88,6 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVByteArray#shareData(byte[])
      */
-    @Override
     public void shareData(byte[] from) {
     	internalShareData(from);
     }
@@ -105,7 +101,7 @@ public class BasePVByteArray extends AbstractPVScalarArray implements PVByteArra
 	    b.get(0, b.getLength(), arrayData);
 		return Arrays.equals(arrayData.data, value);
     }
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

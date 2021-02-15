@@ -187,7 +187,7 @@ channel and how to register monitor algoritms and channel providers.</p>
     private static final ChannelAccess channelAccess
          = ChannelAccessFactory.getChannelAccess();
 
-    // get wanted channel provider 
+    // get wanted channel provider
     ChannelProvider channelProvider = channelAccess.getProvider("pva");
 
     // connect to a channel with given name
@@ -244,7 +244,7 @@ members:</p>
 </dl>
 
 <p>ChannelProvider has a method (among others):</p>
-<pre>Channel createChannel(String channelName, ChannelRequester channelRequester, short priority); 
+<pre>Channel createChannel(String channelName, ChannelRequester channelRequester, short priority);
  ...</pre>
 
 <p>This is the method a client calls to connect to a Channel. See the package
@@ -577,24 +577,24 @@ is a java main program that can be executed as follows:</p>
 <pre>    counter field(value)</pre>
 
 <p>The output is:</p>
-<pre>2012-09-11T12:48:44.831 Channel 'counter' created with status: StatusImpl [type=OK]. 
-2012-09-11T12:48:45.631 Channel 'counter' CONNECTED. 
-2012-09-11T12:48:45.708 ChannelGet for 'counter' connected with status: StatusImpl [type=OK]. 
-2012-09-11T12:48:45.710 getDone for 'counter' called with status: StatusImpl [type=OK]. 
-structure 
+<pre>2012-09-11T12:48:44.831 Channel 'counter' created with status: StatusImpl [type=OK].
+2012-09-11T12:48:45.631 Channel 'counter' CONNECTED.
+2012-09-11T12:48:45.708 ChannelGet for 'counter' connected with status: StatusImpl [type=OK].
+2012-09-11T12:48:45.710 getDone for 'counter' called with status: StatusImpl [type=OK].
+structure
     int value 1
-2012-09-11T12:48:45.735 Channel 'counter' DISCONNECTED. 
+2012-09-11T12:48:45.735 Channel 'counter' DISCONNECTED.
 2012-09-11T12:48:45.736 Channel 'counter' DESTROYED. </pre>
 
 <p>If the arguments are: </p>
 <pre>    counter field(value,timeStamp,alarm)</pre>
 
 <p>The output is:</p>
-<pre>2012-09-11T12:51:12.113 Channel 'counter' created with status: StatusImpl [type=OK]. 
-2012-09-11T12:51:12.156 Channel 'counter' CONNECTED. 
-2012-09-11T12:51:12.163 ChannelGet for 'counter' connected with status: StatusImpl [type=OK]. 
-2012-09-11T12:51:12.164 getDone for 'counter' called with status: StatusImpl [type=OK]. 
-structure 
+<pre>2012-09-11T12:51:12.113 Channel 'counter' created with status: StatusImpl [type=OK].
+2012-09-11T12:51:12.156 Channel 'counter' CONNECTED.
+2012-09-11T12:51:12.163 ChannelGet for 'counter' connected with status: StatusImpl [type=OK].
+2012-09-11T12:51:12.164 getDone for 'counter' called with status: StatusImpl [type=OK].
+structure
     int value 4
     timeStamp_t timeStamp
         long secondsPastEpoch 1347360671
@@ -603,8 +603,8 @@ structure
     alarm_t alarm
         int severity 0
         int status 0
-        string message 
-2012-09-11T12:51:12.167 Channel 'counter' DISCONNECTED. 
+        string message
+2012-09-11T12:51:12.167 Channel 'counter' DISCONNECTED.
 2012-09-11T12:51:12.168 Channel 'counter' DESTROYED.</pre>
 
 <p>If the request is not given then the entire record is shown.</p>
@@ -615,17 +615,17 @@ structure
 <pre>public class ExampleChannelGet {
 
     public static void main(String[] args) throws Throwable {
-        
+
     int len = args.length;
         if (len == 0 || len &gt; 2)
         {
             System.out.println("Usage: &lt;channelName&gt; &lt;pvRequest&gt;");
             return;
         }
-        
+
         final String channelName = args[0];
         final String pvRequestString = args[1];
-        
+
         // initialize console logging
         ConsoleLogHandler.defaultConsoleLogging(Level.INFO);
         Logger logger = Logger.getLogger(ExampleChannelGet.class.getName());
@@ -636,7 +636,7 @@ structure
 
         // get pvAccess client provider
         ChannelProvider channelProvider = ChannelAccessFactory.getChannelAccess().getProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME);
-        
+
         //
         // create channel and channelGet
         //
@@ -644,7 +644,7 @@ structure
 
         ChannelRequesterImpl channelRequester = new ChannelRequesterImpl(logger);
         Channel channel = channelProvider.createChannel(channelName, channelRequester, ChannelProvider.PRIORITY_DEFAULT);
-        
+
         ChannelGetRequester channelGetRequester = new ChannelGetRequesterImpl(logger, channel, doneSignal);
         CreateRequest createRequest = CreateRequest.create();
         PVStructure pvRequest = createRequest.createRequest(pvRequestString);
@@ -694,7 +694,7 @@ for response. </p>
         public void channelStateChange(Channel channel, ConnectionState connectionState) {
             logger.info("Channel '" + channel.getChannelName() + "' " + connectionState + ".");
         }
-    
+
     }</pre>
 
 <p>ChannelRequester.channelCreated method gets called when channel instance is
@@ -702,15 +702,15 @@ created. ChannelRequester.channelStateChange gets called on very channel state
 change. The implementation above just logs all the information. </p>
 
 <h5>Implementation of ChannelGetRequester:</h5>
-<pre>    
+<pre>
     static class ChannelGetRequesterImpl implements ChannelGetRequester
     {
         private final Logger logger;
         private final Channel channel;
         private final CountDownLatch doneSignaler;
-    
+
         private volatile PVStructure pvStructure = null;
-   
+
         public ChannelGetRequesterImpl(Logger logger, Channel channel, CountDownLatch doneSignaler)
         {
             this.logger = logger;
@@ -1074,7 +1074,7 @@ public class CreateRequest {
      </dd>
   <dt>getMessage</dt>
     <dd>The reason why the last call to createRequest failed.</dd>
-<dl>
+</dl>
 
 <p>See the package documentation for
 org.epics.iov.pvCopy/package.html for a detailed description. A few examples
@@ -1465,7 +1465,7 @@ ability to transfer a subarray. A ChannelArray is created via a call to:</p>
   <dt>channelArrayRequester</dt>
     <dd>Described next.</dd>
   <dt>pvRequest</dt>
-    <dd>This must be a PVStructure created as follows: 
+    <dd>This must be a PVStructure created as follows:
       <pre>
 CreateRequest createRequest = CreateRequest.create();
 PVStructure pvRequest = createRequest.createRequest(subField);
@@ -1561,7 +1561,7 @@ and onPercentChange.</p>
            <dt>status</dt>
              <dd>The result of the createMonitor request.
                 If status is not success than the other arguments are null.
-             <//dd>
+             </dd>
            <dt>monitor</dt>
                <dd>The interface for the Monitor.</dd>
            <dt>structure</dt>
@@ -1624,7 +1624,7 @@ and onPercentChange.</p>
 
 <p>This package defines the server interfaces for pvAccess, which is the
 version of channel access that fully supports structured data as defined by
-PVData. 
+PVData.
 <h3>Server Context</h3>
 
 <p>This is an interface implemented by pvAccess server:</p>
@@ -1656,7 +1656,7 @@ PVData.
   <dt>printInfo</dt>
     <dd>Print server info to the System.out.</dd>
   <dt>dispose</dt>
-    <dd>Silently destory the server instance.</dd>
+    <dd>Silently destroy the server instance.</dd>
   <dt>setBeaconServerStatusProvider</dt>
     <dd>Set BeaconServerStatusProvider instance to be used by the server (optional).</dd>
 </dl>

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -36,7 +36,8 @@ public class VLongArrayTest extends FeatureTestVNumberArray<ListLong, VLongArray
 
     @Override
     String getToString() {
-        return "VLongArray[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], size [5, 2], MINOR(DB) - LOW, 2012-12-05T14:57:21.521786982Z]";
+        // Modified precision of test to match joda time's millisecond precision
+        return "VLongArray[[0, 1, 2, 3, 4, 5, 6, 7, 8, 9], size [5, 2], MINOR(DB) - LOW, 2012-12-05T14:57:21.521Z]";
     }
-    
+
 }

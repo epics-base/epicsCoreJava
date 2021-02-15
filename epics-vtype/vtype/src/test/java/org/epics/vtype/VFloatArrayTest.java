@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -36,7 +36,8 @@ public class VFloatArrayTest extends FeatureTestVNumberArray<ListFloat, VFloatAr
 
     @Override
     String getToString() {
-        return "VFloatArray[[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0], size [5, 2], MINOR(DB) - LOW, 2012-12-05T14:57:21.521786982Z]";
+        // Modified precision of test to match joda time's millisecond precision
+        return "VFloatArray[[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0], size [5, 2], MINOR(DB) - LOW, 2012-12-05T14:57:21.521Z]";
     }
-    
+
 }

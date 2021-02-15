@@ -24,30 +24,27 @@ import org.epics.pvaccess.client.ChannelProviderFactory;
  * @version $Id$
  */
 public class ChannelAccessIFLocalTest extends ChannelAccessIFTest {
-	
+
 	static {
 		ChannelProviderFactory channelProviderImplFactory = new ChannelProviderFactory() {
-			
+
 			private TestChannelProviderImpl provider;
-			
-			@Override
+
 			public synchronized ChannelProvider sharedInstance() {
 				if (provider == null)
 					provider = new TestChannelProviderImpl();
 				return provider;
 			}
-			
-			@Override
+
 			public ChannelProvider newInstance() {
 				throw new RuntimeException("not supported");
 			}
-			
-			@Override
+
 			public String getFactoryName() {
 				return TestChannelProviderImpl.PROVIDER_NAME;
 			}
 		};
-		
+
 		ChannelProviderRegistryFactory.registerChannelProviderFactory(channelProviderImplFactory);
 	}
 
@@ -67,7 +64,7 @@ public class ChannelAccessIFLocalTest extends ChannelAccessIFTest {
 	public long getTimeoutMs() {
 		return 3000;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.test.ChannelAccessIFTest#isLocal()
 	 */
@@ -75,5 +72,5 @@ public class ChannelAccessIFLocalTest extends ChannelAccessIFTest {
 	public boolean isLocal() {
 		return true;
 	}
-	
+
 }

@@ -36,15 +36,15 @@ import org.epics.pvdata.pv.Type;
  */
 public final class IntrospectionRegistry {
 
-	protected Map<Short, Field> registry = 
-			new HashMap<>();
+	protected Map<Short, Field> registry =
+			new HashMap<Short, Field>();
 	protected short pointer;
-	
+
 	public IntrospectionRegistry()
 	{
 		reset();
 	}
-	
+
 	/**
 	 * Reset registry, i.e. must be done when transport is changed (server restarted).
 	 */
@@ -64,7 +64,7 @@ public final class IntrospectionRegistry {
 	}
 
 	/**
-	 * Register introspection interface with given ID. 
+	 * Register introspection interface with given ID.
 	 * @param id ID to use to register.
 	 * @param field field to register.
 	 */
@@ -77,7 +77,7 @@ public final class IntrospectionRegistry {
 	 * Private helper variable (optimization).
 	 */
 	private Short shortHolder = Short.valueOf((short)0);
-	
+
 	/**
 	 * Register introspection interface and get it's ID. Always OUTGOING.
 	 * If it is already registered only preassigned ID is returned.
@@ -100,7 +100,7 @@ public final class IntrospectionRegistry {
 			return key;
 		}
 	}
-	
+
 	/**
 	 * Null type.
 	 */
@@ -115,14 +115,14 @@ public final class IntrospectionRegistry {
 	 * Serialization contains an ID (that can be used later, if cached) and full interface description.
 	 */
 	public static final byte FULL_WITH_ID_TYPE_CODE = (byte)-3;
-	
-	
+
+
 	public final void serialize(Field field, ByteBuffer buffer, SerializableControl control) {
 		if (field == null) {
 			SerializationHelper.serializeNullField(buffer, control);
 		}
 		else
-		{ 
+		{
 			// do not cache scalars, scalarArrays
 			// ... and (array of) variant unions - not worth the complex condition,
 			// unless bool Field.cache() would exist
@@ -136,26 +136,26 @@ public final class IntrospectionRegistry {
 					buffer.put(ONLY_ID_TYPE_CODE);
 					buffer.putShort(key);
 					return;
-				} 
+				}
 				else {
 					control.ensureBuffer(3);
 					buffer.put(FULL_WITH_ID_TYPE_CODE);	// could also be a mask
 					buffer.putShort(key);
 				}
 			}
-			
+
 			field.serialize(buffer, control);
 		}
 	}
 
 	static final FieldCreate fieldCreate = PVFactory.getFieldCreate();
-	
+
 	public final Field deserialize(ByteBuffer buffer, DeserializableControl control) {
 
 		control.ensureData(1);
 		int pos = buffer.position();
 		final byte typeCode = buffer.get();
-		
+
 		if (typeCode == NULL_TYPE_CODE)
 		{
 			return null;

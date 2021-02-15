@@ -25,7 +25,7 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     protected PVStructure[] value;
 
     protected StructureArray structureArray;
-    
+
     /**
      * Constructor.
      * @param structureArray The Introspection interface.
@@ -39,8 +39,7 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructureArray#getStructureArray()
      */
-    @Override
-	public StructureArray getStructureArray() {
+    public StructureArray getStructureArray() {
 		return structureArray;
     }
 
@@ -49,13 +48,13 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     	value = new PVStructure[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -65,20 +64,18 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructureArray#get(int, int, org.epics.pvdata.pv.StructureArrayData)
      */
-    @Override
     public int get(int offset, int len, StructureArrayData data) {
     	return internalGet(offset, len, data);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructureArray#put(int, int, org.epics.pvdata.pv.PVStructure[], int)
      */
-    @Override
     public int put(int offset, int len, PVStructure[] from, int fromOffset) {
-    	
+
     	// first check if the PVStructure-s being written are of the right type
     	Structure elementField = structureArray.getStructure();
-    	
+
     	for (int i = 0; i < len; i++) {
     	    PVStructure pvs = from[i];
     	    if (pvs != null && !pvs.getStructure().equals(elementField))
@@ -91,7 +88,6 @@ public class BasePVStructureArray extends AbstractPVComplexArray implements PVSt
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVStructureArray#shareData(org.epics.pvdata.pv.PVStructure[])
      */
-    @Override
     public void shareData(PVStructure[] from) {
     	internalShareData(from);
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,7 +16,7 @@ public class ReadOnlyChannelException extends RuntimeException {
 
     /**
      * Constructs a new runtime exception with the specified detail message.
-     * 
+     *
      * @param message the detail message
      */
     public ReadOnlyChannelException(String message) {
@@ -25,12 +25,12 @@ public class ReadOnlyChannelException extends RuntimeException {
 
     /**
      * Constructs a new runtime exception with the specified detail message.
-     * 
+     *
      * @param message the detail message
      * @param cause the cause
      */
     public ReadOnlyChannelException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
 }

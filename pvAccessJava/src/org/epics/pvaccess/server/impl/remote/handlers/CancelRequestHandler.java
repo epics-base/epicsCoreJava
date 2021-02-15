@@ -50,13 +50,13 @@ public class CancelRequestHandler extends AbstractServerResponseHandler {
 		transport.ensureData(2*Integer.SIZE/Byte.SIZE);
 		final int sid = payloadBuffer.getInt();
 		final int ioid = payloadBuffer.getInt();
-    
+
 		final ServerChannelImpl channel = (ServerChannelImpl)casTransport.getChannel(sid);
 		if (channel == null) {
 			failureResponse(transport, ioid, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-	
+
 		final Destroyable request = channel.getRequest(ioid);
 		if (request == null) {
 			failureResponse(transport, ioid, BaseChannelRequester.badIOIDStatus);
@@ -66,20 +66,20 @@ public class CancelRequestHandler extends AbstractServerResponseHandler {
 			failureResponse(transport, ioid, BaseChannelRequester.notAChannelRequest);
 			return;
 		}
-		
+
 		// cancel
 		((ChannelRequest)request).cancel();
-		
+
 	}
 
 	/**
-	 * @param transport
-	 * @param ioid
-	 * @param errorStatus
+	 * @param transport transport
+	 * @param ioid io ID
+	 * @param errorStatus error status
 	 */
 	private void failureResponse(Transport transport, int ioid, Status errorStatus)
 	{
 		BaseChannelRequester.message(transport, ioid, errorStatus.getMessage(), MessageType.warning);
 	}
-	
+
 }

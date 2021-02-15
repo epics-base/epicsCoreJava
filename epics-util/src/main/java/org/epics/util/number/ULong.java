@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -12,13 +12,13 @@ import java.math.BigInteger;
  * @author carcassi
  */
 public final class ULong extends Number {
-    
+
     private final long unsignedValue;
 
     /**
      * Constructs a newly allocated {@code ULong} object that represent
      * the specified unsigned {@code long} value.
-     * 
+     *
      * @param unsignedValue the value to be represented by the {@code ULong}
      */
     public ULong(long unsignedValue) {
@@ -48,10 +48,10 @@ public final class ULong extends Number {
     public BigInteger bigIntegerValue() {
         return UnsignedConversions.toBigInteger(unsignedValue);
     }
-    
+
     /**
      * A wrapper for the given unsigned {@code long}.
-     * 
+     *
      * @param unsignedValue an unsigned {@code long} value
      * @return a {@code ULong} instance representing {@code unsignedValue}
      */
@@ -62,25 +62,41 @@ public final class ULong extends Number {
     /**
      * Returns a new {@code String} object representing the
      * specified unsigned {@code long}. The radix is assumed to be 10.
+     * <p>
+     * Implementation adapted from Java 12
      *
      * @param unsignedValue the unsigned {@code long} to be converted
      * @return the string representation of the specified unsigned {@code long}
      */
     public static String toString(long unsignedValue) {
-        return Long.toUnsignedString(unsignedValue, 10);
+        if (unsignedValue >= 0)
+            return Long.toString(unsignedValue, 10);
+        else {/*
+         * We can get the effect of an unsigned division by 10
+         * on a long value by first shifting right, yielding a
+         * positive value, and then dividing by 5.  This
+         * allows the last digit and preceding digits to be
+         * isolated more quickly than by an initial conversion
+         * to BigInteger.
+         */
+            long quot = (unsignedValue >>> 1) / 5;
+            long rem = unsignedValue - quot * 10;
+            return toString(quot) + rem;
+        }
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
         if (obj instanceof ULong) {
-            return unsignedValue == ((ULong)obj).unsignedValue;
+            return unsignedValue == ((ULong) obj).unsignedValue;
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Long.hashCode(unsignedValue);
+        return (int) (unsignedValue ^ (unsignedValue >>> 32));
     }
 
     @Override

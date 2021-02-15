@@ -60,7 +60,7 @@ class PVCopyImpl implements PVCopy{
 
     static class StructureNode extends Node {
         Node[] nodes;
-    }    
+    }
 
     private final PVStructure pvMaster;
     private Structure structure = null;
@@ -81,7 +81,7 @@ class PVCopyImpl implements PVCopy{
      */
     public void traverseMaster(PVCopyTraverseMasterCallback callback)
     {
-        traverseMaster(headNode,callback);     
+        traverseMaster(headNode,callback);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pvCopy.PVCopy#getStructure()
@@ -243,7 +243,7 @@ class PVCopyImpl implements PVCopy{
             traverseMaster(node,callback);
         }
     }
-    
+
     private void updateCopySetBitSet(PVField pvCopy,PVField pvMaster,BitSet bitSet) {
         if(pvCopy.getField().getType()!=Type.structure) {
             if(pvCopy.equals(pvMaster)) return;
@@ -461,7 +461,7 @@ class PVCopyImpl implements PVCopy{
     private Node getMasterNode(StructureNode structureNode,int structureOffset) {
         for(Node node : structureNode.nodes) {
             if(structureOffset>=(node.structureOffset + node.nfields)) continue;
-            if(!node.isStructure) return node; 
+            if(!node.isStructure) return node;
             StructureNode subNode = (StructureNode)node;
             return  getMasterNode(subNode,structureOffset);
         }
@@ -477,9 +477,9 @@ class PVCopyImpl implements PVCopy{
             kind = "node";
         }
         builder.append(kind);
-        builder.append((" isStructure " + (node.isStructure ? "true" : "false")));
-        builder.append(" structureOffset " + node.structureOffset);
-        builder.append(" nfields " + node.nfields);
+        builder.append(" isStructure ").append(node.isStructure ? "true" : "false");
+        builder.append(" structureOffset ").append(node.structureOffset);
+        builder.append(" nfields ").append(node.nfields);
         PVStructure options = node.options;
         if(options!=null) {
             convert.newLine(builder, indentLevel+1);
@@ -488,19 +488,19 @@ class PVCopyImpl implements PVCopy{
             for(int i=0; i<pvFields.length; ++i) {
                 PVString pvString = (PVString)pvFields[i];
                 convert.newLine(builder, indentLevel+2);
-                builder.append(pvString.getFieldName() + " " + pvString.get());
+                builder.append(pvString.getFieldName()).append(" ").append(pvString.get());
             }
         }
         String name = node.masterPVField.getFullName();
         convert.newLine(builder, indentLevel+1);
-        builder.append("masterField name " + name);
+        builder.append("masterField name ").append(name);
         if(!node.isStructure) return;
         StructureNode structureNode = (StructureNode)node;
         Node[] nodes =structureNode.nodes;
         for(int i=0 ; i<nodes.length; i++){
             if(nodes[i]==null) {
                 convert.newLine(builder, indentLevel+1);
-                builder.append("node[" + i + "] is null");
+                builder.append("node[").append(i).append("] is null");
                 continue;
             }
             dump(builder,nodes[i],indentLevel+1);

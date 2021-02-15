@@ -34,7 +34,6 @@ public final class PVDisplayFactory implements PVDisplay{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVDisplay#attach(org.epics.pvdata.pv.PVField)
      */
-    @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
             throw new IllegalArgumentException(noDisplayFound);
@@ -67,7 +66,6 @@ public final class PVDisplayFactory implements PVDisplay{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVDisplay#detach()
      */
-    @Override
     public void detach() {
         pvDescription = null;
         pvFormat = null;
@@ -78,7 +76,6 @@ public final class PVDisplayFactory implements PVDisplay{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVDisplay#isAttached()
      */
-    @Override
     public boolean isAttached() {
         if(pvDescription==null || pvFormat==null || pvUnits==null || pvLow==null || pvHigh==null) return false;
         return true;
@@ -86,7 +83,6 @@ public final class PVDisplayFactory implements PVDisplay{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVDisplay#get(org.epics.pvdata.property.Display)
      */
-    @Override
     public void get(Display display) {
         if(pvDescription==null || pvFormat==null || pvUnits==null || pvLow==null || pvHigh==null) {
             throw new IllegalStateException(notAttached);
@@ -101,7 +97,6 @@ public final class PVDisplayFactory implements PVDisplay{
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVDisplay#set(org.epics.pvdata.property.Display)
      */
-    @Override
     public boolean set(Display display) {
         if(pvDescription==null || pvFormat==null || pvUnits==null || pvLow==null || pvHigh==null) {
             throw new IllegalStateException(notAttached);
@@ -115,27 +110,27 @@ public final class PVDisplayFactory implements PVDisplay{
         {
             pvDescription.put(display.getDescription());
             returnValue = true;
-        }    
+        }
         if(!current.getFormat().equals(display.getFormat()))
         {
             pvFormat.put(display.getFormat());
             returnValue = true;
-        }    
+        }
         if(!current.getUnits().equals(display.getUnits()))
         {
             pvUnits.put(display.getUnits());
             returnValue = true;
-        }    
+        }
         if(current.getLow()!=display.getLow())
         {
             pvLow.put(display.getLow());
             returnValue = true;
-        }    
+        }
         if(current.getHigh()!=display.getHigh())
         {
             pvHigh.put(display.getHigh());
             returnValue = true;
-        }    
-        return returnValue;                            
+        }
+        return returnValue;
     }
 }

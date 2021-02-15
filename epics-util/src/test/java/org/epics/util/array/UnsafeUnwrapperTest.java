@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -17,13 +17,13 @@ public class UnsafeUnwrapperTest {
 
     public UnsafeUnwrapperTest() {
     }
-    
+
     static void testArrayEquals(UnsafeUnwrapper.Array<?> array, Object reference, int referenceStartIndex, int referenceSize) {
         assertThat(array.array, equalTo(reference));
         assertThat(array.startIndex, equalTo(referenceStartIndex));
         assertThat(array.size, equalTo(referenceSize));
     }
-    
+
     static void testArraySame(UnsafeUnwrapper.Array<?> array, Object reference, int referenceStartIndex, int referenceSize) {
         assertThat(array.array, sameInstance(reference));
         assertThat(array.startIndex, equalTo(referenceStartIndex));
@@ -92,7 +92,7 @@ public class UnsafeUnwrapperTest {
         ListNumber coll = unmodifiableListFloat(array);
         testArrayEquals(UnsafeUnwrapper.writeSafeDoubleArray(coll), new double[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
-    
+
 
     @Test
     public void wrappedFloatArray1() {
@@ -142,8 +142,8 @@ public class UnsafeUnwrapperTest {
         ListNumber coll = unmodifiableListDouble(array);
         testArrayEquals(UnsafeUnwrapper.writeSafeFloatArray(coll), new float[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
-    
-    
+
+
     @Test
     public void wrappedByteArray1() {
         byte[] array = new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -192,7 +192,7 @@ public class UnsafeUnwrapperTest {
         ListNumber coll = unmodifiableListLong(array);
         testArrayEquals(UnsafeUnwrapper.writeSafeByteArray(coll), new byte[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
-    
+
 
     @Test
     public void wrappedShortArray1() {
@@ -242,7 +242,7 @@ public class UnsafeUnwrapperTest {
         ListNumber coll = unmodifiableListLong(array);
         testArrayEquals(UnsafeUnwrapper.writeSafeShortArray(coll), new short[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
-    
+
 
     @Test
     public void wrappedIntArray1() {
@@ -292,7 +292,7 @@ public class UnsafeUnwrapperTest {
         ListNumber coll = unmodifiableListLong(array);
         testArrayEquals(UnsafeUnwrapper.writeSafeIntArray(coll), new int[] {0,1,2,3,4,5,6,7,8,9}, 0, 10);
     }
-    
+
 
     @Test
     public void wrappedLongArray1() {

@@ -25,15 +25,13 @@ public abstract class AbstractPVScalarArray extends AbstractPVArray implements P
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVArray#getArray()
      */
-    @Override
     public ScalarArray getScalarArray() {
         return (ScalarArray)getField();
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl, int, int)
      */
-    @Override
 	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
     	// check bounds
 		if (offset < 0) offset = 0;
@@ -49,7 +47,7 @@ public abstract class AbstractPVScalarArray extends AbstractPVArray implements P
 			SerializeHelper.writeSize(count, buffer, flusher);
 		else if (count != getArray().getMaximumCapacity())
 			throw new IllegalStateException("fixed array cannot be partially serialized");
-		
+
 		// write elements
 		final int elementSize = getElementSize();
 		if (elementSize <= 0)
@@ -69,18 +67,17 @@ public abstract class AbstractPVScalarArray extends AbstractPVArray implements P
 			}
 		}
 	}
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
      */
-    @Override
 	public void deserialize(ByteBuffer buffer, DeserializableControl control) {
-    	
+
     	// read size
 		final int size = (getArray().getArraySizeType() != Array.ArraySizeType.fixed) ?
 			SerializeHelper.readSize(buffer, control) :
 			getArray().getMaximumCapacity();
-			
+
 		if (size >= 0) {
 			// prepare array, if necessary
 			if (size > capacity)
@@ -107,7 +104,7 @@ public abstract class AbstractPVScalarArray extends AbstractPVArray implements P
 		}
 		// TODO null arrays (size == -1) not supported
 	}
-    
+
     private static final int[] elementSizeLUT =
     {
 		1, // pvBoolean
@@ -123,7 +120,7 @@ public abstract class AbstractPVScalarArray extends AbstractPVArray implements P
 		8, // pvDouble
 		-1  // pvString
 	};
-    
+
     protected final int getElementSize()
     {
     	return elementSizeLUT[getScalarArray().getElementType().ordinal()];

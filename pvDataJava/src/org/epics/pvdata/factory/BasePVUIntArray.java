@@ -24,7 +24,7 @@ import org.epics.util.array.CollectionNumbers;
 public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArray
 {
     protected int[] value;
-    
+
     /**
      * Constructor.
      * @param array The introspection interface.
@@ -33,19 +33,19 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
     {
         super(array);
     }
-    
+
     @Override
     protected void allocate(int newCapacity) {
     	value = new int[newCapacity];
     	capacity = newCapacity;
     }
-    
+
     @Override
     protected Object getValue()
     {
     	return value;
     }
-    
+
     @Override
     protected void setValue(Object array)
     {
@@ -59,7 +59,7 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
 		buffer.position(buffer.position() + length*4);
 		return length;
 	}
-	
+
     @Override
 	protected int getFromBuffer(ByteBuffer buffer, DeserializableControl control, int offset, int length)
 	{
@@ -71,20 +71,17 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUIntArray#get(int, int, org.epics.pvdata.pv.IntArrayData)
      */
-    @Override
     public int get(int offset, int len, IntArrayData data) {
     	return internalGet(offset, len, data);
     }
 
-    @Override
     public ArrayUInteger get() {
         return CollectionNumbers.unmodifiableListUInt(value);
     }
-    
+
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUIntArray#put(int, int, int[], int)
      */
-    @Override
     public int put(int offset, int len, int[] from, int fromOffset) {
     	return internalPut(offset, len, from, fromOffset);
     }
@@ -93,7 +90,6 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVUIntArray#shareData(int[])
      */
-    @Override
     public void shareData(int[] from) {
     	internalShareData(from);
     }
@@ -107,7 +103,7 @@ public class BasePVUIntArray extends AbstractPVScalarArray implements PVUIntArra
 	    b.get(0, b.getLength(), arrayData);
 		return Arrays.equals(arrayData.data, value);
     }
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

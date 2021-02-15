@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.server.rpc;
 
@@ -10,9 +10,9 @@ import org.epics.pvdata.pv.PVStructure;
  * @author msekoranja
  */
 public interface RPCService extends Service {
-	
+
 	/**
-	 * RPC call request. 
+	 * RPC call request.
 	 * Implementation of this method should read arguments encoded in a <code>PVStructure</code>
 	 * and return a result also in a form of <code>PVStructure</code>. In case of an error
 	 * a <code>RPCRequestException</code> exception should be thrown.

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -8,20 +8,20 @@ import org.epics.util.number.UInteger;
 
 /**
  * Scalar unsigned int with alarm, timestamp, display and control information.
- * 
+ *
  * @author carcassi
  */
 public abstract class VUInt extends VNumber {
-    
+
     /**
      * {@inheritDoc }
      */
     @Override
     public abstract UInteger getValue();
-    
+
     /**
      * Creates a new VUShort.
-     * 
+     *
      * @param value the value
      * @param alarm the alarm
      * @param time the time
@@ -31,10 +31,10 @@ public abstract class VUInt extends VNumber {
     public static VUInt of(final UInteger value, final Alarm alarm, final Time time, final Display display) {
         return new IVUInt(value, alarm, time, display);
     }
-    
+
     /**
      * Creates a new VUShort.
-     * 
+     *
      * @param value the value
      * @param alarm the alarm
      * @param time the time

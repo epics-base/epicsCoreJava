@@ -1,11 +1,12 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
+import org.epics.util.compat.legacy.lang.Objects;
+
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Alarm information. Represents the severity and name of the highest alarm
@@ -22,15 +23,15 @@ public abstract class Alarm {
      * @return the alarm severity
      */
     public abstract AlarmSeverity getSeverity();
-    
+
     /**
      * Returns the alarm status, which returns the source of the alarm.
      * Never null.
-     * 
+     *
      * @return the alarm status
      */
     public abstract AlarmStatus getStatus();
-    
+
     /**
      * Returns a brief text representation of the highest currently active alarm.
      * Never null.
@@ -41,7 +42,7 @@ public abstract class Alarm {
 
     /**
      * Tests whether the give object is and Alarm with the same name and severity.
-     * 
+     *
      * @param obj another alarm
      * @return true if equal
      */
@@ -50,15 +51,15 @@ public abstract class Alarm {
         if (this == obj) {
             return true;
         }
-        
+
 	if (obj instanceof Alarm) {
             Alarm other = (Alarm) obj;
-        
+
             return getSeverity().equals(other.getSeverity()) &&
                     getStatus().equals(other.getStatus()) &&
                     getName().equals(other.getName());
         }
-        
+
         return false;
     }
 
@@ -75,10 +76,10 @@ public abstract class Alarm {
     public final String toString() {
         return getSeverity() + "(" + getStatus()+ ") - " + getName();
     }
-    
+
     /**
      * New alarm with the given severity and status.
-     * 
+     *
      * @param severity the alarm severity
      * @param status the alarm status
      * @param name the alarm name
@@ -87,7 +88,7 @@ public abstract class Alarm {
     public static Alarm of(final AlarmSeverity severity, final AlarmStatus status, final String name) {
         return new IAlarm(severity, status, name);
     }
-    
+
     private static final Alarm NONE = of(AlarmSeverity.NONE, AlarmStatus.NONE, "None");
     private static final Alarm HIHI = of(AlarmSeverity.MAJOR, AlarmStatus.RECORD, "HIHI");
     private static final Alarm HIGH = of(AlarmSeverity.MINOR, AlarmStatus.RECORD, "HIGH");
@@ -95,70 +96,70 @@ public abstract class Alarm {
     private static final Alarm LOLO = of(AlarmSeverity.MAJOR, AlarmStatus.RECORD, "LOLO");
     private static final Alarm NO_VALUE = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "No value");
     private static final Alarm DISCONNECTED = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "Disconnected");
-    
+
     /**
      * No alarm. To be used whenever there is no alarm associated with the value.
      * <p>
      * To test for no alarm, one should always check the severity, and not
      * equality to this specific alarm: depending on the data source the status
      * may be different and contain extra information.
-     * 
+     *
      * @return severity NONE and status "None"
      */
     public static Alarm none() {
         return NONE;
     }
-    
+
     /**
      * Alarm condition for when a value is above the high alarm threshold.
-     * 
+     *
      * @return the HIHI alarm
      */
     public static Alarm hihi() {
         return HIHI;
     }
-    
+
     /**
      * Alarm condition for when a value is above the high warning threshold.
-     * 
+     *
      * @return the HIGH alarm
      */
     public static Alarm high() {
         return HIGH;
     }
-    
+
     /**
      * Alarm condition for when a value is below the low warning threshold.
-     * 
+     *
      * @return the LOW alarm
      */
     public static Alarm low() {
         return LOW;
     }
-    
+
     /**
      * Alarm condition for when a value is below the low alarm threshold.
-     * 
+     *
      * @return the LOLO alarm
      */
     public static Alarm lolo() {
         return LOLO;
     }
-    
+
     /**
      * Alarm condition for when a value is not present. To be used as
      * the alarm associated to a null value.
-     * 
+     *
      * @return severity INVALID and status "No Value"
      */
     public static Alarm noValue() {
         return NO_VALUE;
     }
-    
+
     /**
      * Alarm condition for when a channel is disconnected. To be used as
      * the alarm associated with a broken connection.
-     * 
+     *
      * @return severity UNDEFINED and status "Disconnected"
      */
     public static Alarm disconnected() {
@@ -234,5 +235,5 @@ public abstract class Alarm {
             return Alarm.disconnected();
         }
     }
-    
+
 }

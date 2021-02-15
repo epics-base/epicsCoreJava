@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,7 +16,7 @@ public class Sine extends VDoubleSimFunction {
 
     private long currentValue;
     protected final double samplesPerCycle;
-    
+
     /**
      * Creates a sine shaped signal between -5 and 5, updating
      * every 500ms (2Hz) with 10 samples every full sine cycle.
@@ -24,7 +24,7 @@ public class Sine extends VDoubleSimFunction {
     public Sine() {
         this(-5.0, 5.0, DEFAULT_INTERVAL);
     }
-    
+
     /**
      * Creates a sine shaped signal between min and max, updating
      * every interval seconds with 10 samples every full sine cycle.

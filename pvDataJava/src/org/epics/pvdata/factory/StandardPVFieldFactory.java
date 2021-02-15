@@ -40,7 +40,6 @@ public final class  StandardPVFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardPVField#scalar(org.epics.pvdata.pv.ScalarType, java.lang.String)
 		 */
-		@Override
 		public PVStructure scalar(ScalarType scalarType,String properties)
 		{
 		    Structure field = standardField.scalar(scalarType,properties);
@@ -50,7 +49,6 @@ public final class  StandardPVFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardPVField#scalarArray(org.epics.pvdata.pv.ScalarType, java.lang.String)
 		 */
-		@Override
 		public PVStructure scalarArray(ScalarType elementType, String properties)
 		{
 		    Structure field = standardField.scalarArray(elementType,properties);
@@ -60,7 +58,6 @@ public final class  StandardPVFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardPVField#structureArray(org.epics.pvdata.pv.Structure, java.lang.String)
 		 */
-		@Override
 		public PVStructure structureArray(Structure structure,String properties)
 		{
 		    Structure field = standardField.structureArray(structure,properties);
@@ -70,7 +67,6 @@ public final class  StandardPVFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardPVField#enumerated(java.lang.String[])
 		 */
-		@Override
 		public PVStructure enumerated(String[] choices)
 		{
 		    Structure field = standardField.enumerated();
@@ -87,7 +83,6 @@ public final class  StandardPVFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardPVField#enumerated(java.lang.String[], java.lang.String)
 		 */
-		@Override
 		public PVStructure enumerated(String[] choices,String properties)
 		{
 		    Structure field = standardField.enumerated(properties);

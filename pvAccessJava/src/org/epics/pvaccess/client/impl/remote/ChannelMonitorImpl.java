@@ -69,31 +69,31 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		void response(Transport transport, ByteBuffer payloadBuffer);
 		void unlisten();
 	}
-	
+
 	private final MonitorStrategy monitorStrategy;
 
 	public static ChannelMonitorImpl create(ChannelImpl channel,
 			MonitorRequester callback,
 	        PVStructure pvRequest)
 	{
-		ChannelMonitorImpl thisInstance = 
+		ChannelMonitorImpl thisInstance =
 			new ChannelMonitorImpl(channel, callback, pvRequest);
 		thisInstance.activate();
 		return thisInstance;
 	}
-	
+
 	protected ChannelMonitorImpl(ChannelImpl channel,
 			MonitorRequester callback,
 	        PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, false);
-		
+
 		this.callback = callback;
-		
+
 		int qs = 2;
 		boolean pl = false;
 		int aa = 1;
-		
+
 		PVField pvField = pvRequest.getSubField("record._options");
 		if (pvField!=null) {
 		    PVStructure pvOptions = (PVStructure)pvField;
@@ -117,13 +117,13 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		    if (pvString!=null) {
 		        String value = pvString.get();
                 pl = Boolean.parseBoolean(value);
-                
+
                 // pipeline options
                 if (pl)
                 {
                 	// defaults to queueSize/2;
                 	aa = qs / 2;
-                	
+
         		    pvString = pvOptions.getStringField("ackAny");
         		    if (pvString!=null) {
         		        value = pvString.get();
@@ -145,15 +145,15 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
         	                return;
         	            }
         		    }
-                	
+
                 }
 		    }
 		}
-		
+
         queueSize = qs;
         pipeline = pl;
         ackAny = aa;
-        
+
         monitorStrategy = new MonitorStrategyQueue(queueSize, pipeline, ackAny);
 	}
 
@@ -161,7 +161,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	protected void activate()
 	{
 		super.activate();
-		
+
         // subscribe
 		try {
 			resubscribeSubscription(channel.checkDestroyedAndGetTransport());
@@ -170,7 +170,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			destroy(true);
 		}
 	}
-		
+
 	// override default impl. to provide pipeline QoS flag
 	@Override
 	public void resubscribeSubscription(Transport transport) {
@@ -197,33 +197,32 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 
 	    private Structure lastStructure = null;
 	    private MonitorQueue monitorQueue = null;
-	    
+
 	    private final Object monitorSync = new Object();
-	    
+
 	    private boolean needToReleaseFirst = false;
-	    
+
 	    private int releasedCount = 0;
 	    private boolean reportQueueStateInProgress = false;
-	    
+
 	    private final boolean pipeline;
 	    private final int ackAny;
-	    
+
 	    private boolean unlisten;
-	    
+
 		public MonitorStrategyQueue(
 				int queueSize,
 				boolean pipeline, int ackAny)
 		{
 			if (queueSize <= 1)
 				throw new IllegalArgumentException("queueSize <= 1");
-			
+
 			this.queueSize = queueSize;
 			this.pipeline = pipeline;
 			this.ackAny = ackAny;
-			
+
 		}
-		
-		@Override
+
 		public void init(Structure structure)
 		{
 			synchronized (monitorSync)
@@ -231,7 +230,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 				releasedCount = 0;
 				reportQueueStateInProgress = false;
 				unlisten = false;
-				
+
 				// reuse on reconnect
 				if (lastStructure == null || !lastStructure.equals(structure))
 				{
@@ -245,12 +244,11 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 				}
 			}
 		}
-		
-		@Override
+
 		public void unlisten()
 		{
 			boolean notify = false;
-			
+
 			synchronized (monitorSync)
 			{
 				// awkward way of checking "is empty", -1 since one free monitorElement is take in advance
@@ -258,16 +256,15 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 				notify = (monitorQueue.getNumberFree() == (monitorQueue.capacity()-1));
 				unlisten = !notify;
 			}
-			
+
 			if (notify)
 				callback.unlisten(this);
 		}
-		
-		@Override
+
 		public void response(Transport transport, ByteBuffer payloadBuffer)
 		{
 			boolean notify = false;
-			
+
 			synchronized (monitorSync)
 			{
 	            // if in overrun mode, check if some is free
@@ -291,7 +288,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	            	}
 	            }
 			}
-			
+
 			if (notify)
 				callback.monitorEvent(this);
 
@@ -309,7 +306,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	            	// lazy init
 	            	if (bitSet1 == null) bitSet1 = new BitSet(changedBitSet.size());
 	            	if (bitSet2 == null) bitSet2 = new BitSet(overrunBitSet.size());
-	            	
+
 	            	bitSet1.deserialize(payloadBuffer, transport);
 					pvStructure.deserialize(payloadBuffer, transport, bitSet1);
 					bitSet2.deserialize(payloadBuffer, transport);
@@ -332,14 +329,14 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 					pvStructure.deserialize(payloadBuffer, transport, changedBitSet);
 					overrunBitSet.deserialize(payloadBuffer, transport);
 	            }
-	            
+
 				// prepare next free (if any)
 				MonitorElement newElement = monitorQueue.getFree();
 	            if (newElement == null) {
 	                overrunInProgress = true;
 	                return;
 	            }
-	            
+
 	            // if there was overrun in progress we manipulated bitSets... compress them
 	            if (overrunInProgress) {
 		            bitSetUtil.compress(changedBitSet, pvStructure);
@@ -347,22 +344,21 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 
 		            overrunInProgress = false;
 	            }
-	            
+
 	            convert.copy(pvStructure, newElement.getPVStructure());
-     
+
 	            monitorQueue.setUsed(monitorElement);
 
 	            monitorElement = newElement;
 			}
-	        
+
         	callback.monitorEvent(this);
 		}
 
-		@Override
 		public MonitorElement poll()
 		{
 			boolean notifyUnlisten = false;
-			
+
             synchronized(monitorSync) {
             	if (needToReleaseFirst)
             		return null;
@@ -372,7 +368,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
             		needToReleaseFirst = true;
             		return retVal;
             	}
-            	
+
 	            // if in overrun mode and we have free, make it as last element
 	            if (overrunInProgress)
 	            {
@@ -390,7 +386,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	            		monitorElement = newElement;
 
 	            		overrunInProgress = false;
-	            		
+
 	            		needToReleaseFirst = true;
 	            		return monitorQueue.getUsed();
 	            	}
@@ -408,14 +404,13 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	            		return null;
 	            }
             }
-            
+
 
             if (notifyUnlisten)
             	callback.unlisten(this);
             return null;
 		}
 
-		@Override
 		public void release(MonitorElement monitorElement)
 		{
 	        // fast sanity check check if monitorElement->pvStructurePtr->getStructure() matches
@@ -423,11 +418,11 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	        // silent return
 			if (monitorElement.getPVStructure().getStructure() != lastStructure)
 				return;
-			
+
 	        synchronized(monitorSync) {
 	            monitorQueue.releaseUsed(monitorElement);
 	            needToReleaseFirst = false;
-	        
+
 		        if (pipeline)
 		        {
 		        	boolean sendAck = false;
@@ -438,50 +433,46 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		        		sendAck = true;
 		        		reportQueueStateInProgress = true;
 		        	}
-		        	
+
 		        	if (sendAck)
 		        	{
 		        		try
 		        		{
 		        			channel.checkAndGetTransport().enqueueSendRequest(this);
 		        		}
-		        		finally 
+		        		finally
 		        		{
 		        			reportQueueStateInProgress = false;
 		        		}
 		        	}
 		        }
-		        
+
 	        }
 		}
 
-		@Override
 		public void lock() {
 			// noop
 		}
 
-		@Override
 		public void unlock() {
 			// noop
 		}
 
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			control.startMessage((byte)13, 9);
 			buffer.putInt(channel.getServerChannelID());
 			buffer.putInt(ioid);
 			buffer.put((byte)QoS.GET_PUT.getMaskValue());
-			
+
 			synchronized (monitorSync) {
 				buffer.putInt(releasedCount);
 				releasedCount = 0;
 				reportQueueStateInProgress = false;
 			}
-			
+
 			control.flush(true);
 		}
 
-		@Override
 		public Status start()
 		{
 			synchronized (monitorSync) {
@@ -493,16 +484,14 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			return okStatus;
 		}
 
-		@Override
 		public Status stop() {
 			return okStatus;
 		}
 
-		@Override
 		public void destroy() {
 			// noop
 		}
-		
+
 	}
 
     /* (non-Javadoc)
@@ -516,17 +505,17 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			super.send(buffer, control);
 			return;
 		}
-		
+
 		control.startMessage((byte)13, 2*Integer.SIZE/Byte.SIZE+1);
 		buffer.putInt(channel.getServerChannelID());
 		buffer.putInt(ioid);
 		buffer.put((byte)pendingRequest);
-		
+
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// pvRequest
 			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
-			
+
 			// if pipeline
 			if (pipeline)
 			{
@@ -548,7 +537,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			callback.monitorConnect(status, this, null);
 			return;
 		}
-		
+
 		// deserialize Structure...
 		final Structure structure = (Structure)transport.cachedDeserialize(payloadBuffer);
 		monitorStrategy.init(structure);
@@ -556,7 +545,7 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		// notify
 		callback.monitorConnect(okStatus, this, structure);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.impl.remote.channelAccess.BaseRequestImpl#normalResponse(org.epics.pvaccess.core.Transport, byte, java.nio.ByteBuffer, byte, org.epics.pvdata.pv.Status)
 	 */
@@ -569,11 +558,11 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		else if (QoS.DESTROY.isSet(qos))
 		{
 			// TODO for now status is ignored
-			
+
 			if (payloadBuffer.hasRemaining())
 				monitorStrategy.response(transport, payloadBuffer);
 
-			// unlisten will be called when all the elements in the queue gets processed 
+			// unlisten will be called when all the elements in the queue gets processed
 			monitorStrategy.unlisten();
 		}
 		else
@@ -588,16 +577,16 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	public void response(Transport transport, byte version, ByteBuffer payloadBuffer) {
 		boolean destroy = false;
 		try
-		{	
+		{
 			transport.ensureData(1);
 			final byte qos = payloadBuffer.get();
 
 			if (QoS.INIT.isSet(qos))
 			{
 				final Status status = statusCreate.deserializeStatus(payloadBuffer, transport);
-				
+
 				boolean restoreStartedState = started.get();
-				
+
 				initResponse(transport, version, payloadBuffer, qos, status);
 
 				if (restoreStartedState)
@@ -627,14 +616,13 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelMonitor#start()
 	 */
-	@Override
 	public Status start() {
 		if (destroyed)
 			return destroyedStatus;
 		// TODO not initialized (aka created) check?!!
-		
+
 		monitorStrategy.start();
-		
+
 		try {
 			// start == process + get
 			startRequest(QoS.PROCESS.getMaskValue() | QoS.GET.getMaskValue());
@@ -650,14 +638,13 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelMonitor#stop()
 	 */
-	@Override
 	public Status stop() {
 		if (destroyed)
 			return destroyedStatus;
 		// TODO not initialized (aka created) check?!!
-		
+
 		monitorStrategy.stop();
-		
+
 		try {
 			// stop == process + no get
 			startRequest(QoS.PROCESS.getMaskValue());
@@ -669,11 +656,10 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 			return channelNotConnected;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.monitor.Monitor#poll()
 	 */
-	@Override
 	public MonitorElement poll() {
 		return monitorStrategy.poll();
 	}
@@ -681,7 +667,6 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 	/* (non-Javadoc)
 	 * @see org.epics.pvdata.monitor.Monitor#release(org.epics.pvdata.monitor.MonitorElement)
 	 */
-	@Override
 	public void release(MonitorElement monitorElement) {
 		monitorStrategy.release(monitorElement);
 	}
@@ -701,5 +686,5 @@ public class ChannelMonitorImpl extends BaseRequestImpl implements Monitor {
 		}
 	}
 	*/
- 
+
 }

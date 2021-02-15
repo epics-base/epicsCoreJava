@@ -1,12 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.vtype;
 
-import org.epics.util.array.ArrayByte;
 import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ListByte;
 import org.epics.util.array.ListDouble;
 import org.epics.util.array.ListInteger;
 
@@ -18,12 +16,12 @@ public class VDoubleArrayTest extends FeatureTestVNumberArray<ListDouble, VDoubl
 
     @Override
     ListDouble getData() {
-        return ArrayDouble.of(new double[] {0,1,2,3,4,5,6,7,8,9});
+        return ArrayDouble.of(0,1,2,3,4,5,6,7,8,9);
     }
 
     @Override
     ListDouble getOtherData() {
-        return ArrayDouble.of(new double[] {0,-1,-2,-3,-4,-5,-6,-7,-8,-9});
+        return ArrayDouble.of(0,-1,-2,-3,-4,-5,-6,-7,-8,-9);
     }
 
     @Override
@@ -38,7 +36,8 @@ public class VDoubleArrayTest extends FeatureTestVNumberArray<ListDouble, VDoubl
 
     @Override
     String getToString() {
-        return "VDoubleArray[[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0], size [5, 2], MINOR(DB) - LOW, 2012-12-05T14:57:21.521786982Z]";
+        // Modified precision of test to match joda time's millisecond precision
+        return "VDoubleArray[[0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0], size [5, 2], MINOR(DB) - LOW, 2012-12-05T14:57:21.521Z]";
     }
-    
+
 }

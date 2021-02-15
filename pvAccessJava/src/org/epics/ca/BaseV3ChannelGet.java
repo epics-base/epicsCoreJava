@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -43,20 +43,20 @@ implements ChannelGet,GetListener,ConnectionListener
     private static final Status channelNotConnectedStatus = statusCreate.createStatus(StatusType.ERROR, "channel not connected", null);
     private static final Status disconnectedWhileActiveStatus = statusCreate.createStatus(StatusType.ERROR, "disconnected while active", null);
     private static final Status createChannelStructureStatus = statusCreate.createStatus(StatusType.ERROR, "createChannelStructure failed", null);
-    
+
     private final ChannelGetRequester channelGetRequester;
 
     private final V3Channel v3Channel;
     private final V3ChannelStructure v3ChannelStructure;
     private final gov.aps.jca.Channel jcaChannel;
-    
+
     private volatile boolean isDestroyed = false;
     private volatile boolean lastRequest = false;
-    
+
     private final ReentrantLock lock = new ReentrantLock();
-    
+
     private final AtomicBoolean isActive = new AtomicBoolean(false);
-    
+
     private final PVStructure pvRequest;
     /**
      * Constructor.
@@ -71,7 +71,7 @@ implements ChannelGet,GetListener,ConnectionListener
         this.pvRequest = pvRequest;
         v3Channel.add(this);
         v3ChannelStructure = new BaseV3ChannelStructure(v3Channel);
-        
+
     	this.jcaChannel = v3Channel.getJCAChannel();
 
     	try {
@@ -81,7 +81,7 @@ implements ChannelGet,GetListener,ConnectionListener
             destroy();
             return;
 		}
-		
+
 		// there is a possible run condition, but it's OK
 		if (jcaChannel.getConnectionState() == Channel.CONNECTED)
 			connectionChanged(new ConnectionEvent(jcaChannel, true));
@@ -101,7 +101,6 @@ implements ChannelGet,GetListener,ConnectionListener
     /* (non-Javadoc)
      * @see org.epics.pvaccess.client.ChannelGet#get()
      */
-    @Override
     public void get() {
         if(isDestroyed) {
             getDone(channelDestroyedStatus);
@@ -130,7 +129,7 @@ implements ChannelGet,GetListener,ConnectionListener
      * @see org.epics.ioc.util.Requester#message(java.lang.String, org.epics.ioc.util.MessageType)
      */
     public void message(String message, MessageType messageType) {
-        v3Channel.message(message, messageType);   
+        v3Channel.message(message, messageType);
     }
     /* (non-Javadoc)
      * @see gov.aps.jca.event.GetListener#getCompleted(gov.aps.jca.event.GetEvent)
@@ -167,36 +166,31 @@ implements ChannelGet,GetListener,ConnectionListener
             }
         }
     }
-    
+
     private void getDone(Status success) {
         if(!isActive.getAndSet(false)) return;
         if (lastRequest) destroy();
         channelGetRequester.getDone(success, this, v3ChannelStructure.getPVStructure(), v3ChannelStructure.getBitSet());
     }
-    
-	@Override
+
 	public void lock() {
 		lock.lock();
 	}
 
-	@Override
 	public void unlock() {
 		lock.unlock();
 	}
 
-	@Override
 	public void cancel() {
 		// noop, not supported
 	}
-	
-	@Override
+
 	public void lastRequest() {
 		lastRequest = true;
 	}
-	
-	@Override
+
 	public org.epics.pvaccess.client.Channel getChannel() {
 		return v3Channel;
 	}
-	
+
 }

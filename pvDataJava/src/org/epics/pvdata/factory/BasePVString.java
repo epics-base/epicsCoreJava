@@ -23,7 +23,7 @@ public class BasePVString extends AbstractPVScalar implements PVString
 {
     protected String value = "";
     protected final int maxLength;
-    
+
     /**
      * Constructor
      * @param scalar The introspection interface.
@@ -38,14 +38,12 @@ public class BasePVString extends AbstractPVScalar implements PVString
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVString#get()
      */
-    @Override
     public String get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVString#put(java.lang.String)
      */
-    @Override
     public void put(String value) {
         if (super.isImmutable()) {
             throw new IllegalArgumentException("field is immutable");
@@ -54,20 +52,18 @@ public class BasePVString extends AbstractPVScalar implements PVString
         }
         this.value = value;
         super.postPut();
-        
+
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-    @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
         SerializeHelper.serializeString(value, buffer, flusher);
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.SerializableArray#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl, int, int)
      */
-    @Override
-	public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
+    public void serialize(ByteBuffer buffer, SerializableControl flusher, int offset, int count) {
 		// check bounds
     	final int length = (value == null) ? 0 : value.length();
 		if (offset < 0) offset = 0;
@@ -77,14 +73,13 @@ public class BasePVString extends AbstractPVScalar implements PVString
 		final int maxCount = length - offset;
 		if (count > maxCount)
 			count = maxCount;
-		
+
 		// write
 		SerializeHelper.serializeSubstring(value, offset, count, buffer, flusher);
 	}
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
      */
-    @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
         value = SerializeHelper.deserializeString(buffer, control);
     }

@@ -1,10 +1,11 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.text;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.epics.util.array.ArrayDouble;
 import org.junit.Test;
@@ -100,13 +101,13 @@ public class FunctionParserTest {
     @Test
     public void parseFunctionAnyParameters6() {
         List<Object> parameters = FunctionParser.parseFunctionAnyParameter("foo()");
-        assertThat(parameters, equalTo(Arrays.asList((Object) "foo")));
+        assertThat(parameters, equalTo(Collections.singletonList((Object) "foo")));
     }
 
     @Test
     public void parseFunctionAnyParameters7() {
         List<Object> parameters = FunctionParser.parseFunctionAnyParameter("foo");
-        assertThat(parameters, equalTo(Arrays.asList((Object) "foo")));
+        assertThat(parameters, equalTo(Collections.singletonList((Object) "foo")));
     }
 
     @Test

@@ -32,12 +32,10 @@ public class IVStringArray extends VStringArray {
         return data;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }

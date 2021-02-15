@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.server.rpc.impl;
 
@@ -33,11 +33,11 @@ public class RPCChannelProvider implements ChannelProvider {
 	private static final Status okStatus = statusCreate.getStatusOK();
 	private static final Status noSuchChannelStatus =
 		statusCreate.createStatus(StatusType.ERROR, "no such channel", null);
-	
+
 	private final HashMap<String, Service> services = new HashMap<String, Service>();
 	private final LinkedHashMap<String, Service> wildServices = new LinkedHashMap<String, Service>();
 	private final ThreadPoolExecutor threadPool;
-	
+
 	public RPCChannelProvider(ThreadPoolExecutor threadPool) {
 		this.threadPool = threadPool;
 	}
@@ -45,25 +45,22 @@ public class RPCChannelProvider implements ChannelProvider {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProvider#getProviderName()
 	 */
-	@Override
 	public String getProviderName() {
 		return PROVIDER_NAME;
 	}
 
 	private ChannelFind channelFind =
 		new ChannelFind() {
-			
-			@Override
+
 			public ChannelProvider getChannelProvider() {
 				return RPCChannelProvider.this;
 			}
-			
-			@Override
+
 			public void cancel() {
 				// noop
 			}
 		};
-	
+
 	// assumes synchronization on services
 	private Service findWildService(String wildcard)
 	{
@@ -71,10 +68,10 @@ public class RPCChannelProvider implements ChannelProvider {
 			for (Map.Entry<String, Service> entry : wildServices.entrySet())
 				if (WildcharMatcher.match(entry.getKey(), wildcard))
 					return entry.getValue();
-		
+
 		return null;
 	}
-	
+
 	// (too) simple check
 	private boolean isWildcardPattern(String pattern)
 	{
@@ -83,11 +80,10 @@ public class RPCChannelProvider implements ChannelProvider {
 			pattern.indexOf('?') != -1 ||
 			(pattern.indexOf('[') != -1 && pattern.indexOf(']') != -1));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProvider#channelFind(java.lang.String, org.epics.pvaccess.client.ChannelFindRequester)
 	 */
-	@Override
 	public ChannelFind channelFind(String channelName,
 			ChannelFindRequester channelFindRequester) {
 		boolean found;
@@ -99,7 +95,6 @@ public class RPCChannelProvider implements ChannelProvider {
 		return channelFind;
 	}
 
-	@Override
 	public ChannelFind channelList(ChannelListRequester channelListRequester) {
 		channelListRequester.channelListResult(okStatus, channelFind, services.keySet(), false);
 		return channelFind;
@@ -108,24 +103,23 @@ public class RPCChannelProvider implements ChannelProvider {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short)
 	 */
-	@Override
 	public Channel createChannel(String channelName,
 			ChannelRequester channelRequester, short priority)
 	{
-		
+
 		Service service;
 		synchronized (services) {
 			service = services.get(channelName);
 			if (service == null)
 				service = findWildService(channelName);
 		}
-		
+
 		if (service == null)
 		{
 			channelRequester.channelCreated(noSuchChannelStatus, null);
 			return null;
 		}
-			
+
 		RPCChannel rpcChannel = new RPCChannel(
 				this,
 				channelName,
@@ -139,7 +133,6 @@ public class RPCChannelProvider implements ChannelProvider {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String, org.epics.pvaccess.client.ChannelRequester, short, java.lang.String)
 	 */
-	@Override
 	public Channel createChannel(String channelName,
 			ChannelRequester channelRequester, short priority, String address) {
 		// this will never get called by the pvAccess server
@@ -150,13 +143,13 @@ public class RPCChannelProvider implements ChannelProvider {
 	{
 		synchronized (services) {
 			services.put(serviceName, service);
-			
+
 			if (isWildcardPattern(serviceName))
 				wildServices.put(serviceName, service);
 		}
-		
+
 	}
-	
+
 	public void unregisterService(String serviceName)
 	{
 		synchronized (services) {
@@ -168,7 +161,6 @@ public class RPCChannelProvider implements ChannelProvider {
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProvider#destroy()
 	 */
-	@Override
 	public void destroy() {
 		// TODO destroy all channels
 

@@ -40,15 +40,14 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 	}
 
 	private static class GetFieldRequesterImpl extends BaseChannelRequester implements GetFieldRequester, TransportSender {
-		
+
 		private Status status;
 		private Field field;
-		
+
 		public GetFieldRequesterImpl(ServerContextImpl context, ServerChannelImpl channel, int ioid, Transport transport) {
 			super(context, channel, ioid, transport);
 		}
-		
-		@Override
+
 		public void getDone(Status status, Field field) {
 			synchronized (this) {
 				this.status = status;
@@ -57,7 +56,6 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 			transport.enqueueSendRequest(this);
 		}
 
-		@Override
 		public void destroy() {
 			// noop
 		}
@@ -65,7 +63,6 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#lock()
 		 */
-		@Override
 		public void lock() {
 			// noop
 		}
@@ -73,7 +70,6 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// noop
 		}
@@ -81,7 +77,6 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			control.startMessage((byte)17, Integer.SIZE/Byte.SIZE);
 			buffer.putInt(ioid);
@@ -116,7 +111,7 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 			getFieldFailureResponse(transport, ioid, BaseChannelRequester.badCIDStatus);
 			return;
 		}
-			
+
 		final String subField = SerializeHelper.deserializeString(payloadBuffer, transport);
 
 		// asCheck
@@ -132,32 +127,29 @@ public class GetFieldHandler extends AbstractServerResponseHandler {
 	}
 
 	/**
-	 * @param transport
-	 * @param ioid
-	 * @param errorStatus
+	 * @param transport transport
+	 * @param ioid IO ID
+	 * @param errorStatus error status
 	 */
 	private void getFieldFailureResponse(final Transport transport, final int ioid, final Status errorStatus)
 	{
 		transport.enqueueSendRequest(
 				new TransportSender() {
 
-					@Override
 					public void send(ByteBuffer buffer, TransportSendControl control) {
 						control.startMessage((byte)17, Integer.SIZE/Byte.SIZE);
 						buffer.putInt(ioid);
 						errorStatus.serialize(buffer, control);
 					}
 
-					@Override
 					public void lock() {
 						// noop
 					}
 
-					@Override
 					public void unlock() {
 						// noop
 					}
-					
+
 			});
 	}
 }

@@ -104,16 +104,16 @@ public class NTNDArrayTest extends NTTestBase
 
         assertTrue(ntndarray.isValid());
 
-        
+
         ntndarray.getValue().select(c, valueName).
             setLength(6);
 
         assertFalse(ntndarray.isValid());
 
-        ntndarray.getCompressedDataSize().put(6*valueSize);
+        ntndarray.getCompressedDataSize().put(6L *valueSize);
         assertTrue(ntndarray.isValid());
 
-        ntndarray.getUncompressedDataSize().put(1);
+        ntndarray.getUncompressedDataSize().put(1L);
         assertFalse(ntndarray.isValid());
 
         Structure dimStruc = ntndarray.getDimension().getStructureArray().
@@ -130,13 +130,13 @@ public class NTNDArrayTest extends NTTestBase
 
         assertFalse(ntndarray.isValid());
 
-        ntndarray.getUncompressedDataSize().put(6*valueSize);
+        ntndarray.getUncompressedDataSize().put(6L *valueSize);
         assertTrue(ntndarray.isValid());
 
         pvDim1.getSubField(PVInt.class, "size").put(2);
         assertFalse(ntndarray.isValid());
 
-        ntndarray.getUncompressedDataSize().put(4*valueSize);
+        ntndarray.getUncompressedDataSize().put(4L *valueSize);
         assertTrue(ntndarray.isValid());
     }
 

@@ -45,7 +45,6 @@ public class EchoHandler extends AbstractServerResponseHandler {
 		transport.enqueueSendRequest(
 				new TransportSender() {
 
-					@Override
 					public void send(ByteBuffer buffer, TransportSendControl control) {
 						// all at once...
 						/*
@@ -56,16 +55,14 @@ public class EchoHandler extends AbstractServerResponseHandler {
 						control.setRecipient(responseFrom);
 					}
 
-					@Override
 					public void lock() {
 						// noop
 					}
 
-					@Override
 					public void unlock() {
 						// noop
 					}
-					
+
 			});
 	}
 

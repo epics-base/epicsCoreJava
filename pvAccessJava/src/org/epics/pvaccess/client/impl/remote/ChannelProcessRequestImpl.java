@@ -45,23 +45,23 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			ChannelProcessRequester callback,
 			PVStructure pvRequest)
 	{
-		ChannelProcessRequestImpl thisInstance = 
+		ChannelProcessRequestImpl thisInstance =
 			new ChannelProcessRequestImpl(channel, callback, pvRequest);
 		thisInstance.activate();
 		return thisInstance;
 	}
-	
+
 	protected ChannelProcessRequestImpl(ChannelImpl channel,
 			ChannelProcessRequester callback,
 			PVStructure pvRequest)
 	{
 		super(channel, callback, pvRequest, true);
-		
+
 		this.callback = callback;
-		
+
 		// TODO best-effort support
 	}
-	
+
 	protected void activate()
 	{
 		super.activate();
@@ -73,7 +73,7 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			callback.channelProcessConnect(channelDestroyed, this);
 			destroy(true);
 		}
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -87,18 +87,18 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			super.send(buffer, control);
 			return;
 		}
-		
+
 		control.startMessage((byte)16, 2*Integer.SIZE/Byte.SIZE+1);
 		buffer.putInt(channel.getServerChannelID());
 		buffer.putInt(ioid);
 		buffer.put((byte)pendingRequest);
-		
+
 		if (QoS.INIT.isSet(pendingRequest))
 		{
 			// pvRequest
 			SerializationHelper.serializePVRequest(buffer, control, pvRequest);
 		}
-		
+
 		stopRequest();
 	}
 
@@ -137,18 +137,18 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 	/* (non-Javadoc)
 	 * @see org.epics.pvaccess.client.ChannelProcess#process()
 	 */
-	@Override
+
 	public void process() {
 		if (destroyed) {
 			callback.processDone(destroyedStatus, this);
 			return;
 		}
-		
+
 		if (!startRequest(lastRequest ? QoS.DESTROY.getMaskValue() : QoS.DEFAULT.getMaskValue())) {
 			callback.processDone(otherRequestPendingStatus, this);
 			return;
 		}
-		
+
 		try {
 			channel.checkAndGetTransport().enqueueSendRequest(this);
 		} catch (IllegalStateException ise) {
@@ -156,5 +156,5 @@ public class ChannelProcessRequestImpl extends BaseRequestImpl implements Channe
 			callback.processDone(channelNotConnected, this);
 		}
 	}
-	
+
 }

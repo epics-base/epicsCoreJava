@@ -14,12 +14,13 @@
 
 package org.epics.pvaccess.util;
 
+import org.epics.util.compat.legacy.net.InterfaceAddress;
+import org.epics.util.compat.legacy.net.NetworkInterface;
+
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
@@ -39,21 +40,21 @@ public class InetAddressUtil {
 
 	private static final String HOSTNAME_KEY = "HOSTNAME";
 	private static final String STRIP_HOSTNAME_KEY = "STRIP_HOSTNAME";
-	
+
 	private static String hostName = null;
-	
+
 	public static synchronized String getHostName()
 	{
 		if (hostName == null)
 			hostName = internalGetHostName();
 		return hostName;
 	}
-	
-	private static String internalGetHostName() 
+
+	private static String internalGetHostName()
 	{
 		// default fallback
 		String hostName = "localhost";
-		
+
 		try {
 			InetAddress localAddress = InetAddress.getLocalHost();
 			hostName = localAddress.getHostName();
@@ -66,18 +67,18 @@ public class InetAddressUtil {
 			} catch (Throwable th) {
 				// in case not supported by JVM/OS
 			}
-			
+
 			// and system property (overrides env. var.)
 			hostName = System.getProperty(HOSTNAME_KEY, hostName);
 		}
-		
+
 		if (System.getProperties().contains(STRIP_HOSTNAME_KEY))
 		{
 			int dotPos = hostName.indexOf('.');
 			if (dotPos > 0)
 				hostName = hostName.substring(0, dotPos);
 		}
-		
+
 		return hostName;
 	}
 
@@ -119,7 +120,7 @@ public class InetAddressUtil {
 				// noop, skip that interface
 			}
 		}
-		
+
 		InetSocketAddress[] retVal = new InetSocketAddress[list.size()];
 		list.toArray(retVal);
 		return retVal;
@@ -167,7 +168,7 @@ public class InetAddressUtil {
 				// noop, skip that interface
 			}
 		}
-		
+
 		return set;
 	}
 
@@ -197,7 +198,7 @@ public class InetAddressUtil {
 				// noop, skip that interface
 			}
 		}
-		
+
 		return null;
 	}
 
@@ -207,7 +208,7 @@ public class InetAddressUtil {
 	 * @param address address to encode.
 	 * @throws RuntimeException thrown if address is unsupported.
 	 */
-	public static final void encodeAsIPv6Address(ByteBuffer buffer, InetAddress address) throws RuntimeException {
+	public static void encodeAsIPv6Address(ByteBuffer buffer, InetAddress address) throws RuntimeException {
 		if (address instanceof Inet6Address)
 			buffer.put(address.getAddress());	// always network byte order
 		else if (address instanceof Inet4Address)
@@ -222,7 +223,7 @@ public class InetAddressUtil {
 			buffer.put(address.getAddress());	// always network byte order
 		}
 		else
-			throw new RuntimeException("unsupported network addresss: " + address);
+			throw new RuntimeException("unsupported network addresses: " + address);
 	}
 
 	/**
@@ -246,7 +247,7 @@ public class InetAddressUtil {
 		return res;
 	}
 
-	/** 
+	/**
 	 * Convert an IPv4 INET address to an integer.
 	 * @param addr	IPv4 INET address.
 	 * @return integer representation of a given address.
@@ -267,8 +268,8 @@ public class InetAddressUtil {
 
 
 	/**
-	 * Parse space delimited addresss[:port] string and return array of <code>InetSocketAddress</code>.  
-	 * @param list	space delimited addresss[:port] string.
+	 * Parse space delimited addresses[:port] string and return array of <code>InetSocketAddress</code>.
+	 * @param list	space delimited addresses[:port] string.
 	 * @param defaultPort	port take if not specified.
 	 * @return	array of <code>InetSocketAddress</code>.
 	 */
@@ -277,8 +278,8 @@ public class InetAddressUtil {
 	}
 
 	/**
-	 * Parse space delimited addresss[:port] string and return array of <code>InetSocketAddress</code>.  
-	 * @param list	space delimited addresss[:port] string.
+	 * Parse space delimited addresses[:port] string and return array of <code>InetSocketAddress</code>.
+	 * @param list	space delimited addresses[:port] string.
 	 * @param defaultPort	port take if not specified.
 	 * @param appendList 	list to be appended.
 	 * @return	array of <code>InetSocketAddress</code>.
@@ -286,7 +287,7 @@ public class InetAddressUtil {
 	public static InetSocketAddress[] getSocketAddressList(String list, int defaultPort, InetSocketAddress[] appendList)
 	{
 		ArrayList<InetSocketAddress> al = new ArrayList<InetSocketAddress>();
-		
+
 		// parse string
 		StringTokenizer st = new StringTokenizer(list);
 		while (st.hasMoreTokens())
@@ -295,21 +296,21 @@ public class InetAddressUtil {
 			String address = st.nextToken();
 
 			// check port
-			int pos = address.indexOf(':'); 
+			int pos = address.indexOf(':');
 			if (pos >= 0)
 			{
 				try {
 					port = Integer.parseInt(address.substring(pos + 1));
 				}
 				catch (NumberFormatException nfe) { /* noop */ }
-				
+
 				address = address.substring(0, pos);
 			}
-			
+
 			try
 			{
 				InetSocketAddress isa = new InetSocketAddress(address, port);
-				
+
 				// add parsed address if resolved
 				if (!isa.isUnresolved())
 					al.add(isa);
@@ -321,7 +322,7 @@ public class InetAddressUtil {
 		}
 
 		// copy to array
-		int appendSize = (appendList == null) ? 0 : appendList.length; 
+		int appendSize = (appendList == null) ? 0 : appendList.length;
 		InetSocketAddress[] isar = new InetSocketAddress[al.size() + appendSize];
 		al.toArray(isar);
 		if (appendSize > 0)

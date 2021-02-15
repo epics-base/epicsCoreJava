@@ -32,13 +32,12 @@ public interface PVUShortArray extends PVNumberArray{
      * array.
      */
     int get(int offset, int length, ShortArrayData data);
-    
+
     /**
      * Returns an unmodifiable view of the data.
-     * 
+     *
      * @return an unmodifiable view of the data
      */
-    @Override
     ArrayUShort get();
 
     /**

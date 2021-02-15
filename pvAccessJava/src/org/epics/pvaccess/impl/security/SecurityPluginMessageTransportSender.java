@@ -23,32 +23,29 @@ import org.epics.pvdata.pv.PVField;
 public class SecurityPluginMessageTransportSender implements TransportSender
 {
 	private final PVField data;
-	
+
 	public SecurityPluginMessageTransportSender(PVField data)
 	{
 		this.data = data;
 	}
-	
-	@Override
+
 	public void lock() {
 		// noop
 	}
 
-	@Override
 	public void unlock() {
 		// noop
 	}
 
-	@Override
 	public void send(ByteBuffer buffer, TransportSendControl control) {
 
 		control.startMessage((byte)5, 0);
-		
+
 		SerializationHelper.serializeFull(buffer, control, data);
-		
+
 		// send immediately
 		control.flush(true);
-		
+
 	}
-	
+
 }

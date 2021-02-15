@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -11,9 +11,9 @@ package org.epics.util.array;
  */
 public class SortedListView extends ListDouble {
 
-    private ListNumber values;
-    private ListInteger indexes;
-    private int[] indexArray;
+    private final ListNumber values;
+    private final ListInteger indexes;
+    private final int[] indexArray;
 
     SortedListView(ListNumber values) {
         this.values = values;
@@ -30,12 +30,10 @@ public class SortedListView extends ListDouble {
         this.indexArray = null;
     }
 
-    @Override
     public double getDouble(int index) {
         return values.getDouble(indexes.getInt(index));
     }
 
-    @Override
     public int size() {
         return values.size();
     }

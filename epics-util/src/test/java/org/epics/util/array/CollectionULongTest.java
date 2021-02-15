@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -16,20 +16,17 @@ public class CollectionULongTest extends FeatureTestCollectionNumber {
 
     @Override
     public CollectionNumber createConstantCollection() {
-        return new CollectionULong() {
+        return new AbstractCollectionULong() {
 
-            @Override
             public IteratorULong iterator() {
                 return new IteratorULong() {
 
                     int n=0;
 
-                    @Override
                     public boolean hasNext() {
                         return n < 10;
                     }
 
-                    @Override
                     public long nextLong() {
                         n++;
                         return 1L;
@@ -37,7 +34,6 @@ public class CollectionULongTest extends FeatureTestCollectionNumber {
                 };
             }
 
-            @Override
             public int size() {
                 return 10;
             }

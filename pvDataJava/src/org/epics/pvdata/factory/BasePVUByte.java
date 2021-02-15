@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVUByte extends AbstractPVScalar implements PVUByte
 {
     protected byte value;
-    
+
     /**
      * Constructor
      * @param scalar The introspection interface.
@@ -32,14 +32,12 @@ public class BasePVUByte extends AbstractPVScalar implements PVUByte
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVByte#get()
      */
-    @Override
     public byte get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVByte#put(byte)
      */
-    @Override
     public void put(byte value) {
         if(super.isImmutable()) {
             throw new IllegalArgumentException("field is immutable");
@@ -50,7 +48,6 @@ public class BasePVUByte extends AbstractPVScalar implements PVUByte
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-    @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
     	flusher.ensureBuffer(1);
         buffer.put(value);
@@ -58,7 +55,6 @@ public class BasePVUByte extends AbstractPVScalar implements PVUByte
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
      */
-    @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
     	control.ensureData(1);
         value = buffer.get();
@@ -84,5 +80,5 @@ public class BasePVUByte extends AbstractPVScalar implements PVUByte
 	public int hashCode() {
 		return value;
 	}
-    
+
 }

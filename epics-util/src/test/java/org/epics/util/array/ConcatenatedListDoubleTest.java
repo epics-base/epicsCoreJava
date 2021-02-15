@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.util.array;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -72,6 +73,6 @@ public class ConcatenatedListDoubleTest extends FeatureTestListNumber {
         ArrayDouble l5 = unmodifiableListDouble(1, 2, 3, 4, 5);
 
         ListDouble concatenated = ListNumbers.concatenate(l1, l2, l3, l4, l5);
-        assertThat(concatenated, equalTo(unmodifiableListDouble(1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5)));
+        assertThat(concatenated, Matchers.<ListDouble>equalTo(unmodifiableListDouble(1, 1, 2, 1, 2, 3, 1, 2, 3, 4, 1, 2, 3, 4, 5)));
     }
 }

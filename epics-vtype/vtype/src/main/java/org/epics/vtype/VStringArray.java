@@ -1,7 +1,7 @@
 package org.epics.vtype;
 
 import java.util.List;
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 
 import org.epics.util.array.ArrayInteger;
 import org.epics.util.array.ListInteger;
@@ -15,7 +15,7 @@ public abstract class VStringArray extends Array implements AlarmProvider, TimeP
     public static VStringArray of(List<String> data, ListInteger sizes, Alarm alarm, Time time) {
         return new IVStringArray(data, sizes, alarm, time);
     }
-    
+
     public static VStringArray of(List<String> data, Alarm alarm, Time time) {
         return of(data, ArrayInteger.of(data.size()), alarm, time);
     }
@@ -40,7 +40,7 @@ public abstract class VStringArray extends Array implements AlarmProvider, TimeP
                 .append(']');
         return builder.toString();
     }
-    
+
     @Override
     public final boolean equals(Object obj) {
         if (this == obj) {

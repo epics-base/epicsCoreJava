@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -7,38 +7,15 @@ package org.epics.gpclient.datasource.ca;
 import gov.aps.jca.CAException;
 import gov.aps.jca.Channel;
 import gov.aps.jca.Monitor;
-import gov.aps.jca.dbr.DBR;
-import gov.aps.jca.dbr.DBRType;
-import gov.aps.jca.dbr.DBR_CTRL_Double;
-import gov.aps.jca.dbr.DBR_LABELS_Enum;
-import gov.aps.jca.dbr.DBR_String;
-import gov.aps.jca.dbr.DBR_TIME_Byte;
-import gov.aps.jca.dbr.DBR_TIME_Double;
-import gov.aps.jca.dbr.DBR_TIME_Enum;
-import gov.aps.jca.dbr.DBR_TIME_Float;
-import gov.aps.jca.dbr.DBR_TIME_Int;
-import gov.aps.jca.dbr.DBR_TIME_Short;
-import gov.aps.jca.dbr.DBR_TIME_String;
-import gov.aps.jca.event.AccessRightsEvent;
-import gov.aps.jca.event.AccessRightsListener;
-import gov.aps.jca.event.ConnectionEvent;
-import gov.aps.jca.event.ConnectionListener;
-import gov.aps.jca.event.MonitorEvent;
-import gov.aps.jca.event.MonitorListener;
+import gov.aps.jca.dbr.*;
+import gov.aps.jca.event.*;
 import org.epics.gpclient.ReadCollector;
 import org.epics.gpclient.WriteCollector.WriteRequest;
 import org.epics.gpclient.datasource.MultiplexedChannelHandler;
 import org.epics.gpclient.datasource.ca.types.CATypeAdapter;
 import org.epics.util.array.ListNumber;
 import org.epics.util.array.UnsafeUnwrapper;
-import org.epics.vtype.VByte;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VFloat;
-import org.epics.vtype.VInt;
-import org.epics.vtype.VLong;
-import org.epics.vtype.VNumberArray;
-import org.epics.vtype.VShort;
+import org.epics.vtype.*;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -69,7 +46,7 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
     /**
      * The datasource this channel refers to.
-     * 
+     *
      * @return a ca data source
      */
     public CADataSource getCADataSource() {
@@ -128,7 +105,6 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
     private final ConnectionListener connectionListener = new ConnectionListener() {
 
-        @Override
         public void connectionChanged(ConnectionEvent ev) {
             synchronized (CAChannelHandler.this) {
                 try {
@@ -139,7 +115,7 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
                     // Take the channel from the event so that there is no
                     // synchronization problem
-                    Channel channel = (Channel) ev.getSource();
+                    final Channel channel = (Channel) ev.getSource();
 
                     // Check whether the channel is large and was opened
                     // as large. Reconnect if does not match
@@ -166,8 +142,6 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
                     }
 
                     channel.addAccessRightsListener(new AccessRightsListener() {
-
-                        @Override
                         public void accessRightsChanged(AccessRightsEvent ev) {
                             if (log.isLoggable(Level.FINEST)) {
                                 log.log(Level.FINEST, "JCA accessRightsChanged for channel {0} event {1}",
@@ -243,7 +217,6 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
     private final MonitorListener monitorListener = new MonitorListener() {
 
-        @Override
         public void monitorChanged(MonitorEvent event) {
             synchronized (CAChannelHandler.this) {
                 if (log.isLoggable(Level.FINEST)) {
@@ -262,7 +235,6 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
     private final MonitorListener metadataListener = new MonitorListener() {
 
-        @Override
         public void monitorChanged(MonitorEvent ev) {
             synchronized (CAChannelHandler.this) {
                 if (log.isLoggable(Level.FINEST)) {
@@ -483,7 +455,7 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
     /**
      * Converts a String into byte array.
-     * 
+     *
      * @param text the string to be converted
      * @return byte array, always including '\0' termination
      */
@@ -499,7 +471,7 @@ public class CAChannelHandler extends MultiplexedChannelHandler<CAConnectionPayl
 
     /**
      * Converts a byte array into a String. It
-     * 
+     *
      * @param data the array to be converted
      * @return the string
      */

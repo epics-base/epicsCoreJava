@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,12 +14,10 @@ public class ListUByteTest extends FeatureTestListNumber {
     public ListUByte createConstantCollection() {
         return new ListUByte() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public byte getByte(int index) {
                 return 1;
             }
@@ -30,12 +28,10 @@ public class ListUByteTest extends FeatureTestListNumber {
     public ListUByte createRampCollection() {
         return new ListUByte() {
 
-            @Override
             public int size() {
                 return 10;
             }
 
-            @Override
             public byte getByte(int index) {
                 return (byte) index;
             }
@@ -45,10 +41,9 @@ public class ListUByteTest extends FeatureTestListNumber {
     @Override
     public ListUByte createModifiableCollection() {
         return new ListUByte() {
-            
+
             private byte[] array = new byte[10];
-            
-            @Override
+
             public byte getByte(int index) {
                 return array[index];
             }
@@ -58,7 +53,6 @@ public class ListUByteTest extends FeatureTestListNumber {
                 array[index] = value;
             }
 
-            @Override
             public int size() {
                 return array.length;
             }
@@ -69,16 +63,14 @@ public class ListUByteTest extends FeatureTestListNumber {
     public ListUByte createEmpty() {
         return new ListUByte() {
 
-            @Override
             public int size() {
                 return 0;
             }
 
-            @Override
             public byte getByte(int index) {
                 return 1;
             }
         };
     }
-    
+
 }

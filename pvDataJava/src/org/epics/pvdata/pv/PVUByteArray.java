@@ -32,13 +32,12 @@ public interface PVUByteArray extends PVNumberArray{
      * array.
      */
     int get(int offset, int length, ByteArrayData data);
-    
+
     /**
      * Returns an unmodifiable view of the data.
-     * 
+     *
      * @return an unmodifiable view of the data
      */
-    @Override
     ArrayUByte get();
 
     /**

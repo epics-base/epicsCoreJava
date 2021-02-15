@@ -1,13 +1,13 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
-import java.time.Instant;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.Time;
 import org.epics.vtype.VBoolean;
+import org.joda.time.Instant;
 
 /**
  * Function to simulate a boolean signal that turns on and off.

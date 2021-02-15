@@ -1,43 +1,22 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.pva;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.epics.pvdata.factory.FieldFactory;
-import org.epics.pvdata.pv.Field;
+import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.pvdata.pv.FieldCreate;
 import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.ScalarType;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VDoubleArray;
+import org.epics.vtype.*;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.epics.gpclient.datasource.pva.PVAToVTypes.*;
-import org.epics.pvdata.factory.StandardFieldFactory;
-import org.epics.vtype.VByte;
-import org.epics.vtype.VByteArray;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VFloat;
-import org.epics.vtype.VFloatArray;
-import org.epics.vtype.VInt;
-import org.epics.vtype.VIntArray;
-import org.epics.vtype.VLong;
-import org.epics.vtype.VLongArray;
-import org.epics.vtype.VShort;
-import org.epics.vtype.VShortArray;
-import org.epics.vtype.VString;
-import org.epics.vtype.VUByte;
-import org.epics.vtype.VUByteArray;
-import org.epics.vtype.VUInt;
-import org.epics.vtype.VUIntArray;
-import org.epics.vtype.VULong;
-import org.epics.vtype.VULongArray;
-import org.epics.vtype.VUShort;
-import org.epics.vtype.VUShortArray;
 
 /**
  *
@@ -47,14 +26,13 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     private static final FieldCreate fieldCreate = FieldFactory.getFieldCreate();
 
-    @Override
     public Set<PVATypeAdapter> getAdapters() {
         return converters;
     }
 
     // String types
     //--------------
-    
+
     final static PVATypeAdapter vStringAdapter = new PVATypeAdapter(VString.class,
             new String[]{"epics:nt/NTScalar:1.", "string"},
             fieldCreate.createScalar(ScalarType.pvString)) {
@@ -70,7 +48,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     // Numeric scalars
     //-----------------
-    
+
     final static PVATypeAdapter vDoubleAdapter = new PVATypeAdapter(VDouble.class,
             new String[]{"epics:nt/NTScalar:1.", "double"},
             fieldCreate.createScalar(ScalarType.pvDouble)) {
@@ -203,7 +181,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     // Numeric arrays
     //--------------
-    
+
     final static PVATypeAdapter vDoubleArrayAdapter = new PVATypeAdapter(VDoubleArray.class,
             new String[]{"epics:nt/NTScalarArray:1.", "double[]"},
             fieldCreate.createScalarArray(ScalarType.pvDouble)) {
@@ -336,7 +314,7 @@ class PVAVTypeAdapterSet implements PVATypeAdapterSet {
 
     // Enum types
     //--------------
-    
+
     final static PVATypeAdapter vEnumAdapter = new PVATypeAdapter(VEnum.class,
             new String[]{"epics:nt/NTEnum:1.", "enum_t"},
             StandardFieldFactory.getStandardField().enumerated()) {

@@ -20,7 +20,7 @@ import org.epics.pvdata.pv.SerializableControl;
 public class BasePVFloat extends AbstractPVScalar implements PVFloat
 {
     protected float value;
-    
+
     /**
      * Constructor
      * @param scalar The introspection interface.
@@ -32,14 +32,12 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVFloat#get()
      */
-    @Override
     public float get() {
         return value;
     }
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.PVFloat#put(float)
      */
-    @Override
     public void put(float value) {
         if(super.isImmutable()) {
             throw new IllegalArgumentException("field is immutable");
@@ -50,7 +48,6 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#serialize(java.nio.ByteBuffer, org.epics.pvdata.pv.SerializableControl)
      */
-    @Override
     public void serialize(ByteBuffer buffer, SerializableControl flusher) {
     	flusher.ensureBuffer(Float.SIZE/Byte.SIZE);
         buffer.putFloat(value);
@@ -58,7 +55,6 @@ public class BasePVFloat extends AbstractPVScalar implements PVFloat
     /* (non-Javadoc)
      * @see org.epics.pvdata.pv.Serializable#deserialize(java.nio.ByteBuffer, org.epics.pvdata.pv.DeserializableControl)
      */
-    @Override
     public void deserialize(ByteBuffer buffer, DeserializableControl control) {
     	control.ensureData(Float.SIZE/Byte.SIZE);
         value = buffer.getFloat();

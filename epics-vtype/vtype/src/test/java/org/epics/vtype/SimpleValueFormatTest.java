@@ -1,29 +1,23 @@
-/**
+/*
  * Copyright (C) 2010-18 epics and diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
 package org.epics.vtype;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import org.epics.util.array.*;
+import org.epics.util.stats.Range;
+import org.epics.util.text.NumberFormats;
+import org.hamcrest.CoreMatchers;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInteger;
-import org.epics.util.array.ArrayShort;
-import org.epics.util.array.ListByte;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ListFloat;
-import org.epics.util.stats.Range;
-import org.epics.util.text.NumberFormats;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  *
@@ -56,7 +50,7 @@ public class SimpleValueFormatTest {
         assertThat(f.format(VDoubleArray.of(ArrayDouble.of(1), Alarm.none(), Time.now(), display)), equalTo("[1.000]"));
         assertThat(f.format(VDoubleArray.of(ArrayDouble.of(1, 2, 3, 4, 5), Alarm.none(), Time.now(), display)), equalTo("[1.000, 2.000, 3.000, ...]"));
         assertThat(f.format(VStringArray.of(Arrays.asList("A", "B", "C"), Alarm.none(), Time.now())), equalTo("[A, B, C]"));
-        assertThat(f.format(VStringArray.of(Arrays.asList("A"), Alarm.none(), Time.now())), equalTo("[A]"));
+        assertThat(f.format(VStringArray.of(Collections.singletonList("A"), Alarm.none(), Time.now())), equalTo("[A]"));
         assertThat(f.format(VStringArray.of(Arrays.asList("A", "B", "C", "D", "E"), Alarm.none(), Time.now())), equalTo("[A, B, C, ...]"));
 //        assertThat(f.format(newVEnumArray(ArrayInteger.of(2, 0, 0), Arrays.asList("A", "B", "C"), Alarm.none(), Time.now())), equalTo("[C, A, A]"));
 //        assertThat(f.format(newVEnumArray(ArrayInteger.of(2), Arrays.asList("A", "B", "C"), Alarm.none(), Time.now())), equalTo("[C]"));
@@ -79,7 +73,7 @@ public class SimpleValueFormatTest {
         assertThat(f.format(VDoubleArray.of(ArrayDouble.of(1), Alarm.none(), Time.now(), display)), equalTo("[1.00]"));
         assertThat(f.format(VDoubleArray.of(ArrayDouble.of(1, 2, 3, 4, 5), Alarm.none(), Time.now(), display)), equalTo("[1.00, 2.00, 3.00, ...]"));
         assertThat(f.format(VStringArray.of(Arrays.asList("A", "B", "C"), Alarm.none(), Time.now())), equalTo("[A, B, C]"));
-        assertThat(f.format(VStringArray.of(Arrays.asList("A"), Alarm.none(), Time.now())), equalTo("[A]"));
+        assertThat(f.format(VStringArray.of(Collections.singletonList("A"), Alarm.none(), Time.now())), equalTo("[A]"));
         assertThat(f.format(VStringArray.of(Arrays.asList("A", "B", "C", "D", "E"), Alarm.none(), Time.now())), equalTo("[A, B, C, ...]"));
     }
 
@@ -172,9 +166,9 @@ public class SimpleValueFormatTest {
         ValueFormat f = new SimpleValueFormat(3);
         VIntArray reference = Mockito.mock(VIntArray.class);
         assertThat(f.parseObject("3", reference), equalTo((Object) ArrayInteger.of(3)));
-        assertThat(f.parseIntArray("3"), equalTo(ArrayInteger.of(3)));
-        assertThat(f.parseIntArray("1333, 3"), equalTo(ArrayInteger.of(1333, 3)));
-        assertThat(f.parseIntArray("1, 2, 3, 4"), equalTo(ArrayInteger.of(1, 2, 3, 4)));
+        assertThat(f.parseIntArray("3"), CoreMatchers.<ListInteger>equalTo(ArrayInteger.of(3)));
+        assertThat(f.parseIntArray("1333, 3"), CoreMatchers.<ListInteger>equalTo(ArrayInteger.of(1333, 3)));
+        assertThat(f.parseIntArray("1, 2, 3, 4"), CoreMatchers.<ListInteger>equalTo(ArrayInteger.of(1, 2, 3, 4)));
     }
 
     @Test
@@ -182,9 +176,9 @@ public class SimpleValueFormatTest {
         ValueFormat f = new SimpleValueFormat(3);
         VShortArray reference = Mockito.mock(VShortArray.class);
         assertThat(f.parseObject("3", reference), equalTo((Object) ArrayShort.of((short) 3)));
-        assertThat(f.parseShortArray("3"), equalTo(ArrayShort.of((short) 3)));
-        assertThat(f.parseShortArray("1333, 3"), equalTo(ArrayShort.of(new short[]{1333, 3})));
-        assertThat(f.parseShortArray("1, 2, 3, 4"), equalTo(ArrayShort.of(new short[]{1, 2, 3, 4})));
+        assertThat(f.parseShortArray("3"), CoreMatchers.<ListShort>equalTo(ArrayShort.of((short) 3)));
+        assertThat(f.parseShortArray("1333, 3"), CoreMatchers.<ListShort>equalTo(ArrayShort.of(new short[]{1333, 3})));
+        assertThat(f.parseShortArray("1, 2, 3, 4"), CoreMatchers.<ListShort>equalTo(ArrayShort.of(new short[]{1, 2, 3, 4})));
     }
 
     @Test
@@ -201,8 +195,8 @@ public class SimpleValueFormatTest {
     public void parseVStringArray1() {
         ValueFormat f = new SimpleValueFormat(3);
         VStringArray reference = Mockito.mock(VStringArray.class);
-        assertThat(f.parseObject("test", reference), equalTo((Object) Arrays.asList("test")));
-        assertThat(f.parseStringArray("test"), equalTo(Arrays.asList("test")));
+        assertThat(f.parseObject("test", reference), equalTo((Object) Collections.singletonList("test")));
+        assertThat(f.parseStringArray("test"), equalTo(Collections.singletonList("test")));
         assertThat(f.parseStringArray("a, b"), equalTo(Arrays.asList("a", "b")));
         assertThat(f.parseStringArray("a, b, c, d"), equalTo(Arrays.asList("a", "b", "c", "d")));
     }

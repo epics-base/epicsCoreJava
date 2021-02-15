@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -77,10 +76,11 @@ import org.epics.pvdata.misc.TimerFactory;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Status.StatusType;
 import org.epics.pvdata.pv.StatusCreate;
+import org.epics.util.compat.legacy.net.NetworkInterface;
 
 /**
  * Implementation of PVAJ JCA <code>Context</code>.
- * 
+ *
  * @author <a href="mailto:matej.sekoranjaATcosylab.com">Matej Sekoranja</a>
  * @version $Id$
  */
@@ -275,7 +275,7 @@ public class ClientContextImpl implements Context {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.client.ClientContext#getVersion()
 	 */
 	public Version getVersion() {
@@ -310,7 +310,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get configuration instance.
-	 * 
+	 *
 	 * @return the configuration.
 	 */
 	public Configuration getConfiguration() {
@@ -339,7 +339,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Check context state and tries to establish necessary state.
-	 * 
+	 *
 	 * @throws PVAException
 	 *             any PVA exception.
 	 * @throws IllegalStateException
@@ -359,7 +359,7 @@ public class ClientContextImpl implements Context {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.client.ClientContext#initialize()
 	 */
 	public synchronized void initialize() throws PVAException {
@@ -380,14 +380,13 @@ public class ClientContextImpl implements Context {
 	PollerImpl poller;
 
 	/**
-	 * @throws PVAException
+	 * @throws PVAException for PV Access Exceptions
 	 */
 	private void internalInitialize() throws PVAException {
 
 		timer = TimerFactory.create("pvAccess-client timer", ThreadPriority.lower);
 		TransportFactory transportFactory = new TransportFactory() {
 
-			@Override
 			public Transport create(Context context, SocketChannel channel, ResponseHandler responseHandler,
 					int receiveBufferSize, TransportClient client, short transportRevision, float heartbeatInterval,
 					short priority) {
@@ -425,9 +424,13 @@ public class ClientContextImpl implements Context {
 
 			BlockingUDPConnector broadcastConnector = new BlockingUDPConnector(this, true, broadcastAddresses, true);
 
-			broadcastTransport = (BlockingUDPTransport) broadcastConnector.connect(null,
-					new ClientResponseHandler(this), listenLocalAddress, PVAConstants.PVA_PROTOCOL_REVISION,
-					PVAConstants.PVA_DEFAULT_PRIORITY);
+			broadcastTransport = (BlockingUDPTransport) broadcastConnector.connect(
+					null,
+					new ClientResponseHandler(this),
+					listenLocalAddress,
+					PVAConstants.PVA_PROTOCOL_REVISION,
+					PVAConstants.PVA_DEFAULT_PRIORITY
+			);
 
 			BlockingUDPConnector searchConnector = new BlockingUDPConnector(this, false, broadcastAddresses, true);
 
@@ -464,7 +467,7 @@ public class ClientContextImpl implements Context {
 					searchTransport.join(group, localNIF);
 
 					// NOTE: this disables usage of multicast addresses in EPICS_PVA_ADDR_LIST
-					searchTransport.setMutlicastNIF(localNIF, true);
+					searchTransport.setMulticastNIF(localNIF, true);
 
 					logger.config("Local multicast enabled on " + localBroadcastAddress + ":" + broadcastPort
 							+ " using " + localNIF.getDisplayName() + ".");
@@ -485,7 +488,7 @@ public class ClientContextImpl implements Context {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.client.ClientContext#destroy()
 	 */
 	public synchronized void destroy() {
@@ -501,7 +504,6 @@ public class ClientContextImpl implements Context {
 	}
 
 	/**
-	 * @throws PVAException
 	 */
 	private void internalDestroy() {
 
@@ -546,7 +548,7 @@ public class ClientContextImpl implements Context {
      */
     private void destroyAllChannels() {
         synchronized (channelsByCID) {
-            for (Channel channel : new ArrayList<>(channelsByCID.values())) {
+            for (Channel channel : new ArrayList<Channel>(channelsByCID.values())) {
                 try {
                     channel.destroy();
                 } catch (Exception e) {
@@ -559,10 +561,10 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Check channel name.
-	 * 
+	 *
 	 * @param name
 	 *            name to check.
-	 * @throws IllegalArgumentException
+	 * @throws IllegalArgumentException for illegal argument exceptions
 	 */
 	private final void checkChannelName(String name) throws IllegalArgumentException {
 		if (name == null || name.length() == 0)
@@ -600,7 +602,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Destroy channel.
-	 * 
+	 *
 	 * @param channel
 	 *            the channel to destroy.
 	 * @param force
@@ -631,8 +633,8 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Register channel.
-	 * 
-	 * @param channel
+	 *
+	 * @param channel channel
 	 */
 	void registerChannel(ChannelImpl channel) {
 		channelsByCID.put(channel.getChannelID(), channel);
@@ -640,8 +642,8 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Unregister channel.
-	 * 
-	 * @param channel
+	 *
+	 * @param channel channel
 	 */
 	void unregisterChannel(ChannelImpl channel) {
 		channelsByCID.remove(channel.getChannelID());
@@ -649,7 +651,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Searches for a channel with given channel ID.
-	 * 
+	 *
 	 * @param channelID
 	 *            CID.
 	 * @return channel with given CID, <code>null</code> if non-existent.
@@ -661,7 +663,7 @@ public class ClientContextImpl implements Context {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.client.ClientContext#printInfo()
 	 */
 	public void printInfo() {
@@ -670,7 +672,7 @@ public class ClientContextImpl implements Context {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.client.ClientContext#printInfo(java.io.PrintStream)
 	 */
 	public void printInfo(PrintStream out) {
@@ -701,7 +703,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get initialization status.
-	 * 
+	 *
 	 * @return initialization status.
 	 */
 	public boolean isInitialized() {
@@ -710,7 +712,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get destruction status.
-	 * 
+	 *
 	 * @return destruction status.
 	 */
 	public boolean isDestroyed() {
@@ -719,7 +721,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get search address list.
-	 * 
+	 *
 	 * @return get search address list.
 	 */
 	public String getAddressList() {
@@ -728,7 +730,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get auto search-list flag.
-	 * 
+	 *
 	 * @return auto search-list flag.
 	 */
 	public boolean isAutoAddressList() {
@@ -737,7 +739,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get beacon period (in seconds).
-	 * 
+	 *
 	 * @return beacon period (in seconds).
 	 */
 	public float getBeaconPeriod() {
@@ -746,7 +748,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get connection timeout (in seconds).
-	 * 
+	 *
 	 * @return connection timeout (in seconds).
 	 */
 	public float getConnectionTimeout() {
@@ -755,21 +757,20 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get logger.
-	 * 
+	 *
 	 * @return logger.
 	 */
 	public Logger getLogger() {
 		return logger;
 	}
 
-	@Override
 	public int getDebugLevel() {
 		return debugLevel;
 	}
 
 	/**
 	 * Get receive buffer size (max size of payload).
-	 * 
+	 *
 	 * @return receive buffer size (max size of payload).
 	 */
 	public int getReceiveBufferSize() {
@@ -778,7 +779,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get broadcast port.
-	 * 
+	 *
 	 * @return broadcast port.
 	 */
 	public int getBroadcastPort() {
@@ -787,7 +788,7 @@ public class ClientContextImpl implements Context {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.epics.pvaccess.client.ClientContext#dispose()
 	 */
 	public void dispose() {
@@ -800,7 +801,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Broadcast transport.
-	 * 
+	 *
 	 * @return broadcast transport.
 	 */
 	public BlockingUDPTransport getBroadcastTransport() {
@@ -809,7 +810,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Broadcast transport.
-	 * 
+	 *
 	 * @return broadcast transport.
 	 */
 	public BlockingUDPTransport getSearchTransport() {
@@ -818,7 +819,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get local multicast address (group).
-	 * 
+	 *
 	 * @return the address.
 	 */
 	public InetSocketAddress getLocalMulticastAddress() {
@@ -827,7 +828,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get PVA transport (virtual circuit) registry.
-	 * 
+	 *
 	 * @return PVA transport (virtual circuit) registry.
 	 */
 	public TransportRegistry getTransportRegistry() {
@@ -836,7 +837,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get timer.
-	 * 
+	 *
 	 * @return timer.
 	 */
 	public Timer getTimer() {
@@ -845,7 +846,6 @@ public class ClientContextImpl implements Context {
 
 	private final Map<String, SecurityPlugin> securityPlugins = new LinkedHashMap<String, SecurityPlugin>();
 
-	@Override
 	public Map<String, SecurityPlugin> getSecurityPlugins() {
 		return securityPlugins;
 	}
@@ -882,7 +882,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get channel search manager.
-	 * 
+	 *
 	 * @return channel search manager.
 	 */
 	public ChannelSearchManager getChannelSearchManager() {
@@ -891,7 +891,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get LF thread pool.
-	 * 
+	 *
 	 * @return LF thread pool, can be <code>null</code> if disabled.
 	 *
 	 *         public LeaderFollowersThreadPool getLeaderFollowersThreadPool() {
@@ -909,7 +909,7 @@ public class ClientContextImpl implements Context {
 	/**
 	 * Get, or create if necessary, transport of given server address. Note that
 	 * this method might block (creating TCP connection, verifying it).
-	 * 
+	 *
 	 * @param serverAddress
 	 *            required transport address
 	 * @param priority
@@ -929,7 +929,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Generate Client channel ID (CID).
-	 * 
+	 *
 	 * @return Client channel ID (CID).
 	 */
     private int generateCID() {
@@ -953,7 +953,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Searches for a response request with given channel IOID.
-	 * 
+	 *
 	 * @param ioid
 	 *            I/O ID.
 	 * @return request response with given I/O ID.
@@ -964,7 +964,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Register response request.
-	 * 
+	 *
 	 * @param request
 	 *            request to register.
 	 * @return request ID (IOID).
@@ -980,7 +980,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Unregister response request.
-	 * 
+	 *
 	 * @param request
 	 *            request to unregister.
 	 * @return removed object, can be <code>null</code>
@@ -991,7 +991,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Generate IOID.
-	 * 
+	 *
 	 * @return IOID.
 	 */
     private int generateIOID() {
@@ -1007,7 +1007,7 @@ public class ClientContextImpl implements Context {
 
 	/**
 	 * Get (and if necessary create) beacon handler.
-	 * 
+	 *
 	 * @param protocol
 	 *            protocol used.
 	 * @param responseFrom
@@ -1067,29 +1067,26 @@ public class ClientContextImpl implements Context {
 
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see
 			 * org.epics.pvaccess.client.impl.remote.ChannelSearchManager.SearchInstance#
 			 * getChannelID()
 			 */
-			@Override
 			public int getChannelID() {
 				return channelID;
 			}
 
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see
 			 * org.epics.pvaccess.client.impl.remote.ChannelSearchManager.SearchInstance#
 			 * getChannelName()
 			 */
-			@Override
 			public String getChannelName() {
 				return channelName;
 			}
 
-			@Override
 			public void searchResponse(GUID guid, byte minorRevision, InetSocketAddress serverAddress) {
 				freeCID(channelID);
 				requester.channelFindResult(okStatus, this, true);
@@ -1097,21 +1094,19 @@ public class ClientContextImpl implements Context {
 
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see
 			 * org.epics.pvaccess.client.impl.remote.search.SearchInstance#getUserValue()
 			 */
-			@Override
 			public AtomicInteger getUserValue() {
 				return userValue;
 			}
 
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see org.epics.pvaccess.client.ChannelFind#cancel()
 			 */
-			@Override
 			public void cancel() {
 				freeCID(channelID);
 				getChannelSearchManager().unregister(this);
@@ -1119,10 +1114,9 @@ public class ClientContextImpl implements Context {
 
 			/*
 			 * (non-Javadoc)
-			 * 
+			 *
 			 * @see org.epics.pvaccess.client.ChannelFind#getChannelProvider()
 			 */
-			@Override
 			public ChannelProvider getChannelProvider() {
 				return getProvider();
 			}
@@ -1131,11 +1125,10 @@ public class ClientContextImpl implements Context {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.epics.pvaccess.client.ChannelProvider#channelFind(java.lang.String,
 		 * org.epics.pvaccess.client.ChannelFindRequester)
 		 */
-		@Override
 		public ChannelFind channelFind(String channelName, ChannelFindRequester channelFindRequester) {
 
 			checkChannelName(channelName);
@@ -1148,7 +1141,6 @@ public class ClientContextImpl implements Context {
 
 		}
 
-		@Override
 		public ChannelFind channelList(ChannelListRequester channelListRequester) {
 
 			if (channelListRequester == null)
@@ -1160,24 +1152,22 @@ public class ClientContextImpl implements Context {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String,
 		 * org.epics.pvaccess.client.ChannelRequester, short)
 		 */
-		@Override
 		public Channel createChannel(String channelName, ChannelRequester channelRequester, short priority) {
 			return createChannel(channelName, channelRequester, priority, null);
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see
 		 * org.epics.pvaccess.client.ChannelProvider#createChannel(java.lang.String,
 		 * org.epics.pvaccess.client.ChannelRequester, short, java.lang.String[])
 		 */
-		@Override
 		public Channel createChannel(String channelName, ChannelRequester channelRequester, short priority,
 				String address) {
 			Channel channel;
@@ -1200,20 +1190,18 @@ public class ClientContextImpl implements Context {
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.epics.pvaccess.client.ChannelProvider#getProviderName()
 		 */
-		@Override
 		public String getProviderName() {
 			return PROVIDER_NAME;
 		}
 
 		/*
 		 * (non-Javadoc)
-		 * 
+		 *
 		 * @see org.epics.pvaccess.client.ChannelProvider#destroy()
 		 */
-		@Override
 		public void destroy() {
 			dispose();
 		}

@@ -43,7 +43,7 @@ public class NTTableBuilder
 
     /**
      * Adds columns, each of a given ScalarType, to the NTTable.
-     * 
+     *
      * @param names the names of the columns
      * @param elementTypes the types of the scalar array elements of the columns
      * @return this instance of NTTableBuilder
@@ -63,7 +63,7 @@ public class NTTableBuilder
 
     /**
      * Adds descriptor field to the NTTable.
-     * 
+     *
      * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addDescriptor()
@@ -74,7 +74,7 @@ public class NTTableBuilder
 
     /**
      * Adds alarm field to the NTTable.
-     * 
+     *
      * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addAlarm()
@@ -85,7 +85,7 @@ public class NTTableBuilder
 
     /**
      * Adds timeStamp field to the NTTable.
-     * 
+     *
      * @return this instance of NTTableBuilder
      */
     public NTTableBuilder addTimeStamp()
@@ -97,7 +97,7 @@ public class NTTableBuilder
     /**
      * Creates a Structure that represents NTTable.
      * This resets this instance state and allows new instance to be created.
-     * 
+     *
      * @return a new instance of a Structure
      */
     public Structure createStructure()
@@ -146,7 +146,7 @@ public class NTTableBuilder
     public PVStructure createPVStructure()
     {
         // put the column names in labels by default
-        String[] labelArray = columnNames.toArray(new String[columnNames.size()]);
+        String[] labelArray = columnNames.toArray(new String[0]);
 
         PVStructure s = PVDataFactory.getPVDataCreate().createPVStructure(
             createStructure());
@@ -175,7 +175,7 @@ public class NTTableBuilder
      * @param field the field to add
      * @return this instance of NTTableBuilder
      */
-    public NTTableBuilder add(String name, Field field) 
+    public NTTableBuilder add(String name, Field field)
     {
         extraFields.add(field);
         extraFieldNames.add(name);

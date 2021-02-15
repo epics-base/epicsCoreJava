@@ -1,86 +1,26 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.pva;
 
+import org.epics.pvdata.factory.ConvertFactory;
+import org.epics.pvdata.pv.*;
+import org.epics.util.array.*;
+import org.epics.util.stats.Range;
+import org.epics.util.text.NumberFormats;
+import org.epics.vtype.*;
+import org.joda.time.Instant;
+
 import java.text.NumberFormat;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.epics.pvdata.factory.ConvertFactory;
-import org.epics.pvdata.pv.ByteArrayData;
-import org.epics.pvdata.pv.Convert;
-import org.epics.pvdata.pv.DoubleArrayData;
-import org.epics.pvdata.pv.FloatArrayData;
-import org.epics.pvdata.pv.IntArrayData;
-import org.epics.pvdata.pv.LongArrayData;
-import org.epics.pvdata.pv.PVByteArray;
-import org.epics.pvdata.pv.PVDoubleArray;
-import org.epics.pvdata.pv.PVField;
-import org.epics.pvdata.pv.PVFloatArray;
-import org.epics.pvdata.pv.PVInt;
-import org.epics.pvdata.pv.PVIntArray;
-import org.epics.pvdata.pv.PVLong;
-import org.epics.pvdata.pv.PVLongArray;
-import org.epics.pvdata.pv.PVScalar;
-import org.epics.pvdata.pv.PVShortArray;
-import org.epics.pvdata.pv.PVString;
-import org.epics.pvdata.pv.PVStringArray;
-import org.epics.pvdata.pv.PVStructure;
-import org.epics.pvdata.pv.PVUByteArray;
-import org.epics.pvdata.pv.PVUIntArray;
-import org.epics.pvdata.pv.PVULongArray;
-import org.epics.pvdata.pv.PVUShortArray;
-import org.epics.pvdata.pv.ScalarType;
-import org.epics.pvdata.pv.ShortArrayData;
-import org.epics.pvdata.pv.StringArrayData;
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInteger;
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ArrayShort;
-import org.epics.util.array.ArrayUByte;
-import org.epics.util.array.ArrayUInteger;
-import org.epics.util.array.ArrayULong;
-import org.epics.util.array.ArrayUShort;
-import org.epics.util.stats.Range;
-import org.epics.util.text.NumberFormats;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.AlarmSeverity;
-import org.epics.vtype.AlarmStatus;
-import org.epics.vtype.Display;
-import org.epics.vtype.EnumDisplay;
-import org.epics.vtype.Time;
-import org.epics.vtype.VByte;
-import org.epics.vtype.VByteArray;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VDoubleArray;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VFloat;
-import org.epics.vtype.VFloatArray;
-import org.epics.vtype.VInt;
-import org.epics.vtype.VIntArray;
-import org.epics.vtype.VLong;
-import org.epics.vtype.VLongArray;
-import org.epics.vtype.VShort;
-import org.epics.vtype.VShortArray;
-import org.epics.vtype.VString;
-import org.epics.vtype.VUByte;
-import org.epics.vtype.VUByteArray;
-import org.epics.vtype.VUInt;
-import org.epics.vtype.VUIntArray;
-import org.epics.vtype.VULong;
-import org.epics.vtype.VULongArray;
-import org.epics.vtype.VUShort;
-import org.epics.vtype.VUShortArray;
 
 /**
  *
  * Utility class to convert Normative Type structures from PVData to VTypes.
- * 
+ *
  * @author carcassi
  */
 public class PVAToVTypes {
@@ -90,7 +30,7 @@ public class PVAToVTypes {
      * <p>
      * It expects a substructure with name {@code timeStamp} of type {@code timeStamp_t}.
      * If it's not found, the current time is returned.
-     * 
+     *
      * @param pvField the root field
      * @return the time information
      */
@@ -106,7 +46,7 @@ public class PVAToVTypes {
             PVLong secsField = timeStampStructure.getLongField("secondsPastEpoch");
             PVInt nanosField = timeStampStructure.getIntField("nanoseconds");
             if (secsField != null && nanosField != null) {
-                timestamp = Instant.ofEpochSecond(secsField.get(), nanosField.get());
+                timestamp = Instant.ofEpochSecond(secsField.get()).plus(nanosField.get()/1000000L);
                 timeValid = true;
             } else {
                 timestamp = Instant.ofEpochSecond(0);
@@ -127,7 +67,7 @@ public class PVAToVTypes {
             return Time.now();
         }
     }
-    
+
     // Conversion table from pva AlarmSeverity to vType AlarmSeverity
     private static final List<AlarmSeverity> FROM_PVA_SEVERITY = Arrays.asList(AlarmSeverity.NONE,
             AlarmSeverity.MINOR,
@@ -151,7 +91,7 @@ public class PVAToVTypes {
      * It expects a substructure with name {@code alarm} of type {@code alarm_t}.
      * If it's not found, no alarm is returned. If disconnected, disconnected is
      * returned.
-     * 
+     *
      * @param pvField the root field
      * @param disconnected whether the channel is disconnected
      * @return the alarm information
@@ -160,14 +100,14 @@ public class PVAToVTypes {
         if (disconnected) {
             return Alarm.disconnected();
         }
-        
+
         // Expect an alarm field of type alarm_t
         PVStructure alarmStructure = (pvField != null) ? pvField.getStructureField("alarm") : null;
         if (alarmStructure != null) {
             AlarmSeverity alarmSeverity;
             AlarmStatus alarmStatus;
             String name;
-            
+
             PVInt severityField = alarmStructure.getIntField("severity");
             if (severityField == null) {
                 alarmSeverity = AlarmSeverity.UNDEFINED;
@@ -188,13 +128,13 @@ public class PVAToVTypes {
             } else {
                 name = messageField.get();
             }
-            
+
             return Alarm.of(alarmSeverity, alarmStatus, name);
         } else {
             return Alarm.none();
         }
     }
-    
+
     /**
      * Extracts the numeric display information from the given PVStructure.
      * <p>
@@ -206,7 +146,7 @@ public class PVAToVTypes {
      * </ul>
      * The undefined range is used for missing ranges. The default unit and
      * format are used if no unit and/or format are found.
-     * 
+     *
      * @param pvField the root field
      * @return the display information
      */
@@ -214,14 +154,14 @@ public class PVAToVTypes {
         if (pvField == null) {
             return Display.none();
         }
-        
+
         Range controlRange;
         Range displayRange;
         Range alarmRange;
         Range warningRange;
         NumberFormat format;
         String units;
-        
+
         // Expect a display field of type display_t
         PVStructure displayStructure = pvField.getStructureField("display");
         displayRange = rangeOf(displayStructure, "limitLow", "limitHigh");
@@ -251,12 +191,12 @@ public class PVAToVTypes {
         PVStructure valueAlarmStructure = pvField.getStructureField("valueAlarm");
         warningRange = rangeOf(valueAlarmStructure, "lowWarningLimit", "highWarningLimit");
         alarmRange = rangeOf(valueAlarmStructure, "lowAlarmLimit", "highAlarmLimit");
-        
+
         return Display.of(displayRange, alarmRange, warningRange, controlRange, units, format);
     }
-    
+
     private static final Convert convert = ConvertFactory.getConvert();
-    
+
     private static double doubleValueOf(PVStructure structure, String fieldName, Double defaultValue) {
         PVField field = structure.getSubField(fieldName);
         if (field instanceof PVScalar) {
@@ -265,7 +205,7 @@ public class PVAToVTypes {
             return defaultValue;
         }
     }
-    
+
     private static Range rangeOf(PVStructure pvStructure, String lowValueName, String highValueName) {
         if (pvStructure != null) {
             return Range.of(doubleValueOf(pvStructure, lowValueName, Double.NaN),
@@ -277,7 +217,7 @@ public class PVAToVTypes {
 
     /**
      * Converts the the given field to a {@link VString}.
-     * 
+     *
      * @param pvField a field of type NTScalar string
      * @param disconnected whether the client is disconnected
      * @return a new VString
@@ -288,7 +228,7 @@ public class PVAToVTypes {
 
     /**
      * Converts the the given field and metadata to a {@link VString}.
-     * 
+     *
      * @param pvField a field convertible to a string
      * @param pvMetadata the metadata structure from an NTScalar
      * @param disconnected whether the client is disconnected
@@ -571,11 +511,11 @@ public class PVAToVTypes {
             return null;
         }
     }
-    
+
     public static VEnum vEnumOf(PVStructure pvField, boolean disconnected) {
         int index;
         List<String> choices;
-        
+
         PVStructure enumStructure = (pvField != null) ? pvField.getStructureField("value") : null;
 
         PVInt indexField = (enumStructure != null) ? enumStructure.getIntField("index") : null;
@@ -593,8 +533,8 @@ public class PVAToVTypes {
         } else {
             choices = Collections.emptyList();
         }
-        
-        
+
+
         return VEnum.of(index, EnumDisplay.of(choices), alarmOf(pvField, disconnected), timeOf(pvField));
     }
 

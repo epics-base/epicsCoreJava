@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -11,14 +11,14 @@ import org.epics.pvdata.pv.PVField;
  *
  */
 class PVAPVField {
-	
+
 	protected final PVField pvField;
-	
+
 	public PVAPVField(PVField pvField, boolean disconnected)
 	{
 		this.pvField = pvField;
 	}
-	
+
 	public PVField getPVField() {
 		return pvField;
 	}
@@ -27,6 +27,6 @@ class PVAPVField {
 	public String toString() {
 		return pvField.toString();
 	}
-	
-	
+
+
 }

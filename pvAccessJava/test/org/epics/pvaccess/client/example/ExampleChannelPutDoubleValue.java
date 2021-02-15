@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright - See the COPYRIGHT that is included with this distribution.
  * EPICS JavaIOC is distributed subject to a Software License Agreement found
  * in file LICENSE that is included with this distribution.
@@ -33,7 +33,7 @@ public class ExampleChannelPutDoubleValue {
     /**
      * main.
      * @param  args is a sequence of flags and filenames.
-     * @throws PVAException PVA exception. 
+     * @throws PVAException PVA exception.
      */
     public static void main(String[] args) throws PVAException {
         org.epics.pvaccess.ClientFactory.start();
@@ -59,12 +59,12 @@ public class ExampleChannelPutDoubleValue {
         org.epics.pvaccess.ClientFactory.stop();
         System.exit(0);
     }
-    
+
     private static final String providerName = org.epics.pvaccess.ClientFactory.PROVIDER_NAME;
     private static final ChannelProviderRegistry channelAccess = ChannelProviderRegistryFactory.getChannelProviderRegistry();
-    
+
     private static class Client implements ChannelRequester, ChannelPutRequester {
-        
+
         private final PVStructure pvRequest;
         private final ChannelProvider channelProvider;
         private final Channel channel;
@@ -75,7 +75,7 @@ public class ExampleChannelPutDoubleValue {
             channelProvider = channelAccess.getProvider(providerName);
             channel = channelProvider.createChannel(channelName, this, ChannelProvider.PRIORITY_DEFAULT);
         }
-      
+
         public void waitUntilDone(long timeoutMs) {
         	System.out.println("waiting");
         	synchronized (this) {
@@ -88,7 +88,7 @@ public class ExampleChannelPutDoubleValue {
 				}
 			}
         }
-        
+
         private void done() {
     		channel.destroy();
         	synchronized (this) {
@@ -96,11 +96,10 @@ public class ExampleChannelPutDoubleValue {
         		this.notifyAll();
         	}
         }
-        
+
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelRequester#channelCreated(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.Channel)
          */
-        @Override
         public void channelCreated(Status status, Channel channel) {
             if(!status.isSuccess()) {
                 message("channelCreated " + status.getMessage(),MessageType.error);
@@ -111,7 +110,6 @@ public class ExampleChannelPutDoubleValue {
         /* (non-Javadoc)
          * @see org.epics.pvaccess.client.ChannelRequester#channelStateChange(org.epics.pvaccess.client.Channel, org.epics.pvaccess.client.Channel.ConnectionState)
          */
-        @Override
         public void channelStateChange(Channel c,ConnectionState connectionState) {
             if(connectionState==ConnectionState.CONNECTED) {
                 channel.createChannelPut(this, pvRequest);
@@ -123,7 +121,6 @@ public class ExampleChannelPutDoubleValue {
         /* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.ChannelPutRequester#channelPutConnect(org.epics.pvdata.pv.Status, org.epics.pvaccess.client.ChannelPut, org.epics.pvdata.pv.PVStructure, org.epics.pvdata.misc.BitSet)
 		 */
-		@Override
 		public void channelPutConnect(Status status, ChannelPut channelPut,
 				Structure structure) {
             if(!status.isSuccess()) {
@@ -131,20 +128,19 @@ public class ExampleChannelPutDoubleValue {
                 done();
                 return;
             }
-            
-            
+
+
             PVStructure pvStructure = PVDataFactory.getPVDataCreate().createPVStructure(structure);
             BitSet bitSet = new BitSet(pvStructure.getNumberFields());
-            
+
             PVDouble val = pvStructure.getDoubleField("value");
             bitSet.set(val.getFieldOffset());
             val.put(Math.random()*10);
-            
+
             channelPut.lastRequest();
             channelPut.put(pvStructure, bitSet);
 		}
 
-		@Override
 		public void putDone(Status status, ChannelPut channelPut) {
             if(!status.isSuccess()) {
                 message("putDone " + status.getMessage(),MessageType.error);
@@ -157,14 +153,12 @@ public class ExampleChannelPutDoubleValue {
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Requester#getRequesterName()
          */
-        @Override
         public String getRequesterName() {
             return "example";
         }
         /* (non-Javadoc)
          * @see org.epics.pvdata.pv.Requester#message(java.lang.String, org.epics.pvdata.pv.MessageType)
          */
-        @Override
         public void message(String message, MessageType messageType) {
             if(messageType!=MessageType.info) {
                 System.err.println(messageType + " " + message);
@@ -175,11 +169,10 @@ public class ExampleChannelPutDoubleValue {
 
 
 
-		@Override
 		public void getDone(Status status, ChannelPut channelPut,
 				PVStructure pvStructure, BitSet bitSet) {
 			// not used
 		}
-        
+
     }
 }

@@ -31,7 +31,6 @@ public class PVTimeStampFactory implements PVTimeStamp {
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVTimeStamp#attach(org.epics.pvdata.pv.PVField)
      */
-    @Override
     public boolean attach(PVField pvField) {
         if(pvField.getField().getType()!=Type.structure) {
             throw new IllegalArgumentException(noTimeStampFound);
@@ -59,7 +58,6 @@ public class PVTimeStampFactory implements PVTimeStamp {
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVTimeStamp#detach()
      */
-    @Override
     public void detach() {
         pvSecs = null;
         pvUserTag = null;
@@ -68,7 +66,6 @@ public class PVTimeStampFactory implements PVTimeStamp {
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVTimeStamp#isAttached()
      */
-    @Override
     public boolean isAttached() {
         if(pvSecs==null || pvNano==null) return false;
         return true;
@@ -76,7 +73,6 @@ public class PVTimeStampFactory implements PVTimeStamp {
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVTimeStamp#get(org.epics.pvdata.property.TimeStamp)
      */
-    @Override
     public void get(TimeStamp timeStamp) {
         if(pvSecs==null || pvNano==null) {
             throw new IllegalStateException(notAttached);
@@ -87,7 +83,6 @@ public class PVTimeStampFactory implements PVTimeStamp {
     /* (non-Javadoc)
      * @see org.epics.pvdata.property.PVTimeStamp#set(org.epics.pvdata.property.TimeStamp)
      */
-    @Override
     public boolean set(TimeStamp timeStamp) {
         if(pvSecs==null || pvNano==null || pvUserTag==null) {
             throw new IllegalStateException(notAttached);

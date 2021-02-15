@@ -35,7 +35,7 @@ import org.epics.pvdata.pv.StatusCreate;
  * @author msekoranja
  */
 abstract class BaseChannelRequester implements Requester, Destroyable {
-    
+
     public static final StatusCreate statusCreate = PVFactory.getStatusCreate();
 
     public static final Status okStatus = statusCreate.getStatusOK();
@@ -46,7 +46,7 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
     public static final Status noProcessACLStatus = statusCreate.createStatus(StatusType.ERROR, "no process access", null);
     public static final Status otherRequestPendingStatus = statusCreate.createStatus(StatusType.ERROR, "other request pending", null);
     public static final Status notAChannelRequest = statusCreate.createStatus(StatusType.ERROR, "not a channel request", null);
-    
+
 
 	protected final ServerContextImpl context;
 	protected final ServerChannelImpl channel;
@@ -67,30 +67,28 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 		synchronized (this) {
 			if (pendingRequest != NULL_REQUEST)
 				return false;
-			
+
 			pendingRequest = qos;
 			return true;
 		}
 	}
-	
+
 	public void stopRequest() {
 		synchronized (this) {
 			pendingRequest = NULL_REQUEST;
 		}
 	}
-	
+
 	public int getPendingRequest() {
 		synchronized (this) {
 			return pendingRequest;
 		}
 	}
-	
-	@Override
+
 	public String getRequesterName() {
 		return transport + "/" + ioid;
 	}
 
-	@Override
 	public void message(final String message, final MessageType messageType) {
 		message(transport, ioid, message, messageType);
 	}
@@ -106,7 +104,6 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 		transport.enqueueSendRequest(
 				new TransportSender() {
 
-					@Override
 					public void send(ByteBuffer buffer, TransportSendControl control) {
 						control.startMessage((byte)18, Integer.SIZE/Byte.SIZE + 1);
 						buffer.putInt(ioid);
@@ -114,19 +111,17 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 						SerializeHelper.serializeString(message, buffer, control);
 					}
 
-					@Override
 					public void lock() {
 						// noop
 					}
 
-					@Override
 					public void unlock() {
 						// noop
 					}
-					
+
 			});
 	}
-	
+
 	/**
 	 * Send failure message.
 	 * @param command failed command.
@@ -139,7 +134,6 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 		transport.enqueueSendRequest(
 			new TransportSender() {
 
-				@Override
 				public void send(ByteBuffer buffer, TransportSendControl control) {
 					control.startMessage(command, Integer.SIZE/Byte.SIZE + 1);
 					buffer.putInt(ioid);
@@ -147,16 +141,14 @@ abstract class BaseChannelRequester implements Requester, Destroyable {
 					status.serialize(buffer, control);
 				}
 
-				@Override
 				public void lock() {
 					// noop
 				}
 
-				@Override
 				public void unlock() {
 					// noop
 				}
-				
+
 		});
 	}
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -6,15 +6,17 @@ package org.epics.gpclient.javafx.tools;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 public final class Toolbox extends VBox {
-    
+
     private static class Tool {
         private final String toolName;
         private final Class<? extends Parent> toolClass;
@@ -31,26 +33,30 @@ public final class Toolbox extends VBox {
         public Class<? extends Parent> getToolClass() {
             return toolClass;
         }
-        
+
         public void open() {
             JavaFXLaunchUtil.open("Diirt - " + getToolName(), toolClass);
         }
     }
-    
-    private static final List<Tool> tools = Arrays.asList(
+
+    private static final List<Tool> tools = Collections.singletonList(
             new Tool("Probe", Probe.class));
-    
+
     private static class ToolButton extends Button {
         private final Tool tool;
 
         public ToolButton(Tool tool) {
             this.tool = tool;
             setText("Open " + tool.getToolName() + "...");
-            addEventHandler(ActionEvent.ACTION, (e) -> this.tool.open());
+            addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent e) {
+                    ToolButton.this.tool.open();
+                }
+            });
             setMaxWidth(Double.MAX_VALUE);
         }
-        
-        
+
+
     }
 
     public Toolbox() {
@@ -60,18 +66,18 @@ public final class Toolbox extends VBox {
 
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
-        
+
         try {
             fxmlLoader.load();
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        
+
         for (Tool tool : tools) {
             getChildren().add(new ToolButton(tool));
         }
     }
-    
+
     public static void main(String[] args) {
         JavaFXLaunchUtil.launch("Diirt - Toolbox", Toolbox.class, args);
     }

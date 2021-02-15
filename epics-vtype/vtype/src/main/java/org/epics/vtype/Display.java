@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -6,7 +6,7 @@ package org.epics.vtype;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 import org.epics.util.stats.Range;
 
 /**
@@ -22,28 +22,28 @@ public abstract class Display {
 
     /**
      * The range for the value when displayed.
-     * 
+     *
      * @return the display range; can be Range.UNDEFINED but not null
      */
     public abstract Range getDisplayRange();
 
     /**
      * The range for the alarm associated to the value.
-     * 
+     *
      * @return the alarm range; can be Range.UNDEFINED but not null
      */
     public abstract Range getAlarmRange();
 
     /**
      * The range for the warning associated to the value.
-     * 
+     *
      * @return the warning range; can be Range.UNDEFINED but not null
      */
     public abstract Range getWarningRange();
 
     /**
      * The range used for changing the value.
-     * 
+     *
      * @return the control range; can be Range.UNDEFINED but not null
      */
     public abstract Range getControlRange();
@@ -64,11 +64,11 @@ public abstract class Display {
      * @return the default format for all values
      */
     public abstract NumberFormat getFormat();
-    
-        
+
+
     /**
      * Alarm based on the value and the display ranges.
-     * 
+     *
      * @param value the value
      * @return the new alarm
      */
@@ -86,7 +86,7 @@ public abstract class Display {
         } else if (newValue >= getWarningRange().getMaximum()) {
             return Alarm.high();
         }
-        
+
         return Alarm.none();
     }
 
@@ -96,10 +96,10 @@ public abstract class Display {
         if (this == obj) {
             return true;
         }
-        
+
 	if (obj instanceof Display) {
             Display other = (Display) obj;
-        
+
             return Objects.equals(getFormat(), other.getFormat()) &&
                 Objects.equals(getUnit(), other.getUnit()) &&
                 Objects.equals(getDisplayRange(), other.getDisplayRange()) &&
@@ -107,7 +107,7 @@ public abstract class Display {
                 Objects.equals(getWarningRange(), other.getWarningRange()) &&
                 Objects.equals(getControlRange(), other.getControlRange());
         }
-        
+
         return false;
     }
 
@@ -127,10 +127,10 @@ public abstract class Display {
     public final String toString() {
         return "Display[units: " + getUnit() + " disp: " + getDisplayRange() + " alarm: " + getAlarmRange() + " warn: " + getWarningRange() + " ctrl: " + getControlRange() + " format: " + getFormat() + "]";
     }
-    
+
     /**
      * Creates a new display.
-     * 
+     *
      * @param displayRange the display range
      * @param warningRange the warning range
      * @param alarmRange the alarm range
@@ -144,17 +144,17 @@ public abstract class Display {
         return new IDisplay(displayRange, alarmRange, warningRange,
                 controlRange, units, numberFormat);
     }
-    
+
     // TODO: maybe this can be configured (injected through SPI?)
     private static final NumberFormat DEFAULT_NUMBERFORMAT = new DecimalFormat();
-    
+
     private static final Display DISPLAY_NONE = of(Range.undefined(),
-            Range.undefined(), Range.undefined(), Range.undefined(), 
+            Range.undefined(), Range.undefined(), Range.undefined(),
             defaultUnits(), DEFAULT_NUMBERFORMAT);
 
     /**
      * The default number format for number display.
-     * 
+     *
      * @return a number format
      */
     public static NumberFormat defaultNumberFormat() {
@@ -163,22 +163,22 @@ public abstract class Display {
 
     /**
      * The default unit string.
-     * 
+     *
      * @return an empty string
      */
     public static String defaultUnits() {
         return "";
     }
-    
+
     /**
      * Empty display information.
-     * 
+     *
      * @return no display
      */
     public static Display none() {
         return DISPLAY_NONE;
     }
-    
+
     /**
      * Null and non-VType safe utility to extract display information.
      * <ul>
@@ -194,7 +194,7 @@ public abstract class Display {
         if (value instanceof DisplayProvider) {
             return ((DisplayProvider) value).getDisplay();
         }
-        
+
         return none();
     }
 }

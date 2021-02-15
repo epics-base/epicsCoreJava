@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,13 +10,13 @@ package org.epics.util.number;
  * @author carcassi
  */
 public final class UShort extends Number {
-    
+
     private final short unsignedValue;
 
     /**
      * Constructs a newly allocated {@code UShort} object that represent
      * the specified unsigned {@code short} value.
-     * 
+     *
      * @param unsignedValue the value to be represented by the {@code UShort}
      */
     public UShort(short unsignedValue) {
@@ -42,10 +42,10 @@ public final class UShort extends Number {
     public double doubleValue() {
         return UnsignedConversions.toDouble(unsignedValue);
     }
-    
+
     /**
      * A wrapper for the given unsigned {@code short}.
-     * 
+     *
      * @param unsignedValue an unsigned {@code short} value
      * @return a {@code UShort} instance representing {@code unsignedValue}
      */
@@ -65,16 +65,18 @@ public final class UShort extends Number {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof UShort) {
-            return unsignedValue == ((UShort)obj).unsignedValue;
-        }
-        return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UShort)) return false;
+
+        UShort uShort = (UShort) o;
+
+        return unsignedValue == uShort.unsignedValue;
     }
 
     @Override
     public int hashCode() {
-        return Short.hashCode(unsignedValue);
+        return unsignedValue;
     }
 
     @Override

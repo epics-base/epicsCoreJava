@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright (C) 2010-18 diirt developers. See COPYRIGHT.TXT
  * All rights reserved. Use is subject to license terms. See LICENSE.TXT
  */
 package org.epics.vtype;
 
-import java.util.Objects;
+import org.epics.util.compat.legacy.lang.Objects;
 
 /**
  * Statistics for double with alarm, timestamp and display information.
@@ -38,11 +38,11 @@ public abstract class VStatistics extends Statistics {
         Class type = typeOf(this);
         builder.append(type.getSimpleName())
                 .append('[')
-                .append("max:" + getMax())
-                .append(", min:" + getMin())
-                .append(", mean:" + getAverage())
-                .append(", std:" + getStdDev())
-                .append(", #samples" + getNSamples())
+                .append("max:").append(getMax())
+                .append(", min:").append(getMin())
+                .append(", mean:").append(getAverage())
+                .append(", std:").append(getStdDev())
+                .append(", #samples").append(getNSamples())
                 .append(", ")
                 .append(getAlarm())
                 .append(", ")

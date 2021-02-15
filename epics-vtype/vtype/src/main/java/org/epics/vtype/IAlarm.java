@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -14,7 +14,7 @@ final class IAlarm extends Alarm {
     private final AlarmSeverity severity;
     private final AlarmStatus status;
     private final String name;
-    
+
     IAlarm(AlarmSeverity severity, AlarmStatus status, String name) {
         VType.argumentNotNull("severity", severity);
         VType.argumentNotNull("status", status);

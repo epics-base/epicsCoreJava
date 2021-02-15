@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,13 +10,13 @@ package org.epics.util.number;
  * @author carcassi
  */
 public final class UInteger extends Number {
-    
+
     private final int unsignedValue;
 
     /**
      * Constructs a newly allocated {@code UInteger} object that represent
      * the specified unsigned {@code int} value.
-     * 
+     *
      * @param unsignedValue the value to be represented by the {@code UInteger}
      */
     public UInteger(int unsignedValue) {
@@ -42,10 +42,10 @@ public final class UInteger extends Number {
     public double doubleValue() {
         return UnsignedConversions.toDouble(unsignedValue);
     }
-    
+
     /**
      * A wrapper for the given unsigned {@code int}.
-     * 
+     *
      * @param unsignedValue an unsigned {@code int} value
      * @return a {@code UInteger} instance representing {@code unsignedValue}
      */
@@ -61,11 +61,12 @@ public final class UInteger extends Number {
      * @return the string representation of the specified unsigned {@code int}
      */
     public static String toString(int unsignedValue) {
-        return Integer.toUnsignedString(unsignedValue, 10);
+        return ULong.toString(toUnsignedLong(unsignedValue));
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
         if (obj instanceof UInteger) {
             return unsignedValue == ((UInteger)obj).unsignedValue;
         }
@@ -74,11 +75,24 @@ public final class UInteger extends Number {
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(unsignedValue);
+        return unsignedValue;
     }
 
     @Override
     public String toString() {
         return UInteger.toString(unsignedValue);
     }
+
+    /**
+     * From Java 12 implementation
+     *
+     * @param  x the value to convert to an unsigned {@code long}
+     * @return the argument converted to {@code long} by an unsigned
+     *         conversion
+     * @since 1.8
+     */
+    public static long toUnsignedLong(int x) {
+        return ((long) x) & 0xffffffffL;
+    }
+
 }

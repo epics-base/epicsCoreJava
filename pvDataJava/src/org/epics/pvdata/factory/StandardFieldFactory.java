@@ -83,7 +83,7 @@ public final class StandardFieldFactory {
 	    fields[2] = fieldCreate.createScalar(ScalarType.pvInt);
 	    fields[3] = fieldCreate.createScalar(ScalarType.pvInt);
 	   booleanAlarmField = fieldCreate.createStructure("valueAlarm_t",booleanAlarmFieldNames,fields);
-	    
+
 	    fields = new Field[10];
 	    String[] scalarAlarmFieldNames = {
             "active","lowAlarmLimit","lowWarningLimit","highWarningLimit","highAlarmLimit",
@@ -260,7 +260,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#scalar(org.epics.pvdata.pv.ScalarType, java.lang.String)
 		 */
-		@Override
 		public Structure scalar(ScalarType scalarType,String properties)
 		{
 			Scalar field = fieldCreate.createScalar(scalarType);	// scalar_t
@@ -269,7 +268,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#scalarArray(org.epics.pvdata.pv.ScalarType, java.lang.String)
 		 */
-		@Override
 		public Structure scalarArray(ScalarType elementType, String properties)
 		{
 			ScalarArray field = fieldCreate.createScalarArray(elementType);	// scalar_t[]
@@ -278,7 +276,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#structureArray(org.epics.pvdata.pv.Structure, java.lang.String)
 		 */
-		@Override
 		public Structure structureArray(Structure structure,String properties)
 		{
 			StructureArray field = fieldCreate.createStructureArray(structure);
@@ -287,7 +284,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#enumerated()
 		 */
-		@Override
 		public Structure enumerated()
 		{
 			Field[] fields = new Field[2];
@@ -301,18 +297,16 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#enumerated(java.lang.String)
 		 */
-		@Override
 		public Structure enumerated(String properties)
 		{
 		    Structure field = enumerated();	// enum_t
 		    return createProperties("epics:nt/NTEnum:1.0",field,properties);
 
 		}
-		
+
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#alarm()
 		 */
-		@Override
 		public Structure alarm()
 		{
 			return alarmField;
@@ -320,7 +314,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#timeStamp()
 		 */
-		@Override
 		public Structure timeStamp()
 		{
 			return timeStampField;
@@ -328,7 +321,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#display()
 		 */
-		@Override
 		public Structure display()
 		{
 			return displayField;
@@ -336,7 +328,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#control()
 		 */
-		@Override
 		public Structure control()
 		{
 			return controlField;
@@ -344,7 +335,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#booleanAlarm()
 		 */
-		@Override
 		public Structure booleanAlarm()
 		{
 			return booleanAlarmField;
@@ -352,7 +342,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#byteAlarm()
 		 */
-		@Override
 		public Structure byteAlarm()
 		{
 			return byteAlarmField;
@@ -360,7 +349,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#shortAlarm()
 		 */
-		@Override
 		public Structure shortAlarm()
 		{
 			return shortAlarmField;
@@ -368,7 +356,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#intAlarm()
 		 */
-		@Override
 		public Structure intAlarm()
 		{
 			return intAlarmField;
@@ -376,7 +363,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#longAlarm()
 		 */
-		@Override
 		public Structure longAlarm()
 		{
 			return longAlarmField;
@@ -384,7 +370,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#floatAlarm()
 		 */
-		@Override
 		public Structure floatAlarm()
 		{
 			return floatAlarmField;
@@ -392,7 +377,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#doubleAlarm()
 		 */
-		@Override
 		public Structure doubleAlarm()
 		{
 			return doubleAlarmField;
@@ -400,7 +384,6 @@ public final class StandardFieldFactory {
 		/* (non-Javadoc)
 		 * @see org.epics.pvdata.pv.StandardField#enumeratedAlarm()
 		 */
-		@Override
 		public Structure enumeratedAlarm()
 		{
 			return enumeratedAlarmField;

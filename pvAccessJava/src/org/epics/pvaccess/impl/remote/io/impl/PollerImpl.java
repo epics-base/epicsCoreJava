@@ -1,11 +1,10 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.impl.remote.io.impl;
 
 import java.io.IOException;
 import java.nio.channels.CancelledKeyException;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
@@ -13,6 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.epics.pvaccess.impl.remote.io.PollEvents;
 import org.epics.pvaccess.impl.remote.io.Poller;
+import java.nio.channels.SelectableChannel;
 
 /**
  * @author msekoranja
@@ -21,7 +21,7 @@ import org.epics.pvaccess.impl.remote.io.Poller;
 public class PollerImpl implements Poller, Runnable {
 
 	final Selector selector;
-	
+
 	// wake-up time kills low-latency, this mechanism loops selectNow for some time
 	private int trottle = 0;
 
@@ -38,13 +38,12 @@ public class PollerImpl implements Poller, Runnable {
 	/* (non-Javadoc)
 	 * @see com.cosylab.jam.io.Poller#add(java.nio.channels.SelectableChannel, com.cosylab.jam.io.PollEvents, int)
 	 */
-	@Override
-	public void add(SelectableChannel channel, PollEvents handler, int ops) 
+	public void add(SelectableChannel channel, PollEvents handler, int ops)
 	{
 		registrations.add(new RegistrationRequest(channel, handler, ops));
 		selector.wakeup();
 	}
-	
+
 	static class RegistrationRequest
 	{
 		final SelectableChannel channel;
@@ -58,14 +57,13 @@ public class PollerImpl implements Poller, Runnable {
 			this.handler = handler;
 			this.ops = ops;
 		}
-		
+
 	}
 	ConcurrentLinkedQueue<RegistrationRequest> registrations = new ConcurrentLinkedQueue<RegistrationRequest>();
 
 	/* (non-Javadoc)
 	 * @see com.cosylab.jam.io.Poller#modify(java.nio.channels.SelectionKey, int)
 	 */
-	@Override
 	public void modify(SelectionKey key, int ops) {
 		key.interestOps(ops);
 		selector.wakeup();
@@ -74,7 +72,6 @@ public class PollerImpl implements Poller, Runnable {
 	/* (non-Javadoc)
 	 * @see com.cosylab.jam.io.Poller#remove(java.nio.channels.SelectionKey)
 	 */
-	@Override
 	public void remove(SelectionKey key) {
 		key.cancel();
 	}
@@ -96,31 +93,31 @@ public class PollerImpl implements Poller, Runnable {
 				rr.handler.registeredNotify(null, registrationException);
 			}
 		}
-		
+
 		int numSelectedKeys;
 		if (trottle == 0)
 		{
-			numSelectedKeys = selector.select(); 
+			numSelectedKeys = selector.select();
 		}
 		else
 		{
 			numSelectedKeys = selector.selectNow();
 			trottle--;
 		}
-		
+
 		//System.out.println("polled with:" + numSelectedKeys);
-		
+
 		if (numSelectedKeys == 0)
 			return;
-		
+
 		Iterator<SelectionKey> selectedKeysIterator = selector.selectedKeys().iterator();
-		
+
 		while (selectedKeysIterator.hasNext())
 		{
 			SelectionKey key = selectedKeysIterator.next();
 
 			selectedKeysIterator.remove();
-			
+
 			PollEvents pollEvents = (PollEvents)key.attachment();
 
 			// callback guard
@@ -134,9 +131,8 @@ public class PollerImpl implements Poller, Runnable {
 
 		trottle = 5;	// TODO tune
 	}
-	
-	@Override
-	public void run() 
+
+	public void run()
 	{
 		try
 		{

@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */package org.epics.pvaccess.server.rpc;
 
 import org.epics.pvdata.pv.PVStructure;

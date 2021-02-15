@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -12,7 +12,7 @@ import org.epics.util.number.UInteger;
  * @author carcassi
  */
 final class IVUInt extends VUInt {
-    
+
     private final UInteger value;
     private final Alarm alarm;
     private final Time time;
@@ -34,17 +34,14 @@ final class IVUInt extends VUInt {
         return value;
     }
 
-    @Override
     public Alarm getAlarm() {
         return alarm;
     }
 
-    @Override
     public Time getTime() {
         return time;
     }
 
-    @Override
     public Display getDisplay() {
         return display;
     }

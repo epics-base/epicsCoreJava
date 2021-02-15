@@ -31,7 +31,7 @@ public class SerializationExamples {
 	{
 		final IntrospectionRegistry incomingIR;
 		final IntrospectionRegistry outgoingIR;
-		
+
 		public SerDeSerControl()
 		{
 			this.incomingIR = new IntrospectionRegistry();
@@ -44,40 +44,33 @@ public class SerializationExamples {
 			this.outgoingIR = outgoingIR;
 		}
 
-		@Override
 		public void ensureData(int size) {
 		}
 
-		@Override
 		public void alignData(int alignment) {
 		}
 
-		@Override
 		public void flushSerializeBuffer() {
 		}
 
-		@Override
 		public void ensureBuffer(int size) {
 		}
 
-		@Override
 		public void alignBuffer(int alignment) {
 		}
 
-		@Override
 		public Field cachedDeserialize(ByteBuffer buffer) {
 			return incomingIR.deserialize(buffer, this);
 		}
 
-		@Override
 		public void cachedSerialize(Field field, ByteBuffer buffer) {
 			outgoingIR.serialize(field, buffer, this);
 		}
 
 	}
-	
+
 	static final SerDeSerControl control = new SerDeSerControl();
-	
+
 	static void bitSetExample(BitSet bitSet)
 	{
 		ByteBuffer bb = ByteBuffer.allocate(1024); bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -85,7 +78,7 @@ public class SerializationExamples {
 		HexDump.hexDump(bitSet.toString(), bb.array(), bb.position());
 		System.out.println();
 	}
-	
+
 	static void bitSetExamples()
 	{
 		BitSet bitSet = new BitSet();
@@ -98,14 +91,14 @@ public class SerializationExamples {
 			bitSet.set(ix);
 			bitSetExample(bitSet);
 		}
-		
+
 		bitSet.clear();
 		bitSet.set(0);
 		bitSet.set(1);
 		bitSet.set(2);
 		bitSet.set(4);
 		bitSetExample(bitSet);
-		
+
 		bitSet.set(8);
 		bitSetExample(bitSet);
 
@@ -120,24 +113,24 @@ public class SerializationExamples {
 		bitSet.set(49);
 		bitSet.set(50);
 		bitSetExample(bitSet);
-		
+
 		bitSet.set(56);
 		bitSet.set(57);
 		bitSet.set(58);
 		bitSetExample(bitSet);
-		
+
 		bitSet.set(67);
 		bitSetExample(bitSet);
-		
+
 		bitSet.set(72);
 		bitSet.set(75);
 		bitSetExample(bitSet);
-		
+
 		bitSet.set(81);
 		bitSet.set(83);
 		bitSetExample(bitSet);
 	}
-	
+
 	static void statusExample(String description, Status status)
 	{
 		ByteBuffer bb = ByteBuffer.allocate(1024);
@@ -155,17 +148,17 @@ public class SerializationExamples {
 		statusExample("ERROR, \"Failed to get, due to unexpected exception\", (stack dump)",
 				statusCreate.createStatus(StatusType.ERROR, "Failed to get, due to unexpected exception", new RuntimeException()));
 	}
-	
+
 	static void structureExample()
 	{
 		FieldCreate fieldCreate = PVFactory.getFieldCreate();
 		PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-		
+
 		ByteBuffer bb = ByteBuffer.allocate(10240);
-		
+
 		// TODO access via PVFactory?
 		StandardField standardField = StandardFieldFactory.getStandardField();
-		
+
 		Structure structure = fieldCreate.createFieldBuilder().
 				setId("exampleStructure").
 				addArray("value", ScalarType.pvByte).
@@ -180,9 +173,9 @@ public class SerializationExamples {
 					endNested().
 				add("variantUnion", fieldCreate.createVariantUnion()).
 				createStructure();
-        
+
         PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-        
+
         PVByteArray ba = (PVByteArray)pvStructure.getSubField("value");
         byte[] toPut = new byte[] { (byte)1, (byte)2, (byte)3 };
         ba.put(0, toPut.length, toPut, 0);
@@ -206,30 +199,30 @@ public class SerializationExamples {
 		alarmStructure.getStringField("message").put("Allo, Allo!");
 
 		((PVInt)pvStructure.getUnionField("valueUnion").select("intValue")).put(0x33333333);
-		
+
 		PVString pvString = (PVString)pvDataCreate.createPVScalar(ScalarType.pvString);
 		pvString.put("String inside variant union.");
 		pvStructure.getUnionField("variantUnion").set(pvString);
-			
+
 			control.outgoingIR.serialize(pvStructure.getStructure(), bb, control);
-			
+
 	        System.out.println(pvStructure.getStructure());
 	        System.out.println();
-		
+
 		HexDump.hexDump("Serialized structure IF", bb.array(), bb.position());
 		System.out.println();
 
-		
-			
-			
-			
+
+
+
+
 			bb.clear();
-			
+
 	        pvStructure.serialize(bb, control);
 
 	        System.out.println(pvStructure);
 	        System.out.println();
-		
+
 		HexDump.hexDump("Serialized structure", bb.array(), bb.position());
 		System.out.println();
 	}
@@ -238,12 +231,12 @@ public class SerializationExamples {
 	{
 		FieldCreate fieldCreate = PVFactory.getFieldCreate();
 		//PVDataCreate pvDataCreate = PVFactory.getPVDataCreate();
-		
+
 		ByteBuffer bb = ByteBuffer.allocate(10240);
-			
-        Structure blahStructure = 
+
+        Structure blahStructure =
         		fieldCreate.createStructure(
-        				"blah", 
+        				"blah",
         				new String[] {
         						"x",
         						"y"
@@ -253,16 +246,16 @@ public class SerializationExamples {
         						fieldCreate.createScalar(ScalarType.pvFloat)
         				}
         			);
-        
+
         StructureArray blahStructureArray = fieldCreate.createStructureArray(blahStructure);
-        
-			
+
+
 		control.cachedSerialize(blahStructure, bb);
 
 		HexDump.hexDump("blah Structure", bb.array(), bb.position());
 		System.out.println();
 		bb.clear();
-		
+
 		control.cachedSerialize(blahStructureArray, bb);
 		HexDump.hexDump("blah[] Structure", bb.array(), bb.position());
 		System.out.println();

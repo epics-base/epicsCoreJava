@@ -8,7 +8,7 @@ import org.epics.pvdata.pv.PVField;
 import org.epics.pvdata.pv.PVStructure;
 
 /**
- * 
+ *
  * Factory that implements BitSetUtil.
  * It has NO internal state.
  * @author mrk
@@ -25,16 +25,15 @@ public class BitSetUtilFactory {
     public static BitSetUtil getCompressBitSet() {
         return compressBitSet;
     }
-    
+
     private static final class CompressBitSetImpl implements BitSetUtil{
         /* (non-Javadoc)
          * @see org.epics.pvdata.pvCopy.BitSetUtil#compress(org.epics.pvdata.misc.BitSet, org.epics.pvdata.pv.PVStructure)
          */
-        @Override
         public boolean compress(BitSet bitSet, PVStructure pvStructure) {
             return checkBitSetPVField(pvStructure,bitSet,0);
         }
-        
+
         private boolean checkBitSetPVField(PVField pvField,BitSet bitSet,int initialOffset) {
             int offset = initialOffset;
             int nbits = pvField.getNumberFields();
@@ -82,6 +81,6 @@ public class BitSetUtilFactory {
             }
             return atLeastOneBitSet;
         }
-        
+
     }
 }

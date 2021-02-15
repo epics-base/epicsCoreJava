@@ -20,17 +20,17 @@ package org.epics.pvaccess.impl.remote;
  * @version $Id$
  */
 public enum QoS {
-	
+
 	/**
 	 * Default behavior.
 	 */
 	DEFAULT(0x00),
-	
+
 	/**
 	 * Require reply (acknowledgment for reliable operation).
 	 */
 	REPLY_REQUIRED(0x01),
-	
+
 	/**
 	 * Best-effort option (no reply).
 	 */
@@ -55,7 +55,7 @@ public enum QoS {
 	 * Share data option.
 	 */
 	UNUSED_1(0x20),
-	
+
 	/**
 	 * Get.
 	 */
@@ -65,23 +65,23 @@ public enum QoS {
 	 * Get-put.
 	 */
 	GET_PUT(0x80);
-	
-	
+
+
 
 	/**
 	 * Bit-mask value of this option.
 	 */
 	private final int maskValue;
-	
+
 	/**
 	 * Private constructor.
-	 * @param maskValue
+	 * @param maskValue mask value
 	 */
 	private QoS(int maskValue)
 	{
 		this.maskValue = maskValue;
 	}
-	
+
 	/**
 	 * Get bit-mask value of this option.
 	 * @return bit-mask value.
@@ -90,7 +90,7 @@ public enum QoS {
 	{
 		return maskValue;
 	}
-	
+
 	/**
 	 * Check if option is set.
 	 * @param qos QoS options to check.

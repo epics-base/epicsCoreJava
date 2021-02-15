@@ -1,14 +1,16 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
 package org.epics.gpclient.datasource.sim;
 
+import org.epics.gpclient.datasource.ChannelHandler;
+import org.epics.gpclient.datasource.DataSource;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
-import org.epics.gpclient.datasource.ChannelHandler;
-import org.epics.gpclient.datasource.DataSource;
+
 import static org.epics.util.concurrent.Executors.namedPool;
 
 /**
@@ -48,7 +50,7 @@ public final class SimulationDataSource extends DataSource {
         if (channelName.startsWith("intermittentChannel(")) {
             return new IntermittentChannelHandler(channelName, exec);
         }
-        
+
         SimFunction<?> simFunction = (SimFunction<?>) NameParser.createFunction(channelName);
         return new SimulationChannelHandler(channelName, simFunction, exec);
     }

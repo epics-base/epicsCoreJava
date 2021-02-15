@@ -1,5 +1,5 @@
-/**
- * 
+/*
+ *
  */
 package org.epics.pvaccess.impl.remote.io.impl.test;
 
@@ -29,7 +29,7 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 	interface ReadyListener {
 		void ready(AbstractCodec codec);
 	}
-	
+
 	final Poller poller;
 	final SocketChannel channel;
 	SelectionKey key;
@@ -49,7 +49,6 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 	/* (non-Javadoc)
 	 * @see com.cosylab.jam.io.PollEvents#registeredNotify(java.nio.channels.SelectionKey, java.lang.Throwable)
 	 */
-	@Override
 	public void registeredNotify(SelectionKey key,
 			Throwable registrationException) {
 		setSenderThread();
@@ -61,7 +60,6 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 	/* (non-Javadoc)
 	 * @see com.cosylab.jam.io.PollEvents#pollNotify(java.nio.channels.SelectionKey)
 	 */
-	@Override
 	public void pollNotify(SelectionKey key) throws IOException {
 		if (key.isReadable())
 			processRead();
@@ -73,7 +71,6 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		}
 	}
 
-	@Override
 	public int read(ByteBuffer dst) throws IOException {
 		return channel.read(dst);
 	}
@@ -100,17 +97,14 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		return socketAddress;
 	}
 
-	@Override
 	public void close() throws IOException {
 		channel.close();
 	}
 
-	@Override
 	public boolean isOpen() {
 		return channel.isOpen();
 	}
 
-	@Override
 	public int write(ByteBuffer src) throws IOException {
 		return channel.write(src);
 	}
@@ -120,21 +114,19 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.Lockable#lock()
 		 */
-		@Override
 		public void lock() {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.Lockable#unlock()
 		 */
-		@Override
 		public void unlock() {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		int c = 0;
 		long avg = 0;
 
@@ -142,7 +134,6 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
 			long t = System.nanoTime();
 			avg += t-lastTime;
@@ -156,13 +147,13 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 			control.ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 			buffer.put(PVAConstants.PVA_MAGIC);
 			buffer.put(PVAConstants.PVA_VERSION);
-			buffer.put((byte)0x81);		
-			buffer.put((byte)0);		
-			buffer.putInt(0);		
+			buffer.put((byte)0x81);
+			buffer.put((byte)0);
+			buffer.putInt(0);
 		}
-	
+
 	};
-	
+
 	@Override
 	public void processControlMessage() {
 		//System.out.println("processControlMessage():" + command);
@@ -207,25 +198,23 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		return false;
 	}
 
-	@Override
 	public void cachedSerialize(Field field, ByteBuffer buffer) {
 		// no cache
 		field.serialize(buffer, this);
 	}
 
 
-	static class Acceptor implements PollEvents, TransportSender, ReadyListener 
+	static class Acceptor implements PollEvents, TransportSender, ReadyListener
 	{
 		final Poller poller;
 		final ServerSocketChannel serverSocket;
-		
+
 		public Acceptor(Poller poller, ServerSocketChannel serverSocket)
 		{
 			this.poller = poller;
 			this.serverSocket = serverSocket;
 		}
-		
-		@Override
+
 		public void pollNotify(SelectionKey key) {
 			System.out.println(key.readyOps());
 			try {
@@ -242,7 +231,6 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 			}
 		}
 
-		@Override
 		public void registeredNotify(SelectionKey key,
 				Throwable registrationException) {
 			// noop
@@ -251,32 +239,31 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		/**
 		 * PVA connection validation request.
 		 * A server sends a validate connection message when it receives a new connection.
-		 * The message indicates that the server is ready to receive requests; the client must 
+		 * The message indicates that the server is ready to receive requests; the client must
 		 * not send any messages on the connection until it has received the validate connection message
-		 * from the server. No reply to the message is expected by the server. 
-		 * The purpose of the validate connection message is two-fold: 
+		 * from the server. No reply to the message is expected by the server.
+		 * The purpose of the validate connection message is two-fold:
 		 * It informs the client of the protocol version supported by the server.
-		 * It prevents the client from writing a request message to its local transport 
-		 * buffers until after the server has acknowledged that it can actually process the 
-		 * request. This avoids a race condition caused by the server's TCP/IP stack 
+		 * It prevents the client from writing a request message to its local transport
+		 * buffers until after the server has acknowledged that it can actually process the
+		 * request. This avoids a race condition caused by the server's TCP/IP stack
 		 * accepting connections in its backlog while the server is in the process of shutting down:
-		 * if the client were to send a request in this situation, the request 
-		 * would be lost but the client could not safely re-issue the request because that 
-		 * might violate at-most-once semantics. 
-		 * The validate connection message guarantees that a server is not in the middle 
+		 * if the client were to send a request in this situation, the request
+		 * would be lost but the client could not safely re-issue the request because that
+		 * might violate at-most-once semantics.
+		 * The validate connection message guarantees that a server is not in the middle
 		 * of shutting down when the server's TCP/IP stack accepts an incoming connection
-		 * and so avoids the race condition. 
+		 * and so avoids the race condition.
 		 * @see org.epics.pvaccess.impl.remote.TransportSender#send(java.nio.ByteBuffer, org.epics.pvaccess.impl.remote.TransportSendControl)
 		 */
-		@Override
 		public void send(ByteBuffer buffer, TransportSendControl control) {
-		
+
 			control.ensureBuffer(PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 			buffer.put(PVAConstants.PVA_MAGIC);
 			buffer.put(PVAConstants.PVA_VERSION);
-			buffer.put((byte)0x81);		
-			buffer.put((byte)0);		
-			buffer.putInt(0);		
+			buffer.put((byte)0x81);
+			buffer.put((byte)0);
+			buffer.putInt(0);
 
 			// send immediately
 			control.flush(true);
@@ -285,27 +272,24 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.Lockable#lock()
 		 */
-		@Override
 		public void lock() {
 		}
 
 		/* (non-Javadoc)
 		 * @see org.epics.pvaccess.client.Lockable#unlock()
 		 */
-		@Override
 		public void unlock() {
 		}
 
-		@Override
 		public void ready(AbstractCodec codec) {
 			codec.setSenderThread();
 			codec.enqueueSendRequest(this, PVAConstants.PVA_MESSAGE_HEADER_SIZE);
 		}
-		
-	};
-	
+
+	}
+
 	public static void main(String[] args) throws Throwable {
-		
+
 		final PollerImpl poller = new PollerImpl();
 		poller.start();
 
@@ -314,12 +298,12 @@ public class LatencyTest extends AbstractCodec implements PollEvents {
 		serverSocket.configureBlocking(false);
 		poller.add(serverSocket, new Acceptor(poller, serverSocket), SelectionKey.OP_ACCEPT);
 
-		
+
 		SocketChannel clientSocket = SocketChannel.open();
 		clientSocket.configureBlocking(false);
 		poller.add(clientSocket, new LatencyTest(poller, clientSocket, null), SelectionKey.OP_CONNECT);
 		clientSocket.connect(new InetSocketAddress("192.168.1.102", 1234));
-		
+
 	}
 
 }

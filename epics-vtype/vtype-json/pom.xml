@@ -8,7 +8,7 @@
     </parent>
     <artifactId>vtype-json</artifactId>
     <name>org.epics.vtype.json</name>
-    <description>Standard JSON serilization for value types.</description>
+    <description>Standard JSON serialization for value types.</description>
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

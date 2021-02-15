@@ -24,32 +24,32 @@ public class Version {
      * @see Version#getProductName()
      */
     private final String productName;
-    
+
     /**
      * @see Version#getImplementationLanguage()
      */
     private final String implementationLanguage;
-    
+
     /**
      * @see Version#getMajorVersion()
      */
     private final int majorVersion;
-    
+
     /**
      * @see Version#getMinorVersion()
      */
     private final int minorVersion;
-    
+
     /**
      * @see Version#getMaintenanceVersion()
      */
     private final int maintenanceVersion;
-    
+
     /**
-     * @see Version#getDevelopmentVersion()
+     * @code Version#getDevelopmentVersion()
      */
     private final boolean developmentFlag;
-    
+
     /**
      * Default constructor.
      * @param productName	product name.
@@ -65,7 +65,7 @@ public class Version {
     {
         //assert (productName != null);
         //assert (implementationLangugage != null);
-        
+
         this.productName = productName;
         this.implementationLanguage = implementationLangugage;
         this.majorVersion = majorVersion;
@@ -73,7 +73,7 @@ public class Version {
         this.maintenanceVersion = maintenanceVersion;
         this.developmentFlag = developmentFlag;
     }
-    
+
     /**
      * Get the basic version string.
      *
@@ -89,13 +89,13 @@ public class Version {
                 + getMinorVersion()
 		        + "."
 		        + getMaintenanceVersion();
-    	
+
         if (isDevelopmentVersion())
         	version += "-SNAPSHOT";
-        
+
         return version;
     }
-    
+
     /**
      * Name of product: Xalan.
      * @return product name.
@@ -107,7 +107,7 @@ public class Version {
 
     /**
      * Implementation Language: Java.
-     * @return the implementation language. 
+     * @return the implementation language.
      */
     public String getImplementationLanguage()
     {
@@ -118,7 +118,7 @@ public class Version {
      * Major version number. This changes only when there is a
      * significant, externally apparent enhancement from the previous release.
      * 'n' represents the n'th version.
-     * 
+     *
      * Clients should carefully consider the implications of new versions as
      * external interfaces and behaviour may have changed.
      * @return major version.
@@ -136,7 +136,7 @@ public class Version {
      * <li>API or behaviour change</li>
      * <li>its designated as a reference release</li>
      * </ul>
-     * @return minor version. 
+     * @return minor version.
      */
     public int getMinorVersion()
     {
@@ -158,7 +158,7 @@ public class Version {
 
     /**
      * Development flag.
-     * 
+     *
      * Development drops are works in progress towards a completed, final
      * release. A specific development drop may not completely implement all
      * aspects of a new feature, which may take several development drops to

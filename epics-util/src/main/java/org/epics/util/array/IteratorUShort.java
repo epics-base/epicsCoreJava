@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright information and license terms for this software can be
  * found in the file LICENSE.TXT included with the distribution.
  */
@@ -10,30 +10,25 @@ import org.epics.util.number.UnsignedConversions;
  * An iterator of unsigned {@code short}s.
  *
  */
-public interface IteratorUShort extends IteratorNumber {
+public abstract class IteratorUShort implements IteratorNumber {
 
-    @Override
-    public default float nextFloat() {
+    public  float nextFloat() {
         return UnsignedConversions.toFloat(nextShort());
     }
 
-    @Override
-    public default double nextDouble() {
+    public  double nextDouble() {
         return UnsignedConversions.toDouble(nextShort());
     }
 
-    @Override
-    public default byte nextByte() {
+    public  byte nextByte() {
         return (byte) nextShort();
     }
 
-    @Override
-    public default int nextInt() {
+    public  int nextInt() {
         return UnsignedConversions.toInt(nextShort());
     }
 
-    @Override
-    public default long nextLong() {
+    public  long nextLong() {
         return UnsignedConversions.toLong(nextShort());
     }
 

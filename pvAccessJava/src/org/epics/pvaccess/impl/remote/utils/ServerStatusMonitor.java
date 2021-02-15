@@ -41,9 +41,9 @@ public class ServerStatusMonitor {
 		/**
 		 * Beacon handler map.
 		 */
-		private final Map<String, BeaconHandler> beaconHandlerMap = 
+		private final Map<String, BeaconHandler> beaconHandlerMap =
 				Collections.synchronizedMap(new HashMap<String, BeaconHandler>());
-		
+
 		/**
 		 * Constructor.
 		 */
@@ -61,7 +61,7 @@ public class ServerStatusMonitor {
 			}
 			return bh;
 		}
-		
+
 	}
 
 
@@ -71,15 +71,14 @@ public class ServerStatusMonitor {
 		 * ISO 8601 date formatter.
 		 */
 		private static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-		
+
 		private final String protocol;
-		
+
 		public BeaconHandlerImpl(String protocol)
 		{
 			this.protocol = protocol;
 		}
 
-		@Override
 		public void beaconNotify(InetSocketAddress from, byte remoteTransportRevision,
 								 long timestamp, byte[] guid, int sequentalID,
 								 int changeCount, PVField data) {
@@ -103,13 +102,13 @@ public class ServerStatusMonitor {
      * PVA context.
      */
     private BeaconMonitorContextImpl context = null;
-    
+
     /**
      * Initialize JCA context.
      * @throws PVAException	throws on any failure.
      */
     private void initialize() throws PVAException {
-        
+
 		// Create a context with default configuration values.
 		context = new BeaconMonitorContextImpl();
 		context.initialize();
@@ -123,37 +122,37 @@ public class ServerStatusMonitor {
      * Destroy JCA context.
      */
     public void destroy() {
-        
+
         try {
 
             // Destroy the context, check if never initialized.
             if (context != null)
                 context.destroy();
-            
+
         } catch (Throwable th) {
             th.printStackTrace();
         }
     }
-    
+
 	/**
 	 * Do the work...
 	 */
 	public void execute() {
 
 		try {
-		    
+
 		    // initialize context
 		    initialize();
-		    
+
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}
 
 	}
-	
-	
+
+
 	/**
-	 * Program entry point. 
+	 * Program entry point.
 	 * @param args	command-line arguments
 	 */
 	public static void main(String[] args) {
