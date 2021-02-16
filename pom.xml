@@ -33,6 +33,7 @@
         <maven.compiler.source>1.5</maven.compiler.source>
         <maven.compiler.target>1.5</maven.compiler.target>
         <maven.compiler.forceJavacCompilerUse>true</maven.compiler.forceJavacCompilerUse>
+        <maven-bundle-plugin.version>5.1.1</maven-bundle-plugin.version>
     </properties>
 
     <modules>
@@ -274,7 +275,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>${maven-bundle-plugin.version}</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
