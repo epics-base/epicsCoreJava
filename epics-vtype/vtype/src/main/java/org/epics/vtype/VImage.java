@@ -30,6 +30,26 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
     public abstract int getWidth();
 
     /**
+     * Horizontal pixel offset.
+     * For sub-images within a larger image,
+     * this is the X offset.
+     * Defaults to zero.
+     *
+     * @return pixel offset
+     */
+    public abstract int getXOffset();
+
+    /**
+     * Vertical pixel offset.
+     * For sub-images within a larger image,
+     * this is the Y offset.
+     * Defaults to zero.
+     *
+     * @return pixel offset
+     */
+    public abstract int getYOffset();
+
+    /**
      * Image data;
      *
      * @return ListNumber image data
@@ -65,7 +85,25 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
      * @return a new instance of VImage
      */
     public static VImage of(int height, int width, final ListNumber data, VImageDataType imageDataType, VImageType vImageType, Alarm alarm, Time time) {
-        return new IVImage(height, width, data, imageDataType, vImageType, alarm, time);
+        return of(height, width, 0, 0, data, imageDataType, vImageType, alarm, time);
+    }
+
+    /**
+     * Creates a new VImage.
+     *
+     * @param height image height
+     * @param width image width
+     * @param xoffset horizontal offset
+     * @param yoffset vertical offset
+     * @param data image data
+     * @param imageDataType image data type
+     * @param vImageType image type
+     * @param alarm alarm information
+     * @param time timestamp
+     * @return a new instance of VImage
+     */
+    public static VImage of(int height, int width, int xoffset, int yoffset, final ListNumber data, VImageDataType imageDataType, VImageType vImageType, Alarm alarm, Time time) {
+        return new IVImage(height, width, xoffset, yoffset, data, imageDataType, vImageType, alarm, time);
     }
 
     @Override
@@ -80,6 +118,8 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
             return getClass().equals(other.getClass()) 
                     && getHeight() == other.getHeight()
                     && getWidth() == other.getWidth()
+                    && getXOffset() == other.getXOffset()
+                    && getYOffset() == other.getYOffset()
                     && getData().equals(other.getData())
                     && getDataType().equals(other.getDataType())
                     && getVImageType().equals(other.getVImageType())
@@ -95,6 +135,8 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
         int hash = 7;
         hash = 23 * hash + Objects.hashCode(getHeight());
         hash = 23 * hash + Objects.hashCode(getWidth());
+        hash = 23 * hash + Objects.hashCode(getXOffset());
+        hash = 23 * hash + Objects.hashCode(getYOffset());
         hash = 23 * hash + Objects.hashCode(getData());
         hash = 23 * hash + Objects.hashCode(getDataType());
         hash = 23 * hash + Objects.hashCode(getVImageType());
