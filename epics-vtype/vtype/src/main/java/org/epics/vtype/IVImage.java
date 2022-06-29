@@ -17,16 +17,19 @@ public class IVImage extends VImage {
     private final int width;
     private final int xoffset;
     private final int yoffset;
+    private final boolean xreversed;
+    private final boolean yreversed;
     private final ListNumber data;
     private final VImageDataType imageDataType;
     private final VImageType imageType;
 
     IVImage(int height, int width, ListNumber data, VImageDataType imageDataType, VImageType imageType, Alarm alarm,
             Time time) {
-        this(height, width, 0, 0, data, imageDataType, imageType, alarm, time);
+        this(height, width, 0, 0, false, false, data, imageDataType, imageType, alarm, time);
     }
 
-    IVImage(int height, int width, int xoffset, int yoffset, ListNumber data, VImageDataType imageDataType, VImageType imageType, Alarm alarm,
+    IVImage(int height, int width, int xoffset, int yoffset, boolean xreversed, boolean yreversed,
+            ListNumber data, VImageDataType imageDataType, VImageType imageType, Alarm alarm,
             Time time) {
         VType.argumentNotNull("alarm", alarm);
         VType.argumentNotNull("time", time);
@@ -36,6 +39,8 @@ public class IVImage extends VImage {
         this.width = width;
         this.xoffset = xoffset;
         this.yoffset = yoffset;
+        this.xreversed = xreversed;
+        this.yreversed = yreversed;
         this.data = data;
         this.imageDataType = imageDataType;
         this.imageType = imageType;
@@ -55,6 +60,14 @@ public class IVImage extends VImage {
 
     public int getYOffset() {
         return yoffset;
+    }
+
+    public boolean isXReversed() {
+        return xreversed;
+    }
+
+    public boolean isYReversed() {
+        return yreversed;
     }
 
     public ListNumber getData() {

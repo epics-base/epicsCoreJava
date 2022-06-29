@@ -50,6 +50,22 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
     public abstract int getYOffset();
 
     /**
+     * Is the horizontal axis reversed?
+     * Defaults to false.
+     *
+     * @return <code>true</code> if axis is reversed
+     */
+    public abstract boolean isXReversed();
+
+    /**
+     * Is the vertical axis reversed?
+     * Defaults to false.
+     *
+     * @return <code>true</code> if axis is reversed
+     */
+    public abstract boolean isYReversed();
+
+    /**
      * Image data;
      *
      * @return ListNumber image data
@@ -85,7 +101,7 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
      * @return a new instance of VImage
      */
     public static VImage of(int height, int width, final ListNumber data, VImageDataType imageDataType, VImageType vImageType, Alarm alarm, Time time) {
-        return of(height, width, 0, 0, data, imageDataType, vImageType, alarm, time);
+        return of(height, width, 0, 0, false, false, data, imageDataType, vImageType, alarm, time);
     }
 
     /**
@@ -95,6 +111,8 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
      * @param width image width
      * @param xoffset horizontal offset
      * @param yoffset vertical offset
+     * @param xreversed is horizontal axis reversed?
+     * @param yreversed is vertical axis reversed?
      * @param data image data
      * @param imageDataType image data type
      * @param vImageType image type
@@ -102,8 +120,9 @@ public abstract class VImage extends VType implements AlarmProvider, TimeProvide
      * @param time timestamp
      * @return a new instance of VImage
      */
-    public static VImage of(int height, int width, int xoffset, int yoffset, final ListNumber data, VImageDataType imageDataType, VImageType vImageType, Alarm alarm, Time time) {
-        return new IVImage(height, width, xoffset, yoffset, data, imageDataType, vImageType, alarm, time);
+    public static VImage of(int height, int width, int xoffset, int yoffset, boolean xreversed, boolean yreversed,
+                            final ListNumber data, VImageDataType imageDataType, VImageType vImageType, Alarm alarm, Time time) {
+        return new IVImage(height, width, xoffset, yoffset, xreversed, yreversed, data, imageDataType, vImageType, alarm, time);
     }
 
     @Override
