@@ -44,7 +44,10 @@ public class RangeTest {
     @Test
     public void range4() throws Exception {
         Range range = Range.of(0.0, Double.NaN);
-        assertThat(range, sameInstance(Range.undefined()));
+        assertThat(range.getMinimum(), equalTo(0.0));
+        assertThat(range.getMaximum(), equalTo(Double.POSITIVE_INFINITY));
+        assertThat(range.isReversed(), equalTo(false));
+        assertThat(range.toString(), equalTo("[0.0 - Infinity]"));
     }
     
     @Test

@@ -213,10 +213,16 @@ public final class Range {
      * @return the range
      */
     public static Range of(final double minValue, final double maxValue) {
-        if (Double.isNaN(minValue) || Double.isNaN(maxValue)) {
+        if (Double.isNaN(minValue) && Double.isNaN(maxValue)) {
             return Range.UNDEFINED;
         }
-        
+        else if (Double.isNaN(minValue)) {
+            return new Range(Double.NEGATIVE_INFINITY, maxValue, false);
+        }
+        else if (Double.isNaN(maxValue)) {
+            return new Range(minValue, Double.POSITIVE_INFINITY, false);
+        }
+
         if (minValue > maxValue) {
             return new Range(maxValue, minValue, true);
         }
