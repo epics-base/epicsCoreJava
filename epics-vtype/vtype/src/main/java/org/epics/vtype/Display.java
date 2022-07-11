@@ -64,6 +64,13 @@ public abstract class Display {
      * @return the default format for all values
      */
     public abstract NumberFormat getFormat();
+
+    /**
+     * Human-readable description of the underlying data, e.g. the DESC field of an EPICS record.
+     * <code>null</code> if not set.
+     * @return unit
+     */
+    public abstract String getDescription();
     
         
     /**
@@ -97,7 +104,7 @@ public abstract class Display {
             return true;
         }
         
-	if (obj instanceof Display) {
+	    if (obj instanceof Display) {
             Display other = (Display) obj;
         
             return Objects.equals(getFormat(), other.getFormat()) &&
@@ -105,7 +112,8 @@ public abstract class Display {
                 Objects.equals(getDisplayRange(), other.getDisplayRange()) &&
                 Objects.equals(getAlarmRange(), other.getAlarmRange()) &&
                 Objects.equals(getWarningRange(), other.getWarningRange()) &&
-                Objects.equals(getControlRange(), other.getControlRange());
+                Objects.equals(getControlRange(), other.getControlRange()) &&
+                Objects.equals(getDescription(), other.getDescription());
         }
         
         return false;
@@ -120,12 +128,20 @@ public abstract class Display {
         hash = 59 * hash + Objects.hashCode(getAlarmRange());
         hash = 59 * hash + Objects.hashCode(getWarningRange());
         hash = 59 * hash + Objects.hashCode(getControlRange());
+        hash = 59 * hash + Objects.hashCode(getDescription());
         return hash;
     }
 
     @Override
     public final String toString() {
-        return "Display[units: " + getUnit() + " disp: " + getDisplayRange() + " alarm: " + getAlarmRange() + " warn: " + getWarningRange() + " ctrl: " + getControlRange() + " format: " + getFormat() + "]";
+        return "Display[units: " + getUnit() +
+                " disp: " + getDisplayRange() +
+                " alarm: " + getAlarmRange() +
+                " warn: " + getWarningRange() +
+                " ctrl: " + getControlRange() +
+                " format: " + getFormat() +
+                " description: " + getDescription() +
+                "]";
     }
     
     /**
@@ -141,8 +157,26 @@ public abstract class Display {
      */
     public static Display of(final Range displayRange, final Range alarmRange, final Range warningRange,
             final Range controlRange, final String units, final NumberFormat numberFormat) {
+        return of(displayRange, alarmRange, warningRange,
+                controlRange, units, numberFormat, null);
+    }
+
+    /**
+     * Creates a new display.
+     *
+     * @param displayRange the display range
+     * @param warningRange the warning range
+     * @param alarmRange the alarm range
+     * @param controlRange the control range
+     * @param units the units
+     * @param numberFormat the preferred number format
+     * @param description a human-readable description of the underlying data.
+     * @return a new display
+     */
+    public static Display of(final Range displayRange, final Range alarmRange, final Range warningRange,
+                             final Range controlRange, final String units, final NumberFormat numberFormat, String description) {
         return new IDisplay(displayRange, alarmRange, warningRange,
-                controlRange, units, numberFormat);
+                controlRange, units, numberFormat, description);
     }
     
     // TODO: maybe this can be configured (injected through SPI?)
@@ -150,7 +184,7 @@ public abstract class Display {
     
     private static final Display DISPLAY_NONE = of(Range.undefined(),
             Range.undefined(), Range.undefined(), Range.undefined(), 
-            defaultUnits(), DEFAULT_NUMBERFORMAT);
+            defaultUnits(), DEFAULT_NUMBERFORMAT, null);
 
     /**
      * The default number format for number display.

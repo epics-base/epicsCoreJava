@@ -116,7 +116,8 @@ class VTypeGsonMapper extends JsonElement {
                 Range.of(display.getNotNullDouble("lowAlarm"), display.getNotNullDouble("highAlarm")),
                 Range.of(display.getNotNullDouble("lowWarning"), display.getNotNullDouble("highWarning")),
                 Range.of(display.getNotNullDouble("lowControl"), display.getNotNullDouble("highControl")),
-                display.getString("units"), new DecimalFormat());
+                display.getString("units"), new DecimalFormat(),
+                display.getString("description", null));
     }
     
     public ListDouble getListDouble(String string) {
@@ -280,7 +281,7 @@ class VTypeGsonMapper extends JsonElement {
     }
 
     public String getString(String string, String string1) {
-        return json.get(string).isJsonNull() ? string1 : json.get(string).getAsString();
+        return (json.get(string) == null || json.get(string).isJsonNull()) ? string1 : json.get(string).getAsString();
     }
 
     public int getInt(String string) {
