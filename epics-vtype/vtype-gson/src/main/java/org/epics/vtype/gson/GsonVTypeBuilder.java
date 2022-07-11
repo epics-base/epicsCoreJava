@@ -163,6 +163,7 @@ class GsonVTypeBuilder extends JsonElement {
                 .addIgnoreNaN("lowWarning", display.getWarningRange().getMinimum())
                 .addIgnoreNaN("highWarning", display.getWarningRange().getMaximum())
                 .add("units", display.getUnit())
+                .addNullableObject("description", display.getDescription())
                 .build());
     }
     
@@ -242,6 +243,8 @@ class GsonVTypeBuilder extends JsonElement {
             addListNumber(string, (ListNumber) o);
         } else if (o instanceof ListBoolean) {
             addListBoolean(string, (ListBoolean) o);
+        } else if (o instanceof String) {
+            add(string, (String)o);
         } else {
             throw new UnsupportedOperationException("Class " + o.getClass() + " not supported");
         }

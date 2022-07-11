@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
 import org.epics.util.number.UShort;
+import org.epics.util.stats.Range;
 import org.epics.vtype.Alarm;
 import org.epics.vtype.AlarmSeverity;
 import org.epics.vtype.AlarmStatus;
@@ -129,6 +132,35 @@ public class VTypeToGsonTest {
 
     @Test
     public void vDouble1() {
+        VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
+        testSerialization(vDouble1, "VDouble1");
+        testDeserialization("VDouble1", vDouble1);
+        testDeserialization("VDouble1a", vDouble1);
+    }
+
+    @Test
+    public void vDouble1b() {
+        VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR,
+                AlarmStatus.DB, "LOW"),
+                Time.of(Instant.ofEpochSecond(0, 0)),
+                Display.of(Range.of(-100.0, 100.0), Range.of(-100.0, 100.0), Range.of(-10.0, 10.0), Range.of(Double.NaN, Double.NaN), "degC", new DecimalFormat(), null));
+        testSerialization(vDouble1, "VDouble1b");
+        testDeserialization("VDouble1b", vDouble1);
+    }
+
+    @Test
+    public void vDouble1c() {
+        VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR,
+                        AlarmStatus.DB, "LOW"),
+                Time.of(Instant.ofEpochSecond(0, 0)),
+                Display.of(Range.of(-100.0, 100.0), Range.of(-100.0, 100.0), Range.of(-10.0, 10.0), Range.of(Double.NaN, Double.NaN), "degC", new DecimalFormat(), "fooBar"));
+        testSerialization(vDouble1, "VDouble1c");
+        testDeserialization("VDouble1c", vDouble1);
+    }
+
+
+    @Test
+    public void vDouble2() {
         VDouble vDouble1 = VDouble.of(3.14, Alarm.of(AlarmSeverity.MINOR, AlarmStatus.DB, "LOW"), Time.of(Instant.ofEpochSecond(0, 0)), Display.none());
         testSerialization(vDouble1, "VDouble1");
         testDeserialization("VDouble1", vDouble1);

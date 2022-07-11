@@ -1,0 +1,26 @@
+{  
+   "type":{  
+      "name":"VDouble",
+      "version":1
+   },
+   "value":3.14,
+   "alarm":{  
+      "severity":"MINOR",
+      "status":"DB",
+      "name":"LOW"
+   },
+   "time":{  
+      "unixSec":0,
+      "nanoSec":0
+   },
+   "display":{
+      "lowAlarm":-100.0,
+      "highAlarm":100.0,
+      "lowDisplay":-100.0,
+      "highDisplay":100.0,
+      "lowWarning":-10.0,
+      "highWarning":10.0,
+      "units":"degC",
+      "description": "fooBar"
+   }
+}
