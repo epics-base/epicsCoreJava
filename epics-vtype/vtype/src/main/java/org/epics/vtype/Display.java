@@ -67,8 +67,7 @@ public abstract class Display {
 
     /**
      * Human-readable description of the underlying data, e.g. the DESC field of an EPICS record.
-     * <code>null</code> if not set.
-     * @return unit
+     * @return description, or <code>null</code> if not set.
      */
     public abstract String getDescription();
     
