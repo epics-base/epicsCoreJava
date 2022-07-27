@@ -101,42 +101,42 @@ public class DisplayTest {
         assertThat(display.getControlRange(), equalTo(Range.of(0.0, 10.0)));
         assertThat(display.getUnit(), equalTo("m"));
         assertThat(display.getFormat(), equalTo(format));
+        assertNull(display.getDescription());
     }
 
     @Test(expected=NullPointerException.class)
     public void of2() {
         NumberFormat format = new DecimalFormat();
-        Display display = Display.of(null, Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), "m", format);
+        Display.of(null, Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), "m", format);
     }
 
     @Test(expected=NullPointerException.class)
     public void of3() {
         NumberFormat format = new DecimalFormat();
-        Display display = Display.of(Range.of(0, 10), Range.of(2, 8), null, Range.of(0, 10), "m", format);
+        Display.of(Range.of(0, 10), Range.of(2, 8), null, Range.of(0, 10), "m", format);
     }
 
     @Test(expected=NullPointerException.class)
     public void of4() {
         NumberFormat format = new DecimalFormat();
-        Display display = Display.of(Range.of(0, 10), null, Range.of(1, 9), Range.of(0, 10), "m", format);
+        Display.of(Range.of(0, 10), null, Range.of(1, 9), Range.of(0, 10), "m", format);
     }
 
     @Test(expected=NullPointerException.class)
     public void of5() {
         NumberFormat format = new DecimalFormat();
-        Display display = Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), null, "m", format);
+        Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), null, "m", format);
     }
 
     @Test(expected=NullPointerException.class)
     public void of6() {
         NumberFormat format = new DecimalFormat();
-        Display display = Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), null, format);
+        Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), null, format);
     }
 
     @Test(expected=NullPointerException.class)
     public void of7() {
-        NumberFormat format = new DecimalFormat();
-        Display display = Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), "m", null);
+        Display.of(Range.of(0, 10), Range.of(2, 8), Range.of(1, 9), Range.of(0, 10), "m", null);
     }
     
     @Test
@@ -147,6 +147,7 @@ public class DisplayTest {
         assertThat(display.getAlarmRange(), equalTo(Range.undefined()));
         assertThat(display.getControlRange(), equalTo(Range.undefined()));
         assertThat(display.getUnit(), equalTo(""));
+        assertNull(display.getDescription());
     }
     
     @Test
@@ -203,5 +204,15 @@ public class DisplayTest {
         assertThat(display.newAlarmFor(-8.5), equalTo(Alarm.none()));
         assertThat(display.newAlarmFor(-9.5), equalTo(Alarm.lolo()));
     }
-   
+
+    @Test
+    public void testDescription(){
+        Display display = Display.of(Range.of(-10, 10), Range.of(-9, 9), Range.undefined(), Range.undefined(),
+                "", Display.defaultNumberFormat());
+        assertNull(display.getDescription());
+
+        display = Display.of(Range.of(-10, 10), Range.of(-9, 9), Range.undefined(), Range.undefined(),
+                "", Display.defaultNumberFormat(), "desc");
+        assertEquals("desc", display.getDescription());
+    }
 }

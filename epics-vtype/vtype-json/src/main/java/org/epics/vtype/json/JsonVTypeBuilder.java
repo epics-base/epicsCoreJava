@@ -147,7 +147,8 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
                 .addIgnoreNaN("highDisplay", display.getDisplayRange().getMaximum())
                 .addIgnoreNaN("lowWarning", display.getWarningRange().getMinimum())
                 .addIgnoreNaN("highWarning", display.getWarningRange().getMaximum())
-                .add("units", display.getUnit()));
+                .add("units", display.getUnit())
+                .addNullableObject("description", display.getDescription()));
     }
     
     public JsonVTypeBuilder addEnum(VEnum en) {
@@ -225,6 +226,8 @@ class JsonVTypeBuilder implements JsonObjectBuilder {
             addListNumber(string, (ListNumber) o);
         } else if (o instanceof ListBoolean) {
             addListBoolean(string, (ListBoolean) o);
+        } else if (o instanceof String){
+            add(string, (String)o);
         } else {
             throw new UnsupportedOperationException("Class " + o.getClass() + " not supported");
         }

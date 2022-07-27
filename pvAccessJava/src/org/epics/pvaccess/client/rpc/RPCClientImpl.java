@@ -129,10 +129,11 @@ public class RPCClientImpl implements RPCClient, ChannelRequester, ChannelRPCReq
 					return result;
 				else
 				{
-					if (status.getStackDump() == null)
-						throw new RPCRequestException(status.getType(), status.getMessage());
+					String stackDump = status.getStackDump();
+					if (stackDump != null && !stackDump.isEmpty())
+						throw new RPCRequestException(status.getType(), status.getMessage() + ", cause:\n" + stackDump);
 					else
-						throw new RPCRequestException(status.getType(), status.getMessage() + ", cause:\n" + status.getStackDump());
+						throw new RPCRequestException(status.getType(), status.getMessage());
 				}
 			}
 			else

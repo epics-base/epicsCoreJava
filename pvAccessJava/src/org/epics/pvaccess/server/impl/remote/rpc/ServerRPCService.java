@@ -288,8 +288,9 @@ public class ServerRPCService implements RPCService {
 			if (!status.isSuccess())
 			{
 				String errorMessage = "failed to fetch channel list: " + status.getMessage();
-				if (status.getStackDump() != null)
-					errorMessage += "\n" + status.getStackDump();
+				String stackDump = status.getStackDump();
+				if (stackDump != null && !stackDump.isEmpty())
+					errorMessage += "\n" + stackDump;
 				throw new RPCRequestException(StatusType.ERROR, errorMessage);
 			}
 			

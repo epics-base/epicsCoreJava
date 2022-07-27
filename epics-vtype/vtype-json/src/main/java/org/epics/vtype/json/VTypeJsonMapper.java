@@ -100,7 +100,8 @@ class VTypeJsonMapper implements JsonObject {
                 Range.of(display.getNotNullDouble("lowAlarm"), display.getNotNullDouble("highAlarm")),
                 Range.of(display.getNotNullDouble("lowWarning"), display.getNotNullDouble("highWarning")),
                 Range.of(display.getNotNullDouble("lowControl"), display.getNotNullDouble("highControl")),
-                display.getString("units"), new DecimalFormat());
+                display.getString("units"), new DecimalFormat(),
+                display.getString("description", null));
     }
     
     public ListDouble getListDouble(String string) {
