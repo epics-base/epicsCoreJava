@@ -13,6 +13,7 @@
     <dependency>
       <groupId>org.epics</groupId>
       <artifactId>jca</artifactId>
+      <version>${jca.version}</version>
       </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

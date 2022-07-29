@@ -100,7 +100,7 @@ public class InMemoryCAServer {
         mpv.setUnits("units");
         mpv.setPrecision((short) 3);
 
-        server.registerProcessVaribale(mpv);
+        server.registerProcessVariable(mpv);
     }
 
     static void createIntProcessVariable(String name, int value, DefaultServerImpl server) {
@@ -122,7 +122,7 @@ public class InMemoryCAServer {
         mpv.setUnits("units");
         mpv.setPrecision((short) 3);
 
-        server.registerProcessVaribale(mpv);
+        server.registerProcessVariable(mpv);
     }
 
     static void createFloatProcessVariable(String name, float value, DefaultServerImpl server) {
@@ -144,13 +144,13 @@ public class InMemoryCAServer {
         mpv.setUnits("units");
         mpv.setPrecision((short) 3);
 
-        server.registerProcessVaribale(mpv);
+        server.registerProcessVariable(mpv);
     }
 
     static void createStringProcessVariable(String name, String value, DefaultServerImpl server) {
         // PV supporting all GR/CTRL info
         MemoryProcessVariable mpv = new MemoryProcessVariable(name, null, DBR_String.TYPE, new String[] { value });
-        server.registerProcessVaribale(mpv);
+        server.registerProcessVariable(mpv);
     }
 
     public static void main(String[] args) throws IllegalStateException, CAException {
