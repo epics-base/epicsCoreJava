@@ -107,8 +107,8 @@ class GsonVTypeBuilder extends JsonElement {
         return this;
     }
 
-    public GsonVTypeBuilder addIgnoreNaN(String string, double d) {
-        if (!Double.isNaN(d)) {
+    public GsonVTypeBuilder addIgnoreNaNAndInfinity(String string, double d) {
+        if (!Double.isNaN(d) && !Double.isInfinite(d)) {
             jsonObject.addProperty(string, d);
         }
         return this;
@@ -156,12 +156,12 @@ class GsonVTypeBuilder extends JsonElement {
     
     public GsonVTypeBuilder addDisplay(Display display) {
         return add("display", new GsonVTypeBuilder()
-                .addIgnoreNaN("lowAlarm", display.getAlarmRange().getMinimum())
-                .addIgnoreNaN("highAlarm", display.getAlarmRange().getMaximum())
-                .addIgnoreNaN("lowDisplay", display.getDisplayRange().getMinimum())
-                .addIgnoreNaN("highDisplay", display.getDisplayRange().getMaximum())
-                .addIgnoreNaN("lowWarning", display.getWarningRange().getMinimum())
-                .addIgnoreNaN("highWarning", display.getWarningRange().getMaximum())
+                .addIgnoreNaNAndInfinity("lowAlarm", display.getAlarmRange().getMinimum())
+                .addIgnoreNaNAndInfinity("highAlarm", display.getAlarmRange().getMaximum())
+                .addIgnoreNaNAndInfinity("lowDisplay", display.getDisplayRange().getMinimum())
+                .addIgnoreNaNAndInfinity("highDisplay", display.getDisplayRange().getMaximum())
+                .addIgnoreNaNAndInfinity("lowWarning", display.getWarningRange().getMinimum())
+                .addIgnoreNaNAndInfinity("highWarning", display.getWarningRange().getMaximum())
                 .add("units", display.getUnit())
                 .addNullableObject("description", display.getDescription())
                 .build());
