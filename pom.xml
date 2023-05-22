@@ -3,7 +3,7 @@
 
     <groupId>org.epics</groupId>
     <artifactId>epics-parent</artifactId>
-    <version>7.0.9</version>
+    <version>7.0.10-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>EPICS Core Build</name>
@@ -12,11 +12,11 @@
 
     <properties>
         <!-- Matching versions of Core modules -->
-        <epics-util.version>1.0.6</epics-util.version>
+        <epics-util.version>1.0.7-SNAPSHOT</epics-util.version>
         <epics-vtype.version>1.0.6</epics-vtype.version>
-        <epics-pvdata.version>6.1.8</epics-pvdata.version>
-        <epics-ntypes.version>0.3.8</epics-ntypes.version>
-        <epics-pvaccess.version>5.1.8</epics-pvaccess.version>
+        <epics-pvdata.version>6.1.9-SNAPSHOT</epics-pvdata.version>
+        <epics-ntypes.version>0.3.9-SNAPSHOT</epics-ntypes.version>
+        <epics-pvaccess.version>5.1.9-SNAPSHOT</epics-pvaccess.version>
         <jca.version>2.4.8</jca.version>
         <!-- Versions of examples bundled with Core -->
         <!-- Name of javadoc overview page -->
@@ -52,7 +52,7 @@
         <connection>scm:git:https://github.com/epics-base/epicsCoreJava.git</connection>
         <developerConnection>scm:git:https://github.com/epics-base/epicsCoreJava.git</developerConnection>
         <url>https://github.com/epics-base/epicsCoreJava</url>
-        <tag>7.0.9</tag>
+        <tag>7.0.7</tag>
     </scm>
 
     <!-- Project developers (alphabetically) taken from SCM logs -->
