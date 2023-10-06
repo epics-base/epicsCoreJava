@@ -1,0 +1,16 @@
+{
+    "type":{"name":"VTable","version":1},
+    "columnCount":8,
+    "columnNames":["integer","short","byte","long","double","float","string","empty"],
+    "columnTypes":["int","short","byte","long","double","float","java.lang.String","java.lang.Object"],
+    "value":{
+        "0":[1,2,3],
+        "1":[1,2,3],
+        "2":[1,2,3],
+        "3":[1,2,3],
+        "4":[1.0,2.0,3.0],
+        "5":[1.0,2.0,3.0],
+        "6":["a","b","c"],
+        "7":[]
+    }
+}

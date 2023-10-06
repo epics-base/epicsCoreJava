@@ -34,36 +34,7 @@ import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
 import org.epics.util.number.UShort;
 import org.epics.util.stats.Range;
-import org.epics.vtype.Alarm;
-import org.epics.vtype.AlarmSeverity;
-import org.epics.vtype.AlarmStatus;
-import org.epics.vtype.Display;
-import org.epics.vtype.EnumDisplay;
-import org.epics.vtype.Time;
-import org.epics.vtype.VByte;
-import org.epics.vtype.VByteArray;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VDoubleArray;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VFloat;
-import org.epics.vtype.VFloatArray;
-import org.epics.vtype.VInt;
-import org.epics.vtype.VIntArray;
-import org.epics.vtype.VLong;
-import org.epics.vtype.VLongArray;
-import org.epics.vtype.VShort;
-import org.epics.vtype.VShortArray;
-import org.epics.vtype.VString;
-import org.epics.vtype.VStringArray;
-import org.epics.vtype.VType;
-import org.epics.vtype.VUByte;
-import org.epics.vtype.VUByteArray;
-import org.epics.vtype.VUInt;
-import org.epics.vtype.VUIntArray;
-import org.epics.vtype.VULong;
-import org.epics.vtype.VULongArray;
-import org.epics.vtype.VUShort;
-import org.epics.vtype.VUShortArray;
+import org.epics.vtype.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.hamcrest.Matchers.*;
@@ -390,4 +361,91 @@ public class VTypeToJsonTest {
     public void testGetDoubleFromStringNonParsableValue(){
         VTypeToJsonV1.getDoubleFromJsonString("invalid");
     }
+
+    @Test
+    public void testVTable(){
+        List<Class<?>> types = Arrays.asList(Integer.TYPE,
+                Long.TYPE,
+                Short.TYPE,
+                Byte.TYPE,
+                Double.TYPE,
+                Float.TYPE,
+                String.class,
+                Object.class);
+        List<String> names = Arrays.asList("integer", "long", "short", "byte", "double", "float", "string", "empty");
+        int[] ints = {1, 2, 3};
+        ArrayInteger intValues = ArrayInteger.of(ints);
+        long[] longs = {1L, 2L, 3L, 4L};
+        ArrayLong longValues = ArrayLong.of(longs);
+        short[] shorts /* pun intended */ = {(short)1, (short)2, (short)3};
+        ArrayShort shortValues = ArrayShort.of(shorts);
+        byte[] bytes = {(byte)1, (byte)2, (byte)3};
+        ArrayByte byteValues = ArrayByte.of(bytes);
+        double[] doubles = {1.0, 2.0, 3.0};
+        ArrayDouble doubleValues = ArrayDouble.of(doubles);
+        float[] floats = {1.1f};
+        ArrayFloat floatValues = ArrayFloat.of(floats);
+        String[] strings = {"a","b"};
+        List<String> stringValues = Arrays.asList(strings);
+        VTable vTable = VTable.of(types, names, Arrays.asList(intValues,
+                longValues,
+                shortValues,
+                byteValues,
+                doubleValues,
+                floatValues,
+                stringValues,
+                Collections.emptyList()));
+
+        // This should not fail
+        JsonObject jsonObject = VTypeToJson.toJson(vTable);
+        System.out.println(jsonObject.toString());
+
+        VTable deserialized = (VTable) VTypeToJson.toVType(jsonObject);
+        assertEquals(vTable.getColumnCount(), deserialized.getColumnCount());
+        for(int i = 0; i < deserialized.getColumnCount(); i++){
+            assertEquals(vTable.getColumnName(i), deserialized.getColumnName(i));
+            assertEquals(vTable.getColumnType(i), deserialized.getColumnType(i));
+            assertEquals(vTable.getColumnData(i), deserialized.getColumnData(i));
+        }
+
+        // Compare data array lengths and elements
+        ArrayInteger deserializedIntValues = (ArrayInteger) deserialized.getColumnData(0);
+        int[] deserializedInts = new int[deserializedIntValues.size()];
+        deserializedIntValues.toArray(deserializedInts);
+        assertArrayEquals(ints, deserializedInts);
+
+        ArrayLong deserializedLongValues = (ArrayLong)deserialized.getColumnData(1);
+        long[] deserializedLongs = new long[deserializedLongValues.size()];
+        deserializedLongValues.toArray(deserializedLongs);
+        assertArrayEquals(longs, deserializedLongs);
+
+        ArrayShort deserializedShortValues = (ArrayShort)deserialized.getColumnData(2);
+        short[] deserializedShorts = new short[deserializedShortValues.size()];
+        deserializedShortValues.toArray(deserializedShorts);
+        assertArrayEquals(shorts, deserializedShorts);
+
+        ArrayByte deserializedByteValues = (ArrayByte)deserialized.getColumnData(3);
+        byte[] deserializedBytes = new byte[deserializedByteValues.size()];
+        deserializedByteValues.toArray(deserializedBytes);
+        assertArrayEquals(bytes, deserializedBytes);
+
+        ArrayDouble deserializedDoubleValues = (ArrayDouble) deserialized.getColumnData(4);
+        double[] deserializedDoubles = new double[deserializedDoubleValues.size()];
+        deserializedDoubleValues.toArray(deserializedDoubles);
+        assertArrayEquals(doubles, deserializedDoubles, 0);
+
+        ArrayFloat deserializedFloatValues = (ArrayFloat) deserialized.getColumnData(5);
+        float[] deserializedFloats = new float[deserializedFloatValues.size()];
+        deserializedFloatValues.toArray(deserializedFloats);
+        assertArrayEquals(floats, deserializedFloats, 0);
+
+        List<String> deserializedStringValues = (List)deserialized.getColumnData(6);
+        String[] deserializedStrings = new String[deserializedStringValues.size()];
+        deserializedStringValues.toArray(deserializedStrings);
+        assertArrayEquals(strings, deserializedStrings);
+
+        List deserializedNothing = (List)deserialized.getColumnData(7);
+        assertTrue(deserializedNothing.isEmpty());
+    }
+
 }
