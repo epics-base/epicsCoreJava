@@ -4,30 +4,27 @@
  */
 package org.epics.vtype.json;
 
-import java.util.List;
-import javax.json.JsonObject;
 import org.epics.util.array.ListNumber;
 import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
 import org.epics.util.number.UShort;
-import org.epics.vtype.EnumDisplay;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VNumber;
-import org.epics.vtype.VNumberArray;
-import org.epics.vtype.VString;
-import org.epics.vtype.VStringArray;
-import org.epics.vtype.VType;
+import org.epics.vtype.*;
+
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * 
  * @author carcassi
  */
 class VTypeToJsonV1 {
 
     static VType toVType(JsonObject json) {
-        switch(typeNameOf(json)) {
+        switch (typeNameOf(json)) {
             case "VDouble":
             case "VFloat":
             case "VULong":
@@ -56,11 +53,13 @@ class VTypeToJsonV1 {
                 return toVStringArray(json);
             case "VEnum":
                 return toVEnum(json);
+            case "VTable":
+                return toVTable(json);
             default:
                 throw new UnsupportedOperationException("Not implemented yet");
         }
     }
-    
+
     static String typeNameOf(JsonObject json) {
         JsonObject type = json.getJsonObject("type");
         if (type == null) {
@@ -68,7 +67,7 @@ class VTypeToJsonV1 {
         }
         return type.getString("name");
     }
-    
+
     static JsonObject toJson(VType vType) {
         if (vType instanceof VNumber) {
             return toJson((VNumber) vType);
@@ -80,17 +79,19 @@ class VTypeToJsonV1 {
             return toJson((VStringArray) vType);
         } else if (vType instanceof VEnum) {
             return toJson((VEnum) vType);
+        } else if (vType instanceof VTable) {
+            return toJson((VTable) vType);
         }
         throw new UnsupportedOperationException("Not implemented yet");
     }
-    
+
     static VNumber toVNumber(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
         Number value;
-        switch(mapper.getTypeName()) {
+        switch (mapper.getTypeName()) {
             case "VDouble":
                 Double doubleValue = getDoubleFromJsonString(json.get("value").toString());
-                if(doubleValue != null){
+                if (doubleValue != null) {
                     return VDouble.of(doubleValue, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
                 }
                 value = mapper.getJsonNumber("value").doubleValue();
@@ -127,22 +128,22 @@ class VTypeToJsonV1 {
         }
         return VNumber.of(value, mapper.getAlarm(), mapper.getTime(), mapper.getDisplay());
     }
-    
+
     static VString toVString(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
         return VString.of(mapper.getString("value"), mapper.getAlarm(), mapper.getTime());
     }
-    
+
     static VEnum toVEnum(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
         List<String> labels = mapper.getJsonObject("enum").getListString("labels");
         return VEnum.of(mapper.getInt("value"), EnumDisplay.of(labels), mapper.getAlarm(), mapper.getTime());
     }
-    
+
     static VNumberArray toVNumberArray(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
         ListNumber value;
-        switch(mapper.getTypeName()) {
+        switch (mapper.getTypeName()) {
             case "VDoubleArray":
                 value = mapper.getListDouble("value");
                 break;
@@ -182,9 +183,9 @@ class VTypeToJsonV1 {
     static VStringArray toVStringArray(JsonObject json) {
         VTypeJsonMapper mapper = new VTypeJsonMapper(json);
         return VStringArray.of(mapper.getListString("value"), mapper.getAlarm(), mapper.getTime());
-        
+
     }
-    
+
     static JsonObject toJson(VNumber vNumber) {
         return new JsonVTypeBuilder()
                 .addType(vNumber)
@@ -194,7 +195,7 @@ class VTypeToJsonV1 {
                 .addDisplay(vNumber.getDisplay())
                 .build();
     }
-    
+
     static JsonObject toJson(VNumberArray vNumberArray) {
         return new JsonVTypeBuilder()
                 .addType(vNumberArray)
@@ -204,7 +205,7 @@ class VTypeToJsonV1 {
                 .addDisplay(vNumberArray.getDisplay())
                 .build();
     }
-    
+
     static JsonObject toJson(VStringArray vStringArray) {
         return new JsonVTypeBuilder()
                 .addType(vStringArray)
@@ -213,7 +214,7 @@ class VTypeToJsonV1 {
                 .addTime(vStringArray.getTime())
                 .build();
     }
-    
+
     static JsonObject toJson(VString vString) {
         return new JsonVTypeBuilder()
                 .addType(vString)
@@ -222,7 +223,7 @@ class VTypeToJsonV1 {
                 .addTime(vString.getTime())
                 .build();
     }
-    
+
     static JsonObject toJson(VEnum vEnum) {
         return new JsonVTypeBuilder()
                 .addType(vEnum)
@@ -234,26 +235,135 @@ class VTypeToJsonV1 {
     }
 
     /**
+     * Serializes a {@link VTable} object, though with the restriction that data is
+     * structured as arrays, but not any other nested ot complex structure, e.g. arrays of arrays.
+     * The array data may be of different types and of different length.
+     * @param vTable A {@link VTable} object
+     * @return JSON representation.
+     */
+    static JsonObject toJson(VTable vTable) {
+        JsonVTypeBuilder jsonVTypeBuilder = new JsonVTypeBuilder();
+        int columnCount = vTable.getColumnCount();
+        List<String> columnNames = new ArrayList<>();
+        List<String> columnTypes = new ArrayList<>();
+        for (int i = 0; i < columnCount; i++) {
+            columnNames.add(i, vTable.getColumnName(i));
+            columnTypes.add(i, vTable.getColumnType(i).getName());
+        }
+        jsonVTypeBuilder.addType(vTable)
+                .add("columnCount", columnCount)
+                .addListString("columnNames", columnNames);
+
+        jsonVTypeBuilder.addListString("columnTypes", columnTypes);
+        JsonArrayBuilder valueBuilder = JsonVTypeBuilder.factory.createArrayBuilder();
+        for (int i = 0; i < columnCount; i++) {
+            valueBuilder.add(JsonArrays.fromList(vTable.getColumnData(i)));
+        }
+        jsonVTypeBuilder.add("value", valueBuilder);
+        return jsonVTypeBuilder.build();
+    }
+
+    /**
+     * @param name A class name, primitives (int, double...) can be used
+     * @return A {@link Class} derived from the name. Primary purpose is to support
+     * primitives on top of any Java cononical class name.
+     * @throws ClassNotFoundException Should not happen under the assumption that underlying
+     * EPICS data and its Java representation is "well-behaved".
+     */
+    static Class<?> getClass(String name) throws ClassNotFoundException{
+        switch (name) {
+            case "int":
+                return Integer.TYPE;
+            case "long":
+                return Long.TYPE;
+            case "short":
+                return Short.TYPE;
+            case "byte":
+                return Byte.TYPE;
+            case "double":
+                return Double.TYPE;
+            case "float":
+                return Float.TYPE;
+            default:
+                return Class.forName(name);
+        }
+    }
+
+    /**
      * Converts an input (JSON) string to a {@link Double}, taking into account the special cases
      * {@link Double#NaN}, {@link Double#POSITIVE_INFINITY} and {@link Double#NEGATIVE_INFINITY}.
      * If the input string is not parseable as a double (including the special cases), a
      * {@link NumberFormatException} is thrown.
+     *
      * @param valueAsString
      * @return A valid double number, otherwise
      * {@link Double#NaN}, {@link Double#POSITIVE_INFINITY} and {@link Double#NEGATIVE_INFINITY}.
      */
-    public static Double getDoubleFromJsonString(String valueAsString){
-        if(VTypeJsonMapper.NAN_QUOTED.equals(valueAsString)){
+    public static Double getDoubleFromJsonString(String valueAsString) {
+        if (VTypeJsonMapper.NAN_QUOTED.equals(valueAsString)) {
             return Double.NaN;
-        }
-        else if(VTypeJsonMapper.POS_INF_QUOTED.equals(valueAsString)){
+        } else if (VTypeJsonMapper.POS_INF_QUOTED.equals(valueAsString)) {
             return Double.POSITIVE_INFINITY;
-        }
-        else if(VTypeJsonMapper.NEG_INF_QUOTED.equals(valueAsString)){
+        } else if (VTypeJsonMapper.NEG_INF_QUOTED.equals(valueAsString)) {
             return Double.NEGATIVE_INFINITY;
-        }
-        else{
+        } else {
             return Double.parseDouble(valueAsString);
         }
+    }
+
+    /**
+     * Deserializes the JSON representation of a {@link VTable}
+     * @param jsonObject JSON representation
+     * @return A {@link VTable} object.
+     */
+    static VTable toVTable(JsonObject jsonObject) {
+        int columnCount = jsonObject.getInt("columnCount");
+        List<String> listString = new ArrayList<>();
+        List<Class<?>> listClass = new ArrayList<>();
+        JsonArray columnNames = jsonObject.getJsonArray("columnNames");
+        JsonArray columnTypes = jsonObject.getJsonArray("columnTypes");
+        for (int i = 0; i < columnCount; i++) {
+            listString.add(i, columnNames.getString(i));
+            Class<?> clazz;
+            try {
+                clazz = getClass(columnTypes.getString(i));
+            } catch (ClassNotFoundException e) {
+                clazz = Object.class;
+            }
+            listClass.add(i, clazz);
+        }
+        List<Object> listObject = new ArrayList<>();
+        JsonArray value = jsonObject.getJsonArray("value");
+        for (int i = 0; i < columnCount; i++) {
+            JsonArray ja = value.getJsonArray(i);
+            Class clazz = listClass.get(i);
+            if (ja == null || ja.isEmpty() || clazz == null) {
+                listObject.add(i, Collections.emptyList());
+            } else {
+                if (clazz.equals(Integer.TYPE)) {
+                    listObject.add(i, JsonArrays.toListInt(ja));
+                } else if (clazz.equals(Long.TYPE)) {
+                    listObject.add(i, JsonArrays.toListLong(ja));
+                }
+                else if (clazz.equals(Short.TYPE)) {
+                    listObject.add(i, JsonArrays.toListShort(ja));
+                }
+                else if (clazz.equals(Byte.TYPE)) {
+                    listObject.add(i, JsonArrays.toListByte(ja));
+                }
+                else if (clazz.equals(Double.TYPE)) {
+                    listObject.add(i, JsonArrays.toListDouble(ja));
+                }
+                else if (clazz.equals(Float.TYPE)) {
+                    listObject.add(i, JsonArrays.toListFloat(ja));
+                }
+                else if (clazz.equals(String.class)) {
+                    listObject.add(i, JsonArrays.toListString(ja));
+                }
+            }
+        }
+        VTable vTable = VTable.of(listClass, listString, listObject);
+
+        return vTable;
     }
 }
