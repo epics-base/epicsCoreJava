@@ -4,21 +4,18 @@
  */
 package org.epics.vtype.gson;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import org.epics.util.array.ListNumber;
+import com.google.gson.JsonObject;
+import org.epics.util.array.*;
 import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
 import org.epics.util.number.UShort;
-import org.epics.vtype.EnumDisplay;
-import org.epics.vtype.VDouble;
-import org.epics.vtype.VEnum;
-import org.epics.vtype.VNumber;
-import org.epics.vtype.VNumberArray;
-import org.epics.vtype.VString;
-import org.epics.vtype.VStringArray;
-import org.epics.vtype.VType;
+import org.epics.vtype.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -61,6 +58,8 @@ public class VTypeToGson {
                 return toVStringArray(json);
             case "VEnum":
                 return toVEnum(json);
+            case "VTable":
+                return toVTable(json);
             default:
                 throw new UnsupportedOperationException("Not implemented yet");
         }
@@ -85,6 +84,8 @@ public class VTypeToGson {
             return toJson((VStringArray) vType);
         } else if (vType instanceof VEnum) {
             return toJson((VEnum) vType);
+        } else if(vType instanceof VTable) {
+            return toJson((VTable) vType);
         }
         throw new UnsupportedOperationException("Not implemented yet");
     }
@@ -259,6 +260,186 @@ public class VTypeToGson {
         }
         else{
             return Double.parseDouble(valueAsString);
+        }
+    }
+
+    /**
+     * Deserializes the Gson representation of a {@link VTable}
+     * @param jsonElement JSON representation
+     * @return A {@link VTable} object.
+     */
+    static VTable toVTable(JsonElement jsonElement) {
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        int columnCount = jsonObject.get("columnCount").getAsInt();
+        List<String> listString = new ArrayList<>();
+        List<Class<?>> listClass = new ArrayList<>();
+        JsonArray columnNames = jsonObject.get("columnNames").getAsJsonArray();
+        JsonArray columnTypes = jsonObject.get("columnTypes").getAsJsonArray();
+        List<Object> listObject = new ArrayList<>();
+        for (int i = 0; i < columnCount; i++) {
+            listString.add(i, columnNames.get(i).getAsString());
+            Class<?> clazz = getClass(columnTypes.get(i).getAsString());
+            listClass.add(i, clazz);
+            JsonArray value = jsonObject.get("value").getAsJsonArray();
+            JsonArray ja = value.get(i).getAsJsonArray();
+            clazz = listClass.get(i);
+            if (ja == null || ja.size() == 0 || clazz == null) {
+                listObject.add(i, Collections.emptyList());
+            } else {
+                String columnType = columnTypes.get(i).getAsString();
+                switch (columnType){
+                    case "bool":
+                        listObject.add(i, GsonArrays.toListBoolean(ja));
+                        break;
+                    case "byte":
+                        listObject.add(i, GsonArrays.toListByte(ja));
+                        break;
+                    case "ubyte":
+                        listObject.add(i, GsonArrays.toListUByte(ja));
+                        break;
+                    case "short":
+                        listObject.add(i, GsonArrays.toListShort(ja));
+                        break;
+                    case "ushort":
+                        listObject.add(i, GsonArrays.toListUShort(ja));
+                        break;
+                    case "int":
+                        listObject.add(i, GsonArrays.toListInt(ja));
+                        break;
+                    case "uint":
+                        listObject.add(i, GsonArrays.toListUInteger(ja));
+                        break;
+                    case "long":
+                        listObject.add(i, GsonArrays.toListLong(ja));
+                        break;
+                    case "ulong":
+                        listObject.add(i, GsonArrays.toListULong(ja));
+                        break;
+                    case "float":
+                        listObject.add(i, GsonArrays.toListFloat(ja));
+                        break;
+                    case "double":
+                        listObject.add(i, GsonArrays.toListDouble(ja));
+                        break;
+                    case "string":
+                        listObject.add(i, GsonArrays.toListString(ja));
+                        break;
+                    default:
+                        listObject.add(i, Collections.emptyList());
+                }
+            }
+        }
+        return VTable.of(listClass, listString, listObject);
+    }
+
+    /**
+     * @param name A type name determined at serialization time. The &quot;unsigned primitives&quot; (ushort, uint...)
+     *             are allowed.
+     * @return A {@link Class} derived from the name, where - for instance - int and uint both map to
+     * {@link Integer#TYPE}. For unsupported type names <code>null</code> is returned.
+     */
+    static Class<?> getClass(String name) {
+        switch (name) {
+            case "bool":
+                return Boolean.TYPE;
+            case "int":
+            case "uint":
+                return Integer.TYPE;
+            case "long":
+            case "ulong":
+                return Long.TYPE;
+            case "short":
+            case "ushort":
+                return Short.TYPE;
+            case "byte":
+            case "ubyte":
+                return Byte.TYPE;
+            case "double":
+                return Double.TYPE;
+            case "float":
+                return Float.TYPE;
+            case "string":
+                return String.class;
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Serializes a {@link VTable} object, though with the restriction that data is
+     * structured as arrays, but not any other nested ot complex structure, e.g. arrays of arrays.
+     * The array data may be of different types, but EPICS requires data columns to be of equal length.
+     * @param vTable A {@link VTable} object
+     * @return Gson representation.
+     */
+    static JsonObject toJson(VTable vTable) {
+        GsonVTypeBuilder jsonVTypeBuilder = new GsonVTypeBuilder();
+        int columnCount = vTable.getColumnCount();
+        List<String> columnNames = new ArrayList<>();
+        List<String> columnTypes = new ArrayList<>();
+        for (int i = 0; i < columnCount; i++) {
+            columnNames.add(i, vTable.getColumnName(i));
+            columnTypes.add(i, getVTableDataType(vTable.getColumnData(i)));
+        }
+        jsonVTypeBuilder.addType(vTable)
+                .add("columnCount", columnCount)
+                .addListString("columnNames", columnNames);
+
+        jsonVTypeBuilder.addListString("columnTypes", columnTypes);
+        JsonArray valueBuilder = new JsonArray();
+        for (int i = 0; i < columnCount; i++) {
+            valueBuilder.add(GsonArrays.fromList(vTable.getColumnData(i)));
+        }
+        jsonVTypeBuilder.add("value", valueBuilder);
+        return jsonVTypeBuilder.build();
+    }
+
+    /**
+     * An NTTable's value columns are always of type struct_t[]. In order to be able to preserve
+     * the type information when serializing, this method returns a string representation
+     * of the array type.
+     * @param data NTTable value field that is always of array type.
+     * @return A string representation of the array type.
+     */
+    static String getVTableDataType(Object data){
+        if(data instanceof ArrayBoolean){
+            return "bool";
+        }
+        else if(data instanceof ArrayByte){
+            return "byte";
+        }
+        else if(data instanceof ArrayUByte){
+            return "ubyte";
+        }
+        else if(data instanceof ArrayShort){
+            return "short";
+        }
+        else if(data instanceof ArrayUShort){
+            return "ushort";
+        }
+        else if (data instanceof ArrayInteger){
+            return "int";
+        }
+        else if(data instanceof ArrayUInteger){
+            return "uint";
+        }
+        else if(data instanceof ArrayLong){
+            return "long";
+        }
+        else if(data instanceof ArrayULong){
+            return "ulong";
+        }
+        else if(data instanceof ArrayFloat){
+            return "float";
+        }
+        else if(data instanceof ArrayDouble){
+            return "double";
+        }
+        else if(data instanceof List){
+            return "string";
+        }
+        else{
+            return "invalid";
         }
     }
 }

@@ -238,7 +238,7 @@ class VTypeToJsonV1 {
     /**
      * Serializes a {@link VTable} object, though with the restriction that data is
      * structured as arrays, but not any other nested ot complex structure, e.g. arrays of arrays.
-     * The array data may be of different types and of different length.
+     * The array data may be of different types, but EPICS requires data columns to be of equal length.
      * @param vTable A {@link VTable} object
      * @return JSON representation.
      */

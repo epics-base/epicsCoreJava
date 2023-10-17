@@ -7,31 +7,12 @@ package org.epics.vtype.gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInteger;
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ArrayShort;
-import org.epics.util.array.ArrayUByte;
-import org.epics.util.array.ArrayUInteger;
-import org.epics.util.array.ArrayULong;
-import org.epics.util.array.ArrayUShort;
-import org.epics.util.array.ListByte;
-import org.epics.util.array.ListDouble;
-import org.epics.util.array.ListFloat;
-import org.epics.util.array.ListInteger;
-import org.epics.util.array.ListLong;
-import org.epics.util.array.ListNumber;
-import org.epics.util.array.ListShort;
-import org.epics.util.array.ListUByte;
-import org.epics.util.array.ListUInteger;
-import org.epics.util.array.ListULong;
-import org.epics.util.array.ListUShort;
+import org.epics.util.array.*;
 import org.epics.util.number.UnsignedConversions;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -221,6 +202,21 @@ public class GsonArrays {
     }
 
     /**
+     * Converts the given numeric JSON array to a ListBoolean.
+     *
+     * @param array an array of booleans
+     * @return a new ListBoolean
+     */
+    public static ListBoolean toListBoolean(JsonArray array) {
+        boolean[] values = new boolean[array.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = array.get(i).getAsBoolean();
+        }
+        return ArrayBoolean.of(values);
+    }
+
+
+    /**
      * Converts the given string JSON array to a List of Strings.
      * 
      * @param array an array of strings
@@ -326,6 +322,31 @@ public class GsonArrays {
             }
         }
         return b;
+    }
+
+    public static JsonArray fromList(Object object){
+        if(object instanceof ListNumber){
+            return fromListNumber((ListNumber) object);
+        }
+        else if(object instanceof ListBoolean){
+            return fromListBoolean((ListBoolean) object);
+        }
+        else if (object instanceof List) {
+            List list = (List) object;
+            if (list.isEmpty()) {
+                return fromListString(Collections.emptyList());
+            }
+            return fromListString(list);
+        }
+        return new JsonArray();
+    }
+
+    private static JsonArray fromListBoolean(ListBoolean listBoolean){
+        JsonArray builder = new JsonArray();
+        for(int i = 0; i < listBoolean.size(); i++){
+            builder.add(listBoolean.getBoolean(i));
+        }
+        return builder;
     }
     
 }
