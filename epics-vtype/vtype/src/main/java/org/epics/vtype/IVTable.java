@@ -5,6 +5,8 @@
 package org.epics.vtype;
 
 import java.util.List;
+
+import org.epics.util.array.ListBoolean;
 import org.epics.util.array.ListNumber;
 
 /**
@@ -35,6 +37,8 @@ class IVTable extends VTable {
             return ((List) data).size();
         } else if (data instanceof ListNumber) {
             return ((ListNumber) data).size();
+        } else if(data instanceof ListBoolean){
+            return ((ListBoolean)data).size();
         }
 
         throw new IllegalArgumentException("Object " + data + " is not supported");

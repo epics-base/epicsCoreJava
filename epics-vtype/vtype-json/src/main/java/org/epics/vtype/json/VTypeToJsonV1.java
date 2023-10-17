@@ -4,7 +4,7 @@
  */
 package org.epics.vtype.json;
 
-import org.epics.util.array.ListNumber;
+import org.epics.util.array.*;
 import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
@@ -15,6 +15,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -103,13 +104,13 @@ class VTypeToJsonV1 {
                 value = new ULong(mapper.getJsonNumber("value").longValue());
                 break;
             case "VLong":
-                value = (long) mapper.getJsonNumber("value").longValue();
+                value = mapper.getJsonNumber("value").longValue();
                 break;
             case "VUInt":
                 value = new UInteger(mapper.getJsonNumber("value").intValue());
                 break;
             case "VInt":
-                value = (int) mapper.getJsonNumber("value").intValue();
+                value = mapper.getJsonNumber("value").intValue();
                 break;
             case "VUShort":
                 value = new UShort((short) mapper.getJsonNumber("value").intValue());
@@ -248,7 +249,7 @@ class VTypeToJsonV1 {
         List<String> columnTypes = new ArrayList<>();
         for (int i = 0; i < columnCount; i++) {
             columnNames.add(i, vTable.getColumnName(i));
-            columnTypes.add(i, vTable.getColumnType(i).getName());
+            columnTypes.add(i, getVTableDataType(vTable.getColumnData(i)));
         }
         jsonVTypeBuilder.addType(vTable)
                 .add("columnCount", columnCount)
@@ -264,28 +265,84 @@ class VTypeToJsonV1 {
     }
 
     /**
-     * @param name A class name, primitives (int, double...) can be used
-     * @return A {@link Class} derived from the name. Primary purpose is to support
-     * primitives on top of any Java cononical class name.
-     * @throws ClassNotFoundException Should not happen under the assumption that underlying
-     * EPICS data and its Java representation is "well-behaved".
+     * An NTTable's value columns are always of type struct_t[]. In order to be able to preserve
+     * the type information when serializing, this method returns a string representation
+     * of the array type.
+     * @param data NTTable value field that is always of array type.
+     * @return A string representation of the array type.
      */
-    static Class<?> getClass(String name) throws ClassNotFoundException{
+    static String getVTableDataType(Object data){
+        if(data instanceof ArrayBoolean){
+            return "bool";
+        }
+        else if(data instanceof ArrayByte){
+            return "byte";
+        }
+        else if(data instanceof ArrayUByte){
+            return "ubyte";
+        }
+        else if(data instanceof ArrayShort){
+            return "short";
+        }
+        else if(data instanceof ArrayUShort){
+            return "ushort";
+        }
+        else if (data instanceof ArrayInteger){
+            return "int";
+        }
+        else if(data instanceof ArrayUInteger){
+            return "uint";
+        }
+        else if(data instanceof ArrayLong){
+            return "long";
+        }
+        else if(data instanceof ArrayULong){
+            return "ulong";
+        }
+        else if(data instanceof ArrayFloat){
+            return "float";
+        }
+        else if(data instanceof ArrayDouble){
+            return "double";
+        }
+        else if(data instanceof List){
+            return "string";
+        }
+        else{
+            return "invalid";
+        }
+    }
+
+    /**
+     * @param name A type name determined at serialization time. The &quot;unsigned primitives&quot; (ushort, uint...)
+     *             are allowed.
+     * @return A {@link Class} derived from the name, where - for instance - int and uint both map to
+     * {@link Integer#TYPE}. For unsupported type names <code>null</code> is returned.
+     */
+    static Class<?> getClass(String name) {
         switch (name) {
+            case "bool":
+                return Boolean.TYPE;
             case "int":
+            case "uint":
                 return Integer.TYPE;
             case "long":
+            case "ulong":
                 return Long.TYPE;
             case "short":
+            case "ushort":
                 return Short.TYPE;
             case "byte":
+            case "ubyte":
                 return Byte.TYPE;
             case "double":
                 return Double.TYPE;
             case "float":
                 return Float.TYPE;
+            case "string":
+                return String.class;
             default:
-                return Class.forName(name);
+                return null;
         }
     }
 
@@ -322,48 +379,60 @@ class VTypeToJsonV1 {
         List<Class<?>> listClass = new ArrayList<>();
         JsonArray columnNames = jsonObject.getJsonArray("columnNames");
         JsonArray columnTypes = jsonObject.getJsonArray("columnTypes");
+        List<Object> listObject = new ArrayList<>();
         for (int i = 0; i < columnCount; i++) {
             listString.add(i, columnNames.getString(i));
-            Class<?> clazz;
-            try {
-                clazz = getClass(columnTypes.getString(i));
-            } catch (ClassNotFoundException e) {
-                clazz = Object.class;
-            }
+            Class<?> clazz = getClass(columnTypes.getString(i));
             listClass.add(i, clazz);
-        }
-        List<Object> listObject = new ArrayList<>();
-        JsonArray value = jsonObject.getJsonArray("value");
-        for (int i = 0; i < columnCount; i++) {
+            JsonArray value = jsonObject.getJsonArray("value");
             JsonArray ja = value.getJsonArray(i);
-            Class clazz = listClass.get(i);
+            clazz = listClass.get(i);
             if (ja == null || ja.isEmpty() || clazz == null) {
                 listObject.add(i, Collections.emptyList());
             } else {
-                if (clazz.equals(Integer.TYPE)) {
-                    listObject.add(i, JsonArrays.toListInt(ja));
-                } else if (clazz.equals(Long.TYPE)) {
-                    listObject.add(i, JsonArrays.toListLong(ja));
-                }
-                else if (clazz.equals(Short.TYPE)) {
-                    listObject.add(i, JsonArrays.toListShort(ja));
-                }
-                else if (clazz.equals(Byte.TYPE)) {
-                    listObject.add(i, JsonArrays.toListByte(ja));
-                }
-                else if (clazz.equals(Double.TYPE)) {
-                    listObject.add(i, JsonArrays.toListDouble(ja));
-                }
-                else if (clazz.equals(Float.TYPE)) {
-                    listObject.add(i, JsonArrays.toListFloat(ja));
-                }
-                else if (clazz.equals(String.class)) {
-                    listObject.add(i, JsonArrays.toListString(ja));
+                String columnType = columnTypes.getString(i);
+                switch (columnType){
+                    case "bool":
+                        listObject.add(i, JsonArrays.toListBoolean(ja));
+                        break;
+                    case "byte":
+                        listObject.add(i, JsonArrays.toListByte(ja));
+                        break;
+                    case "ubyte":
+                        listObject.add(i, JsonArrays.toListUByte(ja));
+                        break;
+                    case "short":
+                        listObject.add(i, JsonArrays.toListShort(ja));
+                        break;
+                    case "ushort":
+                        listObject.add(i, JsonArrays.toListUShort(ja));
+                        break;
+                    case "int":
+                        listObject.add(i, JsonArrays.toListInt(ja));
+                        break;
+                    case "uint":
+                        listObject.add(i, JsonArrays.toListUInteger(ja));
+                        break;
+                    case "long":
+                        listObject.add(i, JsonArrays.toListLong(ja));
+                        break;
+                    case "ulong":
+                        listObject.add(i, JsonArrays.toListULong(ja));
+                        break;
+                    case "float":
+                        listObject.add(i, JsonArrays.toListFloat(ja));
+                        break;
+                    case "double":
+                        listObject.add(i, JsonArrays.toListDouble(ja));
+                        break;
+                    case "string":
+                        listObject.add(i, JsonArrays.toListString(ja));
+                        break;
+                    default:
+                        listObject.add(i, Collections.emptyList());
                 }
             }
         }
-        VTable vTable = VTable.of(listClass, listString, listObject);
-
-        return vTable;
+        return VTable.of(listClass, listString, listObject);
     }
 }

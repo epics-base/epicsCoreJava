@@ -10,25 +10,14 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
-import org.epics.util.array.ArrayByte;
-import org.epics.util.array.ArrayDouble;
-import org.epics.util.array.ArrayFloat;
-import org.epics.util.array.ArrayInteger;
-import org.epics.util.array.ArrayLong;
-import org.epics.util.array.ArrayShort;
-import org.epics.util.array.ArrayUByte;
-import org.epics.util.array.ArrayUInteger;
-import org.epics.util.array.ArrayULong;
-import org.epics.util.array.ArrayUShort;
+
+import org.epics.util.array.*;
 import org.epics.util.number.UByte;
 import org.epics.util.number.UInteger;
 import org.epics.util.number.ULong;
@@ -364,37 +353,65 @@ public class VTypeToJsonTest {
 
     @Test
     public void testVTable(){
-        List<Class<?>> types = Arrays.asList(Integer.TYPE,
-                Long.TYPE,
-                Short.TYPE,
+        List<Class<?>> types = Arrays.asList(
+                Boolean.TYPE,
                 Byte.TYPE,
+                Byte.TYPE,
+                Short.TYPE,
+                Short.TYPE,
+                Integer.TYPE,
+                Integer.TYPE,
+                Long.TYPE,
+                Long.TYPE,
                 Double.TYPE,
                 Float.TYPE,
-                String.class,
-                Object.class);
-        List<String> names = Arrays.asList("integer", "long", "short", "byte", "double", "float", "string", "empty");
-        int[] ints = {1, 2, 3};
-        ArrayInteger intValues = ArrayInteger.of(ints);
-        long[] longs = {1L, 2L, 3L, 4L};
-        ArrayLong longValues = ArrayLong.of(longs);
-        short[] shorts /* pun intended */ = {(short)1, (short)2, (short)3};
+                String.class);
+        List<String> names = Arrays.asList("bool", "byte", "ubyte", "short", "ushort", "int", "uint", "long", "ulong", "double", "float", "string");
+        boolean[] bools = {true, false, true};
+        ArrayBoolean boolValues = ArrayBoolean.of(bools);
+
+        byte[] bytes = {(byte)-1, (byte)2, (byte)3};
+        ArrayByte byteValues = ArrayByte.of((byte)-1, (byte)2, (byte)3);
+        byte[] ubytes = {(byte)1, (byte)2, (byte)3};
+        ArrayUByte ubyteValues = ArrayUByte.of(ubytes);
+
+        short[] shorts = {(short)-1, (short)2, (short)3};
         ArrayShort shortValues = ArrayShort.of(shorts);
-        byte[] bytes = {(byte)1, (byte)2, (byte)3};
-        ArrayByte byteValues = ArrayByte.of(bytes);
+        short[] ushorts = {(short)1, (short)2, (short)3};
+        ArrayUShort ushortValues = ArrayUShort.of(ushorts);
+
+        int[] ints = {-1, 2, 3};
+        ArrayInteger intValues = ArrayInteger.of(ints);
+        int[] uints = {1, 2, 3};
+        ArrayUInteger uintValues = ArrayUInteger.of(uints);
+
+        long[] longs = {-1L, 2L, 3L, 4L};
+        ArrayLong longValues = ArrayLong.of(longs);
+        long[] ulongs = {1L, 2L, 3L, 4L};
+        ArrayULong ulongValues = ArrayULong.of(ulongs);
+
         double[] doubles = {1.0, 2.0, 3.0};
         ArrayDouble doubleValues = ArrayDouble.of(doubles);
+
         float[] floats = {1.1f};
         ArrayFloat floatValues = ArrayFloat.of(floats);
+
         String[] strings = {"a","b"};
         List<String> stringValues = Arrays.asList(strings);
-        VTable vTable = VTable.of(types, names, Arrays.asList(intValues,
-                longValues,
-                shortValues,
+
+        VTable vTable = VTable.of(types, names, Arrays.asList(
+                boolValues,
                 byteValues,
+                ubyteValues,
+                shortValues,
+                ushortValues,
+                intValues,
+                uintValues,
+                longValues,
+                ulongValues,
                 doubleValues,
                 floatValues,
-                stringValues,
-                Collections.emptyList()));
+                stringValues));
 
         // This should not fail
         JsonObject jsonObject = VTypeToJson.toJson(vTable);
@@ -409,43 +426,66 @@ public class VTypeToJsonTest {
         }
 
         // Compare data array lengths and elements
-        ArrayInteger deserializedIntValues = (ArrayInteger) deserialized.getColumnData(0);
+        ArrayBoolean deserializedBoolValues = (ArrayBoolean) deserialized.getColumnData(0);
+        boolean[] deserializedBools = new boolean[deserializedBoolValues.size()];
+        for(int i = 0; i < deserializedBoolValues.size(); i++){
+            deserializedBools[i] = deserializedBoolValues.getBoolean(i);
+        }
+        assertArrayEquals(bools, deserializedBools);
+
+        ArrayInteger deserializedIntValues = (ArrayInteger) deserialized.getColumnData(5);
         int[] deserializedInts = new int[deserializedIntValues.size()];
         deserializedIntValues.toArray(deserializedInts);
         assertArrayEquals(ints, deserializedInts);
 
-        ArrayLong deserializedLongValues = (ArrayLong)deserialized.getColumnData(1);
+        ArrayUInteger deserializedUIntValues = (ArrayUInteger) deserialized.getColumnData(6);
+        int[] deserializedUInts = new int[deserializedUIntValues.size()];
+        deserializedUIntValues.toArray(deserializedUInts);
+        assertArrayEquals(uints, deserializedUInts);
+
+        ArrayLong deserializedLongValues = (ArrayLong)deserialized.getColumnData(7);
         long[] deserializedLongs = new long[deserializedLongValues.size()];
         deserializedLongValues.toArray(deserializedLongs);
         assertArrayEquals(longs, deserializedLongs);
 
-        ArrayShort deserializedShortValues = (ArrayShort)deserialized.getColumnData(2);
+        ArrayULong deserializedULongValues = (ArrayULong)deserialized.getColumnData(8);
+        long[] deserializedULongs = new long[deserializedULongValues.size()];
+        deserializedULongValues.toArray(deserializedULongs);
+        assertArrayEquals(ulongs, deserializedULongs);
+
+        ArrayShort deserializedShortValues = (ArrayShort)deserialized.getColumnData(3);
         short[] deserializedShorts = new short[deserializedShortValues.size()];
         deserializedShortValues.toArray(deserializedShorts);
         assertArrayEquals(shorts, deserializedShorts);
 
-        ArrayByte deserializedByteValues = (ArrayByte)deserialized.getColumnData(3);
+        ArrayUShort deserializedUShortValues = (ArrayUShort)deserialized.getColumnData(4);
+        short[] deserializedUShorts = new short[deserializedUShortValues.size()];
+        deserializedUShortValues.toArray(deserializedUShorts);
+        assertArrayEquals(ushorts, deserializedUShorts);
+
+        ArrayByte deserializedByteValues = (ArrayByte)deserialized.getColumnData(1);
         byte[] deserializedBytes = new byte[deserializedByteValues.size()];
         deserializedByteValues.toArray(deserializedBytes);
         assertArrayEquals(bytes, deserializedBytes);
 
-        ArrayDouble deserializedDoubleValues = (ArrayDouble) deserialized.getColumnData(4);
+        ArrayUByte deserializedUByteValues = (ArrayUByte)deserialized.getColumnData(2);
+        byte[] deserializedUBytes = new byte[deserializedUByteValues.size()];
+        deserializedUByteValues.toArray(deserializedUBytes);
+        assertArrayEquals(ubytes, deserializedUBytes);
+
+        ArrayDouble deserializedDoubleValues = (ArrayDouble) deserialized.getColumnData(9);
         double[] deserializedDoubles = new double[deserializedDoubleValues.size()];
         deserializedDoubleValues.toArray(deserializedDoubles);
         assertArrayEquals(doubles, deserializedDoubles, 0);
 
-        ArrayFloat deserializedFloatValues = (ArrayFloat) deserialized.getColumnData(5);
+        ArrayFloat deserializedFloatValues = (ArrayFloat) deserialized.getColumnData(10);
         float[] deserializedFloats = new float[deserializedFloatValues.size()];
         deserializedFloatValues.toArray(deserializedFloats);
         assertArrayEquals(floats, deserializedFloats, 0);
 
-        List<String> deserializedStringValues = (List)deserialized.getColumnData(6);
+        List<String> deserializedStringValues = (List)deserialized.getColumnData(11);
         String[] deserializedStrings = new String[deserializedStringValues.size()];
         deserializedStringValues.toArray(deserializedStrings);
         assertArrayEquals(strings, deserializedStrings);
-
-        List deserializedNothing = (List)deserialized.getColumnData(7);
-        assertTrue(deserializedNothing.isEmpty());
     }
-
 }

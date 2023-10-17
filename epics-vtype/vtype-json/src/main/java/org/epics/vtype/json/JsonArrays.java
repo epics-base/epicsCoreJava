@@ -194,6 +194,20 @@ public class JsonArrays {
     }
 
     /**
+     * Converts the given numeric JSON array to a ListBoolean.
+     *
+     * @param array an array of booleans
+     * @return a new ListBoolean
+     */
+    public static ListBoolean toListBoolean(JsonArray array) {
+        boolean[] values = new boolean[array.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = array.getBoolean(i);
+        }
+        return ArrayBoolean.of(values);
+    }
+
+    /**
      * Converts the given string JSON array to a List of Strings.
      *
      * @param array an array of strings
@@ -321,7 +335,11 @@ public class JsonArrays {
     public static JsonArrayBuilder fromList(Object object) {
         if (object instanceof ListNumber) {
             return fromListNumber((ListNumber) object);
-        } else if (object instanceof List) {
+        }
+        else if(object instanceof ListBoolean){
+            return fromListBoolean((ListBoolean)object);
+        }
+        else if (object instanceof List) {
             List list = (List) object;
             if (list.isEmpty()) {
                 return JsonVTypeBuilder.factory.createArrayBuilder();
@@ -329,5 +347,13 @@ public class JsonArrays {
             return fromListString(list);
         }
         return JsonVTypeBuilder.factory.createArrayBuilder();
+    }
+
+    private static JsonArrayBuilder fromListBoolean(ListBoolean listBoolean){
+        JsonArrayBuilder builder = JsonVTypeBuilder.factory.createArrayBuilder();
+        for(int i = 0; i < listBoolean.size(); i++){
+            builder.add(listBoolean.getBoolean(i));
+        }
+        return builder;
     }
 }
