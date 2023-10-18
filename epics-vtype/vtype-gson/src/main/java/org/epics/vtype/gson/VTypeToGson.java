@@ -280,49 +280,49 @@ public class VTypeToGson {
             listString.add(i, columnNames.get(i).getAsString());
             Class<?> clazz = getClass(columnTypes.get(i).getAsString());
             listClass.add(i, clazz);
-            JsonArray value = jsonObject.get("value").getAsJsonArray();
-            JsonArray ja = value.get(i).getAsJsonArray();
+            JsonArray value = jsonObject.get("value").getAsJsonArray()
+                    .get(i).getAsJsonArray();
             clazz = listClass.get(i);
-            if (ja == null || ja.size() == 0 || clazz == null) {
+            if (clazz == null) {
                 listObject.add(i, Collections.emptyList());
             } else {
                 String columnType = columnTypes.get(i).getAsString();
                 switch (columnType){
                     case "bool":
-                        listObject.add(i, GsonArrays.toListBoolean(ja));
+                        listObject.add(i, GsonArrays.toListBoolean(value));
                         break;
                     case "byte":
-                        listObject.add(i, GsonArrays.toListByte(ja));
+                        listObject.add(i, GsonArrays.toListByte(value));
                         break;
                     case "ubyte":
-                        listObject.add(i, GsonArrays.toListUByte(ja));
+                        listObject.add(i, GsonArrays.toListUByte(value));
                         break;
                     case "short":
-                        listObject.add(i, GsonArrays.toListShort(ja));
+                        listObject.add(i, GsonArrays.toListShort(value));
                         break;
                     case "ushort":
-                        listObject.add(i, GsonArrays.toListUShort(ja));
+                        listObject.add(i, GsonArrays.toListUShort(value));
                         break;
                     case "int":
-                        listObject.add(i, GsonArrays.toListInt(ja));
+                        listObject.add(i, GsonArrays.toListInt(value));
                         break;
                     case "uint":
-                        listObject.add(i, GsonArrays.toListUInteger(ja));
+                        listObject.add(i, GsonArrays.toListUInteger(value));
                         break;
                     case "long":
-                        listObject.add(i, GsonArrays.toListLong(ja));
+                        listObject.add(i, GsonArrays.toListLong(value));
                         break;
                     case "ulong":
-                        listObject.add(i, GsonArrays.toListULong(ja));
+                        listObject.add(i, GsonArrays.toListULong(value));
                         break;
                     case "float":
-                        listObject.add(i, GsonArrays.toListFloat(ja));
+                        listObject.add(i, GsonArrays.toListFloat(value));
                         break;
                     case "double":
-                        listObject.add(i, GsonArrays.toListDouble(ja));
+                        listObject.add(i, GsonArrays.toListDouble(value));
                         break;
                     case "string":
-                        listObject.add(i, GsonArrays.toListString(ja));
+                        listObject.add(i, GsonArrays.toListString(value));
                         break;
                     default:
                         listObject.add(i, Collections.emptyList());

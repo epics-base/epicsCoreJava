@@ -365,8 +365,9 @@ public class VTypeToJsonTest {
                 Long.TYPE,
                 Double.TYPE,
                 Float.TYPE,
-                String.class);
-        List<String> names = Arrays.asList("bool", "byte", "ubyte", "short", "ushort", "int", "uint", "long", "ulong", "double", "float", "string");
+                String.class,
+                Long.TYPE);
+        List<String> names = Arrays.asList("bool", "byte", "ubyte", "short", "ushort", "int", "uint", "long", "ulong", "double", "float", "string", "empty");
         boolean[] bools = {true, false, true};
         ArrayBoolean boolValues = ArrayBoolean.of(bools);
 
@@ -399,6 +400,9 @@ public class VTypeToJsonTest {
         String[] strings = {"a","b"};
         List<String> stringValues = Arrays.asList(strings);
 
+        long[] emptyLongs = new long[0];
+        ArrayLong emptyLongValues = ArrayLong.of(emptyLongs);
+
         VTable vTable = VTable.of(types, names, Arrays.asList(
                 boolValues,
                 byteValues,
@@ -411,11 +415,11 @@ public class VTypeToJsonTest {
                 ulongValues,
                 doubleValues,
                 floatValues,
-                stringValues));
+                stringValues,
+                emptyLongValues));
 
         // This should not fail
         JsonObject jsonObject = VTypeToJson.toJson(vTable);
-        System.out.println(jsonObject.toString());
 
         VTable deserialized = (VTable) VTypeToJson.toVType(jsonObject);
         assertEquals(vTable.getColumnCount(), deserialized.getColumnCount());
@@ -487,5 +491,10 @@ public class VTypeToJsonTest {
         String[] deserializedStrings = new String[deserializedStringValues.size()];
         deserializedStringValues.toArray(deserializedStrings);
         assertArrayEquals(strings, deserializedStrings);
+
+        ArrayLong deserializedEmptyLongValues = (ArrayLong)deserialized.getColumnData(12);
+        long[] deserializedEmptyLongs = new long[deserializedEmptyLongValues.size()];
+        deserializedEmptyLongValues.toArray(deserializedEmptyLongs);
+        assertArrayEquals(emptyLongs, deserializedEmptyLongs);
     }
 }
