@@ -384,49 +384,49 @@ class VTypeToJsonV1 {
             listString.add(i, columnNames.getString(i));
             Class<?> clazz = getClass(columnTypes.getString(i));
             listClass.add(i, clazz);
-            JsonArray value = jsonObject.getJsonArray("value");
-            JsonArray ja = value.getJsonArray(i);
+            JsonArray value = jsonObject.getJsonArray("value").getJsonArray(i);
             clazz = listClass.get(i);
-            if (ja == null || ja.isEmpty() || clazz == null) {
+            if (clazz == null) {
                 listObject.add(i, Collections.emptyList());
-            } else {
+            }
+            else {
                 String columnType = columnTypes.getString(i);
                 switch (columnType){
                     case "bool":
-                        listObject.add(i, JsonArrays.toListBoolean(ja));
+                        listObject.add(i, JsonArrays.toListBoolean(value));
                         break;
                     case "byte":
-                        listObject.add(i, JsonArrays.toListByte(ja));
+                        listObject.add(i, JsonArrays.toListByte(value));
                         break;
                     case "ubyte":
-                        listObject.add(i, JsonArrays.toListUByte(ja));
+                        listObject.add(i, JsonArrays.toListUByte(value));
                         break;
                     case "short":
-                        listObject.add(i, JsonArrays.toListShort(ja));
+                        listObject.add(i, JsonArrays.toListShort(value));
                         break;
                     case "ushort":
-                        listObject.add(i, JsonArrays.toListUShort(ja));
+                        listObject.add(i, JsonArrays.toListUShort(value));
                         break;
                     case "int":
-                        listObject.add(i, JsonArrays.toListInt(ja));
+                        listObject.add(i, JsonArrays.toListInt(value));
                         break;
                     case "uint":
-                        listObject.add(i, JsonArrays.toListUInteger(ja));
+                        listObject.add(i, JsonArrays.toListUInteger(value));
                         break;
                     case "long":
-                        listObject.add(i, JsonArrays.toListLong(ja));
+                        listObject.add(i, JsonArrays.toListLong(value));
                         break;
                     case "ulong":
-                        listObject.add(i, JsonArrays.toListULong(ja));
+                        listObject.add(i, JsonArrays.toListULong(value));
                         break;
                     case "float":
-                        listObject.add(i, JsonArrays.toListFloat(ja));
+                        listObject.add(i, JsonArrays.toListFloat(value));
                         break;
                     case "double":
-                        listObject.add(i, JsonArrays.toListDouble(ja));
+                        listObject.add(i, JsonArrays.toListDouble(value));
                         break;
                     case "string":
-                        listObject.add(i, JsonArrays.toListString(ja));
+                        listObject.add(i, JsonArrays.toListString(value));
                         break;
                     default:
                         listObject.add(i, Collections.emptyList());
