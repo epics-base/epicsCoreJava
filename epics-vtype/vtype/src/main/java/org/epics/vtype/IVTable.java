@@ -46,7 +46,7 @@ class IVTable extends VTable {
 
     @Override
     public int getColumnCount() {
-        return names.size();
+        return values.size();
     }
 
     @Override
