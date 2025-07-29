@@ -94,7 +94,7 @@ public abstract class Alarm {
     private static final Alarm LOW = of(AlarmSeverity.MINOR, AlarmStatus.RECORD, "LOW");
     private static final Alarm LOLO = of(AlarmSeverity.MAJOR, AlarmStatus.RECORD, "LOLO");
     private static final Alarm NO_VALUE = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "No value");
-    private static final Alarm DISCONNECTED = of(AlarmSeverity.INVALID, AlarmStatus.CLIENT, "Disconnected");
+    private static final Alarm DISCONNECTED = of(AlarmSeverity.UNDEFINED, AlarmStatus.CLIENT, "Disconnected");
     
     /**
      * No alarm. To be used whenever there is no alarm associated with the value.
