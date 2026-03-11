@@ -13,7 +13,7 @@
     <properties>
         <!-- Matching versions of Core modules -->
         <epics-util.version>1.0.8-SNAPSHOT</epics-util.version>
-        <epics-vtype.version>1.0.7</epics-vtype.version>
+        <epics-vtype.version>1.0.8</epics-vtype.version>
         <epics-pvdata.version>6.1.10-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.3.10-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>5.1.10-SNAPSHOT</epics-pvaccess.version>
@@ -126,8 +126,13 @@
         (id values there should match ids below) -->
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <name>sonatype-nexus-snapshots</name>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/releases</url>
+        </repository>
     </distributionManagement>
 
     <!-- Common depoendencies -->
@@ -349,19 +354,6 @@
                     </dependency>
                 </dependencies>
             </plugin>
-
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.13</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>sonatype-nexus-staging</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-
             <!-- In case one wishes to integrate with Sonarqube running on localhost -->
             <plugin>
                 <groupId>org.jacoco</groupId>
@@ -406,8 +398,21 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.9.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>sonatype-nexus-staging</publishingServerId>
+                            <checksums>required</checksums>
+                            <centralBaseUrl>https://central.sonatype.com</centralBaseUrl>
+                            <autoPublish>false</autoPublish>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>3.2.8</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
