@@ -13,7 +13,7 @@
     <properties>
         <!-- Matching versions of Core modules -->
         <epics-util.version>1.0.8-SNAPSHOT</epics-util.version>
-        <epics-vtype.version>1.0.8</epics-vtype.version>
+        <epics-vtype.version>1.0.8-SNAPSHOT</epics-vtype.version>
         <epics-pvdata.version>6.1.10-SNAPSHOT</epics-pvdata.version>
         <epics-ntypes.version>0.3.10-SNAPSHOT</epics-ntypes.version>
         <epics-pvaccess.version>5.1.10-SNAPSHOT</epics-pvaccess.version>
@@ -127,7 +127,7 @@
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>
             <name>sonatype-nexus-snapshots</name>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+            <url>https://central.sonatype.com/repository/maven-snapshots</url>
         </snapshotRepository>
         <repository>
             <id>sonatype-nexus-staging</id>
