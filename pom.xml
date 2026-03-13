@@ -43,8 +43,9 @@
 
     <licenses>
         <license>
-            <name>The MIT License</name>
-            <url>https://tldrlegal.com/license/mit-license</url>
+            <name>EPICS Open License</name>
+            <url>https://epics-controls.org/epics-open-license</url>
+            <comments>The EPICS Open License for Java Channel Access</comments>
         </license>
     </licenses>
 
