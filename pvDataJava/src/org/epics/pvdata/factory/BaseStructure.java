@@ -192,6 +192,35 @@ public class BaseStructure extends BaseField implements Structure {
     public Field[] getFields() {
         return fields;
     }
+    
+    @Override
+    public Field findSubField(String fieldName, Structure pvStructure) {
+        if(fieldName==null || fieldName.length()<1) return null;
+        int index = fieldName.indexOf('.');
+        String name = fieldName;
+        String restOfName = null;
+        if(index>0) {
+            name = fieldName.substring(0, index);
+            if(fieldName.length()>index) {
+                restOfName = fieldName.substring(index+1);
+            }
+        }
+        Field[] pvFields = pvStructure.getFields();
+        String[] fieldNames = pvStructure.getFieldNames();
+        Field pvField = null;
+        for(int i=0; i < pvFields.length; i++) {
+            if(fieldNames[i].equals(name)) {
+                pvField = pvFields[i];
+                break;
+            }
+        }
+        if(pvField==null) return null;
+        if(restOfName==null) return pvField;
+        if(pvField.getType()!=Type.structure) return null;
+        return findSubField(restOfName,(Structure) pvField);
+    }         
+    
+    
     /* (non-Javadoc)
      * @see org.epics.pvdata.factory.BaseField#toString(java.lang.StringBuilder, int)
      */

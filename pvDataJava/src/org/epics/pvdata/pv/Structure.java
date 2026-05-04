@@ -78,4 +78,13 @@ public interface Structure extends Field{
      * @return the name of the field
      */
     String getFieldName(int fieldIndex);
+    
+    /**
+     * Get the index of the specified field.
+     * 
+     * @param fieldName the name of the field
+     * @param pvStructure a structure instance to lookup the field
+     * @return  the field with fieldName
+     */
+    public Field findSubField(String fieldName, Structure pvStructure);      
 }

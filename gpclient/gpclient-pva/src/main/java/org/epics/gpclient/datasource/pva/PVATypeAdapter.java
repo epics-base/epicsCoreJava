@@ -129,7 +129,7 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
         			break;
         		}
         	
-        	if (!match)
+        	if ((!match) && (!ntId.equalsIgnoreCase("structure")))
         		return false;
         }
         
@@ -139,8 +139,14 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
         	boolean match = false;
         	// we assume Structure here
         	Field channelType = connection.channelType;
-        	Field channelValueType = (channelType.getType() == Type.structure) ?
-        			((Structure)channelType).getField("value") : channelType;
+                Field channelValueType = null;                
+                if (null != connection.extractFieldName) {
+                    channelValueType = ((Structure)channelType).findSubField(connection.extractFieldName, ((Structure)channelType));                   
+                } else {
+                    channelValueType = (channelType.getType() == Type.structure) ?
+        			((Structure)channelType).getField("value") : channelType;                    
+                }
+                
         	if (channelValueType != null)
     		{
             	for (Field vf : valueFieldTypes)
@@ -172,9 +178,11 @@ abstract class PVATypeAdapter implements DataSourceTypeAdapter<PVAConnectionPayl
     	String extractFieldName = connection.extractFieldName;
     	if (extractFieldName != null)
     	{
-    		if (connection.channelType.getType() == Type.structure)
-    			message = message.getStructureField(extractFieldName);
-    		else
+    		if (connection.channelType.getType() == Type.structure) {
+                    if (null != message.getStructureField(extractFieldName)) 
+                        message = message.getStructureField(extractFieldName);
+                    else valueField = message.getSubField(extractFieldName); 
+                } else
     			// this avoids problem when scalars/scalar arrays needs to be passed as PVStructure message
     			valueField = message.getSubField(extractFieldName);
   
