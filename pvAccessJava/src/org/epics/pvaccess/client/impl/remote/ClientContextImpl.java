@@ -20,6 +20,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -418,7 +419,7 @@ public class ClientContextImpl implements Context {
 		// setup UDP transport
 		try {
 			// where to bind (listen) address
-			InetSocketAddress listenLocalAddress = new InetSocketAddress(broadcastPort);
+			InetSocketAddress listenLocalAddress = new InetSocketAddress(InetAddress.getByName("0.0.0.0"), broadcastPort);
 
 			// where to send address
 			InetSocketAddress[] broadcastAddresses = InetAddressUtil.getBroadcastAddresses(broadcastPort);
@@ -432,7 +433,7 @@ public class ClientContextImpl implements Context {
 			BlockingUDPConnector searchConnector = new BlockingUDPConnector(this, false, broadcastAddresses, true);
 
 			searchTransport = (BlockingUDPTransport) searchConnector.connect(null, new ClientResponseHandler(this),
-					new InetSocketAddress(0), PVAConstants.PVA_PROTOCOL_REVISION, PVAConstants.PVA_DEFAULT_PRIORITY);
+					new InetSocketAddress(InetAddress.getByName("0.0.0.0"), 0), PVAConstants.PVA_PROTOCOL_REVISION, PVAConstants.PVA_DEFAULT_PRIORITY);
 
 			// set broadcast address list
 			if (addressList != null && addressList.length() > 0) {
@@ -478,7 +479,7 @@ public class ClientContextImpl implements Context {
 			broadcastTransport.start();
 			searchTransport.start();
 
-		} catch (ConnectionException ce) {
+		} catch (ConnectionException  | UnknownHostException ce) {
 			logger.log(Level.SEVERE, "Failed to initialize UDP transport.", ce);
 		}
 	}
