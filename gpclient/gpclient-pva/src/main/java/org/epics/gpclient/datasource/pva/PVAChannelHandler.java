@@ -83,7 +83,7 @@ class PVAChannelHandler extends
 	private static PVStructure allPVRequest = createRequest.createRequest("field()");
 	private static PVStructure standardPutPVRequest = createRequest.createRequest("field(value)");
 	private static PVStructure enumPutPVRequest = createRequest.createRequest("field(value.index)");
-	
+               
 	private static final String PVREQUEST_PREFIX = "?request=";
 	private final PVStructure pvRequest;
 	private final String extractPVField;
