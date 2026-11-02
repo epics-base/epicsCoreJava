@@ -5,6 +5,7 @@
 package org.epics.vtype;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Scalar enum with alarm and timestamp.
@@ -15,7 +16,7 @@ import java.util.Objects;
  *
  * @author carcassi
  */
-public abstract class VEnum extends Scalar {
+public abstract class VEnum extends Scalar implements DescriptionProvider {
     
     /**
      * {@inheritDoc }
@@ -39,6 +40,20 @@ public abstract class VEnum extends Scalar {
 
     /**
      * Create a new VEnum.
+     *
+     * @param index the index in the label array
+     * @param metaData the metadata
+     * @param alarm the alarm
+     * @param time the time
+     * @param description the description (Optional.empty() if not present.)
+     * @return the new value
+     */
+    public static VEnum of(int index, EnumDisplay metaData, Alarm alarm, Time time, Optional<String> description) {
+        return new IVEnum(index, metaData, alarm, time, description);
+    }
+
+    /**
+     * Create a new VEnum with no description.
      * 
      * @param index the index in the label array
      * @param metaData the metadata
@@ -46,8 +61,9 @@ public abstract class VEnum extends Scalar {
      * @param time the time
      * @return the new value
      */
+    @Deprecated
     public static VEnum of(int index, EnumDisplay metaData, Alarm alarm, Time time) {
-        return new IVEnum(index, metaData, alarm, time);
+        return new IVEnum(index, metaData, alarm, time, Optional.empty());
     }
 
     @Override

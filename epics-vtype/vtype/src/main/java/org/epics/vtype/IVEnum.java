@@ -4,6 +4,8 @@
  */
 package org.epics.vtype;
 
+import java.util.Optional;
+
 /**
  * Immutable {@code VEnum} implementation.
  *
@@ -15,16 +17,19 @@ final class IVEnum extends VEnum {
     private final Time time;
     private final int index;
     private final EnumDisplay enumDisplay;
+    private final Optional<String> description;
 
-    IVEnum(int index, EnumDisplay enumDisplay, Alarm alarm, Time time) {
+    IVEnum(int index, EnumDisplay enumDisplay, Alarm alarm, Time time, Optional<String> description) {
         VType.argumentNotNull("enumDisplay", enumDisplay);
         VType.argumentNotNull("alarm", alarm);
         VType.argumentNotNull("time", time);
         VType.argumentNotNull("index", index);
+        VType.argumentNotNull("description", description);
         this.index = index;
         this.enumDisplay = enumDisplay;
         this.alarm = alarm;
         this.time = time;
+        this.description = description;
     }
 
     @Override
@@ -56,4 +61,8 @@ final class IVEnum extends VEnum {
         return time;
     }
 
+    @Override
+    public Optional<String> getDescription() {
+        return description;
+    }
 }

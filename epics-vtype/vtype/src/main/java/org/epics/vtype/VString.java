@@ -5,13 +5,14 @@
 package org.epics.vtype;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Scalar string with alarm and timestamp.
  *
  * @author carcassi
  */
-public abstract class VString extends Scalar {
+public abstract class VString extends Scalar implements DescriptionProvider {
     
     /**
      * {@inheritDoc }
@@ -22,14 +23,28 @@ public abstract class VString extends Scalar {
     
     /**
      * Creates a new VString.
+     *
+     * @param value the string value
+     * @param alarm the alarm
+     * @param time the time
+     * @param description the description (Optional.empty() if not present.)
+     * @return the new value
+     */
+    public static VString of(final String value, final Alarm alarm, final Time time, final Optional<String> description) {
+        return new IVString(value, alarm, time, description);
+    }
+
+    /**
+     * Creates a new VString with no description.
      * 
      * @param value the string value
      * @param alarm the alarm
      * @param time the time
      * @return the new value
      */
+    @Deprecated
     public static VString of(final String value, final Alarm alarm, final Time time) {
-        return new IVString(value, alarm, time);
+        return new IVString(value, alarm, time, Optional.empty());
     }
 
     @Override
