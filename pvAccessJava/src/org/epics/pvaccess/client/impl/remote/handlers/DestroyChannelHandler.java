@@ -40,8 +40,8 @@ public class DestroyChannelHandler extends AbstractClientResponseHandler {
 		super.handleResponse(responseFrom, transport, version, command, payloadSize, payloadBuffer);
 
 		transport.ensureData(2*Integer.SIZE/Byte.SIZE);
-		final int cid = payloadBuffer.getInt();
 		/*final int sid =*/ payloadBuffer.getInt();
+		final int cid = payloadBuffer.getInt();
 		
 		ChannelImpl channel = context.getChannel(cid);
 		if (channel != null)
