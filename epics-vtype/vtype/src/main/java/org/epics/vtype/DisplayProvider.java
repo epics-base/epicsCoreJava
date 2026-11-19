@@ -4,12 +4,14 @@
  */
 package org.epics.vtype;
 
+import java.util.Optional;
+
 /**
  * A value that provides display information.
  *
  * @author carcassi
  */
-public interface DisplayProvider {
+public interface DisplayProvider extends DescriptionProvider {
     
     /**
      * The display associated with this value.
@@ -17,4 +19,7 @@ public interface DisplayProvider {
      * @return the display; not null
      */
     Display getDisplay();
+    default Optional<String> getDescription() {
+        return Optional.ofNullable(getDisplay().getDescription());
+    }
 }
